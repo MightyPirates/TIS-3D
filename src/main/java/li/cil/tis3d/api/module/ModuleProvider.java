@@ -1,0 +1,32 @@
+package li.cil.tis3d.api.module;
+
+import li.cil.tis3d.api.Casing;
+import li.cil.tis3d.api.Face;
+import net.minecraft.item.ItemStack;
+
+/**
+ * Creates a module instance for a specified item stack.
+ */
+public interface ModuleProvider {
+    /**
+     * Checks whether the provider supports the specified stack.
+     *
+     * @param stack  the stack to check for.
+     * @param casing the casing the module would be installed in.
+     * @param face   the face the module would be installed on.
+     * @return <tt>true</tt> if the stack is supported, <tt>false</tt> otherwise.
+     */
+    boolean worksWith(ItemStack stack, Casing casing, Face face);
+
+    /**
+     * Creates a new module instance for the specified item stack.
+     * <p>
+     * Returns <tt>null</tt> if the specified item type is not supported.
+     *
+     * @param stack  the stack to get the module instance for.
+     * @param casing the casing the module will be installed in.
+     * @param face   the face the module will be installed on.
+     * @return a new module instance, or <tt>null</tt>.
+     */
+    Module createModule(ItemStack stack, Casing casing, Face face);
+}

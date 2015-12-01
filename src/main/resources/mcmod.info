@@ -1,0 +1,16 @@
+[
+{
+  "modid": "tis3d",
+  "name": "TIS-3D",
+  "description": "This is 3D implementation of the TIS-100.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Sangar"],
+  "credits": "Zachtronics for TIS-100",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
