@@ -60,6 +60,14 @@ public abstract class AbstractModule implements Module {
     }
 
     @Override
+    public void onEnabled() {
+    }
+
+    @Override
+    public void onDisabled() {
+    }
+
+    @Override
     public void step() {
     }
 

@@ -55,46 +55,6 @@ public final class TileEntityCasing extends TileEntity implements ISidedInventor
     // --------------------------------------------------------------------- //
     // Networking
 
-    public TileEntityCasing getNeighbor(final Face face) {
-        return neighbors[face.ordinal()];
-    }
-
-    public void setNeighbor(final Face face, final TileEntityCasing neighbor) {
-        final TileEntityCasing oldNeighbor = neighbors[face.ordinal()];
-        if (neighbor != oldNeighbor) {
-            neighbors[face.ordinal()] = neighbor;
-            scheduleScan();
-        }
-
-        // Ensure there are no modules installed between two casings.
-        if (neighbors[face.ordinal()] != null) {
-            InventoryUtils.drop(getWorld(), getPos(), this, face.ordinal(), getInventoryStackLimit(), Face.toEnumFacing(face));
-            InventoryUtils.drop(neighbor.getWorld(), neighbor.getPos(), neighbor, face.getOpposite().ordinal(), neighbor.getInventoryStackLimit(), Face.toEnumFacing(face.getOpposite()));
-        }
-
-        // Adjust ports, connecting multiple casings.
-        if (neighbor == null) {
-            // No neighbor, remove the virtual connector module.
-            if (casing.getModule(face) instanceof ModuleForwarder) {
-                casing.setModule(face, null);
-            }
-            // Also remove it from our old neighbor, if we had one.
-            if (oldNeighbor != null && oldNeighbor.casing.getModule(face.getOpposite()) instanceof ModuleForwarder) {
-                oldNeighbor.casing.setModule(face.getOpposite(), null);
-            }
-        } else if (!(casing.getModule(face) instanceof ModuleForwarder)) {
-            // Got a new connection, and we have not yet been set up by our
-            // neighbor. Create a virtual module that will be responsible
-            // for transferring data between the two casings.
-            final ModuleForwarder forwarder = new ModuleForwarder(casing, face);
-            final ModuleForwarder neighborForwarder = new ModuleForwarder(neighbor.casing, face.getOpposite());
-            forwarder.setSink(neighborForwarder);
-            neighborForwarder.setSink(forwarder);
-            casing.setModule(face, forwarder);
-            neighbor.casing.setModule(face.getOpposite(), neighborForwarder);
-        }
-    }
-
     public TileEntityController getController() {
         return controller;
     }
@@ -150,12 +110,58 @@ public final class TileEntityCasing extends TileEntity implements ISidedInventor
         }
     }
 
+    public void onEnabled() {
+        casing.onEnabled();
+    }
+
+    public void onDisabled() {
+        casing.onDisabled();
+    }
+
     public void stepModules() {
         casing.stepModules();
     }
 
     public void stepPipes() {
         casing.stepPipes();
+    }
+
+    // --------------------------------------------------------------------- //
+
+    private void setNeighbor(final Face face, final TileEntityCasing neighbor) {
+        final TileEntityCasing oldNeighbor = neighbors[face.ordinal()];
+        if (neighbor != oldNeighbor) {
+            neighbors[face.ordinal()] = neighbor;
+            scheduleScan();
+        }
+
+        // Ensure there are no modules installed between two casings.
+        if (neighbors[face.ordinal()] != null) {
+            InventoryUtils.drop(getWorld(), getPos(), this, face.ordinal(), getInventoryStackLimit(), Face.toEnumFacing(face));
+            InventoryUtils.drop(neighbor.getWorld(), neighbor.getPos(), neighbor, face.getOpposite().ordinal(), neighbor.getInventoryStackLimit(), Face.toEnumFacing(face.getOpposite()));
+        }
+
+        // Adjust ports, connecting multiple casings.
+        if (neighbor == null) {
+            // No neighbor, remove the virtual connector module.
+            if (casing.getModule(face) instanceof ModuleForwarder) {
+                casing.setModule(face, null);
+            }
+            // Also remove it from our old neighbor, if we had one.
+            if (oldNeighbor != null && oldNeighbor.casing.getModule(face.getOpposite()) instanceof ModuleForwarder) {
+                oldNeighbor.casing.setModule(face.getOpposite(), null);
+            }
+        } else if (!(casing.getModule(face) instanceof ModuleForwarder)) {
+            // Got a new connection, and we have not yet been set up by our
+            // neighbor. Create a virtual module that will be responsible
+            // for transferring data between the two casings.
+            final ModuleForwarder forwarder = new ModuleForwarder(casing, face);
+            final ModuleForwarder neighborForwarder = new ModuleForwarder(neighbor.casing, face.getOpposite());
+            forwarder.setSink(neighborForwarder);
+            neighborForwarder.setSink(forwarder);
+            casing.setModule(face, forwarder);
+            neighbor.casing.setModule(face.getOpposite(), neighborForwarder);
+        }
     }
 
     private TileEntityController findController() {

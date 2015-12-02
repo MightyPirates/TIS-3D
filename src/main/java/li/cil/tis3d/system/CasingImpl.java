@@ -9,12 +9,12 @@ import li.cil.tis3d.api.module.Redstone;
 import li.cil.tis3d.common.Network;
 import li.cil.tis3d.common.network.MessageModuleData;
 import li.cil.tis3d.common.tile.TileEntityCasing;
+import li.cil.tis3d.common.tile.TileEntityController;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 /**
  * Implementation of a {@link Casing}, holding up to six {@link Module}s.
@@ -76,6 +76,26 @@ public final class CasingImpl implements Casing {
             for (final Port port : Port.VALUES) {
                 pipes[pack(face, port)] = new PipeImpl(this, face, mapFace(face, port), mapSide(face, port));
             }
+        }
+    }
+
+    public void onEnabled() {
+        for (final Module module : modules) {
+            if (module != null) {
+                module.onEnabled();
+            }
+        }
+    }
+
+    public void onDisabled() {
+        for (final Module module : modules) {
+            if (module != null) {
+                module.onDisabled();
+            }
+        }
+        for (final PipeImpl pipe : pipes) {
+            pipe.cancelRead();
+            pipe.cancelWrite();
         }
     }
 
@@ -175,8 +195,17 @@ public final class CasingImpl implements Casing {
             return;
         }
 
+        final TileEntityController controller = tileEntity.getController();
+        final boolean isControllerActive = controller != null && controller.getState() == TileEntityController.ControllerState.RUNNING;
+
+        // End-of-life notification for module if it was active.
+        final Module oldModule = getModule(face);
+        if (isControllerActive && oldModule != null) {
+            oldModule.onDisabled();
+        }
+
         // Remember for below.
-        final boolean hadRedstone = getModule(face) instanceof Redstone;
+        final boolean hadRedstone = oldModule instanceof Redstone;
 
         // Apply new module before adjust remaining state.
         modules[face.ordinal()] = module;
@@ -193,6 +222,11 @@ public final class CasingImpl implements Casing {
                 tileEntity.markDirty();
                 getWorld().notifyNeighborsOfStateChange(getPosition(), tileEntity.getBlockType());
             }
+        }
+
+        // Activate the module if the controller is active.
+        if (isControllerActive && module != null) {
+            module.onEnabled();
         }
     }
 

@@ -43,6 +43,8 @@ public final class MachineImpl implements Machine {
         if (instruction != null) {
             instruction.step(this);
         }
+
+        state.validate();
     }
 
     public void onWriteCompleted(final Port port) {

@@ -33,15 +33,12 @@ public final class ModuleForwarder extends AbstractModule {
     private void beginForwarding(final Port port) {
         final Pipe receivingPipe = getCasing().getReceivingPipe(getFace(), port);
         final Pipe sendingPipe = other.getCasing().getSendingPipe(other.getFace(), flipSide(port));
-        if (sendingPipe.isReading()) {
-            if (!sendingPipe.isWriting()) {
-                if (!receivingPipe.isReading()) {
-                    receivingPipe.beginRead();
-                }
-                if (receivingPipe.canTransfer()) {
-                    sendingPipe.beginWrite(receivingPipe.read());
-                }
-            }
+        if (!receivingPipe.isReading()) {
+            receivingPipe.beginRead();
+        }
+        if (!sendingPipe.isWriting() && sendingPipe.isReading() && receivingPipe.canTransfer()) {
+            sendingPipe.beginWrite(receivingPipe.read());
+            receivingPipe.beginRead();
         }
     }
 

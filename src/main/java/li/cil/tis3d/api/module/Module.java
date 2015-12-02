@@ -29,6 +29,25 @@ public interface Module {
     // --------------------------------------------------------------------- //
 
     /**
+     * Called when the multi-block of casings the module is installed in is
+     * enabled, or when the module was installed into an enabled casing.
+     * <p>
+     * Note that this is only called on the server.
+     */
+    void onEnabled();
+
+    /**
+     * Called when the multi-block of casings the module is installed in is
+     * disabled, or when the module was removed from an enabled casing.
+     * <p>
+     * Modules should use this to reset their state, so that cycling power of
+     * a controller resets the whole multi-block system.
+     * <p>
+     * Note that this is only called on the server.
+     */
+    void onDisabled();
+
+    /**
      * Advance the state of the module.
      * <p>
      * This is called by the controller of the system the module is part of

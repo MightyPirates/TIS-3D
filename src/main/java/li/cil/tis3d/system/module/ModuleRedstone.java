@@ -125,6 +125,18 @@ public final class ModuleRedstone extends AbstractModule implements Redstone {
     }
 
     @Override
+    public void onDisabled() {
+        input = 0;
+        output = 0;
+
+        final Block blockType = getCasing().getWorld().getBlockState(getCasing().getPosition()).getBlock();
+        getCasing().markDirty();
+        getCasing().getWorld().notifyNeighborsOfStateChange(getCasing().getPosition(), blockType);
+
+        sendData();
+    }
+
+    @Override
     public void onWriteComplete(final Port port) {
         // Start writing again right away to write as fast as possible.
         stepOutput(port);

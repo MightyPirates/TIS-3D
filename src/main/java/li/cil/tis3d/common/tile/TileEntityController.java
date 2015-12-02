@@ -57,9 +57,14 @@ public final class TileEntityController extends TileEntity implements ITickable 
         INCOMPLETE,
 
         /**
-         * The controller is in operational state and will update connected casings each tick.
+         * The controller is in operational state and can update connected casings each tick.
          */
-        READY
+        READY,
+
+        /**
+         * The controller is in operational state and powered, updating connected casings each tick.
+         */
+        RUNNING
     }
 
     /**
@@ -104,7 +109,16 @@ public final class TileEntityController extends TileEntity implements ITickable 
         for (final TileEntityCasing casing : casings) {
             casing.setController(null);
         }
-        casings.clear();
+
+        // Disable modules if our old controller was active.
+        if (state == TileEntityController.ControllerState.RUNNING) {
+            final List<TileEntityCasing> casingCopy = new ArrayList<>(casings);
+            casings.clear();
+            casingCopy.forEach(TileEntityCasing::onDisabled);
+        } else {
+            casings.clear();
+        }
+
         state = toState;
     }
 
@@ -114,16 +128,22 @@ public final class TileEntityController extends TileEntity implements ITickable 
     @Override
     public void invalidate() {
         super.invalidate();
-        notifyNeighbors();
+        dispose();
     }
 
     @Override
     public void onChunkUnload() {
         super.onChunkUnload();
-        notifyNeighbors();
+        dispose();
     }
 
-    private void notifyNeighbors() {
+    private void dispose() {
+        // If we were in an active state, deactivate all modules in connected cases.
+        if (state == ControllerState.RUNNING) {
+            casings.forEach(TileEntityCasing::onDisabled);
+        }
+
+        // Tell our neighbors about our untimely death.
         for (final EnumFacing facing : EnumFacing.VALUES) {
             final BlockPos neighborPos = getPos().offset(facing);
             if (getWorld().isBlockLoaded(neighborPos)) {
@@ -149,24 +169,40 @@ public final class TileEntityController extends TileEntity implements ITickable 
             return;
         }
 
-        // Do we have a redstone signal?
-        if (!getWorld().isBlockPowered(getPos())) {
-            return;
-        }
-
         // Check if we need to rescan our multi-block structure.
         if (state == ControllerState.SCANNING) {
             scan();
         }
 
         // If we're in an error state we do nothing.
-        if (state != ControllerState.READY) {
-            return;
+        if (state == ControllerState.READY) {
+            // Are we powered?
+            if (!getWorld().isBlockPowered(getPos())) {
+                // Nope, nothing to do then.
+                return;
+            } else {
+                // Yes, switch to running state and enable modules.
+                state = ControllerState.RUNNING;
+                casings.forEach(TileEntityCasing::onEnabled);
+            }
         }
 
-        // All systems are go!
-        casings.forEach(TileEntityCasing::stepModules);
-        casings.forEach(TileEntityCasing::stepPipes);
+        if (state == ControllerState.RUNNING) {
+            // Are we powered?
+            if (!getWorld().isBlockPowered(getPos())) {
+                // Nope, fall back to ready state, disable modules.
+                state = ControllerState.READY;
+                casings.forEach(TileEntityCasing::onDisabled);
+            } else {
+                final int power = getWorld().isBlockIndirectlyGettingPowered(getPos());
+                final int speed = 16 - Math.max(1, Math.min(15, power));
+                if (getWorld().getTotalWorldTime() % speed == 0) {
+                    // Yes, all systems are go!
+                    casings.forEach(TileEntityCasing::stepModules);
+                    casings.forEach(TileEntityCasing::stepPipes);
+                }
+            }
+        }
     }
 
     // --------------------------------------------------------------------- //

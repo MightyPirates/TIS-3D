@@ -53,7 +53,7 @@ public final class PipeImpl implements Pipe {
     /**
      * The value currently being written over this pipe.
      */
-    private int value;
+    private int value = Integer.MIN_VALUE;
 
     // --------------------------------------------------------------------- //
     // Computed data
@@ -125,6 +125,7 @@ public final class PipeImpl implements Pipe {
     @Override
     public void cancelWrite() {
         writeState = State.IDLE;
+        value = Integer.MIN_VALUE;
         if (readState == State.FLUSHING) {
             readState = State.READY;
         }
@@ -166,8 +167,6 @@ public final class PipeImpl implements Pipe {
         if (!canTransfer()) {
             throw new IllegalStateException("No data to read. Check canTransfer().");
         }
-        cancelWrite();
-        cancelRead();
 
         final BlockPos position = casing.getPosition();
         final double ox = Face.toEnumFacing(inputFace).getFrontOffsetX() + Face.toEnumFacing(outputFace).getFrontOffsetX();
@@ -178,7 +177,12 @@ public final class PipeImpl implements Pipe {
         final double z = oz * 0.6 + position.getZ() + 0.5;
         Network.INSTANCE.spawnParticles(casing.getWorld(), EnumParticleTypes.REDSTONE, x, y, z);
 
+        final int result = value;
+
+        cancelWrite();
+        cancelRead();
+
         casing.getModule(outputFace).onWriteComplete(outputPort);
-        return value;
+        return result;
     }
 }

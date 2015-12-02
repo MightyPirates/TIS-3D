@@ -7,9 +7,11 @@ import li.cil.tis3d.api.Port;
 import li.cil.tis3d.api.prefab.AbstractModule;
 import li.cil.tis3d.client.TextureLoader;
 import li.cil.tis3d.system.module.execution.MachineImpl;
+import li.cil.tis3d.system.module.execution.MachineState;
 import li.cil.tis3d.system.module.execution.compiler.Compiler;
 import li.cil.tis3d.system.module.execution.compiler.ParseException;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -29,17 +31,29 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * The programmable execution module.
  */
 public final class ModuleExecution extends AbstractModule {
-    private enum State {
-        IDLE,
-        RUNNING,
-        WAITING
-    }
-
     // --------------------------------------------------------------------- //
     // Persisted data
 
     private final MachineImpl machine;
     private ParseException compileError;
+    private State state = State.IDLE;
+
+    // --------------------------------------------------------------------- //
+    // Computed data
+
+    private enum State {
+        IDLE,
+        ERROR,
+        RUNNING,
+        WAITING
+    }
+
+    private static final String[] STATE_LOCATIONS = new String[]{
+            null,
+            TextureLoader.LOCATION_MODULE_EXECUTION_OVERLAY_ERROR.toString(),
+            TextureLoader.LOCATION_MODULE_EXECUTION_OVERLAY_RUNNING.toString(),
+            TextureLoader.LOCATION_MODULE_EXECUTION_OVERLAY_WAITING.toString()
+    };
 
     // --------------------------------------------------------------------- //
 
@@ -86,14 +100,59 @@ public final class ModuleExecution extends AbstractModule {
         }
     }
 
+    private void sendData(final boolean full) {
+        final NBTTagCompound nbt = new NBTTagCompound();
+        if (full) {
+            writeToNBT(nbt);
+        } else {
+            nbt.setInteger("pc", machine.getState().pc);
+            nbt.setInteger("acc", machine.getState().acc);
+            nbt.setInteger("bak", machine.getState().bak);
+            nbt.setString("state", state.name());
+        }
+        getCasing().sendData(getFace(), nbt);
+    }
+
     // --------------------------------------------------------------------- //
     // Module
 
     @Override
     public void step() {
-        if (compileError == null) {
+        final State prevState = state;
+
+        if (compileError != null) {
+            state = State.ERROR;
+        } else if (machine.getState().instructions.isEmpty()) {
+            state = State.IDLE;
+        } else {
+            final int prevInstruction = machine.getState().pc;
+
             machine.step();
+
+            if (machine.getState().pc != prevInstruction) {
+                state = State.RUNNING;
+                sendData(false);
+                return; // Don't send data twice.
+            } else {
+                state = State.WAITING;
+            }
         }
+
+        if (prevState != state) {
+            sendData(false);
+        }
+    }
+
+    @Override
+    public void onEnabled() {
+        sendData(true);
+    }
+
+    @Override
+    public void onDisabled() {
+        machine.getState().reset();
+        state = State.IDLE;
+        sendData(false);
     }
 
     @Override
@@ -121,23 +180,56 @@ public final class ModuleExecution extends AbstractModule {
 
         if (!getCasing().getWorld().isRemote) {
             compile(code, player);
+            sendData(true);
         }
 
         return true;
     }
 
+    @Override
+    public void onData(final NBTTagCompound nbt) {
+        if (nbt.hasKey("pc")) {
+            machine.getState().pc = nbt.getInteger("pc");
+            machine.getState().acc = nbt.getInteger("acc");
+            machine.getState().bak = nbt.getInteger("bak");
+            try {
+                state = Enum.valueOf(State.class, nbt.getString("state"));
+            } catch (final IllegalArgumentException ignored) {
+            }
+        } else {
+            readFromNBT(nbt);
+        }
+    }
+
     @SideOnly(Side.CLIENT)
     @Override
     public void render(final float partialTicks) {
+        final MachineState machineState = machine.getState();
+        if (state == State.IDLE || machineState.code == null) {
+            return;
+        }
+
         GlStateManager.pushAttrib();
         RenderHelper.disableStandardItemLighting();
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 0 / 1.0F);
 
         Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
-        final TextureAtlasSprite icon = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(TextureLoader.LOCATION_MODULE_EXECUTION_OVERLAY.toString());
+        final TextureAtlasSprite icon = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(STATE_LOCATIONS[state.ordinal()]);
         drawQuad(icon.getMinU(), icon.getMinV(), icon.getMaxU(), icon.getMaxV());
 
         GlStateManager.bindTexture(0);
+
+        GlStateManager.translate(4 / 16f, 4 / 16f, 0);
+        GlStateManager.scale(1 / 128f, 1 / 128f, 1);
+        final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
+        for (int lineNumber = 0; lineNumber < machineState.code.length; lineNumber++) {
+            final String line = machineState.code[lineNumber];
+            final boolean isCurrent = machineState.lineNumbers.get(machineState.pc) == lineNumber;
+            final int color = isCurrent ? 0xFFFFFF : 0x999999;
+            fontRenderer.drawString(line, 0, lineNumber * fontRenderer.FONT_HEIGHT, color);
+        }
+        fontRenderer.drawString("pc: " + machineState.pc + "; line: " + machineState.lineNumbers.get(machineState.pc), 0, -fontRenderer.FONT_HEIGHT, 0xFFFFFF);
+
         RenderHelper.enableStandardItemLighting();
         GlStateManager.popAttrib();
     }
@@ -146,12 +238,16 @@ public final class ModuleExecution extends AbstractModule {
     public void readFromNBT(final NBTTagCompound nbt) {
         super.readFromNBT(nbt);
 
-        final NBTTagCompound stateNbt = nbt.getCompoundTag("state");
-        machine.getState().readFromNBT(stateNbt);
-
         if (nbt.hasKey("compileError")) {
             final NBTTagCompound errorNbt = nbt.getCompoundTag("compileError");
             compileError = new ParseException(errorNbt.getString("message"), errorNbt.getInteger("lineNumber"), errorNbt.getInteger("column"));
+        } else {
+            final NBTTagCompound machineNbt = nbt.getCompoundTag("machine");
+            machine.getState().readFromNBT(machineNbt);
+            try {
+                state = Enum.valueOf(State.class, nbt.getString("state"));
+            } catch (final IllegalArgumentException ignored) {
+            }
         }
     }
 
@@ -159,16 +255,17 @@ public final class ModuleExecution extends AbstractModule {
     public void writeToNBT(final NBTTagCompound nbt) {
         super.writeToNBT(nbt);
 
-        final NBTTagCompound stateNbt = new NBTTagCompound();
-        machine.getState().writeToNBT(stateNbt);
-        nbt.setTag("state", stateNbt);
-
         if (compileError != null) {
             final NBTTagCompound errorNbt = new NBTTagCompound();
             errorNbt.setString("message", compileError.getMessage());
             errorNbt.setInteger("lineNumber", compileError.getLineNumber());
             errorNbt.setInteger("column", compileError.getColumn());
             nbt.setTag("compileError", errorNbt);
+        } else {
+            final NBTTagCompound machineNbt = new NBTTagCompound();
+            machine.getState().writeToNBT(machineNbt);
+            nbt.setTag("machine", machineNbt);
+            nbt.setString("state", state.name());
         }
     }
 }
