@@ -7,15 +7,29 @@ import li.cil.tis3d.api.Port;
 import li.cil.tis3d.api.module.Redstone;
 import li.cil.tis3d.api.prefab.AbstractModule;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public final class ModuleRedstone extends AbstractModule implements Redstone {
-    /**
-     * The current redstone output.
-     */
+    // --------------------------------------------------------------------- //
+    // Persisted data
+
     private int output = 0;
+
+    // --------------------------------------------------------------------- //
+    // Computed data
+
+    private int input = 0;
+
+    // --------------------------------------------------------------------- //
 
     public ModuleRedstone(final Casing casing, final Face face) {
         super(casing, face);
@@ -27,7 +41,7 @@ public final class ModuleRedstone extends AbstractModule implements Redstone {
         final Pipe sendingPipe = getCasing().getSendingPipe(getFace(), port);
         if (sendingPipe.isReading()) {
             if (!sendingPipe.isWriting()) {
-                sendingPipe.beginWrite(getRedstoneInput());
+                sendingPipe.beginWrite(input);
             }
         }
     }
@@ -45,19 +59,47 @@ public final class ModuleRedstone extends AbstractModule implements Redstone {
         }
     }
 
-    private int getRedstoneInput() {
+    // --------------------------------------------------------------------- //
+
+    private void setRedstoneInput(final int value) {
+        if (value == input) {
+            return;
+        }
+
+        input = Math.max(0, Math.min(15, value));
+
+        if (!getCasing().getWorld().isRemote) {
+            sendData();
+        }
+    }
+
+    private void setRedstoneOutput(final int value) {
+        if (value == output) {
+            return;
+        }
+
+        output = Math.max(0, Math.min(15, value));
+
+        if (!getCasing().getWorld().isRemote) {
+            final Block blockType = getCasing().getWorld().getBlockState(getCasing().getPosition()).getBlock();
+            getCasing().markDirty();
+            getCasing().getWorld().notifyNeighborsOfStateChange(getCasing().getPosition(), blockType);
+
+            sendData();
+        }
+    }
+
+    private int computeRedstoneInput() {
         final EnumFacing facing = Face.toEnumFacing(getFace());
         final BlockPos inputPos = getCasing().getPosition().offset(facing);
         return getCasing().getWorld().getRedstonePower(inputPos, facing);
     }
 
-    private void setRedstoneOutput(final int value) {
-        output = value;
-        if (!getCasing().getWorld().isRemote) {
-            final Block blockType = getCasing().getWorld().getBlockState(getCasing().getPosition()).getBlock();
-            getCasing().markDirty();
-            getCasing().getWorld().notifyNeighborsOfStateChange(getCasing().getPosition(), blockType);
-        }
+    private void sendData() {
+        final NBTTagCompound nbt = new NBTTagCompound();
+        nbt.setInteger("output", output);
+        nbt.setInteger("input", input);
+        getCasing().sendData(getFace(), nbt);
     }
 
     // --------------------------------------------------------------------- //
@@ -69,6 +111,8 @@ public final class ModuleRedstone extends AbstractModule implements Redstone {
             stepOutput(port);
             stepInput(port);
         }
+
+        setRedstoneInput(computeRedstoneInput());
     }
 
     @Override
@@ -78,10 +122,55 @@ public final class ModuleRedstone extends AbstractModule implements Redstone {
     }
 
     @Override
+    public void onData(final NBTTagCompound nbt) {
+        output = nbt.getInteger("output");
+        input = nbt.getInteger("input");
+    }
+
+    private static final ResourceLocation LOCATION_OVERLAY = new ResourceLocation(li.cil.tis3d.Constants.MOD_ID, "textures/blocks/overlay/moduleRedstone.png");
+    private static final float LEFT_U0 = 9 / 32f;
+    private static final float LEFT_U1 = 12 / 32f;
+    private static final float RIGHT_U0 = 20 / 32f;
+    private static final float RIGHT_U1 = 23 / 32f;
+    private static final float SHARED_V0 = 42 / 64f;
+    private static final float SHARED_V1 = 57 / 64f;
+    private static final float SHARED_W = 3 / 32f;
+    private static final float SHARED_H = SHARED_V1 - SHARED_V0;
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void render(final float partialTicks) {
+        GlStateManager.pushAttrib();
+        RenderHelper.disableStandardItemLighting();
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 0 / 1.0F);
+
+        Minecraft.getMinecraft().getTextureManager().bindTexture(LOCATION_OVERLAY);
+
+        // Draw base overlay.
+        drawQuad(0, 0, 1, 0.5f);
+
+        // Draw output bar.
+        final float relativeOutput = output / 15f;
+        final float heightOutput = relativeOutput * SHARED_H;
+        final float v0Output = SHARED_V1 - heightOutput;
+        drawQuad(LEFT_U0, (v0Output - 0.5f) * 2f, SHARED_W, heightOutput * 2, LEFT_U0, v0Output, LEFT_U1, SHARED_V1);
+
+        // Draw input bar.
+        final float relativeInput = input / 15f;
+        final float heightInput = relativeInput * SHARED_H;
+        final float v0Input = SHARED_V1 - heightInput;
+        drawQuad(RIGHT_U0, (v0Input - 0.5f) * 2f, SHARED_W, heightInput * 2, RIGHT_U0, v0Input, RIGHT_U1, SHARED_V1);
+
+        GlStateManager.bindTexture(0);
+        RenderHelper.enableStandardItemLighting();
+        GlStateManager.popAttrib();
+    }
+
+    @Override
     public void readFromNBT(final NBTTagCompound nbt) {
         super.readFromNBT(nbt);
 
-        output = nbt.getInteger("output");
+        output = Math.max(0, Math.min(15, nbt.getInteger("output")));
     }
 
     @Override

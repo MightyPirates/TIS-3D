@@ -5,9 +5,16 @@ import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
 import li.cil.tis3d.api.Port;
 import li.cil.tis3d.api.prefab.AbstractModule;
+import li.cil.tis3d.client.TextureLoader;
 import li.cil.tis3d.system.module.execution.MachineImpl;
 import li.cil.tis3d.system.module.execution.compiler.Compiler;
 import li.cil.tis3d.system.module.execution.compiler.ParseException;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -15,6 +22,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * The programmable execution module.
@@ -109,6 +118,22 @@ public final class ModuleExecution extends AbstractModule {
         }
 
         return true;
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void render(final float partialTicks) {
+        GlStateManager.pushAttrib();
+        RenderHelper.disableStandardItemLighting();
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 0 / 1.0F);
+
+        Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
+        final TextureAtlasSprite icon = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(TextureLoader.LOCATION_MODULE_EXECUTION_OVERLAY.toString());
+        drawQuad(icon.getMinU(), icon.getMinV(), icon.getMaxU(), icon.getMaxV());
+
+        GlStateManager.bindTexture(0);
+        RenderHelper.enableStandardItemLighting();
+        GlStateManager.popAttrib();
     }
 
     @Override

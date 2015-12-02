@@ -23,31 +23,34 @@ public class CommonProxy {
         final CreativeTab creativeTab = new CreativeTab();
 
         GameRegistry.registerBlock(new BlockCasing().
-                        setUnlocalizedName(Constants.BlockCasingName).
+                        setUnlocalizedName(Constants.NAME_BLOCK_CASING).
                         setCreativeTab(creativeTab),
-                Constants.BlockCasingName);
+                Constants.NAME_BLOCK_CASING);
         GameRegistry.registerBlock(new BlockController().
-                        setUnlocalizedName(Constants.BlockControllerName).
+                        setUnlocalizedName(Constants.NAME_BLOCK_CONTROLLER).
                         setCreativeTab(creativeTab),
-                Constants.BlockControllerName);
+                Constants.NAME_BLOCK_CONTROLLER);
 
-        GameRegistry.registerTileEntity(TileEntityCasing.class, Constants.BlockCasingName);
-        GameRegistry.registerTileEntity(TileEntityController.class, Constants.BlockControllerName);
+        GameRegistry.registerTileEntity(TileEntityCasing.class, Constants.NAME_BLOCK_CASING);
+        GameRegistry.registerTileEntity(TileEntityController.class, Constants.NAME_BLOCK_CONTROLLER);
 
         GameRegistry.registerItem(new ItemModule().
-                        setUnlocalizedName(Constants.ItemModuleExecutableName).
+                        setUnlocalizedName(Constants.NAME_ITEM_MODULE_EXECUTABLE).
                         setCreativeTab(creativeTab),
-                Constants.ItemModuleExecutableName);
+                Constants.NAME_ITEM_MODULE_EXECUTABLE);
         GameRegistry.registerItem(new ItemModule().
-                        setUnlocalizedName(Constants.ItemModuleRedstoneName).
+                        setUnlocalizedName(Constants.NAME_ITEM_MODULE_REDSTONE).
                         setCreativeTab(creativeTab),
-                Constants.ItemModuleRedstoneName);
+                Constants.NAME_ITEM_MODULE_REDSTONE);
 
         // Initialize API.
         API.instance = new RegistryImpl();
     }
 
     public void onInit(final FMLInitializationEvent event) {
+        // Register network handler.
+        Network.INSTANCE.init();
+
         // Register providers for built-in modules.
         API.addProvider(new ModuleProviderExecutable());
         API.addProvider(new ModuleProviderRedstone());

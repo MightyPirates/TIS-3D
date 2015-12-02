@@ -395,4 +395,9 @@ public final class TileEntityCasing extends TileEntity implements ISidedInventor
     public Pipe getSendingPipe(final Face face, final Port port) {
         return casing.getSendingPipe(face, port);
     }
+
+    @Override
+    public void sendData(final Face face, final NBTTagCompound data) {
+        casing.sendData(face, data);
+    }
 }

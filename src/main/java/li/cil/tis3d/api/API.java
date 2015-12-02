@@ -19,16 +19,16 @@ public final class API {
     }
 
     /**
-     * Find the first provider supporting the specified stack.
+     * Find the first provider supporting the specified item stack.
      *
-     * @param stack  the stack to find a provider for.
+     * @param stack  the item stack to find a provider for.
      * @param casing the casing the module would be installed in.
      * @param face   the face the module would be installed on.
-     * @return the first provider supporting the stack, or <tt>null</tt>.
+     * @return the first provider supporting the item stack, or <tt>null</tt>.
      */
-    public static ModuleProvider providerFor(final ItemStack stack, final Casing casing, final Face face) {
+    public static ModuleProvider getProviderFor(final ItemStack stack, final Casing casing, final Face face) {
         if (instance != null)
-            return instance.providerFor(stack, casing, face);
+            return instance.getProviderFor(stack, casing, face);
         return null;
     }
 

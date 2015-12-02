@@ -18,6 +18,6 @@ public final class CreativeTab extends CreativeTabs {
     @SideOnly(Side.CLIENT)
     @Override
     public Item getTabIconItem() {
-        return GameRegistry.findItem(Constants.MOD_ID, Constants.BlockControllerName);
+        return GameRegistry.findItem(Constants.MOD_ID, Constants.NAME_BLOCK_CONTROLLER);
     }
 }

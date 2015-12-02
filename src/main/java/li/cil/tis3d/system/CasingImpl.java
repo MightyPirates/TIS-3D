@@ -6,12 +6,15 @@ import li.cil.tis3d.api.Pipe;
 import li.cil.tis3d.api.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.Redstone;
+import li.cil.tis3d.common.Network;
+import li.cil.tis3d.common.network.MessageModuleData;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 /**
  * Implementation of a {@link Casing}, holding up to six {@link Module}s.
@@ -201,5 +204,11 @@ public final class CasingImpl implements Casing {
     @Override
     public Pipe getSendingPipe(final Face face, final Port port) {
         return pipes[packMapped(face, port)];
+    }
+
+    @Override
+    public void sendData(final Face face, final NBTTagCompound data) {
+        final NetworkRegistry.TargetPoint point = Network.getTargetPoint(tileEntity, 32);
+        Network.INSTANCE.getWrapper().sendToAllAround(new MessageModuleData(this, face, data), point);
     }
 }

@@ -1,6 +1,7 @@
 package li.cil.tis3d.api;
 
 import li.cil.tis3d.api.module.Module;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 
@@ -75,4 +76,12 @@ public interface Casing {
      * @return the output port on that port.
      */
     Pipe getSendingPipe(Face face, Port port);
+
+    /**
+     * Call this to send some data to a client representation of a module.
+     *
+     * @param face the face the module is installed in.
+     * @param data the data to send to the client.
+     */
+    void sendData(Face face, NBTTagCompound data);
 }

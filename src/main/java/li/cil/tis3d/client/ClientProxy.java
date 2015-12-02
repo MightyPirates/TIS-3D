@@ -1,11 +1,16 @@
 package li.cil.tis3d.client;
 
 import li.cil.tis3d.Constants;
+import li.cil.tis3d.client.render.TileEntitySpecialRendererCasing;
 import li.cil.tis3d.common.CommonProxy;
+import li.cil.tis3d.common.tile.TileEntityCasing;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.obj.OBJLoader;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
@@ -18,14 +23,23 @@ public final class ClientProxy extends CommonProxy {
         super.onPreInit(event);
 
         // Set up custom models for our blocks.
-
         OBJLoader.instance.addDomain(Constants.MOD_ID.toLowerCase());
 
-        setCustomBlockModelResourceLocation(Constants.BlockCasingName);
-        setCustomBlockModelResourceLocation(Constants.BlockControllerName);
+        setCustomBlockModelResourceLocation(Constants.NAME_BLOCK_CASING);
+        setCustomBlockModelResourceLocation(Constants.NAME_BLOCK_CONTROLLER);
 
-        setCustomItemModelResourceLocation(Constants.ItemModuleExecutableName);
-        setCustomItemModelResourceLocation(Constants.ItemModuleRedstoneName);
+        setCustomItemModelResourceLocation(Constants.NAME_ITEM_MODULE_EXECUTABLE);
+        setCustomItemModelResourceLocation(Constants.NAME_ITEM_MODULE_REDSTONE);
+
+        MinecraftForge.EVENT_BUS.register(TextureLoader.INSTANCE);
+    }
+
+    @Override
+    public void onInit(final FMLInitializationEvent event) {
+        super.onInit(event);
+
+        // Set up tile entity renderer for dynamic module content.
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCasing.class, new TileEntitySpecialRendererCasing());
     }
 
     // --------------------------------------------------------------------- //

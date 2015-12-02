@@ -7,7 +7,8 @@
     "variants": {
         "normal": [{}],
         "inventory": [{
-            "transform": "forge:default-block"
+            "transform": "forge:default-block",
+            "textures" : { "#casing:Module" : "tis3d:items/moduleExecutable" }
         }]
     }
 }

@@ -25,7 +25,7 @@ public final class RegistryImpl implements Registry {
     }
 
     @Override
-    public ModuleProvider providerFor(final ItemStack stack, final Casing casing, final Face face) {
+    public ModuleProvider getProviderFor(final ItemStack stack, final Casing casing, final Face face) {
         if (stack != null) {
             for (final ModuleProvider provider : providers) {
                 if (provider.worksWith(stack, casing, face)) {

@@ -10,6 +10,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 /**
@@ -22,6 +23,18 @@ public final class BlockController extends Block {
 
     // --------------------------------------------------------------------- //
     // Common
+
+    @Override
+    public boolean isSideSolid(final IBlockAccess world, final BlockPos pos, final EnumFacing side) {
+        // Allow levers to be placed on us (wouldn't work because of isFullCube = false otherwise).
+        return true;
+    }
+
+    @Override
+    public boolean isFullCube() {
+        // Prevent fences from visually connecting.
+        return false;
+    }
 
     @Override
     public boolean hasTileEntity(final IBlockState state) {

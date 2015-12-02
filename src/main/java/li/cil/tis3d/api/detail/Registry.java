@@ -20,12 +20,12 @@ public interface Registry {
     void addProvider(ModuleProvider provider);
 
     /**
-     * Find the first provider supporting the specified stack.
+     * Find the first provider supporting the specified item stack.
      *
-     * @param stack  the stack to find a provider for.
+     * @param stack  the item stack to find a provider for.
      * @param casing the casing the module would be installed in.
      * @param face   the face the module would be installed on.
-     * @return the first provider supporting the stack, or <tt>null</tt>.
+     * @return the first provider supporting the item stack, or <tt>null</tt>.
      */
-    ModuleProvider providerFor(ItemStack stack, Casing casing, Face face);
+    ModuleProvider getProviderFor(ItemStack stack, Casing casing, Face face);
 }

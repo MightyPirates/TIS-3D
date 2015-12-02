@@ -17,7 +17,7 @@ public final class InventoryCasing extends Inventory implements ISidedInventory 
     private final TileEntityCasing tileEntity;
 
     public InventoryCasing(final TileEntityCasing tileEntity) {
-        super(Constants.InventoryCasingName, Face.VALUES.length);
+        super(Constants.NAME_INVENTORY_CASING, Face.VALUES.length);
         this.tileEntity = tileEntity;
     }
 
@@ -59,7 +59,7 @@ public final class InventoryCasing extends Inventory implements ISidedInventory 
     }
 
     private boolean canInstall(final ItemStack stack, final Face face) {
-        return API.providerFor(stack, tileEntity, face) != null;
+        return API.getProviderFor(stack, tileEntity, face) != null;
     }
 
     // --------------------------------------------------------------------- //
@@ -73,7 +73,7 @@ public final class InventoryCasing extends Inventory implements ISidedInventory 
         }
 
         final Face face = Face.VALUES[index];
-        final ModuleProvider provider = API.providerFor(stack, tileEntity, face);
+        final ModuleProvider provider = API.getProviderFor(stack, tileEntity, face);
         if (provider == null) {
             return;
         }

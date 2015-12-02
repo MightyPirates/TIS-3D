@@ -14,11 +14,11 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
  * The provider for the redstone module.
  */
 public final class ModuleProviderRedstone implements ModuleProvider {
-    private final Item ItemModuleRedstone = GameRegistry.findItem(Constants.MOD_ID, Constants.ItemModuleRedstoneName);
+    private final Item ITEM_MODULE_REDSTONE = GameRegistry.findItem(Constants.MOD_ID, Constants.NAME_ITEM_MODULE_REDSTONE);
 
     @Override
     public boolean worksWith(final ItemStack stack, final Casing casing, final Face face) {
-        return stack.getItem() == ItemModuleRedstone;
+        return stack.getItem() == ITEM_MODULE_REDSTONE;
     }
 
     @Override

@@ -5,6 +5,8 @@ import li.cil.tis3d.api.Face;
 import li.cil.tis3d.api.Port;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * A module that can be installed in a TIS-3D {@link Casing}.
@@ -63,6 +65,27 @@ public interface Module {
      * @return <tt>true</tt> if the click was handled, <tt>false</tt> otherwise.
      */
     boolean onActivate(EntityPlayer player, float hitX, float hitY, float hitZ);
+
+    /**
+     * Called with NBT data sent from the server's instance of the module.
+     *
+     * @param nbt the received data.
+     */
+    @SideOnly(Side.CLIENT)
+    void onData(NBTTagCompound nbt);
+
+    /**
+     * Called to allow the module to render dynamic content on the casing it
+     * is installed in.
+     * <p>
+     * The render state will be adjusted to take into account the face the
+     * module is installed in, i.e. rendering from (0, 0, 0) to (1, 1, 0) will
+     * render the full quad of face of the casing the module is installed in.
+     *
+     * @param partialTicks the partial time elapsed in this tick.
+     */
+    @SideOnly(Side.CLIENT)
+    void render(float partialTicks);
 
     // --------------------------------------------------------------------- //
 

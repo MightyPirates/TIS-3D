@@ -14,11 +14,11 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
  * The provider for the executable module.
  */
 public final class ModuleProviderExecutable implements ModuleProvider {
-    private final Item ItemModuleExecutable = GameRegistry.findItem(Constants.MOD_ID, Constants.ItemModuleExecutableName);
+    private final Item ITEM_MODULE_EXECUTABLE = GameRegistry.findItem(Constants.MOD_ID, Constants.NAME_ITEM_MODULE_EXECUTABLE);
 
     @Override
     public boolean worksWith(final ItemStack stack, final Casing casing, final Face face) {
-        return stack.getItem() == ItemModuleExecutable;
+        return stack.getItem() == ITEM_MODULE_EXECUTABLE;
     }
 
     @Override
