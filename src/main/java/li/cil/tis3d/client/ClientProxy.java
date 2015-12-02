@@ -28,7 +28,7 @@ public final class ClientProxy extends CommonProxy {
         setCustomBlockModelResourceLocation(Constants.NAME_BLOCK_CASING);
         setCustomBlockModelResourceLocation(Constants.NAME_BLOCK_CONTROLLER);
 
-        setCustomItemModelResourceLocation(Constants.NAME_ITEM_MODULE_EXECUTABLE);
+        setCustomItemModelResourceLocation(Constants.NAME_ITEM_MODULE_EXECUTION);
         setCustomItemModelResourceLocation(Constants.NAME_ITEM_MODULE_REDSTONE);
 
         MinecraftForge.EVENT_BUS.register(TextureLoader.INSTANCE);

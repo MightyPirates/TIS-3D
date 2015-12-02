@@ -12,7 +12,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 public final class CreativeTab extends CreativeTabs {
     public CreativeTab() {
-        super("TIS-3D");
+        super(Constants.MOD_ID);
     }
 
     @SideOnly(Side.CLIENT)

@@ -5,10 +5,13 @@ import li.cil.tis3d.api.API;
 import li.cil.tis3d.common.block.BlockCasing;
 import li.cil.tis3d.common.block.BlockController;
 import li.cil.tis3d.common.item.ItemModule;
-import li.cil.tis3d.common.provider.ModuleProviderExecutable;
+import li.cil.tis3d.common.provider.ModuleProviderExecution;
 import li.cil.tis3d.common.provider.ModuleProviderRedstone;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import li.cil.tis3d.common.tile.TileEntityController;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -35,9 +38,9 @@ public class CommonProxy {
         GameRegistry.registerTileEntity(TileEntityController.class, Constants.NAME_BLOCK_CONTROLLER);
 
         GameRegistry.registerItem(new ItemModule().
-                        setUnlocalizedName(Constants.NAME_ITEM_MODULE_EXECUTABLE).
+                        setUnlocalizedName(Constants.NAME_ITEM_MODULE_EXECUTION).
                         setCreativeTab(creativeTab),
-                Constants.NAME_ITEM_MODULE_EXECUTABLE);
+                Constants.NAME_ITEM_MODULE_EXECUTION);
         GameRegistry.registerItem(new ItemModule().
                         setUnlocalizedName(Constants.NAME_ITEM_MODULE_REDSTONE).
                         setCreativeTab(creativeTab),
@@ -48,11 +51,40 @@ public class CommonProxy {
     }
 
     public void onInit(final FMLInitializationEvent event) {
+        // Hardcoded recipes!
+        GameRegistry.addRecipe(new ItemStack(GameRegistry.findBlock(Constants.MOD_ID, Constants.NAME_BLOCK_CASING), 8),
+                "SRS",
+                "RIR",
+                "SRS",
+                'S', Blocks.stone,
+                'R', Items.redstone,
+                'I', Blocks.iron_block);
+        GameRegistry.addRecipe(new ItemStack(GameRegistry.findBlock(Constants.MOD_ID, Constants.NAME_BLOCK_CONTROLLER), 1),
+                "SRS",
+                "RDR",
+                "SRS",
+                'S', Blocks.stone,
+                'R', Items.redstone,
+                'D', Items.diamond);
+
+        GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(Constants.MOD_ID, Constants.NAME_ITEM_MODULE_EXECUTION), 1),
+                "PPP",
+                "RGR",
+                'P', Blocks.glass_pane,
+                'R', Items.redstone,
+                'G', Items.gold_nugget);
+        GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(Constants.MOD_ID, Constants.NAME_ITEM_MODULE_REDSTONE), 1),
+                "PPP",
+                "RIR",
+                'P', Blocks.glass_pane,
+                'R', Items.redstone,
+                'I', Blocks.redstone_torch);
+
         // Register network handler.
         Network.INSTANCE.init();
 
         // Register providers for built-in modules.
-        API.addProvider(new ModuleProviderExecutable());
+        API.addProvider(new ModuleProviderExecution());
         API.addProvider(new ModuleProviderRedstone());
     }
 

@@ -7,9 +7,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public final class TextureLoader {
     public static final TextureLoader INSTANCE = new TextureLoader();
-    public static final ResourceLocation LOCATION_MODULE_EXECUTION_OVERLAY_ERROR = new ResourceLocation(Constants.MOD_ID, "blocks/overlay/moduleExecutableError");
-    public static final ResourceLocation LOCATION_MODULE_EXECUTION_OVERLAY_RUNNING = new ResourceLocation(Constants.MOD_ID, "blocks/overlay/moduleExecutableRunning");
-    public static final ResourceLocation LOCATION_MODULE_EXECUTION_OVERLAY_WAITING = new ResourceLocation(Constants.MOD_ID, "blocks/overlay/moduleExecutableWaiting");
+    public static final ResourceLocation LOCATION_MODULE_EXECUTION_OVERLAY_ERROR = new ResourceLocation(Constants.MOD_ID, "blocks/overlay/moduleExecutionError");
+    public static final ResourceLocation LOCATION_MODULE_EXECUTION_OVERLAY_RUNNING = new ResourceLocation(Constants.MOD_ID, "blocks/overlay/moduleExecutionRunning");
+    public static final ResourceLocation LOCATION_MODULE_EXECUTION_OVERLAY_WAITING = new ResourceLocation(Constants.MOD_ID, "blocks/overlay/moduleExecutionWaiting");
 
     @SubscribeEvent
     public void onTextureStitchPre(final TextureStitchEvent.Pre event) {

@@ -1,0 +1,7 @@
+itemGroup.tis3d=TIS-3D
+
+item.moduleExecution.name=Execution Module
+item.moduleRedstone.name=Redstone Module
+
+tile.casing.name=Casing
+tile.controller.name=Controller
