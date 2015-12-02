@@ -2,8 +2,8 @@ package li.cil.tis3d.system.module;
 
 import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
+import li.cil.tis3d.api.Pipe;
 import li.cil.tis3d.api.Port;
-import li.cil.tis3d.api.Side;
 import li.cil.tis3d.api.module.Redstone;
 import li.cil.tis3d.api.prefab.AbstractModule;
 import net.minecraft.block.Block;
@@ -21,26 +21,27 @@ public final class ModuleRedstone extends AbstractModule implements Redstone {
         super(casing, face);
     }
 
-    private void beginWrite(final Side side) {
+    private void stepOutput(final Port port) {
         // For reading redstone values, wait for readers to provide up-to-date
         // values, instead of an old value from when we started writing.
-        final Port outputPort = getCasing().getOutputPort(getFace(), side);
-        if (outputPort.isReading()) {
-            if (!outputPort.isWriting()) {
-                outputPort.beginWrite(getRedstoneInput());
+        final Pipe sendingPipe = getCasing().getSendingPipe(getFace(), port);
+        if (sendingPipe.isReading()) {
+            if (!sendingPipe.isWriting()) {
+                sendingPipe.beginWrite(getRedstoneInput());
             }
         }
     }
 
-    private void beginRead(final Side side) {
+    private void stepInput(final Port port) {
         // Continuously read from all ports, set output to last received value.
-        final Port inputPort = getCasing().getInputPort(getFace(), side);
-        if (!inputPort.isReading()) {
-            inputPort.beginRead();
+        final Pipe receivingPipe = getCasing().getReceivingPipe(getFace(), port);
+        if (!receivingPipe.isReading()) {
+            receivingPipe.beginRead();
         }
-        if (inputPort.isTransferring()) {
-            setRedstoneOutput(inputPort.read());
-            inputPort.beginRead();
+        if (receivingPipe.canTransfer()) {
+            setRedstoneOutput(receivingPipe.read());
+            // Start reading again right away to read as fast as possible.
+            receivingPipe.beginRead();
         }
     }
 
@@ -64,26 +65,29 @@ public final class ModuleRedstone extends AbstractModule implements Redstone {
 
     @Override
     public void step() {
-        for (final Side side : Side.VALUES) {
-            beginWrite(side);
-            beginRead(side);
+        for (final Port port : Port.VALUES) {
+            stepOutput(port);
+            stepInput(port);
         }
     }
 
     @Override
-    public void onWriteComplete(final Side side) {
-        beginWrite(side);
+    public void onWriteComplete(final Port port) {
+        // Start writing again right away to write as fast as possible.
+        stepOutput(port);
     }
 
     @Override
     public void readFromNBT(final NBTTagCompound nbt) {
         super.readFromNBT(nbt);
+
         output = nbt.getInteger("output");
     }
 
     @Override
     public void writeToNBT(final NBTTagCompound nbt) {
         super.writeToNBT(nbt);
+
         nbt.setInteger("output", output);
     }
 

@@ -2,8 +2,8 @@ package li.cil.tis3d.system;
 
 import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
+import li.cil.tis3d.api.Pipe;
 import li.cil.tis3d.api.Port;
-import li.cil.tis3d.api.Side;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.Redstone;
 import li.cil.tis3d.common.tile.TileEntityCasing;
@@ -31,7 +31,7 @@ public final class CasingImpl implements Casing {
     // Mapping for faces and sides around edges, i.e. to get the other side
     // of an edge specified by a face and side.
     private static final Face[][] FACE_MAPPING;
-    private static final Side[][] SIDE_MAPPING;
+    private static final Port[][] PORT_MAPPING;
 
     static {
         FACE_MAPPING = new Face[][]{
@@ -43,13 +43,13 @@ public final class CasingImpl implements Casing {
                 {Face.Z_POS, Face.Z_NEG, Face.Y_POS, Face.Y_NEG}  // X_POS
                 //    LEFT        RIGHT       UP          DOWN
         };
-        SIDE_MAPPING = new Side[][]{
-                {Side.DOWN, Side.DOWN, Side.DOWN, Side.DOWN},   // Y_NEG
-                {Side.UP, Side.UP, Side.UP, Side.UP},     // Y_POS
-                {Side.RIGHT, Side.LEFT, Side.DOWN, Side.DOWN},   // Z_NEG
-                {Side.RIGHT, Side.LEFT, Side.UP, Side.UP},     // Z_POS
-                {Side.RIGHT, Side.LEFT, Side.RIGHT, Side.LEFT},   // X_NEG
-                {Side.RIGHT, Side.LEFT, Side.LEFT, Side.RIGHT}   // X_POS
+        PORT_MAPPING = new Port[][]{
+                {Port.DOWN,  Port.DOWN,  Port.DOWN,  Port.DOWN},   // Y_NEG
+                {Port.UP,    Port.UP,    Port.UP,    Port.UP},     // Y_POS
+                {Port.RIGHT, Port.LEFT,  Port.DOWN,  Port.DOWN},   // Z_NEG
+                {Port.RIGHT, Port.LEFT,  Port.UP,    Port.UP},     // Z_POS
+                {Port.RIGHT, Port.LEFT,  Port.RIGHT, Port.LEFT},   // X_NEG
+                {Port.RIGHT, Port.LEFT,  Port.LEFT,  Port.RIGHT}   // X_POS
                 //    LEFT        RIGHT       UP          DOWN
         };
     }
@@ -60,9 +60,9 @@ public final class CasingImpl implements Casing {
     private final TileEntityCasing tileEntity;
 
     /**
-     * The flat list of all {@link Port} on this casing, for enumeration.
+     * The flat list of all {@link Pipe} on this casing, for enumeration.
      */
-    private final PortImpl[] ports = new PortImpl[24];
+    private final PipeImpl[] pipes = new PipeImpl[24];
 
     // --------------------------------------------------------------------- //
 
@@ -70,9 +70,23 @@ public final class CasingImpl implements Casing {
         this.tileEntity = tileEntity;
 
         for (final Face face : Face.VALUES) {
-            for (final Side side : Side.VALUES) {
-                ports[pack(face, side)] = new PortImpl(this, mapFace(face, side), mapSide(face, side));
+            for (final Port port : Port.VALUES) {
+                pipes[pack(face, port)] = new PipeImpl(this, mapFace(face, port), mapSide(face, port));
             }
+        }
+    }
+
+    public void stepModules() {
+        for (final Module module : modules) {
+            if (module != null) {
+                module.step();
+            }
+        }
+    }
+
+    public void stepPipes() {
+        for (final PipeImpl pipe : pipes) {
+            pipe.step();
         }
     }
 
@@ -85,10 +99,10 @@ public final class CasingImpl implements Casing {
             }
         }
 
-        final NBTTagList portsNbt = nbt.getTagList("ports", Constants.NBT.TAG_COMPOUND);
-        final int portCount = Math.min(portsNbt.tagCount(), ports.length);
+        final NBTTagList portsNbt = nbt.getTagList("pipes", Constants.NBT.TAG_COMPOUND);
+        final int portCount = Math.min(portsNbt.tagCount(), pipes.length);
         for (int i = 0; i < portCount; i++) {
-            ports[i].readFromNBT(portsNbt.getCompoundTagAt(i));
+            pipes[i].readFromNBT(portsNbt.getCompoundTagAt(i));
         }
     }
 
@@ -103,29 +117,31 @@ public final class CasingImpl implements Casing {
         }
         nbt.setTag("modules", modulesNbt);
 
-        final NBTTagList portsNbt = new NBTTagList();
-        for (final PortImpl port : ports) {
+        final NBTTagList pipesNbt = new NBTTagList();
+        for (final PipeImpl pipe : pipes) {
             final NBTTagCompound portNbt = new NBTTagCompound();
-            port.writeToNBT(portNbt);
-            portsNbt.appendTag(portNbt);
+            pipe.writeToNBT(portNbt);
+            pipesNbt.appendTag(portNbt);
         }
-        nbt.setTag("ports", portsNbt);
+        nbt.setTag("pipes", pipesNbt);
     }
 
-    private static int pack(final Face face, final Side side) {
-        return face.ordinal() * Side.VALUES.length + side.ordinal();
+    // --------------------------------------------------------------------- //
+
+    private static int pack(final Face face, final Port port) {
+        return face.ordinal() * Port.VALUES.length + port.ordinal();
     }
 
-    private static int packMapped(final Face face, final Side side) {
-        return mapFace(face, side).ordinal() * Side.VALUES.length + mapSide(face, side).ordinal();
+    private static int packMapped(final Face face, final Port port) {
+        return mapFace(face, port).ordinal() * Port.VALUES.length + mapSide(face, port).ordinal();
     }
 
-    private static Face mapFace(final Face face, final Side side) {
-        return FACE_MAPPING[face.ordinal()][side.ordinal()];
+    private static Face mapFace(final Face face, final Port port) {
+        return FACE_MAPPING[face.ordinal()][port.ordinal()];
     }
 
-    private static Side mapSide(final Face face, final Side side) {
-        return SIDE_MAPPING[face.ordinal()][side.ordinal()];
+    private static Port mapSide(final Face face, final Port port) {
+        return PORT_MAPPING[face.ordinal()][port.ordinal()];
     }
 
     // --------------------------------------------------------------------- //
@@ -156,17 +172,19 @@ public final class CasingImpl implements Casing {
             return;
         }
 
+        // Remember for below.
         final boolean hadRedstone = getModule(face) instanceof Redstone;
 
+        // Apply new module before adjust remaining state.
         modules[face.ordinal()] = module;
 
-        if (module == null) {
-            for (final Side side : Side.VALUES) {
-                getInputPort(face, side).cancelRead();
-                getOutputPort(face, side).cancelWrite();
-            }
+        // Reset pipe state controlled by a potential previous module.
+        for (final Port port : Port.VALUES) {
+            getReceivingPipe(face, port).cancelRead();
+            getSendingPipe(face, port).cancelWrite();
         }
 
+        // Reset redstone output if the previous module was redstone capable.
         if (hadRedstone) {
             if (!getWorld().isRemote) {
                 tileEntity.markDirty();
@@ -176,24 +194,12 @@ public final class CasingImpl implements Casing {
     }
 
     @Override
-    public Port getInputPort(final Face face, final Side side) {
-        return ports[pack(face, side)];
+    public Pipe getReceivingPipe(final Face face, final Port port) {
+        return pipes[pack(face, port)];
     }
 
     @Override
-    public Port getOutputPort(final Face face, final Side side) {
-        return ports[packMapped(face, side)];
-    }
-
-    @Override
-    public void step() {
-        for (final Module module : modules) {
-            if (module != null) {
-                module.step();
-            }
-        }
-        for (final PortImpl port : ports) {
-            port.step();
-        }
+    public Pipe getSendingPipe(final Face face, final Port port) {
+        return pipes[packMapped(face, port)];
     }
 }

@@ -2,14 +2,15 @@ package li.cil.tis3d.system.module.execution.target;
 
 import li.cil.tis3d.system.module.execution.Machine;
 
-public final class AccInterface extends AbstractTargetInterface {
-    public AccInterface(final Machine machine) {
+public final class TargetInterfaceAcc extends AbstractTargetInterface {
+    public TargetInterfaceAcc(final Machine machine) {
         super(machine);
     }
 
     @Override
-    public void beginWrite(final int value) {
+    public boolean beginWrite(final int value) {
         getState().acc = value;
+        return true;
     }
 
     @Override
@@ -22,11 +23,6 @@ public final class AccInterface extends AbstractTargetInterface {
     }
 
     @Override
-    public boolean isOutputTransferring() {
-        return true;
-    }
-
-    @Override
     public void beginRead() {
     }
 
@@ -36,7 +32,7 @@ public final class AccInterface extends AbstractTargetInterface {
     }
 
     @Override
-    public boolean isInputTransferring() {
+    public boolean canRead() {
         return true;
     }
 

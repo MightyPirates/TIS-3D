@@ -2,8 +2,8 @@ package li.cil.tis3d.system.module;
 
 import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
+import li.cil.tis3d.api.Pipe;
 import li.cil.tis3d.api.Port;
-import li.cil.tis3d.api.Side;
 import li.cil.tis3d.api.prefab.AbstractModule;
 
 /**
@@ -30,23 +30,23 @@ public final class ModuleForwarder extends AbstractModule {
         this.other = other;
     }
 
-    private void beginForwarding(final Side side) {
-        final Port inputPort = getCasing().getInputPort(getFace(), side);
-        final Port outputPort = other.getCasing().getOutputPort(other.getFace(), flipSide(side));
-        if (outputPort.isReading()) {
-            if (!outputPort.isWriting()) {
-                if (!inputPort.isReading()) {
-                    inputPort.beginRead();
+    private void beginForwarding(final Port port) {
+        final Pipe receivingPipe = getCasing().getReceivingPipe(getFace(), port);
+        final Pipe sendingPipe = other.getCasing().getSendingPipe(other.getFace(), flipSide(port));
+        if (sendingPipe.isReading()) {
+            if (!sendingPipe.isWriting()) {
+                if (!receivingPipe.isReading()) {
+                    receivingPipe.beginRead();
                 }
-                if (inputPort.isTransferring()) {
-                    outputPort.beginWrite(inputPort.read());
+                if (receivingPipe.canTransfer()) {
+                    sendingPipe.beginWrite(receivingPipe.read());
                 }
             }
         }
     }
 
-    private static Side flipSide(final Side side) {
-        return (side == Side.LEFT || side == Side.RIGHT) ? side.getOpposite() : side;
+    private static Port flipSide(final Port port) {
+        return (port == Port.LEFT || port == Port.RIGHT) ? port.getOpposite() : port;
     }
 
     // --------------------------------------------------------------------- //
@@ -54,13 +54,13 @@ public final class ModuleForwarder extends AbstractModule {
 
     @Override
     public void step() {
-        for (final Side side : Side.VALUES) {
-            beginForwarding(side);
+        for (final Port port : Port.VALUES) {
+            beginForwarding(port);
         }
     }
 
     @Override
-    public void onWriteComplete(final Side side) {
-        beginForwarding(side);
+    public void onWriteComplete(final Port port) {
+        beginForwarding(port);
     }
 }

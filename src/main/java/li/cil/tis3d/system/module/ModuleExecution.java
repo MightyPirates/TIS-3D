@@ -3,7 +3,7 @@ package li.cil.tis3d.system.module;
 import com.google.common.base.Strings;
 import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
-import li.cil.tis3d.api.Side;
+import li.cil.tis3d.api.Port;
 import li.cil.tis3d.api.prefab.AbstractModule;
 import li.cil.tis3d.system.module.execution.MachineImpl;
 import li.cil.tis3d.system.module.execution.compiler.Compiler;
@@ -82,9 +82,9 @@ public final class ModuleExecution extends AbstractModule {
     }
 
     @Override
-    public void onWriteComplete(final Side side) {
+    public void onWriteComplete(final Port port) {
         if (compileError == null) {
-            machine.onWriteCompleted(side);
+            machine.onWriteCompleted(port);
         }
     }
 

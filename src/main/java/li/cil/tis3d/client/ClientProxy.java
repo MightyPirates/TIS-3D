@@ -32,13 +32,15 @@ public final class ClientProxy extends CommonProxy {
 
     private static void setCustomBlockModelResourceLocation(final String blockName) {
         final Item item = Item.getItemFromBlock(GameRegistry.findBlock(Constants.MOD_ID, blockName));
-        final ModelResourceLocation location = new ModelResourceLocation(Constants.MOD_ID.toLowerCase() + ":" + blockName, "inventory");
+        final String path = Constants.MOD_ID.toLowerCase() + ":" + blockName;
+        final ModelResourceLocation location = new ModelResourceLocation(path, "inventory");
         ModelLoader.setCustomModelResourceLocation(item, 0, location);
     }
 
     private static void setCustomItemModelResourceLocation(final String itemName) {
         final Item item = GameRegistry.findItem(Constants.MOD_ID, itemName);
-        final ModelResourceLocation location = new ModelResourceLocation(Constants.MOD_ID.toLowerCase() + ":" + itemName, "inventory");
+        final String path = Constants.MOD_ID.toLowerCase() + ":" + itemName;
+        final ModelResourceLocation location = new ModelResourceLocation(path, "inventory");
         ModelLoader.setCustomModelResourceLocation(item, 0, location);
     }
 }

@@ -2,7 +2,7 @@ package li.cil.tis3d.api.module;
 
 import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
-import li.cil.tis3d.api.Side;
+import li.cil.tis3d.api.Port;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -35,14 +35,14 @@ public interface Module {
     void step();
 
     /**
-     * Called from a port this module is writing to when the data was read.
+     * Called from a pipe this module is writing to when the data was read.
      * <p>
      * This allows completing the operation in the same tick in which the
      * read operation was completed. This is particularly useful when writing
      * to multiple ports at a time but the written value may only be read once;
      * in this case the remaining writes can be canceled in this callback.
      */
-    void onWriteComplete(Side side);
+    void onWriteComplete(Port port);
 
     // --------------------------------------------------------------------- //
 

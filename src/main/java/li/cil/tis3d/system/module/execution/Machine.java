@@ -8,19 +8,17 @@ import li.cil.tis3d.system.module.execution.target.Target;
 public interface Machine {
     MachineState getState();
 
-    void beginWrite(Target target, int value);
+    boolean beginWrite(Target target, int value);
 
     void cancelWrite(Target target);
 
     boolean isWriting(Target target);
 
-    boolean isOutputTransferring(Target target);
-
     void beginRead(Target target);
 
     boolean isReading(Target target);
 
-    boolean isInputTransferring(Target target);
+    boolean canRead(Target target);
 
     int read(Target target);
 }

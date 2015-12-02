@@ -2,7 +2,7 @@ package li.cil.tis3d.api.prefab;
 
 import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
-import li.cil.tis3d.api.Side;
+import li.cil.tis3d.api.Port;
 import li.cil.tis3d.api.module.Module;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -40,7 +40,7 @@ public abstract class AbstractModule implements Module {
     }
 
     @Override
-    public void onWriteComplete(final Side side) {
+    public void onWriteComplete(final Port port) {
     }
 
     @Override

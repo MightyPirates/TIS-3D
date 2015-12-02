@@ -13,11 +13,11 @@ public final class InstructionAdd extends AbstractInstruction {
 
     @Override
     public void step(final Machine machine) {
-        final MachineState state = machine.getState();
         if (!machine.isReading(source)) {
             machine.beginRead(source);
         }
-        if (machine.isInputTransferring(source)) {
+        if (machine.canRead(source)) {
+            final MachineState state = machine.getState();
             state.acc += machine.read(source);
             state.pc++;
         }

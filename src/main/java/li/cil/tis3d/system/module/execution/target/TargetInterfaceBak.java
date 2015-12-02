@@ -2,13 +2,13 @@ package li.cil.tis3d.system.module.execution.target;
 
 import li.cil.tis3d.system.module.execution.Machine;
 
-public final class BakInterface extends AbstractTargetInterface {
-    public BakInterface(final Machine machine) {
+public final class TargetInterfaceBak extends AbstractTargetInterface {
+    public TargetInterfaceBak(final Machine machine) {
         super(machine);
     }
 
     @Override
-    public void beginWrite(final int value) {
+    public boolean beginWrite(final int value) {
         throw throwOnWrite();
     }
 
@@ -23,11 +23,6 @@ public final class BakInterface extends AbstractTargetInterface {
     }
 
     @Override
-    public boolean isOutputTransferring() {
-        throw throwOnWrite();
-    }
-
-    @Override
     public void beginRead() {
         throw throwOnRead();
     }
@@ -38,7 +33,7 @@ public final class BakInterface extends AbstractTargetInterface {
     }
 
     @Override
-    public boolean isInputTransferring() {
+    public boolean canRead() {
         throw throwOnRead();
     }
 

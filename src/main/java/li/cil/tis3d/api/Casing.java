@@ -49,36 +49,30 @@ public interface Casing {
     void setModule(Face face, Module module);
 
     /**
-     * Get the input port on the specified side of a module in this casing.
+     * Get the receiving pipe on the specified port of a module in this casing.
      * <p>
-     * There are two {@link Port}s between every pair of {@link Module}s
+     * There are two {@link Pipe}s between every pair of {@link Module}s
      * in a case. Specifically, each edge of a {@link Casing} has two
-     * {@link Port}s, going into opposite directions. This method is used
-     * to to get a {@link Port} based on its sink.
+     * {@link Pipe}s, going into opposite directions. This method is used
+     * to to get a {@link Pipe} based on its sink.
      *
      * @param face the face to get the port for.
-     * @param side the side for which to get the port.
-     * @return the input port on that side.
+     * @param port the port for which to get the port.
+     * @return the input port on that port.
      */
-    Port getInputPort(Face face, Side side);
+    Pipe getReceivingPipe(Face face, Port port);
 
     /**
-     * Get the output port on the specified side of a module in this casing.
+     * Get the sending pipe on the specified port of a module in this casing.
      * <p>
-     * There are two {@link Port}s between every pair of {@link Module}s
+     * There are two {@link Pipe}s between every pair of {@link Module}s
      * in a case. Specifically, each edge of a {@link Casing} has two
-     * {@link Port}s, going into opposite directions. This method is used
-     * to to get a {@link Port} based on its source.
+     * {@link Pipe}s, going into opposite directions. This method is used
+     * to to get a {@link Pipe} based on its source.
      *
      * @param face the face to get the port for.
-     * @param side the side for which to get the port.
-     * @return the output port on that side.
+     * @param port the port for which to get the port.
+     * @return the output port on that port.
      */
-    Port getOutputPort(Face face, Side side);
-
-    /**
-     * Calls {@link Module#step()} for all installed module and performs
-     * additional casing specific logic as necessary.
-     */
-    void step();
+    Pipe getSendingPipe(Face face, Port port);
 }

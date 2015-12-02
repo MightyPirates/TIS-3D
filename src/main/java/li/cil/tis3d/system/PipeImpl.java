@@ -2,19 +2,20 @@ package li.cil.tis3d.system;
 
 import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
+import li.cil.tis3d.api.Pipe;
 import li.cil.tis3d.api.Port;
-import li.cil.tis3d.api.Side;
 import li.cil.tis3d.api.module.Module;
 import net.minecraft.nbt.NBTTagCompound;
 
 /**
- * Implementation of {@link Port}s for passing data between {@link Module}s.
+ * Implementation of {@link Pipe}s for passing data between {@link Module}s.
  */
-public final class PortImpl implements Port {
+public final class PipeImpl implements Pipe {
     /**
-     * Current state of the port, to enforce synchronization, i.e. make sure
+     * Current state of the pipe, to enforce synchronization, i.e. make sure
      * each read/write combination always takes the same amount of steps
-     * regardless of whether reader or writer ran first.
+     * regardless of whether reader or writer ran first (when they start in
+     * the same step).
      */
     private enum State {
         /**
@@ -33,7 +34,7 @@ public final class PortImpl implements Port {
         READY,
 
         /**
-         * Data was read from the port this update.
+         * Data was read from the pipe this update.
          */
         FLUSHING
     }
@@ -42,12 +43,12 @@ public final class PortImpl implements Port {
     // Persisted data
 
     /**
-     * The current state of the port.
+     * The current state of the pipe.
      */
     private State readState = State.IDLE, writeState = State.IDLE;
 
     /**
-     * The value currently being written over this port.
+     * The value currently being written over this pipe.
      */
     private int value;
 
@@ -55,31 +56,31 @@ public final class PortImpl implements Port {
     // Computed data
 
     /**
-     * The casing this port belongs to.
+     * The casing this pipe belongs to.
      */
     private final Casing casing;
 
     /**
-     * The input face of this port in the owning {@link li.cil.tis3d.api.Casing}.
+     * The input face of this pipe in the owning {@link li.cil.tis3d.api.Casing}.
      */
     private final Face outputFace;
 
     /**
-     * The input side of this port in the owning {@link li.cil.tis3d.api.Casing}.
+     * The input port of this pipe in the owning {@link li.cil.tis3d.api.Casing}.
      */
-    private final Side outputSide;
+    private final Port outputPort;
 
     // --------------------------------------------------------------------- //
 
-    public PortImpl(final Casing casing, final Face outputFace, final Side outputSide) {
+    public PipeImpl(final Casing casing, final Face outputFace, final Port outputPort) {
         this.casing = casing;
         this.outputFace = outputFace;
-        this.outputSide = outputSide;
+        this.outputPort = outputPort;
     }
 
     /**
      * Called from the owning {@link li.cil.tis3d.api.Casing} after
-     * all {@link Module}s have been updated to update the port's
+     * all {@link Module}s have been updated to update the pipe's
      * state in a synchronized manner.
      */
     public void step() {
@@ -106,12 +107,12 @@ public final class PortImpl implements Port {
     }
 
     // --------------------------------------------------------------------- //
-    // Port
+    // Pipe
 
     @Override
     public void beginWrite(final int value) {
         if (writeState != State.IDLE) {
-            throw new IllegalStateException("Trying to write to a busy port. Check isWriting().");
+            throw new IllegalStateException("Trying to write to a busy pipe. Check isWriting().");
         }
         writeState = State.BUSY;
         this.value = value;
@@ -133,7 +134,7 @@ public final class PortImpl implements Port {
     @Override
     public void beginRead() {
         if (readState != State.IDLE) {
-            throw new IllegalStateException("Trying to write to a busy port. Check isReading().");
+            throw new IllegalStateException("Trying to write to a busy pipe. Check isReading().");
         }
         readState = State.BUSY;
     }
@@ -152,18 +153,18 @@ public final class PortImpl implements Port {
     }
 
     @Override
-    public boolean isTransferring() {
+    public boolean canTransfer() {
         return writeState == State.FLUSHING && readState == State.FLUSHING;
     }
 
     @Override
     public int read() {
-        if (!isTransferring()) {
-            throw new IllegalStateException("No data to read. Check isTransferring().");
+        if (!canTransfer()) {
+            throw new IllegalStateException("No data to read. Check canTransfer().");
         }
         cancelWrite();
         cancelRead();
-        casing.getModule(outputFace).onWriteComplete(outputSide);
+        casing.getModule(outputFace).onWriteComplete(outputPort);
         return value;
     }
 }

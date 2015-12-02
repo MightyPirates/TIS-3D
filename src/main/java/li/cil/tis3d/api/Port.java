@@ -1,24 +1,33 @@
 package li.cil.tis3d.api;
 
-import li.cil.tis3d.api.module.Module;
-
 /**
- * A port used to move data between {@link Module}s.
+ * The ports that can be available on a module.
+ * <p>
+ * For the top and bottom faces, {@link #UP} points towards {@link Face#Z_POS}.
  */
-public interface Port {
-    void beginWrite(int value);
+public enum Port {
+    LEFT,
+    RIGHT,
+    UP,
+    DOWN;
 
-    void cancelWrite();
+    /**
+     * All possible enum values for quick indexing.
+     */
+    public static final Port[] VALUES = Port.values();
 
-    boolean isWriting();
+    /**
+     * Mapping ports to their opposites (by <tt>ordinal()</tt>).
+     */
+    public static final Port[] OPPOSITES = new Port[]{RIGHT, LEFT, DOWN, UP};
 
-    void beginRead();
-
-    void cancelRead();
-
-    boolean isReading();
-
-    boolean isTransferring();
-
-    int read();
+    /**
+     * The the opposite port to this one.
+     *
+     * @return the opposite port.
+     * @see #OPPOSITES
+     */
+    public Port getOpposite() {
+        return OPPOSITES[ordinal()];
+    }
 }

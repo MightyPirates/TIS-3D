@@ -165,7 +165,8 @@ public final class TileEntityController extends TileEntity implements ITickable 
         }
 
         // All systems are go!
-        casings.forEach(TileEntityCasing::step);
+        casings.forEach(TileEntityCasing::stepModules);
+        casings.forEach(TileEntityCasing::stepPipes);
     }
 
     // --------------------------------------------------------------------- //

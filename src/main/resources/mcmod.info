@@ -2,7 +2,7 @@
 {
   "modid": "tis3d",
   "name": "TIS-3D",
-  "description": "This is 3D implementation of the TIS-100.",
+  "description": "TIS-100 inspired low-tech computing for Minecraft.",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",

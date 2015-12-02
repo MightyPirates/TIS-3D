@@ -3,16 +3,9 @@ package li.cil.tis3d.system.module.execution;
 import com.google.common.collect.ImmutableMap;
 import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
-import li.cil.tis3d.api.Side;
+import li.cil.tis3d.api.Port;
 import li.cil.tis3d.system.module.execution.instruction.Instruction;
-import li.cil.tis3d.system.module.execution.target.AccInterface;
-import li.cil.tis3d.system.module.execution.target.AnyInterface;
-import li.cil.tis3d.system.module.execution.target.BakInterface;
-import li.cil.tis3d.system.module.execution.target.LastInterface;
-import li.cil.tis3d.system.module.execution.target.NilInterface;
-import li.cil.tis3d.system.module.execution.target.SideInterface;
-import li.cil.tis3d.system.module.execution.target.Target;
-import li.cil.tis3d.system.module.execution.target.TargetInterface;
+import li.cil.tis3d.system.module.execution.target.*;
 
 import java.util.Map;
 
@@ -31,15 +24,15 @@ public final class MachineImpl implements Machine {
     public MachineImpl(final Casing casing, final Face face) {
         this.state = new MachineState();
         interfaces = ImmutableMap.<Target, TargetInterface>builder().
-                put(Target.ACC, new AccInterface(this)).
-                put(Target.BAK, new BakInterface(this)).
-                put(Target.NIL, new NilInterface(this)).
-                put(Target.LEFT, new SideInterface(this, casing, face, Side.LEFT)).
-                put(Target.RIGHT, new SideInterface(this, casing, face, Side.RIGHT)).
-                put(Target.UP, new SideInterface(this, casing, face, Side.UP)).
-                put(Target.DOWN, new SideInterface(this, casing, face, Side.DOWN)).
-                put(Target.ANY, new AnyInterface(this, casing, face)).
-                put(Target.LAST, new LastInterface(this, casing, face)).
+                put(Target.ACC, new TargetInterfaceAcc(this)).
+                put(Target.BAK, new TargetInterfaceBak(this)).
+                put(Target.NIL, new TargetInterfaceNil(this)).
+                put(Target.LEFT, new TargetInterfaceSide(this, casing, face, Port.LEFT)).
+                put(Target.RIGHT, new TargetInterfaceSide(this, casing, face, Port.RIGHT)).
+                put(Target.UP, new TargetInterfaceSide(this, casing, face, Port.UP)).
+                put(Target.DOWN, new TargetInterfaceSide(this, casing, face, Port.DOWN)).
+                put(Target.ANY, new TargetInterfaceAny(this, casing, face)).
+                put(Target.LAST, new TargetInterfaceLast(this, casing, face)).
                 build();
     }
 
@@ -52,10 +45,10 @@ public final class MachineImpl implements Machine {
         }
     }
 
-    public void onWriteCompleted(final Side side) {
+    public void onWriteCompleted(final Port port) {
         final Instruction instruction = getInstruction();
         if (instruction != null) {
-            instruction.onWriteCompleted(this, side);
+            instruction.onWriteCompleted(this, port);
         }
     }
 
@@ -74,8 +67,8 @@ public final class MachineImpl implements Machine {
     }
 
     @Override
-    public void beginWrite(final Target target, final int value) {
-        interfaces.get(target).beginWrite(value);
+    public boolean beginWrite(final Target target, final int value) {
+        return interfaces.get(target).beginWrite(value);
     }
 
     @Override
@@ -89,11 +82,6 @@ public final class MachineImpl implements Machine {
     }
 
     @Override
-    public boolean isOutputTransferring(final Target target) {
-        return interfaces.get(target).isOutputTransferring();
-    }
-
-    @Override
     public void beginRead(final Target target) {
         interfaces.get(target).beginRead();
     }
@@ -104,8 +92,8 @@ public final class MachineImpl implements Machine {
     }
 
     @Override
-    public boolean isInputTransferring(final Target target) {
-        return interfaces.get(target).isInputTransferring();
+    public boolean canRead(final Target target) {
+        return interfaces.get(target).canRead();
     }
 
     @Override

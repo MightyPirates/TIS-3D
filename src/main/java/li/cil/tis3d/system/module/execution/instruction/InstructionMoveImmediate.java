@@ -1,8 +1,7 @@
 package li.cil.tis3d.system.module.execution.instruction;
 
-import li.cil.tis3d.api.Side;
+import li.cil.tis3d.api.Port;
 import li.cil.tis3d.system.module.execution.Machine;
-import li.cil.tis3d.system.module.execution.MachineState;
 import li.cil.tis3d.system.module.execution.target.Target;
 
 public final class InstructionMoveImmediate extends AbstractInstruction {
@@ -16,18 +15,18 @@ public final class InstructionMoveImmediate extends AbstractInstruction {
 
     @Override
     public void step(final Machine machine) {
-        final MachineState state = machine.getState();
-
         if (!machine.isWriting(destination)) {
-            machine.beginWrite(destination, value);
-        }
-        if (machine.isOutputTransferring(destination)) {
-            state.pc++;
+            if (machine.beginWrite(destination, value)) {
+                machine.getState().pc++;
+            }
         }
     }
 
     @Override
-    public void onWriteCompleted(final Machine machine, final Side side) {
+    public void onWriteCompleted(final Machine machine, final Port port) {
+        if (destination == Target.ANY) {
+            machine.cancelWrite(destination);
+        }
         machine.getState().pc++;
     }
 }

@@ -2,8 +2,8 @@ package li.cil.tis3d.common.tile;
 
 import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
+import li.cil.tis3d.api.Pipe;
 import li.cil.tis3d.api.Port;
-import li.cil.tis3d.api.Side;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.common.inventory.InventoryCasing;
 import li.cil.tis3d.system.CasingImpl;
@@ -20,7 +20,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IChatComponent;
-import scala.Array;
 
 import java.util.ArrayDeque;
 import java.util.HashSet;
@@ -46,7 +45,6 @@ public final class TileEntityCasing extends TileEntity implements ISidedInventor
 
     private final InventoryCasing inventory = new InventoryCasing(this);
     private final CasingImpl casing = new CasingImpl(this);
-    private final int[] redstoneOutput = new int[Face.VALUES.length];
 
     // --------------------------------------------------------------------- //
     // Computed data
@@ -150,6 +148,14 @@ public final class TileEntityCasing extends TileEntity implements ISidedInventor
                 setNeighbor(Face.fromEnumFacing(facing), null);
             }
         }
+    }
+
+    public void stepModules() {
+        casing.stepModules();
+    }
+
+    public void stepPipes() {
+        casing.stepPipes();
     }
 
     private TileEntityController findController() {
@@ -329,27 +335,19 @@ public final class TileEntityCasing extends TileEntity implements ISidedInventor
     @Override
     public void writeToNBT(final NBTTagCompound nbt) {
         super.writeToNBT(nbt);
-
-        final NBTTagCompound inventoryNbt = new NBTTagCompound();
-        inventory.writeToNBT(inventoryNbt);
-        nbt.setTag("inventory", inventoryNbt);
-
-        final NBTTagCompound casingNbt = new NBTTagCompound();
-        casing.writeToNBT(casingNbt);
-        nbt.setTag("casing", casingNbt);
-
-        nbt.setIntArray("redstoneOutput", redstoneOutput);
+        save(nbt);
     }
 
     @Override
     public void onDataPacket(final NetworkManager manager, final S35PacketUpdateTileEntity packet) {
-        load(packet.getNbtCompound());
+        final NBTTagCompound nbt = packet.getNbtCompound();
+        load(nbt);
     }
 
     @Override
     public Packet getDescriptionPacket() {
         final NBTTagCompound nbt = new NBTTagCompound();
-        writeToNBT(nbt);
+        save(nbt);
         return new S35PacketUpdateTileEntity(pos, -1, nbt);
     }
 
@@ -359,9 +357,16 @@ public final class TileEntityCasing extends TileEntity implements ISidedInventor
 
         final NBTTagCompound casingNbt = nbt.getCompoundTag("casing");
         casing.readFromNBT(casingNbt);
+    }
 
-        final int[] redstoneOutputNbt = nbt.getIntArray("redstoneOutput");
-        Array.copy(redstoneOutputNbt, 0, redstoneOutput, 0, Math.min(redstoneOutputNbt.length, redstoneOutput.length));
+    private void save(final NBTTagCompound nbt) {
+        final NBTTagCompound inventoryNbt = new NBTTagCompound();
+        inventory.writeToNBT(inventoryNbt);
+        nbt.setTag("inventory", inventoryNbt);
+
+        final NBTTagCompound casingNbt = new NBTTagCompound();
+        casing.writeToNBT(casingNbt);
+        nbt.setTag("casing", casingNbt);
     }
 
     // --------------------------------------------------------------------- //
@@ -382,17 +387,12 @@ public final class TileEntityCasing extends TileEntity implements ISidedInventor
     }
 
     @Override
-    public Port getInputPort(final Face face, final Side side) {
-        return casing.getInputPort(face, side);
+    public Pipe getReceivingPipe(final Face face, final Port port) {
+        return casing.getReceivingPipe(face, port);
     }
 
     @Override
-    public Port getOutputPort(final Face face, final Side side) {
-        return casing.getOutputPort(face, side);
-    }
-
-    @Override
-    public void step() {
-        casing.step();
+    public Pipe getSendingPipe(final Face face, final Port port) {
+        return casing.getSendingPipe(face, port);
     }
 }

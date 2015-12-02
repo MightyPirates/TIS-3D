@@ -4,14 +4,15 @@ import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
 import li.cil.tis3d.system.module.execution.Machine;
 
-public final class LastInterface extends AbstractSideInterface {
-    public LastInterface(final Machine machine, final Casing casing, final Face face) {
+public final class TargetInterfaceLast extends TargetInterfaceAbstractSide {
+    public TargetInterfaceLast(final Machine machine, final Casing casing, final Face face) {
         super(machine, casing, face);
     }
 
     @Override
-    public void beginWrite(final int value) {
-        getState().last.ifPresent(side -> beginWrite(side, value));
+    public boolean beginWrite(final int value) {
+        getState().last.ifPresent(port -> beginWrite(port, value));
+        return !getState().last.isPresent();
     }
 
     @Override
@@ -25,11 +26,6 @@ public final class LastInterface extends AbstractSideInterface {
     }
 
     @Override
-    public boolean isOutputTransferring() {
-        return getState().last.map(this::isOutputTransferring).orElse(true);
-    }
-
-    @Override
     public void beginRead() {
         getState().last.ifPresent(this::beginRead);
     }
@@ -40,8 +36,8 @@ public final class LastInterface extends AbstractSideInterface {
     }
 
     @Override
-    public boolean isInputTransferring() {
-        return getState().last.map(this::isInputTransferring).orElse(true);
+    public boolean canRead() {
+        return getState().last.map(this::canRead).orElse(true);
     }
 
     @Override

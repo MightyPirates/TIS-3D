@@ -1,6 +1,6 @@
 package li.cil.tis3d.system.module.execution;
 
-import li.cil.tis3d.api.Side;
+import li.cil.tis3d.api.Port;
 import li.cil.tis3d.system.module.execution.instruction.Instruction;
 import li.cil.tis3d.system.module.execution.compiler.ParseException;
 import li.cil.tis3d.system.module.execution.compiler.Compiler;
@@ -36,7 +36,7 @@ public final class MachineState {
     /**
      * The port last read from.
      */
-    public Optional<Side> last = Optional.empty();
+    public Optional<Port> last = Optional.empty();
 
     /**
      * Lines of original code this state was compiled from.
@@ -110,7 +110,7 @@ public final class MachineState {
         acc = nbt.getInteger("acc");
         bak = nbt.getInteger("bak");
         if (nbt.hasKey("last")) {
-            last = Optional.of(Side.valueOf(nbt.getString("last")));
+            last = Optional.of(Port.valueOf(nbt.getString("last")));
         }
 
         validate();
@@ -129,7 +129,7 @@ public final class MachineState {
         nbt.setInteger("pc", pc);
         nbt.setInteger("acc", acc);
         nbt.setInteger("bak", bak);
-        last.ifPresent(side -> nbt.setString("last", side.name()));
+        last.ifPresent(port -> nbt.setString("last", port.name()));
 
         if (code != null) {
             nbt.setString("code", String.join("\n", code));

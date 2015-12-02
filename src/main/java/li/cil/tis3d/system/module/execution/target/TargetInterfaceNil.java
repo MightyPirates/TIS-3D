@@ -2,13 +2,14 @@ package li.cil.tis3d.system.module.execution.target;
 
 import li.cil.tis3d.system.module.execution.Machine;
 
-public final class NilInterface extends AbstractTargetInterface {
-    public NilInterface(final Machine machine) {
+public final class TargetInterfaceNil extends AbstractTargetInterface {
+    public TargetInterfaceNil(final Machine machine) {
         super(machine);
     }
 
     @Override
-    public void beginWrite(final int value) {
+    public boolean beginWrite(final int value) {
+        return true;
     }
 
     @Override
@@ -21,11 +22,6 @@ public final class NilInterface extends AbstractTargetInterface {
     }
 
     @Override
-    public boolean isOutputTransferring() {
-        return true;
-    }
-
-    @Override
     public void beginRead() {
     }
 
@@ -35,7 +31,7 @@ public final class NilInterface extends AbstractTargetInterface {
     }
 
     @Override
-    public boolean isInputTransferring() {
+    public boolean canRead() {
         return true;
     }
 
