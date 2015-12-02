@@ -7,10 +7,13 @@ import li.cil.tis3d.api.Port;
 import li.cil.tis3d.api.module.Redstone;
 import li.cil.tis3d.api.prefab.AbstractModule;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRedstoneWire;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
@@ -92,7 +95,13 @@ public final class ModuleRedstone extends AbstractModule implements Redstone {
     private int computeRedstoneInput() {
         final EnumFacing facing = Face.toEnumFacing(getFace());
         final BlockPos inputPos = getCasing().getPosition().offset(facing);
-        return getCasing().getWorld().getRedstonePower(inputPos, facing);
+        final int input = getCasing().getWorld().getRedstonePower(inputPos, facing);
+        if (input >= 15) {
+            return input;
+        } else {
+            final IBlockState state = getCasing().getWorld().getBlockState(inputPos);
+            return Math.max(input, state.getBlock() == Blocks.redstone_wire ? state.getValue(BlockRedstoneWire.POWER) : 0);
+        }
     }
 
     private void sendData() {

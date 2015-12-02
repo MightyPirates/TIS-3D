@@ -67,11 +67,15 @@ public interface Module {
     boolean onActivate(EntityPlayer player, float hitX, float hitY, float hitZ);
 
     /**
-     * Called with NBT data sent from the server's instance of the module.
+     * Called with NBT data sent from the remote instance of the module.
+     * <p>
+     * This can be called on both the server and the client, depending on which
+     * side sent the message (i.e. the client can send messages to the server
+     * this way and vice versa).
      *
      * @param nbt the received data.
+     * @see {@link Casing#sendData(Face, NBTTagCompound)}
      */
-    @SideOnly(Side.CLIENT)
     void onData(NBTTagCompound nbt);
 
     /**

@@ -5,7 +5,10 @@ import li.cil.tis3d.api.Face;
 import li.cil.tis3d.api.Pipe;
 import li.cil.tis3d.api.Port;
 import li.cil.tis3d.api.module.Module;
+import li.cil.tis3d.common.Network;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumParticleTypes;
 
 /**
  * Implementation of {@link Pipe}s for passing data between {@link Module}s.
@@ -61,9 +64,9 @@ public final class PipeImpl implements Pipe {
     private final Casing casing;
 
     /**
-     * The input face of this pipe in the owning {@link li.cil.tis3d.api.Casing}.
+     * The faces this pipe is connected to in the owning {@link li.cil.tis3d.api.Casing}.
      */
-    private final Face outputFace;
+    private final Face inputFace, outputFace;
 
     /**
      * The input port of this pipe in the owning {@link li.cil.tis3d.api.Casing}.
@@ -72,8 +75,9 @@ public final class PipeImpl implements Pipe {
 
     // --------------------------------------------------------------------- //
 
-    public PipeImpl(final Casing casing, final Face outputFace, final Port outputPort) {
+    public PipeImpl(final Casing casing, final Face inputFace, final Face outputFace, final Port outputPort) {
         this.casing = casing;
+        this.inputFace = inputFace;
         this.outputFace = outputFace;
         this.outputPort = outputPort;
     }
@@ -164,6 +168,16 @@ public final class PipeImpl implements Pipe {
         }
         cancelWrite();
         cancelRead();
+
+        final BlockPos position = casing.getPosition();
+        final double ox = Face.toEnumFacing(inputFace).getFrontOffsetX() + Face.toEnumFacing(outputFace).getFrontOffsetX();
+        final double oy = Face.toEnumFacing(inputFace).getFrontOffsetY() + Face.toEnumFacing(outputFace).getFrontOffsetY();
+        final double oz = Face.toEnumFacing(inputFace).getFrontOffsetZ() + Face.toEnumFacing(outputFace).getFrontOffsetZ();
+        final double x = ox * 0.6 + position.getX() + 0.5;
+        final double y = oy * 0.6 + position.getY() + 0.5;
+        final double z = oz * 0.6 + position.getZ() + 0.5;
+        Network.INSTANCE.spawnParticles(casing.getWorld(), EnumParticleTypes.REDSTONE, x, y, z);
+
         casing.getModule(outputFace).onWriteComplete(outputPort);
         return value;
     }

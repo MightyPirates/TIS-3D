@@ -1,6 +1,5 @@
-package li.cil.tis3d.client.network;
+package li.cil.tis3d.common.network;
 
-import li.cil.tis3d.common.network.MessageModuleData;
 import net.minecraft.util.IThreadListener;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;

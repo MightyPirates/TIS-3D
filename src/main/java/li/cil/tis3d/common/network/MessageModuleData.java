@@ -10,14 +10,11 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import java.io.IOException;
 
-public final class MessageModuleData implements IMessage {
+public final class MessageModuleData extends AbstractMessage {
     private int dimension;
     private BlockPos position;
     private Face face;
@@ -75,28 +72,10 @@ public final class MessageModuleData implements IMessage {
     // --------------------------------------------------------------------- //
 
     private TileEntity getTileEntity(final MessageContext context) {
-        switch (context.side) {
-            case CLIENT:
-                return getTileEntityClient();
-            case SERVER:
-                return getTileEntityServer();
-        }
-        return null;
-    }
-
-    private TileEntity getTileEntityClient() {
-        final World world = FMLClientHandler.instance().getClient().theWorld;
-        if (world == null) return null;
-        if (world.provider.getDimensionId() != dimension) return null;
-        if (!world.isBlockLoaded(position)) {
+        final World world = getWorld(context, dimension);
+        if (world == null) {
             return null;
         }
-        return world.getTileEntity(position);
-    }
-
-    private TileEntity getTileEntityServer() {
-        final World world = DimensionManager.getWorld(dimension);
-        if (world == null) return null;
         if (!world.isBlockLoaded(position)) {
             return null;
         }

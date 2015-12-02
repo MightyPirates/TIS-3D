@@ -74,7 +74,7 @@ public final class CasingImpl implements Casing {
 
         for (final Face face : Face.VALUES) {
             for (final Port port : Port.VALUES) {
-                pipes[pack(face, port)] = new PipeImpl(this, mapFace(face, port), mapSide(face, port));
+                pipes[pack(face, port)] = new PipeImpl(this, face, mapFace(face, port), mapSide(face, port));
             }
         }
     }
@@ -208,7 +208,11 @@ public final class CasingImpl implements Casing {
 
     @Override
     public void sendData(final Face face, final NBTTagCompound data) {
-        final NetworkRegistry.TargetPoint point = Network.getTargetPoint(tileEntity, 32);
-        Network.INSTANCE.getWrapper().sendToAllAround(new MessageModuleData(this, face, data), point);
+        final MessageModuleData message = new MessageModuleData(this, face, data);
+        if (getWorld().isRemote) {
+            Network.INSTANCE.getWrapper().sendToServer(message);
+        } else {
+            Network.INSTANCE.sendModuleData(this, message);
+        }
     }
 }

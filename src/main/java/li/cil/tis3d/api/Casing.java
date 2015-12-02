@@ -78,7 +78,11 @@ public interface Casing {
     Pipe getSendingPipe(Face face, Port port);
 
     /**
-     * Call this to send some data to a client representation of a module.
+     * Call this to send some data from a module to it's other representation.
+     * <p>
+     * That is, when called from the client, it will send the data to the
+     * instance representing the module on the specified face on the server,
+     * when called on the server it will send the data to the client.
      *
      * @param face the face the module is installed in.
      * @param data the data to send to the client.

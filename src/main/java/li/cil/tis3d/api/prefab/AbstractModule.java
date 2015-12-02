@@ -72,7 +72,6 @@ public abstract class AbstractModule implements Module {
         return false;
     }
 
-    @SideOnly(Side.CLIENT)
     @Override
     public void onData(final NBTTagCompound nbt) {
     }

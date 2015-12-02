@@ -29,6 +29,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * The programmable execution module.
  */
 public final class ModuleExecution extends AbstractModule {
+    private enum State {
+        IDLE,
+        RUNNING,
+        WAITING
+    }
+
     // --------------------------------------------------------------------- //
     // Persisted data
 
