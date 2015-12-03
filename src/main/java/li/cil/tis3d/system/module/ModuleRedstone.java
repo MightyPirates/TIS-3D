@@ -9,8 +9,6 @@ import li.cil.tis3d.api.prefab.AbstractModule;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRedstoneWire;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.init.Blocks;
@@ -137,6 +135,11 @@ public final class ModuleRedstone extends AbstractModule implements Redstone {
     }
 
     @Override
+    public void onEnabled() {
+        sendData();
+    }
+
+    @Override
     public void onWriteComplete(final Port port) {
         // Start writing again right away to write as fast as possible.
         stepOutput(port);
@@ -160,12 +163,11 @@ public final class ModuleRedstone extends AbstractModule implements Redstone {
 
     @SideOnly(Side.CLIENT)
     @Override
-    public void render(final float partialTicks) {
-        GlStateManager.pushAttrib();
+    public void render(final boolean enabled, final float partialTicks) {
         RenderHelper.disableStandardItemLighting();
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 0 / 1.0F);
 
-        Minecraft.getMinecraft().getTextureManager().bindTexture(LOCATION_OVERLAY);
+        bindTexture(LOCATION_OVERLAY);
 
         // Draw base overlay.
         drawQuad(0, 0, 1, 0.5f);
@@ -182,9 +184,7 @@ public final class ModuleRedstone extends AbstractModule implements Redstone {
         final float v0Input = SHARED_V1 - heightInput;
         drawQuad(RIGHT_U0, (v0Input - 0.5f) * 2f, SHARED_W, heightInput * 2, RIGHT_U0, v0Input, RIGHT_U1, SHARED_V1);
 
-        GlStateManager.bindTexture(0);
         RenderHelper.enableStandardItemLighting();
-        GlStateManager.popAttrib();
     }
 
     @Override

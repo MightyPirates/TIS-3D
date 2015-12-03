@@ -2,6 +2,7 @@ package li.cil.tis3d.system.module.execution.compiler;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
+import li.cil.tis3d.Constants;
 import li.cil.tis3d.system.module.execution.MachineState;
 import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitter;
 import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterAdd;
@@ -18,7 +19,6 @@ import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmit
 import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterSave;
 import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterSubtract;
 import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterSwap;
-import li.cil.tis3d.system.module.execution.compiler.instruction.Validator;
 import li.cil.tis3d.system.module.execution.instruction.Instruction;
 
 import java.util.ArrayList;
@@ -40,6 +40,13 @@ public final class Compiler {
     public static final int MAX_LINES = 15;
 
     /**
+     * The maximum number of characters a single line may have.
+     */
+    public static final int MAX_COLUMNS = 18;
+
+    // --------------------------------------------------------------------- //
+
+    /**
      * Parse the specified piece of assembly code into the specified machine state.
      * <p>
      * Note that the machine state will be hard reset.
@@ -53,18 +60,26 @@ public final class Compiler {
 
         final String[] lines = PATTERN_LINES.split(code);
         if (lines.length > MAX_LINES) {
-            throw new ParseException(MESSAGE_TOO_MANY_LINES, MAX_LINES, 0);
+            throw new ParseException(Constants.MESSAGE_TOO_MANY_LINES, MAX_LINES, 0);
         }
 
         state.code = lines;
+        for (int lineNumber = 0; lineNumber < state.code.length; lineNumber++) {
+            state.code[lineNumber] = state.code[lineNumber].toUpperCase(Locale.ENGLISH);
+        }
 
         try {
             // Parse all lines into the specified machine state.
             final List<Validator> validators = new ArrayList<>();
             for (int lineNumber = 0; lineNumber < lines.length; lineNumber++) {
+                // Enforce max line length.
+                if (lines[lineNumber].length() > MAX_COLUMNS) {
+                    throw new ParseException(Constants.MESSAGE_LINE_TOO_LONG, lineNumber, MAX_COLUMNS);
+                }
+
                 // Get current line, strip comments, trim whitespace and uppercase.
                 final Matcher matcher = PATTERN_COMMENT.matcher(lines[lineNumber]);
-                final String line = matcher.replaceFirst("").trim().toUpperCase(Locale.ENGLISH);
+                final String line = matcher.replaceFirst("").trim();
 
                 // Extract a label, if any, pass the rest onto the instruction parser.
                 parseInstruction(parseLabel(line, state), state, lineNumber, validators);
@@ -130,18 +145,16 @@ public final class Compiler {
             state.instructions.add(instruction);
         } else {
             // This should be pretty much impossible...
-            throw new ParseException(MESSAGE_UNEXPECTED_TOKEN, lineNumber, 0);
+            throw new ParseException(Constants.MESSAGE_UNEXPECTED_TOKEN, lineNumber, 0);
         }
     }
 
     // --------------------------------------------------------------------- //
 
-    private static final String MESSAGE_UNEXPECTED_TOKEN = "Unexpected token";
-    private static final String MESSAGE_TOO_MANY_LINES = "Too many lines";
     private static final Pattern PATTERN_LINES = Pattern.compile("\r?\n");
     private static final Pattern PATTERN_COMMENT = Pattern.compile("#.*$");
     private static final Pattern PATTERN_LABEL = Pattern.compile("(?<label>[^:]+)\\s*:\\s*(?<rest>.*)");
-    private static final Pattern PATTERN_INSTRUCTION = Pattern.compile("^(?<name>\\S+)\\s*(?<arg1>\\S+)?\\s*(?<arg2>\\S+)?\\s*(?<excess>.+)?$");
+    private static final Pattern PATTERN_INSTRUCTION = Pattern.compile("^(?<name>[^,\\s]+)\\s*,?\\s*(?<arg1>[^,\\s]+)?\\s*,?\\s*(?<arg2>[^,\\s]+)?\\s*(?<excess>.+)?$");
     private static final InstructionEmitter EMITTER_MISSING = new InstructionEmitterMissing();
     private static final Map<String, InstructionEmitter> EMITTER_MAP;
 

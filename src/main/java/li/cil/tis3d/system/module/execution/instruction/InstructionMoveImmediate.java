@@ -2,6 +2,7 @@ package li.cil.tis3d.system.module.execution.instruction;
 
 import li.cil.tis3d.system.module.execution.Machine;
 import li.cil.tis3d.system.module.execution.target.Target;
+import li.cil.tis3d.system.module.execution.target.TargetInterface;
 
 public final class InstructionMoveImmediate extends AbstractInstructionMove {
     private final int value;
@@ -13,8 +14,10 @@ public final class InstructionMoveImmediate extends AbstractInstructionMove {
 
     @Override
     protected void doStep(final Machine machine) {
-        if (!machine.isWriting(destination)) {
-            if (machine.beginWrite(destination, value)) {
+        final TargetInterface destinationInterface = machine.getInterface(destination);
+
+        if (!destinationInterface.isWriting()) {
+            if (destinationInterface.beginWrite(value)) {
                 machine.getState().pc++;
             }
         }

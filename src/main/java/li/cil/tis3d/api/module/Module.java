@@ -29,6 +29,14 @@ public interface Module {
     // --------------------------------------------------------------------- //
 
     /**
+     * Advance the state of the module.
+     * <p>
+     * This is called by the controller of the system the module is part of
+     * each tick the system is running.
+     */
+    void step();
+
+    /**
      * Called when the multi-block of casings the module is installed in is
      * enabled, or when the module was installed into an enabled casing.
      * <p>
@@ -44,16 +52,13 @@ public interface Module {
      * a controller resets the whole multi-block system.
      * <p>
      * Note that this is only called on the server.
+     * <p>
+     * When this is called due to a controller or casing being disposed, e.g.
+     * due to a chunk being unloaded, the <tt>isDisposing</tt> parameter will
+     * be <tt>true</tt>, indicating that the module should avoid world
+     * interaction in its clean-up logic (to avoid loading the chunk again).
      */
     void onDisabled();
-
-    /**
-     * Advance the state of the module.
-     * <p>
-     * This is called by the controller of the system the module is part of
-     * each tick the system is running.
-     */
-    void step();
 
     /**
      * Called from a pipe this module is writing to when the data was read.
@@ -64,8 +69,6 @@ public interface Module {
      * in this case the remaining writes can be canceled in this callback.
      */
     void onWriteComplete(Port port);
-
-    // --------------------------------------------------------------------- //
 
     /**
      * Called when a player right-clicks the module while installed in a casing.
@@ -97,6 +100,8 @@ public interface Module {
      */
     void onData(NBTTagCompound nbt);
 
+    // --------------------------------------------------------------------- //
+
     /**
      * Called to allow the module to render dynamic content on the casing it
      * is installed in.
@@ -105,10 +110,11 @@ public interface Module {
      * module is installed in, i.e. rendering from (0, 0, 0) to (1, 1, 0) will
      * render the full quad of face of the casing the module is installed in.
      *
+     * @param enabled      whether the module is currently enabled.
      * @param partialTicks the partial time elapsed in this tick.
      */
     @SideOnly(Side.CLIENT)
-    void render(float partialTicks);
+    void render(final boolean enabled, float partialTicks);
 
     // --------------------------------------------------------------------- //
 

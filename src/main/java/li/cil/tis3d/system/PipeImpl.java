@@ -5,7 +5,7 @@ import li.cil.tis3d.api.Face;
 import li.cil.tis3d.api.Pipe;
 import li.cil.tis3d.api.Port;
 import li.cil.tis3d.api.module.Module;
-import li.cil.tis3d.common.Network;
+import li.cil.tis3d.common.network.Network;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumParticleTypes;

@@ -31,7 +31,7 @@ abstract class AbstractInstructionMove extends AbstractInstruction {
     @Override
     public void onWriteCompleted(final Machine machine, final Port port) {
         if (destination == Target.ANY) {
-            machine.cancelWrite(destination);
+            machine.getInterface(destination).cancelWrite();
         }
         isDone = true;
     }

@@ -1,6 +1,7 @@
 package li.cil.tis3d.system.module.execution.compiler.instruction;
 
 import li.cil.tis3d.system.module.execution.compiler.ParseException;
+import li.cil.tis3d.system.module.execution.compiler.Validator;
 import li.cil.tis3d.system.module.execution.instruction.Instruction;
 import li.cil.tis3d.system.module.execution.instruction.InstructionSwap;
 
@@ -10,7 +11,7 @@ import java.util.regex.Matcher;
 public final class InstructionEmitterSwap extends AbstractInstructionEmitter {
     @Override
     public String getInstructionName() {
-        return "SWAP";
+        return "SWP";
     }
 
     @Override

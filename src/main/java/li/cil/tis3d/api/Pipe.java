@@ -67,6 +67,8 @@ public interface Pipe {
      */
     boolean isWriting();
 
+    // --------------------------------------------------------------------- //
+
     /**
      * Begin a reading operation on the pipe.
      * <p>
@@ -94,6 +96,8 @@ public interface Pipe {
      * @return whether the pipe is currently being read from.
      */
     boolean isReading();
+
+    // --------------------------------------------------------------------- //
 
     /**
      * Whether the pipe can transfer data, i.e. {@link #read()} can be called.

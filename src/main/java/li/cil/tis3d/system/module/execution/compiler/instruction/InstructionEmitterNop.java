@@ -1,6 +1,7 @@
 package li.cil.tis3d.system.module.execution.compiler.instruction;
 
 import li.cil.tis3d.system.module.execution.compiler.ParseException;
+import li.cil.tis3d.system.module.execution.compiler.Validator;
 import li.cil.tis3d.system.module.execution.instruction.Instruction;
 import li.cil.tis3d.system.module.execution.instruction.InstructionAddImmediate;
 

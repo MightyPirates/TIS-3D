@@ -1,7 +1,7 @@
 package li.cil.tis3d.client;
 
 import li.cil.tis3d.Constants;
-import li.cil.tis3d.client.render.TileEntitySpecialRendererCasing;
+import li.cil.tis3d.client.render.tile.TileEntitySpecialRendererCasing;
 import li.cil.tis3d.common.CommonProxy;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import net.minecraft.client.resources.model.ModelResourceLocation;
@@ -30,6 +30,8 @@ public final class ClientProxy extends CommonProxy {
 
         setCustomItemModelResourceLocation(Constants.NAME_ITEM_MODULE_EXECUTION);
         setCustomItemModelResourceLocation(Constants.NAME_ITEM_MODULE_REDSTONE);
+        setCustomItemModelResourceLocation(Constants.NAME_ITEM_MODULE_STACK);
+        setCustomItemModelResourceLocation(Constants.NAME_ITEM_MODULE_RANDOM);
 
         MinecraftForge.EVENT_BUS.register(TextureLoader.INSTANCE);
     }

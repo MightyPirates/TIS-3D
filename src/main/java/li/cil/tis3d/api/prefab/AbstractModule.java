@@ -4,11 +4,13 @@ import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
 import li.cil.tis3d.api.Port;
 import li.cil.tis3d.api.module.Module;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -27,6 +29,15 @@ public abstract class AbstractModule implements Module {
         this.face = face;
     }
 
+    // --------------------------------------------------------------------- //
+    // Rendering utility.
+
+    @SideOnly(Side.CLIENT)
+    protected static void bindTexture(final ResourceLocation location) {
+        Minecraft.getMinecraft().getTextureManager().bindTexture(location);
+    }
+
+    @SideOnly(Side.CLIENT)
     protected static void drawQuad(final float x, final float y, final float w, final float h, final float u0, final float v0, final float u1, final float v1) {
         final Tessellator tessellator = Tessellator.getInstance();
         final WorldRenderer worldRenderer = tessellator.getWorldRenderer();
@@ -38,10 +49,12 @@ public abstract class AbstractModule implements Module {
         tessellator.draw();
     }
 
+    @SideOnly(Side.CLIENT)
     protected static void drawQuad(final float u0, final float v0, final float u1, final float v1) {
         drawQuad(0, 0, 1, 1, u0, v0, u1, v1);
     }
 
+    @SideOnly(Side.CLIENT)
     protected static void drawQuad() {
         drawQuad(0, 0, 1, 1);
     }
@@ -60,15 +73,15 @@ public abstract class AbstractModule implements Module {
     }
 
     @Override
+    public void step() {
+    }
+
+    @Override
     public void onEnabled() {
     }
 
     @Override
     public void onDisabled() {
-    }
-
-    @Override
-    public void step() {
     }
 
     @Override
@@ -86,7 +99,7 @@ public abstract class AbstractModule implements Module {
 
     @SideOnly(Side.CLIENT)
     @Override
-    public void render(final float partialTicks) {
+    public void render(final boolean enabled, final float partialTicks) {
     }
 
     @Override

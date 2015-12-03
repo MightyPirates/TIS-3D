@@ -2,6 +2,7 @@ package li.cil.tis3d.api;
 
 import li.cil.tis3d.api.detail.Registry;
 import li.cil.tis3d.api.module.ModuleProvider;
+import li.cil.tis3d.common.CreativeTab;
 import net.minecraft.item.ItemStack;
 
 /**
@@ -35,6 +36,7 @@ public final class API {
     // --------------------------------------------------------------------- //
 
     public static Registry instance;
+    public static CreativeTab creativeTab;
 
     private API() {
     }

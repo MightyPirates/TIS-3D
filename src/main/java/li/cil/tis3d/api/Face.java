@@ -4,6 +4,10 @@ import net.minecraft.util.EnumFacing;
 
 /**
  * Enumeration over the faces of a {@link Casing}.
+ * <p>
+ * Mainly to avoid Minecraft specific types in the API where possible. Just in
+ * case things get changed around again like has happened the last few major
+ * version bumps.
  */
 public enum Face {
     Y_NEG,
@@ -12,6 +16,20 @@ public enum Face {
     Z_POS,
     X_NEG,
     X_POS;
+
+    // --------------------------------------------------------------------- //
+
+    /**
+     * The the opposite face to this one.
+     *
+     * @return the opposite port.
+     * @see #OPPOSITES
+     */
+    public Face getOpposite() {
+        return OPPOSITES[ordinal()];
+    }
+
+    // --------------------------------------------------------------------- //
 
     /**
      * All possible enum values for quick indexing.
@@ -23,15 +41,7 @@ public enum Face {
      */
     public static final Face[] OPPOSITES = new Face[]{Y_POS, Y_NEG, Z_POS, Z_NEG, X_POS, X_NEG};
 
-    /**
-     * The the opposite face to this one.
-     *
-     * @return the opposite port.
-     * @see #OPPOSITES
-     */
-    public Face getOpposite() {
-        return OPPOSITES[ordinal()];
-    }
+    // --------------------------------------------------------------------- //
 
     /**
      * Convert a facing from Forge's format to our internal format.

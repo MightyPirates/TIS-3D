@@ -1,12 +1,12 @@
-package li.cil.tis3d.common.network;
+package li.cil.tis3d.common.network.message;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
-public final class MessageParticleEffect extends AbstractMessage {
+public final class MessageParticleEffect implements IMessage {
     private int dimension;
     private EnumParticleTypes particleType;
     private double x;
@@ -26,14 +26,28 @@ public final class MessageParticleEffect extends AbstractMessage {
 
     // --------------------------------------------------------------------- //
 
-    public void process(final MessageContext context) {
-        final World world = getWorld(context, dimension);
-        if (world != null) {
-            world.spawnParticle(particleType, x, y, z, 0, 0, 0);
-        }
+    public int getDimension() {
+        return dimension;
+    }
+
+    public EnumParticleTypes getParticleType() {
+        return particleType;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public double getZ() {
+        return z;
     }
 
     // --------------------------------------------------------------------- //
+    // IMessage
 
     @Override
     public void fromBytes(final ByteBuf buf) {

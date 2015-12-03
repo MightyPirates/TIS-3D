@@ -69,37 +69,7 @@ public final class MachineImpl implements Machine {
     }
 
     @Override
-    public boolean beginWrite(final Target target, final int value) {
-        return interfaces.get(target).beginWrite(value);
-    }
-
-    @Override
-    public void cancelWrite(final Target target) {
-        interfaces.get(target).cancelWrite();
-    }
-
-    @Override
-    public boolean isWriting(final Target target) {
-        return interfaces.get(target).isWriting();
-    }
-
-    @Override
-    public void beginRead(final Target target) {
-        interfaces.get(target).beginRead();
-    }
-
-    @Override
-    public boolean isReading(final Target target) {
-        return interfaces.get(target).isReading();
-    }
-
-    @Override
-    public boolean canRead(final Target target) {
-        return interfaces.get(target).canRead();
-    }
-
-    @Override
-    public int read(final Target target) {
-        return interfaces.get(target).read();
+    public TargetInterface getInterface(Target target) {
+        return interfaces.get(target);
     }
 }

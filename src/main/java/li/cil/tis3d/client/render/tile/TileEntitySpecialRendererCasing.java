@@ -1,4 +1,4 @@
-package li.cil.tis3d.client.render;
+package li.cil.tis3d.client.render.tile;
 
 import li.cil.tis3d.api.Face;
 import li.cil.tis3d.api.module.Module;
@@ -12,12 +12,14 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
  * also so as not to spam the model registry with potentially a gazillion
  * block states for static individual texturing).
  */
-public class TileEntitySpecialRendererCasing extends TileEntitySpecialRenderer<TileEntityCasing> {
+public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRenderer<TileEntityCasing> {
     @Override
     public void renderTileEntityAt(final TileEntityCasing casing, final double x, final double y, final double z, final float partialTicks, final int destroyStage) {
         GlStateManager.pushMatrix();
         GlStateManager.translate(x + 0.5, y + 0.5, z + 0.5);
 
+        // Render all modules, adjust GL state to allow easily rendering an
+        // overlay in (0, 0, 0) to (1, 1, 0).
         for (final Face face : Face.VALUES) {
             final Module module = casing.getModule(face);
             if (module == null) {
@@ -50,7 +52,7 @@ public class TileEntitySpecialRendererCasing extends TileEntitySpecialRenderer<T
             GlStateManager.translate(0.5, 0.5, -0.505);
             GlStateManager.scale(-1, -1, 1);
 
-            module.render(partialTicks);
+            module.render(casing.isEnabled(), partialTicks);
 
             GlStateManager.popMatrix();
         }

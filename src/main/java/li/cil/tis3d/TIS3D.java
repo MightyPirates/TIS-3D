@@ -8,9 +8,12 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
+/**
+ * Entry point for FML.
+ */
 @Mod(modid = Constants.MOD_ID, version = Constants.MOD_VERSION)
 public final class TIS3D {
-    @SidedProxy(clientSide = "li.cil.tis3d.client.ClientProxy", serverSide = "li.cil.tis3d.common.CommonProxy")
+    @SidedProxy(clientSide = Constants.PROXY_CLIENT, serverSide = Constants.PROXY_COMMON)
     public static CommonProxy proxy;
 
     @EventHandler

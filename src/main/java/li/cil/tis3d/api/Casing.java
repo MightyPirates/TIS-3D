@@ -30,6 +30,8 @@ public interface Casing {
      */
     void markDirty();
 
+    // --------------------------------------------------------------------- //
+
     /**
      * Get the module installed on the specified face of the casing.
      *
@@ -76,6 +78,8 @@ public interface Casing {
      * @return the output port on that port.
      */
     Pipe getSendingPipe(Face face, Port port);
+
+    // --------------------------------------------------------------------- //
 
     /**
      * Call this to send some data from a module to it's other representation.

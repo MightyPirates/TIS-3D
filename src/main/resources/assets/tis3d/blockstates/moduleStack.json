@@ -1,0 +1,14 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "textures": {},
+        "model": "tis3d:module.obj"
+     },
+    "variants": {
+        "normal": [{}],
+        "inventory": [{
+            "transform": "forge:default-block",
+            "textures" : { "#casing:Module" : "tis3d:items/moduleStack" }
+        }]
+    }
+}

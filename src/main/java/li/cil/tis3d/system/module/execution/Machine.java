@@ -1,24 +1,31 @@
 package li.cil.tis3d.system.module.execution;
 
 import li.cil.tis3d.system.module.execution.target.Target;
+import li.cil.tis3d.system.module.execution.target.TargetInterface;
 
 /**
  * Interface for the virtual machine used by the {@link li.cil.tis3d.system.module.ModuleExecution}.
+ * <p>
+ * Provided to {@link li.cil.tis3d.system.module.execution.instruction.Instruction}s on top of the
+ * state itself for unified data transfer to all valid targets, including virtual ones such as
+ * {@link Target#ANY}.
  */
 public interface Machine {
+    /**
+     * Get the state of the machine, i.e. registers and program.
+     *
+     * @return the state of the machine.
+     */
     MachineState getState();
 
-    boolean beginWrite(Target target, int value);
-
-    void cancelWrite(Target target);
-
-    boolean isWriting(Target target);
-
-    void beginRead(Target target);
-
-    boolean isReading(Target target);
-
-    boolean canRead(Target target);
-
-    int read(Target target);
+    /**
+     * Get an interface that allows reading and writing to all valid
+     * {@link Target}s, including virtual ones. A {@link TargetInterface} is
+     * basically a {@link li.cil.tis3d.api.Pipe} wrapper and register wrapper
+     * in one.
+     *
+     * @param target the target to get the interface for.
+     * @return the interface for the specified target.
+     */
+    TargetInterface getInterface(Target target);
 }

@@ -5,8 +5,11 @@ import li.cil.tis3d.api.API;
 import li.cil.tis3d.common.block.BlockCasing;
 import li.cil.tis3d.common.block.BlockController;
 import li.cil.tis3d.common.item.ItemModule;
+import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.provider.ModuleProviderExecution;
+import li.cil.tis3d.common.provider.ModuleProviderRandom;
 import li.cil.tis3d.common.provider.ModuleProviderRedstone;
+import li.cil.tis3d.common.provider.ModuleProviderStack;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import li.cil.tis3d.common.tile.TileEntityController;
 import net.minecraft.init.Blocks;
@@ -22,16 +25,18 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
  */
 public class CommonProxy {
     public void onPreInit(final FMLPreInitializationEvent event) {
-        // Register blocks and items.
-        final CreativeTab creativeTab = new CreativeTab();
+        // Initialize API.
+        API.instance = new RegistryImpl();
+        API.creativeTab = new CreativeTab();
 
+        // Register blocks and items.
         GameRegistry.registerBlock(new BlockCasing().
                         setUnlocalizedName(Constants.NAME_BLOCK_CASING).
-                        setCreativeTab(creativeTab),
+                        setCreativeTab(API.creativeTab),
                 Constants.NAME_BLOCK_CASING);
         GameRegistry.registerBlock(new BlockController().
                         setUnlocalizedName(Constants.NAME_BLOCK_CONTROLLER).
-                        setCreativeTab(creativeTab),
+                        setCreativeTab(API.creativeTab),
                 Constants.NAME_BLOCK_CONTROLLER);
 
         GameRegistry.registerTileEntity(TileEntityCasing.class, Constants.NAME_BLOCK_CASING);
@@ -39,15 +44,20 @@ public class CommonProxy {
 
         GameRegistry.registerItem(new ItemModule().
                         setUnlocalizedName(Constants.NAME_ITEM_MODULE_EXECUTION).
-                        setCreativeTab(creativeTab),
+                        setCreativeTab(API.creativeTab),
                 Constants.NAME_ITEM_MODULE_EXECUTION);
         GameRegistry.registerItem(new ItemModule().
                         setUnlocalizedName(Constants.NAME_ITEM_MODULE_REDSTONE).
-                        setCreativeTab(creativeTab),
+                        setCreativeTab(API.creativeTab),
                 Constants.NAME_ITEM_MODULE_REDSTONE);
-
-        // Initialize API.
-        API.instance = new RegistryImpl();
+        GameRegistry.registerItem(new ItemModule().
+                        setUnlocalizedName(Constants.NAME_ITEM_MODULE_STACK).
+                        setCreativeTab(API.creativeTab),
+                Constants.NAME_ITEM_MODULE_STACK);
+        GameRegistry.registerItem(new ItemModule().
+                        setUnlocalizedName(Constants.NAME_ITEM_MODULE_RANDOM).
+                        setCreativeTab(API.creativeTab),
+                Constants.NAME_ITEM_MODULE_RANDOM);
     }
 
     public void onInit(final FMLInitializationEvent event) {
@@ -86,6 +96,8 @@ public class CommonProxy {
         // Register providers for built-in modules.
         API.addProvider(new ModuleProviderExecution());
         API.addProvider(new ModuleProviderRedstone());
+        API.addProvider(new ModuleProviderStack());
+        API.addProvider(new ModuleProviderRandom());
     }
 
     public void onPostInit(final FMLPostInitializationEvent event) {

@@ -6,17 +6,20 @@ import li.cil.tis3d.api.Face;
 import li.cil.tis3d.api.Port;
 import li.cil.tis3d.api.prefab.AbstractModule;
 import li.cil.tis3d.client.TextureLoader;
+import li.cil.tis3d.client.render.font.FontRendererTextureMonospace;
 import li.cil.tis3d.system.module.execution.MachineImpl;
 import li.cil.tis3d.system.module.execution.MachineState;
 import li.cil.tis3d.system.module.execution.compiler.Compiler;
 import li.cil.tis3d.system.module.execution.compiler.ParseException;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -203,35 +206,89 @@ public final class ModuleExecution extends AbstractModule {
 
     @SideOnly(Side.CLIENT)
     @Override
-    public void render(final float partialTicks) {
+    public void render(final boolean enabled, final float partialTicks) {
+        if (!enabled) {
+            return;
+        }
+
         final MachineState machineState = machine.getState();
         if (state == State.IDLE || machineState.code == null) {
             return;
         }
 
-        GlStateManager.pushAttrib();
         RenderHelper.disableStandardItemLighting();
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 0 / 1.0F);
 
+        // Draw status texture.
         Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
         final TextureAtlasSprite icon = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(STATE_LOCATIONS[state.ordinal()]);
         drawQuad(icon.getMinU(), icon.getMinV(), icon.getMaxU(), icon.getMaxV());
 
-        GlStateManager.bindTexture(0);
-
-        GlStateManager.translate(4 / 16f, 4 / 16f, 0);
-        GlStateManager.scale(1 / 128f, 1 / 128f, 1);
-        final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
-        for (int lineNumber = 0; lineNumber < machineState.code.length; lineNumber++) {
-            final String line = machineState.code[lineNumber];
-            final boolean isCurrent = machineState.lineNumbers.get(machineState.pc) == lineNumber;
-            final int color = isCurrent ? 0xFFFFFF : 0x999999;
-            fontRenderer.drawString(line, 0, lineNumber * fontRenderer.FONT_HEIGHT, color);
+        // Render detailed state when player is close.
+        if (Minecraft.getMinecraft().thePlayer.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
+            renderState(machineState);
         }
-        fontRenderer.drawString("pc: " + machineState.pc + "; line: " + machineState.lineNumbers.get(machineState.pc), 0, -fontRenderer.FONT_HEIGHT, 0xFFFFFF);
 
         RenderHelper.enableStandardItemLighting();
-        GlStateManager.popAttrib();
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void renderState(final MachineState machineState) {
+        // Offset to start drawing at top left of inner area, slightly inset.
+        GlStateManager.translate(4 / 16f, 4 / 16f, 0);
+        GlStateManager.scale(1 / 128f, 1 / 128f, 1);
+        GlStateManager.translate(1, 1, 0);
+        GlStateManager.color(1f, 1f, 1f, 1f);
+
+        // Draw register info on top.
+        final String registers = String.format("ACC:%3d BAK:%3d", machineState.acc, machineState.bak);
+        FontRendererTextureMonospace.drawString(registers);
+        GlStateManager.translate(0, FontRendererTextureMonospace.CHAR_HEIGHT + 4, 0);
+        drawLine(1);
+        GlStateManager.translate(0, 5, 0);
+
+        // If we have more lines than fit on our "screen", offset so that the
+        // current line is in the middle, but don't let last line scroll in.
+        final int maxLines = 50 / (FontRendererTextureMonospace.CHAR_HEIGHT + 1);
+        final int totalLines = machineState.code.length;
+        final int currentLine = machineState.lineNumbers.get(machineState.pc);
+        final int page = currentLine / maxLines;
+        final int offset = page * maxLines;
+        for (int lineNumber = offset; lineNumber < Math.min(totalLines, offset + maxLines); lineNumber++) {
+            final String line = machineState.code[lineNumber];
+            if (lineNumber == currentLine) {
+                if (state == State.WAITING) {
+                    GlStateManager.color(0.66f, 0.66f, 0.66f);
+                }
+
+                drawLine(FontRendererTextureMonospace.CHAR_HEIGHT);
+
+                GlStateManager.color(0f, 0f, 0f);
+            } else {
+                GlStateManager.color(1f, 1f, 1f);
+            }
+
+            FontRendererTextureMonospace.drawString(line, 15);
+
+            GlStateManager.translate(0, FontRendererTextureMonospace.CHAR_HEIGHT + 1, 0);
+        }
+    }
+
+    private static void drawLine(final int height) {
+        GlStateManager.depthMask(false);
+        GlStateManager.disableTexture2D();
+
+        final Tessellator tessellator = Tessellator.getInstance();
+        final WorldRenderer worldRenderer = tessellator.getWorldRenderer();
+        worldRenderer.begin(7, DefaultVertexFormats.POSITION);
+        worldRenderer.pos(-0.5f, height + 0.5f, 0).endVertex();
+        worldRenderer.pos(62.5f, height + 0.5f, 0).endVertex();
+        worldRenderer.pos(62.5f, -0.5f, 0).endVertex();
+        worldRenderer.pos(-0.5f, -0.5f, 0).endVertex();
+        tessellator.draw();
+
+        GlStateManager.depthMask(true);
+        GlStateManager.enableTexture2D();
     }
 
     @Override

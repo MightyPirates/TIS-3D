@@ -5,13 +5,7 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The controller tile entity.
@@ -99,29 +93,6 @@ public final class TileEntityController extends TileEntity implements ITickable 
         }
     }
 
-    /**
-     * Clear the list of controlled casings (and clear their controller), then
-     * enter the specified state.
-     *
-     * @param toState the state to enter after clearing.
-     */
-    private void clear(final ControllerState toState) {
-        for (final TileEntityCasing casing : casings) {
-            casing.setController(null);
-        }
-
-        // Disable modules if our old controller was active.
-        if (state == TileEntityController.ControllerState.RUNNING) {
-            final List<TileEntityCasing> casingCopy = new ArrayList<>(casings);
-            casings.clear();
-            casingCopy.forEach(TileEntityCasing::onDisabled);
-        } else {
-            casings.clear();
-        }
-
-        state = toState;
-    }
-
     // --------------------------------------------------------------------- //
     // TileEntity
 
@@ -135,28 +106,6 @@ public final class TileEntityController extends TileEntity implements ITickable 
     public void onChunkUnload() {
         super.onChunkUnload();
         dispose();
-    }
-
-    private void dispose() {
-        // If we were in an active state, deactivate all modules in connected cases.
-        if (state == ControllerState.RUNNING) {
-            casings.forEach(TileEntityCasing::onDisabled);
-        }
-
-        // Tell our neighbors about our untimely death.
-        for (final EnumFacing facing : EnumFacing.VALUES) {
-            final BlockPos neighborPos = getPos().offset(facing);
-            if (getWorld().isBlockLoaded(neighborPos)) {
-                final TileEntity tileEntity = getWorld().getTileEntity(neighborPos);
-                if (tileEntity instanceof TileEntityController) {
-                    final TileEntityController controller = (TileEntityController) tileEntity;
-                    controller.scheduleScan();
-                } else if (tileEntity instanceof TileEntityCasing) {
-                    final TileEntityCasing casing = (TileEntityCasing) tileEntity;
-                    casing.scheduleScan();
-                }
-            }
-        }
     }
 
     // --------------------------------------------------------------------- //
@@ -195,8 +144,8 @@ public final class TileEntityController extends TileEntity implements ITickable 
                 casings.forEach(TileEntityCasing::onDisabled);
             } else {
                 final int power = getWorld().isBlockIndirectlyGettingPowered(getPos());
-                final int speed = 16 - Math.max(1, Math.min(15, power));
-                if (getWorld().getTotalWorldTime() % speed == 0) {
+                final int delay = 16 - Math.max(1, Math.min(15, power));
+                if (delay < 15 && getWorld().getTotalWorldTime() % delay == 0) {
                     // Yes, all systems are go!
                     casings.forEach(TileEntityCasing::stepModules);
                     casings.forEach(TileEntityCasing::stepPipes);
@@ -206,6 +155,44 @@ public final class TileEntityController extends TileEntity implements ITickable 
     }
 
     // --------------------------------------------------------------------- //
+
+    /**
+     * Checks all six neighbors of the specified tile entity and adds them to the
+     * queue if they're a controller or casing and haven't been checked yet (or
+     * added to the queue yet).
+     * <p>
+     * This returns a boolean value indicating whether a world border has been
+     * hit. In this case we abort the search and wait, to avoid potentially
+     * partially loaded multi-blocks.
+     * <p>
+     * Note that this is also used in {@link TileEntityCasing} for the reverse
+     * search when trying to notify a controller.
+     *
+     * @param tileEntity the tile entity to get the neighbors for.
+     * @param processed  the list of processed tile entities.
+     * @param queue      the list of pending tile entities.
+     * @return <tt>true</tt> if all neighbors could be checked, <tt>false</tt> otherwise.
+     */
+    static boolean addNeighbors(final TileEntity tileEntity, final Set<TileEntity> processed, final Queue<TileEntity> queue) {
+        for (final EnumFacing facing : EnumFacing.VALUES) {
+            final BlockPos neighborPos = tileEntity.getPos().offset(facing);
+            if (!tileEntity.getWorld().isBlockLoaded(neighborPos)) {
+                return false;
+            }
+
+            final TileEntity neighborTileEntity = tileEntity.getWorld().getTileEntity(neighborPos);
+            if (neighborTileEntity == null) {
+                continue;
+            }
+            if (!processed.add(neighborTileEntity)) {
+                continue;
+            }
+            if (neighborTileEntity instanceof TileEntityController || neighborTileEntity instanceof TileEntityCasing) {
+                queue.add(neighborTileEntity);
+            }
+        }
+        return true;
+    }
 
     /**
      * Do a scan for connected casings starting from this controller.
@@ -260,74 +247,57 @@ public final class TileEntityController extends TileEntity implements ITickable 
         // Sort casings for deterministic order of execution (important when modules
         // write / read from multiple ports but only want to make the data available
         // to the first [e.g. execution module's ANY target]).
-        casings.sort(CasingComparator.INSTANCE);
+        casings.sort(Comparator.comparing(TileEntity::getPos));
 
         // All done. Make sure this comes after the checkNeighbors or we get CMEs!
         state = ControllerState.READY;
     }
 
-    private static class CasingComparator implements Comparator<TileEntityCasing> {
-        public static final CasingComparator INSTANCE = new CasingComparator();
-
-        @Override
-        public int compare(final TileEntityCasing casing1, final TileEntityCasing casing2) {
-            final BlockPos pos1 = casing1.getPos();
-            final BlockPos pos2 = casing2.getPos();
-
-            final int deltaY = pos2.getY() - pos1.getY();
-            if (deltaY != 0) {
-                return deltaY;
-            }
-
-            final int deltaZ = pos2.getZ() - pos1.getZ();
-            if (deltaZ != 0) {
-                return deltaZ;
-            }
-
-            final int deltaX = pos2.getX() - pos1.getX();
-            if (deltaX != 0) {
-                return deltaX;
-            }
-
-            return 0;
+    /**
+     * Clear the list of controlled casings (and clear their controller), then
+     * enter the specified state.
+     *
+     * @param toState the state to enter after clearing.
+     */
+    private void clear(final ControllerState toState) {
+        for (final TileEntityCasing casing : casings) {
+            casing.setController(null);
         }
+
+        // Disable modules if our old controller was active.
+        if (state == TileEntityController.ControllerState.RUNNING) {
+            final List<TileEntityCasing> casingCopy = new ArrayList<>(casings);
+            casings.clear();
+            casingCopy.forEach(TileEntityCasing::onDisabled);
+        } else {
+            casings.clear();
+        }
+
+        state = toState;
     }
 
     /**
-     * Checks all six neighbors of the specified tile entity and adds them to the
-     * queue if they're a controller or casing and haven't been checked yet (or
-     * added to the queue yet).
-     * <p>
-     * This returns a boolean value indicating whether a world border has been
-     * hit. In this case we abort the search and wait, to avoid potentially
-     * partially loaded multi-blocks.
-     * <p>
-     * Note that this is also used in {@link TileEntityCasing} for the reverse
-     * search when trying to notify a controller.
-     *
-     * @param tileEntity the tile entity to get the neighbors for.
-     * @param processed  the list of processed tile entities.
-     * @param queue      the list of pending tile entities.
-     * @return <tt>true</tt> if all neighbors could be checked, <tt>false</tt> otherwise.
+     * Clean up the controller state and any casings controlled by it.
      */
-    static boolean addNeighbors(final TileEntity tileEntity, final Set<TileEntity> processed, final Queue<TileEntity> queue) {
-        for (final EnumFacing facing : EnumFacing.VALUES) {
-            final BlockPos neighborPos = tileEntity.getPos().offset(facing);
-            if (!tileEntity.getWorld().isBlockLoaded(neighborPos)) {
-                return false;
-            }
+    private void dispose() {
+        // If we were in an active state, deactivate all modules in connected cases.
+        if (state == ControllerState.RUNNING) {
+            casings.forEach(TileEntityCasing::onDisabled);
+        }
 
-            final TileEntity neighborTileEntity = tileEntity.getWorld().getTileEntity(neighborPos);
-            if (neighborTileEntity == null) {
-                continue;
-            }
-            if (!processed.add(neighborTileEntity)) {
-                continue;
-            }
-            if (neighborTileEntity instanceof TileEntityController || neighborTileEntity instanceof TileEntityCasing) {
-                queue.add(neighborTileEntity);
+        // Tell our neighbors about our untimely death.
+        for (final EnumFacing facing : EnumFacing.VALUES) {
+            final BlockPos neighborPos = getPos().offset(facing);
+            if (getWorld().isBlockLoaded(neighborPos)) {
+                final TileEntity tileEntity = getWorld().getTileEntity(neighborPos);
+                if (tileEntity instanceof TileEntityController) {
+                    final TileEntityController controller = (TileEntityController) tileEntity;
+                    controller.scheduleScan();
+                } else if (tileEntity instanceof TileEntityCasing) {
+                    final TileEntityCasing casing = (TileEntityCasing) tileEntity;
+                    casing.scheduleScan();
+                }
             }
         }
-        return true;
     }
 }
