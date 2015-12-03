@@ -24,10 +24,6 @@ public final class ModuleRedstone extends AbstractModule implements Redstone {
     // Persisted data
 
     private int output = 0;
-
-    // --------------------------------------------------------------------- //
-    // Computed data
-
     private int input = 0;
 
     // --------------------------------------------------------------------- //
@@ -37,13 +33,9 @@ public final class ModuleRedstone extends AbstractModule implements Redstone {
     }
 
     private void stepOutput(final Port port) {
-        // For reading redstone values, wait for readers to provide up-to-date
-        // values, instead of an old value from when we started writing.
         final Pipe sendingPipe = getCasing().getSendingPipe(getFace(), port);
-        if (sendingPipe.isReading()) {
-            if (!sendingPipe.isWriting()) {
-                sendingPipe.beginWrite(input);
-            }
+        if (!sendingPipe.isWriting()) {
+            sendingPipe.beginWrite(input);
         }
     }
 
@@ -55,6 +47,7 @@ public final class ModuleRedstone extends AbstractModule implements Redstone {
         }
         if (receivingPipe.canTransfer()) {
             setRedstoneOutput(receivingPipe.read());
+
             // Start reading again right away to read as fast as possible.
             receivingPipe.beginRead();
         }
@@ -70,6 +63,9 @@ public final class ModuleRedstone extends AbstractModule implements Redstone {
         input = Math.max(0, Math.min(15, value));
 
         if (!getCasing().getWorld().isRemote) {
+            // If the value changed, cancel our output to make sure it's up-to-date.
+            cancelWrite();
+
             sendData();
         }
     }
@@ -114,12 +110,12 @@ public final class ModuleRedstone extends AbstractModule implements Redstone {
 
     @Override
     public void step() {
+        setRedstoneInput(computeRedstoneInput());
+
         for (final Port port : Port.VALUES) {
             stepOutput(port);
             stepInput(port);
         }
-
-        setRedstoneInput(computeRedstoneInput());
     }
 
     @Override
@@ -131,12 +127,16 @@ public final class ModuleRedstone extends AbstractModule implements Redstone {
         getCasing().markDirty();
         getCasing().getWorld().notifyNeighborsOfStateChange(getCasing().getPosition(), blockType);
 
-        sendData();
+        if (!getCasing().getWorld().isRemote) {
+            sendData();
+        }
     }
 
     @Override
     public void onEnabled() {
-        sendData();
+        if (!getCasing().getWorld().isRemote) {
+            sendData();
+        }
     }
 
     @Override
@@ -189,16 +189,14 @@ public final class ModuleRedstone extends AbstractModule implements Redstone {
 
     @Override
     public void readFromNBT(final NBTTagCompound nbt) {
-        super.readFromNBT(nbt);
-
         output = Math.max(0, Math.min(15, nbt.getInteger("output")));
+        input = Math.max(0, Math.min(15, nbt.getInteger("input")));
     }
 
     @Override
     public void writeToNBT(final NBTTagCompound nbt) {
-        super.writeToNBT(nbt);
-
         nbt.setInteger("output", output);
+        nbt.setInteger("input", input);
     }
 
     @Override

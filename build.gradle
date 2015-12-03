@@ -25,6 +25,14 @@ minecraft {
     mappings = "snapshot_20151128"
 }
 
+repositories {
+    maven { url "http://dvs1.progwml6.com/files/maven" }
+}
+
+dependencies {
+    deobfCompile "mezz.jei:jei_1.8.8:2.1.3.14"
+}
+
 processResources {
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version

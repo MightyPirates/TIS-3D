@@ -36,9 +36,8 @@ public final class ModuleForwarder extends AbstractModule {
         if (!receivingPipe.isReading()) {
             receivingPipe.beginRead();
         }
-        if (!sendingPipe.isWriting() && sendingPipe.isReading() && receivingPipe.canTransfer()) {
+        if (sendingPipe.isReading() && !sendingPipe.isWriting() && receivingPipe.canTransfer()) {
             sendingPipe.beginWrite(receivingPipe.read());
-            receivingPipe.beginRead();
         }
     }
 

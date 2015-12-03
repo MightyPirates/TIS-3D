@@ -59,27 +59,11 @@ public final class ModuleStack extends AbstractModule {
             return;
         }
 
-        // Check if we can output a value. Assertion: all pipes start writing
-        // and stop writing together due to onWriteComplete -> cancelOutput.
-        boolean didWrite = false;
         for (final Port port : Port.VALUES) {
             final Pipe sendingPipe = getCasing().getSendingPipe(getFace(), port);
             if (!sendingPipe.isWriting()) {
                 sendingPipe.beginWrite(peek());
-                didWrite = true;
             }
-        }
-
-        // Started writing, pop the value.
-        if (didWrite) {
-            pop();
-        }
-    }
-
-    private void cancelOutput() {
-        for (final Port port : Port.VALUES) {
-            final Pipe sendingPipe = getCasing().getSendingPipe(getFace(), port);
-            sendingPipe.cancelWrite();
         }
     }
 
@@ -96,7 +80,12 @@ public final class ModuleStack extends AbstractModule {
                 receivingPipe.beginRead();
             }
             if (receivingPipe.canTransfer()) {
+                // Store the value.
                 push(receivingPipe.read());
+
+                // Restart all writes to ensure we're outputting the top-most value.
+                cancelWrite();
+
                 // Start reading again right away to read as fast as possible.
                 receivingPipe.beginRead();
             }
@@ -113,28 +102,33 @@ public final class ModuleStack extends AbstractModule {
     }
 
     @Override
+    public void onDisabled() {
+        // Clear stack on shutdown.
+        top = -1;
+    }
+
+    @Override
     public void onWriteComplete(final Port port) {
+        // Pop the top value (the one that was being written).
+        pop();
+
         // If one completes, cancel all other writes to ensure a value is only
         // written once.
-        cancelOutput();
+        cancelWrite();
 
         // Start writing again right away to write as fast as possible.
         stepOutput();
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbt) {
-        super.readFromNBT(nbt);
-
+    public void readFromNBT(final NBTTagCompound nbt) {
         final int[] stackNbt = nbt.getIntArray("stack");
         Array.copy(stackNbt, 0, stack, 0, Math.min(stackNbt.length, stack.length));
         top = Math.max(-1, Math.min(STACK_SIZE - 1, nbt.getInteger("top")));
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound nbt) {
-        super.writeToNBT(nbt);
-
+    public void writeToNBT(final NBTTagCompound nbt) {
         nbt.setIntArray("stack", stack);
         nbt.setInteger("top", top);
     }

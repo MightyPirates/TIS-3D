@@ -5,7 +5,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
@@ -24,10 +23,5 @@ public final class TIS3D {
     @EventHandler
     public void onInit(final FMLInitializationEvent event) {
         proxy.onInit(event);
-    }
-
-    @EventHandler
-    public void onPostInit(final FMLPostInitializationEvent event) {
-        proxy.onPostInit(event);
     }
 }

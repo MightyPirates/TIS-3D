@@ -16,7 +16,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
@@ -77,18 +76,30 @@ public class CommonProxy {
                 'R', Items.redstone,
                 'D', Items.diamond);
 
-        GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(Constants.MOD_ID, Constants.NAME_ITEM_MODULE_EXECUTION), 1),
+        GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(Constants.MOD_ID, Constants.NAME_ITEM_MODULE_EXECUTION), 2),
                 "PPP",
                 "RGR",
                 'P', Blocks.glass_pane,
                 'R', Items.redstone,
-                'G', Items.gold_nugget);
-        GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(Constants.MOD_ID, Constants.NAME_ITEM_MODULE_REDSTONE), 1),
+                'G', Items.gold_ingot);
+        GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(Constants.MOD_ID, Constants.NAME_ITEM_MODULE_REDSTONE), 2),
                 "PPP",
                 "RIR",
                 'P', Blocks.glass_pane,
                 'R', Items.redstone,
-                'I', Blocks.redstone_torch);
+                'I', Items.repeater);
+        GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(Constants.MOD_ID, Constants.NAME_ITEM_MODULE_RANDOM), 2),
+                "PPP",
+                "RER",
+                'P', Blocks.glass_pane,
+                'R', Items.redstone,
+                'E', Items.ender_pearl);
+        GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(Constants.MOD_ID, Constants.NAME_ITEM_MODULE_STACK), 2),
+                "PPP",
+                "RER",
+                'P', Blocks.glass_pane,
+                'R', Items.redstone,
+                'E', Blocks.chest);
 
         // Register network handler.
         Network.INSTANCE.init();
@@ -98,8 +109,5 @@ public class CommonProxy {
         API.addProvider(new ModuleProviderRedstone());
         API.addProvider(new ModuleProviderStack());
         API.addProvider(new ModuleProviderRandom());
-    }
-
-    public void onPostInit(final FMLPostInitializationEvent event) {
     }
 }

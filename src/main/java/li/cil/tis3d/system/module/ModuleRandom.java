@@ -20,13 +20,9 @@ public final class ModuleRandom extends AbstractModule {
     }
 
     private void stepOutput(final Port port) {
-        // For reading redstone values, wait for readers to provide up-to-date
-        // values, instead of an old value from when we started writing.
         final Pipe sendingPipe = getCasing().getSendingPipe(getFace(), port);
-        if (sendingPipe.isReading()) {
-            if (!sendingPipe.isWriting()) {
-                sendingPipe.beginWrite(getCasing().getWorld().rand.nextInt(MachineState.MAX_VALUE * 2 + 1) - MachineState.MAX_VALUE);
-            }
+        if (!sendingPipe.isWriting()) {
+            sendingPipe.beginWrite(getCasing().getWorld().rand.nextInt(MachineState.MAX_VALUE * 2 + 1) - MachineState.MAX_VALUE);
         }
     }
 
@@ -42,6 +38,9 @@ public final class ModuleRandom extends AbstractModule {
 
     @Override
     public void onWriteComplete(final Port port) {
+        // No need to clear other writing pipes because we're outputting random
+        // values anyway, so yey.
+
         // Start writing again right away to write as fast as possible.
         stepOutput(port);
     }

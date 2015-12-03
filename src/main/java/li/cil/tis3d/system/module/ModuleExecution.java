@@ -148,14 +148,19 @@ public final class ModuleExecution extends AbstractModule {
 
     @Override
     public void onEnabled() {
-        sendData(true);
+        if (!getCasing().getWorld().isRemote) {
+            sendData(true);
+        }
     }
 
     @Override
     public void onDisabled() {
         machine.getState().reset();
         state = State.IDLE;
-        sendData(false);
+
+        if (!getCasing().getWorld().isRemote) {
+            sendData(false);
+        }
     }
 
     @Override
@@ -293,8 +298,6 @@ public final class ModuleExecution extends AbstractModule {
 
     @Override
     public void readFromNBT(final NBTTagCompound nbt) {
-        super.readFromNBT(nbt);
-
         if (nbt.hasKey("compileError")) {
             final NBTTagCompound errorNbt = nbt.getCompoundTag("compileError");
             compileError = new ParseException(errorNbt.getString("message"), errorNbt.getInteger("lineNumber"), errorNbt.getInteger("column"));
@@ -310,8 +313,6 @@ public final class ModuleExecution extends AbstractModule {
 
     @Override
     public void writeToNBT(final NBTTagCompound nbt) {
-        super.writeToNBT(nbt);
-
         if (compileError != null) {
             final NBTTagCompound errorNbt = new NBTTagCompound();
             errorNbt.setString("message", compileError.getMessage());

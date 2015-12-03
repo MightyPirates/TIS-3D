@@ -106,6 +106,15 @@ public final class MachineState {
     // --------------------------------------------------------------------- //
 
     public void readFromNBT(final NBTTagCompound nbt) {
+        if (nbt.hasKey("code")) {
+            try {
+                Compiler.compile(nbt.getString("code"), this);
+            } catch (final ParseException e) {
+                // TODO logging
+                e.printStackTrace();
+            }
+        }
+
         pc = nbt.getInteger("pc");
         acc = nbt.getInteger("acc");
         bak = nbt.getInteger("bak");
@@ -115,14 +124,6 @@ public final class MachineState {
 
         validate();
 
-        if (nbt.hasKey("code")) {
-            try {
-                Compiler.compile(nbt.getString("code"), this);
-            } catch (final ParseException e) {
-                // TODO logging
-                e.printStackTrace();
-            }
-        }
     }
 
     public void writeToNBT(final NBTTagCompound nbt) {

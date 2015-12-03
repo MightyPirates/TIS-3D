@@ -2,6 +2,7 @@ package li.cil.tis3d.api.prefab;
 
 import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
+import li.cil.tis3d.api.Pipe;
 import li.cil.tis3d.api.Port;
 import li.cil.tis3d.api.module.Module;
 import net.minecraft.client.Minecraft;
@@ -27,6 +28,29 @@ public abstract class AbstractModule implements Module {
     protected AbstractModule(final Casing casing, final Face face) {
         this.casing = casing;
         this.face = face;
+    }
+
+    // --------------------------------------------------------------------- //
+    // Communication utility.
+
+    /**
+     * Cancel writing on all ports.
+     */
+    protected void cancelWrite() {
+        for (final Port port : Port.VALUES) {
+            final Pipe sendingPipe = getCasing().getSendingPipe(getFace(), port);
+            sendingPipe.cancelWrite();
+        }
+    }
+
+    /**
+     * Cancel reading on all ports.
+     */
+    protected void cancelRead() {
+        for (final Port port : Port.VALUES) {
+            final Pipe sendingPipe = getCasing().getSendingPipe(getFace(), port);
+            sendingPipe.cancelRead();
+        }
     }
 
     // --------------------------------------------------------------------- //
