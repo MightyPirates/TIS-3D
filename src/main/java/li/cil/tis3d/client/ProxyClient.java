@@ -1,6 +1,7 @@
 package li.cil.tis3d.client;
 
 import li.cil.tis3d.Constants;
+import li.cil.tis3d.api.API;
 import li.cil.tis3d.client.render.tile.TileEntitySpecialRendererCasing;
 import li.cil.tis3d.common.ProxyCommon;
 import li.cil.tis3d.common.tile.TileEntityCasing;
@@ -23,7 +24,7 @@ public final class ProxyClient extends ProxyCommon {
         super.onPreInit(event);
 
         // Set up custom models for our blocks.
-        OBJLoader.instance.addDomain(Constants.MOD_ID.toLowerCase());
+        OBJLoader.instance.addDomain(API.MOD_ID.toLowerCase());
 
         setCustomBlockModelResourceLocation(Constants.NAME_BLOCK_CASING);
         setCustomBlockModelResourceLocation(Constants.NAME_BLOCK_CONTROLLER);
@@ -47,15 +48,15 @@ public final class ProxyClient extends ProxyCommon {
     // --------------------------------------------------------------------- //
 
     private static void setCustomBlockModelResourceLocation(final String blockName) {
-        final Item item = Item.getItemFromBlock(GameRegistry.findBlock(Constants.MOD_ID, blockName));
-        final String path = Constants.MOD_ID.toLowerCase() + ":" + blockName;
+        final Item item = Item.getItemFromBlock(GameRegistry.findBlock(API.MOD_ID, blockName));
+        final String path = API.MOD_ID.toLowerCase() + ":" + blockName;
         final ModelResourceLocation location = new ModelResourceLocation(path, "inventory");
         ModelLoader.setCustomModelResourceLocation(item, 0, location);
     }
 
     private static void setCustomItemModelResourceLocation(final String itemName) {
-        final Item item = GameRegistry.findItem(Constants.MOD_ID, itemName);
-        final String path = Constants.MOD_ID.toLowerCase() + ":" + itemName;
+        final Item item = GameRegistry.findItem(API.MOD_ID, itemName);
+        final String path = API.MOD_ID.toLowerCase() + ":" + itemName;
         final ModelResourceLocation location = new ModelResourceLocation(path, "inventory");
         ModelLoader.setCustomModelResourceLocation(item, 0, location);
     }

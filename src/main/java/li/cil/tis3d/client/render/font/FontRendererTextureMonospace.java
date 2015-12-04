@@ -1,6 +1,6 @@
 package li.cil.tis3d.client.render.font;
 
-import li.cil.tis3d.Constants;
+import li.cil.tis3d.api.API;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -14,7 +14,7 @@ public final class FontRendererTextureMonospace {
     public static final int CHAR_WIDTH = 3;
     public static final int CHAR_HEIGHT = 4;
 
-    private static final ResourceLocation LOCATION_FONT_TEXTURE = new ResourceLocation(Constants.MOD_ID, "textures/blocks/overlay/moduleExecutionFont.png");
+    private static final ResourceLocation LOCATION_FONT_TEXTURE = new ResourceLocation(API.MOD_ID, "textures/blocks/overlay/moduleExecutionFont.png");
     private static final String CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890:#-,?+!=()'.";
     private static final int[] CHAR_MAP = IntStream.range(0, 256).map(CHARS::indexOf).toArray();
 

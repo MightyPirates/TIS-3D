@@ -1,5 +1,6 @@
 package li.cil.tis3d;
 
+import li.cil.tis3d.api.API;
 import li.cil.tis3d.common.ProxyCommon;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -11,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 /**
  * Entry point for FML.
  */
-@Mod(modid = Constants.MOD_ID, version = Constants.MOD_VERSION)
+@Mod(modid = API.MOD_ID, version = API.MOD_VERSION)
 public final class TIS3D {
     // --------------------------------------------------------------------- //
     // FML / Forge

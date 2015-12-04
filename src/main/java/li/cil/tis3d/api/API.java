@@ -10,6 +10,16 @@ import net.minecraft.item.ItemStack;
  */
 public final class API {
     /**
+     * The ID of the mod, i.e. the internal string it is identified by.
+     */
+    public static final String MOD_ID = "tis3d";
+
+    /**
+     * The current version of the mod.
+     */
+    public static final String MOD_VERSION = "0.1";
+
+    /**
      * Register the specified provider.
      *
      * @param provider the provider to register.

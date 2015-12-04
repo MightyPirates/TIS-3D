@@ -1,6 +1,7 @@
 package li.cil.tis3d.common;
 
 import li.cil.tis3d.Constants;
+import li.cil.tis3d.api.API;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -12,12 +13,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 public final class CreativeTab extends CreativeTabs {
     public CreativeTab() {
-        super(Constants.MOD_ID);
+        super(API.MOD_ID);
     }
 
     @SideOnly(Side.CLIENT)
     @Override
     public Item getTabIconItem() {
-        return GameRegistry.findItem(Constants.MOD_ID, Constants.NAME_BLOCK_CONTROLLER);
+        return GameRegistry.findItem(API.MOD_ID, Constants.NAME_BLOCK_CONTROLLER);
     }
 }

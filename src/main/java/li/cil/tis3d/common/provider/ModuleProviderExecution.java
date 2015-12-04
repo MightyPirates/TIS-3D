@@ -1,6 +1,7 @@
 package li.cil.tis3d.common.provider;
 
 import li.cil.tis3d.Constants;
+import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
 import li.cil.tis3d.api.module.Module;
@@ -14,7 +15,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
  * The provider for the execution module.
  */
 public final class ModuleProviderExecution implements ModuleProvider {
-    private final Item ITEM_MODULE_EXECUTION = GameRegistry.findItem(Constants.MOD_ID, Constants.NAME_ITEM_MODULE_EXECUTION);
+    private final Item ITEM_MODULE_EXECUTION = GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_EXECUTION);
 
     @Override
     public boolean worksWith(final ItemStack stack, final Casing casing, final Face face) {

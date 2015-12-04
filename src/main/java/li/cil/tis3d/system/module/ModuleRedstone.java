@@ -1,5 +1,6 @@
 package li.cil.tis3d.system.module;
 
+import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
 import li.cil.tis3d.api.Pipe;
@@ -29,7 +30,7 @@ public final class ModuleRedstone extends AbstractModule implements Redstone {
     // --------------------------------------------------------------------- //
     // Computed data
 
-    private static final ResourceLocation LOCATION_OVERLAY = new ResourceLocation(li.cil.tis3d.Constants.MOD_ID, "textures/blocks/overlay/moduleRedstone.png");
+    private static final ResourceLocation LOCATION_OVERLAY = new ResourceLocation(API.MOD_ID, "textures/blocks/overlay/moduleRedstone.png");
     private static final float LEFT_U0 = 9 / 32f;
     private static final float LEFT_U1 = 12 / 32f;
     private static final float RIGHT_U0 = 20 / 32f;

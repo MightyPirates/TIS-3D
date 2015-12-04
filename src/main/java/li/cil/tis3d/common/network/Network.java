@@ -1,6 +1,6 @@
 package li.cil.tis3d.common.network;
 
-import li.cil.tis3d.Constants;
+import li.cil.tis3d.api.API;
 import li.cil.tis3d.client.network.handler.MessageHandlerCasingState;
 import li.cil.tis3d.client.network.handler.MessageHandlerParticleEffects;
 import li.cil.tis3d.common.network.handler.MessageHandlerModuleData;
@@ -25,7 +25,7 @@ public final class Network {
     // --------------------------------------------------------------------- //
 
     public void init() {
-        wrapper = NetworkRegistry.INSTANCE.newSimpleChannel(Constants.MOD_ID);
+        wrapper = NetworkRegistry.INSTANCE.newSimpleChannel(API.MOD_ID);
         wrapper.registerMessage(MessageHandlerModuleData.class, MessageModuleData.class, 1, Side.CLIENT);
         wrapper.registerMessage(MessageHandlerModuleData.class, MessageModuleData.class, 2, Side.SERVER);
         wrapper.registerMessage(MessageHandlerParticleEffects.class, MessageParticleEffect.class, 3, Side.CLIENT);
