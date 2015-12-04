@@ -4,7 +4,7 @@ import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
 import li.cil.tis3d.api.Pipe;
 import li.cil.tis3d.api.Port;
-import li.cil.tis3d.api.prefab.AbstractModule;
+import li.cil.tis3d.api.prefab.AbstractModuleRotatable;
 import net.minecraft.nbt.NBTTagCompound;
 import scala.Array;
 
@@ -15,7 +15,7 @@ import scala.Array;
  * <p>
  * While it is not full, it will receive data on all ports and push them back.
  */
-public final class ModuleStack extends AbstractModule {
+public final class ModuleStack extends AbstractModuleRotatable {
     /**
      * The number of elements the stack may store.
      */
@@ -62,7 +62,15 @@ public final class ModuleStack extends AbstractModule {
     }
 
     @Override
+    public void render(final boolean enabled, final float partialTicks) {
+        rotateForRendering();
+
+    }
+
+    @Override
     public void readFromNBT(final NBTTagCompound nbt) {
+        super.readFromNBT(nbt);
+
         final int[] stackNbt = nbt.getIntArray("stack");
         Array.copy(stackNbt, 0, stack, 0, Math.min(stackNbt.length, stack.length));
         top = Math.max(-1, Math.min(STACK_SIZE - 1, nbt.getInteger("top")));
@@ -70,6 +78,8 @@ public final class ModuleStack extends AbstractModule {
 
     @Override
     public void writeToNBT(final NBTTagCompound nbt) {
+        super.writeToNBT(nbt);
+
         nbt.setIntArray("stack", stack);
         nbt.setInteger("top", top);
     }

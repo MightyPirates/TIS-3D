@@ -1,12 +1,11 @@
 package li.cil.tis3d.system.module;
 
 import com.google.common.base.Strings;
-import com.ibm.icu.impl.IllegalIcuArgumentException;
 import li.cil.tis3d.TIS3D;
 import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
 import li.cil.tis3d.api.Port;
-import li.cil.tis3d.api.prefab.AbstractModule;
+import li.cil.tis3d.api.prefab.AbstractModuleRotatable;
 import li.cil.tis3d.client.TextureLoader;
 import li.cil.tis3d.client.render.font.FontRendererTextureMonospace;
 import li.cil.tis3d.system.module.execution.MachineImpl;
@@ -35,14 +34,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 /**
  * The programmable execution module.
  */
-public final class ModuleExecution extends AbstractModule {
+public final class ModuleExecution extends AbstractModuleRotatable {
     // --------------------------------------------------------------------- //
     // Persisted data
 
     private final MachineImpl machine;
     private ParseException compileError;
     private State state = State.IDLE;
-    private Port facing = Port.UP;
 
     // --------------------------------------------------------------------- //
     // Computed data
@@ -66,18 +64,6 @@ public final class ModuleExecution extends AbstractModule {
     public ModuleExecution(final Casing casing, final Face face) {
         super(casing, face);
         machine = new MachineImpl(this, face);
-    }
-
-    /**
-     * Get the rotated port based on the facing of the module.
-     * <p>
-     * Note that this is only non-default for the top and bottom slot of casings.
-     *
-     * @return the adjusted port.
-     */
-    public Port getRotatedPort(final Port port) {
-        final int rotation = Port.ROTATION[facing.ordinal()];
-        return port.rotated(rotation);
     }
 
     // --------------------------------------------------------------------- //
@@ -187,6 +173,8 @@ public final class ModuleExecution extends AbstractModule {
             return;
         }
 
+        rotateForRendering();
+
         RenderHelper.disableStandardItemLighting();
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 0 / 1.0F);
 
@@ -247,12 +235,7 @@ public final class ModuleExecution extends AbstractModule {
 
     @Override
     public void readFromNBT(final NBTTagCompound nbt) {
-        try {
-            facing = Enum.valueOf(Port.class, nbt.getString("facing"));
-        } catch (final IllegalIcuArgumentException e) {
-            // This can only happen if someone messes with the save.
-            TIS3D.getLog().warn("Broken save, execution module facing is invalid.", e);
-        }
+        super.readFromNBT(nbt);
 
         if (nbt.hasKey("compileError")) {
             final NBTTagCompound errorNbt = nbt.getCompoundTag("compileError");
@@ -273,7 +256,7 @@ public final class ModuleExecution extends AbstractModule {
 
     @Override
     public void writeToNBT(final NBTTagCompound nbt) {
-        nbt.setString("facing", facing.name());
+        super.writeToNBT(nbt);
 
         if (compileError != null) {
             final NBTTagCompound errorNbt = new NBTTagCompound();

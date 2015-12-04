@@ -27,13 +27,15 @@ public final class MachineImpl implements Machine {
     // --------------------------------------------------------------------- //
     // Computed data
 
+    private final ModuleExecution module;
     private final Map<Target, TargetInterface> interfaces;
 
     // --------------------------------------------------------------------- //
 
     public MachineImpl(final ModuleExecution module, final Face face) {
         this.state = new MachineState();
-        interfaces = ImmutableMap.<Target, TargetInterface>builder().
+        this.module = module;
+        this.interfaces = ImmutableMap.<Target, TargetInterface>builder().
                 put(Target.ACC, new TargetInterfaceAcc(this)).
                 put(Target.BAK, new TargetInterfaceBak(this)).
                 put(Target.NIL, new TargetInterfaceNil(this)).
@@ -96,6 +98,32 @@ public final class MachineImpl implements Machine {
 
     @Override
     public TargetInterface getInterface(final Target target) {
-        return interfaces.get(target);
+        final Target rotatedTarget = getRotatedTarget(target);
+        return interfaces.get(rotatedTarget);
+    }
+
+    // --------------------------------------------------------------------- //
+
+    /**
+     * Adjust the specified target based on the execution module's rotation.
+     * <p>
+     * Will only do something for port targets.
+     *
+     * @param target the target to transform.
+     * @return the adjusted target.
+     */
+    public Target getRotatedTarget(final Target target) {
+        switch (target) {
+            case LEFT:
+            case RIGHT:
+            case UP:
+            case DOWN:
+                final int rotation = Port.ROTATION[module.getFacing().ordinal()];
+                final Port port = Target.toPort(target);
+                final Port rotatedPort = port.rotated(rotation);
+                final boolean needsFlipping = module.getFace() == Face.Y_NEG && (port == rotatedPort || port == rotatedPort.getOpposite());
+                return needsFlipping ? Target.fromPort(rotatedPort.getOpposite()) : Target.fromPort(rotatedPort);
+        }
+        return target;
     }
 }

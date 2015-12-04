@@ -55,12 +55,12 @@ public final class CasingImpl implements Casing {
                 //    LEFT        RIGHT       UP          DOWN
         };
         PORT_MAPPING = new Port[][]{
-                {Port.DOWN, Port.DOWN, Port.DOWN, Port.DOWN},   // Y_NEG
-                {Port.UP, Port.UP, Port.UP, Port.UP},     // Y_POS
-                {Port.RIGHT, Port.LEFT, Port.DOWN, Port.DOWN},   // Z_NEG
-                {Port.RIGHT, Port.LEFT, Port.UP, Port.UP},     // Z_POS
-                {Port.RIGHT, Port.LEFT, Port.RIGHT, Port.LEFT},   // X_NEG
-                {Port.RIGHT, Port.LEFT, Port.LEFT, Port.RIGHT}   // X_POS
+                {Port.DOWN,  Port.DOWN,  Port.DOWN,  Port.DOWN},   // Y_NEG
+                {Port.UP,    Port.UP,    Port.UP,    Port.UP},     // Y_POS
+                {Port.RIGHT, Port.LEFT,  Port.DOWN,  Port.DOWN},   // Z_NEG
+                {Port.RIGHT, Port.LEFT,  Port.UP,    Port.UP},     // Z_POS
+                {Port.RIGHT, Port.LEFT,  Port.RIGHT, Port.LEFT},   // X_NEG
+                {Port.RIGHT, Port.LEFT,  Port.LEFT,  Port.RIGHT}   // X_POS
                 //    LEFT        RIGHT       UP          DOWN
         };
     }
@@ -289,6 +289,8 @@ public final class CasingImpl implements Casing {
         if (tileEntity.isEnabled() && module != null) {
             module.onEnabled();
         }
+
+        tileEntity.markDirty();
     }
 
     @Override

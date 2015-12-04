@@ -1,8 +1,10 @@
 package li.cil.tis3d.common.block;
 
 import li.cil.tis3d.api.Face;
+import li.cil.tis3d.api.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.Redstone;
+import li.cil.tis3d.api.module.Rotatable;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import li.cil.tis3d.util.InventoryUtils;
 import net.minecraft.block.Block;
@@ -159,10 +161,18 @@ public final class BlockCasing extends Block {
                     }
                     return true;
                 } else {
-                    final ItemStack newModule = player.getHeldItem();
-                    if (casing.canInsertItem(side.ordinal(), newModule, side)) {
+                    final ItemStack stack = player.getHeldItem();
+                    if (casing.canInsertItem(side.ordinal(), stack, side)) {
                         if (!world.isRemote) {
-                            casing.setInventorySlotContents(side.ordinal(), newModule.splitStack(1));
+                            casing.setInventorySlotContents(side.ordinal(), stack.splitStack(1));
+                            if (side.getAxis() == EnumFacing.Axis.Y) {
+                                final Face face = Face.fromEnumFacing(side);
+                                final Module newModule = casing.getModule(face);
+                                if (newModule instanceof Rotatable) {
+                                    final Port orientation = Port.fromEnumFacing(player.getHorizontalFacing());
+                                    ((Rotatable) newModule).setFacing(orientation);
+                                }
+                            }
                             world.playSoundEffect(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, "tile.piston.out", 0.2f, 0.8f + world.rand.nextFloat() * 0.1f);
                         }
                         return true;

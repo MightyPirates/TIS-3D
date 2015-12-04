@@ -6,7 +6,7 @@ import li.cil.tis3d.api.Face;
 import li.cil.tis3d.api.Pipe;
 import li.cil.tis3d.api.Port;
 import li.cil.tis3d.api.module.Redstone;
-import li.cil.tis3d.api.prefab.AbstractModule;
+import li.cil.tis3d.api.prefab.AbstractModuleRotatable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRedstoneWire;
 import net.minecraft.block.state.IBlockState;
@@ -20,7 +20,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public final class ModuleRedstone extends AbstractModule implements Redstone {
+public final class ModuleRedstone extends AbstractModuleRotatable implements Redstone {
     // --------------------------------------------------------------------- //
     // Persisted data
 
@@ -95,6 +95,8 @@ public final class ModuleRedstone extends AbstractModule implements Redstone {
     @SideOnly(Side.CLIENT)
     @Override
     public void render(final boolean enabled, final float partialTicks) {
+        rotateForRendering();
+
         RenderHelper.disableStandardItemLighting();
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 0 / 1.0F);
 
@@ -120,12 +122,16 @@ public final class ModuleRedstone extends AbstractModule implements Redstone {
 
     @Override
     public void readFromNBT(final NBTTagCompound nbt) {
+        super.readFromNBT(nbt);
+
         output = Math.max(0, Math.min(15, nbt.getInteger("output")));
         input = Math.max(0, Math.min(15, nbt.getInteger("input")));
     }
 
     @Override
     public void writeToNBT(final NBTTagCompound nbt) {
+        super.writeToNBT(nbt);
+
         nbt.setInteger("output", output);
         nbt.setInteger("input", input);
     }

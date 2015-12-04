@@ -175,9 +175,9 @@ public final class PipeImpl implements Pipe {
         final double ox = Face.toEnumFacing(inputFace).getFrontOffsetX() + Face.toEnumFacing(outputFace).getFrontOffsetX();
         final double oy = Face.toEnumFacing(inputFace).getFrontOffsetY() + Face.toEnumFacing(outputFace).getFrontOffsetY();
         final double oz = Face.toEnumFacing(inputFace).getFrontOffsetZ() + Face.toEnumFacing(outputFace).getFrontOffsetZ();
-        final double x = ox * 0.6 + position.getX() + 0.5;
-        final double y = oy * 0.6 + position.getY() + 0.5;
-        final double z = oz * 0.6 + position.getZ() + 0.5;
+        final double x = ox * 0.55 + position.getX() + 0.5;
+        final double y = oy * 0.55 + position.getY() + 0.5;
+        final double z = oz * 0.55 + position.getZ() + 0.5;
 
         final World world = casing.getWorld();
         final MessageParticleEffect message = new MessageParticleEffect(world, EnumParticleTypes.REDSTONE, x, y, z);

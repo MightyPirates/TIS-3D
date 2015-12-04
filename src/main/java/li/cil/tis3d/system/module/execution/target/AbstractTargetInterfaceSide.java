@@ -19,44 +19,40 @@ abstract class AbstractTargetInterfaceSide extends AbstractTargetInterface {
     // --------------------------------------------------------------------- //
 
     protected final void beginWrite(final Port port, final int value) {
-        getCasing().getSendingPipe(face, getRotatedPort(port)).beginWrite(value);
+        getCasing().getSendingPipe(face, port).beginWrite(value);
     }
 
     protected final void cancelWrite(final Port port) {
-        getCasing().getSendingPipe(face, getRotatedPort(port)).cancelWrite();
+        getCasing().getSendingPipe(face, port).cancelWrite();
     }
 
     protected final boolean isWriting(final Port port) {
-        return getCasing().getSendingPipe(face, getRotatedPort(port)).isWriting();
+        return getCasing().getSendingPipe(face, port).isWriting();
     }
 
     protected final void beginRead(final Port port) {
-        getCasing().getReceivingPipe(face, getRotatedPort(port)).beginRead();
+        getCasing().getReceivingPipe(face, port).beginRead();
     }
 
     protected final void cancelRead(final Port port) {
-        getCasing().getReceivingPipe(face, getRotatedPort(port)).cancelRead();
+        getCasing().getReceivingPipe(face, port).cancelRead();
     }
 
     protected final boolean isReading(final Port port) {
-        return getCasing().getReceivingPipe(face, getRotatedPort(port)).isReading();
+        return getCasing().getReceivingPipe(face, port).isReading();
     }
 
     protected final boolean canTransfer(final Port port) {
-        return getCasing().getReceivingPipe(face, getRotatedPort(port)).canTransfer();
+        return getCasing().getReceivingPipe(face, port).canTransfer();
     }
 
     protected final int read(final Port port) {
-        return getCasing().getReceivingPipe(face, getRotatedPort(port)).read();
+        return getCasing().getReceivingPipe(face, port).read();
     }
 
     // --------------------------------------------------------------------- //
 
     private Casing getCasing() {
         return module.getCasing();
-    }
-
-    private Port getRotatedPort(final Port port) {
-        return module.getRotatedPort(port);
     }
 }
