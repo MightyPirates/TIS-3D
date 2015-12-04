@@ -179,7 +179,7 @@ public final class PipeImpl implements Pipe {
         final double y = oy * 0.55 + position.getY() + 0.5;
         final double z = oz * 0.55 + position.getZ() + 0.5;
 
-        final World world = casing.getWorld();
+        final World world = casing.getCasingWorld();
         final MessageParticleEffect message = new MessageParticleEffect(world, EnumParticleTypes.REDSTONE, x, y, z);
         final NetworkRegistry.TargetPoint target = Network.getTargetPoint(world, x, y, z, Network.RANGE_LOW);
         Network.INSTANCE.getWrapper().sendToAllAround(message, target);

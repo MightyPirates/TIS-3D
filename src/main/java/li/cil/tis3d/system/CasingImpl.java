@@ -235,7 +235,7 @@ public final class CasingImpl implements Casing {
     // Casing
 
     @Override
-    public World getWorld() {
+    public World getCasingWorld() {
         return tileEntity.getWorld();
     }
 
@@ -273,9 +273,9 @@ public final class CasingImpl implements Casing {
 
         // Reset redstone output if the previous module was redstone capable.
         if (hadRedstone) {
-            if (!getWorld().isRemote) {
+            if (!getCasingWorld().isRemote) {
                 tileEntity.markDirty();
-                getWorld().notifyNeighborsOfStateChange(getPosition(), tileEntity.getBlockType());
+                getCasingWorld().notifyNeighborsOfStateChange(getPosition(), tileEntity.getBlockType());
             }
         }
 
@@ -306,7 +306,7 @@ public final class CasingImpl implements Casing {
     @Override
     public void sendData(final Face face, final NBTTagCompound data) {
         final MessageModuleData message = new MessageModuleData(this, face, data);
-        if (getWorld().isRemote) {
+        if (getCasingWorld().isRemote) {
             Network.INSTANCE.getWrapper().sendToServer(message);
         } else {
             final NetworkRegistry.TargetPoint point = Network.getTargetPoint(tileEntity, Network.RANGE_MEDIUM);

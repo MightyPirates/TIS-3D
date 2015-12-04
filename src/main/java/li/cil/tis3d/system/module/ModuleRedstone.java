@@ -64,18 +64,18 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
         input = 0;
         output = 0;
 
-        final Block blockType = getCasing().getWorld().getBlockState(getCasing().getPosition()).getBlock();
+        final Block blockType = getCasing().getCasingWorld().getBlockState(getCasing().getPosition()).getBlock();
         getCasing().markDirty();
-        getCasing().getWorld().notifyNeighborsOfStateChange(getCasing().getPosition(), blockType);
+        getCasing().getCasingWorld().notifyNeighborsOfStateChange(getCasing().getPosition(), blockType);
 
-        if (!getCasing().getWorld().isRemote) {
+        if (!getCasing().getCasingWorld().isRemote) {
             sendData();
         }
     }
 
     @Override
     public void onEnabled() {
-        if (!getCasing().getWorld().isRemote) {
+        if (!getCasing().getCasingWorld().isRemote) {
             sendData();
         }
     }
@@ -156,7 +156,7 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
         // Clamp to valid redstone range.
         input = Math.max(0, Math.min(15, value));
 
-        if (!getCasing().getWorld().isRemote) {
+        if (!getCasing().getCasingWorld().isRemote) {
             // If the value changed, cancel our output to make sure it's up-to-date.
             cancelWrite();
 
@@ -177,11 +177,11 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
         // Clamp to valid redstone range.
         output = Math.max(0, Math.min(15, value));
 
-        if (!getCasing().getWorld().isRemote) {
+        if (!getCasing().getCasingWorld().isRemote) {
             // If the value changed, notify neighboring blocks and make sure we're saved.
-            final Block blockType = getCasing().getWorld().getBlockState(getCasing().getPosition()).getBlock();
+            final Block blockType = getCasing().getCasingWorld().getBlockState(getCasing().getPosition()).getBlock();
             getCasing().markDirty();
-            getCasing().getWorld().notifyNeighborsOfStateChange(getCasing().getPosition(), blockType);
+            getCasing().getCasingWorld().notifyNeighborsOfStateChange(getCasing().getPosition(), blockType);
 
             sendData();
         }
@@ -197,11 +197,11 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
     private int computeRedstoneInput() {
         final EnumFacing facing = Face.toEnumFacing(getFace());
         final BlockPos inputPos = getCasing().getPosition().offset(facing);
-        final int input = getCasing().getWorld().getRedstonePower(inputPos, facing);
+        final int input = getCasing().getCasingWorld().getRedstonePower(inputPos, facing);
         if (input >= 15) {
             return input;
         } else {
-            final IBlockState state = getCasing().getWorld().getBlockState(inputPos);
+            final IBlockState state = getCasing().getCasingWorld().getBlockState(inputPos);
             return Math.max(input, state.getBlock() == Blocks.redstone_wire ? state.getValue(BlockRedstoneWire.POWER) : 0);
         }
     }

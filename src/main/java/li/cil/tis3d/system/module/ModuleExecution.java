@@ -100,7 +100,7 @@ public final class ModuleExecution extends AbstractModuleRotatable {
 
     @Override
     public void onEnabled() {
-        if (!getCasing().getWorld().isRemote) {
+        if (!getCasing().getCasingWorld().isRemote) {
             sendData(true);
         }
     }
@@ -110,7 +110,7 @@ public final class ModuleExecution extends AbstractModuleRotatable {
         machine.getState().reset();
         state = State.IDLE;
 
-        if (!getCasing().getWorld().isRemote) {
+        if (!getCasing().getCasingWorld().isRemote) {
             sendData(false);
         }
     }
@@ -138,7 +138,7 @@ public final class ModuleExecution extends AbstractModuleRotatable {
             return true; // Handled, but does nothing.
         }
 
-        if (!getCasing().getWorld().isRemote) {
+        if (!getCasing().getCasingWorld().isRemote) {
             compile(code, player);
             sendData(true);
         }

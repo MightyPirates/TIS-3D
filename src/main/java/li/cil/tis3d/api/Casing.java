@@ -16,7 +16,7 @@ public interface Casing {
      *
      * @return the world the casing lives in.
      */
-    World getWorld();
+    World getCasingWorld();
 
     /**
      * The position of the casing in the world it exists in.

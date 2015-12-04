@@ -13,7 +13,7 @@ public final class MessageModuleData extends AbstractMessageWithLocation {
     private NBTTagCompound nbt;
 
     public MessageModuleData(final Casing casing, final Face face, final NBTTagCompound nbt) {
-        super(casing.getWorld(), casing.getPosition());
+        super(casing.getCasingWorld(), casing.getPosition());
         this.face = face;
         this.nbt = nbt;
     }

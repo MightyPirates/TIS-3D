@@ -13,8 +13,8 @@ public interface CasingProxy extends Casing {
     Casing getCasing();
 
     @Override
-    default World getWorld() {
-        return getCasing().getWorld();
+    default World getCasingWorld() {
+        return getCasing().getCasingWorld();
     }
 
     @Override

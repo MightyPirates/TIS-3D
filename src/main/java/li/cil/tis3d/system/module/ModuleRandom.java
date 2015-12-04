@@ -66,7 +66,7 @@ public final class ModuleRandom extends AbstractModule {
     private void stepOutput(final Port port) {
         final Pipe sendingPipe = getCasing().getSendingPipe(getFace(), port);
         if (!sendingPipe.isWriting()) {
-            final int value = getCasing().getWorld().rand.nextInt(MachineState.MAX_VALUE * 2 + 1) - MachineState.MAX_VALUE;
+            final int value = getCasing().getCasingWorld().rand.nextInt(MachineState.MAX_VALUE * 2 + 1) - MachineState.MAX_VALUE;
             sendingPipe.beginWrite(value);
         }
     }
