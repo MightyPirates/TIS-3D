@@ -82,7 +82,7 @@ public final class TargetInterfaceAny extends AbstractTargetInterfaceSide {
     }
 
     @Override
-    public void onWriteComplete(final Machine machine, final Port port) {
+    public void onWriteComplete() {
         cancelWrite();
     }
 }

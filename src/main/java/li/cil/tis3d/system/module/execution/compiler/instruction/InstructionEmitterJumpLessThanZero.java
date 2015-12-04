@@ -8,7 +8,7 @@ import li.cil.tis3d.system.module.execution.instruction.InstructionJumpLessThanZ
 import java.util.List;
 import java.util.regex.Matcher;
 
-public final class InstructionEmitterJumpLessThanZero extends AbstractInstructionEmitter {
+public final class InstructionEmitterJumpLessThanZero extends AbstractInstructionEmitterJump {
     @Override
     public String getInstructionName() {
         return "JLZ";
@@ -18,6 +18,8 @@ public final class InstructionEmitterJumpLessThanZero extends AbstractInstructio
     public Instruction compile(final Matcher matcher, final int lineNumber, final List<Validator> validators) throws ParseException {
         final String label = checkArg(lineNumber, matcher, "arg1", "name");
         checkExcess(lineNumber, matcher, "arg2");
+
+        validators.add(state -> validateLabel(state, label, matcher, lineNumber));
 
         return new InstructionJumpLessThanZero(label);
     }

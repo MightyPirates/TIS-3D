@@ -37,7 +37,7 @@ public abstract class AbstractMessageHandler<T extends IMessage> implements IMes
         return null;
     }
 
-    protected World getWorldClient(final int dimension) {
+    private static World getWorldClient(final int dimension) {
         final World world = FMLClientHandler.instance().getClient().theWorld;
         if (world == null) {
             return null;
@@ -48,7 +48,7 @@ public abstract class AbstractMessageHandler<T extends IMessage> implements IMes
         return world;
     }
 
-    protected World getWorldServer(final int dimension) {
+    private static World getWorldServer(final int dimension) {
         return DimensionManager.getWorld(dimension);
     }
 }

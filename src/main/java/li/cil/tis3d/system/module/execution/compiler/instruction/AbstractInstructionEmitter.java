@@ -52,7 +52,7 @@ abstract class AbstractInstructionEmitter implements InstructionEmitter {
         }
     }
 
-    protected static boolean isInteger(final String value) {
+    private static boolean isInteger(final String value) {
         try {
             Integer.parseInt(value);
             return true;

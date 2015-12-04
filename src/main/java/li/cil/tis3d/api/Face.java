@@ -56,7 +56,7 @@ public enum Face {
     /**
      * Convert a facing from our internal format to Forge's format.
      *
-     * @param facing the facing to convert.
+     * @param face the face to convert.
      * @return the {@link EnumFacing} representing that facing.
      */
     public static EnumFacing toEnumFacing(final Face face) {

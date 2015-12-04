@@ -6,7 +6,7 @@ import li.cil.tis3d.system.module.execution.MachineState;
 abstract class AbstractInstructionJumpConditional implements Instruction {
     protected final String label;
 
-    public AbstractInstructionJumpConditional(final String label) {
+    protected AbstractInstructionJumpConditional(final String label) {
         this.label = label;
     }
 

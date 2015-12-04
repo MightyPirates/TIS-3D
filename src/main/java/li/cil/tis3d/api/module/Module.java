@@ -73,7 +73,7 @@ public interface Module {
      *
      * @param port the port on which the write operation was completed.
      */
-    default void onWriteComplete(Port port) {
+    default void onWriteComplete(final Port port) {
     }
 
     /**
@@ -92,7 +92,7 @@ public interface Module {
      * @param hitZ   the relative z position that was clicked.
      * @return <tt>true</tt> if the click was handled, <tt>false</tt> otherwise.
      */
-    default boolean onActivate(EntityPlayer player, float hitX, float hitY, float hitZ) {
+    default boolean onActivate(final EntityPlayer player, final float hitX, final float hitY, final float hitZ) {
         return false;
     }
 
@@ -106,7 +106,7 @@ public interface Module {
      * @param nbt the received data.
      * @see {@link Casing#sendData(Face, NBTTagCompound)}
      */
-    default void onData(NBTTagCompound nbt) {
+    default void onData(final NBTTagCompound nbt) {
     }
 
     // --------------------------------------------------------------------- //
@@ -123,7 +123,7 @@ public interface Module {
      * @param partialTicks the partial time elapsed in this tick.
      */
     @SideOnly(Side.CLIENT)
-    default void render(final boolean enabled, float partialTicks) {
+    default void render(final boolean enabled, final float partialTicks) {
     }
 
     // --------------------------------------------------------------------- //
@@ -133,7 +133,7 @@ public interface Module {
      *
      * @param nbt the tag to load the state from.
      */
-    default void readFromNBT(NBTTagCompound nbt) {
+    default void readFromNBT(final NBTTagCompound nbt) {
     }
 
     /**
@@ -141,6 +141,6 @@ public interface Module {
      *
      * @param nbt the tag to save the state to.
      */
-    default void writeToNBT(NBTTagCompound nbt) {
+    default void writeToNBT(final NBTTagCompound nbt) {
     }
 }
