@@ -19,13 +19,6 @@ public final class ModuleRandom extends AbstractModule {
         super(casing, face);
     }
 
-    private void stepOutput(final Port port) {
-        final Pipe sendingPipe = getCasing().getSendingPipe(getFace(), port);
-        if (!sendingPipe.isWriting()) {
-            sendingPipe.beginWrite(getCasing().getWorld().rand.nextInt(MachineState.MAX_VALUE * 2 + 1) - MachineState.MAX_VALUE);
-        }
-    }
-
     // --------------------------------------------------------------------- //
     // Module
 
@@ -61,5 +54,20 @@ public final class ModuleRandom extends AbstractModule {
 
         GlStateManager.disableBlend();
         RenderHelper.enableStandardItemLighting();
+    }
+
+    // --------------------------------------------------------------------- //
+
+    /**
+     * Update our outputs, pushing random values to the specified port.
+     *
+     * @param port the port to push to.
+     */
+    private void stepOutput(final Port port) {
+        final Pipe sendingPipe = getCasing().getSendingPipe(getFace(), port);
+        if (!sendingPipe.isWriting()) {
+            final int value = getCasing().getWorld().rand.nextInt(MachineState.MAX_VALUE * 2 + 1) - MachineState.MAX_VALUE;
+            sendingPipe.beginWrite(value);
+        }
     }
 }

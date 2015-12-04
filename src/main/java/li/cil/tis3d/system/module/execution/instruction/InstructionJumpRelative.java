@@ -4,7 +4,7 @@ import li.cil.tis3d.system.module.execution.Machine;
 import li.cil.tis3d.system.module.execution.target.Target;
 import li.cil.tis3d.system.module.execution.target.TargetInterface;
 
-public final class InstructionJumpRelative extends AbstractInstruction {
+public final class InstructionJumpRelative implements Instruction {
     private final Target source;
 
     public InstructionJumpRelative(final Target source) {
@@ -18,8 +18,13 @@ public final class InstructionJumpRelative extends AbstractInstruction {
         if (!sourceInterface.isReading()) {
             sourceInterface.beginRead();
         }
-        if (sourceInterface.canRead()) {
+        if (sourceInterface.canTransfer()) {
             machine.getState().pc += sourceInterface.read();
         }
+    }
+
+    @Override
+    public String toString() {
+        return "JRO " + source;
     }
 }

@@ -72,7 +72,7 @@ public interface Pipe {
     /**
      * Begin a reading operation on the pipe.
      * <p>
-     * Make sure not to call this if the pipe is already being written to, or
+     * Make sure not to call this if the pipe is already being read from, or
      * an exception will be thrown. Use {@link #isReading()} to check for this.
      *
      * @throws IllegalStateException if the pipe is already being read from.

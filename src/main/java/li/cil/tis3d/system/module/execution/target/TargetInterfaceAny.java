@@ -1,13 +1,20 @@
 package li.cil.tis3d.system.module.execution.target;
 
-import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
 import li.cil.tis3d.api.Port;
+import li.cil.tis3d.system.module.ModuleExecution;
 import li.cil.tis3d.system.module.execution.Machine;
 
-public final class TargetInterfaceAny extends TargetInterfaceAbstractSide {
-    public TargetInterfaceAny(final Machine machine, final Casing casing, final Face face) {
-        super(machine, casing, face);
+/**
+ * Interface for the {@link Target#ANY} target.
+ * <p>
+ * Provides read and write access to all {@link Port}s on the module in a
+ * <em>simultaneous</em> fashion. If any port finishes its transfer, all other
+ * ports will also be reset.
+ */
+public final class TargetInterfaceAny extends AbstractTargetInterfaceSide {
+    public TargetInterfaceAny(final Machine machine, final ModuleExecution module, final Face face) {
+        super(machine, module, face);
     }
 
     @Override
@@ -47,30 +54,35 @@ public final class TargetInterfaceAny extends TargetInterfaceAbstractSide {
     }
 
     @Override
-    public boolean canRead() {
-        return canRead(Port.LEFT) || canRead(Port.RIGHT) || canRead(Port.UP) || canRead(Port.DOWN);
+    public boolean canTransfer() {
+        return canTransfer(Port.LEFT) || canTransfer(Port.RIGHT) || canTransfer(Port.UP) || canTransfer(Port.DOWN);
     }
 
     @Override
     public int read() {
-        if (canRead(Port.LEFT)) {
+        if (canTransfer(Port.LEFT)) {
             cancelRead(Port.RIGHT);
             cancelRead(Port.UP);
             cancelRead(Port.DOWN);
             return read(Port.LEFT);
         } else cancelRead(Port.LEFT);
-        if (canRead(Port.RIGHT)) {
+        if (canTransfer(Port.RIGHT)) {
             cancelRead(Port.UP);
             cancelRead(Port.DOWN);
             return read(Port.RIGHT);
         } else cancelRead(Port.RIGHT);
-        if (canRead(Port.UP)) {
+        if (canTransfer(Port.UP)) {
             cancelRead(Port.DOWN);
             return read(Port.UP);
         } else cancelRead(Port.UP);
-        if (canRead(Port.DOWN)) {
+        if (canTransfer(Port.DOWN)) {
             return read(Port.DOWN);
         } else cancelRead(Port.DOWN);
-        throw new IllegalStateException("No data to read. Check beginRead().");
+        throw new IllegalStateException("No data to read. Check canTransfer().");
+    }
+
+    @Override
+    public void onWriteComplete(final Machine machine, final Port port) {
+        cancelWrite();
     }
 }

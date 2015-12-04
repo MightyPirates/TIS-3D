@@ -2,18 +2,16 @@ package li.cil.tis3d.common.tile;
 
 import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
-import li.cil.tis3d.api.Pipe;
-import li.cil.tis3d.api.Port;
-import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.common.inventory.InventoryCasing;
+import li.cil.tis3d.common.inventory.SidedInventoryProxy;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageCasingState;
 import li.cil.tis3d.system.CasingImpl;
+import li.cil.tis3d.system.CasingProxy;
 import li.cil.tis3d.system.module.ModuleForwarder;
 import li.cil.tis3d.util.InventoryUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ISidedInventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -21,7 +19,6 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.IChatComponent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -43,7 +40,7 @@ import java.util.Set;
  * Casings do not tick. The modules installed in them are driven by a
  * controller (transitively) connected to their casing.
  */
-public final class TileEntityCasing extends TileEntity implements ISidedInventory, Casing {
+public final class TileEntityCasing extends TileEntity implements SidedInventoryProxy, CasingProxy {
     // --------------------------------------------------------------------- //
     // Persisted data
 
@@ -150,55 +147,7 @@ public final class TileEntityCasing extends TileEntity implements ISidedInventor
     }
 
     // --------------------------------------------------------------------- //
-    // IWorldNameable
-
-    @Override
-    public String getName() {
-        return inventory.getName();
-    }
-
-    @Override
-    public boolean hasCustomName() {
-        return inventory.hasCustomName();
-    }
-
-    @Override
-    public IChatComponent getDisplayName() {
-        return inventory.getDisplayName();
-    }
-
-    // --------------------------------------------------------------------- //
     // IInventory
-
-    @Override
-    public int getSizeInventory() {
-        return inventory.getSizeInventory();
-    }
-
-    @Override
-    public ItemStack getStackInSlot(final int index) {
-        return inventory.getStackInSlot(index);
-    }
-
-    @Override
-    public ItemStack decrStackSize(final int index, final int count) {
-        return inventory.decrStackSize(index, count);
-    }
-
-    @Override
-    public ItemStack removeStackFromSlot(final int index) {
-        return inventory.removeStackFromSlot(index);
-    }
-
-    @Override
-    public void setInventorySlotContents(final int index, final ItemStack stack) {
-        inventory.setInventorySlotContents(index, stack);
-    }
-
-    @Override
-    public int getInventoryStackLimit() {
-        return inventory.getInventoryStackLimit();
-    }
 
     @Override
     public boolean isUseableByPlayer(final EntityPlayer player) {
@@ -207,57 +156,21 @@ public final class TileEntityCasing extends TileEntity implements ISidedInventor
         return player.getDistanceSqToCenter(pos) <= maxDistance;
     }
 
-    @Override
-    public void openInventory(final EntityPlayer player) {
-        inventory.openInventory(player);
-    }
+
+    // --------------------------------------------------------------------- //
+    // SidedInventoryProxy
 
     @Override
-    public void closeInventory(final EntityPlayer player) {
-        inventory.closeInventory(player);
-    }
-
-    @Override
-    public boolean isItemValidForSlot(final int index, final ItemStack stack) {
-        return inventory.isItemValidForSlot(index, stack);
-    }
-
-    @Override
-    public int getField(final int id) {
-        return inventory.getField(id);
-    }
-
-    @Override
-    public void setField(final int id, final int value) {
-        inventory.setField(id, value);
-    }
-
-    @Override
-    public int getFieldCount() {
-        return inventory.getFieldCount();
-    }
-
-    @Override
-    public void clear() {
-        inventory.clear();
+    public ISidedInventory getInventory() {
+        return inventory;
     }
 
     // --------------------------------------------------------------------- //
-    // ISidedInventory
+    // CasingProxy
 
     @Override
-    public int[] getSlotsForFace(final EnumFacing side) {
-        return inventory.getSlotsForFace(side);
-    }
-
-    @Override
-    public boolean canInsertItem(final int index, final ItemStack stack, final EnumFacing side) {
-        return inventory.canInsertItem(index, stack, side);
-    }
-
-    @Override
-    public boolean canExtractItem(final int index, final ItemStack stack, final EnumFacing side) {
-        return inventory.canExtractItem(index, stack, side);
+    public Casing getCasing() {
+        return casing;
     }
 
     // --------------------------------------------------------------------- //
@@ -304,38 +217,6 @@ public final class TileEntityCasing extends TileEntity implements ISidedInventor
         save(nbt);
         nbt.setBoolean("enabled", isEnabled());
         return new S35PacketUpdateTileEntity(pos, -1, nbt);
-    }
-
-    // --------------------------------------------------------------------- //
-    // Casing
-
-    @Override
-    public BlockPos getPosition() {
-        return casing.getPosition();
-    }
-
-    @Override
-    public Module getModule(final Face face) {
-        return casing.getModule(face);
-    }
-
-    public void setModule(final Face face, final Module module) {
-        casing.setModule(face, module);
-    }
-
-    @Override
-    public Pipe getReceivingPipe(final Face face, final Port port) {
-        return casing.getReceivingPipe(face, port);
-    }
-
-    @Override
-    public Pipe getSendingPipe(final Face face, final Port port) {
-        return casing.getSendingPipe(face, port);
-    }
-
-    @Override
-    public void sendData(final Face face, final NBTTagCompound data) {
-        casing.sendData(face, data);
     }
 
     // --------------------------------------------------------------------- //

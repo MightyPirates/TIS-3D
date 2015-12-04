@@ -26,12 +26,6 @@ public class Inventory extends AbstractList<ItemStack> implements IInventory {
 
     // --------------------------------------------------------------------- //
 
-    protected void onItemAdded(final int index) {
-    }
-
-    protected void onItemRemoved(final int index) {
-    }
-
     public void readFromNBT(final NBTTagCompound nbt) {
         final NBTTagList itemList = nbt.getTagList("inventory", Constants.NBT.TAG_COMPOUND);
         final int count = Math.min(itemList.tagCount(), items.length);
@@ -50,6 +44,14 @@ public class Inventory extends AbstractList<ItemStack> implements IInventory {
             itemList.appendTag(stackNbt);
         }
         nbt.setTag("inventory", itemList);
+    }
+
+    // --------------------------------------------------------------------- //
+
+    protected void onItemAdded(final int index) {
+    }
+
+    protected void onItemRemoved(final int index) {
     }
 
     // --------------------------------------------------------------------- //

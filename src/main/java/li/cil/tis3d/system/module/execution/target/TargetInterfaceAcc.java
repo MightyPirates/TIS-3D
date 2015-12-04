@@ -2,6 +2,11 @@ package li.cil.tis3d.system.module.execution.target;
 
 import li.cil.tis3d.system.module.execution.Machine;
 
+/**
+ * Interface for the {@link Target#ACC} target.
+ * <p>
+ * Provides instant read and write on the accumulator register.
+ */
 public final class TargetInterfaceAcc extends AbstractTargetInterface {
     public TargetInterfaceAcc(final Machine machine) {
         super(machine);
@@ -32,7 +37,7 @@ public final class TargetInterfaceAcc extends AbstractTargetInterface {
     }
 
     @Override
-    public boolean canRead() {
+    public boolean canTransfer() {
         return true;
     }
 

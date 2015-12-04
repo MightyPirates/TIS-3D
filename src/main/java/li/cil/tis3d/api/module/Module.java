@@ -34,7 +34,8 @@ public interface Module {
      * This is called by the controller of the system the module is part of
      * each tick the system is running.
      */
-    void step();
+    default void step() {
+    }
 
     /**
      * Called when the multi-block of casings the module is installed in is
@@ -42,7 +43,8 @@ public interface Module {
      * <p>
      * Note that this is only called on the server.
      */
-    void onEnabled();
+    default void onEnabled() {
+    }
 
     /**
      * Called when the multi-block of casings the module is installed in is
@@ -58,7 +60,8 @@ public interface Module {
      * be <tt>true</tt>, indicating that the module should avoid world
      * interaction in its clean-up logic (to avoid loading the chunk again).
      */
-    void onDisabled();
+    default void onDisabled() {
+    }
 
     /**
      * Called from a pipe this module is writing to when the data was read.
@@ -67,8 +70,11 @@ public interface Module {
      * read operation was completed. This is particularly useful when writing
      * to multiple ports at a time but the written value may only be read once;
      * in this case the remaining writes can be canceled in this callback.
+     *
+     * @param port the port on which the write operation was completed.
      */
-    void onWriteComplete(Port port);
+    default void onWriteComplete(Port port) {
+    }
 
     /**
      * Called when a player right-clicks the module while installed in a casing.
@@ -86,7 +92,9 @@ public interface Module {
      * @param hitZ   the relative z position that was clicked.
      * @return <tt>true</tt> if the click was handled, <tt>false</tt> otherwise.
      */
-    boolean onActivate(EntityPlayer player, float hitX, float hitY, float hitZ);
+    default boolean onActivate(EntityPlayer player, float hitX, float hitY, float hitZ) {
+        return false;
+    }
 
     /**
      * Called with NBT data sent from the remote instance of the module.
@@ -98,7 +106,8 @@ public interface Module {
      * @param nbt the received data.
      * @see {@link Casing#sendData(Face, NBTTagCompound)}
      */
-    void onData(NBTTagCompound nbt);
+    default void onData(NBTTagCompound nbt) {
+    }
 
     // --------------------------------------------------------------------- //
 
@@ -114,7 +123,8 @@ public interface Module {
      * @param partialTicks the partial time elapsed in this tick.
      */
     @SideOnly(Side.CLIENT)
-    void render(final boolean enabled, float partialTicks);
+    default void render(final boolean enabled, float partialTicks) {
+    }
 
     // --------------------------------------------------------------------- //
 
@@ -123,12 +133,14 @@ public interface Module {
      *
      * @param nbt the tag to load the state from.
      */
-    void readFromNBT(NBTTagCompound nbt);
+    default void readFromNBT(NBTTagCompound nbt) {
+    }
 
     /**
      * Save the state of the module to the specified NBT compound.
      *
      * @param nbt the tag to save the state to.
      */
-    void writeToNBT(NBTTagCompound nbt);
+    default void writeToNBT(NBTTagCompound nbt) {
+    }
 }

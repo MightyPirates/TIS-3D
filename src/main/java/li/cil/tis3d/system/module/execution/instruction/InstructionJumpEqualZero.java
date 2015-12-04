@@ -11,4 +11,9 @@ public final class InstructionJumpEqualZero extends AbstractInstructionJumpCondi
     protected boolean isConditionTrue(final MachineState state) {
         return state.acc == 0;
     }
+
+    @Override
+    public String toString() {
+        return "JEZ " + label;
+    }
 }

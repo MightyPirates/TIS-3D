@@ -1,15 +1,21 @@
 package li.cil.tis3d.system.module.execution.target;
 
-import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
 import li.cil.tis3d.api.Port;
+import li.cil.tis3d.system.module.ModuleExecution;
 import li.cil.tis3d.system.module.execution.Machine;
 
-public final class TargetInterfaceSide extends TargetInterfaceAbstractSide {
+/**
+ * Interface for the {@link Target#LEFT}, {@link Target#RIGHT},
+ * {@link Target#UP} and {@link Target#DOWN} targets.
+ * <p>
+ * Provides read and write on the pipe of the respective port.
+ */
+public final class TargetInterfaceSide extends AbstractTargetInterfaceSide {
     private final Port port;
 
-    public TargetInterfaceSide(final Machine machine, final Casing casing, final Face face, final Port port) {
-        super(machine, casing, face);
+    public TargetInterfaceSide(final Machine machine, final ModuleExecution module, final Face face, final Port port) {
+        super(machine, module, face);
         this.port = port;
     }
 
@@ -40,8 +46,8 @@ public final class TargetInterfaceSide extends TargetInterfaceAbstractSide {
     }
 
     @Override
-    public boolean canRead() {
-        return canRead(port);
+    public boolean canTransfer() {
+        return canTransfer(port);
     }
 
     @Override

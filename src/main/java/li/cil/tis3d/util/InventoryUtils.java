@@ -44,6 +44,7 @@ public final class InventoryUtils {
         }
 
         final Random rng = world.rand;
+
         final double ox = towards.getFrontOffsetX();
         final double oy = towards.getFrontOffsetY();
         final double oz = towards.getFrontOffsetZ();
@@ -53,12 +54,15 @@ public final class InventoryUtils {
         final double px = pos.getX() + 0.5 + tx;
         final double py = pos.getY() + 0.5 + ty;
         final double pz = pos.getZ() + 0.5 + tz;
+
         final EntityItem entity = new EntityItem(world, px, py, pz, stack.copy());
+
         entity.motionX = 0.0125 * (rng.nextDouble() - 0.5) + ox * 0.03;
         entity.motionY = 0.0125 * (rng.nextDouble() - 0.5) + oy * 0.08 + (ox + oz) * 0.03;
         entity.motionZ = 0.0125 * (rng.nextDouble() - 0.5) + oz * 0.03;
         entity.setPickupDelay(15);
         world.spawnEntityInWorld(entity);
+
         return entity;
     }
 

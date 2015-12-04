@@ -9,7 +9,6 @@ import li.cil.tis3d.common.network.message.MessageModuleData;
 import li.cil.tis3d.common.network.message.MessageParticleEffect;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
@@ -35,10 +34,6 @@ public final class Network {
 
     public SimpleNetworkWrapper getWrapper() {
         return wrapper;
-    }
-
-    public static void spawnParticles(final World world, final EnumParticleTypes particleType, final double x, final double y, final double z) {
-        Network.INSTANCE.getWrapper().sendToAllAround(new MessageParticleEffect(world, particleType, x, y, z), getTargetPoint(world, x, y, z, RANGE_LOW));
     }
 
     // --------------------------------------------------------------------- //

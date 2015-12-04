@@ -1,6 +1,8 @@
 package li.cil.tis3d.system.module;
 
 import com.google.common.base.Strings;
+import com.ibm.icu.impl.IllegalIcuArgumentException;
+import li.cil.tis3d.TIS3D;
 import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
 import li.cil.tis3d.api.Port;
@@ -40,6 +42,7 @@ public final class ModuleExecution extends AbstractModule {
     private final MachineImpl machine;
     private ParseException compileError;
     private State state = State.IDLE;
+    private Port facing = Port.UP;
 
     // --------------------------------------------------------------------- //
     // Computed data
@@ -62,58 +65,19 @@ public final class ModuleExecution extends AbstractModule {
 
     public ModuleExecution(final Casing casing, final Face face) {
         super(casing, face);
-        machine = new MachineImpl(casing, face);
+        machine = new MachineImpl(this, face);
     }
 
-    private boolean isCodeSource(final ItemStack stack) {
-        if (stack != null) {
-            if (stack.getItem() == Items.written_book) {
-                return true;
-            }
-            if (stack.getItem() == Items.writable_book) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private String getSourceCode(final ItemStack stack) {
-        if (!stack.hasTagCompound()) {
-            return null;
-        }
-
-        final NBTTagCompound nbt = stack.getTagCompound();
-        final NBTTagList pages = nbt.getTagList("pages", Constants.NBT.TAG_STRING);
-        if (pages.tagCount() < 1) {
-            return null;
-        }
-
-        return pages.getStringTagAt(0);
-    }
-
-    private void compile(final String code, final EntityPlayer player) {
-        compileError = null;
-        try {
-            machine.getState().clear();
-            Compiler.compile(code, machine.getState());
-        } catch (final ParseException e) {
-            compileError = e;
-            player.addChatMessage(new ChatComponentText(e.toString()));
-        }
-    }
-
-    private void sendData(final boolean full) {
-        final NBTTagCompound nbt = new NBTTagCompound();
-        if (full) {
-            writeToNBT(nbt);
-        } else {
-            nbt.setInteger("pc", machine.getState().pc);
-            nbt.setInteger("acc", machine.getState().acc);
-            nbt.setInteger("bak", machine.getState().bak);
-            nbt.setString("state", state.name());
-        }
-        getCasing().sendData(getFace(), nbt);
+    /**
+     * Get the rotated port based on the facing of the module.
+     * <p>
+     * Note that this is only non-default for the top and bottom slot of casings.
+     *
+     * @return the adjusted port.
+     */
+    public Port getRotatedPort(final Port port) {
+        final int rotation = Port.ROTATION[facing.ordinal()];
+        return port.rotated(rotation);
     }
 
     // --------------------------------------------------------------------- //
@@ -134,6 +98,7 @@ public final class ModuleExecution extends AbstractModule {
 
             if (machine.getState().pc != prevInstruction) {
                 state = State.RUNNING;
+                getCasing().markDirty();
                 sendData(false);
                 return; // Don't send data twice.
             } else {
@@ -142,6 +107,7 @@ public final class ModuleExecution extends AbstractModule {
         }
 
         if (prevState != state) {
+            getCasing().markDirty();
             sendData(false);
         }
     }
@@ -279,6 +245,128 @@ public final class ModuleExecution extends AbstractModule {
         }
     }
 
+    @Override
+    public void readFromNBT(final NBTTagCompound nbt) {
+        try {
+            facing = Enum.valueOf(Port.class, nbt.getString("facing"));
+        } catch (final IllegalIcuArgumentException e) {
+            // This can only happen if someone messes with the save.
+            TIS3D.getLog().warn("Broken save, execution module facing is invalid.", e);
+        }
+
+        if (nbt.hasKey("compileError")) {
+            final NBTTagCompound errorNbt = nbt.getCompoundTag("compileError");
+            compileError = new ParseException(errorNbt.getString("message"), errorNbt.getInteger("lineNumber"), errorNbt.getInteger("column"));
+        } else {
+            try {
+                state = Enum.valueOf(State.class, nbt.getString("state"));
+
+                // This way around to not even load the machine if the state is invalid.
+                final NBTTagCompound machineNbt = nbt.getCompoundTag("machine");
+                machine.getState().readFromNBT(machineNbt);
+            } catch (final IllegalArgumentException e) {
+                // This can only happen if someone messes with the save.
+                TIS3D.getLog().warn("Broken save, execution module state is invalid.", e);
+            }
+        }
+    }
+
+    @Override
+    public void writeToNBT(final NBTTagCompound nbt) {
+        nbt.setString("facing", facing.name());
+
+        if (compileError != null) {
+            final NBTTagCompound errorNbt = new NBTTagCompound();
+            errorNbt.setString("message", compileError.getMessage());
+            errorNbt.setInteger("lineNumber", compileError.getLineNumber());
+            errorNbt.setInteger("column", compileError.getColumn());
+            nbt.setTag("compileError", errorNbt);
+        } else {
+            final NBTTagCompound machineNbt = new NBTTagCompound();
+            machine.getState().writeToNBT(machineNbt);
+            nbt.setTag("machine", machineNbt);
+            nbt.setString("state", state.name());
+        }
+    }
+
+    // --------------------------------------------------------------------- //
+
+    private boolean isCodeSource(final ItemStack stack) {
+        if (stack != null) {
+            if (stack.getItem() == Items.written_book) {
+                return true;
+            }
+            if (stack.getItem() == Items.writable_book) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private String getSourceCode(final ItemStack stack) {
+        if (!stack.hasTagCompound()) {
+            return null;
+        }
+
+        final NBTTagCompound nbt = stack.getTagCompound();
+        final NBTTagList pages = nbt.getTagList("pages", Constants.NBT.TAG_STRING);
+        if (pages.tagCount() < 1) {
+            return null;
+        }
+
+        return pages.getStringTagAt(0);
+    }
+
+    /**
+     * Compile the specified lines of code, assuming this was issued by the
+     * specified player (for notifications on errors). The code will be
+     * compiled into the module's machine state. On errors, the state will
+     * be left in a reset state.
+     *
+     * @param code   the code to compile.
+     * @param player the player that issued the compile, or <tt>null</tt>.
+     */
+    private void compile(final String code, final EntityPlayer player) {
+        compileError = null;
+        try {
+            machine.getState().clear();
+            Compiler.compile(code, machine.getState());
+        } catch (final ParseException e) {
+            compileError = e;
+            if (player != null) {
+                player.addChatMessage(new ChatComponentText(e.toString()));
+            }
+        }
+    }
+
+    /**
+     * Send the current execution state to the client.
+     * <p>
+     * May be used to send the full state in case of larger changes, such as
+     * the program we're running being changed.
+     *
+     * @param full if <tt>true</tt>, the full machine state will be sent.
+     */
+    private void sendData(final boolean full) {
+        final NBTTagCompound nbt = new NBTTagCompound();
+        if (full) {
+            writeToNBT(nbt);
+        } else {
+            nbt.setInteger("pc", machine.getState().pc);
+            nbt.setInteger("acc", machine.getState().acc);
+            nbt.setInteger("bak", machine.getState().bak);
+            nbt.setString("state", state.name());
+        }
+        getCasing().sendData(getFace(), nbt);
+    }
+
+    /**
+     * Draws a horizontal line of the specified height.
+     *
+     * @param height the height of the line to draw.
+     */
+    @SideOnly(Side.CLIENT)
     private static void drawLine(final int height) {
         GlStateManager.depthMask(false);
         GlStateManager.disableTexture2D();
@@ -294,36 +382,5 @@ public final class ModuleExecution extends AbstractModule {
 
         GlStateManager.depthMask(true);
         GlStateManager.enableTexture2D();
-    }
-
-    @Override
-    public void readFromNBT(final NBTTagCompound nbt) {
-        if (nbt.hasKey("compileError")) {
-            final NBTTagCompound errorNbt = nbt.getCompoundTag("compileError");
-            compileError = new ParseException(errorNbt.getString("message"), errorNbt.getInteger("lineNumber"), errorNbt.getInteger("column"));
-        } else {
-            final NBTTagCompound machineNbt = nbt.getCompoundTag("machine");
-            machine.getState().readFromNBT(machineNbt);
-            try {
-                state = Enum.valueOf(State.class, nbt.getString("state"));
-            } catch (final IllegalArgumentException ignored) {
-            }
-        }
-    }
-
-    @Override
-    public void writeToNBT(final NBTTagCompound nbt) {
-        if (compileError != null) {
-            final NBTTagCompound errorNbt = new NBTTagCompound();
-            errorNbt.setString("message", compileError.getMessage());
-            errorNbt.setInteger("lineNumber", compileError.getLineNumber());
-            errorNbt.setInteger("column", compileError.getColumn());
-            nbt.setTag("compileError", errorNbt);
-        } else {
-            final NBTTagCompound machineNbt = new NBTTagCompound();
-            machine.getState().writeToNBT(machineNbt);
-            nbt.setTag("machine", machineNbt);
-            nbt.setString("state", state.name());
-        }
     }
 }

@@ -2,7 +2,7 @@ package li.cil.tis3d.client;
 
 import li.cil.tis3d.Constants;
 import li.cil.tis3d.client.render.tile.TileEntitySpecialRendererCasing;
-import li.cil.tis3d.common.CommonProxy;
+import li.cil.tis3d.common.ProxyCommon;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.item.Item;
@@ -17,7 +17,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 /**
  * Takes care of client-side only setup.
  */
-public final class ClientProxy extends CommonProxy {
+public final class ProxyClient extends ProxyCommon {
     @Override
     public void onPreInit(final FMLPreInitializationEvent event) {
         super.onPreInit(event);

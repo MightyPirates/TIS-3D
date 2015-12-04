@@ -21,11 +21,16 @@ public final class InstructionMove extends AbstractInstructionMove {
             if (!sourceInterface.isReading()) {
                 sourceInterface.beginRead();
             }
-            if (sourceInterface.canRead()) {
+            if (sourceInterface.canTransfer()) {
                 if (destinationInterface.beginWrite(sourceInterface.read())) {
                     machine.getState().pc++;
                 }
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return "MOV " + source + " " + destination;
     }
 }

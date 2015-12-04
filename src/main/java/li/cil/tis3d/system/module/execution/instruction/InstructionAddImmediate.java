@@ -3,7 +3,7 @@ package li.cil.tis3d.system.module.execution.instruction;
 import li.cil.tis3d.system.module.execution.Machine;
 import li.cil.tis3d.system.module.execution.MachineState;
 
-public final class InstructionAddImmediate extends AbstractInstruction {
+public final class InstructionAddImmediate implements Instruction {
     private final int value;
 
     public InstructionAddImmediate(final int value) {
@@ -15,5 +15,10 @@ public final class InstructionAddImmediate extends AbstractInstruction {
         final MachineState state = machine.getState();
         state.acc += value;
         state.pc++;
+    }
+
+    @Override
+    public String toString() {
+        return "ADD " + value;
     }
 }

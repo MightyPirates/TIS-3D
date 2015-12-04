@@ -6,9 +6,12 @@ import li.cil.tis3d.api.Pipe;
 import li.cil.tis3d.api.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.common.network.Network;
+import li.cil.tis3d.common.network.message.MessageParticleEffect;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 /**
  * Implementation of {@link Pipe}s for passing data between {@link Module}s.
@@ -175,7 +178,11 @@ public final class PipeImpl implements Pipe {
         final double x = ox * 0.6 + position.getX() + 0.5;
         final double y = oy * 0.6 + position.getY() + 0.5;
         final double z = oz * 0.6 + position.getZ() + 0.5;
-        Network.INSTANCE.spawnParticles(casing.getWorld(), EnumParticleTypes.REDSTONE, x, y, z);
+
+        final World world = casing.getWorld();
+        final MessageParticleEffect message = new MessageParticleEffect(world, EnumParticleTypes.REDSTONE, x, y, z);
+        final NetworkRegistry.TargetPoint target = Network.getTargetPoint(world, x, y, z, Network.RANGE_LOW);
+        Network.INSTANCE.getWrapper().sendToAllAround(message, target);
 
         final int result = value;
 

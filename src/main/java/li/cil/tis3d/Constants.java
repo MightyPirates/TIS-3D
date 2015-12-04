@@ -10,8 +10,8 @@ public final class Constants {
     public static final String MOD_ID = "tis3d";
     public static final String MOD_VERSION = "0.1";
 
-    public static final String PROXY_CLIENT = "li.cil.tis3d.client.ClientProxy";
-    public static final String PROXY_COMMON = "li.cil.tis3d.common.CommonProxy";
+    public static final String PROXY_CLIENT = "li.cil.tis3d.client.ProxyClient";
+    public static final String PROXY_COMMON = "li.cil.tis3d.common.ProxyCommon";
 
     // --------------------------------------------------------------------- //
     // Block, item and container names

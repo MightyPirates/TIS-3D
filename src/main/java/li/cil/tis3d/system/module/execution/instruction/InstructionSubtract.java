@@ -5,7 +5,7 @@ import li.cil.tis3d.system.module.execution.MachineState;
 import li.cil.tis3d.system.module.execution.target.Target;
 import li.cil.tis3d.system.module.execution.target.TargetInterface;
 
-public final class InstructionSubtract extends AbstractInstruction {
+public final class InstructionSubtract implements Instruction {
     private final Target source;
 
     public InstructionSubtract(final Target source) {
@@ -19,10 +19,15 @@ public final class InstructionSubtract extends AbstractInstruction {
         if (!sourceInterface.isReading()) {
             sourceInterface.beginRead();
         }
-        if (sourceInterface.canRead()) {
+        if (sourceInterface.canTransfer()) {
             final MachineState state = machine.getState();
             state.acc -= sourceInterface.read();
             state.pc++;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "SUB " + source;
     }
 }

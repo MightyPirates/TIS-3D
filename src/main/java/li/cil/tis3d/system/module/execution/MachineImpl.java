@@ -1,11 +1,18 @@
 package li.cil.tis3d.system.module.execution;
 
 import com.google.common.collect.ImmutableMap;
-import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
 import li.cil.tis3d.api.Port;
+import li.cil.tis3d.system.module.ModuleExecution;
 import li.cil.tis3d.system.module.execution.instruction.Instruction;
-import li.cil.tis3d.system.module.execution.target.*;
+import li.cil.tis3d.system.module.execution.target.Target;
+import li.cil.tis3d.system.module.execution.target.TargetInterface;
+import li.cil.tis3d.system.module.execution.target.TargetInterfaceAcc;
+import li.cil.tis3d.system.module.execution.target.TargetInterfaceAny;
+import li.cil.tis3d.system.module.execution.target.TargetInterfaceBak;
+import li.cil.tis3d.system.module.execution.target.TargetInterfaceLast;
+import li.cil.tis3d.system.module.execution.target.TargetInterfaceNil;
+import li.cil.tis3d.system.module.execution.target.TargetInterfaceSide;
 
 import java.util.Map;
 
@@ -14,31 +21,36 @@ import java.util.Map;
  */
 public final class MachineImpl implements Machine {
     // --------------------------------------------------------------------- //
+    // Persisted data
+    private final MachineState state;
+
+    // --------------------------------------------------------------------- //
     // Computed data
 
-    private final MachineState state;
     private final Map<Target, TargetInterface> interfaces;
 
     // --------------------------------------------------------------------- //
 
-    public MachineImpl(final Casing casing, final Face face) {
+    public MachineImpl(final ModuleExecution module, final Face face) {
         this.state = new MachineState();
         interfaces = ImmutableMap.<Target, TargetInterface>builder().
                 put(Target.ACC, new TargetInterfaceAcc(this)).
                 put(Target.BAK, new TargetInterfaceBak(this)).
                 put(Target.NIL, new TargetInterfaceNil(this)).
-                put(Target.LEFT, new TargetInterfaceSide(this, casing, face, Port.LEFT)).
-                put(Target.RIGHT, new TargetInterfaceSide(this, casing, face, Port.RIGHT)).
-                put(Target.UP, new TargetInterfaceSide(this, casing, face, Port.UP)).
-                put(Target.DOWN, new TargetInterfaceSide(this, casing, face, Port.DOWN)).
-                put(Target.ANY, new TargetInterfaceAny(this, casing, face)).
-                put(Target.LAST, new TargetInterfaceLast(this, casing, face)).
+                put(Target.LEFT, new TargetInterfaceSide(this, module, face, Port.LEFT)).
+                put(Target.RIGHT, new TargetInterfaceSide(this, module, face, Port.RIGHT)).
+                put(Target.UP, new TargetInterfaceSide(this, module, face, Port.UP)).
+                put(Target.DOWN, new TargetInterfaceSide(this, module, face, Port.DOWN)).
+                put(Target.ANY, new TargetInterfaceAny(this, module, face)).
+                put(Target.LAST, new TargetInterfaceLast(this, module, face)).
                 build();
     }
 
+    /**
+     * Advance the virtual machine, ensures the machine's state is valid after
+     * the instruction finishes.
+     */
     public void step() {
-        state.validate();
-
         final Instruction instruction = getInstruction();
         if (instruction != null) {
             instruction.step(this);
@@ -47,6 +59,14 @@ public final class MachineImpl implements Machine {
         state.validate();
     }
 
+    /**
+     * Inform the active instruction that a write operation was completed.
+     * <p>
+     * Instructions are expected to wait / loop until a write operation they
+     * initiated has been completed.
+     *
+     * @param port the port on which the write operation was completed.
+     */
     public void onWriteCompleted(final Port port) {
         final Instruction instruction = getInstruction();
         if (instruction != null) {
@@ -54,6 +74,11 @@ public final class MachineImpl implements Machine {
         }
     }
 
+    /**
+     * Utility method for safely retrieving the current instruction.
+     *
+     * @return the currently active instruction, or <tt>null</tt>.
+     */
     private Instruction getInstruction() {
         if (state.pc >= 0 && state.pc < state.instructions.size()) {
             return state.instructions.get(state.pc);
@@ -62,6 +87,7 @@ public final class MachineImpl implements Machine {
     }
 
     // --------------------------------------------------------------------- //
+    // Machine
 
     @Override
     public MachineState getState() {
@@ -69,7 +95,7 @@ public final class MachineImpl implements Machine {
     }
 
     @Override
-    public TargetInterface getInterface(Target target) {
+    public TargetInterface getInterface(final Target target) {
         return interfaces.get(target);
     }
 }

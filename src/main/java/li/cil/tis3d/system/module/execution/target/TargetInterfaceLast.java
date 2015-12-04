@@ -1,12 +1,22 @@
 package li.cil.tis3d.system.module.execution.target;
 
-import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
+import li.cil.tis3d.system.module.ModuleExecution;
 import li.cil.tis3d.system.module.execution.Machine;
 
-public final class TargetInterfaceLast extends TargetInterfaceAbstractSide {
-    public TargetInterfaceLast(final Machine machine, final Casing casing, final Face face) {
-        super(machine, casing, face);
+/**
+ * Interface for the {@link Target#LAST} target.
+ * <p>
+ * Provides read and write on the pipe of the port that was last read from
+ * or written to. This is set whenever a read or write operation <em>on a
+ * real port</em> completes.
+ * <p>
+ * Since this is not set upon startup, there needs to be a default behavior,
+ * that being it behaves exactly like {@link Target#NIL}.
+ */
+public final class TargetInterfaceLast extends AbstractTargetInterfaceSide {
+    public TargetInterfaceLast(final Machine machine, final ModuleExecution module, final Face face) {
+        super(machine, module, face);
     }
 
     @Override
@@ -36,8 +46,8 @@ public final class TargetInterfaceLast extends TargetInterfaceAbstractSide {
     }
 
     @Override
-    public boolean canRead() {
-        return getState().last.map(this::canRead).orElse(true);
+    public boolean canTransfer() {
+        return getState().last.map(this::canTransfer).orElse(true);
     }
 
     @Override

@@ -33,65 +33,6 @@ public final class ModuleStack extends AbstractModule {
         super(casing, face);
     }
 
-    private boolean isEmpty() {
-        return top < 0;
-    }
-
-    private boolean isFull() {
-        return top >= STACK_SIZE - 1;
-    }
-
-    private void push(final int value) {
-        stack[++top] = value;
-    }
-
-    private int peek() {
-        return stack[top];
-    }
-
-    private void pop() {
-        --top;
-    }
-
-    private void stepOutput() {
-        // Don't try to write if the stack is empty.
-        if (isEmpty()) {
-            return;
-        }
-
-        for (final Port port : Port.VALUES) {
-            final Pipe sendingPipe = getCasing().getSendingPipe(getFace(), port);
-            if (!sendingPipe.isWriting()) {
-                sendingPipe.beginWrite(peek());
-            }
-        }
-    }
-
-    private void stepInput() {
-        for (final Port port : Port.VALUES) {
-            // Stop reading if the stack is full.
-            if (isFull()) {
-                return;
-            }
-
-            // Continuously read from all ports, push back last received value.
-            final Pipe receivingPipe = getCasing().getReceivingPipe(getFace(), port);
-            if (!receivingPipe.isReading()) {
-                receivingPipe.beginRead();
-            }
-            if (receivingPipe.canTransfer()) {
-                // Store the value.
-                push(receivingPipe.read());
-
-                // Restart all writes to ensure we're outputting the top-most value.
-                cancelWrite();
-
-                // Start reading again right away to read as fast as possible.
-                receivingPipe.beginRead();
-            }
-        }
-    }
-
     // --------------------------------------------------------------------- //
     // Module
 
@@ -131,5 +72,98 @@ public final class ModuleStack extends AbstractModule {
     public void writeToNBT(final NBTTagCompound nbt) {
         nbt.setIntArray("stack", stack);
         nbt.setInteger("top", top);
+    }
+
+    // --------------------------------------------------------------------- //
+
+    /**
+     * Check whether the stack is currently empty, i.e. no more items can be retrieved.
+     *
+     * @return <tt>true</tt> if the stack is empty, <tt>false</tt> otherwise.
+     */
+    private boolean isEmpty() {
+        return top < 0;
+    }
+
+    /**
+     * Check whether the stack is currently full, i.e. no more items can be stored.
+     *
+     * @return <tt>true</tt> if the stack is full, <tt>false</tt> otherwise.
+     */
+    private boolean isFull() {
+        return top >= STACK_SIZE - 1;
+    }
+
+    /**
+     * Store the specified item on the stack.
+     *
+     * @param value the value to store on the stack.
+     * @throws ArrayIndexOutOfBoundsException if the stack is full.
+     */
+    private void push(final int value) {
+        stack[++top] = value;
+    }
+
+    /**
+     * Retrieve the value that's currently on top of the stack, i.e. the value
+     * that was last pushed to the stack.
+     *
+     * @return the value on top of the stack.
+     * @throws ArrayIndexOutOfBoundsException if the stack is empty.
+     */
+    private int peek() {
+        return stack[top];
+    }
+
+    /**
+     * Reduces the stack size by one.
+     */
+    private void pop() {
+        top = Math.max(-1, top - 1);
+    }
+
+    /**
+     * Update the outputs of the stack, pushing the top value.
+     */
+    private void stepOutput() {
+        // Don't try to write if the stack is empty.
+        if (isEmpty()) {
+            return;
+        }
+
+        for (final Port port : Port.VALUES) {
+            final Pipe sendingPipe = getCasing().getSendingPipe(getFace(), port);
+            if (!sendingPipe.isWriting()) {
+                sendingPipe.beginWrite(peek());
+            }
+        }
+    }
+
+    /**
+     * Update the inputs of the stack, pulling values onto the stack.
+     */
+    private void stepInput() {
+        for (final Port port : Port.VALUES) {
+            // Stop reading if the stack is full.
+            if (isFull()) {
+                return;
+            }
+
+            // Continuously read from all ports, push back last received value.
+            final Pipe receivingPipe = getCasing().getReceivingPipe(getFace(), port);
+            if (!receivingPipe.isReading()) {
+                receivingPipe.beginRead();
+            }
+            if (receivingPipe.canTransfer()) {
+                // Store the value.
+                push(receivingPipe.read());
+
+                // Restart all writes to ensure we're outputting the top-most value.
+                cancelWrite();
+
+                // Start reading again right away to read as fast as possible.
+                receivingPipe.beginRead();
+            }
+        }
     }
 }

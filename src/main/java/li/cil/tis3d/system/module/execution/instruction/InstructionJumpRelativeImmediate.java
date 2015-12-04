@@ -2,7 +2,7 @@ package li.cil.tis3d.system.module.execution.instruction;
 
 import li.cil.tis3d.system.module.execution.Machine;
 
-public final class InstructionJumpRelativeImmediate extends AbstractInstruction {
+public final class InstructionJumpRelativeImmediate implements Instruction {
     private final int delta;
 
     public InstructionJumpRelativeImmediate(final int delta) {
@@ -12,5 +12,10 @@ public final class InstructionJumpRelativeImmediate extends AbstractInstruction 
     @Override
     public void step(final Machine machine) {
         machine.getState().pc += delta;
+    }
+
+    @Override
+    public String toString() {
+        return "JRO " + delta;
     }
 }

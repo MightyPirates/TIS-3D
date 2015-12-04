@@ -3,8 +3,8 @@ package li.cil.tis3d.system.module.execution.instruction;
 import li.cil.tis3d.system.module.execution.Machine;
 import li.cil.tis3d.system.module.execution.MachineState;
 
-abstract class AbstractInstructionJumpConditional extends AbstractInstruction {
-    private final String label;
+abstract class AbstractInstructionJumpConditional implements Instruction {
+    protected final String label;
 
     public AbstractInstructionJumpConditional(final String label) {
         this.label = label;

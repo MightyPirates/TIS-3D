@@ -16,13 +16,13 @@ public final class FontRendererTextureMonospace {
 
     private static final ResourceLocation LOCATION_FONT_TEXTURE = new ResourceLocation(Constants.MOD_ID, "textures/blocks/overlay/moduleExecutionFont.png");
     private static final String CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890:#-,?+!=()'.";
+    private static final int[] CHAR_MAP = IntStream.range(0, 256).map(CHARS::indexOf).toArray();
+
     private static final int COLUMNS = 8;
     private static final float U_SIZE = CHAR_WIDTH / 32f;
     private static final float V_SIZE = CHAR_HEIGHT / 32f;
     private static final float U_STEP = (CHAR_WIDTH + 1) / 32f;
     private static final float V_STEP = (CHAR_HEIGHT + 1) / 32f;
-
-    private static final int[] CHAR_MAP = IntStream.range(0, 256).map(CHARS::indexOf).toArray();
 
     public static void drawString(final String value) {
         drawString(value, value.length());

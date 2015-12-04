@@ -22,7 +22,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 /**
  * Takes care of common setup.
  */
-public class CommonProxy {
+public class ProxyCommon {
     public void onPreInit(final FMLPreInitializationEvent event) {
         // Initialize API.
         API.instance = new RegistryImpl();

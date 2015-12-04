@@ -1,9 +1,10 @@
 package li.cil.tis3d.system.module.execution;
 
+import li.cil.tis3d.TIS3D;
 import li.cil.tis3d.api.Port;
-import li.cil.tis3d.system.module.execution.instruction.Instruction;
-import li.cil.tis3d.system.module.execution.compiler.ParseException;
 import li.cil.tis3d.system.module.execution.compiler.Compiler;
+import li.cil.tis3d.system.module.execution.compiler.ParseException;
+import li.cil.tis3d.system.module.execution.instruction.Instruction;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.ArrayList;
@@ -54,17 +55,17 @@ public final class MachineState {
     /**
      * List of instructions (the program) stored in the machine.
      */
-    public final List<Instruction> instructions = new ArrayList<>(15);
+    public final List<Instruction> instructions = new ArrayList<>(Compiler.MAX_LINES);
 
     /**
      * List of labels and associated addresses.
      */
-    public final HashMap<String, Integer> labels = new HashMap<>();
+    public final HashMap<String, Integer> labels = new HashMap<>(Compiler.MAX_LINES);
 
     /**
      * Instruction address to line number mapping.
      */
-    public final HashMap<Integer, Integer> lineNumbers = new HashMap<>();
+    public final HashMap<Integer, Integer> lineNumbers = new HashMap<>(Compiler.MAX_LINES);
 
     // --------------------------------------------------------------------- //
 
@@ -110,8 +111,7 @@ public final class MachineState {
             try {
                 Compiler.compile(nbt.getString("code"), this);
             } catch (final ParseException e) {
-                // TODO logging
-                e.printStackTrace();
+                TIS3D.getLog().warn("Broken save, machine state's code has errors.", e);
             }
         }
 

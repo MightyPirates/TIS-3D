@@ -3,7 +3,7 @@ package li.cil.tis3d.system.module.execution.instruction;
 import li.cil.tis3d.system.module.execution.Machine;
 import li.cil.tis3d.system.module.execution.MachineState;
 
-public final class InstructionJump extends AbstractInstruction {
+public final class InstructionJump implements Instruction {
     private final String label;
 
     public InstructionJump(final String label) {
@@ -14,5 +14,10 @@ public final class InstructionJump extends AbstractInstruction {
     public void step(final Machine machine) {
         final MachineState state = machine.getState();
         state.pc = state.labels.get(label);
+    }
+
+    @Override
+    public String toString() {
+        return "JMP " + label;
     }
 }

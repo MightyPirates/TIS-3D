@@ -22,4 +22,9 @@ public final class InstructionMoveImmediate extends AbstractInstructionMove {
             }
         }
     }
+
+    @Override
+    public String toString() {
+        return "MOV " + value + " " + destination;
+    }
 }

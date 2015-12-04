@@ -9,8 +9,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -94,43 +92,5 @@ public abstract class AbstractModule implements Module {
     @Override
     public Face getFace() {
         return face;
-    }
-
-    @Override
-    public void step() {
-    }
-
-    @Override
-    public void onEnabled() {
-    }
-
-    @Override
-    public void onDisabled() {
-    }
-
-    @Override
-    public void onWriteComplete(final Port port) {
-    }
-
-    @Override
-    public boolean onActivate(final EntityPlayer player, final float hitX, final float hitY, final float hitZ) {
-        return false;
-    }
-
-    @Override
-    public void onData(final NBTTagCompound nbt) {
-    }
-
-    @SideOnly(Side.CLIENT)
-    @Override
-    public void render(final boolean enabled, final float partialTicks) {
-    }
-
-    @Override
-    public void readFromNBT(final NBTTagCompound nbt) {
-    }
-
-    @Override
-    public void writeToNBT(final NBTTagCompound nbt) {
     }
 }

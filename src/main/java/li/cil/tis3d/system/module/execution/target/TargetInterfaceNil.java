@@ -2,6 +2,13 @@ package li.cil.tis3d.system.module.execution.target;
 
 import li.cil.tis3d.system.module.execution.Machine;
 
+/**
+ * Interface for the {@link Target#NIL} target.
+ * <p>
+ * Provides instant read and write on the virtual <tt>NIL</tt> register,
+ * which will always return <tt>0</tt> when read, and silently consume all
+ * values written to it.
+ */
 public final class TargetInterfaceNil extends AbstractTargetInterface {
     public TargetInterfaceNil(final Machine machine) {
         super(machine);
@@ -31,7 +38,7 @@ public final class TargetInterfaceNil extends AbstractTargetInterface {
     }
 
     @Override
-    public boolean canRead() {
+    public boolean canTransfer() {
         return true;
     }
 

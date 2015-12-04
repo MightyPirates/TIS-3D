@@ -8,7 +8,12 @@ public final class InstructionJumpLessThanZero extends AbstractInstructionJumpCo
     }
 
     @Override
-    protected boolean isConditionTrue(MachineState state) {
+    protected boolean isConditionTrue(final MachineState state) {
         return state.acc < 0;
+    }
+
+    @Override
+    public String toString() {
+        return "JLZ " + label;
     }
 }

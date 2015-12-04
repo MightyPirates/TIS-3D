@@ -7,7 +7,6 @@ import li.cil.tis3d.api.module.ModuleProvider;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 
 /**
@@ -84,17 +83,5 @@ public final class InventoryCasing extends Inventory implements ISidedInventory 
     @Override
     protected void onItemRemoved(final int index) {
         tileEntity.setModule(Face.VALUES[index], null);
-    }
-
-    @Override
-    public void writeToNBT(final NBTTagCompound nbt) {
-        // TODO Tell modules to save data.
-        super.writeToNBT(nbt);
-    }
-
-    @Override
-    public void readFromNBT(final NBTTagCompound nbt) {
-        super.readFromNBT(nbt);
-        // TODO Tell modules to load data.
     }
 }

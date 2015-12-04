@@ -4,7 +4,7 @@ import li.cil.tis3d.api.Port;
 import li.cil.tis3d.system.module.execution.Machine;
 import li.cil.tis3d.system.module.execution.target.Target;
 
-abstract class AbstractInstructionMove extends AbstractInstruction {
+abstract class AbstractInstructionMove implements Instruction {
     protected final Target destination;
 
     // Flag for finishing in step if we get an onWriteComplete before it.
@@ -30,9 +30,7 @@ abstract class AbstractInstructionMove extends AbstractInstruction {
 
     @Override
     public void onWriteCompleted(final Machine machine, final Port port) {
-        if (destination == Target.ANY) {
-            machine.getInterface(destination).cancelWrite();
-        }
+        machine.getInterface(destination).onWriteComplete(machine, port);
         isDone = true;
     }
 }
