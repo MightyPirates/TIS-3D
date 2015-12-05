@@ -7,6 +7,7 @@ import li.cil.tis3d.api.Pipe;
 import li.cil.tis3d.api.Port;
 import li.cil.tis3d.api.prefab.AbstractModuleRotatable;
 import li.cil.tis3d.client.render.font.FontRendererTextureMonospace;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -97,8 +98,8 @@ public final class ModuleStack extends AbstractModuleRotatable {
         // Draw base overlay.
         drawQuad();
 
-        // Draw stack contents.
-        if (!isEmpty()) {
+        // Render detailed state when player is close.
+        if (!isEmpty() && Minecraft.getMinecraft().thePlayer.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
             drawState();
         }
 

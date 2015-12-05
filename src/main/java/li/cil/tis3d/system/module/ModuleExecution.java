@@ -191,48 +191,6 @@ public final class ModuleExecution extends AbstractModuleRotatable {
         RenderHelper.enableStandardItemLighting();
     }
 
-    @SideOnly(Side.CLIENT)
-    private void renderState(final MachineState machineState) {
-        // Offset to start drawing at top left of inner area, slightly inset.
-        GlStateManager.translate(4 / 16f, 4 / 16f, 0);
-        GlStateManager.scale(1 / 128f, 1 / 128f, 1);
-        GlStateManager.translate(1, 1, 0);
-        GlStateManager.color(1f, 1f, 1f, 1f);
-
-        // Draw register info on top.
-        final String registers = String.format("ACC:%3d BAK:%3d", machineState.acc, machineState.bak);
-        FontRendererTextureMonospace.drawString(registers);
-        GlStateManager.translate(0, FontRendererTextureMonospace.CHAR_HEIGHT + 4, 0);
-        drawLine(1);
-        GlStateManager.translate(0, 5, 0);
-
-        // If we have more lines than fit on our "screen", offset so that the
-        // current line is in the middle, but don't let last line scroll in.
-        final int maxLines = 50 / (FontRendererTextureMonospace.CHAR_HEIGHT + 1);
-        final int totalLines = machineState.code.length;
-        final int currentLine = machineState.lineNumbers.get(machineState.pc);
-        final int page = currentLine / maxLines;
-        final int offset = page * maxLines;
-        for (int lineNumber = offset; lineNumber < Math.min(totalLines, offset + maxLines); lineNumber++) {
-            final String line = machineState.code[lineNumber];
-            if (lineNumber == currentLine) {
-                if (state == State.WAITING) {
-                    GlStateManager.color(0.66f, 0.66f, 0.66f);
-                }
-
-                drawLine(FontRendererTextureMonospace.CHAR_HEIGHT);
-
-                GlStateManager.color(0f, 0f, 0f);
-            } else {
-                GlStateManager.color(1f, 1f, 1f);
-            }
-
-            FontRendererTextureMonospace.drawString(line, 15);
-
-            GlStateManager.translate(0, FontRendererTextureMonospace.CHAR_HEIGHT + 1, 0);
-        }
-    }
-
     @Override
     public void readFromNBT(final NBTTagCompound nbt) {
         super.readFromNBT(nbt);
@@ -342,6 +300,48 @@ public final class ModuleExecution extends AbstractModuleRotatable {
             nbt.setString("state", state.name());
         }
         getCasing().sendData(getFace(), nbt);
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void renderState(final MachineState machineState) {
+        // Offset to start drawing at top left of inner area, slightly inset.
+        GlStateManager.translate(4 / 16f, 4 / 16f, 0);
+        GlStateManager.scale(1 / 128f, 1 / 128f, 1);
+        GlStateManager.translate(1, 1, 0);
+        GlStateManager.color(1f, 1f, 1f, 1f);
+
+        // Draw register info on top.
+        final String registers = String.format("ACC:%3d BAK:%3d", machineState.acc, machineState.bak);
+        FontRendererTextureMonospace.drawString(registers);
+        GlStateManager.translate(0, FontRendererTextureMonospace.CHAR_HEIGHT + 4, 0);
+        drawLine(1);
+        GlStateManager.translate(0, 5, 0);
+
+        // If we have more lines than fit on our "screen", offset so that the
+        // current line is in the middle, but don't let last line scroll in.
+        final int maxLines = 50 / (FontRendererTextureMonospace.CHAR_HEIGHT + 1);
+        final int totalLines = machineState.code.length;
+        final int currentLine = machineState.lineNumbers.get(machineState.pc);
+        final int page = currentLine / maxLines;
+        final int offset = page * maxLines;
+        for (int lineNumber = offset; lineNumber < Math.min(totalLines, offset + maxLines); lineNumber++) {
+            final String line = machineState.code[lineNumber];
+            if (lineNumber == currentLine) {
+                if (state == State.WAITING) {
+                    GlStateManager.color(0.66f, 0.66f, 0.66f);
+                }
+
+                drawLine(FontRendererTextureMonospace.CHAR_HEIGHT);
+
+                GlStateManager.color(0f, 0f, 0f);
+            } else {
+                GlStateManager.color(1f, 1f, 1f);
+            }
+
+            FontRendererTextureMonospace.drawString(line, 15);
+
+            GlStateManager.translate(0, FontRendererTextureMonospace.CHAR_HEIGHT + 1, 0);
+        }
     }
 
     /**
