@@ -152,9 +152,11 @@ public final class ModuleExecution extends AbstractModuleRotatable {
             machine.getState().pc = nbt.getInteger("pc");
             machine.getState().acc = nbt.getInteger("acc");
             machine.getState().bak = nbt.getInteger("bak");
-            try {
-                state = Enum.valueOf(State.class, nbt.getString("state"));
-            } catch (final IllegalArgumentException ignored) {
+            if (nbt.hasKey("state")) {
+                try {
+                    state = Enum.valueOf(State.class, nbt.getString("state"));
+                } catch (final IllegalArgumentException ignored) {
+                }
             }
         } else {
             readFromNBT(nbt);
@@ -200,7 +202,9 @@ public final class ModuleExecution extends AbstractModuleRotatable {
             compileError = new ParseException(errorNbt.getString("message"), errorNbt.getInteger("lineNumber"), errorNbt.getInteger("column"));
         } else {
             try {
-                state = Enum.valueOf(State.class, nbt.getString("state"));
+                if (nbt.hasKey("state")) {
+                    state = Enum.valueOf(State.class, nbt.getString("state"));
+                }
 
                 // This way around to not even load the machine if the state is invalid.
                 final NBTTagCompound machineNbt = nbt.getCompoundTag("machine");

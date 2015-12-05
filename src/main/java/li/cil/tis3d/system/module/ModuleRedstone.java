@@ -40,6 +40,13 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
     private static final float SHARED_W = 3 / 32f;
     private static final float SHARED_H = SHARED_V1 - SHARED_V0;
 
+    // The last tick we updated. Used to avoid changing output and recomputing
+    // input multiple times a tick, which is pointless and bad for performance.
+    private long lastStep = 0L;
+    // Something changed last tick after the first neighbor block update, so
+    // we need to update again in the next tick (if we don't anyway).
+    private boolean scheduledNeighborUpdate = false;
+
     // --------------------------------------------------------------------- //
 
     public ModuleRedstone(final Casing casing, final Face face) {
@@ -51,11 +58,19 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
 
     @Override
     public void step() {
-        setRedstoneInput(computeRedstoneInput());
+        if (getCasing().getCasingWorld().getTotalWorldTime() > lastStep) {
+            setRedstoneInput(computeRedstoneInput());
+        }
 
         for (final Port port : Port.VALUES) {
             stepOutput(port);
             stepInput(port);
+        }
+
+        lastStep = getCasing().getCasingWorld().getTotalWorldTime();
+
+        if (scheduledNeighborUpdate) {
+            notifyNeighbors();
         }
     }
 
@@ -179,12 +194,26 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
 
         if (!getCasing().getCasingWorld().isRemote) {
             // If the value changed, notify neighboring blocks and make sure we're saved.
-            final Block blockType = getCasing().getCasingWorld().getBlockState(getCasing().getPosition()).getBlock();
             getCasing().markDirty();
-            getCasing().getCasingWorld().notifyNeighborsOfStateChange(getCasing().getPosition(), blockType);
+
+            // Avoid multiple world updates per tick.
+            if (getCasing().getCasingWorld().getTotalWorldTime() > lastStep) {
+                notifyNeighbors();
+            } else {
+                scheduledNeighborUpdate = true;
+            }
 
             sendData();
         }
+    }
+
+    /**
+     * Notify all neighbors of a block update, to let them realize our output changed.
+     */
+    private void notifyNeighbors() {
+        scheduledNeighborUpdate = false;
+        final Block blockType = getCasing().getCasingWorld().getBlockState(getCasing().getPosition()).getBlock();
+        getCasing().getCasingWorld().notifyNeighborsOfStateChange(getCasing().getPosition(), blockType);
     }
 
     /**
