@@ -5,7 +5,13 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Queue;
+import java.util.Set;
 
 /**
  * The controller tile entity.
@@ -123,10 +129,18 @@ public final class TileEntityController extends TileEntity implements ITickable 
             scan();
         }
 
+        // Stop if we're in an invalid state.
+        if (state != ControllerState.READY && state != ControllerState.RUNNING) {
+            return;
+        }
+
+        // Get accumulated redstone power coming in.
+        final int power = computePower();
+
         // If we're in an error state we do nothing.
         if (state == ControllerState.READY) {
             // Are we powered?
-            if (!getWorld().isBlockPowered(getPos())) {
+            if (power < 1) {
                 // Nope, nothing to do then.
                 return;
             } else {
@@ -142,13 +156,25 @@ public final class TileEntityController extends TileEntity implements ITickable 
                 // Nope, fall back to ready state, disable modules.
                 state = ControllerState.READY;
                 casings.forEach(TileEntityCasing::onDisabled);
-            } else {
-                final int power = getWorld().isBlockIndirectlyGettingPowered(getPos());
-                final int delay = 16 - Math.max(1, Math.min(15, power));
-                if (delay < 15 && getWorld().getTotalWorldTime() % delay == 0) {
-                    // Yes, all systems are go!
-                    casings.forEach(TileEntityCasing::stepModules);
-                    casings.forEach(TileEntityCasing::stepPipes);
+            } else if (power > 1) {
+                // 0 = off, we never have this or we'd be in the READY state.
+                // 1 = paused, i.e. we don't lose state, but don't step.
+                // [2-14] = step every 15-n-th step.
+                // 15 = step every tick.
+                // [16-75] = step n/15 times a tick.
+                // 75 = step 5 times a tick.
+                if (power < 15) {
+                    // Stepping slower than 100%.
+                    final int delay = 15 - power;
+                    if (getWorld().getTotalWorldTime() % delay == 0) {
+                        stepCasings();
+                    }
+                } else {
+                    // Stepping faster than 100%.
+                    final int steps = power / 15;
+                    for (int step = 0; step < steps; step++) {
+                        stepCasings();
+                    }
                 }
             }
         }
@@ -251,6 +277,27 @@ public final class TileEntityController extends TileEntity implements ITickable 
 
         // All done. Make sure this comes after the checkNeighbors or we get CMEs!
         state = ControllerState.READY;
+    }
+
+    /**
+     * Compute the <em>accumulative</em> redstone power applied to the controller.
+     *
+     * @return the accumulative redstone signal.
+     */
+    private int computePower() {
+        int acc = 0;
+        for (final EnumFacing facing : EnumFacing.VALUES) {
+            acc += Math.max(0, Math.min(15, getWorld().getRedstonePower(getPos().offset(facing), facing)));
+        }
+        return acc;
+    }
+
+    /**
+     * Advance all casings by one step.
+     */
+    private void stepCasings() {
+        casings.forEach(TileEntityCasing::stepModules);
+        casings.forEach(TileEntityCasing::stepPipes);
     }
 
     /**

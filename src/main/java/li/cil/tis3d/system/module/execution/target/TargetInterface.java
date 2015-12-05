@@ -1,5 +1,7 @@
 package li.cil.tis3d.system.module.execution.target;
 
+import li.cil.tis3d.api.Port;
+
 /**
  * Provides an abstracted way of interacting with {@link Target}s, similar to
  * how {@link li.cil.tis3d.api.Pipe}s operate.
@@ -101,7 +103,8 @@ public interface TargetInterface {
      * Instructions must <em>always</em> await or cancel a write operation they
      * started.
      *
+     * @param port the port the interface was writing to.
      */
-    default void onWriteComplete() {
+    default void onWriteComplete(final Port port) {
     }
 }

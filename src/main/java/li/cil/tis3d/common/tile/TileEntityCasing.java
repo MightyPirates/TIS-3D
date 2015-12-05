@@ -113,10 +113,13 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
                     setNeighbor(Face.fromEnumFacing(facing), null);
                 }
 
-                // If we have a controller and it's not our controller, tell our
-                // controller to do a re-scan (because now we have more than one
-                // controller, which is invalid).
                 if (neighborTileEntity instanceof TileEntityController) {
+                    // If we have a controller, clear the module on that face.
+                    setModule(Face.fromEnumFacing(facing), null);
+
+                    // If we have a controller and it's not our controller, tell our
+                    // controller to do a re-scan (because now we have more than one
+                    // controller, which is invalid).
                     if (getController() != neighborTileEntity && getController() != null) {
                         getController().scheduleScan();
                     }

@@ -5,6 +5,8 @@ import li.cil.tis3d.api.Port;
 import li.cil.tis3d.system.module.ModuleExecution;
 import li.cil.tis3d.system.module.execution.Machine;
 
+import java.util.Optional;
+
 /**
  * Interface for the {@link Target#ANY} target.
  * <p>
@@ -60,29 +62,26 @@ public final class TargetInterfaceAny extends AbstractTargetInterfaceSide {
 
     @Override
     public int read() {
-        if (canTransfer(Port.LEFT)) {
-            cancelRead(Port.RIGHT);
-            cancelRead(Port.UP);
-            cancelRead(Port.DOWN);
-            return read(Port.LEFT);
-        } else cancelRead(Port.LEFT);
-        if (canTransfer(Port.RIGHT)) {
-            cancelRead(Port.UP);
-            cancelRead(Port.DOWN);
-            return read(Port.RIGHT);
-        } else cancelRead(Port.RIGHT);
-        if (canTransfer(Port.UP)) {
-            cancelRead(Port.DOWN);
-            return read(Port.UP);
-        } else cancelRead(Port.UP);
-        if (canTransfer(Port.DOWN)) {
-            return read(Port.DOWN);
-        } else cancelRead(Port.DOWN);
+        for (final Port port : Port.VALUES) {
+            if (canTransfer(port)) {
+                for (final Port otherPort : Port.VALUES) {
+                    if (otherPort != port) {
+                        cancelRead(otherPort);
+                    }
+                }
+
+                getMachine().getState().last = Optional.of(port);
+
+                return read(port);
+            }
+        }
+
         throw new IllegalStateException("No data to read. Check canTransfer().");
     }
 
     @Override
-    public void onWriteComplete() {
+    public void onWriteComplete(final Port port) {
         cancelWrite();
+        getMachine().getState().last = Optional.of(port);
     }
 }

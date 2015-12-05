@@ -30,7 +30,7 @@ abstract class AbstractInstructionMove implements Instruction {
 
     @Override
     public void onWriteCompleted(final Machine machine, final Port port) {
-        machine.getInterface(destination).onWriteComplete();
+        machine.getInterface(destination).onWriteComplete(port);
         isDone = true;
     }
 }
