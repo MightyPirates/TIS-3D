@@ -164,7 +164,11 @@ public final class BlockCasing extends Block {
                     final ItemStack stack = player.getHeldItem();
                     if (casing.canInsertItem(side.ordinal(), stack, side)) {
                         if (!world.isRemote) {
-                            casing.setInventorySlotContents(side.ordinal(), stack.splitStack(1));
+                            if (player.capabilities.isCreativeMode) {
+                                casing.setInventorySlotContents(side.ordinal(), stack.copy().splitStack(1));
+                            } else {
+                                casing.setInventorySlotContents(side.ordinal(), stack.splitStack(1));
+                            }
                             if (side.getAxis() == EnumFacing.Axis.Y) {
                                 final Face face = Face.fromEnumFacing(side);
                                 final Module newModule = casing.getModule(face);

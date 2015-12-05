@@ -166,12 +166,7 @@ public final class ModuleExecution extends AbstractModuleRotatable {
     @SideOnly(Side.CLIENT)
     @Override
     public void render(final boolean enabled, final float partialTicks) {
-        if (!enabled) {
-            return;
-        }
-
-        final MachineState machineState = machine.getState();
-        if (state == State.IDLE || machineState.code == null) {
+        if (!enabled && !isPlayerLookingAt()) {
             return;
         }
 
@@ -180,13 +175,17 @@ public final class ModuleExecution extends AbstractModuleRotatable {
         RenderHelper.disableStandardItemLighting();
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 0 / 1.0F);
 
+        final MachineState machineState = machine.getState();
+
         // Draw status texture.
-        Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
-        final TextureAtlasSprite icon = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(STATE_LOCATIONS[state.ordinal()]);
-        drawQuad(icon.getMinU(), icon.getMinV(), icon.getMaxU(), icon.getMaxV());
+        if (state != State.IDLE) {
+            Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
+            final TextureAtlasSprite icon = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(STATE_LOCATIONS[state.ordinal()]);
+            drawQuad(icon.getMinU(), icon.getMinV(), icon.getMaxU(), icon.getMaxV());
+        }
 
         // Render detailed state when player is close.
-        if (Minecraft.getMinecraft().thePlayer.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
+        if (machineState.code != null && Minecraft.getMinecraft().thePlayer.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
             renderState(machineState);
         }
 
