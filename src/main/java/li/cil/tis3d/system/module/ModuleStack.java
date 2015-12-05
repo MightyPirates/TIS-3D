@@ -1,11 +1,19 @@
 package li.cil.tis3d.system.module;
 
+import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
 import li.cil.tis3d.api.Pipe;
 import li.cil.tis3d.api.Port;
 import li.cil.tis3d.api.prefab.AbstractModuleRotatable;
+import li.cil.tis3d.client.render.font.FontRendererTextureMonospace;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import scala.Array;
 
 /**
@@ -16,16 +24,21 @@ import scala.Array;
  * While it is not full, it will receive data on all ports and push them back.
  */
 public final class ModuleStack extends AbstractModuleRotatable {
-    /**
-     * The number of elements the stack may store.
-     */
-    public static final int STACK_SIZE = 15;
-
     // --------------------------------------------------------------------- //
     // Persisted data
 
     private final int[] stack = new int[STACK_SIZE];
     private int top = -1;
+
+    // --------------------------------------------------------------------- //
+    // Computed data
+
+    /**
+     * The number of elements the stack may store.
+     */
+    public static final int STACK_SIZE = 16;
+
+    private static final ResourceLocation LOCATION_OVERLAY = new ResourceLocation(API.MOD_ID, "textures/blocks/overlay/moduleStack.png");
 
     // --------------------------------------------------------------------- //
 
@@ -46,6 +59,8 @@ public final class ModuleStack extends AbstractModuleRotatable {
     public void onDisabled() {
         // Clear stack on shutdown.
         top = -1;
+
+        sendData();
     }
 
     @Override
@@ -62,9 +77,32 @@ public final class ModuleStack extends AbstractModuleRotatable {
     }
 
     @Override
+    public void onData(final NBTTagCompound nbt) {
+        readFromNBT(nbt);
+    }
+
+    @Override
     public void render(final boolean enabled, final float partialTicks) {
+        if (!enabled) {
+            return;
+        }
+
         rotateForRendering();
 
+        RenderHelper.disableStandardItemLighting();
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 0 / 1.0F);
+
+        bindTexture(LOCATION_OVERLAY);
+
+        // Draw base overlay.
+        drawQuad();
+
+        // Draw stack contents.
+        if (!isEmpty()) {
+            drawState();
+        }
+
+        RenderHelper.enableStandardItemLighting();
     }
 
     @Override
@@ -112,6 +150,8 @@ public final class ModuleStack extends AbstractModuleRotatable {
      */
     private void push(final int value) {
         stack[++top] = value;
+
+        sendData();
     }
 
     /**
@@ -130,6 +170,8 @@ public final class ModuleStack extends AbstractModuleRotatable {
      */
     private void pop() {
         top = Math.max(-1, top - 1);
+
+        sendData();
     }
 
     /**
@@ -173,6 +215,29 @@ public final class ModuleStack extends AbstractModuleRotatable {
 
                 // Start reading again right away to read as fast as possible.
                 receivingPipe.beginRead();
+            }
+        }
+    }
+
+    private void sendData() {
+        final NBTTagCompound nbt = new NBTTagCompound();
+        writeToNBT(nbt);
+        getCasing().sendData(getFace(), nbt);
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void drawState() {
+        // Offset to start drawing at top left of inner area, slightly inset.
+        GlStateManager.translate(3 / 16f, 5 / 16f, 0);
+        GlStateManager.scale(1 / 128f, 1 / 128f, 1);
+        GlStateManager.translate(4.5f, 14.5f, 0);
+        GlStateManager.color(1f, 1f, 1f, 1f);
+
+        for (int i = 0; i <= top; i++) {
+            FontRendererTextureMonospace.drawString(String.valueOf(stack[i]));
+            GlStateManager.translate(0, FontRendererTextureMonospace.CHAR_HEIGHT + 1, 0);
+            if ((i + 1) % 4 == 0) {
+                GlStateManager.translate((FontRendererTextureMonospace.CHAR_WIDTH + 1) * 5, (FontRendererTextureMonospace.CHAR_HEIGHT + 1) * -4, 0);
             }
         }
     }

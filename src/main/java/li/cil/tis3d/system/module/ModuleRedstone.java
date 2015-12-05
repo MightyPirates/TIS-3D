@@ -238,8 +238,7 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
      */
     private void sendData() {
         final NBTTagCompound nbt = new NBTTagCompound();
-        nbt.setInteger("output", output);
-        nbt.setInteger("input", input);
+        writeToNBT(nbt);
         getCasing().sendData(getFace(), nbt);
     }
 }
