@@ -5,10 +5,8 @@ import li.cil.tis3d.common.tile.TileEntityController;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -44,21 +42,6 @@ public final class BlockController extends Block {
     @Override
     public TileEntity createTileEntity(final World world, final IBlockState state) {
         return new TileEntityController();
-    }
-
-    @Override
-    public boolean onBlockActivated(final World world, final BlockPos pos, final IBlockState state, final EntityPlayer player, final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
-        if (world.isBlockLoaded(pos)) {
-            final TileEntity tileEntity = world.getTileEntity(pos);
-            if (tileEntity instanceof TileEntityController) {
-                final TileEntityController controller = (TileEntityController) tileEntity;
-                if (!world.isRemote) {
-                    player.addChatMessage(new ChatComponentText(controller.getState().toString()));
-                }
-                return true;
-            }
-        }
-        return super.onBlockActivated(world, pos, state, player, side, hitX, hitY, hitZ);
     }
 
     // --------------------------------------------------------------------- //
