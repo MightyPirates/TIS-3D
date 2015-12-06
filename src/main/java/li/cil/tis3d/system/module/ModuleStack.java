@@ -81,6 +81,7 @@ public final class ModuleStack extends AbstractModuleRotatable {
         readFromNBT(nbt);
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public void render(final boolean enabled, final float partialTicks) {
         if (!enabled) {
@@ -234,7 +235,7 @@ public final class ModuleStack extends AbstractModuleRotatable {
         GlStateManager.color(1f, 1f, 1f, 1f);
 
         for (int i = 0; i <= top; i++) {
-            FontRendererTextureMonospace.drawString(String.valueOf(stack[i]));
+            FontRendererTextureMonospace.drawString(String.format("%4X", (short) stack[i]));
             GlStateManager.translate(0, FontRendererTextureMonospace.CHAR_HEIGHT + 1, 0);
             if ((i + 1) % 4 == 0) {
                 GlStateManager.translate((FontRendererTextureMonospace.CHAR_WIDTH + 1) * 5, (FontRendererTextureMonospace.CHAR_HEIGHT + 1) * -4, 0);

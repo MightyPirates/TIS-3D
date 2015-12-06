@@ -12,6 +12,8 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Random;
 
@@ -39,6 +41,7 @@ public final class ModuleRandom extends AbstractModule {
         stepOutput(port);
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public void render(final boolean enabled, final float partialTicks) {
         if (!enabled) {

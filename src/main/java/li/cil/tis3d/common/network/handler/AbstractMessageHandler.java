@@ -8,6 +8,8 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public abstract class AbstractMessageHandler<T extends IMessage> implements IMessageHandler<T, IMessage> {
     @Override
@@ -37,6 +39,7 @@ public abstract class AbstractMessageHandler<T extends IMessage> implements IMes
         return null;
     }
 
+    @SideOnly(Side.CLIENT)
     private static World getWorldClient(final int dimension) {
         final World world = FMLClientHandler.instance().getClient().theWorld;
         if (world == null) {
