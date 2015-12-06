@@ -3,6 +3,7 @@ package li.cil.tis3d.system.module.execution.compiler;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import li.cil.tis3d.Constants;
+import li.cil.tis3d.Settings;
 import li.cil.tis3d.system.module.execution.MachineState;
 import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitter;
 import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterAdd;
@@ -35,18 +36,6 @@ import java.util.regex.Pattern;
  */
 public final class Compiler {
     /**
-     * The maximum number of lines a piece of code may have.
-     */
-    public static final int MAX_LINES = 20;
-
-    /**
-     * The maximum number of characters a single line may have.
-     */
-    public static final int MAX_COLUMNS = 18;
-
-    // --------------------------------------------------------------------- //
-
-    /**
      * Parse the specified piece of assembly code into the specified machine state.
      * <p>
      * Note that the machine state will be hard reset.
@@ -59,8 +48,8 @@ public final class Compiler {
         state.clear();
 
         final String[] lines = PATTERN_LINES.split(code);
-        if (lines.length > MAX_LINES) {
-            throw new ParseException(Constants.MESSAGE_TOO_MANY_LINES, MAX_LINES, 0);
+        if (lines.length > Settings.maxLinesPerProgram) {
+            throw new ParseException(Constants.MESSAGE_TOO_MANY_LINES, Settings.maxLinesPerProgram, 0);
         }
         for (int lineNumber = 0; lineNumber < lines.length; lineNumber++) {
             lines[lineNumber] = lines[lineNumber].toUpperCase(Locale.ENGLISH);
@@ -73,8 +62,8 @@ public final class Compiler {
             final List<Validator> validators = new ArrayList<>();
             for (int lineNumber = 0; lineNumber < lines.length; lineNumber++) {
                 // Enforce max line length.
-                if (lines[lineNumber].length() > MAX_COLUMNS) {
-                    throw new ParseException(Constants.MESSAGE_LINE_TOO_LONG, lineNumber, MAX_COLUMNS);
+                if (lines[lineNumber].length() > Settings.maxColumnsPerLine) {
+                    throw new ParseException(Constants.MESSAGE_LINE_TOO_LONG, lineNumber, Settings.maxColumnsPerLine);
                 }
 
                 // Get current line, strip comments, trim whitespace and uppercase.

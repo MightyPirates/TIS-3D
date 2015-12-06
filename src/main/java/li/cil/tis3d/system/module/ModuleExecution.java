@@ -260,7 +260,11 @@ public final class ModuleExecution extends AbstractModuleRotatable {
             return null;
         }
 
-        return pages.getStringTagAt(0);
+        final StringBuilder code = new StringBuilder();
+        for (int page = 0; page < pages.tagCount(); page++) {
+            code.append(pages.getStringTagAt(page)).append('\n');
+        }
+        return code.toString();
     }
 
     /**
