@@ -70,6 +70,11 @@ processResources {
     }
 }
 
+task deobfJar(type: Jar) {
+    from sourceSets.main.output
+    classifier = 'dev'
+}
+
 task apiJar(type: Jar) {
     from sourceSets.main.allSource
     from sourceSets.main.output
@@ -85,6 +90,7 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 artifacts {
     archives javadocJar
     archives apiJar
+    archives deobfJar
 }
 
 publishing {
@@ -93,6 +99,7 @@ publishing {
             artifact jar
             artifact javadocJar
             artifact apiJar
+            artifact deobfJar
         }
     }
     repositories {

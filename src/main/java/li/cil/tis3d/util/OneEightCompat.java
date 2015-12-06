@@ -47,9 +47,6 @@ public final class OneEightCompat {
         return getHorizontal(MathHelper.floor_double(entity.rotationYaw * 4 / 360 + 0.5f) & 3);
     }
 
-    /**
-     * Get a Facing by it's horizontal index (0-3). The order is S-W-N-E.
-     */
     // EnumFacing.getHorizontal
     public static EnumFacing getHorizontal(final int index) {
         return HORIZONTALS[MathHelper.abs_int(index % HORIZONTALS.length)];
