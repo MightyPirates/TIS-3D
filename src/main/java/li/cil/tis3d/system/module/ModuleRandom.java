@@ -1,5 +1,7 @@
 package li.cil.tis3d.system.module;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
 import li.cil.tis3d.api.Pipe;
@@ -39,6 +41,7 @@ public final class ModuleRandom extends AbstractModule {
         stepOutput(port);
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public void render(final boolean enabled, final float partialTicks) {
         if (!enabled) {

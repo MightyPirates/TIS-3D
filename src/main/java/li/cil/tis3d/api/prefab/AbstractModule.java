@@ -163,6 +163,7 @@ public abstract class AbstractModule implements Module {
     public void onData(final NBTTagCompound nbt) {
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public void render(final boolean enabled, final float partialTicks) {
     }

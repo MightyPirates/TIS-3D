@@ -4,6 +4,8 @@ import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 
@@ -30,6 +32,7 @@ public abstract class AbstractMessageHandler<T extends IMessage> implements IMes
         return null;
     }
 
+    @SideOnly(Side.CLIENT)
     private static World getWorldClient(final int dimension) {
         final World world = FMLClientHandler.instance().getClient().theWorld;
         if (world == null) {

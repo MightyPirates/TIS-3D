@@ -1,6 +1,5 @@
 package li.cil.tis3d.system.module.execution;
 
-import li.cil.tis3d.TIS3D;
 import li.cil.tis3d.api.Port;
 import li.cil.tis3d.system.module.execution.compiler.Compiler;
 import li.cil.tis3d.system.module.execution.compiler.ParseException;
@@ -105,8 +104,10 @@ public final class MachineState {
         if (nbt.hasKey("code")) {
             try {
                 Compiler.compile(nbt.getString("code"), this);
-            } catch (final ParseException e) {
-                TIS3D.getLog().warn("Broken save, machine state's code has errors.", e);
+            } catch (final ParseException ignored) {
+                // Silent because this is also used to send code to the
+                // clients to visualize errors, and code is also saved
+                // in errored state.
             }
         }
 
