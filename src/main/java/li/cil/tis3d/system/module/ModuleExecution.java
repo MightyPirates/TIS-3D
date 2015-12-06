@@ -31,6 +31,8 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.Optional;
+
 /**
  * The programmable execution module.
  */
@@ -144,18 +146,24 @@ public final class ModuleExecution extends AbstractModuleRotatable {
 
     @Override
     public void onData(final NBTTagCompound nbt) {
-        if (nbt.hasKey("pc")) {
+        if (nbt.hasKey("machine")) {
+            readFromNBT(nbt);
+        } else {
             machine.getState().pc = nbt.getInteger("pc");
             machine.getState().acc = nbt.getInteger("acc");
             machine.getState().bak = nbt.getInteger("bak");
+            if (nbt.hasKey("last")) {
+                try {
+                    machine.getState().last = Optional.of(Enum.valueOf(Port.class, nbt.getString("last")));
+                } catch (final IllegalArgumentException ignored) {
+                }
+            }
             if (nbt.hasKey("state")) {
                 try {
                     state = Enum.valueOf(State.class, nbt.getString("state"));
                 } catch (final IllegalArgumentException ignored) {
                 }
             }
-        } else {
-            readFromNBT(nbt);
         }
     }
 
@@ -292,6 +300,8 @@ public final class ModuleExecution extends AbstractModuleRotatable {
             nbt.setInteger("pc", machine.getState().pc);
             nbt.setInteger("acc", machine.getState().acc);
             nbt.setInteger("bak", machine.getState().bak);
+            machine.getState().last.ifPresent(last -> nbt.setString("last", last.name()));
+
             nbt.setString("state", state.name());
         }
         getCasing().sendData(getFace(), nbt);
