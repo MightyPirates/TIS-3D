@@ -156,6 +156,8 @@ public final class ModuleExecution extends AbstractModuleRotatable {
                     machine.getState().last = Optional.of(Enum.valueOf(Port.class, nbt.getString("last")));
                 } catch (final IllegalArgumentException ignored) {
                 }
+            } else {
+                machine.getState().last = Optional.empty();
             }
             if (nbt.hasKey("state")) {
                 try {
