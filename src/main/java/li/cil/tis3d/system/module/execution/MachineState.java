@@ -48,11 +48,6 @@ public final class MachineState {
     // Computed data
 
     /**
-     * The maximum value that can be stored in a register.
-     */
-    public static final int MAX_VALUE = 999;
-
-    /**
      * List of instructions (the program) stored in the machine.
      */
     public final List<Instruction> instructions = new ArrayList<>(Compiler.MAX_LINES);
@@ -78,8 +73,8 @@ public final class MachineState {
         if (pc < 0 || pc >= instructions.size()) {
             pc = 0;
         }
-        acc = Math.max(-MAX_VALUE, Math.min(MAX_VALUE, acc));
-        bak = Math.max(-MAX_VALUE, Math.min(MAX_VALUE, bak));
+        acc = Math.max(Short.MIN_VALUE, Math.min(Short.MAX_VALUE, acc));
+        bak = Math.max(Short.MIN_VALUE, Math.min(Short.MAX_VALUE, bak));
     }
 
     /**

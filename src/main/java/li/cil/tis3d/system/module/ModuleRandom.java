@@ -6,13 +6,14 @@ import li.cil.tis3d.api.Pipe;
 import li.cil.tis3d.api.Port;
 import li.cil.tis3d.api.prefab.AbstractModule;
 import li.cil.tis3d.client.TextureLoader;
-import li.cil.tis3d.system.module.execution.MachineState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
+
+import java.util.Random;
 
 public final class ModuleRandom extends AbstractModule {
     public ModuleRandom(final Casing casing, final Face face) {
@@ -66,7 +67,8 @@ public final class ModuleRandom extends AbstractModule {
     private void stepOutput(final Port port) {
         final Pipe sendingPipe = getCasing().getSendingPipe(getFace(), port);
         if (!sendingPipe.isWriting()) {
-            final int value = getCasing().getCasingWorld().rand.nextInt(MachineState.MAX_VALUE * 2 + 1) - MachineState.MAX_VALUE;
+            final Random random = getCasing().getCasingWorld().rand;
+            final int value = (short) random.nextInt(0xFFFF + 1);
             sendingPipe.beginWrite(value);
         }
     }

@@ -316,10 +316,10 @@ public final class ModuleExecution extends AbstractModuleRotatable {
         GlStateManager.color(1f, 1f, 1f, 1f);
 
         // Draw register info on top.
-        final String accLast = String.format("ACC:%4d LAST:%s", machineState.acc, machineState.last.map(Enum::name).orElse("NONE"));
+        final String accLast = String.format("ACC:%4X LAST:%s", (short) machineState.acc, machineState.last.map(Enum::name).orElse("NONE"));
         FontRendererTextureMonospace.drawString(accLast);
         GlStateManager.translate(0, FontRendererTextureMonospace.CHAR_HEIGHT + 4, 0);
-        final String bakState = String.format("BAK:%4d MODE:%s", machineState.bak, state.name());
+        final String bakState = String.format("BAK:%4X MODE:%s", (short) machineState.bak, state.name());
         FontRendererTextureMonospace.drawString(bakState);
         GlStateManager.translate(0, FontRendererTextureMonospace.CHAR_HEIGHT + 4, 0);
         drawLine(1);
