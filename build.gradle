@@ -29,7 +29,7 @@ file "build.properties" withReader {
 
 version = "${config.mod.version}"
 group = "li.cil.tis3d"
-archivesBaseName = "TIS-3D-MC${config.minecraft.version}"
+archivesBaseName = "TIS-3D"
 
 def getGitRef() {
   try {
@@ -49,17 +49,21 @@ if (System.getenv("BUILD_NUMBER") != null)
 else
     version += "+" + getGitRef()
 
+ext.simpleVersion = version
+version = "MC${config.minecraft.version}-${project.version}"
+
 minecraft {
     version = "${config.minecraft.version}-${config.forge.version}"
     runDir = "run"
+    replace "@VERSION@", project.simpleVersion
 }
 
 processResources {
-    inputs.property "version", project.version
+    inputs.property "version", project.simpleVersion
     inputs.property "mcversion", project.minecraft.version
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-        expand 'version':project.version, 'mcversion':project.minecraft.version
+        expand 'version':project.simpleVersion, 'mcversion':project.minecraft.version
     }
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
