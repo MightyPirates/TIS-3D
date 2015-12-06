@@ -21,9 +21,15 @@ apply plugin: 'maven-publish'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-version = "0.1"
+file "build.properties" withReader {
+    def prop = new Properties()
+    prop.load(it)
+    ext.config = new ConfigSlurper().parse prop
+}
+
+version = "${config.mod.version}"
 group = "li.cil.tis3d"
-archivesBaseName = "TIS-3D"
+archivesBaseName = "TIS-3D-MC${config.minecraft.version}"
 
 def getGitRef() {
   try {
@@ -44,7 +50,7 @@ else
     version += "+" + getGitRef()
 
 minecraft {
-    version = "1.7.10-10.13.4.1566-1.7.10"
+    version = "${config.minecraft.version}-${config.forge.version}"
     runDir = "run"
 }
 
@@ -68,7 +74,7 @@ publishing {
     }
     repositories {
         maven {
-            url "file:///home/www/maven.cil.li/web"
+            url "${config.maven.url}"
         }
     }
 }
