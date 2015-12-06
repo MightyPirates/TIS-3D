@@ -1,6 +1,7 @@
 package li.cil.tis3d.common;
 
 import li.cil.tis3d.Constants;
+import li.cil.tis3d.Settings;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.common.block.BlockCasing;
 import li.cil.tis3d.common.block.BlockController;
@@ -57,6 +58,8 @@ public class ProxyCommon {
                         setUnlocalizedName(Constants.NAME_ITEM_MODULE_RANDOM).
                         setCreativeTab(API.creativeTab),
                 Constants.NAME_ITEM_MODULE_RANDOM);
+
+        Settings.load(event.getSuggestedConfigurationFile());
     }
 
     public void onInit(final FMLInitializationEvent event) {

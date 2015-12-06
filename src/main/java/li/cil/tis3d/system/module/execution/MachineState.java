@@ -1,5 +1,6 @@
 package li.cil.tis3d.system.module.execution;
 
+import li.cil.tis3d.Settings;
 import li.cil.tis3d.api.Port;
 import li.cil.tis3d.system.module.execution.compiler.Compiler;
 import li.cil.tis3d.system.module.execution.compiler.ParseException;
@@ -49,17 +50,17 @@ public final class MachineState {
     /**
      * List of instructions (the program) stored in the machine.
      */
-    public final List<Instruction> instructions = new ArrayList<>(Compiler.MAX_LINES);
+    public final List<Instruction> instructions = new ArrayList<>(Settings.maxLinesPerProgram);
 
     /**
      * List of labels and associated addresses.
      */
-    public final HashMap<String, Integer> labels = new HashMap<>(Compiler.MAX_LINES);
+    public final HashMap<String, Integer> labels = new HashMap<>(Settings.maxLinesPerProgram);
 
     /**
      * Instruction address to line number mapping.
      */
-    public final HashMap<Integer, Integer> lineNumbers = new HashMap<>(Compiler.MAX_LINES);
+    public final HashMap<Integer, Integer> lineNumbers = new HashMap<>(Settings.maxLinesPerProgram);
 
     // --------------------------------------------------------------------- //
 
