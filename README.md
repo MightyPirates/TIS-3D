@@ -1,5 +1,5 @@
 # TIS-3D
-TIS-3D is a Minecraft mod inspired by the brilliant game TIS-100 (go buy it if you don't own it yet). It takes the concept of minimal, programmable nodes and expands it to the third dimension, allowing you to build multiblock computers from different modules. Basic modules are the executable module, which can be programmed in very basic ASM (as introduced by TIS-100), and the redstone module, which allows reading and writing readstone signals, enabling basic interaction with the world.
+TIS-3D is a Minecraft mod inspired by the brilliant game TIS-100 (go buy it if you don't own it yet). It takes the concept of minimal, programmable nodes and expands it to the third dimension, allowing you to build multiblock computers from different modules. Basic modules are the executable module, which can be programmed in very basic ASM (as introduced by TIS-100), and the redstone module, which allows reading and writing redstone signals, enabling basic interaction with the world.
 
 *This mod requires Java 8!*
 
