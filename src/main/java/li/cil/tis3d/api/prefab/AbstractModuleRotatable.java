@@ -56,7 +56,7 @@ public abstract class AbstractModuleRotatable extends AbstractModule implements 
                 facing = Enum.valueOf(Port.class, nbt.getString("facing"));
             } catch (final IllegalArgumentException e) {
                 // This can only happen if someone messes with the save.
-                LogManager.getLogger(API.MOD_ID).warn("Broken save, execution module facing is invalid.", e);
+                LogManager.getLogger(API.MOD_ID).warn("Broken save, module facing is invalid.", e);
             }
         }
     }
