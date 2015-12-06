@@ -5,6 +5,7 @@ import li.cil.tis3d.Settings;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.common.block.BlockCasing;
 import li.cil.tis3d.common.block.BlockController;
+import li.cil.tis3d.common.item.ItemCodeBook;
 import li.cil.tis3d.common.item.ItemModule;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.provider.ModuleProviderExecution;
@@ -59,6 +60,11 @@ public class ProxyCommon {
                         setCreativeTab(API.creativeTab),
                 Constants.NAME_ITEM_MODULE_RANDOM);
 
+        GameRegistry.registerItem(new ItemCodeBook().
+                        setUnlocalizedName(Constants.NAME_ITEM_CODE_BOOK).
+                        setCreativeTab(API.creativeTab),
+                Constants.NAME_ITEM_CODE_BOOK);
+
         Settings.load(event.getSuggestedConfigurationFile());
     }
 
@@ -103,6 +109,11 @@ public class ProxyCommon {
                 'P', Blocks.glass_pane,
                 'R', Items.redstone,
                 'E', Blocks.chest);
+
+        GameRegistry.addShapelessRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_CODE_BOOK), 1),
+                Items.book,
+                Items.redstone);
+
 
         // Register network handler.
         Network.INSTANCE.init();

@@ -68,6 +68,10 @@ public final class ModuleExecution extends AbstractModuleRotatable {
         machine = new MachineImpl(this, face);
     }
 
+    public MachineState getState() {
+        return machine.getState();
+    }
+
     // --------------------------------------------------------------------- //
     // Module
 
@@ -277,7 +281,11 @@ public final class ModuleExecution extends AbstractModuleRotatable {
      * @param code   the code to compile.
      * @param player the player that issued the compile, or <tt>null</tt>.
      */
-    private void compile(final String code, final EntityPlayer player) {
+    public void compile(final String code, final EntityPlayer player) {
+        if (getCasing().getCasingWorld().isRemote) {
+            return; // When called from ItemCodeBook e.g.
+        }
+
         compileError = null;
         try {
             machine.getState().clear();
