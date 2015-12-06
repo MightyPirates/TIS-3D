@@ -1,5 +1,7 @@
 package li.cil.tis3d.system.module;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
@@ -7,14 +9,13 @@ import li.cil.tis3d.api.Pipe;
 import li.cil.tis3d.api.Port;
 import li.cil.tis3d.api.prefab.AbstractModuleRotatable;
 import li.cil.tis3d.client.render.font.FontRendererTextureMonospace;
+import li.cil.tis3d.util.OneEightCompat;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.opengl.GL11;
 
 /**
  * The stack module can be used to store a number of values to be retrieved
@@ -98,7 +99,7 @@ public final class ModuleStack extends AbstractModuleRotatable {
         drawQuad();
 
         // Render detailed state when player is close.
-        if (!isEmpty() && Minecraft.getMinecraft().thePlayer.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
+        if (!isEmpty() && OneEightCompat.getDistanceSqToCenter(Minecraft.getMinecraft().thePlayer, getCasing().getPositionX(), getCasing().getPositionY(), getCasing().getPositionZ()) < 64) {
             drawState();
         }
 
@@ -228,16 +229,16 @@ public final class ModuleStack extends AbstractModuleRotatable {
     @SideOnly(Side.CLIENT)
     private void drawState() {
         // Offset to start drawing at top left of inner area, slightly inset.
-        GlStateManager.translate(3 / 16f, 5 / 16f, 0);
-        GlStateManager.scale(1 / 128f, 1 / 128f, 1);
-        GlStateManager.translate(4.5f, 14.5f, 0);
-        GlStateManager.color(1f, 1f, 1f, 1f);
+        GL11.glTranslatef(3 / 16f, 5 / 16f, 0);
+        GL11.glScalef(1 / 128f, 1 / 128f, 1);
+        GL11.glTranslatef(4.5f, 14.5f, 0);
+        GL11.glColor4f(1f, 1f, 1f, 1f);
 
         for (int i = 0; i <= top; i++) {
             FontRendererTextureMonospace.drawString(String.valueOf(stack[i]));
-            GlStateManager.translate(0, FontRendererTextureMonospace.CHAR_HEIGHT + 1, 0);
+            GL11.glTranslatef(0, FontRendererTextureMonospace.CHAR_HEIGHT + 1, 0);
             if ((i + 1) % 4 == 0) {
-                GlStateManager.translate((FontRendererTextureMonospace.CHAR_WIDTH + 1) * 5, (FontRendererTextureMonospace.CHAR_HEIGHT + 1) * -4, 0);
+                GL11.glTranslatef((FontRendererTextureMonospace.CHAR_WIDTH + 1) * 5, (FontRendererTextureMonospace.CHAR_HEIGHT + 1) * -4, 0);
             }
         }
     }

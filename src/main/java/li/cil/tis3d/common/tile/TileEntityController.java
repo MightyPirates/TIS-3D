@@ -1,9 +1,8 @@
 package li.cil.tis3d.common.tile;
 
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -23,7 +22,7 @@ import java.util.Set;
  * Controllers have no real state. They are active when powered by a redstone
  * signal, and can be reset by right-clicking them.
  */
-public final class TileEntityController extends TileEntity implements ITickable {
+public final class TileEntityController extends TileEntity {
     // --------------------------------------------------------------------- //
     // Computed data
 
@@ -114,13 +113,10 @@ public final class TileEntityController extends TileEntity implements ITickable 
         dispose();
     }
 
-    // --------------------------------------------------------------------- //
-    // ITickable
-
     @Override
-    public void update() {
+    public void updateEntity() {
         // Only update multi-block and casings on the server.
-        if (getWorld().isRemote) {
+        if (getWorldObj().isRemote) {
             return;
         }
 
@@ -152,7 +148,7 @@ public final class TileEntityController extends TileEntity implements ITickable 
 
         if (state == ControllerState.RUNNING) {
             // Are we powered?
-            if (!getWorld().isBlockPowered(getPos())) {
+            if (!getWorldObj().isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord)) {
                 // Nope, fall back to ready state, disable modules.
                 state = ControllerState.READY;
                 casings.forEach(TileEntityCasing::onDisabled);
@@ -166,7 +162,7 @@ public final class TileEntityController extends TileEntity implements ITickable 
                 if (power < 15) {
                     // Stepping slower than 100%.
                     final int delay = 15 - power;
-                    if (getWorld().getTotalWorldTime() % delay == 0) {
+                    if (getWorldObj().getTotalWorldTime() % delay == 0) {
                         stepCasings();
                     }
                 } else {
@@ -200,13 +196,15 @@ public final class TileEntityController extends TileEntity implements ITickable 
      * @return <tt>true</tt> if all neighbors could be checked, <tt>false</tt> otherwise.
      */
     static boolean addNeighbors(final TileEntity tileEntity, final Set<TileEntity> processed, final Queue<TileEntity> queue) {
-        for (final EnumFacing facing : EnumFacing.VALUES) {
-            final BlockPos neighborPos = tileEntity.getPos().offset(facing);
-            if (!tileEntity.getWorld().isBlockLoaded(neighborPos)) {
+        for (final EnumFacing facing : EnumFacing.values()) {
+            final int neighborX = tileEntity.xCoord + facing.getFrontOffsetX();
+            final int neighborY = tileEntity.yCoord + facing.getFrontOffsetY();
+            final int neighborZ = tileEntity.zCoord + facing.getFrontOffsetZ();
+            if (!tileEntity.getWorldObj().blockExists(neighborX, neighborY, neighborZ)) {
                 return false;
             }
 
-            final TileEntity neighborTileEntity = tileEntity.getWorld().getTileEntity(neighborPos);
+            final TileEntity neighborTileEntity = tileEntity.getWorldObj().getTileEntity(neighborX, neighborY, neighborZ);
             if (neighborTileEntity == null) {
                 continue;
             }
@@ -273,7 +271,7 @@ public final class TileEntityController extends TileEntity implements ITickable 
         // Sort casings for deterministic order of execution (important when modules
         // write / read from multiple ports but only want to make the data available
         // to the first [e.g. execution module's ANY target]).
-        casings.sort(Comparator.comparing(TileEntity::getPos));
+        casings.sort(Comparator.comparing((final TileEntityCasing t) -> new ChunkCoordinates(t.xCoord, t.yCoord, t.zCoord)));
 
         // All done. Make sure this comes after the checkNeighbors or we get CMEs!
         state = ControllerState.READY;
@@ -286,8 +284,11 @@ public final class TileEntityController extends TileEntity implements ITickable 
      */
     private int computePower() {
         int acc = 0;
-        for (final EnumFacing facing : EnumFacing.VALUES) {
-            acc += Math.max(0, Math.min(15, getWorld().getRedstonePower(getPos().offset(facing), facing)));
+        for (final EnumFacing facing : EnumFacing.values()) {
+            final int inputX = xCoord + facing.getFrontOffsetX();
+            final int inputY = yCoord + facing.getFrontOffsetY();
+            final int inputZ = zCoord + facing.getFrontOffsetZ();
+            acc += Math.max(0, Math.min(15, getWorldObj().getIndirectPowerLevelTo(inputX, inputY, inputZ, facing.ordinal())));
         }
         return acc;
     }
@@ -333,10 +334,12 @@ public final class TileEntityController extends TileEntity implements ITickable 
         }
 
         // Tell our neighbors about our untimely death.
-        for (final EnumFacing facing : EnumFacing.VALUES) {
-            final BlockPos neighborPos = getPos().offset(facing);
-            if (getWorld().isBlockLoaded(neighborPos)) {
-                final TileEntity tileEntity = getWorld().getTileEntity(neighborPos);
+        for (final EnumFacing facing : EnumFacing.values()) {
+            final int neighborX = xCoord + facing.getFrontOffsetX();
+            final int neighborY = yCoord + facing.getFrontOffsetY();
+            final int neighborZ = zCoord + facing.getFrontOffsetZ();
+            if (getWorldObj().blockExists(neighborX, neighborY, neighborZ)) {
+                final TileEntity tileEntity = getWorldObj().getTileEntity(neighborX, neighborY, neighborZ);
                 if (tileEntity instanceof TileEntityController) {
                     final TileEntityController controller = (TileEntityController) tileEntity;
                     controller.scheduleScan();

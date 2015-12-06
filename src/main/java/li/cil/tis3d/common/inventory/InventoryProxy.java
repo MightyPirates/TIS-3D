@@ -3,7 +3,6 @@ package li.cil.tis3d.common.inventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IChatComponent;
 
 public interface InventoryProxy extends IInventory {
     IInventory getInventory();
@@ -24,8 +23,8 @@ public interface InventoryProxy extends IInventory {
     }
 
     @Override
-    default ItemStack removeStackFromSlot(final int slot) {
-        return getInventory().removeStackFromSlot(slot);
+    default ItemStack getStackInSlotOnClosing(final int slot) {
+        return getInventory().getStackInSlotOnClosing(slot);
     }
 
     @Override
@@ -49,13 +48,13 @@ public interface InventoryProxy extends IInventory {
     }
 
     @Override
-    default void openInventory(final EntityPlayer player) {
-        getInventory().openInventory(player);
+    default void openInventory() {
+        getInventory().openInventory();
     }
 
     @Override
-    default void closeInventory(final EntityPlayer player) {
-        getInventory().closeInventory(player);
+    default void closeInventory() {
+        getInventory().closeInventory();
     }
 
     @Override
@@ -64,37 +63,12 @@ public interface InventoryProxy extends IInventory {
     }
 
     @Override
-    default int getField(final int index) {
-        return getInventory().getField(index);
+    default String getInventoryName() {
+        return getInventory().getInventoryName();
     }
 
     @Override
-    default void setField(final int index, final int value) {
-        getInventory().setField(index, value);
-    }
-
-    @Override
-    default int getFieldCount() {
-        return getInventory().getFieldCount();
-    }
-
-    @Override
-    default void clear() {
-        getInventory().clear();
-    }
-
-    @Override
-    default String getName() {
-        return getInventory().getName();
-    }
-
-    @Override
-    default boolean hasCustomName() {
-        return getInventory().hasCustomName();
-    }
-
-    @Override
-    default IChatComponent getDisplayName() {
-        return getInventory().getDisplayName();
+    default boolean hasCustomInventoryName() {
+        return getInventory().hasCustomInventoryName();
     }
 }

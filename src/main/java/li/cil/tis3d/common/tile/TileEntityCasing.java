@@ -1,5 +1,7 @@
 package li.cil.tis3d.common.tile;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
 import li.cil.tis3d.common.inventory.InventoryCasing;
@@ -10,6 +12,7 @@ import li.cil.tis3d.system.CasingImpl;
 import li.cil.tis3d.system.CasingProxy;
 import li.cil.tis3d.system.module.ModuleForwarder;
 import li.cil.tis3d.util.InventoryUtils;
+import li.cil.tis3d.util.OneEightCompat;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.nbt.NBTTagCompound;
@@ -17,10 +20,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.ArrayDeque;
 import java.util.HashSet;
@@ -66,10 +66,10 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
     }
 
     public boolean isEnabled() {
-        if (getWorld() == null) {
+        if (getWorldObj() == null) {
             return false;
         }
-        if (getWorld().isRemote) {
+        if (getWorldObj().isRemote) {
             return isEnabledClient;
         } else {
             return getController() != null && getController().getState() == TileEntityController.ControllerState.RUNNING;
@@ -82,7 +82,7 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
     }
 
     public void scheduleScan() {
-        if (getWorld().isRemote) {
+        if (getWorldObj().isRemote) {
             return;
         }
         if (controller != null) {
@@ -102,11 +102,13 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
         // When a neighbor changed, check all neighbors and register them in
         // our tile entity. If a neighbor changed in that list, do a rescan
         // in our controller (if any).
-        for (final EnumFacing facing : EnumFacing.VALUES) {
-            final BlockPos neighborPos = getPos().offset(facing);
-            if (getWorld().isBlockLoaded(neighborPos)) {
+        for (final EnumFacing facing : EnumFacing.values()) {
+            final int neighborX = getPositionX() + facing.getFrontOffsetX();
+            final int neighborY = getPositionY() + facing.getFrontOffsetY();
+            final int neighborZ = getPositionZ() + facing.getFrontOffsetZ();
+            if (getWorldObj().blockExists(neighborX, neighborY, neighborZ)) {
                 // If we have a casing, set it as our neighbor.
-                final TileEntity neighborTileEntity = getWorld().getTileEntity(neighborPos);
+                final TileEntity neighborTileEntity = getWorldObj().getTileEntity(neighborX, neighborY, neighborZ);
                 if (neighborTileEntity instanceof TileEntityCasing) {
                     setNeighbor(Face.fromEnumFacing(facing), (TileEntityCasing) neighborTileEntity);
                 } else {
@@ -154,11 +156,10 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
 
     @Override
     public boolean isUseableByPlayer(final EntityPlayer player) {
-        if (worldObj.getTileEntity(pos) != this) return false;
+        if (worldObj.getTileEntity(getPositionX(), getPositionY(), getPositionZ()) != this) return false;
         final double maxDistance = 64;
-        return player.getDistanceSqToCenter(pos) <= maxDistance;
+        return OneEightCompat.getDistanceSqToCenter(player, getPositionX(), getPositionY(), getPositionZ()) <= maxDistance;
     }
-
 
     // --------------------------------------------------------------------- //
     // SidedInventoryProxy
@@ -178,6 +179,11 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
 
     // --------------------------------------------------------------------- //
     // TileEntity
+
+    @Override
+    public boolean canUpdate() {
+        return false;
+    }
 
     @Override
     public void invalidate() {
@@ -209,7 +215,7 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
 
     @Override
     public void onDataPacket(final NetworkManager manager, final S35PacketUpdateTileEntity packet) {
-        final NBTTagCompound nbt = packet.getNbtCompound();
+        final NBTTagCompound nbt = packet.func_148857_g();
         load(nbt);
         isEnabledClient = nbt.getBoolean("enabled");
     }
@@ -219,7 +225,7 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
         final NBTTagCompound nbt = new NBTTagCompound();
         save(nbt);
         nbt.setBoolean("enabled", isEnabled());
-        return new S35PacketUpdateTileEntity(pos, -1, nbt);
+        return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, -1, nbt);
     }
 
     // --------------------------------------------------------------------- //
@@ -233,8 +239,8 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
 
         // Ensure there are no modules installed between two casings.
         if (neighbors[face.ordinal()] != null) {
-            InventoryUtils.drop(getWorld(), getPos(), this, face.ordinal(), getInventoryStackLimit(), Face.toEnumFacing(face));
-            InventoryUtils.drop(neighbor.getWorld(), neighbor.getPos(), neighbor, face.getOpposite().ordinal(), neighbor.getInventoryStackLimit(), Face.toEnumFacing(face.getOpposite()));
+            InventoryUtils.drop(getWorldObj(), getPositionX(), getPositionY(), getPositionZ(), this, face.ordinal(), getInventoryStackLimit(), Face.toEnumFacing(face));
+            InventoryUtils.drop(neighbor.getWorldObj(), neighbor.getPositionX(), neighbor.getPositionY(), neighbor.getPositionZ(), neighbor, face.getOpposite().ordinal(), neighbor.getInventoryStackLimit(), Face.toEnumFacing(face.getOpposite()));
         }
 
         // Adjust ports, connecting multiple casings.
@@ -300,7 +306,7 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
 
     private void sendState(final boolean state) {
         final MessageCasingState message = new MessageCasingState(this, state);
-        Network.INSTANCE.getWrapper().sendToDimension(message, getWorld().provider.getDimensionId());
+        Network.INSTANCE.getWrapper().sendToDimension(message, getWorldObj().provider.dimensionId);
     }
 
     private void load(final NBTTagCompound nbt) {

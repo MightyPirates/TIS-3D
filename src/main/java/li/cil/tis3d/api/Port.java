@@ -69,7 +69,7 @@ public enum Port {
     /**
      * Mapping of {@link EnumFacing}s to a horizontal {@link Port} equivalent.
      */
-    public static final Port[] HORIZONTAL = new Port[]{Port.UP, Port.UP, Port.DOWN, Port.UP, Port.RIGHT, Port.LEFT};
+    public static final Port[] HORIZONTAL = new Port[]{Port.UP, Port.UP, Port.DOWN, Port.UP, Port.LEFT, Port.RIGHT};
 
     // --------------------------------------------------------------------- //
 

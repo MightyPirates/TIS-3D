@@ -1,5 +1,6 @@
 package li.cil.tis3d.common.provider;
 
+import cpw.mods.fml.common.registry.GameRegistry;
 import li.cil.tis3d.Constants;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.Casing;
@@ -9,7 +10,6 @@ import li.cil.tis3d.api.module.ModuleProvider;
 import li.cil.tis3d.system.module.ModuleRedstone;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 /**
  * The provider for the redstone module.

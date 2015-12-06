@@ -1,10 +1,10 @@
 package li.cil.tis3d.common.network.handler;
 
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.common.network.message.MessageModuleData;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public final class MessageHandlerModuleData extends AbstractMessageHandlerWithLocation<MessageModuleData> {
     @Override

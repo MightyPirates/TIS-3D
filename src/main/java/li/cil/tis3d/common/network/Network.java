@@ -1,5 +1,8 @@
 package li.cil.tis3d.common.network;
 
+import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import cpw.mods.fml.relauncher.Side;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.client.network.handler.MessageHandlerCasingState;
 import li.cil.tis3d.client.network.handler.MessageHandlerParticleEffects;
@@ -8,11 +11,7 @@ import li.cil.tis3d.common.network.message.MessageCasingState;
 import li.cil.tis3d.common.network.message.MessageModuleData;
 import li.cil.tis3d.common.network.message.MessageParticleEffect;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.relauncher.Side;
 
 public final class Network {
     public static final Network INSTANCE = new Network();
@@ -39,15 +38,11 @@ public final class Network {
     // --------------------------------------------------------------------- //
 
     public static NetworkRegistry.TargetPoint getTargetPoint(final World world, final double x, final double y, final double z, final int range) {
-        return new NetworkRegistry.TargetPoint(world.provider.getDimensionId(), x, y, z, range);
-    }
-
-    public static NetworkRegistry.TargetPoint getTargetPoint(final World world, final BlockPos position, final int range) {
-        return getTargetPoint(world, position.getX() + 0.5, position.getY() + 0.5, position.getZ() + 0.5, range);
+        return new NetworkRegistry.TargetPoint(world.provider.dimensionId, x, y, z, range);
     }
 
     public static NetworkRegistry.TargetPoint getTargetPoint(final TileEntity tileEntity, final int range) {
-        return getTargetPoint(tileEntity.getWorld(), tileEntity.getPos(), range);
+        return getTargetPoint(tileEntity.getWorldObj(), tileEntity.xCoord + 0.5, tileEntity.yCoord + 0.5, tileEntity.zCoord + 0.5, range);
     }
 
     // --------------------------------------------------------------------- //

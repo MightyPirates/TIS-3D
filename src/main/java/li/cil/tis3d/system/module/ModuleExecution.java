@@ -1,6 +1,8 @@
 package li.cil.tis3d.system.module;
 
 import com.google.common.base.Strings;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import li.cil.tis3d.TIS3D;
 import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
@@ -12,15 +14,13 @@ import li.cil.tis3d.system.module.execution.MachineImpl;
 import li.cil.tis3d.system.module.execution.MachineState;
 import li.cil.tis3d.system.module.execution.compiler.Compiler;
 import li.cil.tis3d.system.module.execution.compiler.ParseException;
+import li.cil.tis3d.util.OneEightCompat;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -28,8 +28,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.opengl.GL11;
 
 import java.util.Optional;
 
@@ -189,7 +188,7 @@ public final class ModuleExecution extends AbstractModuleRotatable {
         }
 
         // Render detailed state when player is close.
-        if (machineState.code != null && Minecraft.getMinecraft().thePlayer.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
+        if (machineState.code != null && OneEightCompat.getDistanceSqToCenter(Minecraft.getMinecraft().thePlayer, getCasing().getPositionX(), getCasing().getPositionY(), getCasing().getPositionZ()) < 64) {
             renderState(machineState);
         }
 
@@ -310,20 +309,20 @@ public final class ModuleExecution extends AbstractModuleRotatable {
     @SideOnly(Side.CLIENT)
     private void renderState(final MachineState machineState) {
         // Offset to start drawing at top left of inner area, slightly inset.
-        GlStateManager.translate(3.5f / 16f, 3.5f / 16f, 0);
-        GlStateManager.scale(1 / 128f, 1 / 128f, 1);
-        GlStateManager.translate(1, 1, 0);
-        GlStateManager.color(1f, 1f, 1f, 1f);
+        GL11.glTranslatef(3.5f / 16f, 3.5f / 16f, 0);
+        GL11.glScalef(1 / 128f, 1 / 128f, 1);
+        GL11.glTranslatef(1, 1, 0);
+        GL11.glColor4f(1f, 1f, 1f, 1f);
 
         // Draw register info on top.
         final String accLast = String.format("ACC:%4X LAST:%s", (short) machineState.acc, machineState.last.map(Enum::name).orElse("NONE"));
         FontRendererTextureMonospace.drawString(accLast);
-        GlStateManager.translate(0, FontRendererTextureMonospace.CHAR_HEIGHT + 4, 0);
+        GL11.glTranslatef(0, FontRendererTextureMonospace.CHAR_HEIGHT + 4, 0);
         final String bakState = String.format("BAK:%4X MODE:%s", (short) machineState.bak, state.name());
         FontRendererTextureMonospace.drawString(bakState);
-        GlStateManager.translate(0, FontRendererTextureMonospace.CHAR_HEIGHT + 4, 0);
+        GL11.glTranslatef(0, FontRendererTextureMonospace.CHAR_HEIGHT + 4, 0);
         drawLine(1);
-        GlStateManager.translate(0, 5, 0);
+        GL11.glTranslatef(0, 5, 0);
 
         // If we have more lines than fit on our "screen", offset so that the
         // current line is in the middle, but don't let last line scroll in.
@@ -343,21 +342,21 @@ public final class ModuleExecution extends AbstractModuleRotatable {
             final String line = machineState.code[lineNumber];
             if (lineNumber == currentLine) {
                 if (state == State.WAIT) {
-                    GlStateManager.color(0.66f, 0.66f, 0.66f);
+                    GL11.glColor3f(0.66f, 0.66f, 0.66f);
                 } else if (state == State.ERR) {
-                    GlStateManager.color(1f, 0f, 0f);
+                    GL11.glColor3f(1f, 0f, 0f);
                 }
 
                 drawLine(FontRendererTextureMonospace.CHAR_HEIGHT);
 
-                GlStateManager.color(0f, 0f, 0f);
+                GL11.glColor3f(0f, 0f, 0f);
             } else {
-                GlStateManager.color(1f, 1f, 1f);
+                GL11.glColor3f(1f, 1f, 1f);
             }
 
             FontRendererTextureMonospace.drawString(line, 18);
 
-            GlStateManager.translate(0, FontRendererTextureMonospace.CHAR_HEIGHT + 1, 0);
+            GL11.glTranslatef(0, FontRendererTextureMonospace.CHAR_HEIGHT + 1, 0);
         }
     }
 
@@ -368,19 +367,18 @@ public final class ModuleExecution extends AbstractModuleRotatable {
      */
     @SideOnly(Side.CLIENT)
     private static void drawLine(final int height) {
-        GlStateManager.depthMask(false);
-        GlStateManager.disableTexture2D();
+        GL11.glDepthMask(false);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
 
-        final Tessellator tessellator = Tessellator.getInstance();
-        final WorldRenderer worldRenderer = tessellator.getWorldRenderer();
-        worldRenderer.begin(7, DefaultVertexFormats.POSITION);
-        worldRenderer.pos(-0.5f, height + 0.5f, 0).endVertex();
-        worldRenderer.pos(71.5f, height + 0.5f, 0).endVertex();
-        worldRenderer.pos(71.5f, -0.5f, 0).endVertex();
-        worldRenderer.pos(-0.5f, -0.5f, 0).endVertex();
+        final Tessellator tessellator = Tessellator.instance;
+        tessellator.startDrawingQuads();
+        tessellator.addVertex(-0.5f, height + 0.5f, 0);
+        tessellator.addVertex(71.5f, height + 0.5f, 0);
+        tessellator.addVertex(71.5f, -0.5f, 0);
+        tessellator.addVertex(-0.5f, -0.5f, 0);
         tessellator.draw();
 
-        GlStateManager.depthMask(true);
-        GlStateManager.enableTexture2D();
+        GL11.glDepthMask(true);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
     }
 }

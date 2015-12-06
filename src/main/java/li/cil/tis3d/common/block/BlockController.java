@@ -1,15 +1,15 @@
 package li.cil.tis3d.common.block;
 
+import li.cil.tis3d.TIS3D;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import li.cil.tis3d.common.tile.TileEntityController;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 /**
  * Block for the controller driving the casings.
@@ -23,24 +23,29 @@ public final class BlockController extends Block {
     // Common
 
     @Override
-    public boolean isSideSolid(final IBlockAccess world, final BlockPos pos, final EnumFacing side) {
+    public boolean isSideSolid(final IBlockAccess world, final int x, final int y, final int z, final ForgeDirection side) {
         // Allow levers to be placed on us (wouldn't work because of isFullCube = false otherwise).
         return true;
     }
 
     @Override
-    public boolean isFullCube() {
+    public boolean renderAsNormalBlock() {
         // Prevent fences from visually connecting.
         return false;
     }
 
     @Override
-    public boolean hasTileEntity(final IBlockState state) {
+    public int getRenderType() {
+        return TIS3D.proxy.getControllerRenderId();
+    }
+
+    @Override
+    public boolean hasTileEntity(final int metadata) {
         return true;
     }
 
     @Override
-    public TileEntity createTileEntity(final World world, final IBlockState state) {
+    public TileEntity createTileEntity(final World world, final int metadata) {
         return new TileEntityController();
     }
 
@@ -53,8 +58,8 @@ public final class BlockController extends Block {
     }
 
     @Override
-    public int getComparatorInputOverride(final World world, final BlockPos pos) {
-        final TileEntity tileEntity = world.getTileEntity(pos);
+    public int getComparatorInputOverride(final World world, final int x, final int y, final int z, final int side) {
+        final TileEntity tileEntity = world.getTileEntity(x, y, z);
         if (tileEntity instanceof TileEntityController) {
             final TileEntityController controller = (TileEntityController) tileEntity;
             return controller.getState() == TileEntityController.ControllerState.READY ? 15 : 0;
@@ -66,21 +71,23 @@ public final class BlockController extends Block {
     // Networking
 
     @Override
-    public void onNeighborBlockChange(final World world, final BlockPos pos, final IBlockState state, final Block neighborBlock) {
-        final TileEntity tileEntity = world.getTileEntity(pos);
+    public void onNeighborBlockChange(final World world, final int x, final int y, final int z, final Block neighborBlock) {
+        final TileEntity tileEntity = world.getTileEntity(x, y, z);
         if (tileEntity instanceof TileEntityController) {
             final TileEntityController controller = (TileEntityController) tileEntity;
-            for (final EnumFacing facing : EnumFacing.VALUES) {
+            for (final EnumFacing facing : EnumFacing.values()) {
                 checkNeighbor(controller, facing);
             }
         }
-        super.onNeighborBlockChange(world, pos, state, neighborBlock);
+        super.onNeighborBlockChange(world, x, y, z, neighborBlock);
     }
 
     private static void checkNeighbor(final TileEntityController controller, final EnumFacing facing) {
-        final BlockPos neighborPos = controller.getPos().offset(facing);
-        if (controller.getWorld().isBlockLoaded(neighborPos)) {
-            final TileEntity neighborTileEntity = controller.getWorld().getTileEntity(neighborPos);
+        final int neighborX = controller.xCoord + facing.getFrontOffsetX();
+        final int neighborY = controller.yCoord + facing.getFrontOffsetY();
+        final int neighborZ = controller.zCoord + facing.getFrontOffsetZ();
+        if (controller.getWorldObj().blockExists(neighborX, neighborY, neighborZ)) {
+            final TileEntity neighborTileEntity = controller.getWorldObj().getTileEntity(neighborX, neighborY, neighborZ);
             if (neighborTileEntity instanceof TileEntityController) {
                 // If we have a controller that means we have more than one in
                 // our multi-block. Rescan to enter appropriate error state.

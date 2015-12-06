@@ -31,8 +31,8 @@ public final class InventoryCasing extends Inventory implements ISidedInventory 
     @Override
     public void markDirty() {
         tileEntity.markDirty();
-        if (tileEntity.getWorld() != null) {
-            tileEntity.getWorld().markBlockForUpdate(tileEntity.getPos());
+        if (tileEntity.getWorldObj() != null) {
+            tileEntity.getWorldObj().markBlockForUpdate(tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord);
         }
     }
 
@@ -40,21 +40,21 @@ public final class InventoryCasing extends Inventory implements ISidedInventory 
     // ISidedInventory
 
     @Override
-    public int[] getSlotsForFace(final EnumFacing side) {
-        return new int[side.ordinal()];
+    public int[] getAccessibleSlotsFromSide(final int side) {
+        return new int[side];
     }
 
     @Override
-    public boolean canInsertItem(final int index, final ItemStack stack, final EnumFacing side) {
-        return side.ordinal() == index &&
+    public boolean canInsertItem(final int index, final ItemStack stack, final int side) {
+        return side == index &&
                 getStackInSlot(index) == null &&
-                tileEntity.getModule(Face.fromEnumFacing(side)) == null && // Handles virtual modules.
-                canInstall(stack, Face.fromEnumFacing(side));
+                tileEntity.getModule(Face.fromEnumFacing(EnumFacing.getFront(side))) == null && // Handles virtual modules.
+                canInstall(stack, Face.fromEnumFacing(EnumFacing.getFront(side)));
     }
 
     @Override
-    public boolean canExtractItem(final int index, final ItemStack stack, final EnumFacing side) {
-        return side.ordinal() == index && stack == getStackInSlot(index);
+    public boolean canExtractItem(final int index, final ItemStack stack, final int side) {
+        return side == index && stack == getStackInSlot(index);
     }
 
     private boolean canInstall(final ItemStack stack, final Face face) {

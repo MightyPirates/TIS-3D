@@ -1,15 +1,15 @@
 package li.cil.tis3d.api.prefab;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
 import li.cil.tis3d.api.Port;
 import li.cil.tis3d.api.module.Rotatable;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
+import org.lwjgl.opengl.GL11;
 
 /**
  * This is a utility implementation of a rotatable module.
@@ -41,9 +41,9 @@ public abstract class AbstractModuleRotatable extends AbstractModule implements 
     @SideOnly(Side.CLIENT)
     protected void rotateForRendering() {
         final int rotation = Port.ROTATION[facing.ordinal()];
-        GlStateManager.translate(0.5f, 0.5f, 0);
-        GlStateManager.rotate(90 * rotation, 0, 0, Face.toEnumFacing(getFace()).getFrontOffsetY());
-        GlStateManager.translate(-0.5f, -0.5f, 0);
+        GL11.glTranslatef(0.5f, 0.5f, 0);
+        GL11.glRotatef(90 * rotation, 0, 0, Face.toEnumFacing(getFace()).getFrontOffsetY());
+        GL11.glTranslatef(-0.5f, -0.5f, 0);
     }
 
     // --------------------------------------------------------------------- //

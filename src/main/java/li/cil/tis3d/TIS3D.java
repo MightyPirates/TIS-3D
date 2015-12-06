@@ -1,12 +1,11 @@
 package li.cil.tis3d;
 
+import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.SidedProxy;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.common.ProxyCommon;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.Logger;
 
 /**
@@ -20,13 +19,13 @@ public final class TIS3D {
     @SidedProxy(clientSide = Constants.PROXY_CLIENT, serverSide = Constants.PROXY_COMMON)
     public static ProxyCommon proxy;
 
-    @EventHandler
+    @Mod.EventHandler
     public void onPreInit(final FMLPreInitializationEvent event) {
         log = event.getModLog();
         proxy.onPreInit(event);
     }
 
-    @EventHandler
+    @Mod.EventHandler
     public void onInit(final FMLInitializationEvent event) {
         proxy.onInit(event);
     }

@@ -1,5 +1,6 @@
 package li.cil.tis3d.system;
 
+import cpw.mods.fml.common.network.NetworkRegistry;
 import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
 import li.cil.tis3d.api.Pipe;
@@ -12,10 +13,8 @@ import li.cil.tis3d.common.tile.TileEntityCasing;
 import li.cil.tis3d.common.tile.TileEntityController;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 /**
  * Implementation of a {@link Casing}, holding up to six {@link Module}s.
@@ -236,12 +235,22 @@ public final class CasingImpl implements Casing {
 
     @Override
     public World getCasingWorld() {
-        return tileEntity.getWorld();
+        return tileEntity.getWorldObj();
     }
 
     @Override
-    public BlockPos getPosition() {
-        return tileEntity.getPos();
+    public int getPositionX() {
+        return tileEntity.xCoord;
+    }
+
+    @Override
+    public int getPositionY() {
+        return tileEntity.yCoord;
+    }
+
+    @Override
+    public int getPositionZ() {
+        return tileEntity.zCoord;
     }
 
     @Override
@@ -275,7 +284,7 @@ public final class CasingImpl implements Casing {
         if (hadRedstone) {
             if (!getCasingWorld().isRemote) {
                 tileEntity.markDirty();
-                getCasingWorld().notifyNeighborsOfStateChange(getPosition(), tileEntity.getBlockType());
+                getCasingWorld().notifyBlocksOfNeighborChange(getPositionX(), getPositionY(), getPositionZ(), tileEntity.getBlockType());
             }
         }
 

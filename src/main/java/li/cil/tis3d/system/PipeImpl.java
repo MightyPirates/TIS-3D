@@ -1,5 +1,6 @@
 package li.cil.tis3d.system;
 
+import cpw.mods.fml.common.network.NetworkRegistry;
 import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
 import li.cil.tis3d.api.Pipe;
@@ -8,10 +9,7 @@ import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageParticleEffect;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 /**
  * Implementation of {@link Pipe}s for passing data between {@link Module}s.
@@ -171,17 +169,16 @@ public final class PipeImpl implements Pipe {
             throw new IllegalStateException("No data to read. Check canTransfer().");
         }
 
-        final BlockPos position = casing.getPosition();
         final double ox = Face.toEnumFacing(inputFace).getFrontOffsetX() + Face.toEnumFacing(outputFace).getFrontOffsetX();
         final double oy = Face.toEnumFacing(inputFace).getFrontOffsetY() + Face.toEnumFacing(outputFace).getFrontOffsetY();
         final double oz = Face.toEnumFacing(inputFace).getFrontOffsetZ() + Face.toEnumFacing(outputFace).getFrontOffsetZ();
-        final double x = ox * 0.55 + position.getX() + 0.5;
-        final double y = oy * 0.55 + position.getY() + 0.5;
-        final double z = oz * 0.55 + position.getZ() + 0.5;
+        final double x = ox * 0.55 + casing.getPositionX() + 0.5;
+        final double y = oy * 0.55 + casing.getPositionY() + 0.5;
+        final double z = oz * 0.55 + casing.getPositionZ() + 0.5;
         final double extraOffsetY = oy < 0 ? -0.2 : (oy > 0) ? 0.1 : 0;
 
         final World world = casing.getCasingWorld();
-        final MessageParticleEffect message = new MessageParticleEffect(world, EnumParticleTypes.REDSTONE, x, y + extraOffsetY, z);
+        final MessageParticleEffect message = new MessageParticleEffect(world, "reddust", x, y + extraOffsetY, z);
         final NetworkRegistry.TargetPoint target = Network.getTargetPoint(world, x, y, z, Network.RANGE_LOW);
         Network.INSTANCE.getWrapper().sendToAllAround(message, target);
 

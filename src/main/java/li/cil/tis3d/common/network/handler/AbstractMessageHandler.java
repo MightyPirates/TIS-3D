@@ -1,23 +1,16 @@
 package li.cil.tis3d.common.network.handler;
 
-import net.minecraft.util.IThreadListener;
+import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public abstract class AbstractMessageHandler<T extends IMessage> implements IMessageHandler<T, IMessage> {
     @Override
     public IMessage onMessage(final T message, final MessageContext context) {
-        final IThreadListener thread = FMLCommonHandler.instance().getWorldThread(context.netHandler);
-        if (thread.isCallingFromMinecraftThread()) {
-            process(message, context);
-        } else {
-            thread.addScheduledTask(() -> process(message, context));
-        }
+        process(message, context);
         return null;
     }
 
@@ -42,7 +35,7 @@ public abstract class AbstractMessageHandler<T extends IMessage> implements IMes
         if (world == null) {
             return null;
         }
-        if (world.provider.getDimensionId() != dimension) {
+        if (world.provider.dimensionId != dimension) {
             return null;
         }
         return world;

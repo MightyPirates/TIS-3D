@@ -60,6 +60,6 @@ public enum Face {
      * @return the {@link EnumFacing} representing that facing.
      */
     public static EnumFacing toEnumFacing(final Face face) {
-        return EnumFacing.VALUES[face.ordinal()];
+        return EnumFacing.values()[face.ordinal()];
     }
 }

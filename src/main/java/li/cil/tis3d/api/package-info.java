@@ -12,7 +12,7 @@
  * See the module's interface and the provider's interface to see how you
  * can interact with the casing and other modules.
  */
-@net.minecraftforge.fml.common.API(
+@cpw.mods.fml.common.API(
         owner = API.MOD_ID,
         provides = API.MOD_ID + "API",
         apiVersion = API.MOD_VERSION)

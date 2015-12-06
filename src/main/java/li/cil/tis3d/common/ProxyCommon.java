@@ -1,5 +1,8 @@
 package li.cil.tis3d.common;
 
+import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.registry.GameRegistry;
 import li.cil.tis3d.Constants;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.common.block.BlockCasing;
@@ -15,14 +18,14 @@ import li.cil.tis3d.common.tile.TileEntityController;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 /**
  * Takes care of common setup.
  */
 public class ProxyCommon {
+    private int controllerRenderId;
+    private int casingRenderId;
+
     public void onPreInit(final FMLPreInitializationEvent event) {
         // Initialize API.
         API.instance = new RegistryImpl();
@@ -30,11 +33,13 @@ public class ProxyCommon {
 
         // Register blocks and items.
         GameRegistry.registerBlock(new BlockCasing().
-                        setUnlocalizedName(Constants.NAME_BLOCK_CASING).
+                        setBlockName(Constants.NAME_BLOCK_CASING).
+                        setBlockTextureName(API.MOD_ID + ":" + Constants.NAME_BLOCK_CASING).
                         setCreativeTab(API.creativeTab),
                 Constants.NAME_BLOCK_CASING);
         GameRegistry.registerBlock(new BlockController().
-                        setUnlocalizedName(Constants.NAME_BLOCK_CONTROLLER).
+                        setBlockName(Constants.NAME_BLOCK_CONTROLLER).
+                        setBlockTextureName(API.MOD_ID + ":" + Constants.NAME_BLOCK_CONTROLLER).
                         setCreativeTab(API.creativeTab),
                 Constants.NAME_BLOCK_CONTROLLER);
 
@@ -43,18 +48,22 @@ public class ProxyCommon {
 
         GameRegistry.registerItem(new ItemModule().
                         setUnlocalizedName(Constants.NAME_ITEM_MODULE_EXECUTION).
+                        setTextureName(API.MOD_ID + ":" + Constants.NAME_ITEM_MODULE_EXECUTION).
                         setCreativeTab(API.creativeTab),
                 Constants.NAME_ITEM_MODULE_EXECUTION);
         GameRegistry.registerItem(new ItemModule().
                         setUnlocalizedName(Constants.NAME_ITEM_MODULE_REDSTONE).
+                        setTextureName(API.MOD_ID + ":" + Constants.NAME_ITEM_MODULE_REDSTONE).
                         setCreativeTab(API.creativeTab),
                 Constants.NAME_ITEM_MODULE_REDSTONE);
         GameRegistry.registerItem(new ItemModule().
                         setUnlocalizedName(Constants.NAME_ITEM_MODULE_STACK).
+                        setTextureName(API.MOD_ID + ":" + Constants.NAME_ITEM_MODULE_STACK).
                         setCreativeTab(API.creativeTab),
                 Constants.NAME_ITEM_MODULE_STACK);
         GameRegistry.registerItem(new ItemModule().
                         setUnlocalizedName(Constants.NAME_ITEM_MODULE_RANDOM).
+                        setTextureName(API.MOD_ID + ":" + Constants.NAME_ITEM_MODULE_RANDOM).
                         setCreativeTab(API.creativeTab),
                 Constants.NAME_ITEM_MODULE_RANDOM);
     }
@@ -109,5 +118,21 @@ public class ProxyCommon {
         API.addProvider(new ModuleProviderRedstone());
         API.addProvider(new ModuleProviderStack());
         API.addProvider(new ModuleProviderRandom());
+    }
+
+    public int getControllerRenderId() {
+        return controllerRenderId;
+    }
+
+    public void setControllerRenderId(final int controllerRenderId) {
+        this.controllerRenderId = controllerRenderId;
+    }
+
+    public int getCasingRenderId() {
+        return casingRenderId;
+    }
+
+    public void setCasingRenderId(final int casingRenderId) {
+        this.casingRenderId = casingRenderId;
     }
 }

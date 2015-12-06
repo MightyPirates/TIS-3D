@@ -1,6 +1,7 @@
 package li.cil.tis3d.common.network.message;
 
 import io.netty.buffer.ByteBuf;
+import li.cil.tis3d.TIS3D;
 import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
 import net.minecraft.nbt.NBTTagCompound;
@@ -13,7 +14,7 @@ public final class MessageModuleData extends AbstractMessageWithLocation {
     private NBTTagCompound nbt;
 
     public MessageModuleData(final Casing casing, final Face face, final NBTTagCompound nbt) {
-        super(casing.getCasingWorld(), casing.getPosition());
+        super(casing.getCasingWorld(), casing.getPositionX(), casing.getPositionY(), casing.getPositionZ());
         this.face = face;
         this.nbt = nbt;
     }
@@ -36,23 +37,27 @@ public final class MessageModuleData extends AbstractMessageWithLocation {
 
     @Override
     public void fromBytes(final ByteBuf buf) {
-        super.fromBytes(buf);
-
-        final PacketBuffer buffer = new PacketBuffer(buf);
-        face = buffer.readEnumValue(Face.class);
         try {
+            super.fromBytes(buf);
+
+            final PacketBuffer buffer = new PacketBuffer(buf);
+            face = Face.valueOf(buffer.readStringFromBuffer(32));
             nbt = buffer.readNBTTagCompoundFromBuffer();
-        } catch (final IOException e) {
-            e.printStackTrace();
+        } catch (final IOException | IllegalArgumentException e) {
+            TIS3D.getLog().warn("Invalid packet received.", e);
         }
     }
 
     @Override
     public void toBytes(final ByteBuf buf) {
-        super.toBytes(buf);
+        try {
+            super.toBytes(buf);
 
-        final PacketBuffer buffer = new PacketBuffer(buf);
-        buffer.writeEnumValue(face);
-        buffer.writeNBTTagCompoundToBuffer(nbt);
+            final PacketBuffer buffer = new PacketBuffer(buf);
+            buffer.writeStringToBuffer(face.name());
+            buffer.writeNBTTagCompoundToBuffer(nbt);
+        } catch (final IOException e) {
+            TIS3D.getLog().warn("Invalid packet received", e);
+        }
     }
 }

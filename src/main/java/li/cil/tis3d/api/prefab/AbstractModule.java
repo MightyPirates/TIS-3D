@@ -1,5 +1,7 @@
 package li.cil.tis3d.api.prefab;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
 import li.cil.tis3d.api.Pipe;
@@ -7,14 +9,10 @@ import li.cil.tis3d.api.Port;
 import li.cil.tis3d.api.module.Module;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Base implementation of a module, taking care of the boilerplate code.
@@ -81,13 +79,12 @@ public abstract class AbstractModule implements Module {
      */
     @SideOnly(Side.CLIENT)
     protected static void drawQuad(final float x, final float y, final float w, final float h, final float u0, final float v0, final float u1, final float v1) {
-        final Tessellator tessellator = Tessellator.getInstance();
-        final WorldRenderer worldRenderer = tessellator.getWorldRenderer();
-        worldRenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
-        worldRenderer.pos(x, y + h, 0).tex(u0, v1).endVertex();
-        worldRenderer.pos(x + w, y + h, 0).tex(u1, v1).endVertex();
-        worldRenderer.pos(x + w, y, 0).tex(u1, v0).endVertex();
-        worldRenderer.pos(x, y, 0).tex(u0, v0).endVertex();
+        final Tessellator tessellator = Tessellator.instance;
+        tessellator.startDrawingQuads();
+        tessellator.addVertexWithUV(x, y + h, 0, u0, v1);
+        tessellator.addVertexWithUV(x + w, y + h, 0, u1, v1);
+        tessellator.addVertexWithUV(x + w, y, 0, u1, v0);
+        tessellator.addVertexWithUV(x, y, 0, u0, v0);
         tessellator.draw();
     }
 
@@ -122,8 +119,10 @@ public abstract class AbstractModule implements Module {
         final MovingObjectPosition hit = Minecraft.getMinecraft().objectMouseOver;
         return hit != null &&
                 hit.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK &&
-                getCasing().getPosition().equals(hit.getBlockPos()) &&
-                hit.sideHit == Face.toEnumFacing(getFace());
+                getCasing().getPositionX() == hit.blockX &&
+                getCasing().getPositionY() == hit.blockY &&
+                getCasing().getPositionZ() == hit.blockZ &&
+                hit.sideHit == Face.toEnumFacing(getFace()).ordinal();
     }
 
     // --------------------------------------------------------------------- //

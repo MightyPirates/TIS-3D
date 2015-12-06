@@ -1,9 +1,9 @@
 package li.cil.tis3d.common.network.handler;
 
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import li.cil.tis3d.common.network.message.AbstractMessageWithLocation;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public abstract class AbstractMessageHandlerWithLocation<T extends AbstractMessageWithLocation> extends AbstractMessageHandler<T> {
     protected TileEntity getTileEntity(final T message, final MessageContext context) {
@@ -11,10 +11,10 @@ public abstract class AbstractMessageHandlerWithLocation<T extends AbstractMessa
         if (world == null) {
             return null;
         }
-        if (!world.isBlockLoaded(message.getPosition())) {
+        if (!world.blockExists(message.getPositionX(), message.getPositionY(), message.getPositionZ())) {
             return null;
         }
-        return world.getTileEntity(message.getPosition());
+        return world.getTileEntity(message.getPositionX(), message.getPositionY(), message.getPositionZ());
     }
 
     protected World getWorld(final T message, final MessageContext context) {

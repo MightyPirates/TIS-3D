@@ -6,7 +6,6 @@ import li.cil.tis3d.api.Pipe;
 import li.cil.tis3d.api.Port;
 import li.cil.tis3d.api.module.Module;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 
 public interface CasingProxy extends Casing {
@@ -18,8 +17,18 @@ public interface CasingProxy extends Casing {
     }
 
     @Override
-    default BlockPos getPosition() {
-        return getCasing().getPosition();
+    default int getPositionX() {
+        return getCasing().getPositionX();
+    }
+
+    @Override
+    default int getPositionY() {
+        return getCasing().getPositionY();
+    }
+
+    @Override
+    default int getPositionZ() {
+        return getCasing().getPositionZ();
     }
 
     @Override

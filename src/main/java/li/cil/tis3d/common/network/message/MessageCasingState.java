@@ -7,7 +7,7 @@ public final class MessageCasingState extends AbstractMessageWithLocation {
     private boolean isEnabled;
 
     public MessageCasingState(final Casing casing, final boolean isEnabled) {
-        super(casing.getCasingWorld(), casing.getPosition());
+        super(casing.getCasingWorld(), casing.getPositionX(), casing.getPositionY(), casing.getPositionZ());
         this.isEnabled = isEnabled;
     }
 

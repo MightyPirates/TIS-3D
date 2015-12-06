@@ -1,5 +1,7 @@
 package li.cil.tis3d.system.module;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
@@ -8,17 +10,12 @@ import li.cil.tis3d.api.Port;
 import li.cil.tis3d.api.module.Redstone;
 import li.cil.tis3d.api.prefab.AbstractModuleRotatable;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRedstoneWire;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public final class ModuleRedstone extends AbstractModuleRotatable implements Redstone {
     // --------------------------------------------------------------------- //
@@ -211,8 +208,8 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
      */
     private void notifyNeighbors() {
         scheduledNeighborUpdate = false;
-        final Block blockType = getCasing().getCasingWorld().getBlockState(getCasing().getPosition()).getBlock();
-        getCasing().getCasingWorld().notifyNeighborsOfStateChange(getCasing().getPosition(), blockType);
+        final Block blockType = getCasing().getCasingWorld().getBlock(getCasing().getPositionX(), getCasing().getPositionY(), getCasing().getPositionZ());
+        getCasing().getCasingWorld().notifyBlocksOfNeighborChange(getCasing().getPositionX(), getCasing().getPositionY(), getCasing().getPositionZ(), blockType);
     }
 
     /**
@@ -224,13 +221,15 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
      */
     private int computeRedstoneInput() {
         final EnumFacing facing = Face.toEnumFacing(getFace());
-        final BlockPos inputPos = getCasing().getPosition().offset(facing);
-        final int input = getCasing().getCasingWorld().getRedstonePower(inputPos, facing);
+        final int inputX = getCasing().getPositionX() + facing.getFrontOffsetX();
+        final int inputY = getCasing().getPositionY() + facing.getFrontOffsetY();
+        final int inputZ = getCasing().getPositionZ() + facing.getFrontOffsetZ();
+        final int input = getCasing().getCasingWorld().isBlockProvidingPowerTo(inputX, inputY, inputZ, facing.ordinal());
         if (input >= 15) {
             return input;
         } else {
-            final IBlockState state = getCasing().getCasingWorld().getBlockState(inputPos);
-            return Math.max(input, state.getBlock() == Blocks.redstone_wire ? state.getValue(BlockRedstoneWire.POWER) : 0);
+            final Block block = getCasing().getCasingWorld().getBlock(inputX, inputY, inputZ);
+            return Math.max(input, block == Blocks.redstone_wire ? getCasing().getCasingWorld().getBlockMetadata(inputX, inputY, inputZ) : 0);
         }
     }
 

@@ -5,9 +5,6 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.IChatComponent;
 import net.minecraftforge.common.util.Constants;
 
 import java.util.AbstractList;
@@ -58,18 +55,13 @@ public class Inventory extends AbstractList<ItemStack> implements IInventory {
     // IWorldNameable
 
     @Override
-    public String getName() {
+    public String getInventoryName() {
         return name;
     }
 
     @Override
-    public boolean hasCustomName() {
+    public boolean hasCustomInventoryName() {
         return false;
-    }
-
-    @Override
-    public IChatComponent getDisplayName() {
-        return hasCustomName() ? new ChatComponentText(getName()) : new ChatComponentTranslation(getName());
     }
 
     // --------------------------------------------------------------------- //
@@ -90,7 +82,7 @@ public class Inventory extends AbstractList<ItemStack> implements IInventory {
         if (items[index] == null) {
             return null;
         } else if (items[index].stackSize <= count) {
-            return removeStackFromSlot(index);
+            return getStackInSlotOnClosing(index);
         } else {
             final ItemStack stack = items[index].splitStack(count);
             if (items[index].stackSize < 1) {
@@ -102,7 +94,7 @@ public class Inventory extends AbstractList<ItemStack> implements IInventory {
     }
 
     @Override
-    public ItemStack removeStackFromSlot(final int index) {
+    public ItemStack getStackInSlotOnClosing(final int index) {
         final ItemStack stack = items[index];
         setInventorySlotContents(index, null);
         return stack;
@@ -142,34 +134,16 @@ public class Inventory extends AbstractList<ItemStack> implements IInventory {
     }
 
     @Override
-    public void openInventory(final EntityPlayer player) {
+    public void openInventory() {
     }
 
     @Override
-    public void closeInventory(final EntityPlayer player) {
+    public void closeInventory() {
     }
 
     @Override
     public boolean isItemValidForSlot(final int index, final ItemStack stack) {
         return true;
-    }
-
-    @Override
-    public int getField(final int id) {
-        return 0;
-    }
-
-    @Override
-    public void setField(final int id, final int value) {
-    }
-
-    @Override
-    public int getFieldCount() {
-        return 0;
-    }
-
-    @Override
-    public void clear() {
     }
 
     // --------------------------------------------------------------------- //

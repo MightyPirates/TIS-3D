@@ -2,7 +2,6 @@ package li.cil.tis3d.api;
 
 import li.cil.tis3d.api.module.Module;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 
 /**
@@ -19,11 +18,25 @@ public interface Casing {
     World getCasingWorld();
 
     /**
-     * The position of the casing in the world it exists in.
+     * The x position of the casing in the world it exists in.
      *
-     * @return the position of the casing.
+     * @return the x position of the casing.
      */
-    BlockPos getPosition();
+    int getPositionX();
+
+    /**
+     * The y position of the casing in the world it exists in.
+     *
+     * @return the y position of the casing.
+     */
+    int getPositionY();
+
+    /**
+     * The z position of the casing in the world it exists in.
+     *
+     * @return the z position of the casing.
+     */
+    int getPositionZ();
 
     /**
      * Flag the casing as dirty so it is saved when the chunk containing it saved next.

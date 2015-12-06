@@ -1,16 +1,21 @@
 buildscript {
     repositories {
-        jcenter()
+        mavenCentral()
         maven {
             name = "forge"
             url = "http://files.minecraftforge.net/maven"
         }
+        maven {
+            name = "sonatype"
+            url = "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
     }
 }
-apply plugin: 'net.minecraftforge.gradle.forge'
+
+apply plugin: 'forge'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -20,17 +25,8 @@ group = "li.cil.tis3d"
 archivesBaseName = "TIS-3D"
 
 minecraft {
-    version = "1.8.8-11.15.0.1609-1.8.8"
+    version = "1.7.10-10.13.4.1566-1.7.10"
     runDir = "run"
-    mappings = "snapshot_20151128"
-}
-
-repositories {
-    maven { url "http://dvs1.progwml6.com/files/maven" }
-}
-
-dependencies {
-    deobfCompile "mezz.jei:jei_1.8.8:2.1.3.14"
 }
 
 processResources {
@@ -42,5 +38,12 @@ processResources {
     }
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
+    }
+}
+
+// this is needed for IntelliJ so we don't have to copy over the assets manually every time
+idea {
+    module {
+        outputDir = file('build/classes/main')
     }
 }

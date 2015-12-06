@@ -7,11 +7,11 @@ import li.cil.tis3d.api.Port;
 import li.cil.tis3d.api.prefab.AbstractModule;
 import li.cil.tis3d.client.TextureLoader;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
+import org.lwjgl.opengl.GL11;
 
 import java.util.Random;
 
@@ -46,14 +46,14 @@ public final class ModuleRandom extends AbstractModule {
         }
 
         RenderHelper.disableStandardItemLighting();
-        GlStateManager.enableBlend();
+        GL11.glEnable(GL11.GL_BLEND);
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 0 / 1.0F);
 
         Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
         final TextureAtlasSprite icon = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(TextureLoader.LOCATION_MODULE_RANDOM_OVERLAY.toString());
         drawQuad(icon.getMinU(), icon.getMinV(), icon.getMaxU(), icon.getMaxV());
 
-        GlStateManager.disableBlend();
+        GL11.glDisable(GL11.GL_BLEND);
         RenderHelper.enableStandardItemLighting();
     }
 

@@ -1,7 +1,0 @@
-newmtl casing:Casing
-Kd 1.000000 1.000000 1.000000
-map_Kd tis3d:blocks/casing
-
-newmtl casing:Module
-Kd 1.000000 1.000000 1.000000
-map_Kd tis3d:blocks/casingModule

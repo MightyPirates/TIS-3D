@@ -1,18 +1,18 @@
 package li.cil.tis3d.common.network.message;
 
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 public abstract class AbstractMessageWithLocation implements IMessage {
     private int dimension;
-    private BlockPos position;
+    private int x, y, z;
 
-    protected AbstractMessageWithLocation(final World world, final BlockPos position) {
-        this.dimension = world.provider.getDimensionId();
-        this.position = position;
+    protected AbstractMessageWithLocation(final World world, final int x, final int y, final int z) {
+        this.dimension = world.provider.dimensionId;
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 
     protected AbstractMessageWithLocation() {
@@ -24,8 +24,16 @@ public abstract class AbstractMessageWithLocation implements IMessage {
         return dimension;
     }
 
-    public BlockPos getPosition() {
-        return position;
+    public int getPositionX() {
+        return x;
+    }
+
+    public int getPositionY() {
+        return y;
+    }
+
+    public int getPositionZ() {
+        return z;
     }
 
     // --------------------------------------------------------------------- //
@@ -33,16 +41,18 @@ public abstract class AbstractMessageWithLocation implements IMessage {
 
     @Override
     public void fromBytes(final ByteBuf buf) {
-        final PacketBuffer buffer = new PacketBuffer(buf);
-        dimension = buffer.readInt();
-        position = buffer.readBlockPos();
+        dimension = buf.readInt();
+        x = buf.readInt();
+        y = buf.readInt();
+        z = buf.readInt();
 
     }
 
     @Override
     public void toBytes(final ByteBuf buf) {
-        final PacketBuffer buffer = new PacketBuffer(buf);
         buf.writeInt(dimension);
-        buffer.writeBlockPos(position);
+        buf.writeInt(x);
+        buf.writeInt(y);
+        buf.writeInt(z);
     }
 }
