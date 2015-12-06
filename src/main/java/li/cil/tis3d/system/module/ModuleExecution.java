@@ -47,9 +47,9 @@ public final class ModuleExecution extends AbstractModuleRotatable {
 
     private enum State {
         IDLE,
-        ERROR,
-        RUNNING,
-        WAITING
+        ERR,
+        RUN,
+        WAIT
     }
 
     private static final String[] STATE_LOCATIONS = new String[]{
@@ -74,21 +74,17 @@ public final class ModuleExecution extends AbstractModuleRotatable {
         final State prevState = state;
 
         if (compileError != null) {
-            state = State.ERROR;
+            state = State.ERR;
         } else if (machine.getState().instructions.isEmpty()) {
             state = State.IDLE;
         } else {
-            final int prevInstruction = machine.getState().pc;
-
-            machine.step();
-
-            if (machine.getState().pc != prevInstruction) {
-                state = State.RUNNING;
+            if (machine.step()) {
+                state = State.RUN;
                 getCasing().markDirty();
                 sendData(false);
                 return; // Don't send data twice.
             } else {
-                state = State.WAITING;
+                state = State.WAIT;
             }
         }
 
@@ -196,22 +192,18 @@ public final class ModuleExecution extends AbstractModuleRotatable {
     public void readFromNBT(final NBTTagCompound nbt) {
         super.readFromNBT(nbt);
 
+        try {
+            state = Enum.valueOf(State.class, nbt.getString("state"));
+            final NBTTagCompound machineNbt = nbt.getCompoundTag("machine");
+            machine.getState().readFromNBT(machineNbt);
+        } catch (final IllegalArgumentException e) {
+            // This can only happen if someone messes with the save.
+            TIS3D.getLog().warn("Broken save, execution module state is invalid.", e);
+        }
+
         if (nbt.hasKey("compileError")) {
             final NBTTagCompound errorNbt = nbt.getCompoundTag("compileError");
             compileError = new ParseException(errorNbt.getString("message"), errorNbt.getInteger("lineNumber"), errorNbt.getInteger("column"));
-        } else {
-            try {
-                if (nbt.hasKey("state")) {
-                    state = Enum.valueOf(State.class, nbt.getString("state"));
-                }
-
-                // This way around to not even load the machine if the state is invalid.
-                final NBTTagCompound machineNbt = nbt.getCompoundTag("machine");
-                machine.getState().readFromNBT(machineNbt);
-            } catch (final IllegalArgumentException e) {
-                // This can only happen if someone messes with the save.
-                TIS3D.getLog().warn("Broken save, execution module state is invalid.", e);
-            }
         }
     }
 
@@ -219,17 +211,17 @@ public final class ModuleExecution extends AbstractModuleRotatable {
     public void writeToNBT(final NBTTagCompound nbt) {
         super.writeToNBT(nbt);
 
+        final NBTTagCompound machineNbt = new NBTTagCompound();
+        machine.getState().writeToNBT(machineNbt);
+        nbt.setTag("machine", machineNbt);
+        nbt.setString("state", state.name());
+
         if (compileError != null) {
             final NBTTagCompound errorNbt = new NBTTagCompound();
             errorNbt.setString("message", compileError.getMessage());
             errorNbt.setInteger("lineNumber", compileError.getLineNumber());
             errorNbt.setInteger("column", compileError.getColumn());
             nbt.setTag("compileError", errorNbt);
-        } else {
-            final NBTTagCompound machineNbt = new NBTTagCompound();
-            machine.getState().writeToNBT(machineNbt);
-            nbt.setTag("machine", machineNbt);
-            nbt.setString("state", state.name());
         }
     }
 
@@ -279,7 +271,7 @@ public final class ModuleExecution extends AbstractModuleRotatable {
         } catch (final ParseException e) {
             compileError = e;
             if (player != null) {
-                player.addChatMessage(new ChatComponentText(e.toString()));
+                player.addChatMessage(new ChatComponentText(String.format("Compile error @%s.", e)));
             }
         }
     }
@@ -308,14 +300,17 @@ public final class ModuleExecution extends AbstractModuleRotatable {
     @SideOnly(Side.CLIENT)
     private void renderState(final MachineState machineState) {
         // Offset to start drawing at top left of inner area, slightly inset.
-        GlStateManager.translate(4 / 16f, 4 / 16f, 0);
+        GlStateManager.translate(3.5f / 16f, 3.5f / 16f, 0);
         GlStateManager.scale(1 / 128f, 1 / 128f, 1);
         GlStateManager.translate(1, 1, 0);
         GlStateManager.color(1f, 1f, 1f, 1f);
 
         // Draw register info on top.
-        final String registers = String.format("ACC:%3d BAK:%3d", machineState.acc, machineState.bak);
-        FontRendererTextureMonospace.drawString(registers);
+        final String accLast = String.format("ACC:%4d LAST:%s", machineState.acc, machineState.last.map(Enum::name).orElse("NONE"));
+        FontRendererTextureMonospace.drawString(accLast);
+        GlStateManager.translate(0, FontRendererTextureMonospace.CHAR_HEIGHT + 4, 0);
+        final String bakState = String.format("BAK:%4d MODE:%s", machineState.bak, state.name());
+        FontRendererTextureMonospace.drawString(bakState);
         GlStateManager.translate(0, FontRendererTextureMonospace.CHAR_HEIGHT + 4, 0);
         drawLine(1);
         GlStateManager.translate(0, 5, 0);
@@ -324,14 +319,23 @@ public final class ModuleExecution extends AbstractModuleRotatable {
         // current line is in the middle, but don't let last line scroll in.
         final int maxLines = 50 / (FontRendererTextureMonospace.CHAR_HEIGHT + 1);
         final int totalLines = machineState.code.length;
-        final int currentLine = machineState.lineNumbers.get(machineState.pc);
+        final int currentLine;
+        if (machineState.lineNumbers.size() > 0) {
+            currentLine = machineState.lineNumbers.get(machineState.pc);
+        } else if (compileError != null) {
+            currentLine = compileError.getLineNumber();
+        } else {
+            currentLine = -1;
+        }
         final int page = currentLine / maxLines;
         final int offset = page * maxLines;
         for (int lineNumber = offset; lineNumber < Math.min(totalLines, offset + maxLines); lineNumber++) {
             final String line = machineState.code[lineNumber];
             if (lineNumber == currentLine) {
-                if (state == State.WAITING) {
+                if (state == State.WAIT) {
                     GlStateManager.color(0.66f, 0.66f, 0.66f);
+                } else if (state == State.ERR) {
+                    GlStateManager.color(1f, 0f, 0f);
                 }
 
                 drawLine(FontRendererTextureMonospace.CHAR_HEIGHT);
@@ -341,7 +345,7 @@ public final class ModuleExecution extends AbstractModuleRotatable {
                 GlStateManager.color(1f, 1f, 1f);
             }
 
-            FontRendererTextureMonospace.drawString(line, 15);
+            FontRendererTextureMonospace.drawString(line, 18);
 
             GlStateManager.translate(0, FontRendererTextureMonospace.CHAR_HEIGHT + 1, 0);
         }
@@ -361,8 +365,8 @@ public final class ModuleExecution extends AbstractModuleRotatable {
         final WorldRenderer worldRenderer = tessellator.getWorldRenderer();
         worldRenderer.begin(7, DefaultVertexFormats.POSITION);
         worldRenderer.pos(-0.5f, height + 0.5f, 0).endVertex();
-        worldRenderer.pos(62.5f, height + 0.5f, 0).endVertex();
-        worldRenderer.pos(62.5f, -0.5f, 0).endVertex();
+        worldRenderer.pos(71.5f, height + 0.5f, 0).endVertex();
+        worldRenderer.pos(71.5f, -0.5f, 0).endVertex();
         worldRenderer.pos(-0.5f, -0.5f, 0).endVertex();
         tessellator.draw();
 

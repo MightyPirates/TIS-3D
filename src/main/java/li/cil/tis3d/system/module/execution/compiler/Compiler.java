@@ -37,7 +37,7 @@ public final class Compiler {
     /**
      * The maximum number of lines a piece of code may have.
      */
-    public static final int MAX_LINES = 15;
+    public static final int MAX_LINES = 20;
 
     /**
      * The maximum number of characters a single line may have.
@@ -62,11 +62,11 @@ public final class Compiler {
         if (lines.length > MAX_LINES) {
             throw new ParseException(Constants.MESSAGE_TOO_MANY_LINES, MAX_LINES, 0);
         }
+        for (int lineNumber = 0; lineNumber < lines.length; lineNumber++) {
+            lines[lineNumber] = lines[lineNumber].toUpperCase(Locale.ENGLISH);
+        }
 
         state.code = lines;
-        for (int lineNumber = 0; lineNumber < state.code.length; lineNumber++) {
-            state.code[lineNumber] = state.code[lineNumber].toUpperCase(Locale.ENGLISH);
-        }
 
         try {
             // Parse all lines into the specified machine state.
@@ -92,6 +92,7 @@ public final class Compiler {
             }
         } catch (final ParseException e) {
             state.clear();
+            state.code = lines;
             throw e;
         }
     }

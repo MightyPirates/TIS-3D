@@ -79,9 +79,8 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
         input = 0;
         output = 0;
 
-        final Block blockType = getCasing().getCasingWorld().getBlockState(getCasing().getPosition()).getBlock();
         getCasing().markDirty();
-        getCasing().getCasingWorld().notifyNeighborsOfStateChange(getCasing().getPosition(), blockType);
+        notifyNeighbors();
 
         if (!getCasing().getCasingWorld().isRemote) {
             sendData();

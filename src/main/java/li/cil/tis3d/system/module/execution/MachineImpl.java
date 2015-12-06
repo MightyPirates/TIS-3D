@@ -51,14 +51,20 @@ public final class MachineImpl implements Machine {
     /**
      * Advance the virtual machine, ensures the machine's state is valid after
      * the instruction finishes.
+     *
+     * @return <tt>true</tt> if the current instruction changed (even if it's the same again).
      */
-    public void step() {
+    public boolean step() {
         final Instruction instruction = getInstruction();
         if (instruction != null) {
             instruction.step(this);
         }
 
+        final boolean stateChanged = getInstruction() != instruction;
+
         state.validate();
+
+        return stateChanged;
     }
 
     /**

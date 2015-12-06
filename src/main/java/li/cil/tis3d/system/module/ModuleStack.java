@@ -15,7 +15,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import scala.Array;
 
 /**
  * The stack module can be used to store a number of values to be retrieved
@@ -111,7 +110,7 @@ public final class ModuleStack extends AbstractModuleRotatable {
         super.readFromNBT(nbt);
 
         final int[] stackNbt = nbt.getIntArray("stack");
-        Array.copy(stackNbt, 0, stack, 0, Math.min(stackNbt.length, stack.length));
+        System.arraycopy(stackNbt, 0, stack, 0, Math.min(stackNbt.length, stack.length));
         top = Math.max(-1, Math.min(STACK_SIZE - 1, nbt.getInteger("top")));
     }
 

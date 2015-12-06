@@ -1,10 +1,14 @@
 package li.cil.tis3d.client.render.tile;
 
+import li.cil.tis3d.TIS3D;
 import li.cil.tis3d.api.Face;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Tile entity renderer for casings, used to dynamically render stuff for
@@ -13,6 +17,8 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
  * block states for static individual texturing).
  */
 public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRenderer<TileEntityCasing> {
+    private final static Set<Class<?>> BLACKLIST = new HashSet<>();
+
     @Override
     public void renderTileEntityAt(final TileEntityCasing casing, final double x, final double y, final double z, final float partialTicks, final int destroyStage) {
         GlStateManager.pushMatrix();
@@ -23,6 +29,9 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
         for (final Face face : Face.VALUES) {
             final Module module = casing.getModule(face);
             if (module == null) {
+                continue;
+            }
+            if (BLACKLIST.contains(module.getClass())) {
                 continue;
             }
 
@@ -52,7 +61,12 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
             GlStateManager.translate(0.5, 0.5, -0.505);
             GlStateManager.scale(-1, -1, 1);
 
-            module.render(casing.isEnabled(), partialTicks);
+            try {
+                module.render(casing.isEnabled(), partialTicks);
+            } catch (final Exception e) {
+                BLACKLIST.add(module.getClass());
+                TIS3D.getLog().error("A module threw an exception while rendering, won't render again!", e);
+            }
 
             GlStateManager.popMatrix();
         }
