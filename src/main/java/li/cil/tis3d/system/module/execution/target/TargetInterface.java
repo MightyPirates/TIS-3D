@@ -75,7 +75,7 @@ public interface TargetInterface {
     /**
      * Whether the target can transfer data, i.e. {@link #read()} can be called.
      * <p>
-     * Note that this is <em>not</em> equivalent to <tt>{@link #isReading()} &&
+     * Note that this is <em>not</em> equivalent to <tt>{@link #isReading()} &amp;&amp;
      * {@link #isWriting()}</tt>. Depending on the target type, this may be
      * only true in the first update <em>after</em> that has been true and
      * later, but it may also be true right away or always.
