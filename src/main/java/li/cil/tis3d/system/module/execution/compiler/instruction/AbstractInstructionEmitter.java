@@ -46,7 +46,7 @@ abstract class AbstractInstructionEmitter implements InstructionEmitter {
             return target;
         } catch (final IllegalArgumentException ex) {
             if (isInteger(name)) {
-                return Integer.parseInt(name);
+                return Integer.decode(name);
             }
             throw new ParseException(Constants.MESSAGE_INVALID_TARGET, lineNumber, column);
         }
@@ -54,7 +54,7 @@ abstract class AbstractInstructionEmitter implements InstructionEmitter {
 
     private static boolean isInteger(final String value) {
         try {
-            Integer.parseInt(value);
+            Integer.decode(value);
             return true;
         } catch (final NumberFormatException ex) {
             return false;

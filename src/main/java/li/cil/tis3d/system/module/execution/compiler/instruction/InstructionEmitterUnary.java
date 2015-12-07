@@ -3,24 +3,29 @@ package li.cil.tis3d.system.module.execution.compiler.instruction;
 import li.cil.tis3d.system.module.execution.compiler.ParseException;
 import li.cil.tis3d.system.module.execution.compiler.Validator;
 import li.cil.tis3d.system.module.execution.instruction.Instruction;
-import li.cil.tis3d.system.module.execution.instruction.InstructionJump;
 
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 
-public final class InstructionEmitterJump extends AbstractInstructionEmitterJump {
+public class InstructionEmitterUnary extends AbstractInstructionEmitter {
+    private final String name;
+    private final Supplier<Instruction> constructor;
+
+    public InstructionEmitterUnary(final String name, final Supplier<Instruction> constructor) {
+        this.name = name;
+        this.constructor = constructor;
+    }
+
     @Override
     public String getInstructionName() {
-        return "JMP";
+        return name;
     }
 
     @Override
     public Instruction compile(final Matcher matcher, final int lineNumber, final List<Validator> validators) throws ParseException {
-        final String label = checkArg(lineNumber, matcher, "arg1", "name");
-        checkExcess(lineNumber, matcher, "arg2");
+        checkExcess(lineNumber, matcher, "arg1");
 
-        validators.add(state -> validateLabel(state, label, matcher, lineNumber));
-
-        return new InstructionJump(label);
+        return constructor.get();
     }
 }

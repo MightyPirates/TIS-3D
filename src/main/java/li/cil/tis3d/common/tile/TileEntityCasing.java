@@ -4,6 +4,9 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
+import li.cil.tis3d.api.infrared.InfraredPacket;
+import li.cil.tis3d.api.infrared.InfraredReceiver;
+import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.common.inventory.InventoryCasing;
 import li.cil.tis3d.common.inventory.SidedInventoryProxy;
 import li.cil.tis3d.common.network.Network;
@@ -21,6 +24,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.MovingObjectPosition;
 
 import java.util.ArrayDeque;
 import java.util.HashSet;
@@ -40,7 +44,7 @@ import java.util.Set;
  * Casings do not tick. The modules installed in them are driven by a
  * controller (transitively) connected to their casing.
  */
-public final class TileEntityCasing extends TileEntity implements SidedInventoryProxy, CasingProxy {
+public final class TileEntityCasing extends TileEntity implements SidedInventoryProxy, CasingProxy, InfraredReceiver {
     // --------------------------------------------------------------------- //
     // Persisted data
 
@@ -49,6 +53,11 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
 
     // --------------------------------------------------------------------- //
     // Computed data
+
+    // NBT tag names.
+    private static final String TAG_INVENTORY = "inventory";
+    private static final String TAG_CASING = "casing";
+    private static final String TAG_ENABLED = "enabled";
 
     private final TileEntityCasing[] neighbors = new TileEntityCasing[Face.VALUES.length];
     private TileEntityController controller;
@@ -178,6 +187,17 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
     }
 
     // --------------------------------------------------------------------- //
+    // InfraredReceiver
+
+    @Override
+    public void onInfraredPacket(final InfraredPacket packet, final MovingObjectPosition hit) {
+        final Module module = getModule(Face.fromEnumFacing(EnumFacing.getFront(hit.sideHit)));
+        if (module instanceof InfraredReceiver) {
+            ((InfraredReceiver) module).onInfraredPacket(packet, hit);
+        }
+    }
+
+    // --------------------------------------------------------------------- //
     // TileEntity
 
     @Override
@@ -217,14 +237,14 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
     public void onDataPacket(final NetworkManager manager, final S35PacketUpdateTileEntity packet) {
         final NBTTagCompound nbt = packet.func_148857_g();
         load(nbt);
-        isEnabledClient = nbt.getBoolean("enabled");
+        isEnabledClient = nbt.getBoolean(TAG_ENABLED);
     }
 
     @Override
     public Packet getDescriptionPacket() {
         final NBTTagCompound nbt = new NBTTagCompound();
         save(nbt);
-        nbt.setBoolean("enabled", isEnabled());
+        nbt.setBoolean(TAG_ENABLED, isEnabled());
         return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, -1, nbt);
     }
 
@@ -310,20 +330,20 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
     }
 
     private void load(final NBTTagCompound nbt) {
-        final NBTTagCompound inventoryNbt = nbt.getCompoundTag("inventory");
+        final NBTTagCompound inventoryNbt = nbt.getCompoundTag(TAG_INVENTORY);
         inventory.readFromNBT(inventoryNbt);
 
-        final NBTTagCompound casingNbt = nbt.getCompoundTag("casing");
+        final NBTTagCompound casingNbt = nbt.getCompoundTag(TAG_CASING);
         casing.readFromNBT(casingNbt);
     }
 
     private void save(final NBTTagCompound nbt) {
         final NBTTagCompound inventoryNbt = new NBTTagCompound();
         inventory.writeToNBT(inventoryNbt);
-        nbt.setTag("inventory", inventoryNbt);
+        nbt.setTag(TAG_INVENTORY, inventoryNbt);
 
         final NBTTagCompound casingNbt = new NBTTagCompound();
         casing.writeToNBT(casingNbt);
-        nbt.setTag("casing", casingNbt);
+        nbt.setTag(TAG_CASING, casingNbt);
     }
 }

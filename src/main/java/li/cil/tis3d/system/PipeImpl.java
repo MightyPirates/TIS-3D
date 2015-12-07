@@ -15,6 +15,22 @@ import net.minecraft.world.World;
  * Implementation of {@link Pipe}s for passing data between {@link Module}s.
  */
 public final class PipeImpl implements Pipe {
+    // --------------------------------------------------------------------- //
+    // Persisted data
+
+    /**
+     * The current state of the pipe.
+     */
+    private State readState = State.IDLE, writeState = State.IDLE;
+
+    /**
+     * The value currently being written over this pipe.
+     */
+    private int value = Integer.MIN_VALUE;
+
+    // --------------------------------------------------------------------- //
+    // Computed data
+
     /**
      * Current state of the pipe, to enforce synchronization, i.e. make sure
      * each read/write combination always takes the same amount of steps
@@ -43,21 +59,10 @@ public final class PipeImpl implements Pipe {
         FLUSHING
     }
 
-    // --------------------------------------------------------------------- //
-    // Persisted data
-
-    /**
-     * The current state of the pipe.
-     */
-    private State readState = State.IDLE, writeState = State.IDLE;
-
-    /**
-     * The value currently being written over this pipe.
-     */
-    private int value = Integer.MIN_VALUE;
-
-    // --------------------------------------------------------------------- //
-    // Computed data
+    // NBT tag names.
+    private static final String TAG_READ_STATE = "readState";
+    private static final String TAG_WRITE_STATE = "writeState";
+    private static final String TAG_VALUE = "value";
 
     /**
      * The casing this pipe belongs to.
@@ -100,15 +105,15 @@ public final class PipeImpl implements Pipe {
     }
 
     public void readFromNBT(final NBTTagCompound nbt) {
-        readState = State.valueOf(nbt.getString("readState"));
-        writeState = State.valueOf(nbt.getString("writeState"));
-        value = nbt.getInteger("value");
+        readState = State.valueOf(nbt.getString(TAG_READ_STATE));
+        writeState = State.valueOf(nbt.getString(TAG_WRITE_STATE));
+        value = nbt.getInteger(TAG_VALUE);
     }
 
     public void writeToNBT(final NBTTagCompound nbt) {
-        nbt.setString("readState", readState.name());
-        nbt.setString("writeState", writeState.name());
-        nbt.setInteger("value", value);
+        nbt.setString(TAG_READ_STATE, readState.name());
+        nbt.setString(TAG_WRITE_STATE, writeState.name());
+        nbt.setInteger(TAG_VALUE, value);
     }
 
     // --------------------------------------------------------------------- //

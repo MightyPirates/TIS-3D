@@ -4,20 +4,20 @@ import li.cil.tis3d.system.module.execution.Machine;
 import li.cil.tis3d.system.module.execution.MachineState;
 import li.cil.tis3d.system.module.execution.target.Target;
 
-public final class InstructionAdd extends AbstractInstructionRead {
-    public InstructionAdd(final Target source) {
+public final class InstructionBitwiseXor extends AbstractInstructionRead {
+    public InstructionBitwiseXor(final Target source) {
         super(source);
     }
 
     @Override
     protected void doStep(final Machine machine, final int value) {
         final MachineState state = machine.getState();
-        state.acc += value;
+        state.acc ^= value;
         state.pc++;
     }
 
     @Override
     public String toString() {
-        return "ADD " + source;
+        return "XOR " + source;
     }
 }

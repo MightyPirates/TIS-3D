@@ -16,6 +16,9 @@ public final class TIS3D {
     // --------------------------------------------------------------------- //
     // FML / Forge
 
+    @Mod.Instance(API.MOD_ID)
+    public static TIS3D instance;
+
     @SidedProxy(clientSide = Constants.PROXY_CLIENT, serverSide = Constants.PROXY_COMMON)
     public static ProxyCommon proxy;
 

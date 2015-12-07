@@ -28,6 +28,12 @@ public abstract class AbstractModuleRotatable extends AbstractModule implements 
     private Port facing = Port.UP;
 
     // --------------------------------------------------------------------- //
+    // Computed data
+
+    // NBT tag names.
+    private static final String TAG_FACING = "facing";
+
+    // --------------------------------------------------------------------- //
 
     protected AbstractModuleRotatable(final Casing casing, final Face face) {
         super(casing, face);
@@ -51,9 +57,9 @@ public abstract class AbstractModuleRotatable extends AbstractModule implements 
 
     @Override
     public void readFromNBT(final NBTTagCompound nbt) {
-        if (nbt.hasKey("facing")) {
+        if (nbt.hasKey(TAG_FACING)) {
             try {
-                facing = Enum.valueOf(Port.class, nbt.getString("facing"));
+                facing = Enum.valueOf(Port.class, nbt.getString(TAG_FACING));
             } catch (final IllegalArgumentException e) {
                 // This can only happen if someone messes with the save.
                 LogManager.getLogger(API.MOD_ID).warn("Broken save, module facing is invalid.", e);
@@ -63,7 +69,7 @@ public abstract class AbstractModuleRotatable extends AbstractModule implements 
 
     @Override
     public void writeToNBT(final NBTTagCompound nbt) {
-        nbt.setString("facing", facing.name());
+        nbt.setString(TAG_FACING, facing.name());
     }
 
     // --------------------------------------------------------------------- //

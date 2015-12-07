@@ -60,6 +60,19 @@ public final class ModuleExecution extends AbstractModuleRotatable {
             TextureLoader.LOCATION_MODULE_EXECUTION_OVERLAY_WAITING.toString()
     };
 
+    // NBT tag names.
+    private static final String TAG_FULL = "full";
+    private static final String TAG_STATE = "state";
+    private static final String TAG_MACHINE = "machine";
+    private static final String TAG_COMPILE_ERROR = "compileError";
+    private static final String TAG_MESSAGE = "message";
+    private static final String TAG_LINE_NUMBER = "lineNumber";
+    private static final String TAG_COLUMN = "column";
+    private static final String TAG_PC = MachineState.TAG_PC;
+    private static final String TAG_ACC = MachineState.TAG_ACC;
+    private static final String TAG_BAK = MachineState.TAG_BAK;
+    private static final String TAG_LAST = MachineState.TAG_LAST;
+
     // --------------------------------------------------------------------- //
 
     public ModuleExecution(final Casing casing, final Face face) {
@@ -145,24 +158,26 @@ public final class ModuleExecution extends AbstractModuleRotatable {
 
     @Override
     public void onData(final NBTTagCompound nbt) {
-        if (nbt.hasKey("machine")) {
+        if (nbt.getBoolean(TAG_FULL)) {
             readFromNBT(nbt);
         } else {
-            machine.getState().pc = nbt.getInteger("pc");
-            machine.getState().acc = nbt.getInteger("acc");
-            machine.getState().bak = nbt.getInteger("bak");
-            if (nbt.hasKey("last")) {
+            machine.getState().pc = nbt.getInteger(TAG_PC);
+            machine.getState().acc = nbt.getInteger(TAG_ACC);
+            machine.getState().bak = nbt.getInteger(TAG_BAK);
+            if (nbt.hasKey(TAG_LAST)) {
                 try {
-                    machine.getState().last = Optional.of(Enum.valueOf(Port.class, nbt.getString("last")));
-                } catch (final IllegalArgumentException ignored) {
+                    machine.getState().last = Optional.of(Enum.valueOf(Port.class, nbt.getString(TAG_LAST)));
+                } catch (final IllegalArgumentException e) {
+                    TIS3D.getLog().warn("Invalid machine state received.", e);
                 }
             } else {
                 machine.getState().last = Optional.empty();
             }
-            if (nbt.hasKey("state")) {
+            if (nbt.hasKey(TAG_STATE)) {
                 try {
-                    state = Enum.valueOf(State.class, nbt.getString("state"));
-                } catch (final IllegalArgumentException ignored) {
+                    state = Enum.valueOf(State.class, nbt.getString(TAG_STATE));
+                } catch (final IllegalArgumentException e) {
+                    TIS3D.getLog().warn("Invalid executable module state received.", e);
                 }
             }
         }
@@ -202,17 +217,17 @@ public final class ModuleExecution extends AbstractModuleRotatable {
         super.readFromNBT(nbt);
 
         try {
-            state = Enum.valueOf(State.class, nbt.getString("state"));
-            final NBTTagCompound machineNbt = nbt.getCompoundTag("machine");
+            final NBTTagCompound machineNbt = nbt.getCompoundTag(TAG_MACHINE);
             machine.getState().readFromNBT(machineNbt);
+            state = Enum.valueOf(State.class, nbt.getString(TAG_STATE));
         } catch (final IllegalArgumentException e) {
             // This can only happen if someone messes with the save.
             TIS3D.getLog().warn("Broken save, execution module state is invalid.", e);
         }
 
-        if (nbt.hasKey("compileError")) {
-            final NBTTagCompound errorNbt = nbt.getCompoundTag("compileError");
-            compileError = new ParseException(errorNbt.getString("message"), errorNbt.getInteger("lineNumber"), errorNbt.getInteger("column"));
+        if (nbt.hasKey(TAG_COMPILE_ERROR)) {
+            final NBTTagCompound errorNbt = nbt.getCompoundTag(TAG_COMPILE_ERROR);
+            compileError = new ParseException(errorNbt.getString(TAG_MESSAGE), errorNbt.getInteger(TAG_LINE_NUMBER), errorNbt.getInteger(TAG_COLUMN));
         }
     }
 
@@ -222,15 +237,15 @@ public final class ModuleExecution extends AbstractModuleRotatable {
 
         final NBTTagCompound machineNbt = new NBTTagCompound();
         machine.getState().writeToNBT(machineNbt);
-        nbt.setTag("machine", machineNbt);
-        nbt.setString("state", state.name());
+        nbt.setTag(TAG_MACHINE, machineNbt);
+        nbt.setString(TAG_STATE, state.name());
 
         if (compileError != null) {
             final NBTTagCompound errorNbt = new NBTTagCompound();
-            errorNbt.setString("message", compileError.getMessage());
-            errorNbt.setInteger("lineNumber", compileError.getLineNumber());
-            errorNbt.setInteger("column", compileError.getColumn());
-            nbt.setTag("compileError", errorNbt);
+            errorNbt.setString(TAG_MESSAGE, compileError.getMessage());
+            errorNbt.setInteger(TAG_LINE_NUMBER, compileError.getLineNumber());
+            errorNbt.setInteger(TAG_COLUMN, compileError.getColumn());
+            nbt.setTag(TAG_COMPILE_ERROR, errorNbt);
         }
     }
 
@@ -299,15 +314,15 @@ public final class ModuleExecution extends AbstractModuleRotatable {
      */
     private void sendData(final boolean full) {
         final NBTTagCompound nbt = new NBTTagCompound();
+        nbt.setBoolean(TAG_FULL, full);
         if (full) {
             writeToNBT(nbt);
         } else {
-            nbt.setInteger("pc", machine.getState().pc);
-            nbt.setInteger("acc", machine.getState().acc);
-            nbt.setInteger("bak", machine.getState().bak);
-            machine.getState().last.ifPresent(last -> nbt.setString("last", last.name()));
-
-            nbt.setString("state", state.name());
+            nbt.setInteger(TAG_PC, machine.getState().pc);
+            nbt.setInteger(TAG_ACC, machine.getState().acc);
+            nbt.setInteger(TAG_BAK, machine.getState().bak);
+            machine.getState().last.ifPresent(last -> nbt.setString(TAG_LAST, last.name()));
+            nbt.setString(TAG_STATE, state.name());
         }
         getCasing().sendData(getFace(), nbt);
     }

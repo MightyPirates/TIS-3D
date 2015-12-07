@@ -2,15 +2,19 @@ package li.cil.tis3d.common;
 
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import li.cil.tis3d.Constants;
 import li.cil.tis3d.Settings;
+import li.cil.tis3d.TIS3D;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.common.block.BlockCasing;
 import li.cil.tis3d.common.block.BlockController;
+import li.cil.tis3d.common.entity.EntityInfraredPacket;
 import li.cil.tis3d.common.item.ItemModule;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.provider.ModuleProviderExecution;
+import li.cil.tis3d.common.provider.ModuleProviderInfrared;
 import li.cil.tis3d.common.provider.ModuleProviderRandom;
 import li.cil.tis3d.common.provider.ModuleProviderRedstone;
 import li.cil.tis3d.common.provider.ModuleProviderStack;
@@ -53,6 +57,16 @@ public class ProxyCommon {
                         setCreativeTab(API.creativeTab),
                 Constants.NAME_ITEM_MODULE_EXECUTION);
         GameRegistry.registerItem(new ItemModule().
+                        setUnlocalizedName(Constants.NAME_ITEM_MODULE_INFRARED).
+                        setTextureName(API.MOD_ID + ":" + Constants.NAME_ITEM_MODULE_INFRARED).
+                        setCreativeTab(API.creativeTab),
+                Constants.NAME_ITEM_MODULE_INFRARED);
+        GameRegistry.registerItem(new ItemModule().
+                        setUnlocalizedName(Constants.NAME_ITEM_MODULE_RANDOM).
+                        setTextureName(API.MOD_ID + ":" + Constants.NAME_ITEM_MODULE_RANDOM).
+                        setCreativeTab(API.creativeTab),
+                Constants.NAME_ITEM_MODULE_RANDOM);
+        GameRegistry.registerItem(new ItemModule().
                         setUnlocalizedName(Constants.NAME_ITEM_MODULE_REDSTONE).
                         setTextureName(API.MOD_ID + ":" + Constants.NAME_ITEM_MODULE_REDSTONE).
                         setCreativeTab(API.creativeTab),
@@ -62,11 +76,6 @@ public class ProxyCommon {
                         setTextureName(API.MOD_ID + ":" + Constants.NAME_ITEM_MODULE_STACK).
                         setCreativeTab(API.creativeTab),
                 Constants.NAME_ITEM_MODULE_STACK);
-        GameRegistry.registerItem(new ItemModule().
-                        setUnlocalizedName(Constants.NAME_ITEM_MODULE_RANDOM).
-                        setTextureName(API.MOD_ID + ":" + Constants.NAME_ITEM_MODULE_RANDOM).
-                        setCreativeTab(API.creativeTab),
-                Constants.NAME_ITEM_MODULE_RANDOM);
 
         Settings.load(event.getSuggestedConfigurationFile());
     }
@@ -94,18 +103,24 @@ public class ProxyCommon {
                 'P', Blocks.glass_pane,
                 'R', Items.redstone,
                 'G', Items.gold_ingot);
-        GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_REDSTONE), 2),
+        GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_INFRARED), 2),
                 "PPP",
-                "RIR",
+                "RGR",
                 'P', Blocks.glass_pane,
                 'R', Items.redstone,
-                'I', Items.repeater);
+                'G', Items.spider_eye);
         GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_RANDOM), 2),
                 "PPP",
                 "RER",
                 'P', Blocks.glass_pane,
                 'R', Items.redstone,
                 'E', Items.ender_pearl);
+        GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_REDSTONE), 2),
+                "PPP",
+                "RIR",
+                'P', Blocks.glass_pane,
+                'R', Items.redstone,
+                'I', Items.repeater);
         GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_STACK), 2),
                 "PPP",
                 "RER",
@@ -113,14 +128,18 @@ public class ProxyCommon {
                 'R', Items.redstone,
                 'E', Blocks.chest);
 
+        // Register entities.
+        EntityRegistry.registerModEntity(EntityInfraredPacket.class, Constants.NAME_ENTITY_INFRARED_PACKET, 1, TIS3D.instance, 16, 1, true);
+
         // Register network handler.
         Network.INSTANCE.init();
 
         // Register providers for built-in modules.
         API.addProvider(new ModuleProviderExecution());
-        API.addProvider(new ModuleProviderRedstone());
+        API.addProvider(new ModuleProviderInfrared());
         API.addProvider(new ModuleProviderStack());
         API.addProvider(new ModuleProviderRandom());
+        API.addProvider(new ModuleProviderRedstone());
     }
 
     public int getControllerRenderId() {
