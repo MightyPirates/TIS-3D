@@ -1,5 +1,7 @@
 package li.cil.tis3d;
 
+import li.cil.tis3d.api.API;
+
 /**
  * Collection of constants used throughout the mod.
  */
@@ -11,14 +13,17 @@ public final class Constants {
     public static final String PROXY_COMMON = "li.cil.tis3d.common.ProxyCommon";
 
     // --------------------------------------------------------------------- //
-    // Block, item and container names
+    // Block, item, entity and container names
 
     public static final String NAME_BLOCK_CASING = "casing";
     public static final String NAME_BLOCK_CONTROLLER = "controller";
     public static final String NAME_ITEM_MODULE_EXECUTION = "moduleExecution";
+    public static final String NAME_ITEM_MODULE_INFRARED = "moduleInfrared";
     public static final String NAME_ITEM_MODULE_REDSTONE = "moduleRedstone";
     public static final String NAME_ITEM_MODULE_STACK = "moduleStack";
     public static final String NAME_ITEM_MODULE_RANDOM = "moduleRandom";
+
+    public static final String NAME_ENTITY_INFRARED_PACKET = API.MOD_ID + ":infraredPacket";
 
     public static final String NAME_INVENTORY_CASING = "container.casing";
 

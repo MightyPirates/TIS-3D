@@ -30,9 +30,10 @@ public final class ProxyClient extends ProxyCommon {
         setCustomBlockModelResourceLocation(Constants.NAME_BLOCK_CONTROLLER);
 
         setCustomItemModelResourceLocation(Constants.NAME_ITEM_MODULE_EXECUTION);
+        setCustomItemModelResourceLocation(Constants.NAME_ITEM_MODULE_INFRARED);
+        setCustomItemModelResourceLocation(Constants.NAME_ITEM_MODULE_RANDOM);
         setCustomItemModelResourceLocation(Constants.NAME_ITEM_MODULE_REDSTONE);
         setCustomItemModelResourceLocation(Constants.NAME_ITEM_MODULE_STACK);
-        setCustomItemModelResourceLocation(Constants.NAME_ITEM_MODULE_RANDOM);
 
         MinecraftForge.EVENT_BUS.register(TextureLoader.INSTANCE);
     }

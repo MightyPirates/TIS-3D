@@ -2,6 +2,9 @@ package li.cil.tis3d.common.tile;
 
 import li.cil.tis3d.api.Casing;
 import li.cil.tis3d.api.Face;
+import li.cil.tis3d.api.infrared.InfraredPacket;
+import li.cil.tis3d.api.infrared.InfraredReceiver;
+import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.common.inventory.InventoryCasing;
 import li.cil.tis3d.common.inventory.SidedInventoryProxy;
 import li.cil.tis3d.common.network.Network;
@@ -19,6 +22,7 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -40,7 +44,7 @@ import java.util.Set;
  * Casings do not tick. The modules installed in them are driven by a
  * controller (transitively) connected to their casing.
  */
-public final class TileEntityCasing extends TileEntity implements SidedInventoryProxy, CasingProxy {
+public final class TileEntityCasing extends TileEntity implements SidedInventoryProxy, CasingProxy, InfraredReceiver {
     // --------------------------------------------------------------------- //
     // Persisted data
 
@@ -159,7 +163,6 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
         return player.getDistanceSqToCenter(pos) <= maxDistance;
     }
 
-
     // --------------------------------------------------------------------- //
     // SidedInventoryProxy
 
@@ -174,6 +177,17 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
     @Override
     public Casing getCasing() {
         return casing;
+    }
+
+    // --------------------------------------------------------------------- //
+    // InfraredReceiver
+
+    @Override
+    public void onInfraredPacket(final InfraredPacket packet, final MovingObjectPosition hit) {
+        final Module module = getModule(Face.fromEnumFacing(hit.sideHit));
+        if (module instanceof InfraredReceiver) {
+            ((InfraredReceiver) module).onInfraredPacket(packet, hit);
+        }
     }
 
     // --------------------------------------------------------------------- //
