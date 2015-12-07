@@ -2,30 +2,21 @@ package li.cil.tis3d.system.module.execution.compiler;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
-
 import li.cil.tis3d.Constants;
 import li.cil.tis3d.Settings;
 import li.cil.tis3d.system.module.execution.MachineState;
 import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitter;
-import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterArithmetic;
-import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterBitwiseNot;
-import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterJump;
-import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterJumpEqualsZero;
-import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterJumpGreaterThanZero;
-import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterJumpLessThanZero;
-import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterJumpNotZero;
-import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterJumpRelative;
+import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterLabel;
 import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterMissing;
 import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterMove;
-import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterNeg;
-import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterNop;
-import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterSave;
-import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterSwap;
+import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterTargetOrImmediate;
+import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterUnary;
 import li.cil.tis3d.system.module.execution.instruction.Instruction;
 import li.cil.tis3d.system.module.execution.instruction.InstructionAdd;
 import li.cil.tis3d.system.module.execution.instruction.InstructionAddImmediate;
 import li.cil.tis3d.system.module.execution.instruction.InstructionBitwiseAnd;
 import li.cil.tis3d.system.module.execution.instruction.InstructionBitwiseAndImmediate;
+import li.cil.tis3d.system.module.execution.instruction.InstructionBitwiseNot;
 import li.cil.tis3d.system.module.execution.instruction.InstructionBitwiseOr;
 import li.cil.tis3d.system.module.execution.instruction.InstructionBitwiseOrImmediate;
 import li.cil.tis3d.system.module.execution.instruction.InstructionBitwiseShiftLeft;
@@ -34,8 +25,19 @@ import li.cil.tis3d.system.module.execution.instruction.InstructionBitwiseShiftR
 import li.cil.tis3d.system.module.execution.instruction.InstructionBitwiseShiftRightImmediate;
 import li.cil.tis3d.system.module.execution.instruction.InstructionBitwiseXor;
 import li.cil.tis3d.system.module.execution.instruction.InstructionBitwiseXorImmediate;
+import li.cil.tis3d.system.module.execution.instruction.InstructionJump;
+import li.cil.tis3d.system.module.execution.instruction.InstructionJumpEqualZero;
+import li.cil.tis3d.system.module.execution.instruction.InstructionJumpGreaterThanZero;
+import li.cil.tis3d.system.module.execution.instruction.InstructionJumpLessThanZero;
+import li.cil.tis3d.system.module.execution.instruction.InstructionJumpNotZero;
+import li.cil.tis3d.system.module.execution.instruction.InstructionJumpRelative;
+import li.cil.tis3d.system.module.execution.instruction.InstructionJumpRelativeImmediate;
+import li.cil.tis3d.system.module.execution.instruction.InstructionNegate;
+import li.cil.tis3d.system.module.execution.instruction.InstructionSave;
 import li.cil.tis3d.system.module.execution.instruction.InstructionSubtract;
 import li.cil.tis3d.system.module.execution.instruction.InstructionSubtractImmediate;
+import li.cil.tis3d.system.module.execution.instruction.InstructionSwap;
+import li.cil.tis3d.system.module.execution.target.Target;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -160,32 +162,42 @@ public final class Compiler {
     private static final Pattern PATTERN_COMMENT = Pattern.compile("#.*$");
     private static final Pattern PATTERN_LABEL = Pattern.compile("(?<label>[^:]+)\\s*:\\s*(?<rest>.*)");
     private static final Pattern PATTERN_INSTRUCTION = Pattern.compile("^(?<name>[^,\\s]+)\\s*,?\\s*(?<arg1>[^,\\s]+)?\\s*,?\\s*(?<arg2>[^,\\s]+)?\\s*(?<excess>.+)?$");
+    private static final Instruction INSTRUCTION_NOP = new InstructionAdd(Target.NIL);
     private static final InstructionEmitter EMITTER_MISSING = new InstructionEmitterMissing();
     private static final Map<String, InstructionEmitter> EMITTER_MAP;
 
     static {
         final ImmutableMap.Builder<String, InstructionEmitter> builder = ImmutableMap.<String, InstructionEmitter>builder();
 
-        addInstructionEmitter(builder, new InstructionEmitterArithmetic("ADD", InstructionAdd::new, InstructionAddImmediate::new));
-        addInstructionEmitter(builder, new InstructionEmitterJump());
-        addInstructionEmitter(builder, new InstructionEmitterJumpEqualsZero());
-        addInstructionEmitter(builder, new InstructionEmitterJumpGreaterThanZero());
-        addInstructionEmitter(builder, new InstructionEmitterJumpLessThanZero());
-        addInstructionEmitter(builder, new InstructionEmitterJumpNotZero());
-        addInstructionEmitter(builder, new InstructionEmitterJumpRelative());
+        // Special handling: actually emits an `ADD NIL`.
+        addInstructionEmitter(builder, new InstructionEmitterUnary("NOP", () -> INSTRUCTION_NOP));
+
+        // Jumps.
+        addInstructionEmitter(builder, new InstructionEmitterLabel("JMP", InstructionJump::new));
+        addInstructionEmitter(builder, new InstructionEmitterLabel("JEZ", InstructionJumpEqualZero::new));
+        addInstructionEmitter(builder, new InstructionEmitterLabel("JGZ", InstructionJumpGreaterThanZero::new));
+        addInstructionEmitter(builder, new InstructionEmitterLabel("JLZ", InstructionJumpLessThanZero::new));
+        addInstructionEmitter(builder, new InstructionEmitterLabel("JNZ", InstructionJumpNotZero::new));
+        addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate("JRO", InstructionJumpRelative::new, InstructionJumpRelativeImmediate::new));
+
+        // Data transfer.
         addInstructionEmitter(builder, new InstructionEmitterMove());
-        addInstructionEmitter(builder, new InstructionEmitterNeg());
-        addInstructionEmitter(builder, new InstructionEmitterNop());
-        addInstructionEmitter(builder, new InstructionEmitterSave());
-        addInstructionEmitter(builder, new InstructionEmitterArithmetic("SUB", InstructionSubtract::new, InstructionSubtractImmediate::new));
-        addInstructionEmitter(builder, new InstructionEmitterSwap());
-        addInstructionEmitter(builder, new InstructionEmitterArithmetic("AND", InstructionBitwiseAnd::new, InstructionBitwiseAndImmediate::new));
-        addInstructionEmitter(builder, new InstructionEmitterArithmetic("OR", InstructionBitwiseOr::new, InstructionBitwiseOrImmediate::new));
-        addInstructionEmitter(builder, new InstructionEmitterBitwiseNot());
-        addInstructionEmitter(builder, new InstructionEmitterArithmetic("XOR", InstructionBitwiseXor::new, InstructionBitwiseXorImmediate::new));
-        addInstructionEmitter(builder, new InstructionEmitterArithmetic("SHL", InstructionBitwiseShiftLeft::new, InstructionBitwiseShiftLeftImmediate::new));
-        addInstructionEmitter(builder, new InstructionEmitterArithmetic("SHR", InstructionBitwiseShiftRight::new, InstructionBitwiseShiftRightImmediate::new));
-        
+        addInstructionEmitter(builder, new InstructionEmitterUnary("SAV", () -> InstructionSave.INSTANCE));
+        addInstructionEmitter(builder, new InstructionEmitterUnary("SWP", () -> InstructionSwap.INSTANCE));
+
+        // Arithmetic operations.
+        addInstructionEmitter(builder, new InstructionEmitterUnary("NEG", () -> InstructionNegate.INSTANCE));
+        addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate("ADD", InstructionAdd::new, InstructionAddImmediate::new));
+        addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate("SUB", InstructionSubtract::new, InstructionSubtractImmediate::new));
+
+        // Bitwise operations.
+        addInstructionEmitter(builder, new InstructionEmitterUnary("NOT", () -> InstructionBitwiseNot.INSTANCE));
+        addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate("AND", InstructionBitwiseAnd::new, InstructionBitwiseAndImmediate::new));
+        addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate("OR", InstructionBitwiseOr::new, InstructionBitwiseOrImmediate::new));
+        addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate("XOR", InstructionBitwiseXor::new, InstructionBitwiseXorImmediate::new));
+        addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate("SHL", InstructionBitwiseShiftLeft::new, InstructionBitwiseShiftLeftImmediate::new));
+        addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate("SHR", InstructionBitwiseShiftRight::new, InstructionBitwiseShiftRightImmediate::new));
+
         EMITTER_MAP = builder.build();
     }
 
