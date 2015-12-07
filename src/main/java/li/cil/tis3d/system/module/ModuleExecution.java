@@ -203,7 +203,9 @@ public final class ModuleExecution extends AbstractModuleRotatable {
         super.readFromNBT(nbt);
 
         try {
-            state = Enum.valueOf(State.class, nbt.getString("state"));
+            if (nbt.hasKey("state")) {
+                state = Enum.valueOf(State.class, nbt.getString("state"));
+            }
             final NBTTagCompound machineNbt = nbt.getCompoundTag("machine");
             machine.getState().readFromNBT(machineNbt);
         } catch (final IllegalArgumentException e) {
