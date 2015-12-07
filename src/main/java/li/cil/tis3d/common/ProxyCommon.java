@@ -119,7 +119,7 @@ public class ProxyCommon {
                 'E', Blocks.chest);
 
         // Register entities.
-        EntityRegistry.registerModEntity(EntityInfraredPacket.class, Constants.NAME_ENTITY_INFRARED_PACKET, 1, TIS3D.instance, 32, 1, true);
+        EntityRegistry.registerModEntity(EntityInfraredPacket.class, Constants.NAME_ENTITY_INFRARED_PACKET, 1, TIS3D.instance, 16, 1, true);
 
         // Register network handler.
         Network.INSTANCE.init();

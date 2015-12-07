@@ -54,6 +54,11 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
     // --------------------------------------------------------------------- //
     // Computed data
 
+    // NBT tag names.
+    private static final String TAG_INVENTORY = "inventory";
+    private static final String TAG_CASING = "casing";
+    private static final String TAG_ENABLED = "enabled";
+
     private final TileEntityCasing[] neighbors = new TileEntityCasing[Face.VALUES.length];
     private TileEntityController controller;
     private boolean isEnabledClient = false;
@@ -225,14 +230,14 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
     public void onDataPacket(final NetworkManager manager, final S35PacketUpdateTileEntity packet) {
         final NBTTagCompound nbt = packet.getNbtCompound();
         load(nbt);
-        isEnabledClient = nbt.getBoolean("enabled");
+        isEnabledClient = nbt.getBoolean(TAG_ENABLED);
     }
 
     @Override
     public Packet getDescriptionPacket() {
         final NBTTagCompound nbt = new NBTTagCompound();
         save(nbt);
-        nbt.setBoolean("enabled", isEnabled());
+        nbt.setBoolean(TAG_ENABLED, isEnabled());
         return new S35PacketUpdateTileEntity(pos, -1, nbt);
     }
 
@@ -318,20 +323,20 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
     }
 
     private void load(final NBTTagCompound nbt) {
-        final NBTTagCompound inventoryNbt = nbt.getCompoundTag("inventory");
+        final NBTTagCompound inventoryNbt = nbt.getCompoundTag(TAG_INVENTORY);
         inventory.readFromNBT(inventoryNbt);
 
-        final NBTTagCompound casingNbt = nbt.getCompoundTag("casing");
+        final NBTTagCompound casingNbt = nbt.getCompoundTag(TAG_CASING);
         casing.readFromNBT(casingNbt);
     }
 
     private void save(final NBTTagCompound nbt) {
         final NBTTagCompound inventoryNbt = new NBTTagCompound();
         inventory.writeToNBT(inventoryNbt);
-        nbt.setTag("inventory", inventoryNbt);
+        nbt.setTag(TAG_INVENTORY, inventoryNbt);
 
         final NBTTagCompound casingNbt = new NBTTagCompound();
         casing.writeToNBT(casingNbt);
-        nbt.setTag("casing", casingNbt);
+        nbt.setTag(TAG_CASING, casingNbt);
     }
 }

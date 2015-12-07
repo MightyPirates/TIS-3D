@@ -33,6 +33,10 @@ public final class ModuleStack extends AbstractModuleRotatable {
     // --------------------------------------------------------------------- //
     // Computed data
 
+    // NBT data names.
+    private static final String TAG_STACK = "stack";
+    private static final String TAG_TOP = "top";
+
     /**
      * The number of elements the stack may store.
      */
@@ -110,17 +114,17 @@ public final class ModuleStack extends AbstractModuleRotatable {
     public void readFromNBT(final NBTTagCompound nbt) {
         super.readFromNBT(nbt);
 
-        final int[] stackNbt = nbt.getIntArray("stack");
+        final int[] stackNbt = nbt.getIntArray(TAG_STACK);
         System.arraycopy(stackNbt, 0, stack, 0, Math.min(stackNbt.length, stack.length));
-        top = Math.max(-1, Math.min(STACK_SIZE - 1, nbt.getInteger("top")));
+        top = Math.max(-1, Math.min(STACK_SIZE - 1, nbt.getInteger(TAG_TOP)));
     }
 
     @Override
     public void writeToNBT(final NBTTagCompound nbt) {
         super.writeToNBT(nbt);
 
-        nbt.setIntArray("stack", stack);
-        nbt.setInteger("top", top);
+        nbt.setIntArray(TAG_STACK, stack);
+        nbt.setInteger(TAG_TOP, top);
     }
 
     // --------------------------------------------------------------------- //

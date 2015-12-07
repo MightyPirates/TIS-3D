@@ -16,6 +16,8 @@ import java.util.AbstractList;
  * Base implementation of an array based inventory.
  */
 public class Inventory extends AbstractList<ItemStack> implements IInventory {
+    private static final String TAG_ITEMS = "inventory";
+
     private final String name;
     private final ItemStack[] items;
 
@@ -27,7 +29,7 @@ public class Inventory extends AbstractList<ItemStack> implements IInventory {
     // --------------------------------------------------------------------- //
 
     public void readFromNBT(final NBTTagCompound nbt) {
-        final NBTTagList itemList = nbt.getTagList("inventory", Constants.NBT.TAG_COMPOUND);
+        final NBTTagList itemList = nbt.getTagList(TAG_ITEMS, Constants.NBT.TAG_COMPOUND);
         final int count = Math.min(itemList.tagCount(), items.length);
         for (int index = 0; index < count; index++) {
             setInventorySlotContents(index, ItemStack.loadItemStackFromNBT(itemList.getCompoundTagAt(index)));
@@ -43,7 +45,7 @@ public class Inventory extends AbstractList<ItemStack> implements IInventory {
             }
             itemList.appendTag(stackNbt);
         }
-        nbt.setTag("inventory", itemList);
+        nbt.setTag(TAG_ITEMS, itemList);
     }
 
     // --------------------------------------------------------------------- //

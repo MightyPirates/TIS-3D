@@ -65,6 +65,10 @@ public final class CasingImpl implements Casing {
         };
     }
 
+    // NBT tag names.
+    private static final String TAG_MODULES = "modules";
+    private static final String TAG_PIPES = "pipes";
+
     /**
      * The tile entity hosting this casing.
      */
@@ -142,7 +146,7 @@ public final class CasingImpl implements Casing {
      * @param nbt the data to load.
      */
     public void readFromNBT(final NBTTagCompound nbt) {
-        final NBTTagList modulesNbt = nbt.getTagList("modules", Constants.NBT.TAG_COMPOUND);
+        final NBTTagList modulesNbt = nbt.getTagList(TAG_MODULES, Constants.NBT.TAG_COMPOUND);
         final int moduleCount = Math.min(modulesNbt.tagCount(), modules.length);
         for (int i = 0; i < moduleCount; i++) {
             if (modules[i] != null) {
@@ -150,7 +154,7 @@ public final class CasingImpl implements Casing {
             }
         }
 
-        final NBTTagList portsNbt = nbt.getTagList("pipes", Constants.NBT.TAG_COMPOUND);
+        final NBTTagList portsNbt = nbt.getTagList(TAG_PIPES, Constants.NBT.TAG_COMPOUND);
         final int portCount = Math.min(portsNbt.tagCount(), pipes.length);
         for (int i = 0; i < portCount; i++) {
             pipes[i].readFromNBT(portsNbt.getCompoundTagAt(i));
@@ -171,7 +175,7 @@ public final class CasingImpl implements Casing {
             }
             modulesNbt.appendTag(moduleNbt);
         }
-        nbt.setTag("modules", modulesNbt);
+        nbt.setTag(TAG_MODULES, modulesNbt);
 
         final NBTTagList pipesNbt = new NBTTagList();
         for (final PipeImpl pipe : pipes) {
@@ -179,7 +183,7 @@ public final class CasingImpl implements Casing {
             pipe.writeToNBT(portNbt);
             pipesNbt.appendTag(portNbt);
         }
-        nbt.setTag("pipes", pipesNbt);
+        nbt.setTag(TAG_PIPES, pipesNbt);
     }
 
     // --------------------------------------------------------------------- //

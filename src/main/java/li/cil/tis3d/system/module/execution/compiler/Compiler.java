@@ -161,7 +161,7 @@ public final class Compiler {
     private static final Pattern PATTERN_LINES = Pattern.compile("\r?\n");
     private static final Pattern PATTERN_COMMENT = Pattern.compile("#.*$");
     private static final Pattern PATTERN_LABEL = Pattern.compile("(?<label>[^:]+)\\s*:\\s*(?<rest>.*)");
-    private static final Pattern PATTERN_INSTRUCTION = Pattern.compile("^(?<name>\\S+)\\s+(?<arg1>[^,\\s]+)?\\s*,?\\s*(?<arg2>[^,\\s]+)?\\s*(?<excess>.+)?$");
+    private static final Pattern PATTERN_INSTRUCTION = Pattern.compile("^(?<name>\\S+)\\s*(?<arg1>[^,\\s]+)?\\s*,?\\s*(?<arg2>[^,\\s]+)?\\s*(?<excess>.+)?$");
     private static final Instruction INSTRUCTION_NOP = new InstructionAdd(Target.NIL);
     private static final InstructionEmitter EMITTER_MISSING = new InstructionEmitterMissing();
     private static final Map<String, InstructionEmitter> EMITTER_MAP;

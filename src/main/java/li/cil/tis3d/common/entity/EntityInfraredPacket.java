@@ -44,8 +44,12 @@ public class EntityInfraredPacket extends Entity implements InfraredPacket {
     private static final int DEFAULT_LIFETIME = 10;
 
     // NBT tag names.
-    private static final String TAG_LIFETIME = "lifetime";
     private static final String TAG_VALUE = "value";
+    private static final String TAG_LIFETIME = "lifetime";
+
+    // Data watcher ids.
+    private static final int DATA_VALUE = 5;
+    private static final int DATA_LIFETIME = 6;
 
     // --------------------------------------------------------------------- //
     // Persisted data
@@ -86,16 +90,16 @@ public class EntityInfraredPacket extends Entity implements InfraredPacket {
         motionZ = direction.getFrontOffsetZ() * TRAVEL_SPEED;
         lifetime = DEFAULT_LIFETIME;
         this.value = value;
-        dataWatcher.updateObject(5, value);
-        dataWatcher.updateObject(6, lifetime);
+        dataWatcher.updateObject(DATA_VALUE, value);
+        dataWatcher.updateObject(DATA_LIFETIME, lifetime);
     }
 
     // --------------------------------------------------------------------- //
 
     @Override
     protected void entityInit() {
-        dataWatcher.addObject(5, 0);
-        dataWatcher.addObject(6, DEFAULT_LIFETIME);
+        dataWatcher.addObject(DATA_VALUE, 0);
+        dataWatcher.addObject(DATA_LIFETIME, DEFAULT_LIFETIME);
     }
 
     @Override

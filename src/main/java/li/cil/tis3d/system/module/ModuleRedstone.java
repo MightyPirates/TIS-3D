@@ -30,6 +30,11 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
     // --------------------------------------------------------------------- //
     // Computed data
 
+    // NBT tag names.
+    private static final String TAG_OUTPUT = "output";
+    private static final String TAG_INPUT = "input";
+
+    // Rendering info.
     private static final ResourceLocation LOCATION_OVERLAY = new ResourceLocation(API.MOD_ID, "textures/blocks/overlay/moduleRedstone.png");
     private static final float LEFT_U0 = 9 / 32f;
     private static final float LEFT_U1 = 12 / 32f;
@@ -107,8 +112,8 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
 
     @Override
     public void onData(final NBTTagCompound nbt) {
-        output = nbt.getInteger("output");
-        input = nbt.getInteger("input");
+        output = nbt.getInteger(TAG_OUTPUT);
+        input = nbt.getInteger(TAG_INPUT);
     }
 
     @SideOnly(Side.CLIENT)
@@ -143,16 +148,16 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
     public void readFromNBT(final NBTTagCompound nbt) {
         super.readFromNBT(nbt);
 
-        output = Math.max(0, Math.min(15, nbt.getInteger("output")));
-        input = Math.max(0, Math.min(15, nbt.getInteger("input")));
+        output = Math.max(0, Math.min(15, nbt.getInteger(TAG_OUTPUT)));
+        input = Math.max(0, Math.min(15, nbt.getInteger(TAG_INPUT)));
     }
 
     @Override
     public void writeToNBT(final NBTTagCompound nbt) {
         super.writeToNBT(nbt);
 
-        nbt.setInteger("output", output);
-        nbt.setInteger("input", input);
+        nbt.setInteger(TAG_OUTPUT, output);
+        nbt.setInteger(TAG_INPUT, input);
     }
 
     @Override

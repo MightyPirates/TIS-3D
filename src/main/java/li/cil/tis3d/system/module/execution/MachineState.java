@@ -47,6 +47,13 @@ public final class MachineState {
     // --------------------------------------------------------------------- //
     // Computed data
 
+    // NBT tag names.
+    public static final String TAG_CODE = "code";
+    public static final String TAG_PC = "pc";
+    public static final String TAG_ACC = "acc";
+    public static final String TAG_BAK = "bak";
+    public static final String TAG_LAST = "last";
+
     /**
      * List of instructions (the program) stored in the machine.
      */
@@ -102,9 +109,9 @@ public final class MachineState {
     // --------------------------------------------------------------------- //
 
     public void readFromNBT(final NBTTagCompound nbt) {
-        if (nbt.hasKey("code")) {
+        if (nbt.hasKey(TAG_CODE)) {
             try {
-                Compiler.compile(nbt.getString("code"), this);
+                Compiler.compile(nbt.getString(TAG_CODE), this);
             } catch (final ParseException ignored) {
                 // Silent because this is also used to send code to the
                 // clients to visualize errors, and code is also saved
@@ -112,11 +119,11 @@ public final class MachineState {
             }
         }
 
-        pc = nbt.getInteger("pc");
-        acc = nbt.getInteger("acc");
-        bak = nbt.getInteger("bak");
-        if (nbt.hasKey("last")) {
-            last = Optional.of(Port.valueOf(nbt.getString("last")));
+        pc = nbt.getInteger(TAG_PC);
+        acc = nbt.getInteger(TAG_ACC);
+        bak = nbt.getInteger(TAG_BAK);
+        if (nbt.hasKey(TAG_LAST)) {
+            last = Optional.of(Port.valueOf(nbt.getString(TAG_LAST)));
         }
 
         validate();
@@ -124,13 +131,13 @@ public final class MachineState {
     }
 
     public void writeToNBT(final NBTTagCompound nbt) {
-        nbt.setInteger("pc", pc);
-        nbt.setInteger("acc", acc);
-        nbt.setInteger("bak", bak);
-        last.ifPresent(port -> nbt.setString("last", port.name()));
+        nbt.setInteger(TAG_PC, pc);
+        nbt.setInteger(TAG_ACC, acc);
+        nbt.setInteger(TAG_BAK, bak);
+        last.ifPresent(port -> nbt.setString(TAG_LAST, port.name()));
 
         if (code != null) {
-            nbt.setString("code", String.join("\n", code));
+            nbt.setString(TAG_CODE, String.join("\n", code));
         }
     }
 }

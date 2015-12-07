@@ -41,7 +41,7 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
     public static final int MAX_QUEUE_LENGTH = 16;
 
     // NBT tag names.
-    public static final String TAG_RECEIVE_QUEUE = "receiveQueue";
+    private static final String TAG_RECEIVE_QUEUE = "receiveQueue";
 
     /**
      * The last tick we sent a packet. Used to avoid emitting multiple packets
