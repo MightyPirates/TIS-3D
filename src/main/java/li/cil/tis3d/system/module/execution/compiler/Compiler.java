@@ -2,11 +2,13 @@ package li.cil.tis3d.system.module.execution.compiler;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
+
 import li.cil.tis3d.Constants;
 import li.cil.tis3d.Settings;
 import li.cil.tis3d.system.module.execution.MachineState;
 import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitter;
-import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterAdd;
+import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterArithmetic;
+import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterBitwiseNot;
 import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterJump;
 import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterJumpEqualsZero;
 import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterJumpGreaterThanZero;
@@ -18,9 +20,22 @@ import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmit
 import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterNeg;
 import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterNop;
 import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterSave;
-import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterSubtract;
 import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterSwap;
 import li.cil.tis3d.system.module.execution.instruction.Instruction;
+import li.cil.tis3d.system.module.execution.instruction.InstructionAdd;
+import li.cil.tis3d.system.module.execution.instruction.InstructionAddImmediate;
+import li.cil.tis3d.system.module.execution.instruction.InstructionBitwiseAnd;
+import li.cil.tis3d.system.module.execution.instruction.InstructionBitwiseAndImmediate;
+import li.cil.tis3d.system.module.execution.instruction.InstructionBitwiseOr;
+import li.cil.tis3d.system.module.execution.instruction.InstructionBitwiseOrImmediate;
+import li.cil.tis3d.system.module.execution.instruction.InstructionBitwiseShiftLeft;
+import li.cil.tis3d.system.module.execution.instruction.InstructionBitwiseShiftLeftImmediate;
+import li.cil.tis3d.system.module.execution.instruction.InstructionBitwiseShiftRight;
+import li.cil.tis3d.system.module.execution.instruction.InstructionBitwiseShiftRightImmediate;
+import li.cil.tis3d.system.module.execution.instruction.InstructionBitwiseXor;
+import li.cil.tis3d.system.module.execution.instruction.InstructionBitwiseXorImmediate;
+import li.cil.tis3d.system.module.execution.instruction.InstructionSubtract;
+import li.cil.tis3d.system.module.execution.instruction.InstructionSubtractImmediate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -151,7 +166,7 @@ public final class Compiler {
     static {
         final ImmutableMap.Builder<String, InstructionEmitter> builder = ImmutableMap.<String, InstructionEmitter>builder();
 
-        addInstructionEmitter(builder, new InstructionEmitterAdd());
+        addInstructionEmitter(builder, new InstructionEmitterArithmetic("ADD", InstructionAdd::new, InstructionAddImmediate::new));
         addInstructionEmitter(builder, new InstructionEmitterJump());
         addInstructionEmitter(builder, new InstructionEmitterJumpEqualsZero());
         addInstructionEmitter(builder, new InstructionEmitterJumpGreaterThanZero());
@@ -162,9 +177,15 @@ public final class Compiler {
         addInstructionEmitter(builder, new InstructionEmitterNeg());
         addInstructionEmitter(builder, new InstructionEmitterNop());
         addInstructionEmitter(builder, new InstructionEmitterSave());
-        addInstructionEmitter(builder, new InstructionEmitterSubtract());
+        addInstructionEmitter(builder, new InstructionEmitterArithmetic("SUB", InstructionSubtract::new, InstructionSubtractImmediate::new));
         addInstructionEmitter(builder, new InstructionEmitterSwap());
-
+        addInstructionEmitter(builder, new InstructionEmitterArithmetic("AND", InstructionBitwiseAnd::new, InstructionBitwiseAndImmediate::new));
+        addInstructionEmitter(builder, new InstructionEmitterArithmetic("OR", InstructionBitwiseOr::new, InstructionBitwiseOrImmediate::new));
+        addInstructionEmitter(builder, new InstructionEmitterBitwiseNot());
+        addInstructionEmitter(builder, new InstructionEmitterArithmetic("XOR", InstructionBitwiseXor::new, InstructionBitwiseXorImmediate::new));
+        addInstructionEmitter(builder, new InstructionEmitterArithmetic("SHL", InstructionBitwiseShiftLeft::new, InstructionBitwiseShiftLeftImmediate::new));
+        addInstructionEmitter(builder, new InstructionEmitterArithmetic("SHR", InstructionBitwiseShiftRight::new, InstructionBitwiseShiftRightImmediate::new));
+        
         EMITTER_MAP = builder.build();
     }
 
