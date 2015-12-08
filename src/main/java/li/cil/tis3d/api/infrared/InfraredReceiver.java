@@ -17,8 +17,9 @@ import net.minecraft.util.MovingObjectPosition;
  * <li>{@link li.cil.tis3d.api.module.Module} in {@link Casing}.</li>
  * </ul>
  * <p>
- * Note that for blocks that do not block light ({@link Material#blocksLight()})
- * this will never be called!
+ * Note that for non-opaque blocks, defined as <tt>!{@link Material#blocksMovement()} ||
+ * !{@link Material#isOpaque()} || !{@link Material#blocksLight()})</tt>) this will
+ * never be called, as they will be skipped when performing a collision check!
  */
 public interface InfraredReceiver {
     /**

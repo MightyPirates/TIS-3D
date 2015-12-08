@@ -5,6 +5,7 @@ import li.cil.tis3d.api.infrared.InfraredReceiver;
 import li.cil.tis3d.common.event.TickHandlerInfraredPacket;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageParticleEffect;
+import li.cil.tis3d.util.Raytracing;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
@@ -95,7 +96,7 @@ public class EntityInfraredPacket extends Entity implements InfraredPacket {
      * Called from our watchdog each server tick to update our lifetime.
      */
     public void updateLifetime() {
-        if (lifetime-- < 1) {
+        if (--lifetime < 1) {
             setDead();
         }
     }
@@ -304,7 +305,7 @@ public class EntityInfraredPacket extends Entity implements InfraredPacket {
         final Vec3 target = start.addVector(motionX, motionY, motionZ);
 
         // Check for block collisions.
-        final MovingObjectPosition blockHit = world.rayTraceBlocks(start, target);
+        final MovingObjectPosition blockHit = Raytracing.raytrace(world, start, target, Raytracing::intersectIgnoringTransparent);
 
         // Check for entity collisions.
         final MovingObjectPosition entityHit = checkEntityCollision(world, start, target);
@@ -363,16 +364,6 @@ public class EntityInfraredPacket extends Entity implements InfraredPacket {
         // Traveling through a portal?
         if (hit.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && block == Blocks.portal) {
             func_181015_d(pos);
-            return;
-        }
-
-        // Air block?
-        if (block.isAir(world, pos)) {
-            return;
-        }
-
-        // Non-blocking block?
-        if (!block.getMaterial().blocksLight()) {
             return;
         }
 
