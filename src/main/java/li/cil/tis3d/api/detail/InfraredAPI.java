@@ -15,6 +15,7 @@ public interface InfraredAPI {
      * @param position  the location to spawn the packet at.
      * @param direction the direction the packet shall travel in.
      * @param value     the value the packet carries.
+     * @return the packet that was spawned.
      */
-    InfraredPacket sendPacket(final World word, final Vec3 position, final Vec3 direction, final int value);
+    InfraredPacket sendPacket(final World world, final Vec3 position, final Vec3 direction, final int value);
 }
