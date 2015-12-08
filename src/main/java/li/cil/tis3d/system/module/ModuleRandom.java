@@ -1,9 +1,9 @@
 package li.cil.tis3d.system.module;
 
-import li.cil.tis3d.api.Casing;
-import li.cil.tis3d.api.Face;
-import li.cil.tis3d.api.Pipe;
-import li.cil.tis3d.api.Port;
+import li.cil.tis3d.api.machine.Casing;
+import li.cil.tis3d.api.machine.Face;
+import li.cil.tis3d.api.machine.Pipe;
+import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.AbstractModule;
 import li.cil.tis3d.client.TextureLoader;
 import net.minecraft.client.Minecraft;

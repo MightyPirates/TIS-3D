@@ -1,7 +1,7 @@
 package li.cil.tis3d.api.detail;
 
-import li.cil.tis3d.api.Casing;
-import li.cil.tis3d.api.Face;
+import li.cil.tis3d.api.machine.Casing;
+import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.ModuleProvider;
 import net.minecraft.item.ItemStack;
 
@@ -11,7 +11,7 @@ import net.minecraft.item.ItemStack;
  * When trying to create a module instance for an {@link net.minecraft.item.ItemStack},
  * all registered providers will be queried, until one returns something not <tt>null</tt>.
  */
-public interface Registry {
+public interface ModuleAPI {
     /**
      * Register the specified provider.
      *

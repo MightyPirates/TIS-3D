@@ -1,8 +1,8 @@
 package li.cil.tis3d.api.module;
 
-import li.cil.tis3d.api.Casing;
-import li.cil.tis3d.api.Face;
-import li.cil.tis3d.api.Port;
+import li.cil.tis3d.api.machine.Casing;
+import li.cil.tis3d.api.machine.Face;
+import li.cil.tis3d.api.machine.Port;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.relauncher.Side;

@@ -2,12 +2,12 @@ package li.cil.tis3d.system.module;
 
 import com.google.common.base.Strings;
 import li.cil.tis3d.TIS3D;
-import li.cil.tis3d.api.Casing;
-import li.cil.tis3d.api.Face;
-import li.cil.tis3d.api.Port;
+import li.cil.tis3d.api.FontRendererAPI;
+import li.cil.tis3d.api.machine.Casing;
+import li.cil.tis3d.api.machine.Face;
+import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.AbstractModuleRotatable;
 import li.cil.tis3d.client.TextureLoader;
-import li.cil.tis3d.client.render.font.FontRendererTextureMonospace;
 import li.cil.tis3d.system.module.execution.MachineImpl;
 import li.cil.tis3d.system.module.execution.MachineState;
 import li.cil.tis3d.system.module.execution.compiler.Compiler;
@@ -252,7 +252,7 @@ public final class ModuleExecution extends AbstractModuleRotatable {
 
     // --------------------------------------------------------------------- //
 
-    private boolean isCodeSource(final ItemStack stack) {
+    private static boolean isCodeSource(final ItemStack stack) {
         if (stack != null) {
             if (stack.getItem() == Items.written_book) {
                 return true;
@@ -265,7 +265,7 @@ public final class ModuleExecution extends AbstractModuleRotatable {
         return false;
     }
 
-    private String getSourceCode(final ItemStack stack) {
+    private static String getSourceCode(final ItemStack stack) {
         if (!stack.hasTagCompound()) {
             return null;
         }
@@ -338,17 +338,17 @@ public final class ModuleExecution extends AbstractModuleRotatable {
 
         // Draw register info on top.
         final String accLast = String.format("ACC:%4X LAST:%s", (short) machineState.acc, machineState.last.map(Enum::name).orElse("NONE"));
-        FontRendererTextureMonospace.drawString(accLast);
-        GlStateManager.translate(0, FontRendererTextureMonospace.CHAR_HEIGHT + 4, 0);
+        FontRendererAPI.drawString(accLast);
+        GlStateManager.translate(0, FontRendererAPI.getCharHeight() + 4, 0);
         final String bakState = String.format("BAK:%4X MODE:%s", (short) machineState.bak, state.name());
-        FontRendererTextureMonospace.drawString(bakState);
-        GlStateManager.translate(0, FontRendererTextureMonospace.CHAR_HEIGHT + 4, 0);
+        FontRendererAPI.drawString(bakState);
+        GlStateManager.translate(0, FontRendererAPI.getCharHeight() + 4, 0);
         drawLine(1);
         GlStateManager.translate(0, 5, 0);
 
         // If we have more lines than fit on our "screen", offset so that the
         // current line is in the middle, but don't let last line scroll in.
-        final int maxLines = 50 / (FontRendererTextureMonospace.CHAR_HEIGHT + 1);
+        final int maxLines = 50 / (FontRendererAPI.getCharHeight() + 1);
         final int totalLines = machineState.code.length;
         final int currentLine;
         if (machineState.lineNumbers.size() > 0) {
@@ -369,16 +369,16 @@ public final class ModuleExecution extends AbstractModuleRotatable {
                     GlStateManager.color(1f, 0f, 0f);
                 }
 
-                drawLine(FontRendererTextureMonospace.CHAR_HEIGHT);
+                drawLine(FontRendererAPI.getCharHeight());
 
                 GlStateManager.color(0f, 0f, 0f);
             } else {
                 GlStateManager.color(1f, 1f, 1f);
             }
 
-            FontRendererTextureMonospace.drawString(line, 18);
+            FontRendererAPI.drawString(line, 18);
 
-            GlStateManager.translate(0, FontRendererTextureMonospace.CHAR_HEIGHT + 1, 0);
+            GlStateManager.translate(0, FontRendererAPI.getCharHeight() + 1, 0);
         }
     }
 

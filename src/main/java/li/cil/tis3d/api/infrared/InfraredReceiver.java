@@ -1,5 +1,6 @@
 package li.cil.tis3d.api.infrared;
 
+import li.cil.tis3d.api.machine.Casing;
 import net.minecraft.block.material.Material;
 import net.minecraft.util.MovingObjectPosition;
 
@@ -13,7 +14,7 @@ import net.minecraft.util.MovingObjectPosition;
  * <li>{@link net.minecraft.entity.Entity}</li>
  * <li>{@link net.minecraft.block.Block}</li>
  * <li>{@link net.minecraft.tileentity.TileEntity}</li>
- * <li>{@link li.cil.tis3d.api.module.Module} in {@link li.cil.tis3d.api.Casing}.</li>
+ * <li>{@link li.cil.tis3d.api.module.Module} in {@link Casing}.</li>
  * </ul>
  * <p>
  * Note that for blocks that do not block light ({@link Material#blocksLight()})

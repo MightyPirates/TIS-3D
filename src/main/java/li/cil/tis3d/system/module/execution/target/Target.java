@@ -1,6 +1,6 @@
 package li.cil.tis3d.system.module.execution.target;
 
-import li.cil.tis3d.api.Port;
+import li.cil.tis3d.api.machine.Port;
 
 import java.util.Arrays;
 import java.util.Set;

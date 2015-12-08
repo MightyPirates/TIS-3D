@@ -1,7 +1,7 @@
 package li.cil.tis3d.common.network.message;
 
 import io.netty.buffer.ByteBuf;
-import li.cil.tis3d.api.Casing;
+import li.cil.tis3d.api.machine.Casing;
 
 public final class MessageCasingState extends AbstractMessageWithLocation {
     private boolean isEnabled;

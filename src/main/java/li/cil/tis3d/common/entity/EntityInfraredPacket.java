@@ -12,7 +12,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
@@ -82,12 +81,11 @@ public class EntityInfraredPacket extends Entity implements InfraredPacket {
      * @param direction the direction in which the packet was emitted.
      * @param value     the value the packet carries.
      */
-    public void configure(final BlockPos start, final EnumFacing direction, final int value) {
-        final BlockPos offsetPosition = start.offset(direction);
-        setPosition(offsetPosition.getX() + 0.5, offsetPosition.getY() + 0.5, offsetPosition.getZ() + 0.5);
-        motionX = direction.getFrontOffsetX() * TRAVEL_SPEED;
-        motionY = direction.getFrontOffsetY() * TRAVEL_SPEED;
-        motionZ = direction.getFrontOffsetZ() * TRAVEL_SPEED;
+    public void configure(final Vec3 start, final Vec3 direction, final int value) {
+        setPosition(start.xCoord, start.yCoord, start.zCoord);
+        motionX = direction.xCoord * TRAVEL_SPEED;
+        motionY = direction.yCoord * TRAVEL_SPEED;
+        motionZ = direction.zCoord * TRAVEL_SPEED;
         lifetime = DEFAULT_LIFETIME;
         this.value = value;
         dataWatcher.updateObject(DATA_VALUE, value);

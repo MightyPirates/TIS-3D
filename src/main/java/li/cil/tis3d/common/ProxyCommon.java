@@ -4,6 +4,11 @@ import li.cil.tis3d.Constants;
 import li.cil.tis3d.Settings;
 import li.cil.tis3d.TIS3D;
 import li.cil.tis3d.api.API;
+import li.cil.tis3d.api.ModuleAPI;
+import li.cil.tis3d.common.api.CreativeTab;
+import li.cil.tis3d.common.api.FontRendererAPIImpl;
+import li.cil.tis3d.common.api.InfraredAPIImpl;
+import li.cil.tis3d.common.api.ModuleAPIImpl;
 import li.cil.tis3d.common.block.BlockCasing;
 import li.cil.tis3d.common.block.BlockController;
 import li.cil.tis3d.common.entity.EntityInfraredPacket;
@@ -30,8 +35,11 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 public class ProxyCommon {
     public void onPreInit(final FMLPreInitializationEvent event) {
         // Initialize API.
-        API.instance = new RegistryImpl();
         API.creativeTab = new CreativeTab();
+
+        API.fontRendererAPI = new FontRendererAPIImpl();
+        API.infraredAPI = new InfraredAPIImpl();
+        API.moduleAPI = new ModuleAPIImpl();
 
         // Register blocks and items.
         GameRegistry.registerBlock(new BlockCasing().
@@ -125,10 +133,10 @@ public class ProxyCommon {
         Network.INSTANCE.init();
 
         // Register providers for built-in modules.
-        API.addProvider(new ModuleProviderExecution());
-        API.addProvider(new ModuleProviderInfrared());
-        API.addProvider(new ModuleProviderStack());
-        API.addProvider(new ModuleProviderRandom());
-        API.addProvider(new ModuleProviderRedstone());
+        ModuleAPI.addProvider(new ModuleProviderExecution());
+        ModuleAPI.addProvider(new ModuleProviderInfrared());
+        ModuleAPI.addProvider(new ModuleProviderStack());
+        ModuleAPI.addProvider(new ModuleProviderRandom());
+        ModuleAPI.addProvider(new ModuleProviderRedstone());
     }
 }

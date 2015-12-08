@@ -1,7 +1,7 @@
 package li.cil.tis3d.common.block;
 
-import li.cil.tis3d.api.Face;
-import li.cil.tis3d.api.Port;
+import li.cil.tis3d.api.machine.Face;
+import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.Redstone;
 import li.cil.tis3d.api.module.Rotatable;

@@ -1,8 +1,8 @@
-package li.cil.tis3d.common;
+package li.cil.tis3d.common.api;
 
-import li.cil.tis3d.api.Casing;
-import li.cil.tis3d.api.Face;
-import li.cil.tis3d.api.detail.Registry;
+import li.cil.tis3d.api.detail.ModuleAPI;
+import li.cil.tis3d.api.machine.Casing;
+import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.ModuleProvider;
 import net.minecraft.item.ItemStack;
 
@@ -14,7 +14,7 @@ import java.util.List;
  * <p>
  * Allows registering providers as well as querying them.
  */
-public final class RegistryImpl implements Registry {
+public final class ModuleAPIImpl implements ModuleAPI {
     private final List<ModuleProvider> providers = new ArrayList<>();
 
     @Override

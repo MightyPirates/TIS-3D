@@ -1,5 +1,6 @@
 package li.cil.tis3d.system.module.execution;
 
+import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.system.module.execution.target.Target;
 import li.cil.tis3d.system.module.execution.target.TargetInterface;
 
@@ -21,7 +22,7 @@ public interface Machine {
     /**
      * Get an interface that allows reading and writing to all valid
      * {@link Target}s, including virtual ones. A {@link TargetInterface} is
-     * basically a {@link li.cil.tis3d.api.Pipe} wrapper and register wrapper
+     * basically a {@link Pipe} wrapper and register wrapper
      * in one.
      *
      * @param target the target to get the interface for.

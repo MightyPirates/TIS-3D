@@ -1,7 +1,7 @@
 package li.cil.tis3d.system.module.execution.target;
 
-import li.cil.tis3d.api.Face;
-import li.cil.tis3d.api.Port;
+import li.cil.tis3d.api.machine.Face;
+import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.system.module.ModuleExecution;
 import li.cil.tis3d.system.module.execution.Machine;
 

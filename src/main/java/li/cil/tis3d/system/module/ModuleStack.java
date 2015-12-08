@@ -1,12 +1,12 @@
 package li.cil.tis3d.system.module;
 
 import li.cil.tis3d.api.API;
-import li.cil.tis3d.api.Casing;
-import li.cil.tis3d.api.Face;
-import li.cil.tis3d.api.Pipe;
-import li.cil.tis3d.api.Port;
+import li.cil.tis3d.api.FontRendererAPI;
+import li.cil.tis3d.api.machine.Casing;
+import li.cil.tis3d.api.machine.Face;
+import li.cil.tis3d.api.machine.Pipe;
+import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.AbstractModuleRotatable;
-import li.cil.tis3d.client.render.font.FontRendererTextureMonospace;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -239,10 +239,10 @@ public final class ModuleStack extends AbstractModuleRotatable {
         GlStateManager.color(1f, 1f, 1f, 1f);
 
         for (int i = 0; i <= top; i++) {
-            FontRendererTextureMonospace.drawString(String.format("%4X", (short) stack[i]));
-            GlStateManager.translate(0, FontRendererTextureMonospace.CHAR_HEIGHT + 1, 0);
+            FontRendererAPI.drawString(String.format("%4X", (short) stack[i]));
+            GlStateManager.translate(0, FontRendererAPI.getCharHeight() + 1, 0);
             if ((i + 1) % 4 == 0) {
-                GlStateManager.translate((FontRendererTextureMonospace.CHAR_WIDTH + 1) * 5, (FontRendererTextureMonospace.CHAR_HEIGHT + 1) * -4, 0);
+                GlStateManager.translate((FontRendererAPI.getCharWidth() + 1) * 5, (FontRendererAPI.getCharHeight() + 1) * -4, 0);
             }
         }
     }

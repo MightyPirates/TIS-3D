@@ -1,4 +1,4 @@
-package li.cil.tis3d.api;
+package li.cil.tis3d.api.machine;
 
 import net.minecraft.util.EnumFacing;
 

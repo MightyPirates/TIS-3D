@@ -1,9 +1,9 @@
 package li.cil.tis3d.system;
 
-import li.cil.tis3d.api.Casing;
-import li.cil.tis3d.api.Face;
-import li.cil.tis3d.api.Pipe;
-import li.cil.tis3d.api.Port;
+import li.cil.tis3d.api.machine.Casing;
+import li.cil.tis3d.api.machine.Face;
+import li.cil.tis3d.api.machine.Pipe;
+import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageParticleEffect;
@@ -72,12 +72,12 @@ public final class PipeImpl implements Pipe {
     private final Casing casing;
 
     /**
-     * The faces this pipe is connected to in the owning {@link li.cil.tis3d.api.Casing}.
+     * The faces this pipe is connected to in the owning {@link Casing}.
      */
     private final Face inputFace, outputFace;
 
     /**
-     * The input port of this pipe in the owning {@link li.cil.tis3d.api.Casing}.
+     * The input port of this pipe in the owning {@link Casing}.
      */
     private final Port outputPort;
 
@@ -91,7 +91,7 @@ public final class PipeImpl implements Pipe {
     }
 
     /**
-     * Called from the owning {@link li.cil.tis3d.api.Casing} after
+     * Called from the owning {@link Casing} after
      * all {@link Module}s have been updated to update the pipe's
      * state in a synchronized manner.
      */

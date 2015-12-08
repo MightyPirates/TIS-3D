@@ -1,14 +1,14 @@
 package li.cil.tis3d.system.module;
 
-import li.cil.tis3d.api.Casing;
-import li.cil.tis3d.api.Face;
-import li.cil.tis3d.api.Pipe;
-import li.cil.tis3d.api.Port;
+import li.cil.tis3d.api.InfraredAPI;
 import li.cil.tis3d.api.infrared.InfraredPacket;
 import li.cil.tis3d.api.infrared.InfraredReceiver;
+import li.cil.tis3d.api.machine.Casing;
+import li.cil.tis3d.api.machine.Face;
+import li.cil.tis3d.api.machine.Pipe;
+import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.AbstractModule;
 import li.cil.tis3d.client.TextureLoader;
-import li.cil.tis3d.common.entity.EntityInfraredPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -17,7 +17,11 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -192,8 +196,13 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
      * @param value the value to transmit.
      */
     private void emitInfraredPacket(final int value) {
-        final EntityInfraredPacket entity = new EntityInfraredPacket(getCasing().getCasingWorld());
-        entity.configure(getCasing().getPosition(), Face.toEnumFacing(getFace()), value);
-        getCasing().getCasingWorld().spawnEntityInWorld(entity);
+        final BlockPos blockPos = getCasing().getPosition();
+        final EnumFacing facing = Face.toEnumFacing(getFace());
+
+        final World world = getCasing().getCasingWorld();
+        final Vec3 position = new Vec3(blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5);
+        final Vec3 direction = new Vec3(facing.getFrontOffsetX(), facing.getFrontOffsetY(), facing.getFrontOffsetZ());
+
+        InfraredAPI.sendPacket(world, position, direction, value);
     }
 }

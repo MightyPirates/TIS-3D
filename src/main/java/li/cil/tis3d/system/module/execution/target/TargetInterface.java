@@ -1,10 +1,11 @@
 package li.cil.tis3d.system.module.execution.target;
 
-import li.cil.tis3d.api.Port;
+import li.cil.tis3d.api.machine.Pipe;
+import li.cil.tis3d.api.machine.Port;
 
 /**
  * Provides an abstracted way of interacting with {@link Target}s, similar to
- * how {@link li.cil.tis3d.api.Pipe}s operate.
+ * how {@link Pipe}s operate.
  * <p>
  * Depending on the represented {@link Target} this may operate on none, one or
  * multiple pipes (when operating on registers, a port or a virtual port like
