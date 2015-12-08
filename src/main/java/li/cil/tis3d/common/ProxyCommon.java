@@ -1,14 +1,20 @@
 package li.cil.tis3d.common;
 
-import li.cil.tis3d.Constants;
-import li.cil.tis3d.Settings;
 import li.cil.tis3d.api.API;
+import li.cil.tis3d.api.ModuleAPI;
+import li.cil.tis3d.common.api.CreativeTab;
+import li.cil.tis3d.common.api.FontRendererAPIImpl;
+import li.cil.tis3d.common.api.InfraredAPIImpl;
+import li.cil.tis3d.common.api.ModuleAPIImpl;
 import li.cil.tis3d.common.block.BlockCasing;
 import li.cil.tis3d.common.block.BlockController;
+import li.cil.tis3d.common.entity.EntityInfraredPacket;
+import li.cil.tis3d.common.event.TickHandlerInfraredPacket;
 import li.cil.tis3d.common.item.ItemCodeBook;
 import li.cil.tis3d.common.item.ItemModule;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.provider.ModuleProviderExecution;
+import li.cil.tis3d.common.provider.ModuleProviderInfrared;
 import li.cil.tis3d.common.provider.ModuleProviderRandom;
 import li.cil.tis3d.common.provider.ModuleProviderRedstone;
 import li.cil.tis3d.common.provider.ModuleProviderStack;
@@ -17,8 +23,10 @@ import li.cil.tis3d.common.tile.TileEntityController;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 /**
@@ -27,8 +35,11 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 public class ProxyCommon {
     public void onPreInit(final FMLPreInitializationEvent event) {
         // Initialize API.
-        API.instance = new RegistryImpl();
         API.creativeTab = new CreativeTab();
+
+        API.fontRendererAPI = new FontRendererAPIImpl();
+        API.infraredAPI = new InfraredAPIImpl();
+        API.moduleAPI = new ModuleAPIImpl();
 
         // Register blocks and items.
         GameRegistry.registerBlock(new BlockCasing().
@@ -48,6 +59,14 @@ public class ProxyCommon {
                         setCreativeTab(API.creativeTab),
                 Constants.NAME_ITEM_MODULE_EXECUTION);
         GameRegistry.registerItem(new ItemModule().
+                        setUnlocalizedName(Constants.NAME_ITEM_MODULE_INFRARED).
+                        setCreativeTab(API.creativeTab),
+                Constants.NAME_ITEM_MODULE_INFRARED);
+        GameRegistry.registerItem(new ItemModule().
+                        setUnlocalizedName(Constants.NAME_ITEM_MODULE_RANDOM).
+                        setCreativeTab(API.creativeTab),
+                Constants.NAME_ITEM_MODULE_RANDOM);
+        GameRegistry.registerItem(new ItemModule().
                         setUnlocalizedName(Constants.NAME_ITEM_MODULE_REDSTONE).
                         setCreativeTab(API.creativeTab),
                 Constants.NAME_ITEM_MODULE_REDSTONE);
@@ -55,10 +74,6 @@ public class ProxyCommon {
                         setUnlocalizedName(Constants.NAME_ITEM_MODULE_STACK).
                         setCreativeTab(API.creativeTab),
                 Constants.NAME_ITEM_MODULE_STACK);
-        GameRegistry.registerItem(new ItemModule().
-                        setUnlocalizedName(Constants.NAME_ITEM_MODULE_RANDOM).
-                        setCreativeTab(API.creativeTab),
-                Constants.NAME_ITEM_MODULE_RANDOM);
 
         GameRegistry.registerItem(new ItemCodeBook().
                         setUnlocalizedName(Constants.NAME_ITEM_CODE_BOOK).
@@ -91,18 +106,24 @@ public class ProxyCommon {
                 'P', Blocks.glass_pane,
                 'R', Items.redstone,
                 'G', Items.gold_ingot);
-        GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_REDSTONE), 2),
+        GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_INFRARED), 2),
                 "PPP",
-                "RIR",
+                "RGR",
                 'P', Blocks.glass_pane,
                 'R', Items.redstone,
-                'I', Items.repeater);
+                'G', Items.spider_eye);
         GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_RANDOM), 2),
                 "PPP",
                 "RER",
                 'P', Blocks.glass_pane,
                 'R', Items.redstone,
                 'E', Items.ender_pearl);
+        GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_REDSTONE), 2),
+                "PPP",
+                "RIR",
+                'P', Blocks.glass_pane,
+                'R', Items.redstone,
+                'I', Items.repeater);
         GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_STACK), 2),
                 "PPP",
                 "RER",
@@ -114,14 +135,20 @@ public class ProxyCommon {
                 Items.book,
                 Items.redstone);
 
+        // Register entities.
+        EntityRegistry.registerModEntity(EntityInfraredPacket.class, Constants.NAME_ENTITY_INFRARED_PACKET, 1, TIS3D.instance, 16, 1, true);
 
         // Register network handler.
         Network.INSTANCE.init();
 
+        // Register event handlers.
+        MinecraftForge.EVENT_BUS.register(TickHandlerInfraredPacket.INSTANCE);
+
         // Register providers for built-in modules.
-        API.addProvider(new ModuleProviderExecution());
-        API.addProvider(new ModuleProviderRedstone());
-        API.addProvider(new ModuleProviderStack());
-        API.addProvider(new ModuleProviderRandom());
+        ModuleAPI.addProvider(new ModuleProviderExecution());
+        ModuleAPI.addProvider(new ModuleProviderInfrared());
+        ModuleAPI.addProvider(new ModuleProviderStack());
+        ModuleAPI.addProvider(new ModuleProviderRandom());
+        ModuleAPI.addProvider(new ModuleProviderRedstone());
     }
 }

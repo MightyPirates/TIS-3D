@@ -1,14 +1,17 @@
 package li.cil.tis3d.common.tile;
 
-import li.cil.tis3d.api.Casing;
-import li.cil.tis3d.api.Face;
+import li.cil.tis3d.api.infrared.InfraredPacket;
+import li.cil.tis3d.api.infrared.InfraredReceiver;
+import li.cil.tis3d.api.machine.Casing;
+import li.cil.tis3d.api.machine.Face;
+import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.common.inventory.InventoryCasing;
 import li.cil.tis3d.common.inventory.SidedInventoryProxy;
+import li.cil.tis3d.common.machine.CasingImpl;
+import li.cil.tis3d.common.machine.CasingProxy;
+import li.cil.tis3d.common.module.ModuleForwarder;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageCasingState;
-import li.cil.tis3d.system.CasingImpl;
-import li.cil.tis3d.system.CasingProxy;
-import li.cil.tis3d.system.module.ModuleForwarder;
 import li.cil.tis3d.util.InventoryUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ISidedInventory;
@@ -19,6 +22,7 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -40,7 +44,7 @@ import java.util.Set;
  * Casings do not tick. The modules installed in them are driven by a
  * controller (transitively) connected to their casing.
  */
-public final class TileEntityCasing extends TileEntity implements SidedInventoryProxy, CasingProxy {
+public final class TileEntityCasing extends TileEntity implements SidedInventoryProxy, CasingProxy, InfraredReceiver {
     // --------------------------------------------------------------------- //
     // Persisted data
 
@@ -49,6 +53,11 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
 
     // --------------------------------------------------------------------- //
     // Computed data
+
+    // NBT tag names.
+    private static final String TAG_INVENTORY = "inventory";
+    private static final String TAG_CASING = "casing";
+    private static final String TAG_ENABLED = "enabled";
 
     private final TileEntityCasing[] neighbors = new TileEntityCasing[Face.VALUES.length];
     private TileEntityController controller;
@@ -159,7 +168,6 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
         return player.getDistanceSqToCenter(pos) <= maxDistance;
     }
 
-
     // --------------------------------------------------------------------- //
     // SidedInventoryProxy
 
@@ -174,6 +182,17 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
     @Override
     public Casing getCasing() {
         return casing;
+    }
+
+    // --------------------------------------------------------------------- //
+    // InfraredReceiver
+
+    @Override
+    public void onInfraredPacket(final InfraredPacket packet, final MovingObjectPosition hit) {
+        final Module module = getModule(Face.fromEnumFacing(hit.sideHit));
+        if (module instanceof InfraredReceiver) {
+            ((InfraredReceiver) module).onInfraredPacket(packet, hit);
+        }
     }
 
     // --------------------------------------------------------------------- //
@@ -211,14 +230,14 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
     public void onDataPacket(final NetworkManager manager, final S35PacketUpdateTileEntity packet) {
         final NBTTagCompound nbt = packet.getNbtCompound();
         load(nbt);
-        isEnabledClient = nbt.getBoolean("enabled");
+        isEnabledClient = nbt.getBoolean(TAG_ENABLED);
     }
 
     @Override
     public Packet getDescriptionPacket() {
         final NBTTagCompound nbt = new NBTTagCompound();
         save(nbt);
-        nbt.setBoolean("enabled", isEnabled());
+        nbt.setBoolean(TAG_ENABLED, isEnabled());
         return new S35PacketUpdateTileEntity(pos, -1, nbt);
     }
 
@@ -304,20 +323,20 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
     }
 
     private void load(final NBTTagCompound nbt) {
-        final NBTTagCompound inventoryNbt = nbt.getCompoundTag("inventory");
+        final NBTTagCompound inventoryNbt = nbt.getCompoundTag(TAG_INVENTORY);
         inventory.readFromNBT(inventoryNbt);
 
-        final NBTTagCompound casingNbt = nbt.getCompoundTag("casing");
+        final NBTTagCompound casingNbt = nbt.getCompoundTag(TAG_CASING);
         casing.readFromNBT(casingNbt);
     }
 
     private void save(final NBTTagCompound nbt) {
         final NBTTagCompound inventoryNbt = new NBTTagCompound();
         inventory.writeToNBT(inventoryNbt);
-        nbt.setTag("inventory", inventoryNbt);
+        nbt.setTag(TAG_INVENTORY, inventoryNbt);
 
         final NBTTagCompound casingNbt = new NBTTagCompound();
         casing.writeToNBT(casingNbt);
-        nbt.setTag("casing", casingNbt);
+        nbt.setTag(TAG_CASING, casingNbt);
     }
 }

@@ -1,9 +1,9 @@
 package li.cil.tis3d.api.prefab;
 
 import li.cil.tis3d.api.API;
-import li.cil.tis3d.api.Casing;
-import li.cil.tis3d.api.Face;
-import li.cil.tis3d.api.Port;
+import li.cil.tis3d.api.machine.Casing;
+import li.cil.tis3d.api.machine.Face;
+import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Rotatable;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
@@ -15,7 +15,7 @@ import org.apache.logging.log4j.LogManager;
  * This is a utility implementation of a rotatable module.
  * <p>
  * Rotatable modules can face one of four directions, the default being
- * {@link li.cil.tis3d.api.Port#UP}. Most modules will either not need
+ * {@link Port#UP}. Most modules will either not need
  * this at all, or only use this when installed in the top or bottom faces
  * of casings. In some cases you may also merely want to use this for
  * graphical purposes (e.g. the built-in redstone and stack modules do
@@ -26,6 +26,12 @@ public abstract class AbstractModuleRotatable extends AbstractModule implements 
     // Persisted data
 
     private Port facing = Port.UP;
+
+    // --------------------------------------------------------------------- //
+    // Computed data
+
+    // NBT tag names.
+    private static final String TAG_FACING = "facing";
 
     // --------------------------------------------------------------------- //
 
@@ -51,9 +57,9 @@ public abstract class AbstractModuleRotatable extends AbstractModule implements 
 
     @Override
     public void readFromNBT(final NBTTagCompound nbt) {
-        if (nbt.hasKey("facing")) {
+        if (nbt.hasKey(TAG_FACING)) {
             try {
-                facing = Enum.valueOf(Port.class, nbt.getString("facing"));
+                facing = Enum.valueOf(Port.class, nbt.getString(TAG_FACING));
             } catch (final IllegalArgumentException e) {
                 // This can only happen if someone messes with the save.
                 LogManager.getLogger(API.MOD_ID).warn("Broken save, module facing is invalid.", e);
@@ -63,7 +69,7 @@ public abstract class AbstractModuleRotatable extends AbstractModule implements 
 
     @Override
     public void writeToNBT(final NBTTagCompound nbt) {
-        nbt.setString("facing", facing.name());
+        nbt.setString(TAG_FACING, facing.name());
     }
 
     // --------------------------------------------------------------------- //

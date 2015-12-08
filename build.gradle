@@ -106,3 +106,10 @@ publishing {
         }
     }
 }
+
+// this is needed for IntelliJ so we don't have to copy over the assets manually every time
+idea {
+    module {
+        outputDir = file('build/classes/main')
+    }
+}
