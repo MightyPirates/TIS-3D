@@ -26,7 +26,7 @@ public final class FontRendererTextureMonospace {
         drawString(value, value.length());
     }
 
-    public static void drawString(final String value, final int count) {
+    public static void drawString(final String value, final int maxChars) {
         GL11.glPushMatrix();
         GL11.glDepthMask(false);
 
@@ -36,7 +36,7 @@ public final class FontRendererTextureMonospace {
         tessellator.startDrawingQuads();
 
         float tx = 0f;
-        final int end = Math.min(count, value.length());
+        final int end = Math.min(maxChars, value.length());
         for (int i = 0; i < end; i++) {
             final char ch = value.charAt(i);
             drawChar(tx, ch, tessellator);

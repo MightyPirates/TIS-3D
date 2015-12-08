@@ -1,5 +1,6 @@
 package li.cil.tis3d.api.infrared;
 
+import li.cil.tis3d.api.machine.Casing;
 import net.minecraft.block.material.Material;
 import net.minecraft.util.MovingObjectPosition;
 
@@ -13,11 +14,12 @@ import net.minecraft.util.MovingObjectPosition;
  * <li>{@link net.minecraft.entity.Entity}</li>
  * <li>{@link net.minecraft.block.Block}</li>
  * <li>{@link net.minecraft.tileentity.TileEntity}</li>
- * <li>{@link li.cil.tis3d.api.module.Module} in {@link li.cil.tis3d.api.Casing}.</li>
+ * <li>{@link li.cil.tis3d.api.module.Module} in {@link Casing}.</li>
  * </ul>
  * <p>
- * Note that for blocks that do not block light ({@link Material#getCanBlockGrass()})
- * this will never be called!
+ * Note that for non-opaque blocks, defined as <tt>!{@link Material#blocksMovement()} ||
+ * !{@link Material#isOpaque()} || !{@link Material#getCanBlockGrass()})</tt>) this will
+ * never be called, as they will be skipped when performing a collision check!
  */
 public interface InfraredReceiver {
     /**

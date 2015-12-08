@@ -1,9 +1,9 @@
 package li.cil.tis3d.common.inventory;
 
-import li.cil.tis3d.Constants;
-import li.cil.tis3d.api.API;
-import li.cil.tis3d.api.Face;
+import li.cil.tis3d.api.ModuleAPI;
+import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.ModuleProvider;
+import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
@@ -58,7 +58,7 @@ public final class InventoryCasing extends Inventory implements ISidedInventory 
     }
 
     private boolean canInstall(final ItemStack stack, final Face face) {
-        return API.getProviderFor(stack, tileEntity, face) != null;
+        return ModuleAPI.getProviderFor(stack, tileEntity, face) != null;
     }
 
     // --------------------------------------------------------------------- //
@@ -72,7 +72,7 @@ public final class InventoryCasing extends Inventory implements ISidedInventory 
         }
 
         final Face face = Face.VALUES[index];
-        final ModuleProvider provider = API.getProviderFor(stack, tileEntity, face);
+        final ModuleProvider provider = ModuleAPI.getProviderFor(stack, tileEntity, face);
         if (provider == null) {
             return;
         }

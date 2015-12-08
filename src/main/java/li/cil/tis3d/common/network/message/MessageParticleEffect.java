@@ -2,7 +2,7 @@ package li.cil.tis3d.common.network.message;
 
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import io.netty.buffer.ByteBuf;
-import li.cil.tis3d.TIS3D;
+import li.cil.tis3d.common.TIS3D;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
 

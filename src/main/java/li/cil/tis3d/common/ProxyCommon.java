@@ -4,13 +4,16 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
-import li.cil.tis3d.Constants;
-import li.cil.tis3d.Settings;
-import li.cil.tis3d.TIS3D;
 import li.cil.tis3d.api.API;
+import li.cil.tis3d.api.ModuleAPI;
+import li.cil.tis3d.common.api.CreativeTab;
+import li.cil.tis3d.common.api.FontRendererAPIImpl;
+import li.cil.tis3d.common.api.InfraredAPIImpl;
+import li.cil.tis3d.common.api.ModuleAPIImpl;
 import li.cil.tis3d.common.block.BlockCasing;
 import li.cil.tis3d.common.block.BlockController;
 import li.cil.tis3d.common.entity.EntityInfraredPacket;
+import li.cil.tis3d.common.event.TickHandlerInfraredPacket;
 import li.cil.tis3d.common.item.ItemModule;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.provider.ModuleProviderExecution;
@@ -23,6 +26,7 @@ import li.cil.tis3d.common.tile.TileEntityController;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
 
 /**
  * Takes care of common setup.
@@ -33,8 +37,11 @@ public class ProxyCommon {
 
     public void onPreInit(final FMLPreInitializationEvent event) {
         // Initialize API.
-        API.instance = new RegistryImpl();
         API.creativeTab = new CreativeTab();
+
+        API.fontRendererAPI = new FontRendererAPIImpl();
+        API.infraredAPI = new InfraredAPIImpl();
+        API.moduleAPI = new ModuleAPIImpl();
 
         // Register blocks and items.
         GameRegistry.registerBlock(new BlockCasing().
@@ -134,12 +141,15 @@ public class ProxyCommon {
         // Register network handler.
         Network.INSTANCE.init();
 
+        // Register event handlers.
+        MinecraftForge.EVENT_BUS.register(TickHandlerInfraredPacket.INSTANCE);
+
         // Register providers for built-in modules.
-        API.addProvider(new ModuleProviderExecution());
-        API.addProvider(new ModuleProviderInfrared());
-        API.addProvider(new ModuleProviderStack());
-        API.addProvider(new ModuleProviderRandom());
-        API.addProvider(new ModuleProviderRedstone());
+        ModuleAPI.addProvider(new ModuleProviderExecution());
+        ModuleAPI.addProvider(new ModuleProviderInfrared());
+        ModuleAPI.addProvider(new ModuleProviderStack());
+        ModuleAPI.addProvider(new ModuleProviderRandom());
+        ModuleAPI.addProvider(new ModuleProviderRedstone());
     }
 
     public int getControllerRenderId() {

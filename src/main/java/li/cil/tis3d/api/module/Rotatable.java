@@ -1,6 +1,6 @@
 package li.cil.tis3d.api.module;
 
-import li.cil.tis3d.api.Port;
+import li.cil.tis3d.api.machine.Port;
 
 /**
  * Implement this on your module to indicate it can be rotated.

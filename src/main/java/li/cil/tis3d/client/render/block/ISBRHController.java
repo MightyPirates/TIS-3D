@@ -1,6 +1,6 @@
 package li.cil.tis3d.client.render.block;
 
-import li.cil.tis3d.TIS3D;
+import li.cil.tis3d.common.TIS3D;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.world.IBlockAccess;

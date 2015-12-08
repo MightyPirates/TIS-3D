@@ -4,6 +4,7 @@ import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import li.cil.tis3d.client.render.TextureLoader;
 import li.cil.tis3d.client.render.block.ISBRHCasing;
 import li.cil.tis3d.client.render.block.ISBRHController;
 import li.cil.tis3d.client.render.tile.TileEntitySpecialRendererCasing;

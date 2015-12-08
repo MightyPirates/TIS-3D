@@ -1,6 +1,6 @@
 package li.cil.tis3d.common.block;
 
-import li.cil.tis3d.TIS3D;
+import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import li.cil.tis3d.common.tile.TileEntityController;
 import net.minecraft.block.Block;

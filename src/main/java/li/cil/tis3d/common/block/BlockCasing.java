@@ -1,11 +1,11 @@
 package li.cil.tis3d.common.block;
 
-import li.cil.tis3d.TIS3D;
-import li.cil.tis3d.api.Face;
-import li.cil.tis3d.api.Port;
+import li.cil.tis3d.api.machine.Face;
+import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.Redstone;
 import li.cil.tis3d.api.module.Rotatable;
+import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import li.cil.tis3d.util.InventoryUtils;
 import li.cil.tis3d.util.OneEightCompat;
