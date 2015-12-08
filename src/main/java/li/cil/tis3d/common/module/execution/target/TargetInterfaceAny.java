@@ -19,6 +19,9 @@ public final class TargetInterfaceAny extends AbstractTargetInterfaceSide {
         super(machine, module, face);
     }
 
+    // --------------------------------------------------------------------- //
+    // TargetInterface
+
     @Override
     public boolean beginWrite(final int value) {
         for (final Port port : Port.VALUES) {
@@ -83,5 +86,13 @@ public final class TargetInterfaceAny extends AbstractTargetInterfaceSide {
     public void onWriteComplete(final Port port) {
         cancelWrite();
         getMachine().getState().last = Optional.of(port);
+    }
+
+    // --------------------------------------------------------------------- //
+    // Object
+
+    @Override
+    public String toString() {
+        return "ANY";
     }
 }

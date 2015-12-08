@@ -19,6 +19,9 @@ public final class TargetInterfaceLast extends AbstractTargetInterfaceSide {
         super(machine, module, face);
     }
 
+    // --------------------------------------------------------------------- //
+    // TargetInterface
+
     @Override
     public boolean beginWrite(final int value) {
         getState().last.ifPresent(port -> beginWrite(port, value));
@@ -53,5 +56,13 @@ public final class TargetInterfaceLast extends AbstractTargetInterfaceSide {
     @Override
     public int read() {
         return getState().last.map(this::read).orElse(0);
+    }
+
+    // --------------------------------------------------------------------- //
+    // Object
+
+    @Override
+    public String toString() {
+        return "LAST [" + getState().last.map(Enum::name).orElse("NIL") + "]";
     }
 }

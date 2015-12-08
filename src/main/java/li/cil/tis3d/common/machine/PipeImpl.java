@@ -74,20 +74,20 @@ public final class PipeImpl implements Pipe {
     /**
      * The faces this pipe is connected to in the owning {@link Casing}.
      */
-    private final Face inputFace, outputFace;
+    private final Face receivingFace, sendingFace;
 
     /**
      * The input port of this pipe in the owning {@link Casing}.
      */
-    private final Port outputPort;
+    private final Port sendingPort;
 
     // --------------------------------------------------------------------- //
 
-    public PipeImpl(final Casing casing, final Face inputFace, final Face outputFace, final Port outputPort) {
+    public PipeImpl(final Casing casing, final Face receivingFace, final Face sendingFace, final Port sendingPort) {
         this.casing = casing;
-        this.inputFace = inputFace;
-        this.outputFace = outputFace;
-        this.outputPort = outputPort;
+        this.receivingFace = receivingFace;
+        this.sendingFace = sendingFace;
+        this.sendingPort = sendingPort;
     }
 
     /**
@@ -177,9 +177,9 @@ public final class PipeImpl implements Pipe {
         }
 
         final BlockPos position = casing.getPosition();
-        final double ox = Face.toEnumFacing(inputFace).getFrontOffsetX() + Face.toEnumFacing(outputFace).getFrontOffsetX();
-        final double oy = Face.toEnumFacing(inputFace).getFrontOffsetY() + Face.toEnumFacing(outputFace).getFrontOffsetY();
-        final double oz = Face.toEnumFacing(inputFace).getFrontOffsetZ() + Face.toEnumFacing(outputFace).getFrontOffsetZ();
+        final double ox = Face.toEnumFacing(receivingFace).getFrontOffsetX() + Face.toEnumFacing(sendingFace).getFrontOffsetX();
+        final double oy = Face.toEnumFacing(receivingFace).getFrontOffsetY() + Face.toEnumFacing(sendingFace).getFrontOffsetY();
+        final double oz = Face.toEnumFacing(receivingFace).getFrontOffsetZ() + Face.toEnumFacing(sendingFace).getFrontOffsetZ();
         final double x = ox * 0.55 + position.getX() + 0.5;
         final double y = oy * 0.55 + position.getY() + 0.5;
         final double z = oz * 0.55 + position.getZ() + 0.5;
@@ -195,7 +195,15 @@ public final class PipeImpl implements Pipe {
         cancelWrite();
         cancelRead();
 
-        casing.getModule(outputFace).onWriteComplete(outputPort);
+        casing.getModule(sendingFace).onWriteComplete(sendingPort);
         return result;
+    }
+
+    // --------------------------------------------------------------------- //
+    // Object
+
+    @Override
+    public String toString() {
+        return casing.getPosition() + ": " + sendingFace + " [" + writeState + "] -> " + receivingFace + " [" + readState + "]";
     }
 }

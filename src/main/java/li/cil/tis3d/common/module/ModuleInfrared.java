@@ -196,8 +196,8 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
      * @param value the value to transmit.
      */
     private void emitInfraredPacket(final int value) {
-        final BlockPos blockPos = getCasing().getPosition();
         final EnumFacing facing = Face.toEnumFacing(getFace());
+        final BlockPos blockPos = getCasing().getPosition().offset(facing);
 
         final World world = getCasing().getCasingWorld();
         final Vec3 position = new Vec3(blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5);

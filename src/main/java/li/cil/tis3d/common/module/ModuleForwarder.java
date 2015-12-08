@@ -59,4 +59,12 @@ public final class ModuleForwarder extends AbstractModule {
     public void onWriteComplete(final Port port) {
         beginForwarding(port);
     }
+
+    // --------------------------------------------------------------------- //
+    // Object
+
+    @Override
+    public String toString() {
+        return getCasing().getPosition().toString() + ": " + getFace().toString();
+    }
 }

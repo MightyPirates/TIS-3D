@@ -12,6 +12,9 @@ public final class TargetInterfaceAcc extends AbstractTargetInterface {
         super(machine);
     }
 
+    // --------------------------------------------------------------------- //
+    // TargetInterface
+
     @Override
     public boolean beginWrite(final int value) {
         getState().acc = value;
@@ -44,5 +47,13 @@ public final class TargetInterfaceAcc extends AbstractTargetInterface {
     @Override
     public int read() {
         return getState().acc;
+    }
+
+    // --------------------------------------------------------------------- //
+    // Object
+
+    @Override
+    public String toString() {
+        return "ACC";
     }
 }

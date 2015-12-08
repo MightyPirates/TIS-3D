@@ -105,7 +105,9 @@ public class EntityInfraredPacket extends Entity implements InfraredPacket {
      */
     private void revive() {
         isDead = false;
-        TickHandlerInfraredPacket.INSTANCE.watchPacket(this);
+        if (!getEntityWorld().isRemote) {
+            TickHandlerInfraredPacket.INSTANCE.watchPacket(this);
+        }
     }
 
     // --------------------------------------------------------------------- //
@@ -113,13 +115,17 @@ public class EntityInfraredPacket extends Entity implements InfraredPacket {
     @Override
     protected void entityInit() {
         dataWatcher.addObject(DATA_VALUE, 0);
-        TickHandlerInfraredPacket.INSTANCE.watchPacket(this);
+        if (!getEntityWorld().isRemote) {
+            TickHandlerInfraredPacket.INSTANCE.watchPacket(this);
+        }
     }
 
     @Override
     public void setDead() {
         super.setDead();
-        TickHandlerInfraredPacket.INSTANCE.unwatchPacket(this);
+        if (!getEntityWorld().isRemote) {
+            TickHandlerInfraredPacket.INSTANCE.unwatchPacket(this);
+        }
     }
 
     @Override

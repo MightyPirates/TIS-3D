@@ -15,6 +15,9 @@ public final class TargetInterfaceBak extends AbstractTargetInterface {
         super(machine);
     }
 
+    // --------------------------------------------------------------------- //
+    // TargetInterface
+
     @Override
     public boolean beginWrite(final int value) {
         throw throwOnWrite();
@@ -56,5 +59,13 @@ public final class TargetInterfaceBak extends AbstractTargetInterface {
 
     private static IllegalArgumentException throwOnRead() {
         throw new IllegalStateException("BAK cannot be read from directly.");
+    }
+
+    // --------------------------------------------------------------------- //
+    // Object
+
+    @Override
+    public String toString() {
+        return "BAK";
     }
 }

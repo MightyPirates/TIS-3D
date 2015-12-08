@@ -19,6 +19,9 @@ public final class TargetInterfaceSide extends AbstractTargetInterfaceSide {
         this.port = port;
     }
 
+    // --------------------------------------------------------------------- //
+    // TargetInterface
+
     @Override
     public boolean beginWrite(final int value) {
         beginWrite(port, value);
@@ -53,5 +56,13 @@ public final class TargetInterfaceSide extends AbstractTargetInterfaceSide {
     @Override
     public int read() {
         return read(port);
+    }
+
+    // --------------------------------------------------------------------- //
+    // Object
+
+    @Override
+    public String toString() {
+        return port.name();
     }
 }
