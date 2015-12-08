@@ -1,13 +1,13 @@
 package li.cil.tis3d.system.module;
 
 import com.google.common.base.Strings;
-import li.cil.tis3d.TIS3D;
 import li.cil.tis3d.api.FontRendererAPI;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.AbstractModuleRotatable;
-import li.cil.tis3d.client.TextureLoader;
+import li.cil.tis3d.client.render.TextureLoader;
+import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.system.module.execution.MachineImpl;
 import li.cil.tis3d.system.module.execution.MachineState;
 import li.cil.tis3d.system.module.execution.compiler.Compiler;

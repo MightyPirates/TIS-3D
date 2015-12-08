@@ -1,8 +1,9 @@
 package li.cil.tis3d.client;
 
-import li.cil.tis3d.Constants;
 import li.cil.tis3d.api.API;
+import li.cil.tis3d.client.render.TextureLoader;
 import li.cil.tis3d.client.render.tile.TileEntitySpecialRendererCasing;
+import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.ProxyCommon;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import net.minecraft.client.resources.model.ModelResourceLocation;

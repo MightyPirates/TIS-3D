@@ -2,6 +2,7 @@ package li.cil.tis3d.common.entity;
 
 import li.cil.tis3d.api.infrared.InfraredPacket;
 import li.cil.tis3d.api.infrared.InfraredReceiver;
+import li.cil.tis3d.common.event.TickHandlerInfraredPacket;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageParticleEffect;
 import net.minecraft.block.Block;
@@ -48,7 +49,6 @@ public class EntityInfraredPacket extends Entity implements InfraredPacket {
 
     // Data watcher ids.
     private static final int DATA_VALUE = 5;
-    private static final int DATA_LIFETIME = 6;
 
     // --------------------------------------------------------------------- //
     // Persisted data
@@ -89,7 +89,23 @@ public class EntityInfraredPacket extends Entity implements InfraredPacket {
         lifetime = DEFAULT_LIFETIME;
         this.value = value;
         dataWatcher.updateObject(DATA_VALUE, value);
-        dataWatcher.updateObject(DATA_LIFETIME, lifetime);
+    }
+
+    /**
+     * Called from our watchdog each server tick to update our lifetime.
+     */
+    public void updateLifetime() {
+        if (lifetime-- < 1) {
+            setDead();
+        }
+    }
+
+    /**
+     * Unflag the entity as dead; used to revive it when being redirected.
+     */
+    private void revive() {
+        isDead = false;
+        TickHandlerInfraredPacket.INSTANCE.watchPacket(this);
     }
 
     // --------------------------------------------------------------------- //
@@ -97,7 +113,13 @@ public class EntityInfraredPacket extends Entity implements InfraredPacket {
     @Override
     protected void entityInit() {
         dataWatcher.addObject(DATA_VALUE, 0);
-        dataWatcher.addObject(DATA_LIFETIME, DEFAULT_LIFETIME);
+        TickHandlerInfraredPacket.INSTANCE.watchPacket(this);
+    }
+
+    @Override
+    public void setDead() {
+        super.setDead();
+        TickHandlerInfraredPacket.INSTANCE.unwatchPacket(this);
     }
 
     @Override
@@ -114,8 +136,8 @@ public class EntityInfraredPacket extends Entity implements InfraredPacket {
 
     @Override
     public void onEntityUpdate() {
-        // Enforce lifetime.
-        if (lifetime-- <= 0) {
+        // Enforce lifetime, fail-safe, should be tracked in updateLifetime().
+        if (lifetime < 1) {
             setDead();
             return;
         }
@@ -192,7 +214,7 @@ public class EntityInfraredPacket extends Entity implements InfraredPacket {
         lifetime += addedLifetime;
         if (lifetime > 0) {
             // Revive!
-            isDead = false;
+            revive();
 
             // Apply new position.
             final Vec3 oldPos = getPositionVector();
@@ -279,10 +301,30 @@ public class EntityInfraredPacket extends Entity implements InfraredPacket {
         final MovingObjectPosition blockHit = world.rayTraceBlocks(start, target);
 
         // Check for entity collisions.
-        final List<Entity> collisions = world.getEntitiesWithinAABBExcludingEntity(this, getEntityBoundingBox().addCoord(motionX, motionY, motionZ));
+        final MovingObjectPosition entityHit = checkEntityCollision(world, start, target);
 
+        // If we have both, pick the closer one.
+        if (blockHit != null && blockHit.typeOfHit != MovingObjectPosition.MovingObjectType.MISS &&
+                entityHit != null && entityHit.typeOfHit != MovingObjectPosition.MovingObjectType.MISS) {
+            if (blockHit.hitVec.squareDistanceTo(start) < entityHit.hitVec.squareDistanceTo(start)) {
+                return blockHit;
+            } else {
+                return entityHit;
+            }
+        } else if (blockHit != null) {
+            return blockHit;
+        } else if (entityHit != null) {
+            return entityHit;
+        } else {
+            return null;
+        }
+    }
+
+    private MovingObjectPosition checkEntityCollision(final World world, final Vec3 start, final Vec3 target) {
         MovingObjectPosition entityHit = null;
         double bestSqrDistance = Double.POSITIVE_INFINITY;
+
+        final List<Entity> collisions = world.getEntitiesWithinAABBExcludingEntity(this, getEntityBoundingBox().addCoord(motionX, motionY, motionZ));
         for (final Entity entity : collisions) {
             if (entity.canBeCollidedWith()) {
                 final AxisAlignedBB entityBounds = entity.getEntityBoundingBox();
@@ -299,24 +341,7 @@ public class EntityInfraredPacket extends Entity implements InfraredPacket {
             }
         }
 
-        if (blockHit != null && blockHit.typeOfHit != MovingObjectPosition.MovingObjectType.MISS &&
-                entityHit != null && entityHit.typeOfHit != MovingObjectPosition.MovingObjectType.MISS) {
-            if (blockHit.hitVec.squareDistanceTo(start) < entityHit.hitVec.squareDistanceTo(start)) {
-                return blockHit;
-            } else {
-                return entityHit;
-            }
-        }
-
-        if (blockHit != null && blockHit.typeOfHit != MovingObjectPosition.MovingObjectType.MISS) {
-            return blockHit;
-        }
-
-        if (entityHit != null && entityHit.typeOfHit != MovingObjectPosition.MovingObjectType.MISS) {
-            return entityHit;
-        }
-
-        return null;
+        return entityHit;
     }
 
     private void onBlockCollision(final MovingObjectPosition hit) {

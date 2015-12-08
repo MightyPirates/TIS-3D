@@ -1,8 +1,8 @@
 package li.cil.tis3d.client.render.tile;
 
-import li.cil.tis3d.TIS3D;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
+import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;

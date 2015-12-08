@@ -1,9 +1,9 @@
 package li.cil.tis3d.common.inventory;
 
-import li.cil.tis3d.Constants;
 import li.cil.tis3d.api.ModuleAPI;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.ModuleProvider;
+import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;

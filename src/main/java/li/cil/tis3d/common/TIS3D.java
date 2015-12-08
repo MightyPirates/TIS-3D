@@ -1,7 +1,6 @@
-package li.cil.tis3d;
+package li.cil.tis3d.common;
 
 import li.cil.tis3d.api.API;
-import li.cil.tis3d.common.ProxyCommon;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;

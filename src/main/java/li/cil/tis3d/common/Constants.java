@@ -1,4 +1,4 @@
-package li.cil.tis3d;
+package li.cil.tis3d.common;
 
 import li.cil.tis3d.api.API;
 

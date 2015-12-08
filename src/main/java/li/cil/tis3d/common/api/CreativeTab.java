@@ -1,7 +1,7 @@
 package li.cil.tis3d.common.api;
 
-import li.cil.tis3d.Constants;
 import li.cil.tis3d.api.API;
+import li.cil.tis3d.common.Constants;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.registry.GameRegistry;

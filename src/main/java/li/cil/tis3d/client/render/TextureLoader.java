@@ -1,4 +1,4 @@
-package li.cil.tis3d.client;
+package li.cil.tis3d.client.render;
 
 import li.cil.tis3d.api.API;
 import net.minecraft.util.ResourceLocation;

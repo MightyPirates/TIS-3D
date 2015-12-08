@@ -1,7 +1,7 @@
 package li.cil.tis3d.system.module.execution;
 
-import li.cil.tis3d.Settings;
 import li.cil.tis3d.api.machine.Port;
+import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.system.module.execution.compiler.Compiler;
 import li.cil.tis3d.system.module.execution.compiler.ParseException;
 import li.cil.tis3d.system.module.execution.instruction.Instruction;

@@ -2,8 +2,8 @@ package li.cil.tis3d.system.module.execution.compiler;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
-import li.cil.tis3d.Constants;
-import li.cil.tis3d.Settings;
+import li.cil.tis3d.common.Constants;
+import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.system.module.execution.MachineState;
 import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitter;
 import li.cil.tis3d.system.module.execution.compiler.instruction.InstructionEmitterLabel;

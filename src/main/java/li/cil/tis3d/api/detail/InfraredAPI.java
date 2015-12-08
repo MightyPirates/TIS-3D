@@ -1,10 +1,11 @@
 package li.cil.tis3d.api.detail;
 
+import li.cil.tis3d.api.infrared.InfraredPacket;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 /**
- * API entry point for spawning {@link li.cil.tis3d.api.infrared.InfraredPacket}s and related tasks.
+ * API entry point for spawning {@link InfraredPacket}s and related tasks.
  */
 public interface InfraredAPI {
     /**
@@ -15,5 +16,5 @@ public interface InfraredAPI {
      * @param direction the direction the packet shall travel in.
      * @param value     the value the packet carries.
      */
-    void sendPacket(final World word, final Vec3 position, final Vec3 direction, final int value);
+    InfraredPacket sendPacket(final World word, final Vec3 position, final Vec3 direction, final int value);
 }

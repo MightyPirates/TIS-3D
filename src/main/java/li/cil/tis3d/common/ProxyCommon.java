@@ -1,8 +1,5 @@
 package li.cil.tis3d.common;
 
-import li.cil.tis3d.Constants;
-import li.cil.tis3d.Settings;
-import li.cil.tis3d.TIS3D;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.ModuleAPI;
 import li.cil.tis3d.common.api.CreativeTab;
@@ -12,6 +9,7 @@ import li.cil.tis3d.common.api.ModuleAPIImpl;
 import li.cil.tis3d.common.block.BlockCasing;
 import li.cil.tis3d.common.block.BlockController;
 import li.cil.tis3d.common.entity.EntityInfraredPacket;
+import li.cil.tis3d.common.event.TickHandlerInfraredPacket;
 import li.cil.tis3d.common.item.ItemModule;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.provider.ModuleProviderExecution;
@@ -24,6 +22,7 @@ import li.cil.tis3d.common.tile.TileEntityController;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
@@ -131,6 +130,9 @@ public class ProxyCommon {
 
         // Register network handler.
         Network.INSTANCE.init();
+
+        // Register event handlers.
+        MinecraftForge.EVENT_BUS.register(TickHandlerInfraredPacket.INSTANCE);
 
         // Register providers for built-in modules.
         ModuleAPI.addProvider(new ModuleProviderExecution());
