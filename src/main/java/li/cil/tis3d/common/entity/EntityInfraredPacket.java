@@ -24,7 +24,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.List;
 
 /**
- * Represents a single value in transmission, sent by an {@link li.cil.tis3d.system.module.ModuleInfrared}.
+ * Represents a single value in transmission, sent by an {@link li.cil.tis3d.common.module.ModuleInfrared}.
  */
 public class EntityInfraredPacket extends Entity implements InfraredPacket {
     // --------------------------------------------------------------------- //
@@ -74,7 +74,7 @@ public class EntityInfraredPacket extends Entity implements InfraredPacket {
     /**
      * Sets up the packet's starting position, velocity and value carried.
      * <p>
-     * Called from {@link li.cil.tis3d.system.module.ModuleInfrared} directly
+     * Called from {@link li.cil.tis3d.common.module.ModuleInfrared} directly
      * after instantiation of a new infrared packet entity.
      *
      * @param start     the position of the block that spawned the packet.
