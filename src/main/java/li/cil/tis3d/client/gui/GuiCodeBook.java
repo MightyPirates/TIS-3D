@@ -2,46 +2,54 @@ package li.cil.tis3d.client.gui;
 
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.common.item.ItemCodeBook;
+import li.cil.tis3d.common.network.Network;
+import li.cil.tis3d.common.network.message.MessageCodeBookData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 /**
  * GUI for the code book, used to write and manage ASM programs.
  */
 public class GuiCodeBook extends GuiScreen {
     private static final ResourceLocation LOCATION_BACKGROUND = new ResourceLocation(API.MOD_ID, "textures/gui/codeBook.png");
+    private static final Pattern PATTERN_LINES = Pattern.compile("\r?\n");
     private static final int GUI_WIDTH = 148;
     private static final int GUI_HEIGHT = 230;
     private static final int BUTTON_PAGE_CHANGE_PREV_X = 8;
     private static final int BUTTON_PAGE_CHANGE_NEXT_X = 116;
     private static final int BUTTON_PAGE_CHANGE_Y = 224;
-    private static final int BUTTON_PROGRAM_X = 20;
-    private static final int BUTTON_PROGRAM_BASE_Y = 10;
-    private static final int BUTTON_PROGRAM_HEIGHT = 26;
-    private static final int BUTTONS_PER_PAGE = 8;
+    private static final int CODE_POS_X = 18;
+    private static final int CODE_POS_Y = 16;
 
     private static final int ID_BUTTON_PAGE_NEXT = 1;
     private static final int ID_BUTTON_PAGE_PREV = 2;
-    private static final int ID_BUTTON_PROGRAM_BASE = 3;
 
     private PageChangeButton buttonNextPage;
     private PageChangeButton buttonPreviousPage;
 
     private final EntityPlayer player;
     private final ItemCodeBook.Data data;
-    private int page = 0;
-    private int program = -1;
+
+    private int selectedLine = 0;
+    private int selectionStart = 0;
+    private int selectionEnd = 0;
+
+    // --------------------------------------------------------------------- //
 
     public GuiCodeBook(final EntityPlayer player) {
         this.player = player;
         this.data = ItemCodeBook.Data.loadFromStack(player.getHeldItem());
     }
+
+    // --------------------------------------------------------------------- //
 
     @Override
     public void initGui() {
@@ -53,12 +61,6 @@ public class GuiCodeBook extends GuiScreen {
         // Buttons for next / previous page of pages.
         buttonList.add(buttonNextPage = new PageChangeButton(ID_BUTTON_PAGE_PREV, x + BUTTON_PAGE_CHANGE_PREV_X, y + BUTTON_PAGE_CHANGE_Y, PageChangeType.Previous));
         buttonList.add(buttonPreviousPage = new PageChangeButton(ID_BUTTON_PAGE_NEXT, x + BUTTON_PAGE_CHANGE_NEXT_X, y + BUTTON_PAGE_CHANGE_Y, PageChangeType.Next));
-
-        for (int i = 0; i < BUTTONS_PER_PAGE; i++) {
-            buttonList.add(new ProgramButton(ID_BUTTON_PROGRAM_BASE + i, x + BUTTON_PROGRAM_X, y + BUTTON_PROGRAM_BASE_Y + i * BUTTON_PROGRAM_HEIGHT));
-        }
-
-        updateButtons();
     }
 
     @Override
@@ -68,10 +70,6 @@ public class GuiCodeBook extends GuiScreen {
         } else if (button == buttonPreviousPage) {
             changePage(-1);
         }
-    }
-
-    private void changePage(final int delta) {
-        page = Math.max(0, Math.min(data.getPageCount() - 1, page + delta));
     }
 
     @Override
@@ -88,15 +86,67 @@ public class GuiCodeBook extends GuiScreen {
         Minecraft.getMinecraft().getTextureManager().bindTexture(LOCATION_BACKGROUND);
         drawTexturedModalRect(x, y, 0, 0, GUI_WIDTH, GUI_HEIGHT);
 
+        // Check page change button availability.
+        buttonNextPage.visible = data.getSelectedProgram() < data.getProgramCount() - 1;
+        buttonPreviousPage.visible = data.getSelectedProgram() > 0 && data.getProgramCount() > 0;
+
         super.drawScreen(mouseX, mouseY, partialTicks);
+
+        // Draw current program.
+        drawProgram(mouseX, mouseY);
     }
 
-    private void updateButtons() {
-        // TODO
-        // Set visibility of buttons based on current page and set text.
+    @Override
+    public void onGuiClosed() {
+        super.onGuiClosed();
 
-        // Always use last button as "Add new program" button.
+        // Save any changes made and send them to the server.
+        final NBTTagCompound nbt = new NBTTagCompound();
+        data.writeToNBT(nbt);
+        Network.INSTANCE.getWrapper().sendToServer(new MessageCodeBookData(nbt));
     }
+
+    // --------------------------------------------------------------------- //
+
+    private void changePage(final int delta) {
+        data.setSelectedProgram(data.getSelectedProgram() + delta);
+    }
+
+    private void drawProgram(final int mouseX, final int mouseY) {
+        if (data.getProgramCount() < 1) {
+            // Insert first program.
+            data.addProgram("# Hello " + player.getDisplayNameString());
+        }
+
+        final String code = data.getProgram(data.getSelectedProgram());
+        final String[] lines = PATTERN_LINES.split(code);
+
+        final int x = (width - GUI_WIDTH) / 2;
+        final int y = 2;
+
+        for (int lineNumber = 0; lineNumber < lines.length; lineNumber++) {
+            final String line = lines[lineNumber];
+            final int offsetY = lineNumber * fontRendererObj.FONT_HEIGHT;
+            final int lineX = x + CODE_POS_X;
+            final int lineY = y + CODE_POS_Y + offsetY;
+            if (lineNumber == selectedLine && selectionStart > selectionEnd) {
+                final String left = line.substring(0, selectionStart);
+                final String selected = line.substring(selectionStart, selectionEnd);
+                final String right = line.substring(selectionEnd);
+                final int offsetX = fontRendererObj.getStringWidth(left);
+                final int selectionWidth = fontRendererObj.getStringWidth(selected);
+                final int selectionX = x + CODE_POS_X + offsetX;
+                drawRect(selectionX, lineY, selectionX + selectionWidth, lineY + fontRendererObj.FONT_HEIGHT, 0x99333333);
+                fontRendererObj.drawString(left, lineX, lineY, 0xFF333333, false);
+                fontRendererObj.drawString(left, selectionX, lineY, 0xFFEEEEEE, false);
+                fontRendererObj.drawString(right, selectionX + selectionWidth, lineY, 0xFF333333, false);
+            } else {
+                fontRendererObj.drawString(line, lineX, lineY, 0xFF333333, false);
+            }
+        }
+    }
+
+    // --------------------------------------------------------------------- //
 
     private class PageChangeButton extends GuiButton {
         private final static int BUTTON_WIDTH = 23;
@@ -128,38 +178,8 @@ public class GuiCodeBook extends GuiScreen {
         }
     }
 
-    public enum PageChangeType {
+    private enum PageChangeType {
         Previous,
         Next
-    }
-
-    private class ProgramButton extends GuiButton {
-        private final static int BUTTON_WIDTH = 104;
-        private final static int BUTTON_HEIGHT = BUTTON_PROGRAM_HEIGHT;
-
-        public ProgramButton(final int buttonId, final int x, final int y) {
-            super(buttonId, x, y, BUTTON_WIDTH, BUTTON_HEIGHT, "asd");
-        }
-
-        @Override
-        public void drawButton(final Minecraft minecraft, final int mouseX, final int mouseY) {
-            if (!visible) {
-                return;
-            }
-
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            mc.getTextureManager().bindTexture(LOCATION_BACKGROUND);
-            GlStateManager.enableBlend();
-            drawTexturedModalRect(xPosition, yPosition, 0, 230, BUTTON_WIDTH, BUTTON_HEIGHT);
-            GlStateManager.disableBlend();
-
-            // TODO
-            //drawCenteredString(mc.fontRendererObj, displayString, xPosition + width / 2, yPosition + (height - 8) / 2, 0);
-
-            final boolean isHovered = mouseX >= xPosition && mouseY >= yPosition && mouseX < xPosition + width && mouseY < yPosition + height;
-            if (isHovered) {
-                drawRect(xPosition, yPosition, xPosition + BUTTON_WIDTH, yPosition + BUTTON_HEIGHT, 0x33FFFFFF);
-            }
-        }
     }
 }

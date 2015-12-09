@@ -2,24 +2,23 @@ package li.cil.tis3d.common.network.message;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
-public abstract class AbstractMessageWithLocation extends AbstractMessageWithDimension {
-    private BlockPos position;
+public abstract class AbstractMessageWithDimension implements IMessage {
+    private int dimension;
 
-    protected AbstractMessageWithLocation(final World world, final BlockPos position) {
-        super(world);
-        this.position = position;
+    protected AbstractMessageWithDimension(final World world) {
+        this.dimension = world.provider.getDimensionId();
     }
 
-    protected AbstractMessageWithLocation() {
+    protected AbstractMessageWithDimension() {
     }
 
     // --------------------------------------------------------------------- //
 
-    public BlockPos getPosition() {
-        return position;
+    public int getDimension() {
+        return dimension;
     }
 
     // --------------------------------------------------------------------- //
@@ -27,16 +26,14 @@ public abstract class AbstractMessageWithLocation extends AbstractMessageWithDim
 
     @Override
     public void fromBytes(final ByteBuf buf) {
-        super.fromBytes(buf);
         final PacketBuffer buffer = new PacketBuffer(buf);
-        position = buffer.readBlockPos();
+        dimension = buffer.readVarIntFromBuffer();
 
     }
 
     @Override
     public void toBytes(final ByteBuf buf) {
-        super.toBytes(buf);
         final PacketBuffer buffer = new PacketBuffer(buf);
-        buffer.writeBlockPos(position);
+        buffer.writeVarIntToBuffer(dimension);
     }
 }

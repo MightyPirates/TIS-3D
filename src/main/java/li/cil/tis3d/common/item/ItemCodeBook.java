@@ -1,11 +1,11 @@
 package li.cil.tis3d.common.item;
 
 import li.cil.tis3d.api.API;
-import li.cil.tis3d.api.Casing;
-import li.cil.tis3d.api.Face;
+import li.cil.tis3d.api.machine.Casing;
+import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
-import li.cil.tis3d.system.module.ModuleExecution;
-import li.cil.tis3d.system.module.execution.MachineState;
+import li.cil.tis3d.common.module.ModuleExecution;
+import li.cil.tis3d.common.module.execution.MachineState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBook;
 import net.minecraft.item.ItemStack;
@@ -50,12 +50,12 @@ public final class ItemCodeBook extends ItemBook {
                 if (player.isSneaking()) {
                     if (state.code != null && state.code.length > 0) {
                         final String code = String.join("\n", state.code);
-                        data.addPage(code);
+                        data.addProgram(code);
                         Data.saveToStack(stack, data);
                     }
                 } else {
-                    if (data.getPageCount() > 0) {
-                        final String code = data.getPageContent(data.getSelectedPage());
+                    if (data.getProgramCount() > 0) {
+                        final String code = data.getProgram(data.getSelectedProgram());
                         moduleExecution.compile(code, player);
                     }
                 }
@@ -66,66 +66,146 @@ public final class ItemCodeBook extends ItemBook {
     }
 
     public static boolean isCodeBook(final ItemStack stack) {
-        return stack != null && stack.getItem() == GameRegistry.findItem(API.MOD_ID, li.cil.tis3d.Constants.NAME_ITEM_CODE_BOOK);
+        return stack != null && stack.getItem() == GameRegistry.findItem(API.MOD_ID, li.cil.tis3d.common.Constants.NAME_ITEM_CODE_BOOK);
     }
 
+    // --------------------------------------------------------------------- //
+
+    /**
+     * Wrapper for list of programs stored in the code book.
+     */
     public static class Data {
-        private final List<String> pages = new ArrayList<>();
-        private int selectedPage = 0;
+        private static final String TAG_PAGES = "pages";
 
-        public int getSelectedPage() {
-            return selectedPage;
+        private final List<String> programs = new ArrayList<>();
+        private int selectedProgram = 0;
+
+        // --------------------------------------------------------------------- //
+
+        /**
+         * Get the program currently selected in the book.
+         *
+         * @return the index of the selected program.
+         */
+        public int getSelectedProgram() {
+            return selectedProgram;
         }
 
-        public void setSelectedPage(final int selectedPage) {
-            this.selectedPage = selectedPage;
+        /**
+         * Set which program is currently selected.
+         *
+         * @param index the new selected index.
+         */
+        public void setSelectedProgram(final int index) {
+            this.selectedProgram = Math.max(0, Math.min(programs.size(), index));
         }
 
-        public int getPageCount() {
-            return pages.size();
+        /**
+         * Get the number of programs stored in the book.
+         *
+         * @return the number of programs stored in the book.
+         */
+        public int getProgramCount() {
+            return programs.size();
         }
 
-        public String getPageContent(final int page) {
-            return pages.get(page);
+        /**
+         * Get the code of the program with the specified index.
+         *
+         * @param index the index of the program to get.
+         * @return the code of the program.
+         */
+        public String getProgram(final int index) {
+            return programs.get(index);
         }
 
-        public void addPage(final String content) {
-            pages.add(content);
+        /**
+         * Add a new program to the book.
+         *
+         * @param code the code of the program to add.
+         */
+        public void addProgram(final String code) {
+            programs.add(code);
         }
 
-        public void setPage(final int page, final String content) {
-            pages.set(page, content);
+        /**
+         * Overwrite a program at the specified index.
+         *
+         * @param page the index of the program to overwrite.
+         * @param code the code of the program.
+         */
+        public void setProgram(final int page, final String code) {
+            programs.set(page, code);
         }
 
-        public void removePage(final int page) {
-            pages.remove(page);
+        /**
+         * Remove a program from the book.
+         *
+         * @param index the index of the program to remove.
+         */
+        public void removeProgram(final int index) {
+            programs.remove(index);
         }
 
+        /**
+         * Load data from the specified NBT tag.
+         *
+         * @param nbt the tag to load the data from.
+         */
         public void readFromNBT(final NBTTagCompound nbt) {
-            pages.clear();
+            programs.clear();
 
-            final NBTTagList pagesNbt = nbt.getTagList("pages", Constants.NBT.TAG_STRING);
+            final NBTTagList pagesNbt = nbt.getTagList(TAG_PAGES, Constants.NBT.TAG_STRING);
             for (int page = 0; page < pagesNbt.tagCount(); page++) {
-                pages.add(pagesNbt.getStringTagAt(page));
+                programs.add(pagesNbt.getStringTagAt(page));
             }
         }
 
+        /**
+         * Store the data to the specified NBT tag.
+         *
+         * @param nbt the tag to save the data to.
+         */
         public void writeToNBT(final NBTTagCompound nbt) {
             final NBTTagList pagesNbt = new NBTTagList();
-            for (final String page : pages) {
+            for (final String page : programs) {
                 pagesNbt.appendTag(new NBTTagString(page));
             }
-            nbt.setTag("pages", pagesNbt);
+            nbt.setTag(TAG_PAGES, pagesNbt);
         }
 
-        public static Data loadFromStack(final ItemStack stack) {
+        // --------------------------------------------------------------------- //
+
+        /**
+         * Load code book data from the specified NBT tag.
+         *
+         * @param nbt the tag to load the data from.
+         * @return the data loaded from the tag.
+         */
+        public static Data loadFromNBT(final NBTTagCompound nbt) {
             final Data data = new Data();
-            if (stack.hasTagCompound()) {
-                data.readFromNBT(stack.getTagCompound());
+            if (nbt != null) {
+                data.readFromNBT(nbt);
             }
             return data;
         }
 
+        /**
+         * Load code book data from the specified item stack.
+         *
+         * @param stack the item stack to load the data from.
+         * @return the data loaded from the stack.
+         */
+        public static Data loadFromStack(final ItemStack stack) {
+            return loadFromNBT(stack.getTagCompound());
+        }
+
+        /**
+         * Save the specified code book data to the specified item stack.
+         *
+         * @param stack the item stack to save the data to.
+         * @param data  the data to save to the item stack.
+         */
         public static void saveToStack(final ItemStack stack, final Data data) {
             if (!stack.hasTagCompound()) {
                 stack.setTagCompound(new NBTTagCompound());

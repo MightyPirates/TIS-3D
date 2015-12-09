@@ -5,7 +5,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-public abstract class AbstractMessageHandlerWithLocation<T extends AbstractMessageWithLocation> extends AbstractMessageHandler<T> {
+public abstract class AbstractMessageHandlerWithLocation<T extends AbstractMessageWithLocation> extends AbstractMessageHandlerWithDimension<T> {
     protected TileEntity getTileEntity(final T message, final MessageContext context) {
         final World world = getWorld(message, context);
         if (world == null) {
@@ -15,9 +15,5 @@ public abstract class AbstractMessageHandlerWithLocation<T extends AbstractMessa
             return null;
         }
         return world.getTileEntity(message.getPosition());
-    }
-
-    protected World getWorld(final T message, final MessageContext context) {
-        return getWorld(message.getDimension(), context);
     }
 }
