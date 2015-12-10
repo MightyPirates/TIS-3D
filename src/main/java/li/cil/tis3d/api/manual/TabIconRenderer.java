@@ -9,7 +9,6 @@ import cpw.mods.fml.relauncher.SideOnly;
  * Each renderer instance represents the single graphic it is drawing. To
  * provide different graphics for different tabs you'll need to create
  * multiple tab renderer instances.
- * <p>
  *
  * @see li.cil.tis3d.api.prefab.ItemStackTabIconRenderer
  * @see li.cil.tis3d.api.prefab.TextureTabIconRenderer

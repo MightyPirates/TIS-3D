@@ -7,7 +7,6 @@ package li.cil.tis3d.api.manual;
  * arbitrary paths. Note that content providers have <em>lower</em> priority
  * than content found in resource packs, i.e. content providers will only be
  * queried for missing pages, so to speak.
- * <p>
  *
  * @see li.cil.tis3d.api.prefab.ResourceContentProvider
  */

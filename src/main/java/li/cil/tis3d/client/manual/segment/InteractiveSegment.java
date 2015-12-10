@@ -13,6 +13,8 @@ import java.util.Optional;
 public interface InteractiveSegment extends Segment {
     /**
      * The tooltip that should be displayed when this segment is being hovered.
+     *
+     * @return the tooltip for this interactive segment, if any.
      */
     default Optional<String> tooltip() {
         return Optional.empty();

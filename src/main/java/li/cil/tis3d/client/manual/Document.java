@@ -43,6 +43,9 @@ import java.util.regex.Pattern;
 public final class Document {
     /**
      * Parses a plain text document into a list of segments.
+     *
+     * @param document iterator over the lines of the document to parse.
+     * @return the first segment of the parsed document.
      */
     public static Segment parse(final Iterable<String> document) {
         // Get top-level list of text segments.
@@ -73,6 +76,11 @@ public final class Document {
 
     /**
      * Compute the overall height of a document, e.g. for computation of scroll offsets.
+     *
+     * @param document the document to compute the height of.
+     * @param maxWidth the maximum height available.
+     * @param renderer the font renderer used.
+     * @return the height of the document.
      */
     public static int height(final Segment document, final int maxWidth, final FontRenderer renderer) {
         int currentX = 0;
@@ -88,6 +96,9 @@ public final class Document {
 
     /**
      * Line height for a normal line of text.
+     *
+     * @param renderer the font renderer used.
+     * @return the height of a single line.
      */
     public static int lineHeight(final FontRenderer renderer) {
         return renderer.FONT_HEIGHT + 1;
@@ -96,6 +107,17 @@ public final class Document {
     /**
      * Renders a list of segments and tooltips if a segment with a tooltip is hovered.
      * Returns the hovered interactive segment, if any.
+     *
+     * @param document  the document to render.
+     * @param x         the x position to render at.
+     * @param y         the y position to render at.
+     * @param maxWidth  the width of the area to render the document in.
+     * @param maxHeight the height of the area to render the document in.
+     * @param yOffset   the vertical scroll offset of the document.
+     * @param renderer  the font renderer to use.
+     * @param mouseX    the x position of the mouse.
+     * @param mouseY    the y position of the mouse.
+     * @return the interactive segment being hovered, if any.
      */
     public static Optional<InteractiveSegment> render(final Segment document, final int x, final int y, final int maxWidth, final int maxHeight, final int yOffset, final FontRenderer renderer, final int mouseX, final int mouseY) {
         final Minecraft mc = Minecraft.getMinecraft();
