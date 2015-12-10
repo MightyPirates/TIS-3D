@@ -6,12 +6,17 @@ import net.minecraft.item.ItemBook;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
+
+import java.util.List;
 
 /**
  * The manual!
  */
 public final class ItemManual extends ItemBook {
+    public static final String TOOLTIP_MANUAL = "tis3d.tooltip.manual";
+
     @Override
     public boolean isItemTool(final ItemStack stack) {
         return false;
@@ -20,6 +25,12 @@ public final class ItemManual extends ItemBook {
     @Override
     public int getItemEnchantability() {
         return 0;
+    }
+
+    @Override
+    public void addInformation(final ItemStack stack, final EntityPlayer playerIn, final List<String> tooltip, final boolean advanced) {
+        super.addInformation(stack, playerIn, tooltip, advanced);
+        tooltip.add(StatCollector.translateToLocal(TOOLTIP_MANUAL));
     }
 
     @Override

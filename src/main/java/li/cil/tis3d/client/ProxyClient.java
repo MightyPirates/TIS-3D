@@ -72,9 +72,9 @@ public final class ProxyClient extends ProxyCommon {
         ManualAPI.addProvider("block", new BlockImageProvider());
         ManualAPI.addProvider("oredict", new OreDictImageProvider());
 
-        ManualAPI.addTab(new TextureTabIconRenderer(new ResourceLocation(API.MOD_ID, "textures/gui/manualHome.png")), "manual.home", "%LANGUAGE%/index.md");
-        ManualAPI.addTab(new ItemStackTabIconRenderer(new ItemStack(GameRegistry.findBlock(API.MOD_ID, Constants.NAME_BLOCK_CONTROLLER))), "manual.tis3d.blocks", "%LANGUAGE%/block/index.md");
-        ManualAPI.addTab(new ItemStackTabIconRenderer(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_EXECUTION))), "manual.tis3d.items", "%LANGUAGE%/item/index.md");
+        ManualAPI.addTab(new TextureTabIconRenderer(new ResourceLocation(API.MOD_ID, "textures/gui/manualHome.png")), "tis3d.manual.home", "%LANGUAGE%/index.md");
+        ManualAPI.addTab(new ItemStackTabIconRenderer(new ItemStack(GameRegistry.findBlock(API.MOD_ID, Constants.NAME_BLOCK_CONTROLLER))), "tis3d.manual.blocks", "%LANGUAGE%/block/index.md");
+        ManualAPI.addTab(new ItemStackTabIconRenderer(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_EXECUTION))), "tis3d.manual.items", "%LANGUAGE%/item/index.md");
     }
 
     // --------------------------------------------------------------------- //

@@ -1,6 +1,7 @@
 package li.cil.tis3d.client.manual.provider;
 
 import com.google.common.base.Strings;
+import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.manual.ImageProvider;
 import li.cil.tis3d.api.manual.ImageRenderer;
 import li.cil.tis3d.client.manual.segment.render.ItemStackImageRenderer;
@@ -11,6 +12,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 public final class BlockImageProvider implements ImageProvider {
+    public static final String WARNING_BLOCK_MISSING = API.MOD_ID + ".manual.warning.missing.block";
+
     @Override
     public ImageRenderer getImage(final String data) {
         final int splitIndex = data.lastIndexOf('@');
@@ -27,7 +30,7 @@ public final class BlockImageProvider implements ImageProvider {
         if (block != null && Item.getItemFromBlock(block) != null) {
             return new ItemStackImageRenderer(new ItemStack(block, 1, meta));
         } else {
-            return new MissingItemRenderer("manual.Warning.BlockMissing");
+            return new MissingItemRenderer(WARNING_BLOCK_MISSING);
         }
     }
 }

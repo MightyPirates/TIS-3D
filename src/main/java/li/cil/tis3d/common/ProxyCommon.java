@@ -29,6 +29,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.oredict.OreDictionary;
 
 /**
  * Takes care of common setup.
@@ -45,11 +46,11 @@ public class ProxyCommon {
 
         // Register blocks and items.
         GameRegistry.registerBlock(new BlockCasing().
-                        setUnlocalizedName(Constants.NAME_BLOCK_CASING).
+                        setUnlocalizedName(API.MOD_ID + "." + Constants.NAME_BLOCK_CASING).
                         setCreativeTab(API.creativeTab),
                 Constants.NAME_BLOCK_CASING);
         GameRegistry.registerBlock(new BlockController().
-                        setUnlocalizedName(Constants.NAME_BLOCK_CONTROLLER).
+                        setUnlocalizedName(API.MOD_ID + "." + Constants.NAME_BLOCK_CONTROLLER).
                         setCreativeTab(API.creativeTab),
                 Constants.NAME_BLOCK_CONTROLLER);
 
@@ -57,28 +58,28 @@ public class ProxyCommon {
         GameRegistry.registerTileEntity(TileEntityController.class, Constants.NAME_BLOCK_CONTROLLER);
 
         GameRegistry.registerItem(new ItemModule().
-                        setUnlocalizedName(Constants.NAME_ITEM_MODULE_EXECUTION).
+                        setUnlocalizedName(API.MOD_ID + "." + Constants.NAME_ITEM_MODULE_EXECUTION).
                         setCreativeTab(API.creativeTab),
                 Constants.NAME_ITEM_MODULE_EXECUTION);
         GameRegistry.registerItem(new ItemModule().
-                        setUnlocalizedName(Constants.NAME_ITEM_MODULE_INFRARED).
+                        setUnlocalizedName(API.MOD_ID + "." + Constants.NAME_ITEM_MODULE_INFRARED).
                         setCreativeTab(API.creativeTab),
                 Constants.NAME_ITEM_MODULE_INFRARED);
         GameRegistry.registerItem(new ItemModule().
-                        setUnlocalizedName(Constants.NAME_ITEM_MODULE_RANDOM).
+                        setUnlocalizedName(API.MOD_ID + "." + Constants.NAME_ITEM_MODULE_RANDOM).
                         setCreativeTab(API.creativeTab),
                 Constants.NAME_ITEM_MODULE_RANDOM);
         GameRegistry.registerItem(new ItemModule().
-                        setUnlocalizedName(Constants.NAME_ITEM_MODULE_REDSTONE).
+                        setUnlocalizedName(API.MOD_ID + "." + Constants.NAME_ITEM_MODULE_REDSTONE).
                         setCreativeTab(API.creativeTab),
                 Constants.NAME_ITEM_MODULE_REDSTONE);
         GameRegistry.registerItem(new ItemModule().
-                        setUnlocalizedName(Constants.NAME_ITEM_MODULE_STACK).
+                        setUnlocalizedName(API.MOD_ID + "." + Constants.NAME_ITEM_MODULE_STACK).
                         setCreativeTab(API.creativeTab),
                 Constants.NAME_ITEM_MODULE_STACK);
 
         GameRegistry.registerItem(new ItemManual().
-                        setUnlocalizedName(Constants.NAME_ITEM_MANUAL).
+                        setUnlocalizedName(API.MOD_ID + "." + Constants.NAME_ITEM_MANUAL).
                         setCreativeTab(API.creativeTab),
                 Constants.NAME_ITEM_MANUAL);
 
@@ -86,6 +87,15 @@ public class ProxyCommon {
     }
 
     public void onInit(final FMLInitializationEvent event) {
+        // Register Ore Dictionary entries.
+        OreDictionary.registerOre("book", GameRegistry.findBlock(API.MOD_ID, Constants.NAME_ITEM_MANUAL));
+
+        OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findBlock(API.MOD_ID, Constants.NAME_ITEM_MODULE_EXECUTION));
+        OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findBlock(API.MOD_ID, Constants.NAME_ITEM_MODULE_INFRARED));
+        OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findBlock(API.MOD_ID, Constants.NAME_ITEM_MODULE_RANDOM));
+        OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findBlock(API.MOD_ID, Constants.NAME_ITEM_MODULE_REDSTONE));
+        OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findBlock(API.MOD_ID, Constants.NAME_ITEM_MODULE_STACK));
+
         // Hardcoded recipes!
         GameRegistry.addRecipe(new ItemStack(GameRegistry.findBlock(API.MOD_ID, Constants.NAME_BLOCK_CASING), 8),
                 "IRI",
