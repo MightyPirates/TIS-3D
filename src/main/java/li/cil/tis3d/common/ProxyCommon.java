@@ -88,48 +88,58 @@ public class ProxyCommon {
     public void onInit(final FMLInitializationEvent event) {
         // Hardcoded recipes!
         GameRegistry.addRecipe(new ItemStack(GameRegistry.findBlock(API.MOD_ID, Constants.NAME_BLOCK_CASING), 8),
-                "SRS",
-                "RIR",
-                "SRS",
-                'S', Blocks.stone,
+                "IRI",
+                "RBR",
+                "IRI",
+                'I', Items.iron_ingot,
                 'R', Items.redstone,
-                'I', Blocks.iron_block);
+                'B', Blocks.iron_block);
         GameRegistry.addRecipe(new ItemStack(GameRegistry.findBlock(API.MOD_ID, Constants.NAME_BLOCK_CONTROLLER), 1),
-                "SRS",
+                "IRI",
                 "RDR",
-                "SRS",
-                'S', Blocks.stone,
+                "IRI",
+                'I', Items.iron_ingot,
                 'R', Items.redstone,
                 'D', Items.diamond);
 
         GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_EXECUTION), 2),
                 "PPP",
-                "RGR",
+                "IGI",
+                " R ",
                 'P', Blocks.glass_pane,
+                'I', Items.iron_ingot,
                 'R', Items.redstone,
                 'G', Items.gold_ingot);
         GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_INFRARED), 2),
                 "PPP",
-                "RGR",
+                "IGI",
+                " R ",
                 'P', Blocks.glass_pane,
+                'I', Items.iron_ingot,
                 'R', Items.redstone,
                 'G', Items.spider_eye);
         GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_RANDOM), 2),
                 "PPP",
-                "RER",
+                "IEI",
+                " R ",
                 'P', Blocks.glass_pane,
+                'I', Items.iron_ingot,
                 'R', Items.redstone,
                 'E', Items.ender_pearl);
         GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_REDSTONE), 2),
                 "PPP",
-                "RIR",
+                "ICI",
+                " R ",
                 'P', Blocks.glass_pane,
+                'I', Items.iron_ingot,
                 'R', Items.redstone,
-                'I', Items.repeater);
+                'C', Items.repeater);
         GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_STACK), 2),
                 "PPP",
-                "RER",
+                "IEI",
+                " R ",
                 'P', Blocks.glass_pane,
+                'I', Items.iron_ingot,
                 'R', Items.redstone,
                 'E', Blocks.chest);
 
