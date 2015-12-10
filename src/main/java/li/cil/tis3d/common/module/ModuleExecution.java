@@ -30,6 +30,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.opengl.GL11;
 
 import java.util.Optional;
 
@@ -394,7 +395,7 @@ public final class ModuleExecution extends AbstractModuleRotatable {
 
         final Tessellator tessellator = Tessellator.getInstance();
         final WorldRenderer worldRenderer = tessellator.getWorldRenderer();
-        worldRenderer.begin(7, DefaultVertexFormats.POSITION);
+        worldRenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
         worldRenderer.pos(-0.5f, height + 0.5f, 0).endVertex();
         worldRenderer.pos(71.5f, height + 0.5f, 0).endVertex();
         worldRenderer.pos(71.5f, -0.5f, 0).endVertex();

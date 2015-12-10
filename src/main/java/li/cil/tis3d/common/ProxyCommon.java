@@ -5,11 +5,13 @@ import li.cil.tis3d.api.ModuleAPI;
 import li.cil.tis3d.common.api.CreativeTab;
 import li.cil.tis3d.common.api.FontRendererAPIImpl;
 import li.cil.tis3d.common.api.InfraredAPIImpl;
+import li.cil.tis3d.common.api.ManualAPIImpl;
 import li.cil.tis3d.common.api.ModuleAPIImpl;
 import li.cil.tis3d.common.block.BlockCasing;
 import li.cil.tis3d.common.block.BlockController;
 import li.cil.tis3d.common.entity.EntityInfraredPacket;
 import li.cil.tis3d.common.event.TickHandlerInfraredPacket;
+import li.cil.tis3d.common.item.ItemManual;
 import li.cil.tis3d.common.item.ItemModule;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.provider.ModuleProviderExecution;
@@ -38,6 +40,7 @@ public class ProxyCommon {
 
         API.fontRendererAPI = new FontRendererAPIImpl();
         API.infraredAPI = new InfraredAPIImpl();
+        API.manualAPI = ManualAPIImpl.INSTANCE;
         API.moduleAPI = new ModuleAPIImpl();
 
         // Register blocks and items.
@@ -73,6 +76,11 @@ public class ProxyCommon {
                         setUnlocalizedName(Constants.NAME_ITEM_MODULE_STACK).
                         setCreativeTab(API.creativeTab),
                 Constants.NAME_ITEM_MODULE_STACK);
+
+        GameRegistry.registerItem(new ItemManual().
+                        setUnlocalizedName(Constants.NAME_ITEM_MANUAL).
+                        setCreativeTab(API.creativeTab),
+                Constants.NAME_ITEM_MANUAL);
 
         Settings.load(event.getSuggestedConfigurationFile());
     }

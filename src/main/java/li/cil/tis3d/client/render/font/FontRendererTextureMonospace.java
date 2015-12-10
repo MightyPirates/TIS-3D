@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
 
 import java.util.stream.IntStream;
 
@@ -36,7 +37,7 @@ public final class FontRendererTextureMonospace {
 
         final Tessellator tessellator = Tessellator.getInstance();
         final WorldRenderer worldRenderer = tessellator.getWorldRenderer();
-        worldRenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
+        worldRenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 
         float tx = 0f;
         final int end = Math.min(maxChars, value.length());

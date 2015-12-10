@@ -1,5 +1,6 @@
 itemGroup.tis3d=TIS-3D
 
+item.bookManual.name=TIS-3D Reference Manual
 item.moduleExecution.name=Execution Module
 item.moduleInfrared.name=Infrared Module
 item.moduleRandom.name=Random Module
@@ -8,3 +9,7 @@ item.moduleStack.name=Stack Module
 
 tile.casing.name=Casing
 tile.controller.name=Controller
+
+manual.home=Home
+manual.tis3d.blocks=Blocks
+manual.tis3d.items=Items
