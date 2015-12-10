@@ -1,15 +1,22 @@
 package li.cil.tis3d.common.block;
 
+import li.cil.tis3d.api.API;
+import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import li.cil.tis3d.common.tile.TileEntityController;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 /**
  * Block for the controller driving the casings.
@@ -42,6 +49,30 @@ public final class BlockController extends Block {
     @Override
     public TileEntity createTileEntity(final World world, final IBlockState state) {
         return new TileEntityController();
+    }
+
+    @Override
+    public boolean onBlockActivated(final World world, final BlockPos pos, final IBlockState state, final EntityPlayer player, final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
+        final ItemStack stack = player.getHeldItem();
+        if (stack != null) {
+            final Item item = stack.getItem();
+            if (item == Items.book) {
+                if (!world.isRemote) {
+                    if (!player.capabilities.isCreativeMode) {
+                        stack.splitStack(1);
+                    }
+                    final ItemStack manual = new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MANUAL));
+                    if (player.inventory.addItemStackToInventory(manual)) {
+                        player.inventoryContainer.detectAndSendChanges();
+                    }
+                    if (manual.stackSize > 0) {
+                        player.dropItem(manual, false, false);
+                    }
+                }
+                return true;
+            }
+        }
+        return super.onBlockActivated(world, pos, state, player, side, hitX, hitY, hitZ);
     }
 
     // --------------------------------------------------------------------- //
