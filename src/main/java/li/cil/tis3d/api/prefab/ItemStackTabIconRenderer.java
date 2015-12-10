@@ -17,7 +17,7 @@ import org.lwjgl.opengl.GL12;
 public class ItemStackTabIconRenderer implements TabIconRenderer {
     private final ItemStack stack;
 
-    public ItemStackTabIconRenderer(ItemStack stack) {
+    public ItemStackTabIconRenderer(final ItemStack stack) {
         this.stack = stack;
     }
 
