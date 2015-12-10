@@ -9,11 +9,13 @@ import li.cil.tis3d.api.ModuleAPI;
 import li.cil.tis3d.common.api.CreativeTab;
 import li.cil.tis3d.common.api.FontRendererAPIImpl;
 import li.cil.tis3d.common.api.InfraredAPIImpl;
+import li.cil.tis3d.common.api.ManualAPIImpl;
 import li.cil.tis3d.common.api.ModuleAPIImpl;
 import li.cil.tis3d.common.block.BlockCasing;
 import li.cil.tis3d.common.block.BlockController;
 import li.cil.tis3d.common.entity.EntityInfraredPacket;
 import li.cil.tis3d.common.event.TickHandlerInfraredPacket;
+import li.cil.tis3d.common.item.ItemManual;
 import li.cil.tis3d.common.item.ItemModule;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.provider.ModuleProviderExecution;
@@ -27,6 +29,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.oredict.OreDictionary;
 
 /**
  * Takes care of common setup.
@@ -41,16 +44,17 @@ public class ProxyCommon {
 
         API.fontRendererAPI = new FontRendererAPIImpl();
         API.infraredAPI = new InfraredAPIImpl();
+        API.manualAPI = ManualAPIImpl.INSTANCE;
         API.moduleAPI = new ModuleAPIImpl();
 
         // Register blocks and items.
         GameRegistry.registerBlock(new BlockCasing().
-                        setBlockName(Constants.NAME_BLOCK_CASING).
+                        setBlockName(API.MOD_ID + "." + Constants.NAME_BLOCK_CASING).
                         setBlockTextureName(API.MOD_ID + ":" + Constants.NAME_BLOCK_CASING).
                         setCreativeTab(API.creativeTab),
                 Constants.NAME_BLOCK_CASING);
         GameRegistry.registerBlock(new BlockController().
-                        setBlockName(Constants.NAME_BLOCK_CONTROLLER).
+                        setBlockName(API.MOD_ID + "." + Constants.NAME_BLOCK_CONTROLLER).
                         setBlockTextureName(API.MOD_ID + ":" + Constants.NAME_BLOCK_CONTROLLER).
                         setCreativeTab(API.creativeTab),
                 Constants.NAME_BLOCK_CONTROLLER);
@@ -59,79 +63,104 @@ public class ProxyCommon {
         GameRegistry.registerTileEntity(TileEntityController.class, Constants.NAME_BLOCK_CONTROLLER);
 
         GameRegistry.registerItem(new ItemModule().
-                        setUnlocalizedName(Constants.NAME_ITEM_MODULE_EXECUTION).
+                        setUnlocalizedName(API.MOD_ID + "." + Constants.NAME_ITEM_MODULE_EXECUTION).
                         setTextureName(API.MOD_ID + ":" + Constants.NAME_ITEM_MODULE_EXECUTION).
                         setCreativeTab(API.creativeTab),
                 Constants.NAME_ITEM_MODULE_EXECUTION);
         GameRegistry.registerItem(new ItemModule().
-                        setUnlocalizedName(Constants.NAME_ITEM_MODULE_INFRARED).
+                        setUnlocalizedName(API.MOD_ID + "." + Constants.NAME_ITEM_MODULE_INFRARED).
                         setTextureName(API.MOD_ID + ":" + Constants.NAME_ITEM_MODULE_INFRARED).
                         setCreativeTab(API.creativeTab),
                 Constants.NAME_ITEM_MODULE_INFRARED);
         GameRegistry.registerItem(new ItemModule().
-                        setUnlocalizedName(Constants.NAME_ITEM_MODULE_RANDOM).
+                        setUnlocalizedName(API.MOD_ID + "." + Constants.NAME_ITEM_MODULE_RANDOM).
                         setTextureName(API.MOD_ID + ":" + Constants.NAME_ITEM_MODULE_RANDOM).
                         setCreativeTab(API.creativeTab),
                 Constants.NAME_ITEM_MODULE_RANDOM);
         GameRegistry.registerItem(new ItemModule().
-                        setUnlocalizedName(Constants.NAME_ITEM_MODULE_REDSTONE).
+                        setUnlocalizedName(API.MOD_ID + "." + Constants.NAME_ITEM_MODULE_REDSTONE).
                         setTextureName(API.MOD_ID + ":" + Constants.NAME_ITEM_MODULE_REDSTONE).
                         setCreativeTab(API.creativeTab),
                 Constants.NAME_ITEM_MODULE_REDSTONE);
         GameRegistry.registerItem(new ItemModule().
-                        setUnlocalizedName(Constants.NAME_ITEM_MODULE_STACK).
+                        setUnlocalizedName(API.MOD_ID + "." + Constants.NAME_ITEM_MODULE_STACK).
                         setTextureName(API.MOD_ID + ":" + Constants.NAME_ITEM_MODULE_STACK).
                         setCreativeTab(API.creativeTab),
                 Constants.NAME_ITEM_MODULE_STACK);
+
+        GameRegistry.registerItem(new ItemManual().
+                        setUnlocalizedName(API.MOD_ID + "." + Constants.NAME_ITEM_MANUAL).
+                        setTextureName(API.MOD_ID + ":" + Constants.NAME_ITEM_MANUAL).
+                        setCreativeTab(API.creativeTab),
+                Constants.NAME_ITEM_MANUAL);
 
         Settings.load(event.getSuggestedConfigurationFile());
     }
 
     public void onInit(final FMLInitializationEvent event) {
+        // Register Ore Dictionary entries.
+        OreDictionary.registerOre("book", GameRegistry.findBlock(API.MOD_ID, Constants.NAME_ITEM_MANUAL));
+
+        OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findBlock(API.MOD_ID, Constants.NAME_ITEM_MODULE_EXECUTION));
+        OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findBlock(API.MOD_ID, Constants.NAME_ITEM_MODULE_INFRARED));
+        OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findBlock(API.MOD_ID, Constants.NAME_ITEM_MODULE_RANDOM));
+        OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findBlock(API.MOD_ID, Constants.NAME_ITEM_MODULE_REDSTONE));
+        OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findBlock(API.MOD_ID, Constants.NAME_ITEM_MODULE_STACK));
+
         // Hardcoded recipes!
         GameRegistry.addRecipe(new ItemStack(GameRegistry.findBlock(API.MOD_ID, Constants.NAME_BLOCK_CASING), 8),
-                "SRS",
-                "RIR",
-                "SRS",
-                'S', Blocks.stone,
+                "IRI",
+                "RBR",
+                "IRI",
+                'I', Items.iron_ingot,
                 'R', Items.redstone,
-                'I', Blocks.iron_block);
+                'B', Blocks.iron_block);
         GameRegistry.addRecipe(new ItemStack(GameRegistry.findBlock(API.MOD_ID, Constants.NAME_BLOCK_CONTROLLER), 1),
-                "SRS",
+                "IRI",
                 "RDR",
-                "SRS",
-                'S', Blocks.stone,
+                "IRI",
+                'I', Items.iron_ingot,
                 'R', Items.redstone,
                 'D', Items.diamond);
 
         GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_EXECUTION), 2),
                 "PPP",
-                "RGR",
+                "IGI",
+                " R ",
                 'P', Blocks.glass_pane,
+                'I', Items.iron_ingot,
                 'R', Items.redstone,
                 'G', Items.gold_ingot);
         GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_INFRARED), 2),
                 "PPP",
-                "RGR",
+                "IGI",
+                " R ",
                 'P', Blocks.glass_pane,
+                'I', Items.iron_ingot,
                 'R', Items.redstone,
                 'G', Items.spider_eye);
         GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_RANDOM), 2),
                 "PPP",
-                "RER",
+                "IEI",
+                " R ",
                 'P', Blocks.glass_pane,
+                'I', Items.iron_ingot,
                 'R', Items.redstone,
                 'E', Items.ender_pearl);
         GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_REDSTONE), 2),
                 "PPP",
-                "RIR",
+                "ICI",
+                " R ",
                 'P', Blocks.glass_pane,
+                'I', Items.iron_ingot,
                 'R', Items.redstone,
-                'I', Items.repeater);
+                'C', Items.repeater);
         GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_STACK), 2),
                 "PPP",
-                "RER",
+                "IEI",
+                " R ",
                 'P', Blocks.glass_pane,
+                'I', Items.iron_ingot,
                 'R', Items.redstone,
                 'E', Blocks.chest);
 

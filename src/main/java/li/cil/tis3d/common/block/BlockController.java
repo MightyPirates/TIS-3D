@@ -1,10 +1,17 @@
 package li.cil.tis3d.common.block;
 
+import cpw.mods.fml.common.registry.GameRegistry;
+import li.cil.tis3d.api.API;
+import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import li.cil.tis3d.common.tile.TileEntityController;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.IBlockAccess;
@@ -47,6 +54,30 @@ public final class BlockController extends Block {
     @Override
     public TileEntity createTileEntity(final World world, final int metadata) {
         return new TileEntityController();
+    }
+
+    @Override
+    public boolean onBlockActivated(final World world, final int x, final int y, final int z, final EntityPlayer player, final int side, final float hitX, final float hitY, final float hitZ) {
+        final ItemStack stack = player.getHeldItem();
+        if (stack != null) {
+            final Item item = stack.getItem();
+            if (item == Items.book) {
+                if (!world.isRemote) {
+                    if (!player.capabilities.isCreativeMode) {
+                        stack.splitStack(1);
+                    }
+                    final ItemStack manual = new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MANUAL));
+                    if (player.inventory.addItemStackToInventory(manual)) {
+                        player.inventoryContainer.detectAndSendChanges();
+                    }
+                    if (manual.stackSize > 0) {
+                        player.func_146097_a(manual, false, false);
+                    }
+                }
+                return true;
+            }
+        }
+        return super.onBlockActivated(world, x, y, z, player, side, hitX, hitY, hitZ);
     }
 
     // --------------------------------------------------------------------- //
