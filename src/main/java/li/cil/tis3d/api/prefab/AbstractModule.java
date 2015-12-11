@@ -15,6 +15,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.opengl.GL11;
 
 /**
  * Base implementation of a module, taking care of the boilerplate code.
@@ -83,7 +84,7 @@ public abstract class AbstractModule implements Module {
     protected static void drawQuad(final float x, final float y, final float w, final float h, final float u0, final float v0, final float u1, final float v1) {
         final Tessellator tessellator = Tessellator.getInstance();
         final WorldRenderer worldRenderer = tessellator.getWorldRenderer();
-        worldRenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
+        worldRenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
         worldRenderer.pos(x, y + h, 0).tex(u0, v1).endVertex();
         worldRenderer.pos(x + w, y + h, 0).tex(u1, v1).endVertex();
         worldRenderer.pos(x + w, y, 0).tex(u1, v0).endVertex();

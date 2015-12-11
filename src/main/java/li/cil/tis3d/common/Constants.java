@@ -17,6 +17,7 @@ public final class Constants {
 
     public static final String NAME_BLOCK_CASING = "casing";
     public static final String NAME_BLOCK_CONTROLLER = "controller";
+    public static final String NAME_ITEM_MANUAL = "bookManual";
     public static final String NAME_ITEM_CODE_BOOK = "codeBook";
     public static final String NAME_ITEM_MODULE_EXECUTION = "moduleExecution";
     public static final String NAME_ITEM_MODULE_INFRARED = "moduleInfrared";

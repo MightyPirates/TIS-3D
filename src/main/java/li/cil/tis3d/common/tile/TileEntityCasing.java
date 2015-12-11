@@ -5,6 +5,7 @@ import li.cil.tis3d.api.infrared.InfraredReceiver;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
+import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.inventory.InventoryCasing;
 import li.cil.tis3d.common.inventory.SidedInventoryProxy;
 import li.cil.tis3d.common.machine.CasingImpl;
@@ -302,7 +303,7 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
                 // We only allow a certain number of casings per multi-block, so
                 // we can early exit if there are too many (because even if we
                 // notified the controller, it'd enter an error state again anyway).
-                if (++casings > TileEntityController.MAX_CASINGS) {
+                if (++casings > Settings.maxCasingsPerController) {
                     return null;
                 }
 

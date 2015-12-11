@@ -1,11 +1,22 @@
 itemGroup.tis3d=TIS-3D
 
-item.codeBook.name=Code Bible
-item.moduleExecution.name=Execution Module
-item.moduleInfrared.name=Infrared Module
-item.moduleRandom.name=Random Module
-item.moduleRedstone.name=Redstone Module
-item.moduleStack.name=Stack Module
+item.tis3d.bookCode.name=Code Bible
+item.tis3d.bookManual.name=TIS-3D Reference Manual
+item.tis3d.moduleExecution.name=Execution Module
+item.tis3d.moduleInfrared.name=Infrared Module
+item.tis3d.moduleRandom.name=Random Module
+item.tis3d.moduleRedstone.name=Redstone Module
+item.tis3d.moduleStack.name=Stack Module
 
-tile.casing.name=Casing
-tile.controller.name=Controller
+tile.tis3d.casing.name=Casing
+tile.tis3d.controller.name=Controller
+
+tis3d.manual.home=Home
+tis3d.manual.blocks=Blocks
+tis3d.manual.items=Items
+tis3d.manual.warning.missing.block=Block unavailable.
+tis3d.manual.warning.missing.image=Image not found.
+tis3d.manual.warning.missing.item=Item unavailable.
+tis3d.manual.warning.missing.oreDict=Ore dictionary entry unavailable.
+
+tis3d.tooltip.manual=§7Use a book on a controller block to get a copy.

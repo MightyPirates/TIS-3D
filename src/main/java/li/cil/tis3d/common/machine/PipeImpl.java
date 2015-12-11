@@ -127,7 +127,7 @@ public final class PipeImpl implements Pipe {
             throw new IllegalStateException("Trying to write to a busy pipe. Check isWriting().");
         }
         writeState = State.BUSY;
-        this.value = value;
+        this.value = Math.max(Short.MIN_VALUE, Math.min(Short.MAX_VALUE, value));
     }
 
     @Override
