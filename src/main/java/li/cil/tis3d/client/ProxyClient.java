@@ -11,7 +11,6 @@ import li.cil.tis3d.client.manual.provider.GameRegistryPathProvider;
 import li.cil.tis3d.client.manual.provider.ItemImageProvider;
 import li.cil.tis3d.client.manual.provider.OreDictImageProvider;
 import li.cil.tis3d.client.manual.provider.TextureImageProvider;
-import li.cil.tis3d.client.gui.GuiHandlerClient;
 import li.cil.tis3d.client.render.TextureLoader;
 import li.cil.tis3d.client.render.tile.TileEntitySpecialRendererCasing;
 import li.cil.tis3d.common.Constants;
@@ -26,7 +25,6 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -46,8 +44,8 @@ public final class ProxyClient extends ProxyCommon {
         setCustomBlockModelResourceLocation(Constants.NAME_BLOCK_CASING);
         setCustomBlockModelResourceLocation(Constants.NAME_BLOCK_CONTROLLER);
 
-        setCustomItemModelResourceLocation(Constants.NAME_ITEM_MANUAL);
-        setCustomItemModelResourceLocation(Constants.NAME_ITEM_CODE_BOOK);
+        setCustomItemModelResourceLocation(Constants.NAME_ITEM_BOOK_MANUAL);
+        setCustomItemModelResourceLocation(Constants.NAME_ITEM_BOOK_CODE);
         setCustomItemModelResourceLocation(Constants.NAME_ITEM_MODULE_EXECUTION);
         setCustomItemModelResourceLocation(Constants.NAME_ITEM_MODULE_INFRARED);
         setCustomItemModelResourceLocation(Constants.NAME_ITEM_MODULE_RANDOM);

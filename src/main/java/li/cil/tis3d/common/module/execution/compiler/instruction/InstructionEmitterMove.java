@@ -20,10 +20,10 @@ public final class InstructionEmitterMove extends AbstractInstructionEmitter {
     public Instruction compile(final Matcher matcher, final int lineNumber, final List<Validator> validators) throws ParseException {
         final Object src = checkTargetOrInt(lineNumber,
                 checkArg(lineNumber, matcher, "arg1", "name"),
-                matcher.start("arg1"));
+                matcher.start("arg1"), matcher.end("arg1"));
         final Target dst = checkTarget(lineNumber,
                 checkArg(lineNumber, matcher, "arg2", "arg1"),
-                matcher.start("arg2"));
+                matcher.start("arg2"), matcher.end("arg2"));
         checkExcess(lineNumber, matcher, "excess");
 
         if (src instanceof Target) {

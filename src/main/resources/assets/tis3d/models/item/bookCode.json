@@ -1,7 +1,7 @@
 {
     "parent": "builtin/generated",
     "textures": {
-        "layer0": "tis3d:items/codeBook"
+        "layer0": "tis3d:items/bookCode"
     },
     "display": {
         "thirdperson": {

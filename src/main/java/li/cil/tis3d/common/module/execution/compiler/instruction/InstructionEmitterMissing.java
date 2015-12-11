@@ -16,6 +16,6 @@ public final class InstructionEmitterMissing implements InstructionEmitter {
 
     @Override
     public Instruction compile(final Matcher matcher, final int lineNumber, final List<Validator> validators) throws ParseException {
-        throw new ParseException(Constants.MESSAGE_UNKNOWN_INSTRUCTION, lineNumber, matcher.start("name"));
+        throw new ParseException(Constants.MESSAGE_UNKNOWN_INSTRUCTION, lineNumber, matcher.start("name"), matcher.end("name"));
     }
 }

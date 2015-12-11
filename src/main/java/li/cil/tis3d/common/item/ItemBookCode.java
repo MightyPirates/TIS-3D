@@ -4,6 +4,8 @@ import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
+import li.cil.tis3d.client.gui.GuiHandlerClient;
+import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.module.ModuleExecution;
 import li.cil.tis3d.common.module.execution.MachineState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,23 +19,26 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * The code book, utility book for coding ASM programs for execution modules.
  */
-public final class ItemCodeBook extends ItemBook {
-    public ItemCodeBook() {
+public final class ItemBookCode extends ItemBook {
+    public ItemBookCode() {
         setMaxStackSize(1);
     }
 
     @Override
     public ItemStack onItemRightClick(final ItemStack stack, final World world, final EntityPlayer player) {
-        player.openGui(Loader.instance().getIndexedModList().get(API.MOD_ID).getMod(), 0, world, 0, 0, 0);
+        if (world.isRemote) {
+            player.openGui(TIS3D.instance, GuiHandlerClient.ID_GUI_BOOK_CODE, world, 0, 0, 0);
+        }
         return super.onItemRightClick(stack, world, player);
     }
 
@@ -49,13 +54,12 @@ public final class ItemCodeBook extends ItemBook {
                 final Data data = Data.loadFromStack(stack);
                 if (player.isSneaking()) {
                     if (state.code != null && state.code.length > 0) {
-                        final String code = String.join("\n", state.code);
-                        data.addProgram(code);
+                        data.addProgram(Arrays.asList(state.code));
                         Data.saveToStack(stack, data);
                     }
                 } else {
                     if (data.getProgramCount() > 0) {
-                        final String code = data.getProgram(data.getSelectedProgram());
+                        final List<String> code = data.getProgram(data.getSelectedProgram());
                         moduleExecution.compile(code, player);
                     }
                 }
@@ -65,8 +69,8 @@ public final class ItemCodeBook extends ItemBook {
         return super.onItemUse(stack, player, world, pos, side, hitX, hitY, hitZ);
     }
 
-    public static boolean isCodeBook(final ItemStack stack) {
-        return stack != null && stack.getItem() == GameRegistry.findItem(API.MOD_ID, li.cil.tis3d.common.Constants.NAME_ITEM_CODE_BOOK);
+    public static boolean isBookCode(final ItemStack stack) {
+        return stack != null && stack.getItem() == GameRegistry.findItem(API.MOD_ID, li.cil.tis3d.common.Constants.NAME_ITEM_BOOK_CODE);
     }
 
     // --------------------------------------------------------------------- //
@@ -75,9 +79,11 @@ public final class ItemCodeBook extends ItemBook {
      * Wrapper for list of programs stored in the code book.
      */
     public static class Data {
+        public static final Pattern PATTERN_LINES = Pattern.compile("\r?\n");
         private static final String TAG_PAGES = "pages";
+        private static final String TAG_SELECTED = "selected";
 
-        private final List<String> programs = new ArrayList<>();
+        private final List<List<String>> programs = new ArrayList<>();
         private int selectedProgram = 0;
 
         // --------------------------------------------------------------------- //
@@ -115,7 +121,7 @@ public final class ItemCodeBook extends ItemBook {
          * @param index the index of the program to get.
          * @return the code of the program.
          */
-        public String getProgram(final int index) {
+        public List<String> getProgram(final int index) {
             return programs.get(index);
         }
 
@@ -124,7 +130,7 @@ public final class ItemCodeBook extends ItemBook {
          *
          * @param code the code of the program to add.
          */
-        public void addProgram(final String code) {
+        public void addProgram(final List<String> code) {
             programs.add(code);
         }
 
@@ -134,7 +140,7 @@ public final class ItemCodeBook extends ItemBook {
          * @param page the index of the program to overwrite.
          * @param code the code of the program.
          */
-        public void setProgram(final int page, final String code) {
+        public void setProgram(final int page, final List<String> code) {
             programs.set(page, code);
         }
 
@@ -156,9 +162,11 @@ public final class ItemCodeBook extends ItemBook {
             programs.clear();
 
             final NBTTagList pagesNbt = nbt.getTagList(TAG_PAGES, Constants.NBT.TAG_STRING);
-            for (int page = 0; page < pagesNbt.tagCount(); page++) {
-                programs.add(pagesNbt.getStringTagAt(page));
+            for (int index = 0; index < pagesNbt.tagCount(); index++) {
+                programs.add(Arrays.asList(PATTERN_LINES.split(pagesNbt.getStringTagAt(index))));
             }
+
+            selectedProgram = Math.max(0, Math.min(programs.size() - 1, nbt.getInteger(TAG_SELECTED)));
         }
 
         /**
@@ -168,10 +176,18 @@ public final class ItemCodeBook extends ItemBook {
          */
         public void writeToNBT(final NBTTagCompound nbt) {
             final NBTTagList pagesNbt = new NBTTagList();
-            for (final String page : programs) {
-                pagesNbt.appendTag(new NBTTagString(page));
+            int removed = 0;
+            for (int index = 0; index < programs.size(); index++) {
+                final List<String> program = programs.get(index);
+                if (program.size() > 1 || program.get(0).length() > 0) {
+                    pagesNbt.appendTag(new NBTTagString(String.join("\n", program)));
+                } else if (index < selectedProgram) {
+                    removed++;
+                }
             }
             nbt.setTag(TAG_PAGES, pagesNbt);
+
+            nbt.setInteger(TAG_SELECTED, selectedProgram - removed);
         }
 
         // --------------------------------------------------------------------- //
@@ -211,6 +227,16 @@ public final class ItemCodeBook extends ItemBook {
                 stack.setTagCompound(new NBTTagCompound());
             }
             data.writeToNBT(stack.getTagCompound());
+        }
+
+        /**
+         * Checks if the program at the specified content has any actual content.
+         *
+         * @param index the index to check at.
+         * @return <tt>true</tt> if the data has content, <tt>false</tt> if it is empty.
+         */
+        public boolean hasContent(final int index) {
+            return programs.get(index).size() > 1 || programs.get(index).get(0).length() > 0;
         }
     }
 }

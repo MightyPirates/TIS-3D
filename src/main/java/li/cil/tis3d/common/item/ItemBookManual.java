@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * The manual!
  */
-public final class ItemManual extends ItemBook {
+public final class ItemBookManual extends ItemBook {
     public static final String TOOLTIP_MANUAL = "tis3d.tooltip.manual";
 
     @Override

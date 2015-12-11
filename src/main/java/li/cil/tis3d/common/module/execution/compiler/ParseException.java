@@ -5,12 +5,14 @@ package li.cil.tis3d.common.module.execution.compiler;
  */
 public final class ParseException extends Exception {
     private final int lineNumber;
-    private final int column;
+    private final int start;
+    private final int end;
 
-    public ParseException(final String message, final int lineNumber, final int column) {
+    public ParseException(final String message, final int lineNumber, final int start, final int end) {
         super(message);
         this.lineNumber = lineNumber;
-        this.column = column;
+        this.start = start;
+        this.end = end;
     }
 
     /**
@@ -23,16 +25,25 @@ public final class ParseException extends Exception {
     }
 
     /**
-     * The column (nth character) on which the error occurred.
+     * The start column (nth character) on which the error occurred.
      *
-     * @return the column of the error.
+     * @return the start column of the error.
      */
-    public int getColumn() {
-        return column;
+    public int getStart() {
+        return start;
+    }
+
+    /**
+     * The end column (nth character) on which the error occurred.
+     *
+     * @return the end column of the error.
+     */
+    public int getEnd() {
+        return end;
     }
 
     @Override
     public String toString() {
-        return (lineNumber + 1) + ":" + (column + 1) + ": " + getMessage();
+        return (lineNumber + 1) + ":" + (start + 1) + "-" + (end + 1) + ": " + getMessage();
     }
 }

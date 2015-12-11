@@ -61,12 +61,12 @@ public final class BlockController extends Block {
                     if (!player.capabilities.isCreativeMode) {
                         stack.splitStack(1);
                     }
-                    final ItemStack manual = new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MANUAL));
-                    if (player.inventory.addItemStackToInventory(manual)) {
+                    final ItemStack bookManual = new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_BOOK_MANUAL));
+                    if (player.inventory.addItemStackToInventory(bookManual)) {
                         player.inventoryContainer.detectAndSendChanges();
                     }
-                    if (manual.stackSize > 0) {
-                        player.dropItem(manual, false, false);
+                    if (bookManual.stackSize > 0) {
+                        player.dropItem(bookManual, false, false);
                     }
                 }
                 return true;

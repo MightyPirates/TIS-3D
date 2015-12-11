@@ -11,8 +11,8 @@ import li.cil.tis3d.common.block.BlockCasing;
 import li.cil.tis3d.common.block.BlockController;
 import li.cil.tis3d.common.entity.EntityInfraredPacket;
 import li.cil.tis3d.common.event.TickHandlerInfraredPacket;
-import li.cil.tis3d.common.item.ItemManual;
-import li.cil.tis3d.common.item.ItemCodeBook;
+import li.cil.tis3d.common.item.ItemBookManual;
+import li.cil.tis3d.common.item.ItemBookCode;
 import li.cil.tis3d.common.item.ItemModule;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.provider.ModuleProviderExecution;
@@ -79,28 +79,27 @@ public class ProxyCommon {
                         setCreativeTab(API.creativeTab),
                 Constants.NAME_ITEM_MODULE_STACK);
 
-        GameRegistry.registerItem(new ItemManual().
-                        setUnlocalizedName(API.MOD_ID + "." + Constants.NAME_ITEM_MANUAL).
+        GameRegistry.registerItem(new ItemBookCode().
+                        setUnlocalizedName(API.MOD_ID + "." +Constants.NAME_ITEM_BOOK_CODE).
                         setCreativeTab(API.creativeTab),
-                Constants.NAME_ITEM_MANUAL);
-
-        GameRegistry.registerItem(new ItemCodeBook().
-                        setUnlocalizedName(Constants.NAME_ITEM_CODE_BOOK).
+                Constants.NAME_ITEM_BOOK_CODE);
+        GameRegistry.registerItem(new ItemBookManual().
+                        setUnlocalizedName(API.MOD_ID + "." + Constants.NAME_ITEM_BOOK_MANUAL).
                         setCreativeTab(API.creativeTab),
-                Constants.NAME_ITEM_CODE_BOOK);
+                Constants.NAME_ITEM_BOOK_MANUAL);
 
         Settings.load(event.getSuggestedConfigurationFile());
     }
 
     public void onInit(final FMLInitializationEvent event) {
         // Register Ore Dictionary entries.
-        OreDictionary.registerOre("book", GameRegistry.findBlock(API.MOD_ID, Constants.NAME_ITEM_MANUAL));
+        OreDictionary.registerOre("book", GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_BOOK_MANUAL));
 
-        OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findBlock(API.MOD_ID, Constants.NAME_ITEM_MODULE_EXECUTION));
-        OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findBlock(API.MOD_ID, Constants.NAME_ITEM_MODULE_INFRARED));
-        OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findBlock(API.MOD_ID, Constants.NAME_ITEM_MODULE_RANDOM));
-        OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findBlock(API.MOD_ID, Constants.NAME_ITEM_MODULE_REDSTONE));
-        OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findBlock(API.MOD_ID, Constants.NAME_ITEM_MODULE_STACK));
+        OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_EXECUTION));
+        OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_INFRARED));
+        OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_RANDOM));
+        OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_REDSTONE));
+        OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_STACK));
 
         // Hardcoded recipes!
         GameRegistry.addRecipe(new ItemStack(GameRegistry.findBlock(API.MOD_ID, Constants.NAME_BLOCK_CASING), 8),
@@ -158,10 +157,6 @@ public class ProxyCommon {
                 'I', Items.iron_ingot,
                 'R', Items.redstone,
                 'E', Blocks.chest);
-
-        GameRegistry.addShapelessRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_CODE_BOOK), 1),
-                Items.book,
-                Items.redstone);
 
         // Register entities.
         EntityRegistry.registerModEntity(EntityInfraredPacket.class, Constants.NAME_ENTITY_INFRARED_PACKET, 1, TIS3D.instance, 16, 1, true);

@@ -7,14 +7,14 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 import java.io.IOException;
 
-public final class MessageCodeBookData implements IMessage {
+public final class MessageBookCodeData implements IMessage {
     private NBTTagCompound nbt;
 
-    public MessageCodeBookData(final NBTTagCompound nbt) {
+    public MessageBookCodeData(final NBTTagCompound nbt) {
         this.nbt = nbt;
     }
 
-    public MessageCodeBookData() {
+    public MessageBookCodeData() {
     }
 
     // --------------------------------------------------------------------- //

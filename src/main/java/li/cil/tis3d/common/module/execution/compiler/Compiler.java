@@ -2,6 +2,7 @@ package li.cil.tis3d.common.module.execution.compiler;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.module.execution.MachineState;
@@ -61,12 +62,12 @@ public final class Compiler {
      * @param state the machine state to store the instructions and debug info in.
      * @throws ParseException if the specified code contains syntax errors.
      */
-    public static void compile(final String code, final MachineState state) throws ParseException {
+    public static void compile(final Iterable<String> code, final MachineState state) throws ParseException {
         state.clear();
 
-        final String[] lines = PATTERN_LINES.split(code);
+        final String[] lines = Iterables.toArray(code, String.class);
         if (lines.length > Settings.maxLinesPerProgram) {
-            throw new ParseException(Constants.MESSAGE_TOO_MANY_LINES, Settings.maxLinesPerProgram, 0);
+            throw new ParseException(Constants.MESSAGE_TOO_MANY_LINES, Settings.maxLinesPerProgram, 0, 0);
         }
         for (int lineNumber = 0; lineNumber < lines.length; lineNumber++) {
             lines[lineNumber] = lines[lineNumber].toUpperCase(Locale.ENGLISH);
@@ -80,7 +81,7 @@ public final class Compiler {
             for (int lineNumber = 0; lineNumber < lines.length; lineNumber++) {
                 // Enforce max line length.
                 if (lines[lineNumber].length() > Settings.maxColumnsPerLine) {
-                    throw new ParseException(Constants.MESSAGE_LINE_TOO_LONG, lineNumber, Settings.maxColumnsPerLine);
+                    throw new ParseException(Constants.MESSAGE_LINE_TOO_LONG, lineNumber, Settings.maxColumnsPerLine, Settings.maxColumnsPerLine);
                 }
 
                 // Get current line, strip comments, trim whitespace and uppercase.
@@ -152,13 +153,12 @@ public final class Compiler {
             state.instructions.add(instruction);
         } else {
             // This should be pretty much impossible...
-            throw new ParseException(Constants.MESSAGE_UNEXPECTED_TOKEN, lineNumber, 0);
+            throw new ParseException(Constants.MESSAGE_UNEXPECTED_TOKEN, lineNumber, 0, 0);
         }
     }
 
     // --------------------------------------------------------------------- //
 
-    private static final Pattern PATTERN_LINES = Pattern.compile("\r?\n");
     private static final Pattern PATTERN_COMMENT = Pattern.compile("#.*$");
     private static final Pattern PATTERN_LABEL = Pattern.compile("(?<label>[^:]+)\\s*:\\s*(?<rest>.*)");
     private static final Pattern PATTERN_INSTRUCTION = Pattern.compile("^(?<name>\\S+)\\s*(?<arg1>[^,\\s]+)?\\s*,?\\s*(?<arg2>[^,\\s]+)?\\s*(?<excess>.+)?$");
