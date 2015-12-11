@@ -15,7 +15,7 @@ import java.util.List;
  * The manual!
  */
 public final class ItemBookManual extends ItemBook {
-    public static final String TOOLTIP_MANUAL = "tis3d.tooltip.manual";
+    public static final String TOOLTIP_BOOK_MANUAL = "tis3d.tooltip.bookManual";
 
     @Override
     public boolean isItemTool(final ItemStack stack) {
@@ -30,7 +30,7 @@ public final class ItemBookManual extends ItemBook {
     @Override
     public void addInformation(final ItemStack stack, final EntityPlayer playerIn, final List<String> tooltip, final boolean advanced) {
         super.addInformation(stack, playerIn, tooltip, advanced);
-        tooltip.add(StatCollector.translateToLocal(TOOLTIP_MANUAL));
+        tooltip.add(StatCollector.translateToLocal(TOOLTIP_BOOK_MANUAL));
     }
 
     @Override

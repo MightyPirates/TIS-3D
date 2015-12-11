@@ -19,4 +19,5 @@ tis3d.manual.warning.missing.image=Image not found.
 tis3d.manual.warning.missing.item=Item unavailable.
 tis3d.manual.warning.missing.oreDict=Ore dictionary entry unavailable.
 
-tis3d.tooltip.manual=§7Use a book on a controller block to get a copy.
+tis3d.tooltip.bookCode=§7Use a book on an installed execution module to get a copy.
+tis3d.tooltip.bookManual=§7Use a book on a controller block to get a copy.

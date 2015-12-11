@@ -17,6 +17,7 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -30,16 +31,26 @@ import java.util.regex.Pattern;
  * The code book, utility book for coding ASM programs for execution modules.
  */
 public final class ItemBookCode extends ItemBook {
+    public static final String TOOLTIP_BOOK_CODE = "tis3d.tooltip.bookCode";
+
     public ItemBookCode() {
         setMaxStackSize(1);
     }
 
     @Override
-    public ItemStack onItemRightClick(final ItemStack stack, final World world, final EntityPlayer player) {
-        if (world.isRemote) {
-            player.openGui(TIS3D.instance, GuiHandlerClient.ID_GUI_BOOK_CODE, world, 0, 0, 0);
-        }
-        return super.onItemRightClick(stack, world, player);
+    public boolean isItemTool(final ItemStack stack) {
+        return false;
+    }
+
+    @Override
+    public int getItemEnchantability() {
+        return 0;
+    }
+
+    @Override
+    public void addInformation(final ItemStack stack, final EntityPlayer playerIn, final List<String> tooltip, final boolean advanced) {
+        super.addInformation(stack, playerIn, tooltip, advanced);
+        tooltip.add(StatCollector.translateToLocal(TOOLTIP_BOOK_CODE));
     }
 
     @Override
@@ -67,6 +78,14 @@ public final class ItemBookCode extends ItemBook {
             }
         }
         return super.onItemUse(stack, player, world, pos, side, hitX, hitY, hitZ);
+    }
+
+    @Override
+    public ItemStack onItemRightClick(final ItemStack stack, final World world, final EntityPlayer player) {
+        if (world.isRemote) {
+            player.openGui(TIS3D.instance, GuiHandlerClient.ID_GUI_BOOK_CODE, world, 0, 0, 0);
+        }
+        return super.onItemRightClick(stack, world, player);
     }
 
     public static boolean isBookCode(final ItemStack stack) {
