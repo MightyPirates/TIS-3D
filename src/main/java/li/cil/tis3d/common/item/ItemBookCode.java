@@ -247,15 +247,5 @@ public final class ItemBookCode extends ItemBook {
             }
             data.writeToNBT(stack.getTagCompound());
         }
-
-        /**
-         * Checks if the program at the specified content has any actual content.
-         *
-         * @param index the index to check at.
-         * @return <tt>true</tt> if the data has content, <tt>false</tt> if it is empty.
-         */
-        public boolean hasContent(final int index) {
-            return programs.get(index).size() > 1 || programs.get(index).get(0).length() > 0;
-        }
     }
 }

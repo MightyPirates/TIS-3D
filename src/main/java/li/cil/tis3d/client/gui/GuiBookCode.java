@@ -110,7 +110,7 @@ public class GuiBookCode extends GuiScreen {
         // Check page change button availability.
         buttonPreviousPage.visible = data.getSelectedProgram() > 0 && data.getProgramCount() > 0;
         buttonNextPage.visible = (data.getSelectedProgram() < data.getProgramCount() - 1) ||
-                (data.getSelectedProgram() == data.getProgramCount() - 1 && data.hasContent(data.getProgramCount() - 1));
+                (data.getSelectedProgram() == data.getProgramCount() - 1 && isCurrentProgramNonEmpty());
 
         super.drawScreen(mouseX, mouseY, partialTicks);
 
@@ -308,6 +308,11 @@ public class GuiBookCode extends GuiScreen {
         }
     }
 
+    @Override
+    public boolean doesGuiPauseGame() {
+        return false;
+    }
+
     // --------------------------------------------------------------------- //
 
     private int getSelectionStart() {
@@ -391,6 +396,10 @@ public class GuiBookCode extends GuiScreen {
             position += line.length() + 1;
         }
         return lines.get(lines.size() - 1).length(); // Out of bounds, clamp.
+    }
+
+    private boolean isCurrentProgramNonEmpty() {
+        return lines.size() > 1 || lines.get(0).length() > 0;
     }
 
     private void recompile() {
