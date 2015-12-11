@@ -9,6 +9,11 @@ import java.io.File;
  */
 public final class Settings {
     /**
+     * The maximum number of casings that may be connected to a controller.
+     */
+    public static int maxCasingsPerController = 8;
+
+    /**
      * The maximum number of lines a piece of code may have.
      */
     public static int maxLinesPerProgram = 20;
@@ -18,6 +23,13 @@ public final class Settings {
      */
     public static int maxColumnsPerLine = 18;
 
+    /**
+     * Maximum number of items stored in our receiver queue.
+     * <p>
+     * If the queue runs full, additionally received packets will be dropped.
+     */
+    public static int maxInfraredQueueLength = 16;
+
     // --------------------------------------------------------------------- //
 
     public static void load(final File configFile) {
@@ -25,10 +37,19 @@ public final class Settings {
 
         config.load();
 
-        config.getInt("maxLinesPerProgram", "Module.Execution", Settings.maxLinesPerProgram, 1, 200,
+        maxCasingsPerController = config.getInt("maxCasings", "controller",
+                Settings.maxCasingsPerController, 1, 512,
+                "The maximum number of casings a single controller supports.");
+
+        maxLinesPerProgram = config.getInt("maxLinesPerProgram", "module.execution",
+                Settings.maxLinesPerProgram, 1, 200,
                 "The maximum number of lines an ASM program for an execution node may have.");
-        config.getInt("maxColumnsPerLine", "Module.Execution", Settings.maxColumnsPerLine, 1, 80,
+        maxColumnsPerLine = config.getInt("maxColumnsPerLine", "module.execution",
+                Settings.maxColumnsPerLine, 1, 80,
                 "The maximum number of columns per line of an ASM program for an execution node may have.");
+        maxInfraredQueueLength = config.getInt("maxQueueLength", "module.infrared",
+                Settings.maxInfraredQueueLength, 1, 64,
+                "The maximum number of infrared packets that can be stored in the receiver's buffer.");
 
         if (config.hasChanged()) {
             config.save();

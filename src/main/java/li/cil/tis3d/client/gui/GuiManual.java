@@ -35,7 +35,7 @@ public final class GuiManual extends GuiScreen {
     private static final int tabPosY = 40;
     private static final int tabWidth = 64;
     private static final int tabHeight = 32;
-    private static final int tabOverlap = 12;
+    private static final int tabOverlap = 8;
     private static final int maxTabsPerSide = 7;
     private static final int windowWidth = 256;
     private static final int windowHeight = 256;
@@ -144,7 +144,7 @@ public final class GuiManual extends GuiScreen {
             final ManualAPIImpl.Tab tab = ManualAPIImpl.getTabs().get(i);
             final ImageButton button = (ImageButton) buttonList.get(i);
             GL11.glPushMatrix();
-            GL11.glTranslated(button.xPosition + 30, button.yPosition + 8 - tabOverlap / 2, zLevel);
+            GL11.glTranslated(button.xPosition + 30, button.yPosition + 4 - tabOverlap / 2, zLevel);
             tab.renderer.render();
             GL11.glPopMatrix();
         }
