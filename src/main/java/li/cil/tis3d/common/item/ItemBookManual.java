@@ -1,6 +1,9 @@
 package li.cil.tis3d.common.item;
 
+import cpw.mods.fml.common.registry.GameRegistry;
+import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.ManualAPI;
+import li.cil.tis3d.common.Constants;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBook;
 import net.minecraft.item.ItemStack;
@@ -34,16 +37,7 @@ public final class ItemBookManual extends ItemBook {
 
     @Override
     public boolean onItemUse(final ItemStack stack, final EntityPlayer player, final World world, final int x, final int y, final int z, final int side, final float hitX, final float hitY, final float hitZ) {
-        final String path = ManualAPI.pathFor(world, x, y, z);
-        if (path != null) {
-            if (world.isRemote) {
-                ManualAPI.openFor(player);
-                ManualAPI.reset();
-                ManualAPI.navigate(path);
-            }
-            return true;
-        }
-        return super.onItemUse(stack, player, world, x, y, z, side, hitX, hitY, hitZ);
+        return tryOpenManual(world, player, ManualAPI.pathFor(world, x, y, z));
     }
 
     @Override
@@ -55,5 +49,23 @@ public final class ItemBookManual extends ItemBook {
             ManualAPI.openFor(playerIn);
         }
         return super.onItemRightClick(stack, world, playerIn);
+    }
+
+    public static boolean isBookManual(final ItemStack stack) {
+        return stack != null && stack.getItem() == GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_BOOK_MANUAL);
+    }
+
+    public static boolean tryOpenManual(final World world, final EntityPlayer player, final String path) {
+        if (path == null) {
+            return false;
+        }
+
+        if (world.isRemote) {
+            ManualAPI.openFor(player);
+            ManualAPI.reset();
+            ManualAPI.navigate(path);
+        }
+
+        return true;
     }
 }

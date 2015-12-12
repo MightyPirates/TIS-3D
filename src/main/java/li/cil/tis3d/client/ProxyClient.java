@@ -9,11 +9,9 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.api.prefab.ItemStackTabIconRenderer;
-import li.cil.tis3d.api.prefab.ResourceContentProvider;
 import li.cil.tis3d.api.prefab.TextureTabIconRenderer;
 import li.cil.tis3d.client.gui.GuiHandlerClient;
 import li.cil.tis3d.client.manual.provider.BlockImageProvider;
-import li.cil.tis3d.client.manual.provider.GameRegistryPathProvider;
 import li.cil.tis3d.client.manual.provider.ItemImageProvider;
 import li.cil.tis3d.client.manual.provider.OreDictImageProvider;
 import li.cil.tis3d.client.manual.provider.TextureImageProvider;
@@ -54,9 +52,7 @@ public final class ProxyClient extends ProxyCommon {
         // Register GUI handler for fancy GUIs in our almost GUI-less mod!
         NetworkRegistry.INSTANCE.registerGuiHandler(TIS3D.instance, new GuiHandlerClient());
 
-        // Add default manual providers.
-        ManualAPI.addProvider(new GameRegistryPathProvider());
-        ManualAPI.addProvider(new ResourceContentProvider("tis3d", "doc/"));
+        // Add default manual providers for client side stuff.
         ManualAPI.addProvider("", new TextureImageProvider());
         ManualAPI.addProvider("item", new ItemImageProvider());
         ManualAPI.addProvider("block", new BlockImageProvider());

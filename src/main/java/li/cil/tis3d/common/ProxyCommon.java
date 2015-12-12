@@ -5,7 +5,10 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import li.cil.tis3d.api.API;
+import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.api.ModuleAPI;
+import li.cil.tis3d.api.prefab.ResourceContentProvider;
+import li.cil.tis3d.client.manual.provider.GameRegistryPathProvider;
 import li.cil.tis3d.common.api.CreativeTab;
 import li.cil.tis3d.common.api.FontRendererAPIImpl;
 import li.cil.tis3d.common.api.InfraredAPIImpl;
@@ -186,6 +189,10 @@ public class ProxyCommon {
         ModuleAPI.addProvider(new ModuleProviderStack());
         ModuleAPI.addProvider(new ModuleProviderRandom());
         ModuleAPI.addProvider(new ModuleProviderRedstone());
+
+        // Add default manual providers for server side stuff.
+        ManualAPI.addProvider(new GameRegistryPathProvider());
+        ManualAPI.addProvider(new ResourceContentProvider("tis3d", "doc/"));
     }
 
     public int getControllerRenderId() {
