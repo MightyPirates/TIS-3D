@@ -18,13 +18,17 @@ import li.cil.tis3d.client.manual.provider.TextureImageProvider;
 import li.cil.tis3d.client.render.TextureLoader;
 import li.cil.tis3d.client.render.block.ISBRHCasing;
 import li.cil.tis3d.client.render.block.ISBRHController;
+import li.cil.tis3d.api.prefab.client.SimpleModuleRenderer;
 import li.cil.tis3d.client.render.tile.TileEntitySpecialRendererCasing;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.ProxyCommon;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.tile.TileEntityCasing;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.IItemRenderer;
+import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
 
 /**
@@ -42,7 +46,7 @@ public final class ProxyClient extends ProxyCommon {
         MinecraftForge.EVENT_BUS.register(TextureLoader.INSTANCE);
     }
 
-    @Override
+	@Override
     public void onInit(final FMLInitializationEvent event) {
         super.onInit(event);
 
@@ -62,4 +66,21 @@ public final class ProxyClient extends ProxyCommon {
         ManualAPI.addTab(new ItemStackTabIconRenderer(new ItemStack(GameRegistry.findBlock(API.MOD_ID, Constants.NAME_BLOCK_CONTROLLER))), "tis3d.manual.blocks", "%LANGUAGE%/block/index.md");
         ManualAPI.addTab(new ItemStackTabIconRenderer(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_EXECUTION))), "tis3d.manual.items", "%LANGUAGE%/item/index.md");
     }
+
+
+	@Override
+	protected Item registerModule(String name) {
+		Item item = super.registerModule(name);
+		MinecraftForgeClient.registerItemRenderer(item, getSimpleModuleRenderer());
+		return item;
+	}
+
+	private IItemRenderer simpleModuleRenderer;
+
+	private IItemRenderer getSimpleModuleRenderer() {
+		if(simpleModuleRenderer == null) {
+			simpleModuleRenderer = new SimpleModuleRenderer();
+		}
+		return simpleModuleRenderer;
+	}
 }

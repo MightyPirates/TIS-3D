@@ -31,6 +31,7 @@ import li.cil.tis3d.common.tile.TileEntityCasing;
 import li.cil.tis3d.common.tile.TileEntityController;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.oredict.OreDictionary;
@@ -66,31 +67,11 @@ public class ProxyCommon {
         GameRegistry.registerTileEntity(TileEntityCasing.class, Constants.NAME_BLOCK_CASING);
         GameRegistry.registerTileEntity(TileEntityController.class, Constants.NAME_BLOCK_CONTROLLER);
 
-        GameRegistry.registerItem(new ItemModule().
-                        setUnlocalizedName(API.MOD_ID + "." + Constants.NAME_ITEM_MODULE_EXECUTION).
-                        setTextureName(API.MOD_ID + ":" + Constants.NAME_ITEM_MODULE_EXECUTION).
-                        setCreativeTab(API.creativeTab),
-                Constants.NAME_ITEM_MODULE_EXECUTION);
-        GameRegistry.registerItem(new ItemModule().
-                        setUnlocalizedName(API.MOD_ID + "." + Constants.NAME_ITEM_MODULE_INFRARED).
-                        setTextureName(API.MOD_ID + ":" + Constants.NAME_ITEM_MODULE_INFRARED).
-                        setCreativeTab(API.creativeTab),
-                Constants.NAME_ITEM_MODULE_INFRARED);
-        GameRegistry.registerItem(new ItemModule().
-                        setUnlocalizedName(API.MOD_ID + "." + Constants.NAME_ITEM_MODULE_RANDOM).
-                        setTextureName(API.MOD_ID + ":" + Constants.NAME_ITEM_MODULE_RANDOM).
-                        setCreativeTab(API.creativeTab),
-                Constants.NAME_ITEM_MODULE_RANDOM);
-        GameRegistry.registerItem(new ItemModule().
-                        setUnlocalizedName(API.MOD_ID + "." + Constants.NAME_ITEM_MODULE_REDSTONE).
-                        setTextureName(API.MOD_ID + ":" + Constants.NAME_ITEM_MODULE_REDSTONE).
-                        setCreativeTab(API.creativeTab),
-                Constants.NAME_ITEM_MODULE_REDSTONE);
-        GameRegistry.registerItem(new ItemModule().
-                        setUnlocalizedName(API.MOD_ID + "." + Constants.NAME_ITEM_MODULE_STACK).
-                        setTextureName(API.MOD_ID + ":" + Constants.NAME_ITEM_MODULE_STACK).
-                        setCreativeTab(API.creativeTab),
-                Constants.NAME_ITEM_MODULE_STACK);
+        registerModule(Constants.NAME_ITEM_MODULE_EXECUTION);
+        registerModule(Constants.NAME_ITEM_MODULE_INFRARED);
+        registerModule(Constants.NAME_ITEM_MODULE_RANDOM);
+        registerModule(Constants.NAME_ITEM_MODULE_REDSTONE);
+        registerModule(Constants.NAME_ITEM_MODULE_STACK);
 
         GameRegistry.registerItem(new ItemBookCode().
                         setUnlocalizedName(API.MOD_ID + "." + Constants.NAME_ITEM_BOOK_CODE).
@@ -104,6 +85,15 @@ public class ProxyCommon {
                 Constants.NAME_ITEM_BOOK_MANUAL);
 
         Settings.load(event.getSuggestedConfigurationFile());
+    }
+
+    protected Item registerModule(String name){
+        Item item = new ItemModule().
+            setUnlocalizedName(API.MOD_ID + "." + name).
+            setTextureName(API.MOD_ID + ":" + name).
+            setCreativeTab(API.creativeTab);
+        GameRegistry.registerItem(item, name);
+        return item;
     }
 
     public void onInit(final FMLInitializationEvent event) {
