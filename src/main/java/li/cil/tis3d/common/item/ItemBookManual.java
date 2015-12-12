@@ -1,6 +1,8 @@
 package li.cil.tis3d.common.item;
 
+import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.ManualAPI;
+import li.cil.tis3d.common.Constants;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBook;
 import net.minecraft.item.ItemStack;
@@ -8,6 +10,7 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import java.util.List;
 
@@ -28,23 +31,14 @@ public final class ItemBookManual extends ItemBook {
     }
 
     @Override
-    public void addInformation(final ItemStack stack, final EntityPlayer playerIn, final List<String> tooltip, final boolean advanced) {
-        super.addInformation(stack, playerIn, tooltip, advanced);
+    public void addInformation(final ItemStack stack, final EntityPlayer player, final List<String> tooltip, final boolean advanced) {
+        super.addInformation(stack, player, tooltip, advanced);
         tooltip.add(StatCollector.translateToLocal(TOOLTIP_BOOK_MANUAL));
     }
 
     @Override
-    public boolean onItemUse(final ItemStack stack, final EntityPlayer playerIn, final World world, final BlockPos pos, final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
-        final String path = ManualAPI.pathFor(world, pos);
-        if (path != null) {
-            if (world.isRemote) {
-                ManualAPI.openFor(playerIn);
-                ManualAPI.reset();
-                ManualAPI.navigate(path);
-            }
-            return true;
-        }
-        return super.onItemUse(stack, playerIn, world, pos, side, hitX, hitY, hitZ);
+    public boolean onItemUse(final ItemStack stack, final EntityPlayer player, final World world, final BlockPos pos, final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
+        return tryOpenManual(world, player, ManualAPI.pathFor(world, pos));
     }
 
     @Override
@@ -56,5 +50,23 @@ public final class ItemBookManual extends ItemBook {
             ManualAPI.openFor(playerIn);
         }
         return super.onItemRightClick(stack, world, playerIn);
+    }
+
+    public static boolean isBookManual(final ItemStack stack) {
+        return stack != null && stack.getItem() == GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_BOOK_MANUAL);
+    }
+
+    public static boolean tryOpenManual(final World world, final EntityPlayer player, final String path) {
+        if (path == null) {
+            return false;
+        }
+
+        if (world.isRemote) {
+            ManualAPI.openFor(player);
+            ManualAPI.reset();
+            ManualAPI.navigate(path);
+        }
+
+        return true;
     }
 }

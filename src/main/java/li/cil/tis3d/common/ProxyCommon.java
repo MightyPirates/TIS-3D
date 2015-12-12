@@ -1,7 +1,10 @@
 package li.cil.tis3d.common;
 
 import li.cil.tis3d.api.API;
+import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.api.ModuleAPI;
+import li.cil.tis3d.api.prefab.ResourceContentProvider;
+import li.cil.tis3d.client.manual.provider.GameRegistryPathProvider;
 import li.cil.tis3d.common.api.CreativeTab;
 import li.cil.tis3d.common.api.FontRendererAPIImpl;
 import li.cil.tis3d.common.api.InfraredAPIImpl;
@@ -11,8 +14,8 @@ import li.cil.tis3d.common.block.BlockCasing;
 import li.cil.tis3d.common.block.BlockController;
 import li.cil.tis3d.common.entity.EntityInfraredPacket;
 import li.cil.tis3d.common.event.TickHandlerInfraredPacket;
-import li.cil.tis3d.common.item.ItemBookManual;
 import li.cil.tis3d.common.item.ItemBookCode;
+import li.cil.tis3d.common.item.ItemBookManual;
 import li.cil.tis3d.common.item.ItemModule;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.provider.ModuleProviderExecution;
@@ -80,7 +83,7 @@ public class ProxyCommon {
                 Constants.NAME_ITEM_MODULE_STACK);
 
         GameRegistry.registerItem(new ItemBookCode().
-                        setUnlocalizedName(API.MOD_ID + "." +Constants.NAME_ITEM_BOOK_CODE).
+                        setUnlocalizedName(API.MOD_ID + "." + Constants.NAME_ITEM_BOOK_CODE).
                         setCreativeTab(API.creativeTab),
                 Constants.NAME_ITEM_BOOK_CODE);
         GameRegistry.registerItem(new ItemBookManual().
@@ -174,5 +177,9 @@ public class ProxyCommon {
         ModuleAPI.addProvider(new ModuleProviderStack());
         ModuleAPI.addProvider(new ModuleProviderRandom());
         ModuleAPI.addProvider(new ModuleProviderRedstone());
+
+        // Add default manual providers for server side stuff.
+        ManualAPI.addProvider(new GameRegistryPathProvider());
+        ManualAPI.addProvider(new ResourceContentProvider("tis3d", "doc/"));
     }
 }

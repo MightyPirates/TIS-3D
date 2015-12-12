@@ -1,10 +1,12 @@
 package li.cil.tis3d.common.block;
 
+import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.Redstone;
 import li.cil.tis3d.api.module.Rotatable;
+import li.cil.tis3d.common.item.ItemBookManual;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import li.cil.tis3d.util.InventoryUtils;
 import net.minecraft.block.Block;
@@ -144,6 +146,14 @@ public final class BlockCasing extends Block {
             if (tileEntity instanceof TileEntityCasing) {
                 final TileEntityCasing casing = (TileEntityCasing) tileEntity;
 
+                final ItemStack stack = player.getHeldItem();
+                if (ItemBookManual.isBookManual(stack)) {
+                    final ItemStack moduleStack = casing.getStackInSlot(side.ordinal());
+                    if (ItemBookManual.tryOpenManual(world, player, ManualAPI.pathFor(moduleStack))) {
+                        return true;
+                    }
+                }
+
                 final Module module = casing.getModule(Face.fromEnumFacing(side));
                 if (module != null && module.onActivate(player, hitX, hitY, hitZ)) {
                     return true;
@@ -161,7 +171,6 @@ public final class BlockCasing extends Block {
                     }
                     return true;
                 } else {
-                    final ItemStack stack = player.getHeldItem();
                     if (casing.canInsertItem(side.ordinal(), stack, side)) {
                         if (!world.isRemote) {
                             if (player.capabilities.isCreativeMode) {
