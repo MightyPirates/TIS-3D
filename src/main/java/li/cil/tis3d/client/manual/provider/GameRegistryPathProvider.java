@@ -4,6 +4,7 @@ import cpw.mods.fml.common.registry.GameData;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.manual.PathProvider;
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -15,7 +16,7 @@ public class GameRegistryPathProvider implements PathProvider {
         if (stack != null) {
             final Item item = stack.getItem();
             final Block block = Block.getBlockFromItem(item);
-            if (block != null) {
+            if (block != null && block != Blocks.air) {
                 final String modId = new ResourceLocation(GameData.getBlockRegistry().getNameForObject(block)).getResourceDomain();
                 if (API.MOD_ID.equals(modId)) {
                     return "%LANGUAGE%/block/" + block.getUnlocalizedName().replaceFirst("^tile\\.tis3d\\.", "") + ".md";
