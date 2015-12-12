@@ -121,7 +121,8 @@ public final class ItemBookCode extends ItemBook {
          * @param index the new selected index.
          */
         public void setSelectedProgram(final int index) {
-            this.selectedProgram = Math.max(0, Math.min(programs.size(), index));
+            this.selectedProgram = index;
+            validateSelectedPage();
         }
 
         /**
@@ -169,6 +170,7 @@ public final class ItemBookCode extends ItemBook {
          */
         public void removeProgram(final int index) {
             programs.remove(index);
+            validateSelectedPage();
         }
 
         /**
@@ -184,7 +186,8 @@ public final class ItemBookCode extends ItemBook {
                 programs.add(Arrays.asList(PATTERN_LINES.split(pagesNbt.getStringTagAt(index))));
             }
 
-            selectedProgram = Math.max(0, Math.min(programs.size() - 1, nbt.getInteger(TAG_SELECTED)));
+            selectedProgram = nbt.getInteger(TAG_SELECTED);
+            validateSelectedPage();
         }
 
         /**
@@ -206,6 +209,12 @@ public final class ItemBookCode extends ItemBook {
             nbt.setTag(TAG_PAGES, pagesNbt);
 
             nbt.setInteger(TAG_SELECTED, selectedProgram - removed);
+        }
+
+        // --------------------------------------------------------------------- //
+
+        private void validateSelectedPage() {
+            selectedProgram = Math.max(0, Math.min(programs.size() - 1, selectedProgram));
         }
 
         // --------------------------------------------------------------------- //

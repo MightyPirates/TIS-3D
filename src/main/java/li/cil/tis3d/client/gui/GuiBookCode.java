@@ -1,6 +1,7 @@
 package li.cil.tis3d.client.gui;
 
 import li.cil.tis3d.api.API;
+import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.item.ItemBookCode;
 import li.cil.tis3d.common.module.execution.MachineState;
 import li.cil.tis3d.common.module.execution.compiler.Compiler;
@@ -33,16 +34,20 @@ public class GuiBookCode extends GuiScreen {
     private static final int BUTTON_PAGE_CHANGE_PREV_X = 8;
     private static final int BUTTON_PAGE_CHANGE_NEXT_X = 116;
     private static final int BUTTON_PAGE_CHANGE_Y = 224;
+    private static final int BUTTON_PAGE_DELETE_X = 66;
+    private static final int BUTTON_PAGE_DELETE_Y = 224;
     private static final int CODE_POS_X = 18;
     private static final int CODE_POS_Y = 16;
-    private static final int MAX_LINES = 20; // Hardcoded for now, scrollbar maybe later...
-    private static final int MAX_COLUMNS = 18; // Hardcoded fro now, scrollbar probably never...
+    private static final int CODE_WIDTH = 120;
+    private static final int CODE_MARGIN = 30;
 
     private static final int ID_BUTTON_PAGE_NEXT = 1;
     private static final int ID_BUTTON_PAGE_PREV = 2;
+    private static final int ID_BUTTON_PAGE_DELETE = 3;
 
-    private PageChangeButton buttonNextPage;
-    private PageChangeButton buttonPreviousPage;
+    private ButtonChangePage buttonNextPage;
+    private ButtonChangePage buttonPreviousPage;
+    private ButtonDeletePage buttonDeletePage;
 
     private final EntityPlayer player;
     private final ItemBookCode.Data data;
@@ -74,8 +79,9 @@ public class GuiBookCode extends GuiScreen {
         guiY = 2;
 
         // Buttons for next / previous page of pages.
-        buttonList.add(buttonPreviousPage = new PageChangeButton(ID_BUTTON_PAGE_PREV, guiX + BUTTON_PAGE_CHANGE_PREV_X, guiY + BUTTON_PAGE_CHANGE_Y, PageChangeType.Previous));
-        buttonList.add(buttonNextPage = new PageChangeButton(ID_BUTTON_PAGE_NEXT, guiX + BUTTON_PAGE_CHANGE_NEXT_X, guiY + BUTTON_PAGE_CHANGE_Y, PageChangeType.Next));
+        buttonList.add(buttonPreviousPage = new ButtonChangePage(ID_BUTTON_PAGE_PREV, guiX + BUTTON_PAGE_CHANGE_PREV_X, guiY + BUTTON_PAGE_CHANGE_Y, PageChangeType.Previous));
+        buttonList.add(buttonNextPage = new ButtonChangePage(ID_BUTTON_PAGE_NEXT, guiX + BUTTON_PAGE_CHANGE_NEXT_X, guiY + BUTTON_PAGE_CHANGE_Y, PageChangeType.Next));
+        buttonList.add(buttonDeletePage = new ButtonDeletePage(ID_BUTTON_PAGE_DELETE, guiX + BUTTON_PAGE_DELETE_X, guiY + BUTTON_PAGE_DELETE_Y));
 
         Keyboard.enableRepeatEvents(true);
     }
@@ -122,18 +128,22 @@ public class GuiBookCode extends GuiScreen {
     protected void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) {
         super.mouseClicked(mouseX, mouseY, mouseButton);
 
-        final int line = cursorToLine(mouseY);
-        final int column = cursorToColumn(mouseX + 2, mouseY);
-        selectionStart = selectionEnd = positionToIndex(line, column);
+        if (isInCodeArea(mouseX, mouseY)) {
+            final int line = cursorToLine(mouseY);
+            final int column = cursorToColumn(mouseX + 2, mouseY);
+            selectionStart = selectionEnd = positionToIndex(line, column);
+        }
     }
 
     @Override
     protected void mouseClickMove(final int mouseX, final int mouseY, final int clickedMouseButton, final long timeSinceLastClick) {
         super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
 
-        final int line = cursorToLine(mouseY);
-        final int column = cursorToColumn(mouseX + 2, mouseY);
-        selectionEnd = positionToIndex(line, column);
+        if (isInCodeArea(mouseX, mouseY)) {
+            final int line = cursorToLine(mouseY);
+            final int column = cursorToColumn(mouseX + 2, mouseY);
+            selectionEnd = positionToIndex(line, column);
+        }
     }
 
     @Override
@@ -218,7 +228,7 @@ public class GuiBookCode extends GuiScreen {
                     final StringBuilder currLine = lines.get(line);
                     final StringBuilder nextLine = lines.get(line + 1);
 
-                    if (currLine.length() + nextLine.length() < MAX_COLUMNS) {
+                    if (currLine.length() + nextLine.length() < Settings.maxColumnsPerLine) {
                         currLine.append(nextLine);
                         lines.remove(line + 1);
                     }
@@ -234,7 +244,7 @@ public class GuiBookCode extends GuiScreen {
                     final StringBuilder prevLine = lines.get(line - 1);
                     final StringBuilder currLine = lines.get(line);
 
-                    if (prevLine.length() + currLine.length() < MAX_COLUMNS) {
+                    if (prevLine.length() + currLine.length() < Settings.maxColumnsPerLine) {
                         prevLine.append(currLine);
                         lines.remove(line);
                     }
@@ -246,7 +256,7 @@ public class GuiBookCode extends GuiScreen {
             recompile();
         } else if (keyCode == Keyboard.KEY_RETURN) {
             deleteSelection();
-            if (lines.size() < MAX_LINES) {
+            if (lines.size() < Settings.maxLinesPerProgram) {
                 final StringBuilder oldLine = lines.get(line);
                 final StringBuilder newLine = new StringBuilder();
                 if (column < oldLine.length()) {
@@ -260,10 +270,12 @@ public class GuiBookCode extends GuiScreen {
 
             recompile();
         } else if (isCtrlKeyDown()) {
-            if (keyCode == Keyboard.KEY_C) {
+            if (keyCode == Keyboard.KEY_A) {
+                selectionStart = 0;
+                selectionEnd = positionToIndex(Integer.MAX_VALUE, Integer.MAX_VALUE);
+            } else if (keyCode == Keyboard.KEY_C) {
                 setClipboardString(selectionToString());
-            }
-            if (keyCode == Keyboard.KEY_X) {
+            } else if (keyCode == Keyboard.KEY_X) {
                 setClipboardString(selectionToString());
                 deleteSelection();
 
@@ -290,7 +302,7 @@ public class GuiBookCode extends GuiScreen {
 
                 recompile();
             }
-        } else if (!Character.isISOControl(typedChar) && lines.get(line).length() < MAX_COLUMNS) {
+        } else if (!Character.isISOControl(typedChar) && lines.get(line).length() < Settings.maxColumnsPerLine) {
             deleteSelection();
             lines.get(line).insert(column, String.valueOf(typedChar).toUpperCase());
             selectionStart = selectionEnd = selectionEnd + 1;
@@ -305,6 +317,9 @@ public class GuiBookCode extends GuiScreen {
             changePage(1);
         } else if (button == buttonPreviousPage) {
             changePage(-1);
+        } else if (button == buttonDeletePage) {
+            data.removeProgram(data.getSelectedProgram());
+            rebuildLines();
         }
     }
 
@@ -351,7 +366,7 @@ public class GuiBookCode extends GuiScreen {
     }
 
     private int cursorToLine(final int y) {
-        return Math.max(0, Math.min(Math.min(lines.size() - 1, MAX_LINES), (y - guiY - CODE_POS_Y) / fontRendererObj.FONT_HEIGHT));
+        return Math.max(0, Math.min(Math.min(lines.size() - 1, Settings.maxLinesPerProgram), (y - guiY - CODE_POS_Y) / fontRendererObj.FONT_HEIGHT));
     }
 
     private int cursorToColumn(final int x, final int y) {
@@ -369,10 +384,10 @@ public class GuiBookCode extends GuiScreen {
 
     private int positionToIndex(final int line, final int column) {
         int index = 0;
-        for (int l = 0; l < line; l++) {
+        for (int l = 0; l < Math.min(line, lines.size()); l++) {
             index += lines.get(l).length() + 1;
         }
-        index += column;
+        index += Math.min(column, lines.get(Math.min(line, lines.size() - 1)).length());
         return index;
     }
 
@@ -396,6 +411,11 @@ public class GuiBookCode extends GuiScreen {
             position += line.length() + 1;
         }
         return lines.get(lines.size() - 1).length(); // Out of bounds, clamp.
+    }
+
+    private boolean isInCodeArea(final int mouseX, final int mouseY) {
+        return mouseX >= guiX + CODE_POS_X - CODE_MARGIN && mouseX <= guiX + CODE_POS_X + CODE_WIDTH + CODE_MARGIN &&
+                mouseY >= guiY + CODE_POS_Y - CODE_MARGIN && mouseY <= guiY + CODE_POS_Y + fontRendererObj.FONT_HEIGHT * Settings.maxLinesPerProgram + CODE_MARGIN;
     }
 
     private boolean isCurrentProgramNonEmpty() {
@@ -445,17 +465,18 @@ public class GuiBookCode extends GuiScreen {
         if (pastedLines.length == 0) {
             return false; // Invalid paste, nothing to paste (this shouldn't even be possible).
         }
-        if (pastedLines.length - 1 + lines.size() > MAX_LINES) {
+        if (pastedLines.length - 1 + lines.size() > Settings.maxLinesPerProgram) {
             return false; // Invalid paste, too many resulting lines.
         }
-        if (pastedLines[0].length() + lines.get(selectedLine).length() > MAX_COLUMNS) {
+        if (pastedLines[0].length() + lines.get(selectedLine).length() > Settings.maxColumnsPerLine) {
             return false; // Invalid paste, combined first line and current line too long.
         }
         for (final String pastedLine : pastedLines) {
-            if (pastedLine.length() > MAX_COLUMNS) {
+            if (pastedLine.length() > Settings.maxColumnsPerLine) {
                 return false; // Invalid paste, a line is too long.
             }
         }
+
 
         return true;
     }
@@ -467,6 +488,7 @@ public class GuiBookCode extends GuiScreen {
             data.addProgram(Collections.singletonList(""));
         }
         data.setSelectedProgram(data.getSelectedProgram() + delta);
+        selectionStart = selectionEnd = 0;
 
         rebuildLines();
     }
@@ -564,13 +586,20 @@ public class GuiBookCode extends GuiScreen {
 
     // --------------------------------------------------------------------- //
 
-    private class PageChangeButton extends GuiButton {
-        private final static int BUTTON_WIDTH = 23;
-        private final static int BUTTON_HEIGHT = 12;
+    private enum PageChangeType {
+        Previous,
+        Next
+    }
+
+    private class ButtonChangePage extends GuiButton {
+        private static final int TEXTURE_X = 110;
+        private static final int TEXTURE_Y = 231;
+        private static final int BUTTON_WIDTH = 23;
+        private static final int BUTTON_HEIGHT = 12;
 
         private final PageChangeType type;
 
-        public PageChangeButton(final int buttonId, final int x, final int y, final PageChangeType type) {
+        public ButtonChangePage(final int buttonId, final int x, final int y, final PageChangeType type) {
             super(buttonId, x, y, BUTTON_WIDTH, BUTTON_HEIGHT, "");
             this.type = type;
         }
@@ -584,18 +613,33 @@ public class GuiBookCode extends GuiScreen {
             final boolean isHovered = mouseX >= xPosition && mouseY >= yPosition && mouseX < xPosition + width && mouseY < yPosition + height;
             GL11.glColor4f(1, 1, 1, 1);
             mc.getTextureManager().bindTexture(LOCATION_BACKGROUND);
-            final int baseX = 110;
-            final int baseY = 231;
-            final int hoverOffsetX = isHovered ? BUTTON_WIDTH : 0;
-            final int typeOffsetY = type == PageChangeType.Previous ? BUTTON_HEIGHT : 0;
-            final int x = baseX + hoverOffsetX;
-            final int y = baseY + typeOffsetY;
-            drawTexturedModalRect(xPosition, yPosition, x, y, BUTTON_WIDTH, BUTTON_HEIGHT);
+            final int offsetX = isHovered ? BUTTON_WIDTH : 0;
+            final int offsetY = type == PageChangeType.Previous ? BUTTON_HEIGHT : 0;
+            drawTexturedModalRect(xPosition, yPosition, TEXTURE_X + offsetX, TEXTURE_Y + offsetY, BUTTON_WIDTH, BUTTON_HEIGHT);
         }
     }
 
-    private enum PageChangeType {
-        Previous,
-        Next
+    private class ButtonDeletePage extends GuiButton {
+        private static final int TEXTURE_X = 158;
+        private static final int TEXTURE_Y = 231;
+        private static final int BUTTON_WIDTH = 14;
+        private static final int BUTTON_HEIGHT = 14;
+
+        public ButtonDeletePage(final int buttonId, final int x, final int y) {
+            super(buttonId, x, y, BUTTON_WIDTH, BUTTON_HEIGHT, "");
+        }
+
+        @Override
+        public void drawButton(final Minecraft minecraft, final int mouseX, final int mouseY) {
+            if (!visible) {
+                return;
+            }
+
+            final boolean isHovered = mouseX >= xPosition && mouseY >= yPosition && mouseX < xPosition + width && mouseY < yPosition + height;
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            mc.getTextureManager().bindTexture(LOCATION_BACKGROUND);
+            final int offsetX = isHovered ? BUTTON_WIDTH : 0;
+            drawTexturedModalRect(xPosition, yPosition, TEXTURE_X + offsetX, TEXTURE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+        }
     }
 }
