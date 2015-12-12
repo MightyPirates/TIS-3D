@@ -302,10 +302,13 @@ public class GuiBookCode extends GuiScreen {
 
                 recompile();
             }
-        } else if (!Character.isISOControl(typedChar) && lines.get(line).length() < Settings.maxColumnsPerLine) {
+        } else if (!Character.isISOControl(typedChar)) {
             deleteSelection();
-            lines.get(line).insert(column, String.valueOf(typedChar).toUpperCase());
-            selectionStart = selectionEnd = selectionEnd + 1;
+
+            if (lines.get(line).length() < Settings.maxColumnsPerLine) {
+                lines.get(line).insert(column, String.valueOf(typedChar).toUpperCase());
+                selectionStart = selectionEnd = selectionEnd + 1;
+            }
 
             recompile();
         }

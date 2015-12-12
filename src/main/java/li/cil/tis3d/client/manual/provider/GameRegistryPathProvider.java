@@ -18,12 +18,12 @@ public class GameRegistryPathProvider implements PathProvider {
             if (block != null) {
                 final String modId = new ResourceLocation(GameData.getBlockRegistry().getNameForObject(block)).getResourceDomain();
                 if (API.MOD_ID.equals(modId)) {
-                    return "%LANGUAGE%/block/" + block.getUnlocalizedName().replaceFirst("^tile\\.", "") + ".md";
+                    return "%LANGUAGE%/block/" + block.getUnlocalizedName().replaceFirst("^tile\\.tis3d\\.", "") + ".md";
                 }
             } else {
                 final String modId = new ResourceLocation(GameData.getItemRegistry().getNameForObject(item)).getResourceDomain();
                 if (API.MOD_ID.equals(modId)) {
-                    return "%LANGUAGE%/item/" + item.getUnlocalizedName().replaceFirst("^item\\.", "") + ".md";
+                    return "%LANGUAGE%/item/" + item.getUnlocalizedName().replaceFirst("^item\\.tis3d\\.", "") + ".md";
                 }
             }
         }
@@ -36,7 +36,7 @@ public class GameRegistryPathProvider implements PathProvider {
             final Block block = world.getBlock(x, y, z);
             final String modId = new ResourceLocation(GameData.getBlockRegistry().getNameForObject(block)).getResourceDomain();
             if (API.MOD_ID.equals(modId)) {
-                return "%LANGUAGE%/block/" + block.getUnlocalizedName().replaceFirst("^tile\\.", "") + ".md";
+                return "%LANGUAGE%/block/" + block.getUnlocalizedName().replaceFirst("^tile\\.tis3d\\.", "") + ".md";
             }
         }
         return null;
