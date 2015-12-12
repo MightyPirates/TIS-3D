@@ -13,22 +13,22 @@ A TIS-3D computer, and in extension the execution module, supports a value range
 
 ## Targets
 `ACC`
-Register.
+Register. This is the primary register of an execution module. Arithmetic operations will usually store their result in this register.
 
 `BAK`
-Non-addressable register.
+Non-addressable register. Special register that can be used to store a value from `ACC`. It cannot be addressed directly, but must instead be accessed using the `SAV` and `SWP` instructions.
 
 `NIL`
-Virtual register.
+Virtual register. This is a pseudo-target that may be written to to dispose values, or read from to produce zero values.
 
 `LEFT`, `RIGHT`, `UP`, `DOWN`
-Port.
+Port. These represent the four ports of the execution module. Operation on the external ports is generally slower than operating on internal registers.
 
 `ANY`
-Virtual port.
+Virtual port. This is a pseudo-target that will perform an operation on all ports simultaneously, but will only actually perform an operation on the first port to finish the operation. For example, `MOV 10 ANY` will begin writing the value 10 to all ports, but as soon as it was read from one port, it can no longer be read from all other ports; the write operation on all ports will effectively be canceled after one succeeded.
 
 `LAST`
-Virtual port.
+Virtual port. This is a pseudo-target that will store the *actual* port that finished the last operation that used the `ANY` pseudo-target.
 
 ## Language Specification
 In addition to a list of instructions, assembler code provided to an execution module may contain metadata. Comments are textual notes in the code that are completely ignored in the execution of the program. Labels mark positions in the code that can be addressed by jump instructions. Comments, labels and blank lines have no influence on the addressing of the compiled program. This is relevant when using the `JRO` instruction.

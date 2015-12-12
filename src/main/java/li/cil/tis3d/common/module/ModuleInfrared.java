@@ -11,6 +11,7 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.AbstractModule;
 import li.cil.tis3d.client.render.TextureLoader;
+import li.cil.tis3d.common.Settings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -35,13 +36,6 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
 
     // --------------------------------------------------------------------- //
     // Computed data
-
-    /**
-     * Maximum number of items stored in our receiver queue.
-     * <p>
-     * If the queue runs full, additionally received packets will be dropped.
-     */
-    public static final int MAX_QUEUE_LENGTH = 16;
 
     // NBT tag names.
     private static final String TAG_RECEIVE_QUEUE = "receiveQueue";
@@ -143,7 +137,7 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
         }
 
         final int value = packet.getPacketValue();
-        if (receiveQueue.size() < MAX_QUEUE_LENGTH) {
+        if (receiveQueue.size() < Settings.maxInfraredQueueLength) {
             receiveQueue.addLast(value);
         }
     }

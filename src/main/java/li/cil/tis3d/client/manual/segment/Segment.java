@@ -10,11 +10,15 @@ public interface Segment {
      * Parent segment, i.e. the segment this segment was refined from.
      * Each line starts as a TextSegment that is refined based into segments
      * based on the handled formatting rules / patterns.
+     *
+     * @return the parent segment.
      */
     Segment parent();
 
     /**
      * The root segment, i.e. the original parent of this segment.
+     *
+     * @return the root segment.
      */
     Segment root();
 

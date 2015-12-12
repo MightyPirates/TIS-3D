@@ -31,7 +31,7 @@ public final class GuiManual extends GuiScreen {
     private static final int tabPosY = 40;
     private static final int tabWidth = 64;
     private static final int tabHeight = 32;
-    private static final int tabOverlap = 12;
+    private static final int tabOverlap = 8;
     private static final int maxTabsPerSide = 7;
     private static final int windowWidth = 256;
     private static final int windowHeight = 256;
@@ -52,50 +52,10 @@ public final class GuiManual extends GuiScreen {
 
     private ImageButton scrollButton = null;
 
-    private boolean canScroll() {
-        return maxOffset() > 0;
-    }
-
-    private int offset() {
-        return ManualAPIImpl.peekOffset();
-    }
-
-    private int maxOffset() {
-        return documentHeight - documentMaxHeight;
-    }
-
-    private void refreshPage() {
-        final Iterable<String> content = ManualAPI.contentFor(ManualAPIImpl.peekPath());
-        document = Document.parse(content != null ? content : Collections.singletonList("Document not found: " + ManualAPIImpl.peekPath()));
-        documentHeight = Document.height(document, documentMaxWidth, fontRendererObj);
-        scrollTo(offset());
-    }
-
     public void pushPage(final String path) {
         if (!ManualAPIImpl.peekPath().equals(path)) {
             ManualAPIImpl.pushPath(path);
             refreshPage();
-        }
-    }
-
-    private void popPage() {
-        if (ManualAPIImpl.getHistorySize() > 1) {
-            ManualAPIImpl.popPath();
-            refreshPage();
-        } else {
-            Minecraft.getMinecraft().thePlayer.closeScreen();
-        }
-    }
-
-    @Override
-    public boolean doesGuiPauseGame() {
-        return false;
-    }
-
-    @Override
-    protected void actionPerformed(final GuiButton button) {
-        if (button.id >= 0 && button.id < ManualAPIImpl.getTabs().size()) {
-            ManualAPI.navigate(ManualAPIImpl.getTabs().get(button.id).path);
         }
     }
 
@@ -141,7 +101,7 @@ public final class GuiManual extends GuiScreen {
             final ManualAPIImpl.Tab tab = ManualAPIImpl.getTabs().get(i);
             final ImageButton button = (ImageButton) buttonList.get(i);
             GL11.glPushMatrix();
-            GL11.glTranslated(button.xPosition + 30, button.yPosition + 8 - tabOverlap / 2, zLevel);
+            GL11.glTranslated(button.xPosition + 30, button.yPosition + 4 - tabOverlap / 2, zLevel);
             tab.renderer.render();
             GL11.glPopMatrix();
         }
@@ -216,6 +176,48 @@ public final class GuiManual extends GuiScreen {
         super.mouseMovedOrUp(mouseX, mouseY, button);
         if (button == 0) {
             isDragging = false;
+        }
+    }
+
+    @Override
+    protected void actionPerformed(final GuiButton button) {
+        if (button.id >= 0 && button.id < ManualAPIImpl.getTabs().size()) {
+            ManualAPI.navigate(ManualAPIImpl.getTabs().get(button.id).path);
+        }
+    }
+
+    @Override
+    public boolean doesGuiPauseGame() {
+        return false;
+    }
+
+    // --------------------------------------------------------------------- //
+
+    private boolean canScroll() {
+        return maxOffset() > 0;
+    }
+
+    private int offset() {
+        return ManualAPIImpl.peekOffset();
+    }
+
+    private int maxOffset() {
+        return documentHeight - documentMaxHeight;
+    }
+
+    private void refreshPage() {
+        final Iterable<String> content = ManualAPI.contentFor(ManualAPIImpl.peekPath());
+        document = Document.parse(content != null ? content : Collections.singletonList("Document not found: " + ManualAPIImpl.peekPath()));
+        documentHeight = Document.height(document, documentMaxWidth, fontRendererObj);
+        scrollTo(offset());
+    }
+
+    private void popPage() {
+        if (ManualAPIImpl.getHistorySize() > 1) {
+            ManualAPIImpl.popPath();
+            refreshPage();
+        } else {
+            Minecraft.getMinecraft().thePlayer.closeScreen();
         }
     }
 

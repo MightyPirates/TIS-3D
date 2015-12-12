@@ -75,7 +75,7 @@ public final class MessageParticleEffect implements IMessage {
             buffer.writeDouble(y);
             buffer.writeDouble(z);
         } catch (final IOException e) {
-            TIS3D.getLog().warn("Invalid packet received.", e);
+            TIS3D.getLog().warn("Failed sending packet.", e);
         }
     }
 }

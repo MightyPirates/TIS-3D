@@ -6,8 +6,10 @@ import cpw.mods.fml.relauncher.Side;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.client.network.handler.MessageHandlerCasingState;
 import li.cil.tis3d.client.network.handler.MessageHandlerParticleEffects;
+import li.cil.tis3d.common.network.handler.MessageHandlerBookCodeData;
 import li.cil.tis3d.common.network.handler.MessageHandlerModuleData;
 import li.cil.tis3d.common.network.message.MessageCasingState;
+import li.cil.tis3d.common.network.message.MessageBookCodeData;
 import li.cil.tis3d.common.network.message.MessageModuleData;
 import li.cil.tis3d.common.network.message.MessageParticleEffect;
 import net.minecraft.tileentity.TileEntity;
@@ -29,6 +31,7 @@ public final class Network {
         wrapper.registerMessage(MessageHandlerModuleData.class, MessageModuleData.class, 2, Side.SERVER);
         wrapper.registerMessage(MessageHandlerParticleEffects.class, MessageParticleEffect.class, 3, Side.CLIENT);
         wrapper.registerMessage(MessageHandlerCasingState.class, MessageCasingState.class, 4, Side.CLIENT);
+        wrapper.registerMessage(MessageHandlerBookCodeData.class, MessageBookCodeData.class, 5, Side.SERVER);
     }
 
     public SimpleNetworkWrapper getWrapper() {

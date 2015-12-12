@@ -1,15 +1,18 @@
 package li.cil.tis3d.common.module;
 
-import com.google.common.base.Strings;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.FontRendererAPI;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.AbstractModuleRotatable;
 import li.cil.tis3d.client.render.TextureLoader;
+import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.TIS3D;
+import li.cil.tis3d.common.item.ItemBookCode;
 import li.cil.tis3d.common.module.execution.MachineImpl;
 import li.cil.tis3d.common.module.execution.MachineState;
 import li.cil.tis3d.common.module.execution.compiler.Compiler;
@@ -23,13 +26,16 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ChatComponentText;
-import net.minecraftforge.common.util.Constants;
 import org.lwjgl.opengl.GL11;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -67,7 +73,8 @@ public final class ModuleExecution extends AbstractModuleRotatable {
     private static final String TAG_COMPILE_ERROR = "compileError";
     private static final String TAG_MESSAGE = "message";
     private static final String TAG_LINE_NUMBER = "lineNumber";
-    private static final String TAG_COLUMN = "column";
+    private static final String TAG_START = "columnStart";
+    private static final String TAG_END = "columnEnd";
     private static final String TAG_PC = MachineState.TAG_PC;
     private static final String TAG_ACC = MachineState.TAG_ACC;
     private static final String TAG_BAK = MachineState.TAG_BAK;
@@ -78,6 +85,10 @@ public final class ModuleExecution extends AbstractModuleRotatable {
     public ModuleExecution(final Casing casing, final Face face) {
         super(casing, face);
         machine = new MachineImpl(this, face);
+    }
+
+    public MachineState getState() {
+        return machine.getState();
     }
 
     // --------------------------------------------------------------------- //
@@ -134,17 +145,37 @@ public final class ModuleExecution extends AbstractModuleRotatable {
 
     @Override
     public boolean onActivate(final EntityPlayer player, final float hitX, final float hitY, final float hitZ) {
+        final ItemStack stack = player.getHeldItem();
+        if (stack != null) {
+            final Item item = stack.getItem();
+            if (item == Items.book) {
+                if (!player.getEntityWorld().isRemote) {
+                    if (!player.capabilities.isCreativeMode) {
+                        stack.splitStack(1);
+                    }
+                    final ItemStack bookCode = new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_BOOK_CODE));
+                    if (player.inventory.addItemStackToInventory(bookCode)) {
+                        player.inventoryContainer.detectAndSendChanges();
+                    }
+                    if (bookCode.stackSize > 0) {
+                        player.func_146097_a(bookCode, false, false);
+                    }
+                }
+                return true;
+            }
+        }
+
         if (player.isSneaking()) {
             return false;
         }
 
-        final ItemStack stack = player.getHeldItem();
-        if (!isCodeSource(stack)) {
+        final SourceCodeProvider provider = providerFor(stack);
+        if (provider == null) {
             return false;
         }
 
-        final String code = getSourceCode(stack);
-        if (Strings.isNullOrEmpty(code)) {
+        final Iterable<String> code = provider.codeFor(stack);
+        if (code == null || !code.iterator().hasNext()) {
             return true; // Handled, but does nothing.
         }
 
@@ -227,7 +258,7 @@ public final class ModuleExecution extends AbstractModuleRotatable {
 
         if (nbt.hasKey(TAG_COMPILE_ERROR)) {
             final NBTTagCompound errorNbt = nbt.getCompoundTag(TAG_COMPILE_ERROR);
-            compileError = new ParseException(errorNbt.getString(TAG_MESSAGE), errorNbt.getInteger(TAG_LINE_NUMBER), errorNbt.getInteger(TAG_COLUMN));
+            compileError = new ParseException(errorNbt.getString(TAG_MESSAGE), errorNbt.getInteger(TAG_LINE_NUMBER), errorNbt.getInteger(TAG_START), errorNbt.getInteger(TAG_END));
         }
     }
 
@@ -244,43 +275,13 @@ public final class ModuleExecution extends AbstractModuleRotatable {
             final NBTTagCompound errorNbt = new NBTTagCompound();
             errorNbt.setString(TAG_MESSAGE, compileError.getMessage());
             errorNbt.setInteger(TAG_LINE_NUMBER, compileError.getLineNumber());
-            errorNbt.setInteger(TAG_COLUMN, compileError.getColumn());
+            errorNbt.setInteger(TAG_START, compileError.getStart());
+            errorNbt.setInteger(TAG_END, compileError.getEnd());
             nbt.setTag(TAG_COMPILE_ERROR, errorNbt);
         }
     }
 
     // --------------------------------------------------------------------- //
-
-    private static boolean isCodeSource(final ItemStack stack) {
-        if (stack != null) {
-            if (stack.getItem() == Items.written_book) {
-                return true;
-            }
-            if (stack.getItem() == Items.writable_book) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private static String getSourceCode(final ItemStack stack) {
-        if (!stack.hasTagCompound()) {
-            return null;
-        }
-
-        final NBTTagCompound nbt = stack.getTagCompound();
-        final NBTTagList pages = nbt.getTagList("pages", Constants.NBT.TAG_STRING);
-        if (pages.tagCount() < 1) {
-            return null;
-        }
-
-        final StringBuilder code = new StringBuilder();
-        for (int page = 0; page < pages.tagCount(); page++) {
-            code.append(pages.getStringTagAt(page)).append('\n');
-        }
-        return code.toString();
-    }
 
     /**
      * Compile the specified lines of code, assuming this was issued by the
@@ -291,7 +292,11 @@ public final class ModuleExecution extends AbstractModuleRotatable {
      * @param code   the code to compile.
      * @param player the player that issued the compile, or <tt>null</tt>.
      */
-    private void compile(final String code, final EntityPlayer player) {
+    public void compile(final Iterable<String> code, final EntityPlayer player) {
+        if (getCasing().getCasingWorld().isRemote) {
+            return; // When called from ItemBookCode e.g.
+        }
+
         compileError = null;
         try {
             machine.getState().clear();
@@ -364,7 +369,7 @@ public final class ModuleExecution extends AbstractModuleRotatable {
             if (lineNumber == currentLine) {
                 if (state == State.WAIT) {
                     GL11.glColor3f(0.66f, 0.66f, 0.66f);
-                } else if (state == State.ERR) {
+                } else if (state == State.ERR || compileError != null && compileError.getLineNumber() == currentLine) {
                     GL11.glColor3f(1f, 0f, 0f);
                 }
 
@@ -401,5 +406,64 @@ public final class ModuleExecution extends AbstractModuleRotatable {
 
         GL11.glDepthMask(true);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
+    }
+
+    // --------------------------------------------------------------------- //
+
+    private interface SourceCodeProvider {
+        boolean worksFor(ItemStack stack);
+
+        Iterable<String> codeFor(ItemStack stack);
+    }
+
+    private static final class SourceCodeProviderVanilla implements SourceCodeProvider {
+        @Override
+        public boolean worksFor(final ItemStack stack) {
+            return (stack.getItem() == Items.written_book) || (stack.getItem() == Items.writable_book);
+        }
+
+        @Override
+        public Iterable<String> codeFor(final ItemStack stack) {
+            if (!stack.hasTagCompound()) {
+                return null;
+            }
+
+            final NBTTagCompound nbt = stack.getTagCompound();
+            final NBTTagList pages = nbt.getTagList("pages", net.minecraftforge.common.util.Constants.NBT.TAG_STRING);
+            if (pages.tagCount() < 1) {
+                return null;
+            }
+
+            final List<String> code = new ArrayList<>();
+            for (int page = 0; page < pages.tagCount(); page++) {
+                code.add(pages.getStringTagAt(page));
+            }
+            return code;
+        }
+    }
+
+    private static final class SourceCodeProviderBookCode implements SourceCodeProvider {
+        @Override
+        public boolean worksFor(final ItemStack stack) {
+            return stack.getItem() == GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_BOOK_CODE);
+        }
+
+        @Override
+        public Iterable<String> codeFor(final ItemStack stack) {
+            final ItemBookCode.Data data = ItemBookCode.Data.loadFromStack(stack);
+            return data.getProgram(data.getSelectedProgram());
+        }
+    }
+
+    private static final List<SourceCodeProvider> providers = new ArrayList<>(Arrays.asList(
+            new SourceCodeProviderVanilla(),
+            new SourceCodeProviderBookCode()
+    ));
+
+    private static SourceCodeProvider providerFor(final ItemStack stack) {
+        if (stack != null) {
+            return providers.stream().filter(p -> p.worksFor(stack)).findFirst().orElse(null);
+        }
+        return null;
     }
 }

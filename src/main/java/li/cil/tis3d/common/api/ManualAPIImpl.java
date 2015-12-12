@@ -180,7 +180,7 @@ public final class ManualAPIImpl implements ManualAPI {
     @Override
     public void openFor(final EntityPlayer player) {
         if (player.getEntityWorld().isRemote) {
-            player.openGui(TIS3D.instance, GuiHandlerClient.ID_GUI_MANUAL, player.getEntityWorld(), 0, 0, 0);
+            player.openGui(TIS3D.instance, GuiHandlerClient.ID_GUI_BOOK_MANUAL, player.getEntityWorld(), 0, 0, 0);
         }
     }
 

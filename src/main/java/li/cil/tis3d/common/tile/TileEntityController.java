@@ -1,5 +1,6 @@
 package li.cil.tis3d.common.tile;
 
+import li.cil.tis3d.common.Settings;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.EnumFacing;
@@ -27,11 +28,6 @@ public final class TileEntityController extends TileEntity {
     // Computed data
 
     /**
-     * The maximum number of casings that may be connected to a controller.
-     */
-    public static final int MAX_CASINGS = 16;
-
-    /**
      * Possible states of a controller.
      */
     public enum ControllerState {
@@ -46,7 +42,7 @@ public final class TileEntityController extends TileEntity {
         MULTIPLE_CONTROLLERS,
 
         /**
-         * In the last scan more than {@link #MAX_CASINGS} casings were found.
+         * In the last scan more than {@link Settings#maxCasingsPerController} casings were found.
          */
         TOO_COMPLEX,
 
@@ -69,7 +65,7 @@ public final class TileEntityController extends TileEntity {
     /**
      * The list of casings managed by this controller.
      */
-    private final List<TileEntityCasing> casings = new ArrayList<>(MAX_CASINGS);
+    private final List<TileEntityCasing> casings = new ArrayList<>(Settings.maxCasingsPerController);
 
     /**
      * The current state of the controller.
@@ -252,7 +248,7 @@ public final class TileEntityController extends TileEntity {
                 }
             } else /* if (tileEntity instanceof TileEntityCasing) */ {
                 // We only allow a certain number of casings per multi-block.
-                if (casings.size() + 1 > MAX_CASINGS) {
+                if (casings.size() + 1 > Settings.maxCasingsPerController) {
                     clear(ControllerState.TOO_COMPLEX);
                     return;
                 }
