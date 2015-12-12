@@ -105,6 +105,7 @@ public class ProxyCommon {
 
     public void onInit(final FMLInitializationEvent event) {
         // Register Ore Dictionary entries.
+        OreDictionary.registerOre("book", GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_BOOK_CODE));
         OreDictionary.registerOre("book", GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_BOOK_MANUAL));
 
         OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_EXECUTION));

@@ -85,7 +85,7 @@ public class GuiBookCode extends GuiScreen {
         super.onGuiClosed();
 
         // Write changes back to our data tag.
-        data.setProgram(data.getSelectedProgram(), lines.stream().map(StringBuilder::toString).collect(Collectors.toList()));
+        saveProgram();
 
         // Save any changes made and send them to the server.
         final NBTTagCompound nbt = new NBTTagCompound();
@@ -461,11 +461,18 @@ public class GuiBookCode extends GuiScreen {
     }
 
     private void changePage(final int delta) {
+        saveProgram();
+
         if (data.getSelectedProgram() + delta == data.getProgramCount()) {
             data.addProgram(Collections.singletonList(""));
         }
         data.setSelectedProgram(data.getSelectedProgram() + delta);
+
         rebuildLines();
+    }
+
+    private void saveProgram() {
+        data.setProgram(data.getSelectedProgram(), lines.stream().map(StringBuilder::toString).collect(Collectors.toList()));
     }
 
     private void rebuildLines() {
