@@ -133,7 +133,7 @@ public final class Document {
         // Clear depth mask, then create masks in foreground above and below scroll area.
         GL11.glColor4f(1, 1, 1, 1);
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
-        GL11.glEnable(GL11.GL_DEPTH);
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glDepthFunc(GL11.GL_LEQUAL);
         GL11.glDepthMask(true);
         GL11.glColorMask(false, false, false, false);

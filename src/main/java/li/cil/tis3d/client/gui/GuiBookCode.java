@@ -636,7 +636,7 @@ public class GuiBookCode extends GuiScreen {
             }
 
             final boolean isHovered = mouseX >= xPosition && mouseY >= yPosition && mouseX < xPosition + width && mouseY < yPosition + height;
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            GL11.glColor4f(1, 1, 1, 1);
             mc.getTextureManager().bindTexture(LOCATION_BACKGROUND);
             final int offsetX = isHovered ? BUTTON_WIDTH : 0;
             drawTexturedModalRect(xPosition, yPosition, TEXTURE_X + offsetX, TEXTURE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
