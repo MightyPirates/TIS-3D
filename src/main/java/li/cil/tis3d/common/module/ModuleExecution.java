@@ -6,6 +6,7 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.AbstractModuleRotatable;
+import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.render.TextureLoader;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.TIS3D;
@@ -234,7 +235,7 @@ public final class ModuleExecution extends AbstractModuleRotatable {
         if (state != State.IDLE) {
             Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
             final TextureAtlasSprite icon = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(STATE_LOCATIONS[state.ordinal()]);
-            drawQuad(icon.getMinU(), icon.getMinV(), icon.getMaxU(), icon.getMaxV());
+            RenderUtil.drawQuad(icon.getMinU(), icon.getMinV(), icon.getMaxU(), icon.getMaxV());
         }
 
         // Render detailed state when player is close.

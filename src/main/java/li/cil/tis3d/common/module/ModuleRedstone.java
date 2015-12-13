@@ -7,6 +7,7 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Redstone;
 import li.cil.tis3d.api.prefab.AbstractModuleRotatable;
+import li.cil.tis3d.api.util.RenderUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRedstoneWire;
 import net.minecraft.block.state.IBlockState;
@@ -124,22 +125,22 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
         RenderHelper.disableStandardItemLighting();
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 0 / 1.0F);
 
-        bindTexture(LOCATION_OVERLAY);
+        RenderUtil.bindTexture(LOCATION_OVERLAY);
 
         // Draw base overlay.
-        drawQuad(0, 0, 1, 0.5f);
+        RenderUtil.drawQuad(0, 0, 1, 0.5f);
 
         // Draw output bar.
         final float relativeOutput = output / 15f;
         final float heightOutput = relativeOutput * SHARED_H;
         final float v0Output = SHARED_V1 - heightOutput;
-        drawQuad(LEFT_U0, (v0Output - 0.5f) * 2f, SHARED_W, heightOutput * 2, LEFT_U0, v0Output, LEFT_U1, SHARED_V1);
+        RenderUtil.drawQuad(LEFT_U0, (v0Output - 0.5f) * 2f, SHARED_W, heightOutput * 2, LEFT_U0, v0Output, LEFT_U1, SHARED_V1);
 
         // Draw input bar.
         final float relativeInput = input / 15f;
         final float heightInput = relativeInput * SHARED_H;
         final float v0Input = SHARED_V1 - heightInput;
-        drawQuad(RIGHT_U0, (v0Input - 0.5f) * 2f, SHARED_W, heightInput * 2, RIGHT_U0, v0Input, RIGHT_U1, SHARED_V1);
+        RenderUtil.drawQuad(RIGHT_U0, (v0Input - 0.5f) * 2f, SHARED_W, heightInput * 2, RIGHT_U0, v0Input, RIGHT_U1, SHARED_V1);
 
         RenderHelper.enableStandardItemLighting();
     }

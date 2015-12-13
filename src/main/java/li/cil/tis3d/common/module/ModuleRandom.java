@@ -5,6 +5,7 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.AbstractModule;
+import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.render.TextureLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -54,7 +55,7 @@ public final class ModuleRandom extends AbstractModule {
 
         Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
         final TextureAtlasSprite icon = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(TextureLoader.LOCATION_MODULE_RANDOM_OVERLAY.toString());
-        drawQuad(icon.getMinU(), icon.getMinV(), icon.getMaxU(), icon.getMaxV());
+        RenderUtil.drawQuad(icon.getMinU(), icon.getMinV(), icon.getMaxU(), icon.getMaxV());
 
         GlStateManager.disableBlend();
         RenderHelper.enableStandardItemLighting();

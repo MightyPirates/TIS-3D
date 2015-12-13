@@ -7,6 +7,7 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.AbstractModuleRotatable;
+import li.cil.tis3d.api.util.RenderUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -97,10 +98,10 @@ public final class ModuleStack extends AbstractModuleRotatable {
         RenderHelper.disableStandardItemLighting();
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 0 / 1.0F);
 
-        bindTexture(LOCATION_OVERLAY);
+        RenderUtil.bindTexture(LOCATION_OVERLAY);
 
         // Draw base overlay.
-        drawQuad();
+        RenderUtil.drawQuad();
 
         // Render detailed state when player is close.
         if (!isEmpty() && Minecraft.getMinecraft().thePlayer.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
