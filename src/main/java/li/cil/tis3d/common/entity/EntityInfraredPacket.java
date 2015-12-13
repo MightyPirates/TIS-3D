@@ -34,13 +34,13 @@ public class EntityInfraredPacket extends Entity implements InfraredPacket {
      * <p>
      * Don't ask. This is Minecraft.
      */
-    private final static float TRAVEL_SPEED = 4f;
+    private final static float TRAVEL_SPEED = 24f;
 
     /**
      * The default lifetime of a packet, in ticks, implicitly controlling how
      * far packets travel (that being <tt>TRAVEL_SPEED * DEFAULT_LIFETIME</tt>).
      */
-    private static final int DEFAULT_LIFETIME = 10;
+    private static final int DEFAULT_LIFETIME = 2;
 
     // NBT tag names.
     private static final String TAG_VALUE = "value";
@@ -94,7 +94,7 @@ public class EntityInfraredPacket extends Entity implements InfraredPacket {
      * Called from our watchdog each server tick to update our lifetime.
      */
     public void updateLifetime() {
-        if (--lifetime < 1) {
+        if (lifetime-- < 1) {
             setDead();
         }
     }
@@ -150,11 +150,11 @@ public class EntityInfraredPacket extends Entity implements InfraredPacket {
         // Do general update logic.
         super.onEntityUpdate();
 
-        // Emit some particles.
-        emitParticles();
-
         // Check for collisions and handle them.
-        checkCollisions();
+        final MovingObjectPosition hit = checkCollisions();
+
+        // Emit some particles.
+        emitParticles(hit);
 
         // Update position.
         posX += motionX;
@@ -244,7 +244,7 @@ public class EntityInfraredPacket extends Entity implements InfraredPacket {
 
     // --------------------------------------------------------------------- //
 
-    private void emitParticles() {
+    private void emitParticles(final MovingObjectPosition hit) {
         final World world = worldObj;
         if (world.isRemote) {
             // Entities regularly die too quickly for the client to have a
@@ -255,16 +255,27 @@ public class EntityInfraredPacket extends Entity implements InfraredPacket {
 
         final double t = rand.nextDouble();
 
-        final double x = posX + motionX * t;
-        final double y = posY + motionY * t;
-        final double z = posZ + motionZ * t;
+        final double dx, dy, dz;
+        if (hit == null || hit.hitVec == null) {
+            dx = motionX;
+            dy = motionY;
+            dz = motionZ;
+        } else {
+            dx = hit.hitVec.xCoord - posX;
+            dy = hit.hitVec.yCoord - posY;
+            dz = hit.hitVec.zCoord - posZ;
+        }
+
+        final double x = posX + dx * t;
+        final double y = posY + dy * t;
+        final double z = posZ + dz * t;
 
         final MessageParticleEffect message = new MessageParticleEffect(world, "reddust", x, y, z);
         final NetworkRegistry.TargetPoint target = Network.getTargetPoint(world, x, y, z, Network.RANGE_LOW);
         Network.INSTANCE.getWrapper().sendToAllAround(message, target);
     }
 
-    private void checkCollisions() {
+    private MovingObjectPosition checkCollisions() {
         final MovingObjectPosition hit = checkCollision();
         if (hit != null) {
             // For travel distance adjustment, see below.
@@ -278,7 +289,7 @@ public class EntityInfraredPacket extends Entity implements InfraredPacket {
                     onEntityCollision(hit);
                     break;
                 default:
-                    return;
+                    return null;
             }
 
             // Offset to compensate position adjustments. This way the total
@@ -290,6 +301,7 @@ public class EntityInfraredPacket extends Entity implements InfraredPacket {
             posY -= motionY * delta;
             posZ -= motionZ * delta;
         }
+        return hit;
     }
 
     private MovingObjectPosition checkCollision() {
