@@ -79,7 +79,12 @@ public final class ProxyClient extends ProxyCommon {
 
 	private IItemRenderer getSimpleModuleRenderer() {
 		if(simpleModuleRenderer == null) {
-			simpleModuleRenderer = new SimpleModuleRenderer();
+			simpleModuleRenderer = new SimpleModuleRenderer(){
+				@Override
+				protected boolean shouldIgnoreLighting(ItemRenderType type, ItemStack item, Object... data) {
+					return true;
+				}
+			};
 		}
 		return simpleModuleRenderer;
 	}

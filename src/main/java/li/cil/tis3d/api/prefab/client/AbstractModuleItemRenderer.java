@@ -1,7 +1,5 @@
 package li.cil.tis3d.api.prefab.client;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -19,12 +17,19 @@ import org.lwjgl.opengl.GL11;
 /**
  * @author Sangar, Vexatos
  */
-public abstract class ModuleItemRenderer implements IItemRenderer {
+public abstract class AbstractModuleItemRenderer implements IItemRenderer {
 
 	public abstract IIcon getFrontIcon(ItemRenderType type, ItemStack item, Object... data);
 
 	protected ResourceLocation getTextureLocation(ItemRenderType type, ItemStack item, Object... data) {
-		return TextureMap.locationBlocksTexture;
+		return TextureMap.locationItemsTexture;
+	}
+
+	/**
+	 * @return <tt>true</tt> if the front texture should ignore lighting (in case you want your module to glow).
+	 */
+	protected boolean shouldIgnoreLighting(ItemRenderType type, ItemStack item, Object... data) {
+		return false;
 	}
 
 	protected String getModelPath() {
@@ -108,7 +113,9 @@ public abstract class ModuleItemRenderer implements IItemRenderer {
 		GL11.glRotatef(90, 0, -1, 0);
 		GL11.glTranslatef(1 / 16f, 1 / 16f, -0.5f - 1 / 4096f);
 		GL11.glScalef(14 / 16f, 14 / 16f, 14 / 16f);
-		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 0.0F);
+		if(shouldIgnoreLighting(type, item, data)) {
+			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 0.0F);
+		}
 		Minecraft.getMinecraft().getTextureManager().bindTexture(getTextureLocation(type, item, data));
 		IIcon icon = getFrontIcon(type, item, data);
 		if(icon != null) {
@@ -116,7 +123,6 @@ public abstract class ModuleItemRenderer implements IItemRenderer {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
 	protected static void drawQuad(float x, float y, float w, float h, float u0, float v0, float u1, float v1) {
 		Tessellator tessellator = Tessellator.instance;
 		tessellator.startDrawingQuads();
@@ -127,7 +133,6 @@ public abstract class ModuleItemRenderer implements IItemRenderer {
 		tessellator.draw();
 	}
 
-	@SideOnly(Side.CLIENT)
 	protected static void drawQuad(float u0, float v0, float u1, float v1) {
 		drawQuad(0.0F, 0.0F, 1.0F, 1.0F, u0, v0, u1, v1);
 	}
