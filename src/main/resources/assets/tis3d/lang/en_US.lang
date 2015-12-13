@@ -11,6 +11,16 @@ item.tis3d.moduleStack.name=Stack Module
 tile.tis3d.casing.name=Casing
 tile.tis3d.controller.name=Controller
 
+tis3d.compiler.tooManyLines=Too many lines
+tis3d.compiler.tooManyColumns=Line too long
+tis3d.compiler.invalidFormat=Unexpected token
+tis3d.compiler.invalidInstruction=Invalid opcode
+tis3d.compiler.parameterUnderflow=Missing operand
+tis3d.compiler.parameterInvalid=Invalid register
+tis3d.compiler.parameterOverflow=Too many operands
+tis3d.compiler.labelNotFound=Undefined label
+tis3d.compiler.labelDuplicate=Label is already defined
+
 tis3d.manual.home=Home
 tis3d.manual.blocks=Blocks
 tis3d.manual.items=Items

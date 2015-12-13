@@ -14,6 +14,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
@@ -569,7 +570,7 @@ public class GuiBookCode extends GuiScreen {
             final int endX = Math.max(columnToX(exception.getLineNumber(), exception.getEnd()), startX + fontRendererObj.getCharWidth(' '));
 
             if (mouseX >= startX && mouseX <= endX && mouseY >= startY && mouseY <= startY + fontRendererObj.FONT_HEIGHT) {
-                func_146283_a(Arrays.asList(ItemBookCode.Data.PATTERN_LINES.split(exception.getMessage())), mouseX, mouseY);
+                func_146283_a(Arrays.asList(ItemBookCode.Data.PATTERN_LINES.split(StatCollector.translateToLocal(exception.getMessage()))), mouseX, mouseY);
                 GL11.glDisable(GL11.GL_LIGHTING);
             }
         }
