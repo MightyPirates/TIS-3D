@@ -1,5 +1,7 @@
 package li.cil.tis3d.common.module.execution.compiler;
 
+import net.minecraft.util.StatCollector;
+
 /**
  * Thrown by the {@link Compiler} when the specified code contains errors.
  */
@@ -44,6 +46,6 @@ public final class ParseException extends Exception {
 
     @Override
     public String toString() {
-        return (lineNumber + 1) + ":" + (start + 1) + "-" + (end + 1) + ": " + getMessage();
+        return (lineNumber + 1) + ":" + (start + 1) + "-" + (end + 1) + ": " + StatCollector.translateToLocal(getMessage());
     }
 }
