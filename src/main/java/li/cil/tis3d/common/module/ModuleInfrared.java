@@ -10,6 +10,7 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.AbstractModule;
+import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.render.TextureLoader;
 import li.cil.tis3d.common.Settings;
 import net.minecraft.client.Minecraft;
@@ -97,7 +98,7 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
 
         Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
         final TextureAtlasSprite icon = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(TextureLoader.LOCATION_MODULE_INFRARED_OVERLAY.toString());
-        drawQuad(icon.getMinU(), icon.getMinV(), icon.getMaxU(), icon.getMaxV());
+        RenderUtil.drawQuad(icon.getMinU(), icon.getMinV(), icon.getMaxU(), icon.getMaxV());
 
         GL11.glDisable(GL11.GL_BLEND);
         RenderHelper.enableStandardItemLighting();
