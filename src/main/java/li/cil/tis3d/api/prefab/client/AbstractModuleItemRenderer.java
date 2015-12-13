@@ -69,7 +69,7 @@ public abstract class AbstractModuleItemRenderer implements IItemRenderer {
     /**
      * Get the icon representation of the texture to use as the overlay of the
      * module (specifying the texture coordinates on the texture location
-     * specified in {@link #getTextureLocation(ItemRenderType, ItemStack, Object...)}).
+     * specified in {@link #getTextureLocation}).
      *
      * @param type the current render type.
      * @param item the item stack of the module being rendered.
@@ -83,7 +83,10 @@ public abstract class AbstractModuleItemRenderer implements IItemRenderer {
      * i.e. whether it should be fully lit regardless of light conditions, effectively
      * making it glow.
      *
-     * @return <tt>true</tt> if the front texture should ignore lighting.
+     * @param type the current render type.
+     * @param item the item stack of the module being rendered.
+     * @param data additional data (unused).
+     * @return <tt>true</tt> if the overlay texture should ignore lighting.
      */
     protected boolean shouldIgnoreLighting(final ItemRenderType type, final ItemStack item, final Object... data) {
         return false;
