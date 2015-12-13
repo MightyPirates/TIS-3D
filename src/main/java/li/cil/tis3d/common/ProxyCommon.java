@@ -29,11 +29,16 @@ import li.cil.tis3d.common.provider.ModuleProviderRedstone;
 import li.cil.tis3d.common.provider.ModuleProviderStack;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import li.cil.tis3d.common.tile.TileEntityController;
+import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.oredict.OreDictionary;
+
+import java.util.function.Supplier;
 
 /**
  * Takes care of common setup.
@@ -41,6 +46,24 @@ import net.minecraftforge.oredict.OreDictionary;
 public class ProxyCommon {
     private int controllerRenderId;
     private int casingRenderId;
+
+    public int getControllerRenderId() {
+        return controllerRenderId;
+    }
+
+    public void setControllerRenderId(final int controllerRenderId) {
+        this.controllerRenderId = controllerRenderId;
+    }
+
+    public int getCasingRenderId() {
+        return casingRenderId;
+    }
+
+    public void setCasingRenderId(final int casingRenderId) {
+        this.casingRenderId = casingRenderId;
+    }
+
+    // --------------------------------------------------------------------- //
 
     public void onPreInit(final FMLPreInitializationEvent event) {
         // Initialize API.
@@ -52,56 +75,17 @@ public class ProxyCommon {
         API.moduleAPI = new ModuleAPIImpl();
 
         // Register blocks and items.
-        GameRegistry.registerBlock(new BlockCasing().
-                        setBlockName(API.MOD_ID + "." + Constants.NAME_BLOCK_CASING).
-                        setBlockTextureName(API.MOD_ID + ":" + Constants.NAME_BLOCK_CASING).
-                        setCreativeTab(API.creativeTab),
-                Constants.NAME_BLOCK_CASING);
-        GameRegistry.registerBlock(new BlockController().
-                        setBlockName(API.MOD_ID + "." + Constants.NAME_BLOCK_CONTROLLER).
-                        setBlockTextureName(API.MOD_ID + ":" + Constants.NAME_BLOCK_CONTROLLER).
-                        setCreativeTab(API.creativeTab),
-                Constants.NAME_BLOCK_CONTROLLER);
+        registerBlock(Constants.NAME_BLOCK_CASING, BlockCasing::new, TileEntityCasing.class);
+        registerBlock(Constants.NAME_BLOCK_CONTROLLER, BlockController::new, TileEntityController.class);
 
-        GameRegistry.registerTileEntity(TileEntityCasing.class, Constants.NAME_BLOCK_CASING);
-        GameRegistry.registerTileEntity(TileEntityController.class, Constants.NAME_BLOCK_CONTROLLER);
+        registerModule(Constants.NAME_ITEM_MODULE_EXECUTION);
+        registerModule(Constants.NAME_ITEM_MODULE_INFRARED);
+        registerModule(Constants.NAME_ITEM_MODULE_RANDOM);
+        registerModule(Constants.NAME_ITEM_MODULE_REDSTONE);
+        registerModule(Constants.NAME_ITEM_MODULE_STACK);
 
-        GameRegistry.registerItem(new ItemModule().
-                        setUnlocalizedName(API.MOD_ID + "." + Constants.NAME_ITEM_MODULE_EXECUTION).
-                        setTextureName(API.MOD_ID + ":" + Constants.NAME_ITEM_MODULE_EXECUTION).
-                        setCreativeTab(API.creativeTab),
-                Constants.NAME_ITEM_MODULE_EXECUTION);
-        GameRegistry.registerItem(new ItemModule().
-                        setUnlocalizedName(API.MOD_ID + "." + Constants.NAME_ITEM_MODULE_INFRARED).
-                        setTextureName(API.MOD_ID + ":" + Constants.NAME_ITEM_MODULE_INFRARED).
-                        setCreativeTab(API.creativeTab),
-                Constants.NAME_ITEM_MODULE_INFRARED);
-        GameRegistry.registerItem(new ItemModule().
-                        setUnlocalizedName(API.MOD_ID + "." + Constants.NAME_ITEM_MODULE_RANDOM).
-                        setTextureName(API.MOD_ID + ":" + Constants.NAME_ITEM_MODULE_RANDOM).
-                        setCreativeTab(API.creativeTab),
-                Constants.NAME_ITEM_MODULE_RANDOM);
-        GameRegistry.registerItem(new ItemModule().
-                        setUnlocalizedName(API.MOD_ID + "." + Constants.NAME_ITEM_MODULE_REDSTONE).
-                        setTextureName(API.MOD_ID + ":" + Constants.NAME_ITEM_MODULE_REDSTONE).
-                        setCreativeTab(API.creativeTab),
-                Constants.NAME_ITEM_MODULE_REDSTONE);
-        GameRegistry.registerItem(new ItemModule().
-                        setUnlocalizedName(API.MOD_ID + "." + Constants.NAME_ITEM_MODULE_STACK).
-                        setTextureName(API.MOD_ID + ":" + Constants.NAME_ITEM_MODULE_STACK).
-                        setCreativeTab(API.creativeTab),
-                Constants.NAME_ITEM_MODULE_STACK);
-
-        GameRegistry.registerItem(new ItemBookCode().
-                        setUnlocalizedName(API.MOD_ID + "." + Constants.NAME_ITEM_BOOK_CODE).
-                        setTextureName(API.MOD_ID + ":" + Constants.NAME_ITEM_BOOK_CODE).
-                        setCreativeTab(API.creativeTab),
-                Constants.NAME_ITEM_BOOK_CODE);
-        GameRegistry.registerItem(new ItemBookManual().
-                        setUnlocalizedName(API.MOD_ID + "." + Constants.NAME_ITEM_BOOK_MANUAL).
-                        setTextureName(API.MOD_ID + ":" + Constants.NAME_ITEM_BOOK_MANUAL).
-                        setCreativeTab(API.creativeTab),
-                Constants.NAME_ITEM_BOOK_MANUAL);
+        registerItem(Constants.NAME_ITEM_BOOK_CODE, ItemBookCode::new);
+        registerItem(Constants.NAME_ITEM_BOOK_MANUAL, ItemBookManual::new);
 
         Settings.load(event.getSuggestedConfigurationFile());
     }
@@ -195,19 +179,28 @@ public class ProxyCommon {
         ManualAPI.addProvider(new ResourceContentProvider("tis3d", "doc/"));
     }
 
-    public int getControllerRenderId() {
-        return controllerRenderId;
+    // --------------------------------------------------------------------- //
+
+    protected Block registerBlock(final String name, final Supplier<Block> constructor, final Class<? extends TileEntity> tileEntity) {
+        final Block block = constructor.get().
+                setBlockName(API.MOD_ID + "." + name).
+                setBlockTextureName(API.MOD_ID + ":" + name).
+                setCreativeTab(API.creativeTab);
+        GameRegistry.registerBlock(block, name);
+        GameRegistry.registerTileEntity(tileEntity, name);
+        return block;
     }
 
-    public void setControllerRenderId(final int controllerRenderId) {
-        this.controllerRenderId = controllerRenderId;
+    protected Item registerItem(final String name, final Supplier<Item> constructor) {
+        final Item item = constructor.get().
+                setUnlocalizedName(API.MOD_ID + "." + name).
+                setTextureName(API.MOD_ID + ":" + name).
+                setCreativeTab(API.creativeTab);
+        GameRegistry.registerItem(item, name);
+        return item;
     }
 
-    public int getCasingRenderId() {
-        return casingRenderId;
-    }
-
-    public void setCasingRenderId(final int casingRenderId) {
-        this.casingRenderId = casingRenderId;
+    protected Item registerModule(final String name) {
+        return registerItem(name, ItemModule::new);
     }
 }

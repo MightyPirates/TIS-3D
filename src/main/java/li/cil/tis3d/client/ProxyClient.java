@@ -35,7 +35,7 @@ public final class ProxyClient extends ProxyCommon {
     public void onPreInit(final FMLPreInitializationEvent event) {
         super.onPreInit(event);
 
-        // Set up custom models for our blocks.
+        // Set up OBJ loader for this mod.
         RenderingRegistry.registerBlockHandler(new ISBRHCasing());
         RenderingRegistry.registerBlockHandler(new ISBRHController());
 
