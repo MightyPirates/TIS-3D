@@ -1,5 +1,6 @@
 package li.cil.tis3d.common;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
@@ -35,7 +36,6 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.function.Supplier;
@@ -165,7 +165,7 @@ public class ProxyCommon {
         Network.INSTANCE.init();
 
         // Register event handlers.
-        MinecraftForge.EVENT_BUS.register(TickHandlerInfraredPacket.INSTANCE);
+        FMLCommonHandler.instance().bus().register(TickHandlerInfraredPacket.INSTANCE);
 
         // Register providers for built-in modules.
         ModuleAPI.addProvider(new ModuleProviderExecution());
