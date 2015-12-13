@@ -15,9 +15,11 @@ import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.ProxyCommon;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.tile.TileEntityCasing;
+import net.minecraft.block.Block;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.obj.OBJLoader;
@@ -28,6 +30,8 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
+import java.util.function.Supplier;
+
 /**
  * Takes care of client-side only setup.
  */
@@ -36,19 +40,8 @@ public final class ProxyClient extends ProxyCommon {
     public void onPreInit(final FMLPreInitializationEvent event) {
         super.onPreInit(event);
 
-        // Set up custom models for our blocks.
+        // Set up OBJ loader for this mod.
         OBJLoader.instance.addDomain(API.MOD_ID.toLowerCase());
-
-        setCustomBlockModelResourceLocation(Constants.NAME_BLOCK_CASING);
-        setCustomBlockModelResourceLocation(Constants.NAME_BLOCK_CONTROLLER);
-
-        setCustomItemModelResourceLocation(Constants.NAME_ITEM_BOOK_MANUAL);
-        setCustomItemModelResourceLocation(Constants.NAME_ITEM_BOOK_CODE);
-        setCustomItemModelResourceLocation(Constants.NAME_ITEM_MODULE_EXECUTION);
-        setCustomItemModelResourceLocation(Constants.NAME_ITEM_MODULE_INFRARED);
-        setCustomItemModelResourceLocation(Constants.NAME_ITEM_MODULE_RANDOM);
-        setCustomItemModelResourceLocation(Constants.NAME_ITEM_MODULE_REDSTONE);
-        setCustomItemModelResourceLocation(Constants.NAME_ITEM_MODULE_STACK);
 
         MinecraftForge.EVENT_BUS.register(TextureLoader.INSTANCE);
     }
@@ -76,16 +69,31 @@ public final class ProxyClient extends ProxyCommon {
 
     // --------------------------------------------------------------------- //
 
-    private static void setCustomBlockModelResourceLocation(final String blockName) {
-        final Item item = Item.getItemFromBlock(GameRegistry.findBlock(API.MOD_ID, blockName));
-        final String path = API.MOD_ID.toLowerCase() + ":" + blockName;
+    @Override
+    protected Block registerBlock(final String name, final Supplier<Block> constructor, final Class<? extends TileEntity> tileEntity) {
+        final Block block = super.registerBlock(name, constructor, tileEntity);
+        setCustomBlockModelResourceLocation(name, block);
+        return block;
+    }
+
+    @Override
+    protected Item registerItem(final String name, final Supplier<Item> constructor) {
+        final Item item = super.registerItem(name, constructor);
+        setCustomItemModelResourceLocation(name, item);
+        return item;
+    }
+
+    // --------------------------------------------------------------------- //
+
+    private static void setCustomBlockModelResourceLocation(final String name, final Block block) {
+        final Item item = Item.getItemFromBlock(block);
+        final String path = API.MOD_ID.toLowerCase() + ":" + name;
         final ModelResourceLocation location = new ModelResourceLocation(path, "inventory");
         ModelLoader.setCustomModelResourceLocation(item, 0, location);
     }
 
-    private static void setCustomItemModelResourceLocation(final String itemName) {
-        final Item item = GameRegistry.findItem(API.MOD_ID, itemName);
-        final String path = API.MOD_ID.toLowerCase() + ":" + itemName;
+    private static void setCustomItemModelResourceLocation(final String name, final Item item) {
+        final String path = API.MOD_ID.toLowerCase() + ":" + name;
         final ModelResourceLocation location = new ModelResourceLocation(path, "inventory");
         ModelLoader.setCustomModelResourceLocation(item, 0, location);
     }
