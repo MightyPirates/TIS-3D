@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
@@ -50,7 +51,7 @@ public abstract class ModuleItemRenderer implements IItemRenderer {
 		return helper != ItemRendererHelper.BLOCK_3D;
 	}
 
-	private IModelCustom model = AdvancedModelLoader.loadModel(new ResourceLocation(getModelPath()));
+	protected IModelCustom model = AdvancedModelLoader.loadModel(new ResourceLocation(getModelPath()));
 
 	@Override
 	public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
@@ -67,7 +68,10 @@ public abstract class ModuleItemRenderer implements IItemRenderer {
 
 		switch(type) {
 			case ENTITY: {
-				GL11.glTranslatef(-0.5f, 0, -0.5f);
+				GL11.glTranslatef(-0.5f, 0.25f, -0.5f);
+				if(RenderItem.renderInFrame) {
+					GL11.glTranslatef(0f, 0.125f, 0f);
+				}
 				break;
 			}
 			case EQUIPPED_FIRST_PERSON: {
