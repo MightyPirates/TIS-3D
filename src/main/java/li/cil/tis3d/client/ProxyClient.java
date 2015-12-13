@@ -27,7 +27,6 @@ import li.cil.tis3d.common.tile.TileEntityCasing;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -72,23 +71,7 @@ public final class ProxyClient extends ProxyCommon {
     @Override
     protected Item registerModule(final String name) {
         final Item item = super.registerModule(name);
-        MinecraftForgeClient.registerItemRenderer(item, getSimpleModuleRenderer());
+        MinecraftForgeClient.registerItemRenderer(item, new SimpleModuleRenderer().setIgnoreLighting(true));
         return item;
-    }
-
-    // --------------------------------------------------------------------- //
-
-    private IItemRenderer simpleModuleRenderer;
-
-    private IItemRenderer getSimpleModuleRenderer() {
-        if (simpleModuleRenderer == null) {
-            simpleModuleRenderer = new SimpleModuleRenderer() {
-                @Override
-                protected boolean shouldIgnoreLighting(final ItemRenderType type, final ItemStack item, final Object... data) {
-                    return true;
-                }
-            };
-        }
-        return simpleModuleRenderer;
     }
 }
