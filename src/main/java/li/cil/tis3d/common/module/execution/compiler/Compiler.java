@@ -89,7 +89,7 @@ public final class Compiler {
                 final String line = matcher.replaceFirst("").trim();
 
                 // Extract a label, if any, pass the rest onto the instruction parser.
-                parseInstruction(parseLabel(line, state), state, lineNumber, validators);
+                parseInstruction(parseLabel(line, state, lineNumber), state, lineNumber, validators);
             }
 
             // Run all registered validators as a post-processing step. This is used
@@ -109,15 +109,19 @@ public final class Compiler {
     /**
      * Look for a label on the specified line and store it if present.
      *
-     * @param line  the line to parse.
-     * @param state the machine state to store the label in.
+     * @param line       the line to parse.
+     * @param state      the machine state to store the label in.
+     * @param lineNumber the current line number.
      * @return the remainder of the line, or the full line if there was no label.
      */
-    private static String parseLabel(final String line, final MachineState state) {
+    private static String parseLabel(final String line, final MachineState state, final int lineNumber) throws ParseException {
         final Matcher matcher = PATTERN_LABEL.matcher(line);
         if (matcher.matches()) {
             // Got a label, store it and the address it represents.
             final String label = matcher.group("label");
+            if (state.labels.containsKey(label)) {
+                throw new ParseException(Constants.MESSAGE_DUPLICATE_LABEL, lineNumber, matcher.start("label"), matcher.end("label"));
+            }
             state.labels.put(label, state.instructions.size());
             // Return the remainder of the line.
             return matcher.group("rest");

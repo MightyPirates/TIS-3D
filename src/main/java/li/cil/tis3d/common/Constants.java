@@ -40,6 +40,7 @@ public final class Constants {
     public static final String MESSAGE_INVALID_TARGET = "Invalid register";
     public static final String MESSAGE_EXCESS_TOKENS = "Too many operands";
     public static final String MESSAGE_NO_SUCH_LABEL = "Undefined label";
+    public static final String MESSAGE_DUPLICATE_LABEL = "Label is already defined.";
 
     // --------------------------------------------------------------------- //
 
