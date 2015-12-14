@@ -37,6 +37,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import java.util.function.Supplier;
 
@@ -102,61 +103,61 @@ public class ProxyCommon {
         OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_STACK));
 
         // Hardcoded recipes!
-        GameRegistry.addRecipe(new ItemStack(GameRegistry.findBlock(API.MOD_ID, Constants.NAME_BLOCK_CASING), 8),
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(GameRegistry.findBlock(API.MOD_ID, Constants.NAME_BLOCK_CASING), 8),
                 "IRI",
                 "RBR",
                 "IRI",
-                'I', Items.iron_ingot,
-                'R', Items.redstone,
-                'B', Blocks.iron_block);
-        GameRegistry.addRecipe(new ItemStack(GameRegistry.findBlock(API.MOD_ID, Constants.NAME_BLOCK_CONTROLLER), 1),
+                'I', "ingotIron",
+                'R', "dustRedstone",
+                'B', "blockIron"));
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(GameRegistry.findBlock(API.MOD_ID, Constants.NAME_BLOCK_CONTROLLER), 1),
                 "IRI",
                 "RDR",
                 "IRI",
-                'I', Items.iron_ingot,
-                'R', Items.redstone,
-                'D', Items.diamond);
+                'I', "ingotIron",
+                'R', "dustRedstone",
+                'D', "gemDiamond"));
 
-        GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_EXECUTION), 2),
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_EXECUTION), 2),
                 "PPP",
                 "IGI",
                 " R ",
-                'P', Blocks.glass_pane,
-                'I', Items.iron_ingot,
-                'R', Items.redstone,
-                'G', Items.gold_ingot);
-        GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_INFRARED), 2),
+                'P', "paneGlassColorless",
+                'I', "ingotIron",
+                'R', "dustRedstone",
+                'G', "ingotGold"));
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_INFRARED), 2),
                 "PPP",
                 "IGI",
                 " R ",
-                'P', Blocks.glass_pane,
-                'I', Items.iron_ingot,
-                'R', Items.redstone,
-                'G', Items.spider_eye);
-        GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_RANDOM), 2),
+                'P', "paneGlassColorless",
+                'I', "ingotIron",
+                'R', "dustRedstone",
+                'G', Items.spider_eye));
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_RANDOM), 2),
                 "PPP",
                 "IEI",
                 " R ",
-                'P', Blocks.glass_pane,
-                'I', Items.iron_ingot,
-                'R', Items.redstone,
-                'E', Items.ender_pearl);
-        GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_REDSTONE), 2),
+                'P', "paneGlassColorless",
+                'I', "ingotIron",
+                'R', "dustRedstone",
+                'E', Items.ender_pearl));
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_REDSTONE), 2),
                 "PPP",
                 "ICI",
                 " R ",
-                'P', Blocks.glass_pane,
-                'I', Items.iron_ingot,
-                'R', Items.redstone,
-                'C', Items.repeater);
-        GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_STACK), 2),
+                'P', "paneGlassColorless",
+                'I', "ingotIron",
+                'R', "dustRedstone",
+                'C', Items.repeater));
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_STACK), 2),
                 "PPP",
                 "IEI",
                 " R ",
-                'P', Blocks.glass_pane,
-                'I', Items.iron_ingot,
-                'R', Items.redstone,
-                'E', Blocks.chest);
+                'P', "paneGlassColorless",
+                'I', "ingotIron",
+                'R', "dustRedstone",
+                'E', Blocks.chest));
 
         // Register entities.
         EntityRegistry.registerModEntity(EntityInfraredPacket.class, Constants.NAME_ENTITY_INFRARED_PACKET, 1, TIS3D.instance, 16, 1, true);
