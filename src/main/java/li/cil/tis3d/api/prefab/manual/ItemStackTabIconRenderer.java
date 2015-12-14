@@ -1,4 +1,4 @@
-package li.cil.tis3d.api.prefab;
+package li.cil.tis3d.api.prefab.manual;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

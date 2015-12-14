@@ -4,7 +4,7 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
-import li.cil.tis3d.api.prefab.AbstractModule;
+import li.cil.tis3d.api.prefab.module.AbstractModule;
 
 /**
  * This is a "virtual" module for internal use, forwarding data on all incoming

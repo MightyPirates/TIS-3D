@@ -8,7 +8,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.api.ModuleAPI;
-import li.cil.tis3d.api.prefab.ResourceContentProvider;
+import li.cil.tis3d.api.prefab.manual.ResourceContentProvider;
 import li.cil.tis3d.client.manual.provider.GameRegistryPathProvider;
 import li.cil.tis3d.common.api.CreativeTab;
 import li.cil.tis3d.common.api.FontRendererAPIImpl;

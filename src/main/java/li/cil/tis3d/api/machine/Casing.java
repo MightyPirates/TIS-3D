@@ -1,6 +1,7 @@
 package li.cil.tis3d.api.machine;
 
 import li.cil.tis3d.api.module.Module;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
@@ -9,7 +10,7 @@ import net.minecraft.world.World;
  * <p>
  * This is implemented by the tile entity of TIS-3D casings.
  */
-public interface Casing {
+public interface Casing extends ISidedInventory {
     /**
      * The world this casing resides in.
      *

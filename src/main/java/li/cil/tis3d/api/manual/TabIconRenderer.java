@@ -2,6 +2,8 @@ package li.cil.tis3d.api.manual;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import li.cil.tis3d.api.prefab.manual.ItemStackTabIconRenderer;
+import li.cil.tis3d.api.prefab.manual.TextureTabIconRenderer;
 
 /**
  * Allows defining a renderer for a manual tab.
@@ -10,8 +12,8 @@ import cpw.mods.fml.relauncher.SideOnly;
  * provide different graphics for different tabs you'll need to create
  * multiple tab renderer instances.
  *
- * @see li.cil.tis3d.api.prefab.ItemStackTabIconRenderer
- * @see li.cil.tis3d.api.prefab.TextureTabIconRenderer
+ * @see ItemStackTabIconRenderer
+ * @see TextureTabIconRenderer
  */
 public interface TabIconRenderer {
     /**
