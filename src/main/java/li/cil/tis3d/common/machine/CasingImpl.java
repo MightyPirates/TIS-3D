@@ -1,18 +1,19 @@
 package li.cil.tis3d.common.machine;
 
 import cpw.mods.fml.common.network.NetworkRegistry;
+import li.cil.tis3d.api.ModuleAPI;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
+import li.cil.tis3d.api.module.ModuleProvider;
 import li.cil.tis3d.api.module.Redstone;
-import li.cil.tis3d.common.inventory.SidedInventoryProxy;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageModuleData;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import li.cil.tis3d.common.tile.TileEntityController;
-import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
@@ -21,7 +22,7 @@ import net.minecraftforge.common.util.Constants;
 /**
  * Implementation of a {@link Casing}, holding up to six {@link Module}s.
  */
-public final class CasingImpl implements Casing, SidedInventoryProxy {
+public final class CasingImpl implements Casing {
     // --------------------------------------------------------------------- //
     // Persisted data.
 
@@ -119,6 +120,19 @@ public final class CasingImpl implements Casing, SidedInventoryProxy {
     }
 
     /**
+     * Calls {@link Module#onDisposed()} on all modules.
+     * <p>
+     * Used by the casing when it is being unloaded.
+     */
+    public void onDisposed() {
+        for (final Module module : modules) {
+            if (module != null) {
+                module.onDisposed();
+            }
+        }
+    }
+
+    /**
      * Advance the logic of all modules by calling {@link Module#step()} on them.
      */
     public void stepModules() {
@@ -142,11 +156,84 @@ public final class CasingImpl implements Casing, SidedInventoryProxy {
     }
 
     /**
+     * Set the module for the specified face of the casing.
+     * <p>
+     * This is automatically called by the casing tile entity when items are
+     * added or removed and as a special case directly for forwarder modules.
+     * <p>
+     * This calls {@link Module#onEnabled()} and {@link Module#onDisabled()}
+     * appropriately if the casing is enabled or disabled, respectively.
+     *
+     * @param face   the face to install the module on.
+     * @param module the module to install on the face, or <tt>null</tt> for none.
+     */
+    public void setModule(final Face face, final Module module) {
+        if (getModule(face) == module) {
+            return;
+        }
+
+        // End-of-life notification for module if it was active.
+        final Module oldModule = getModule(face);
+        if (tileEntity.isEnabled() && oldModule != null && getCasingWorld() != null && !getCasingWorld().isRemote) {
+            oldModule.onDisabled();
+        }
+
+        // Remember for below.
+        final boolean hadRedstone = oldModule instanceof Redstone;
+
+        // Apply new module before adjust remaining state.
+        modules[face.ordinal()] = module;
+
+        // Reset redstone output if the previous module was redstone capable.
+        if (hadRedstone) {
+            if (!getCasingWorld().isRemote) {
+                tileEntity.markDirty();
+                getCasingWorld().notifyBlocksOfNeighborChange(getPositionX(), getPositionY(), getPositionZ(), tileEntity.getBlockType());
+            }
+        }
+
+        // Reset pipe state if module is removed. Don't reset when one is set,
+        // because it might be set via a load or scan, in which case we
+        // absolutely do not want to reset our state!
+        if (module == null) {
+            for (final Port port : Port.VALUES) {
+                getReceivingPipe(face, port).cancelRead();
+                getSendingPipe(face, port).cancelWrite();
+            }
+        }
+
+        // Activate the module if the controller is active.
+        if (tileEntity.isEnabled() && module != null && getCasingWorld() != null && !getCasingWorld().isRemote) {
+            module.onEnabled();
+        }
+
+        tileEntity.markDirty();
+    }
+
+    /**
      * Restore data of all modules and pipes from the specified NBT tag.
      *
      * @param nbt the data to load.
      */
     public void readFromNBT(final NBTTagCompound nbt) {
+        for (int index = 0; index < tileEntity.getSizeInventory(); index++) {
+            final ItemStack stack = tileEntity.getStackInSlot(index);
+            if (stack == null) {
+                modules[index] = null;
+                continue;
+            }
+
+            final Face face = Face.VALUES[index];
+            final ModuleProvider provider = ModuleAPI.getProviderFor(stack, tileEntity, face);
+            if (provider == null) {
+                modules[index] = null;
+                continue;
+            }
+
+            final Module module = provider.createModule(stack, tileEntity, face);
+            modules[index] = module;
+        }
+
         final NBTTagList modulesNbt = nbt.getTagList(TAG_MODULES, Constants.NBT.TAG_COMPOUND);
         final int moduleCount = Math.min(modulesNbt.tagCount(), modules.length);
         for (int i = 0; i < moduleCount; i++) {
@@ -155,10 +242,10 @@ public final class CasingImpl implements Casing, SidedInventoryProxy {
             }
         }
 
-        final NBTTagList portsNbt = nbt.getTagList(TAG_PIPES, Constants.NBT.TAG_COMPOUND);
-        final int portCount = Math.min(portsNbt.tagCount(), pipes.length);
-        for (int i = 0; i < portCount; i++) {
-            pipes[i].readFromNBT(portsNbt.getCompoundTagAt(i));
+        final NBTTagList pipesNbt = nbt.getTagList(TAG_PIPES, Constants.NBT.TAG_COMPOUND);
+        final int pipeCount = Math.min(pipesNbt.tagCount(), pipes.length);
+        for (int i = 0; i < pipeCount; i++) {
+            pipes[i].readFromNBT(pipesNbt.getCompoundTagAt(i));
         }
     }
 
@@ -269,45 +356,6 @@ public final class CasingImpl implements Casing, SidedInventoryProxy {
         return modules[face.ordinal()];
     }
 
-    public void setModule(final Face face, final Module module) {
-        if (getModule(face) == module) {
-            return;
-        }
-
-        // End-of-life notification for module if it was active.
-        final Module oldModule = getModule(face);
-        if (tileEntity.isEnabled() && oldModule != null) {
-            oldModule.onDisabled();
-        }
-
-        // Remember for below.
-        final boolean hadRedstone = oldModule instanceof Redstone;
-
-        // Apply new module before adjust remaining state.
-        modules[face.ordinal()] = module;
-
-        // Reset redstone output if the previous module was redstone capable.
-        if (hadRedstone) {
-            if (!getCasingWorld().isRemote) {
-                tileEntity.markDirty();
-                getCasingWorld().notifyBlocksOfNeighborChange(getPositionX(), getPositionY(), getPositionZ(), tileEntity.getBlockType());
-            }
-        }
-
-        // Reset pipe state controlled by a potential previous module.
-        for (final Port port : Port.VALUES) {
-            getReceivingPipe(face, port).cancelRead();
-            getSendingPipe(face, port).cancelWrite();
-        }
-
-        // Activate the module if the controller is active.
-        if (tileEntity.isEnabled() && module != null) {
-            module.onEnabled();
-        }
-
-        tileEntity.markDirty();
-    }
-
     @Override
     public Pipe getReceivingPipe(final Face face, final Port port) {
         return pipes[pack(face, port)];
@@ -327,13 +375,5 @@ public final class CasingImpl implements Casing, SidedInventoryProxy {
             final NetworkRegistry.TargetPoint point = Network.getTargetPoint(tileEntity, Network.RANGE_MEDIUM);
             Network.INSTANCE.getWrapper().sendToAllAround(message, point);
         }
-    }
-
-    // --------------------------------------------------------------------- //
-    // SidedInventoryProxy
-
-    @Override
-    public ISidedInventory getInventory() {
-        return tileEntity;
     }
 }

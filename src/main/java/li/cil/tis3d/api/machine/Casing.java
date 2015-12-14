@@ -1,7 +1,6 @@
 package li.cil.tis3d.api.machine;
 
 import li.cil.tis3d.api.module.Module;
-import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
@@ -10,7 +9,7 @@ import net.minecraft.world.World;
  * <p>
  * This is implemented by the tile entity of TIS-3D casings.
  */
-public interface Casing extends ISidedInventory {
+public interface Casing {
     /**
      * The world this casing resides in.
      *
@@ -53,17 +52,6 @@ public interface Casing extends ISidedInventory {
      * @return the module installed on that face, or <tt>null</tt>.
      */
     Module getModule(Face face);
-
-    /**
-     * Set the module for the specified face of the casing.
-     * <p>
-     * This is automatically called by the casing tile entity when items are
-     * added or removed, you'll usually not need to call this directly.
-     *
-     * @param face   the face to install the module on.
-     * @param module the module to install on the face, or <tt>null</tt> for none.
-     */
-    void setModule(Face face, Module module);
 
     /**
      * Get the receiving pipe on the specified port of a module in this casing.

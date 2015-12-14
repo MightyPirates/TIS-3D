@@ -62,7 +62,7 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
 
     private final TileEntityCasing[] neighbors = new TileEntityCasing[Face.VALUES.length];
     private TileEntityController controller;
-    private boolean isEnabledClient = false;
+    private boolean isEnabled;
 
     // --------------------------------------------------------------------- //
     // Networking
@@ -76,19 +76,12 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
     }
 
     public boolean isEnabled() {
-        if (getWorldObj() == null) {
-            return false;
-        }
-        if (getWorldObj().isRemote) {
-            return isEnabledClient;
-        } else {
-            return getController() != null && getController().getState() == TileEntityController.ControllerState.RUNNING;
-        }
+        return isEnabled;
     }
 
     @SideOnly(Side.CLIENT)
     public void setEnabled(final boolean value) {
-        isEnabledClient = value;
+        isEnabled = value;
     }
 
     public void scheduleScan() {
@@ -144,13 +137,21 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
     }
 
     public void onEnabled() {
+        if (isEnabled) {
+            return;
+        }
+        isEnabled = true;
+        sendState();
         casing.onEnabled();
-        sendState(true);
     }
 
     public void onDisabled() {
+        if (!isEnabled) {
+            return;
+        }
+        isEnabled = false;
+        sendState();
         casing.onDisabled();
-        sendState(false);
     }
 
     public void stepModules() {
@@ -159,6 +160,10 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
 
     public void stepPipes() {
         casing.stepPipes();
+    }
+
+    public void setModule(final Face face, final Module module) {
+        casing.setModule(face, module);
     }
 
     // --------------------------------------------------------------------- //
@@ -209,17 +214,16 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
     @Override
     public void invalidate() {
         super.invalidate();
-        if (controller != null) {
-            controller.scheduleScan();
+        if (!getCasingWorld().isRemote) {
+            onDisabled();
         }
+        dispose();
     }
 
     @Override
     public void onChunkUnload() {
         super.onChunkUnload();
-        if (controller != null) {
-            controller.scheduleScan();
-        }
+        dispose();
     }
 
     @Override
@@ -238,14 +242,13 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
     public void onDataPacket(final NetworkManager manager, final S35PacketUpdateTileEntity packet) {
         final NBTTagCompound nbt = packet.func_148857_g();
         load(nbt);
-        isEnabledClient = nbt.getBoolean(TAG_ENABLED);
+        getCasingWorld().markBlockForUpdate(getPositionX(), getPositionY(), getPositionZ());
     }
 
     @Override
     public Packet getDescriptionPacket() {
         final NBTTagCompound nbt = new NBTTagCompound();
         save(nbt);
-        nbt.setBoolean(TAG_ENABLED, isEnabled());
         return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, -1, nbt);
     }
 
@@ -311,23 +314,35 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
                 // we can early exit if there are too many (because even if we
                 // notified the controller, it'd enter an error state again anyway).
                 if (++casings > Settings.maxCasingsPerController) {
+                    onDisabled();
                     return null;
                 }
 
                 // Keep looking...
                 if (!TileEntityController.addNeighbors(tileEntity, processed, queue)) {
                     // Hit end of loaded area, so scheduling would just result in
-                    // error again anyway.
+                    // error again anyway. Do *not* disable casings, keep last
+                    // known valid state when all parts were loaded.
                     return null;
                 }
             }
         }
+
+        // Could not find a controller, disable modules.
+        onDisabled();
         return null;
     }
 
-    private void sendState(final boolean state) {
-        final MessageCasingState message = new MessageCasingState(this, state);
+    private void sendState() {
+        final MessageCasingState message = new MessageCasingState(this, isEnabled);
         Network.INSTANCE.getWrapper().sendToDimension(message, getWorldObj().provider.dimensionId);
+    }
+
+    private void dispose() {
+        if (controller != null) {
+            controller.scheduleScan();
+        }
+        casing.onDisposed();
     }
 
     private void load(final NBTTagCompound nbt) {
@@ -336,6 +351,8 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
 
         final NBTTagCompound casingNbt = nbt.getCompoundTag(TAG_CASING);
         casing.readFromNBT(casingNbt);
+
+        isEnabled = nbt.getBoolean(TAG_ENABLED);
     }
 
     private void save(final NBTTagCompound nbt) {
@@ -346,5 +363,7 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
         final NBTTagCompound casingNbt = new NBTTagCompound();
         casing.writeToNBT(casingNbt);
         nbt.setTag(TAG_CASING, casingNbt);
+
+        nbt.setBoolean(TAG_ENABLED, isEnabled());
     }
 }

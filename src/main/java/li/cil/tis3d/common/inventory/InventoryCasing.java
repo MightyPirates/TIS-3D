@@ -2,6 +2,7 @@ package li.cil.tis3d.common.inventory;
 
 import li.cil.tis3d.api.ModuleAPI;
 import li.cil.tis3d.api.machine.Face;
+import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.ModuleProvider;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.tile.TileEntityCasing;
@@ -77,11 +78,21 @@ public final class InventoryCasing extends Inventory implements ISidedInventory 
             return;
         }
 
-        tileEntity.setModule(Face.VALUES[index], provider.createModule(stack, tileEntity, face));
+        final Module module = provider.createModule(stack, tileEntity, face);
+        if (module != null && !tileEntity.getCasingWorld().isRemote) {
+            module.onInstalled(stack);
+        }
+        tileEntity.setModule(Face.VALUES[index], module);
     }
 
     @Override
     protected void onItemRemoved(final int index) {
-        tileEntity.setModule(Face.VALUES[index], null);
+        final Face face = Face.VALUES[index];
+        final Module module = tileEntity.getModule(face);
+        tileEntity.setModule(face, null);
+        if (module != null && !tileEntity.getCasingWorld().isRemote) {
+            module.onUninstalled(getStackInSlot(index));
+            module.onDisposed();
+        }
     }
 }

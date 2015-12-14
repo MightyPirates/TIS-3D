@@ -89,9 +89,7 @@ public final class TileEntityController extends TileEntity {
      * If we're currently scanning this does nothing.
      */
     public void scheduleScan() {
-        if (state != ControllerState.SCANNING) {
-            clear(ControllerState.SCANNING);
-        }
+        state = ControllerState.SCANNING;
     }
 
     // --------------------------------------------------------------------- //
@@ -100,13 +98,42 @@ public final class TileEntityController extends TileEntity {
     @Override
     public void invalidate() {
         super.invalidate();
-        dispose();
+
+        if (getWorldObj().isRemote) {
+            return;
+        }
+
+        // If we were in an active state, deactivate all modules in connected cases.
+        // Safe to always call this because the casings track their own enabled
+        // state and just won't do anything if they're already disabled.
+        casings.forEach(TileEntityCasing::onDisabled);
+
+        // Tell our neighbors about our untimely death.
+        for (final EnumFacing facing : EnumFacing.values()) {
+            final int neighborX = xCoord + facing.getFrontOffsetX();
+            final int neighborY = yCoord + facing.getFrontOffsetY();
+            final int neighborZ = zCoord + facing.getFrontOffsetZ();
+            if (getWorldObj().blockExists(neighborX, neighborY, neighborZ)) {
+                final TileEntity tileEntity = getWorldObj().getTileEntity(neighborX, neighborY, neighborZ);
+                if (tileEntity instanceof TileEntityController) {
+                    final TileEntityController controller = (TileEntityController) tileEntity;
+                    controller.scheduleScan();
+                } else if (tileEntity instanceof TileEntityCasing) {
+                    final TileEntityCasing casing = (TileEntityCasing) tileEntity;
+                    casing.scheduleScan();
+                }
+            }
+        }
     }
 
     @Override
     public void onChunkUnload() {
         super.onChunkUnload();
-        dispose();
+
+        // Just unset from our casings, do *not* disable them to keep their state.
+        for (final TileEntityCasing casing : casings) {
+            casing.setController(null);
+        }
     }
 
     @Override
@@ -304,46 +331,25 @@ public final class TileEntityController extends TileEntity {
      * @param toState the state to enter after clearing.
      */
     private void clear(final ControllerState toState) {
+        // Whatever we're clearing to, remove self from all casings first. If
+        // we're clearing for a schedule that's fine because we'll find them
+        // again (or won't, in which case we're unloading/partially unloaded
+        // anyway), if we're disabling because of an error, that's also what
+        // we want (because it could be the 'two controllers' error, in which
+        // case we don't want to reference one of the controllers since that
+        // could lead to confusion.
         for (final TileEntityCasing casing : casings) {
             casing.setController(null);
         }
 
-        // Disable modules if our old controller was active.
-        if (state == TileEntityController.ControllerState.RUNNING) {
-            final List<TileEntityCasing> casingCopy = new ArrayList<>(casings);
-            casings.clear();
-            casingCopy.forEach(TileEntityCasing::onDisabled);
-        } else {
-            casings.clear();
-        }
-
-        state = toState;
-    }
-
-    /**
-     * Clean up the controller state and any casings controlled by it.
-     */
-    private void dispose() {
-        // If we were in an active state, deactivate all modules in connected cases.
-        if (state == ControllerState.RUNNING) {
+        // Disable modules if we're in an errored state. If we're in an
+        // incomplete state or rescanning, leave the state as is to avoid
+        // unnecessarily resetting the computer.
+        if (state != ControllerState.INCOMPLETE && state != ControllerState.SCANNING) {
             casings.forEach(TileEntityCasing::onDisabled);
         }
+        casings.clear();
 
-        // Tell our neighbors about our untimely death.
-        for (final EnumFacing facing : EnumFacing.values()) {
-            final int neighborX = xCoord + facing.getFrontOffsetX();
-            final int neighborY = yCoord + facing.getFrontOffsetY();
-            final int neighborZ = zCoord + facing.getFrontOffsetZ();
-            if (getWorldObj().blockExists(neighborX, neighborY, neighborZ)) {
-                final TileEntity tileEntity = getWorldObj().getTileEntity(neighborX, neighborY, neighborZ);
-                if (tileEntity instanceof TileEntityController) {
-                    final TileEntityController controller = (TileEntityController) tileEntity;
-                    controller.scheduleScan();
-                } else if (tileEntity instanceof TileEntityCasing) {
-                    final TileEntityCasing casing = (TileEntityCasing) tileEntity;
-                    casing.scheduleScan();
-                }
-            }
-        }
+        state = toState;
     }
 }
