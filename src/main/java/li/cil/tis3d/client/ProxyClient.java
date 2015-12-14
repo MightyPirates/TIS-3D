@@ -2,8 +2,8 @@ package li.cil.tis3d.client;
 
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.ManualAPI;
-import li.cil.tis3d.api.prefab.ItemStackTabIconRenderer;
-import li.cil.tis3d.api.prefab.TextureTabIconRenderer;
+import li.cil.tis3d.api.prefab.manual.ItemStackTabIconRenderer;
+import li.cil.tis3d.api.prefab.manual.TextureTabIconRenderer;
 import li.cil.tis3d.client.gui.GuiHandlerClient;
 import li.cil.tis3d.client.manual.provider.BlockImageProvider;
 import li.cil.tis3d.client.manual.provider.ItemImageProvider;

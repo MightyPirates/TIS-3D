@@ -1,4 +1,4 @@
-package li.cil.tis3d.api.prefab;
+package li.cil.tis3d.api.prefab.module;
 
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;

@@ -1,4 +1,4 @@
-package li.cil.tis3d.api.prefab;
+package li.cil.tis3d.api.prefab.manual;
 
 import li.cil.tis3d.api.manual.TabIconRenderer;
 import net.minecraft.client.Minecraft;

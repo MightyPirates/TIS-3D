@@ -1,5 +1,7 @@
 package li.cil.tis3d.api.manual;
 
+import li.cil.tis3d.api.prefab.manual.ResourceContentProvider;
+
 /**
  * This interface allows implementation of content providers for the manual.
  * <p>
@@ -8,7 +10,7 @@ package li.cil.tis3d.api.manual;
  * than content found in resource packs, i.e. content providers will only be
  * queried for missing pages, so to speak.
  *
- * @see li.cil.tis3d.api.prefab.ResourceContentProvider
+ * @see ResourceContentProvider
  */
 public interface ContentProvider {
     /**

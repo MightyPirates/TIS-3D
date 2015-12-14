@@ -1,4 +1,4 @@
-package li.cil.tis3d.api.prefab;
+package li.cil.tis3d.api.prefab.manual;
 
 import com.google.common.base.Charsets;
 import li.cil.tis3d.api.manual.ContentProvider;
