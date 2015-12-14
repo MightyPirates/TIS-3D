@@ -118,6 +118,7 @@ public class GuiBookCode extends GuiScreen {
         buttonPreviousPage.visible = data.getSelectedProgram() > 0 && data.getProgramCount() > 0;
         buttonNextPage.visible = (data.getSelectedProgram() < data.getProgramCount() - 1) ||
                 (data.getSelectedProgram() == data.getProgramCount() - 1 && isCurrentProgramNonEmpty());
+        buttonDeletePage.visible = data.getProgramCount() > 1 || isCurrentProgramNonEmpty();
 
         super.drawScreen(mouseX, mouseY, partialTicks);
 
