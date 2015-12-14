@@ -452,6 +452,9 @@ public final class ModuleExecution extends AbstractModuleRotatable {
         @Override
         public Iterable<String> codeFor(final ItemStack stack) {
             final ItemBookCode.Data data = ItemBookCode.Data.loadFromStack(stack);
+            if (data.getProgramCount() < 1) {
+                return null;
+            }
             return data.getProgram(data.getSelectedProgram());
         }
     }
