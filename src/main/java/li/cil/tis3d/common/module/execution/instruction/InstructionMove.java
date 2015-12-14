@@ -22,7 +22,8 @@ public final class InstructionMove extends AbstractInstructionMove {
                 sourceInterface.beginRead();
             }
             if (sourceInterface.canTransfer()) {
-                if (destinationInterface.beginWrite(sourceInterface.read())) {
+                final int value = sourceInterface.read();
+                if (destinationInterface.beginWrite(value)) {
                     machine.getState().pc++;
                 }
             }

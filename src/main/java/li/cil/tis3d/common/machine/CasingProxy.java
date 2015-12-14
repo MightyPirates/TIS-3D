@@ -33,11 +33,6 @@ public interface CasingProxy extends Casing {
     }
 
     @Override
-    default void setModule(final Face face, final Module module) {
-        getCasing().setModule(face, module);
-    }
-
-    @Override
     default Pipe getReceivingPipe(final Face face, final Port port) {
         return getCasing().getReceivingPipe(face, port);
     }

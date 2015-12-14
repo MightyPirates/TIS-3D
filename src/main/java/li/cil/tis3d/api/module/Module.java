@@ -4,6 +4,7 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -37,6 +38,41 @@ public interface Module {
     void step();
 
     /**
+     * Called when the module is being installed into a {@link Casing}.
+     * <p>
+     * This is mainly for convenience and having things in one place, you could
+     * just as well restore state in your {@link ModuleProvider}'s
+     * {@link ModuleProvider#createModule(ItemStack, Casing, Face)} method.
+     * <p>
+     * This is called before the first {@link #onEnabled()}, and also <em>before
+     * it is actually set in the containing {@link Casing}</em>. Particularly
+     * this means {@link Casing#getModule(Face)} for the module's {@link Face}
+     * will return <tt>null</tt> in this callback.
+     * <p>
+     * Note that this is only called on the server.
+     *
+     * @param stack the item stack the module was created from.
+     */
+    void onInstalled(ItemStack stack);
+
+    /**
+     * Called after the module was uninstalled from a {@link Casing}.
+     * <p>
+     * This allows storing any data that should be persisted onto the module's
+     * item representation. For most modules this will not apply, since they
+     * are generally stateless / reset state when the computer shuts down.
+     * <p>
+     * This is called after the last {@link #onDisabled()} and is equivalent
+     * to a <tt>dispose</tt> method (i.e. the module will not be used again
+     * after this).
+     * <p>
+     * Note that this is only called on the server.
+     *
+     * @param stack the stack representing the module.
+     */
+    void onUninstalled(ItemStack stack);
+
+    /**
      * Called when the multi-block of casings the module is installed in is
      * enabled, or when the module was installed into an enabled casing.
      * <p>
@@ -52,13 +88,21 @@ public interface Module {
      * a controller resets the whole multi-block system.
      * <p>
      * Note that this is only called on the server.
-     * <p>
-     * When this is called due to a controller or casing being disposed, e.g.
-     * due to a chunk being unloaded, the <tt>isDisposing</tt> parameter will
-     * be <tt>true</tt>, indicating that the module should avoid world
-     * interaction in its clean-up logic (to avoid loading the chunk again).
      */
     void onDisabled();
+
+    /**
+     * Called when the {@link Casing} housing the module is being disposed,
+     * e.g. due to a chunk being unloaded.
+     * <p>
+     * This is intended for freeing up resources (e.g. allocated texture or
+     * audio memory). Unlike {@link #onDisabled()} this is only called once
+     * on a module, at the very end of its life. Avoid world interaction in
+     * this callback to avoid loading the chunk again.
+     * <p>
+     * This is called on the server <em>and</em> the client.
+     */
+    void onDisposed();
 
     /**
      * Called from a pipe this module is writing to when the data was read.

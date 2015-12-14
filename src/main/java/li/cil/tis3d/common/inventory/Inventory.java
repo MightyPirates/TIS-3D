@@ -10,12 +10,10 @@ import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.common.util.Constants;
 
-import java.util.AbstractList;
-
 /**
  * Base implementation of an array based inventory.
  */
-public class Inventory extends AbstractList<ItemStack> implements IInventory {
+public class Inventory implements IInventory {
     private static final String TAG_ITEMS = "inventory";
 
     private final String name;
@@ -32,7 +30,7 @@ public class Inventory extends AbstractList<ItemStack> implements IInventory {
         final NBTTagList itemList = nbt.getTagList(TAG_ITEMS, Constants.NBT.TAG_COMPOUND);
         final int count = Math.min(itemList.tagCount(), items.length);
         for (int index = 0; index < count; index++) {
-            setInventorySlotContents(index, ItemStack.loadItemStackFromNBT(itemList.getCompoundTagAt(index)));
+            items[index] = ItemStack.loadItemStackFromNBT(itemList.getCompoundTagAt(index));
         }
     }
 
@@ -172,25 +170,5 @@ public class Inventory extends AbstractList<ItemStack> implements IInventory {
 
     @Override
     public void clear() {
-    }
-
-    // --------------------------------------------------------------------- //
-    // List
-
-    @Override
-    public ItemStack get(final int index) {
-        return getStackInSlot(index);
-    }
-
-    @Override
-    public int size() {
-        return getSizeInventory();
-    }
-
-    @Override
-    public ItemStack set(final int index, final ItemStack element) {
-        final ItemStack oldStack = get(index);
-        setInventorySlotContents(index, element);
-        return oldStack;
     }
 }

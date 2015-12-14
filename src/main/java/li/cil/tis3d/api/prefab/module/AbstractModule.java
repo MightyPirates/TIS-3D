@@ -7,6 +7,7 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.fml.relauncher.Side;
@@ -85,11 +86,23 @@ public abstract class AbstractModule implements Module {
     }
 
     @Override
+    public void onInstalled(final ItemStack stack) {
+    }
+
+    @Override
+    public void onUninstalled(final ItemStack stack) {
+    }
+
+    @Override
     public void onEnabled() {
     }
 
     @Override
     public void onDisabled() {
+    }
+
+    @Override
+    public void onDisposed() {
     }
 
     @Override
