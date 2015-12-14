@@ -1,6 +1,6 @@
 package li.cil.tis3d.client.manual.segment;
 
-import li.cil.tis3d.api.FontRendererAPI;
+import li.cil.tis3d.client.render.font.FontRendererNormal;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.opengl.GL11;
@@ -8,6 +8,8 @@ import org.lwjgl.opengl.GL11;
 import java.util.Optional;
 
 public final class CodeSegment extends BasicTextSegment {
+    private static final float FONT_SCALE = 0.5f;
+
     private final Segment parent;
     private final String text;
 
@@ -38,8 +40,8 @@ public final class CodeSegment extends BasicTextSegment {
             GL11.glColor4f(0.25f, 0.3f, 0.5f, 1);
             GlStateManager.pushMatrix();
             GlStateManager.translate(currentX, currentY, 0);
-            GlStateManager.scale(1.75f, 1.75f, 1.75f);
-            FontRendererAPI.drawString(part.toUpperCase());
+            GlStateManager.scale(FONT_SCALE, FONT_SCALE, FONT_SCALE);
+            FontRendererNormal.INSTANCE.drawString(part.toUpperCase());
             GlStateManager.popMatrix();
             currentX = x + wrapIndent;
             currentY += lineHeight(renderer);
@@ -58,7 +60,7 @@ public final class CodeSegment extends BasicTextSegment {
 
     @Override
     protected int stringWidth(final String s, final FontRenderer renderer) {
-        return (int)(1.75f * s.length() * (FontRendererAPI.getCharWidth() + 1));
+        return (int) (FONT_SCALE * s.length() * (FontRendererNormal.INSTANCE.getCharWidth() + 1));
     }
 
     @Override
