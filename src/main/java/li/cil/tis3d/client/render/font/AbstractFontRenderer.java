@@ -1,0 +1,93 @@
+package li.cil.tis3d.client.render.font;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
+
+import java.util.stream.IntStream;
+
+/**
+ * Base implementation for texture based font rendering.
+ */
+public abstract class AbstractFontRenderer implements FontRenderer {
+    private final int[] CHAR_MAP = IntStream.range(0, 256).map(getCharacters()::indexOf).toArray();
+
+    private final int COLUMNS = getResolution() / (getCharWidth() + getGapU());
+    private final float U_SIZE = getCharWidth() / (float) getResolution();
+    private final float V_SIZE = getCharHeight() / (float) getResolution();
+    private final float U_STEP = (getCharWidth() + getGapU()) / (float) getResolution();
+    private final float V_STEP = (getCharHeight() + getGapV()) / (float) getResolution();
+
+    // --------------------------------------------------------------------- //
+
+    public void drawString(final String value) {
+        drawString(value, value.length());
+    }
+
+    public void drawString(final String value, final int maxChars) {
+        GL11.glPushMatrix();
+        GL11.glDepthMask(false);
+
+        Minecraft.getMinecraft().getTextureManager().bindTexture(getTextureLocation());
+
+        final Tessellator tessellator = Tessellator.instance;
+        tessellator.startDrawingQuads();
+
+        float tx = 0f;
+        final int end = Math.min(maxChars, value.length());
+        for (int i = 0; i < end; i++) {
+            final char ch = value.charAt(i);
+            drawChar(tx, ch, tessellator);
+            tx += getCharWidth() + getGapU();
+        }
+
+        tessellator.draw();
+
+        GL11.glDepthMask(true);
+        GL11.glPopMatrix();
+        GL11.glColor3f(1, 1, 1);
+    }
+
+    // --------------------------------------------------------------------- //
+
+    abstract protected String getCharacters();
+
+    abstract protected ResourceLocation getTextureLocation();
+
+    abstract protected int getResolution();
+
+    abstract protected int getGapU();
+
+    abstract protected int getGapV();
+
+    // --------------------------------------------------------------------- //
+
+    private void drawChar(final float x, final char ch, final Tessellator tessellator) {
+        if (Character.isWhitespace(ch) || Character.isISOControl(ch)) {
+            return;
+        }
+        final int index = getCharIndex(ch);
+
+        final int column = index % COLUMNS;
+        final int row = index / COLUMNS;
+        final float u = column * U_STEP;
+        final float v = row * V_STEP;
+
+        tessellator.addVertexWithUV(x, getCharHeight(), 0, u, v + V_SIZE);
+        tessellator.addVertexWithUV(x + getCharWidth(), getCharHeight(), 0, u + U_SIZE, v + V_SIZE);
+        tessellator.addVertexWithUV(x + getCharWidth(), 0, 0, u + U_SIZE, v);
+        tessellator.addVertexWithUV(x, 0, 0, u, v);
+    }
+
+    private int getCharIndex(final char ch) {
+        if (ch >= CHAR_MAP.length) {
+            return CHAR_MAP['?'];
+        }
+        final int index = CHAR_MAP[ch];
+        if (index < 0) {
+            return CHAR_MAP['?'];
+        }
+        return index;
+    }
+}
