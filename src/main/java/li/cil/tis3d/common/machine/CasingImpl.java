@@ -6,10 +6,12 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.Redstone;
+import li.cil.tis3d.common.inventory.SidedInventoryProxy;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageModuleData;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import li.cil.tis3d.common.tile.TileEntityController;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.BlockPos;
@@ -20,7 +22,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 /**
  * Implementation of a {@link Casing}, holding up to six {@link Module}s.
  */
-public final class CasingImpl implements Casing {
+public final class CasingImpl implements Casing, SidedInventoryProxy {
     // --------------------------------------------------------------------- //
     // Persisted data.
 
@@ -316,5 +318,13 @@ public final class CasingImpl implements Casing {
             final NetworkRegistry.TargetPoint point = Network.getTargetPoint(tileEntity, Network.RANGE_MEDIUM);
             Network.INSTANCE.getWrapper().sendToAllAround(message, point);
         }
+    }
+
+    // --------------------------------------------------------------------- //
+    // SidedInventoryProxy
+
+    @Override
+    public ISidedInventory getInventory() {
+        return tileEntity;
     }
 }
