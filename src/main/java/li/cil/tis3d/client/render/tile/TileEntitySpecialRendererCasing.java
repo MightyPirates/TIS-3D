@@ -26,6 +26,8 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
         GlStateManager.pushMatrix();
         GlStateManager.translate(x + 0.5, y + 0.5, z + 0.5);
 
+        RenderHelper.disableStandardItemLighting();
+
         // Render all modules, adjust GL state to allow easily rendering an
         // overlay in (0, 0, 0) to (1, 1, 0).
         for (final Face face : Face.VALUES) {
@@ -63,11 +65,11 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
             GlStateManager.translate(0.5, 0.5, -0.505);
             GlStateManager.scale(-1, -1, 1);
 
+            GlStateManager.pushAttrib();
+
             final int brightness = getWorld().getCombinedLight(
                     casing.getPosition().offset(Face.toEnumFacing(face)), 0);
             OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, brightness % 65536, brightness / 65536);
-
-            RenderHelper.disableStandardItemLighting();
 
             try {
                 module.render(casing.isEnabled(), partialTicks);
@@ -76,10 +78,12 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
                 TIS3D.getLog().error("A module threw an exception while rendering, won't render again!", e);
             }
 
-            RenderHelper.enableStandardItemLighting();
+            GlStateManager.popAttrib();
 
             GlStateManager.popMatrix();
         }
+
+        RenderHelper.enableStandardItemLighting();
 
         GlStateManager.popMatrix();
     }
