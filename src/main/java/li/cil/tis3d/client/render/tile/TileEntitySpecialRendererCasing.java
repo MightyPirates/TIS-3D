@@ -27,6 +27,8 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
     public void renderTileEntityAt(final TileEntity tileEntity, final double x, final double y, final double z, final float partialTicks) {
         final TileEntityCasing casing = (TileEntityCasing) tileEntity;
 
+        RenderHelper.disableStandardItemLighting();
+
         GL11.glPushMatrix();
         GL11.glTranslated(x + 0.5, y + 0.5, z + 0.5);
 
@@ -67,14 +69,14 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
             GL11.glTranslatef(0.5f, 0.5f, -0.505f);
             GL11.glScalef(-1, -1, 1);
 
+            GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+
             final EnumFacing facing = Face.toEnumFacing(face);
             final int neighborX = casing.getPositionX() + facing.getFrontOffsetX();
             final int neighborY = casing.getPositionY() + facing.getFrontOffsetY();
             final int neighborZ = casing.getPositionZ() + facing.getFrontOffsetZ();
             final int brightness = casing.getWorldObj().getLightBrightnessForSkyBlocks(neighborX, neighborY, neighborZ, 0);
             OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, brightness % 65536, brightness / 65536);
-
-            RenderHelper.disableStandardItemLighting();
 
             try {
                 module.render(casing.isEnabled(), partialTicks);
@@ -83,10 +85,12 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
                 TIS3D.getLog().error("A module threw an exception while rendering, won't render again!", e);
             }
 
-            RenderHelper.enableStandardItemLighting();
+            GL11.glPopAttrib();
 
             GL11.glPopMatrix();
         }
+
+        RenderHelper.enableStandardItemLighting();
 
         GL11.glPopMatrix();
     }

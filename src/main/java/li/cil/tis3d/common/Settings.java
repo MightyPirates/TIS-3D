@@ -3,6 +3,8 @@ package li.cil.tis3d.common;
 import net.minecraftforge.common.config.Configuration;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * User configurable stuff via config file.
@@ -30,6 +32,12 @@ public final class Settings {
      */
     public static int maxInfraredQueueLength = 16;
 
+    /**
+     * The list of <em>disabled</em> modules. Disabled modules will not be
+     * registered with the game. Filled in while loading, for convenience.
+     */
+    public static Set<String> disabledModules = new HashSet<>();
+
     // --------------------------------------------------------------------- //
 
     public static void load(final File configFile) {
@@ -51,8 +59,22 @@ public final class Settings {
                 Settings.maxInfraredQueueLength, 1, 64,
                 "The maximum number of infrared packets that can be stored in the receiver's buffer.");
 
+        checkModule(config, "module.audio", Constants.NAME_ITEM_MODULE_AUDIO);
+        checkModule(config, "module.execution", Constants.NAME_ITEM_MODULE_EXECUTION);
+        checkModule(config, "module.infrared", Constants.NAME_ITEM_MODULE_INFRARED);
+        checkModule(config, "module.random", Constants.NAME_ITEM_MODULE_RANDOM);
+        checkModule(config, "module.redstone", Constants.NAME_ITEM_MODULE_REDSTONE);
+        checkModule(config, "module.stack", Constants.NAME_ITEM_MODULE_STACK);
+
         if (config.hasChanged()) {
             config.save();
+        }
+    }
+
+    private static void checkModule(final Configuration config, final String path, final String name) {
+        if (!config.getBoolean("enabled", path, true,
+                "Whether the module is enabled. Disabled modules are not registered, meaning if you disable them later on the items will disappear!")) {
+            disabledModules.add(name);
         }
     }
 
