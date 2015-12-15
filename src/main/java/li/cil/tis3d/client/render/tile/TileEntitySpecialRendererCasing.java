@@ -4,8 +4,11 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.tile.TileEntityCasing;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import org.lwjgl.opengl.GL11;
 
 import java.util.HashSet;
@@ -64,12 +67,23 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
             GL11.glTranslatef(0.5f, 0.5f, -0.505f);
             GL11.glScalef(-1, -1, 1);
 
+            final EnumFacing facing = Face.toEnumFacing(face);
+            final int neighborX = casing.getPositionX() + facing.getFrontOffsetX();
+            final int neighborY = casing.getPositionY() + facing.getFrontOffsetY();
+            final int neighborZ = casing.getPositionZ() + facing.getFrontOffsetZ();
+            final int brightness = casing.getWorldObj().getLightBrightnessForSkyBlocks(neighborX, neighborY, neighborZ, 0);
+            OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, brightness % 65536, brightness / 65536);
+
+            RenderHelper.disableStandardItemLighting();
+
             try {
                 module.render(casing.isEnabled(), partialTicks);
             } catch (final Exception e) {
                 BLACKLIST.add(module.getClass());
                 TIS3D.getLog().error("A module threw an exception while rendering, won't render again!", e);
             }
+
+            RenderHelper.enableStandardItemLighting();
 
             GL11.glPopMatrix();
         }
