@@ -18,7 +18,6 @@ import li.cil.tis3d.common.module.execution.compiler.ParseException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -226,7 +225,6 @@ public final class ModuleExecution extends AbstractModuleRotatable {
 
         rotateForRendering();
 
-        RenderHelper.disableStandardItemLighting();
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 0 / 1.0F);
 
         final MachineState machineState = machine.getState();
@@ -242,8 +240,6 @@ public final class ModuleExecution extends AbstractModuleRotatable {
         if (machineState.code != null && Minecraft.getMinecraft().thePlayer.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
             renderState(machineState);
         }
-
-        RenderHelper.enableStandardItemLighting();
     }
 
     @Override

@@ -12,7 +12,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockRedstoneWire;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
@@ -122,7 +121,6 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
     public void render(final boolean enabled, final float partialTicks) {
         rotateForRendering();
 
-        RenderHelper.disableStandardItemLighting();
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 0 / 1.0F);
 
         RenderUtil.bindTexture(LOCATION_OVERLAY);
@@ -141,8 +139,6 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
         final float heightInput = relativeInput * SHARED_H;
         final float v0Input = SHARED_V1 - heightInput;
         RenderUtil.drawQuad(RIGHT_U0, (v0Input - 0.5f) * 2f, SHARED_W, heightInput * 2, RIGHT_U0, v0Input, RIGHT_U1, SHARED_V1);
-
-        RenderHelper.enableStandardItemLighting();
     }
 
     @Override

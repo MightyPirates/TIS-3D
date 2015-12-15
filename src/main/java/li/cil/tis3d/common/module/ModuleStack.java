@@ -11,7 +11,6 @@ import li.cil.tis3d.api.util.RenderUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
@@ -95,7 +94,6 @@ public final class ModuleStack extends AbstractModuleRotatable {
 
         rotateForRendering();
 
-        RenderHelper.disableStandardItemLighting();
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 0 / 1.0F);
 
         RenderUtil.bindTexture(LOCATION_OVERLAY);
@@ -107,8 +105,6 @@ public final class ModuleStack extends AbstractModuleRotatable {
         if (!isEmpty() && Minecraft.getMinecraft().thePlayer.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
             drawState();
         }
-
-        RenderHelper.enableStandardItemLighting();
     }
 
     @Override
