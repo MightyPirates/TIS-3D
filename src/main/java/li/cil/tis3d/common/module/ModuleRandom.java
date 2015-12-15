@@ -11,7 +11,6 @@ import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.render.TextureLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import org.lwjgl.opengl.GL11;
@@ -49,7 +48,6 @@ public final class ModuleRandom extends AbstractModule {
             return;
         }
 
-        RenderHelper.disableStandardItemLighting();
         GL11.glEnable(GL11.GL_BLEND);
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 0 / 1.0F);
 
@@ -58,7 +56,6 @@ public final class ModuleRandom extends AbstractModule {
         RenderUtil.drawQuad(icon.getMinU(), icon.getMinV(), icon.getMaxU(), icon.getMaxV());
 
         GL11.glDisable(GL11.GL_BLEND);
-        RenderHelper.enableStandardItemLighting();
     }
 
     // --------------------------------------------------------------------- //

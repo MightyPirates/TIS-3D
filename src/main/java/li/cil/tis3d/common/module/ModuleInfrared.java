@@ -15,7 +15,6 @@ import li.cil.tis3d.client.render.TextureLoader;
 import li.cil.tis3d.common.Settings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.nbt.NBTTagCompound;
@@ -92,7 +91,6 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
             return;
         }
 
-        RenderHelper.disableStandardItemLighting();
         GL11.glEnable(GL11.GL_BLEND);
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 0 / 1.0F);
 
@@ -101,7 +99,6 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
         RenderUtil.drawQuad(icon.getMinU(), icon.getMinV(), icon.getMaxU(), icon.getMaxV());
 
         GL11.glDisable(GL11.GL_BLEND);
-        RenderHelper.enableStandardItemLighting();
     }
 
     @Override
