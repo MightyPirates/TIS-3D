@@ -38,6 +38,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import java.util.function.Supplier;
 
@@ -46,6 +47,9 @@ import java.util.function.Supplier;
  */
 public class ProxyCommon {
     public void onPreInit(final FMLPreInitializationEvent event) {
+        // Load our settings first to have all we need for remaining init.
+        Settings.load(event.getSuggestedConfigurationFile());
+
         // Initialize API.
         API.creativeTab = new CreativeTab();
 
@@ -67,8 +71,6 @@ public class ProxyCommon {
 
         registerItem(Constants.NAME_ITEM_BOOK_CODE, ItemBookCode::new);
         registerItem(Constants.NAME_ITEM_BOOK_MANUAL, ItemBookManual::new);
-
-        Settings.load(event.getSuggestedConfigurationFile());
     }
 
     public void onInit(final FMLInitializationEvent event) {
@@ -76,77 +78,23 @@ public class ProxyCommon {
         OreDictionary.registerOre("book", GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_BOOK_CODE));
         OreDictionary.registerOre("book", GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_BOOK_MANUAL));
 
-        OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_AUDIO));
-        OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_EXECUTION));
-        OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_INFRARED));
-        OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_RANDOM));
-        OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_REDSTONE));
-        OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_STACK));
+        registerModuleOre(Constants.NAME_ITEM_MODULE_AUDIO);
+        registerModuleOre(Constants.NAME_ITEM_MODULE_EXECUTION);
+        registerModuleOre(Constants.NAME_ITEM_MODULE_INFRARED);
+        registerModuleOre(Constants.NAME_ITEM_MODULE_RANDOM);
+        registerModuleOre(Constants.NAME_ITEM_MODULE_REDSTONE);
+        registerModuleOre(Constants.NAME_ITEM_MODULE_STACK);
 
         // Hardcoded recipes!
-        GameRegistry.addRecipe(new ItemStack(GameRegistry.findBlock(API.MOD_ID, Constants.NAME_BLOCK_CASING), 8),
-                "IRI",
-                "RBR",
-                "IRI",
-                'I', Items.iron_ingot,
-                'R', Items.redstone,
-                'B', Blocks.iron_block);
-        GameRegistry.addRecipe(new ItemStack(GameRegistry.findBlock(API.MOD_ID, Constants.NAME_BLOCK_CONTROLLER), 1),
-                "IRI",
-                "RDR",
-                "IRI",
-                'I', Items.iron_ingot,
-                'R', Items.redstone,
-                'D', Items.diamond);
+        addBlockRecipe(Constants.NAME_BLOCK_CASING, "blockIron", 8);
+        addBlockRecipe(Constants.NAME_BLOCK_CONTROLLER, "gemDiamond", 1);
 
-        GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_AUDIO), 2),
-                "PPP",
-                "INI",
-                " R ",
-                'P', Blocks.glass_pane,
-                'I', Items.iron_ingot,
-                'R', Items.redstone,
-                'N', Blocks.noteblock);
-        GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_EXECUTION), 2),
-                "PPP",
-                "IGI",
-                " R ",
-                'P', Blocks.glass_pane,
-                'I', Items.iron_ingot,
-                'R', Items.redstone,
-                'G', Items.gold_ingot);
-        GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_INFRARED), 2),
-                "PPP",
-                "IGI",
-                " R ",
-                'P', Blocks.glass_pane,
-                'I', Items.iron_ingot,
-                'R', Items.redstone,
-                'G', Items.spider_eye);
-        GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_RANDOM), 2),
-                "PPP",
-                "IEI",
-                " R ",
-                'P', Blocks.glass_pane,
-                'I', Items.iron_ingot,
-                'R', Items.redstone,
-                'E', Items.ender_pearl);
-        GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_REDSTONE), 2),
-                "PPP",
-                "ICI",
-                " R ",
-                'P', Blocks.glass_pane,
-                'I', Items.iron_ingot,
-                'R', Items.redstone,
-                'C', Items.repeater);
-        GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_STACK), 2),
-                "PPP",
-                "IEI",
-                " R ",
-                'P', Blocks.glass_pane,
-                'I', Items.iron_ingot,
-                'R', Items.redstone,
-                'E', Blocks.chest);
+        addModuleRecipe(Constants.NAME_ITEM_MODULE_AUDIO, Item.getItemFromBlock(Blocks.noteblock));
+        addModuleRecipe(Constants.NAME_ITEM_MODULE_EXECUTION, "ingotGold");
+        addModuleRecipe(Constants.NAME_ITEM_MODULE_INFRARED, Items.spider_eye);
+        addModuleRecipe(Constants.NAME_ITEM_MODULE_RANDOM, Items.ender_pearl);
+        addModuleRecipe(Constants.NAME_ITEM_MODULE_REDSTONE, Items.repeater);
+        addModuleRecipe(Constants.NAME_ITEM_MODULE_STACK, Item.getItemFromBlock(Blocks.chest));
 
         // Register entities.
         EntityRegistry.registerModEntity(EntityInfraredPacket.class, Constants.NAME_ENTITY_INFRARED_PACKET, 1, TIS3D.instance, 16, 1, true);
@@ -190,6 +138,43 @@ public class ProxyCommon {
     }
 
     protected Item registerModule(final String name) {
+        if (Settings.disabledModules.contains(name)) {
+            return null;
+        }
+
         return registerItem(name, ItemModule::new);
+    }
+
+    private void registerModuleOre(final String name) {
+        if (Settings.disabledModules.contains(name)) {
+            return;
+        }
+
+        OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findItem(API.MOD_ID, name));
+    }
+
+    private void addBlockRecipe(final String name, final Object specialIngredient, final int count) {
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(GameRegistry.findBlock(API.MOD_ID, name), count),
+                "IRI",
+                "RSR",
+                "IRI",
+                'I', "ingotIron",
+                'R', "dustRedstone",
+                'S', specialIngredient));
+    }
+
+    private void addModuleRecipe(final String name, final Object specialIngredient) {
+        if (Settings.disabledModules.contains(name)) {
+            return;
+        }
+
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, name), 2),
+                "PPP",
+                "ISI",
+                " R ",
+                'P', "paneGlassColorless",
+                'I', "ingotIron",
+                'R', "dustRedstone",
+                'S', specialIngredient));
     }
 }
