@@ -18,6 +18,7 @@ import li.cil.tis3d.common.item.ItemBookCode;
 import li.cil.tis3d.common.item.ItemBookManual;
 import li.cil.tis3d.common.item.ItemModule;
 import li.cil.tis3d.common.network.Network;
+import li.cil.tis3d.common.provider.ModuleProviderAudio;
 import li.cil.tis3d.common.provider.ModuleProviderExecution;
 import li.cil.tis3d.common.provider.ModuleProviderInfrared;
 import li.cil.tis3d.common.provider.ModuleProviderRandom;
@@ -57,6 +58,7 @@ public class ProxyCommon {
         registerBlock(Constants.NAME_BLOCK_CASING, BlockCasing::new, TileEntityCasing.class);
         registerBlock(Constants.NAME_BLOCK_CONTROLLER, BlockController::new, TileEntityController.class);
 
+        registerModule(Constants.NAME_ITEM_MODULE_AUDIO);
         registerModule(Constants.NAME_ITEM_MODULE_EXECUTION);
         registerModule(Constants.NAME_ITEM_MODULE_INFRARED);
         registerModule(Constants.NAME_ITEM_MODULE_RANDOM);
@@ -74,6 +76,7 @@ public class ProxyCommon {
         OreDictionary.registerOre("book", GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_BOOK_CODE));
         OreDictionary.registerOre("book", GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_BOOK_MANUAL));
 
+        OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_AUDIO));
         OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_EXECUTION));
         OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_INFRARED));
         OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_RANDOM));
@@ -96,6 +99,14 @@ public class ProxyCommon {
                 'R', Items.redstone,
                 'D', Items.diamond);
 
+        GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_AUDIO), 2),
+                "PPP",
+                "INI",
+                " R ",
+                'P', Blocks.glass_pane,
+                'I', Items.iron_ingot,
+                'R', Items.redstone,
+                'N', Blocks.noteblock);
         GameRegistry.addRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_EXECUTION), 2),
                 "PPP",
                 "IGI",
@@ -147,6 +158,7 @@ public class ProxyCommon {
         MinecraftForge.EVENT_BUS.register(TickHandlerInfraredPacket.INSTANCE);
 
         // Register providers for built-in modules.
+        ModuleAPI.addProvider(new ModuleProviderAudio());
         ModuleAPI.addProvider(new ModuleProviderExecution());
         ModuleAPI.addProvider(new ModuleProviderInfrared());
         ModuleAPI.addProvider(new ModuleProviderStack());

@@ -252,6 +252,8 @@ public final class TileEntityController extends TileEntity implements ITickable 
         final Set<TileEntity> processed = new HashSet<>();
         // List of pending tile entities that still need to be scanned.
         final Queue<TileEntity> queue = new ArrayDeque<>();
+        // List of new found casings.
+        final List<TileEntityCasing> newCasings = new ArrayList<>(Settings.maxCasingsPerController);
 
         // Start at our location, keep going until there's nothing left to do.
         processed.add(this);
@@ -275,7 +277,7 @@ public final class TileEntityController extends TileEntity implements ITickable 
                 }
             } else /* if (tileEntity instanceof TileEntityCasing) */ {
                 // We only allow a certain number of casings per multi-block.
-                if (casings.size() + 1 > Settings.maxCasingsPerController) {
+                if (newCasings.size() + 1 > Settings.maxCasingsPerController) {
                     clear(ControllerState.TOO_COMPLEX);
                     return;
                 }
@@ -283,10 +285,15 @@ public final class TileEntityController extends TileEntity implements ITickable 
                 // Register as the controller with the casing and add neighbors.
                 final TileEntityCasing casing = (TileEntityCasing) tileEntity;
                 casing.setController(this);
-                casings.add(casing);
+                newCasings.add(casing);
                 addNeighbors(casing, processed, queue);
             }
         }
+
+        // Replace old list of casings with the new found ones, now that we're
+        // sure we don't have to disable our old ones.
+        casings.clear();
+        casings.addAll(newCasings);
 
         // Ensure our casings know their neighbors.
         casings.forEach(TileEntityCasing::checkNeighbors);
@@ -342,7 +349,7 @@ public final class TileEntityController extends TileEntity implements ITickable 
         // Disable modules if we're in an errored state. If we're in an
         // incomplete state or rescanning, leave the state as is to avoid
         // unnecessarily resetting the computer.
-        if (state != ControllerState.INCOMPLETE && state != ControllerState.SCANNING) {
+        if (toState != ControllerState.INCOMPLETE && toState != ControllerState.SCANNING) {
             casings.forEach(TileEntityCasing::onDisabled);
         }
         casings.clear();
