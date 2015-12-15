@@ -37,6 +37,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -436,7 +437,7 @@ public final class ModuleExecution extends AbstractModuleRotatable {
 
             final List<String> code = new ArrayList<>();
             for (int page = 0; page < pages.tagCount(); page++) {
-                code.add(pages.getStringTagAt(page));
+                Collections.addAll(code, ItemBookCode.Data.PATTERN_LINES.split(pages.getStringTagAt(page)));
             }
             return code;
         }
