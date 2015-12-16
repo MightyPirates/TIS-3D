@@ -81,7 +81,7 @@ public final class ModuleAudio extends AbstractModule {
      */
     private void stepInput() {
         for (final Port port : Port.VALUES) {
-            // Continuously read from all ports, emit packet when receiving a value.
+            // Continuously read from all ports, play sound when receiving a value.
             final Pipe receivingPipe = getCasing().getReceivingPipe(getFace(), port);
             if (!receivingPipe.isReading()) {
                 receivingPipe.beginRead();

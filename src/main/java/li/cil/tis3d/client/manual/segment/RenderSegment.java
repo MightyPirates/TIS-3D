@@ -47,18 +47,6 @@ public final class RenderSegment extends AbstractSegment implements InteractiveS
     public void notifyHover() {
     }
 
-    private float scale(final int maxWidth) {
-        return Math.min(1f, maxWidth / (float) imageRenderer.getWidth());
-    }
-
-    public int imageWidth(final int maxWidth) {
-        return Math.min(maxWidth, imageRenderer.getWidth());
-    }
-
-    public int imageHeight(final int maxWidth) {
-        return MathHelper.ceiling_float_int(imageRenderer.getHeight() * scale(maxWidth)) + 4;
-    }
-
     @Override
     public int nextY(final int indent, final int maxWidth, final FontRenderer renderer) {
         return imageHeight(maxWidth) + ((indent > 0) ? Document.lineHeight(renderer) : 0);
@@ -117,5 +105,17 @@ public final class RenderSegment extends AbstractSegment implements InteractiveS
     @Override
     public String toString() {
         return String.format("![%s](%s)", title, imageRenderer);
+    }
+
+    private float scale(final int maxWidth) {
+        return Math.min(1f, maxWidth / (float) imageRenderer.getWidth());
+    }
+
+    private int imageWidth(final int maxWidth) {
+        return Math.min(maxWidth, imageRenderer.getWidth());
+    }
+
+    private int imageHeight(final int maxWidth) {
+        return MathHelper.ceiling_float_int(imageRenderer.getHeight() * scale(maxWidth)) + 4;
     }
 }

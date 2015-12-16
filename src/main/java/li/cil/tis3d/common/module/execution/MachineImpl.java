@@ -118,7 +118,7 @@ public final class MachineImpl implements Machine {
      * @param target the target to transform.
      * @return the adjusted target.
      */
-    public Target getRotatedTarget(final Target target) {
+    private Target getRotatedTarget(final Target target) {
         switch (target) {
             case LEFT:
             case RIGHT:

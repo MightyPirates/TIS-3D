@@ -18,7 +18,7 @@ import java.util.List;
  * The manual!
  */
 public final class ItemBookManual extends ItemBook {
-    public static final String TOOLTIP_BOOK_MANUAL = "tis3d.tooltip.bookManual";
+    private static final String TOOLTIP_BOOK_MANUAL = "tis3d.tooltip.bookManual";
 
     @Override
     public boolean isItemTool(final ItemStack stack) {

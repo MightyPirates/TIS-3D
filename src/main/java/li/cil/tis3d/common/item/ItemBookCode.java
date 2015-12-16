@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
  * The code book, utility book for coding ASM programs for execution modules.
  */
 public final class ItemBookCode extends ItemBook {
-    public static final String TOOLTIP_BOOK_CODE = "tis3d.tooltip.bookCode";
+    private static final String TOOLTIP_BOOK_CODE = "tis3d.tooltip.bookCode";
 
     public ItemBookCode() {
         setMaxStackSize(1);
