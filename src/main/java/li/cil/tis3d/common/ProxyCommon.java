@@ -40,6 +40,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import java.util.function.Supplier;
 
@@ -94,6 +95,8 @@ public class ProxyCommon {
 
         registerItem(Constants.NAME_ITEM_BOOK_CODE, ItemBookCode::new);
         registerItem(Constants.NAME_ITEM_BOOK_MANUAL, ItemBookManual::new);
+
+        registerItem(Constants.NAME_ITEM_PRISM, Item::new);
     }
 
     public void onInit(final FMLInitializationEvent event) {
@@ -114,12 +117,18 @@ public class ProxyCommon {
         addBlockRecipe(Constants.NAME_BLOCK_CONTROLLER, "gemDiamond", 1);
 
         addModuleRecipe(Constants.NAME_ITEM_MODULE_AUDIO, Item.getItemFromBlock(Blocks.noteblock));
-        addModuleRecipe(Constants.NAME_ITEM_MODULE_DISPLAY, "blockQuartz");
+        addModuleRecipe(Constants.NAME_ITEM_MODULE_DISPLAY, GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_PRISM));
         addModuleRecipe(Constants.NAME_ITEM_MODULE_EXECUTION, "ingotGold");
         addModuleRecipe(Constants.NAME_ITEM_MODULE_INFRARED, Items.spider_eye);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_RANDOM, Items.ender_pearl);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_REDSTONE, Items.repeater);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_STACK, Item.getItemFromBlock(Blocks.chest));
+
+        GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_PRISM), 1),
+                "gemQuartz",
+                "dustRedstone",
+                "gemLapis",
+                "gemEmerald"));
 
         // Register entities.
         EntityRegistry.registerModEntity(EntityInfraredPacket.class, Constants.NAME_ENTITY_INFRARED_PACKET, 1, TIS3D.instance, 16, 1, true);
