@@ -26,6 +26,7 @@ public final class Constants {
     public static final String NAME_ITEM_MODULE_REDSTONE = "moduleRedstone";
     public static final String NAME_ITEM_MODULE_STACK = "moduleStack";
     public static final String NAME_ITEM_MODULE_RANDOM = "moduleRandom";
+    public static final String NAME_ITEM_PRISM = "prism";
 
     public static final String NAME_ENTITY_INFRARED_PACKET = API.MOD_ID + ":infraredPacket";
 
