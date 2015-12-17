@@ -7,8 +7,8 @@ import net.minecraft.client.gui.FontRenderer;
 import java.util.Set;
 
 abstract class BasicTextSegment extends AbstractSegment implements Segment {
-    protected static final Set<Character> BREAKS = ImmutableSet.of(' ', '.', ',', ':', ';', '!', '?', '_', '=', '-', '+', '*', '/', '\\');
-    protected static final Set<String> LISTS = ImmutableSet.of("- ", "* ");
+    private static final Set<Character> BREAKS = ImmutableSet.of(' ', '.', ',', ':', ';', '!', '?', '_', '=', '-', '+', '*', '/', '\\');
+    private static final Set<String> LISTS = ImmutableSet.of("- ", "* ");
 
     private String rootPrefix = null; // Lazily initialized.
 

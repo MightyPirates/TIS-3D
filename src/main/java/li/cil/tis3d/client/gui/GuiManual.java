@@ -45,10 +45,10 @@ public final class GuiManual extends GuiScreen {
     private int xSize = 0;
     private int ySize = 0;
 
-    boolean isDragging = false;
-    Segment document = null;
-    int documentHeight = 0;
-    Optional<InteractiveSegment> currentSegment = Optional.empty();
+    private boolean isDragging = false;
+    private Segment document = null;
+    private int documentHeight = 0;
+    private Optional<InteractiveSegment> currentSegment = Optional.empty();
 
     private ImageButton scrollButton = null;
 

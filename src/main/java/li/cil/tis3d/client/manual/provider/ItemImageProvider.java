@@ -10,7 +10,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 public final class ItemImageProvider implements ImageProvider {
-    public static final String WARNING_ITEM_MISSING = API.MOD_ID + ".manual.warning.missing.item";
+    private static final String WARNING_ITEM_MISSING = API.MOD_ID + ".manual.warning.missing.item";
 
     @Override
     public ImageRenderer getImage(final String data) {

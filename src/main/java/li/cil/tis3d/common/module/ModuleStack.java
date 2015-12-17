@@ -41,7 +41,7 @@ public final class ModuleStack extends AbstractModuleRotatable {
     /**
      * The number of elements the stack may store.
      */
-    public static final int STACK_SIZE = 16;
+    private static final int STACK_SIZE = 16;
 
     private static final ResourceLocation LOCATION_OVERLAY = new ResourceLocation(API.MOD_ID, "textures/blocks/overlay/moduleStack.png");
 

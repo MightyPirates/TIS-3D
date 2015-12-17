@@ -11,7 +11,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 public final class BlockImageProvider implements ImageProvider {
-    public static final String WARNING_BLOCK_MISSING = API.MOD_ID + ".manual.warning.missing.block";
+    private static final String WARNING_BLOCK_MISSING = API.MOD_ID + ".manual.warning.missing.block";
 
     @Override
     public ImageRenderer getImage(final String data) {

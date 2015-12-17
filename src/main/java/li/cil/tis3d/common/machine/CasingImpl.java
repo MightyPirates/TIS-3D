@@ -219,6 +219,9 @@ public final class CasingImpl implements Casing {
         for (int index = 0; index < tileEntity.getSizeInventory(); index++) {
             final ItemStack stack = tileEntity.getStackInSlot(index);
             if (stack == null) {
+                if (modules[index] != null) {
+                    modules[index].onDisposed();
+                }
                 modules[index] = null;
                 continue;
             }
@@ -226,6 +229,9 @@ public final class CasingImpl implements Casing {
             final Face face = Face.VALUES[index];
             final ModuleProvider provider = ModuleAPI.getProviderFor(stack, tileEntity, face);
             if (provider == null) {
+                if (modules[index] != null) {
+                    modules[index].onDisposed();
+                }
                 modules[index] = null;
                 continue;
             }

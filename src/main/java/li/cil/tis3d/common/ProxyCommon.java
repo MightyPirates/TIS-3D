@@ -24,6 +24,7 @@ import li.cil.tis3d.common.item.ItemBookManual;
 import li.cil.tis3d.common.item.ItemModule;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.provider.ModuleProviderAudio;
+import li.cil.tis3d.common.provider.ModuleProviderDisplay;
 import li.cil.tis3d.common.provider.ModuleProviderExecution;
 import li.cil.tis3d.common.provider.ModuleProviderInfrared;
 import li.cil.tis3d.common.provider.ModuleProviderRandom;
@@ -84,6 +85,7 @@ public class ProxyCommon {
         registerBlock(Constants.NAME_BLOCK_CONTROLLER, BlockController::new, TileEntityController.class);
 
         registerModule(Constants.NAME_ITEM_MODULE_AUDIO);
+        registerModule(Constants.NAME_ITEM_MODULE_DISPLAY);
         registerModule(Constants.NAME_ITEM_MODULE_EXECUTION);
         registerModule(Constants.NAME_ITEM_MODULE_INFRARED);
         registerModule(Constants.NAME_ITEM_MODULE_RANDOM);
@@ -100,6 +102,7 @@ public class ProxyCommon {
         OreDictionary.registerOre("book", GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_BOOK_MANUAL));
 
         registerModuleOre(Constants.NAME_ITEM_MODULE_AUDIO);
+        registerModuleOre(Constants.NAME_ITEM_MODULE_DISPLAY);
         registerModuleOre(Constants.NAME_ITEM_MODULE_EXECUTION);
         registerModuleOre(Constants.NAME_ITEM_MODULE_INFRARED);
         registerModuleOre(Constants.NAME_ITEM_MODULE_RANDOM);
@@ -111,6 +114,7 @@ public class ProxyCommon {
         addBlockRecipe(Constants.NAME_BLOCK_CONTROLLER, "gemDiamond", 1);
 
         addModuleRecipe(Constants.NAME_ITEM_MODULE_AUDIO, Item.getItemFromBlock(Blocks.noteblock));
+        addModuleRecipe(Constants.NAME_ITEM_MODULE_DISPLAY, "blockQuartz");
         addModuleRecipe(Constants.NAME_ITEM_MODULE_EXECUTION, "ingotGold");
         addModuleRecipe(Constants.NAME_ITEM_MODULE_INFRARED, Items.spider_eye);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_RANDOM, Items.ender_pearl);
@@ -128,6 +132,7 @@ public class ProxyCommon {
 
         // Register providers for built-in modules.
         ModuleAPI.addProvider(new ModuleProviderAudio());
+        ModuleAPI.addProvider(new ModuleProviderDisplay());
         ModuleAPI.addProvider(new ModuleProviderExecution());
         ModuleAPI.addProvider(new ModuleProviderInfrared());
         ModuleAPI.addProvider(new ModuleProviderStack());
@@ -168,7 +173,7 @@ public class ProxyCommon {
         return registerItem(name, ItemModule::new);
     }
 
-    private void registerModuleOre(final String name) {
+    private static void registerModuleOre(final String name) {
         if (Settings.disabledModules.contains(name)) {
             return;
         }
@@ -176,7 +181,7 @@ public class ProxyCommon {
         OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findItem(API.MOD_ID, name));
     }
 
-    private void addBlockRecipe(final String name, final Object specialIngredient, final int count) {
+    private static void addBlockRecipe(final String name, final Object specialIngredient, final int count) {
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(GameRegistry.findBlock(API.MOD_ID, name), count),
                 "IRI",
                 "RSR",
@@ -186,7 +191,7 @@ public class ProxyCommon {
                 'S', specialIngredient));
     }
 
-    private void addModuleRecipe(final String name, final Object specialIngredient) {
+    private static void addModuleRecipe(final String name, final Object specialIngredient) {
         if (Settings.disabledModules.contains(name)) {
             return;
         }

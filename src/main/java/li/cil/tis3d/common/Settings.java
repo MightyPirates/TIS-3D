@@ -36,7 +36,7 @@ public final class Settings {
      * The list of <em>disabled</em> modules. Disabled modules will not be
      * registered with the game. Filled in while loading, for convenience.
      */
-    public static Set<String> disabledModules = new HashSet<>();
+    public static final Set<String> disabledModules = new HashSet<>();
 
     // --------------------------------------------------------------------- //
 
@@ -59,6 +59,7 @@ public final class Settings {
                 Settings.maxInfraredQueueLength, 1, 64,
                 "The maximum number of infrared packets that can be stored in the receiver's buffer.");
 
+        disabledModules.clear();
         checkModule(config, "module.audio", Constants.NAME_ITEM_MODULE_AUDIO);
         checkModule(config, "module.execution", Constants.NAME_ITEM_MODULE_EXECUTION);
         checkModule(config, "module.infrared", Constants.NAME_ITEM_MODULE_INFRARED);

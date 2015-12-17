@@ -69,8 +69,6 @@ public interface Segment {
      */
     Optional<InteractiveSegment> render(final int x, final int y, final int indent, final int maxWidth, final FontRenderer renderer, final int mouseX, final int mouseY);
 
-    Iterable<String> renderAsText();
-
     // ----------------------------------------------------------------------- //
 
     /**

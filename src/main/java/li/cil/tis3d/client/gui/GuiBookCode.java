@@ -383,7 +383,7 @@ public class GuiBookCode extends GuiScreen {
         return fontRendererObj.trimStringToWidth(lines.get(line).toString(), relX).length();
     }
 
-    public int columnToX(final int line, final int column) {
+    private int columnToX(final int line, final int column) {
         return guiX + CODE_POS_X + fontRendererObj.getStringWidth(lines.get(line).substring(0, Math.min(column, lines.get(line).length())));
     }
 

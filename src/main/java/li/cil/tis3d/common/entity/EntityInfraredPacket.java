@@ -100,7 +100,7 @@ public class EntityInfraredPacket extends Entity implements InfraredPacket {
     }
 
     /**
-     * Unflag the entity as dead; used to revive it when being redirected.
+     * Remove flag that the entity is dead; used to revive it when being redirected.
      */
     private void revive() {
         isDead = false;
