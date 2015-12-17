@@ -1,17 +1,17 @@
 package li.cil.tis3d.common.module;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.opengl.GL11;
 
 import java.util.Arrays;
 
@@ -147,7 +147,7 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
 
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 0f);
 
-        GlStateManager.bindTexture(getGlTextureId());
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, getGlTextureId());
 
         RenderUtil.drawQuad();
     }
@@ -241,7 +241,7 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
      */
     private int getGlTextureId() {
         if (glTextureId == 0) {
-            glTextureId = GlStateManager.generateTexture();
+            glTextureId = TextureUtil.glGenTextures();
             TextureUtil.allocateTexture(glTextureId, RESOLUTION, RESOLUTION);
             TextureUtil.uploadTexture(glTextureId, image, RESOLUTION, RESOLUTION);
         }
