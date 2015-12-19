@@ -68,8 +68,8 @@ public interface CharsetWiresRedstone extends IRedstoneEmitter, IRedstoneUpdatab
                         }
 
                         final short signal = (short) emitter.getRedstoneSignal(face, facing.getOpposite());
-                        if (signal > maxSignal) {
-                            maxSignal = signal;
+                        if ((signal & 0xFFFF) > (maxSignal & 0xFFFF)) {
+                            maxSignal = (short) (signal & 0xFFFF);
                         }
                     }
                     redstone.setRedstoneInput(maxSignal);

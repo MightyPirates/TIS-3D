@@ -75,7 +75,7 @@ public interface CharsetWiresBundledRedstone extends IBundledEmitter, IBundledUp
                         final byte[] signal = emitter.getBundledSignal(face, facing.getOpposite());
                         if (signal != null) {
                             for (int channel = 0; channel < maxSignal.length; channel++) {
-                                if (signal[channel] > maxSignal[channel]) {
+                                if ((signal[channel] & 0xFF) > (maxSignal[channel] & 0xFF)) {
                                     maxSignal[channel] = signal[channel];
                                 }
                             }
@@ -83,7 +83,7 @@ public interface CharsetWiresBundledRedstone extends IBundledEmitter, IBundledUp
                     }
 
                     for (int channel = 0; channel < maxSignal.length; channel++) {
-                        bundledRedstone.setBundledRedstoneInput(channel, maxSignal[channel]);
+                        bundledRedstone.setBundledRedstoneInput(channel, (short) (maxSignal[channel] & 0xFF));
                     }
                 }
             }
