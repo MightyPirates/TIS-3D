@@ -14,7 +14,7 @@ public final class API {
     /**
      * The current version of the mod.
      */
-    public static final String MOD_VERSION = "9001";
+    public static final String MOD_VERSION = "@VERSION@";
 
     // --------------------------------------------------------------------- //
 
