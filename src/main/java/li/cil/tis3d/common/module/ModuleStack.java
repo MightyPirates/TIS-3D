@@ -251,7 +251,7 @@ public final class ModuleStack extends AbstractModuleRotatable {
         GlStateManager.color(1f, 1f, 1f, 1f);
 
         for (int i = 0; i <= top; i++) {
-            FontRendererAPI.drawString(String.format("%4X", (short) stack[i]));
+            FontRendererAPI.drawString(String.format("%4X", stack[i]));
             GlStateManager.translate(0, FontRendererAPI.getCharHeight() + 1, 0);
             if ((i + 1) % 4 == 0) {
                 GlStateManager.translate((FontRendererAPI.getCharWidth() + 1) * 5, (FontRendererAPI.getCharHeight() + 1) * -4, 0);
