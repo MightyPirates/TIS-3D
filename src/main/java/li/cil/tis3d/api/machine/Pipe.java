@@ -13,7 +13,7 @@ import li.cil.tis3d.api.module.Module;
  * start reading and writing on a pipe between them in the same update step,
  * there is no execution-order-dependent behavior: the pipe requires a read
  * and write operation to be started via {@link #beginRead()} and
- * {@link #beginWrite(int)}, respectively, and will then, <em>after</em> the
+ * {@link #beginWrite(short)}, respectively, and will then, <em>after</em> the
  * modules finished their update for the current step switch to a transferring
  * state, so that the modules can finish the operation in the next update.
  * <p>
@@ -47,7 +47,7 @@ public interface Pipe {
      * @param value the value to write to the pipe.
      * @throws IllegalStateException if the pipe is already being written to.
      */
-    void beginWrite(int value) throws IllegalStateException;
+    void beginWrite(short value) throws IllegalStateException;
 
     /**
      * Cancel an active write operation.
@@ -59,7 +59,7 @@ public interface Pipe {
     /**
      * Whether the pipe is currently being written to.
      * <p>
-     * This is <tt>true</tt> as soon as {@link #beginWrite(int)} was called and
+     * This is <tt>true</tt> as soon as {@link #beginWrite(short)} was called and
      * until {@link #read()} or {@link #cancelWrite()} was called to finish or
      * cancel the operation.
      *
@@ -125,5 +125,5 @@ public interface Pipe {
      * @return the value transferred through the pipe.
      * @throws IllegalStateException if the pipe is in an incorrect state.
      */
-    int read() throws IllegalStateException;
+    short read() throws IllegalStateException;
 }

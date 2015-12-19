@@ -62,7 +62,7 @@ public class EntityInfraredPacket extends Entity implements InfraredPacket {
     /**
      * The value carried by this packet.
      */
-    private int value;
+    private short value;
 
     public EntityInfraredPacket(final World world) {
         super(world);
@@ -82,7 +82,7 @@ public class EntityInfraredPacket extends Entity implements InfraredPacket {
      * @param direction the direction in which the packet was emitted.
      * @param value     the value the packet carries.
      */
-    public void configure(final Vec3 start, final Vec3 direction, final int value) {
+    public void configure(final Vec3 start, final Vec3 direction, final short value) {
         setPosition(start.xCoord, start.yCoord, start.zCoord);
         motionX = direction.xCoord * TRAVEL_SPEED;
         motionY = direction.yCoord * TRAVEL_SPEED;
@@ -115,7 +115,7 @@ public class EntityInfraredPacket extends Entity implements InfraredPacket {
 
     @Override
     protected void entityInit() {
-        dataWatcher.addObject(DATA_VALUE, 0);
+        dataWatcher.addObject(DATA_VALUE, (short) 0);
         if (!getEntityWorld().isRemote) {
             TickHandlerInfraredPacket.INSTANCE.watchPacket(this);
         }
@@ -132,13 +132,13 @@ public class EntityInfraredPacket extends Entity implements InfraredPacket {
     @Override
     protected void readEntityFromNBT(final NBTTagCompound nbt) {
         lifetime = nbt.getInteger(TAG_LIFETIME);
-        value = nbt.getInteger(TAG_VALUE);
+        value = nbt.getShort(TAG_VALUE);
     }
 
     @Override
     protected void writeEntityToNBT(final NBTTagCompound nbt) {
         nbt.setInteger(TAG_LIFETIME, lifetime);
-        nbt.setInteger(TAG_VALUE, value);
+        nbt.setShort(TAG_VALUE, value);
     }
 
     @Override
@@ -202,7 +202,7 @@ public class EntityInfraredPacket extends Entity implements InfraredPacket {
     // InfraredPacket
 
     @Override
-    public int getPacketValue() {
+    public short getPacketValue() {
         return value;
     }
 

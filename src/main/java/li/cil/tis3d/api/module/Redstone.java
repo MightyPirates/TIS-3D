@@ -20,5 +20,5 @@ public interface Redstone extends Module {
      *
      * @param value the new input value of the module.
      */
-    void setRedstoneInput(int value);
+    void setRedstoneInput(short value);
 }

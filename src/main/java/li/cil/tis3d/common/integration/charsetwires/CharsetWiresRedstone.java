@@ -61,13 +61,13 @@ public interface CharsetWiresRedstone extends IRedstoneEmitter, IRedstoneUpdatab
                 if (tileEntity instanceof IRedstoneEmitter) {
                     final IRedstoneEmitter emitter = (IRedstoneEmitter) tileEntity;
 
-                    int maxSignal = 0;
+                    short maxSignal = 0;
                     for (final WireFace face : WireFace.VALUES) {
                         if (!connectivity[face.ordinal()]) {
                             continue;
                         }
 
-                        final int signal = emitter.getRedstoneSignal(face, facing.getOpposite());
+                        final short signal = (short) emitter.getRedstoneSignal(face, facing.getOpposite());
                         if (signal > maxSignal) {
                             maxSignal = signal;
                         }

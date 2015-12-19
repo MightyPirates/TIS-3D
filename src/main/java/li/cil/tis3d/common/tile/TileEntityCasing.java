@@ -174,7 +174,7 @@ public final class TileEntityCasing extends TileEntity implements
             final Module module = getCasing().getModule(face);
             if (module instanceof Redstone) {
                 final Redstone redstone = (Redstone) module;
-                final int input = computeRedstoneInput(face);
+                final short input = computeRedstoneInput(face);
                 redstone.setRedstoneInput(input);
             }
         }
@@ -354,7 +354,7 @@ public final class TileEntityCasing extends TileEntity implements
         return null;
     }
 
-    private int computeRedstoneInput(final Face face) {
+    private short computeRedstoneInput(final Face face) {
         final EnumFacing facing = Face.toEnumFacing(face);
         final World world = getCasing().getCasingWorld();
         final BlockPos inputPos = getCasing().getPosition().offset(facing);
@@ -364,10 +364,10 @@ public final class TileEntityCasing extends TileEntity implements
 
         final int input = world.getRedstonePower(inputPos, facing);
         if (input >= 15) {
-            return input;
+            return (short) input;
         } else {
             final IBlockState state = world.getBlockState(inputPos);
-            return Math.max(input, state.getBlock() == Blocks.redstone_wire ? state.getValue(BlockRedstoneWire.POWER) : 0);
+            return (short) Math.max(input, state.getBlock() == Blocks.redstone_wire ? state.getValue(BlockRedstoneWire.POWER) : 0);
         }
     }
 

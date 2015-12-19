@@ -19,5 +19,5 @@ public interface BundledRedstone extends Module {
      * @param channel the bundled channel to set the value of.
      * @param value   the new input value of the module.
      */
-    void setBundledRedstoneInput(int channel, int value);
+    void setBundledRedstoneInput(int channel, short value);
 }

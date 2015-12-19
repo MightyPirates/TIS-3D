@@ -27,7 +27,7 @@ public final class ModuleStack extends AbstractModuleRotatable {
     // --------------------------------------------------------------------- //
     // Persisted data
 
-    private final int[] stack = new int[STACK_SIZE];
+    private final short[] stack = new short[STACK_SIZE];
     private int top = -1;
 
     // --------------------------------------------------------------------- //
@@ -118,7 +118,11 @@ public final class ModuleStack extends AbstractModuleRotatable {
         super.readFromNBT(nbt);
 
         final int[] stackNbt = nbt.getIntArray(TAG_STACK);
-        System.arraycopy(stackNbt, 0, stack, 0, Math.min(stackNbt.length, stack.length));
+        final int count = Math.min(stackNbt.length, stack.length);
+        for (int i = 0; i < count; i++) {
+            stack[i] = (short) stackNbt[i];
+        }
+
         top = Math.max(-1, Math.min(STACK_SIZE - 1, nbt.getInteger(TAG_TOP)));
     }
 
@@ -126,7 +130,12 @@ public final class ModuleStack extends AbstractModuleRotatable {
     public void writeToNBT(final NBTTagCompound nbt) {
         super.writeToNBT(nbt);
 
-        nbt.setIntArray(TAG_STACK, stack);
+        final int[] stackNbt = new int[stack.length];
+        for (int i = 0; i < stack.length; i++) {
+            stackNbt[i] = stack[i];
+        }
+        nbt.setIntArray(TAG_STACK, stackNbt);
+
         nbt.setInteger(TAG_TOP, top);
     }
 
@@ -156,7 +165,7 @@ public final class ModuleStack extends AbstractModuleRotatable {
      * @param value the value to store on the stack.
      * @throws ArrayIndexOutOfBoundsException if the stack is full.
      */
-    private void push(final int value) {
+    private void push(final short value) {
         stack[++top] = value;
 
         sendData();
@@ -169,7 +178,7 @@ public final class ModuleStack extends AbstractModuleRotatable {
      * @return the value on top of the stack.
      * @throws ArrayIndexOutOfBoundsException if the stack is empty.
      */
-    private int peek() {
+    private short peek() {
         return stack[top];
     }
 

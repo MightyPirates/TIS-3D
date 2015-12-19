@@ -37,7 +37,7 @@ abstract class AbstractInstructionEmitter implements InstructionEmitter {
         }
     }
 
-    protected static Object checkTargetOrInt(final int lineNumber, final String name, final int start, final int end) throws ParseException {
+    protected static Object checkTargetOrNumber(final int lineNumber, final String name, final int start, final int end) throws ParseException {
         try {
             final Target target = Enum.valueOf(Target.class, name);
             if (!Target.VALID_TARGETS.contains(target)) {
@@ -45,19 +45,11 @@ abstract class AbstractInstructionEmitter implements InstructionEmitter {
             }
             return target;
         } catch (final IllegalArgumentException ex) {
-            if (isInteger(name)) {
-                return Integer.decode(name);
+            try {
+                return Integer.decode(name).shortValue();
+            } catch (final NumberFormatException ignored) {
+                throw new ParseException(Constants.MESSAGE_INVALID_TARGET, lineNumber, start, end);
             }
-            throw new ParseException(Constants.MESSAGE_INVALID_TARGET, lineNumber, start, end);
-        }
-    }
-
-    private static boolean isInteger(final String value) {
-        try {
-            Integer.decode(value);
-            return true;
-        } catch (final NumberFormatException ex) {
-            return false;
         }
     }
 }

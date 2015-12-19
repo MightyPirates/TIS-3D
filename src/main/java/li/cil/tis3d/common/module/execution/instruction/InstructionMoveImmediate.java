@@ -5,9 +5,9 @@ import li.cil.tis3d.common.module.execution.target.Target;
 import li.cil.tis3d.common.module.execution.target.TargetInterface;
 
 public final class InstructionMoveImmediate extends AbstractInstructionMove {
-    private final int value;
+    private final short value;
 
-    public InstructionMoveImmediate(final int value, final Target destination) {
+    public InstructionMoveImmediate(final short value, final Target destination) {
         super(destination);
         this.value = value;
     }

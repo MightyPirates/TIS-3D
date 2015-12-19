@@ -9,6 +9,8 @@ import li.cil.tis3d.api.module.BundledRedstone;
 import li.cil.tis3d.api.module.BundledRedstoneOutputChangedEvent;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
+import li.cil.tis3d.util.ColorUtils;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
@@ -22,9 +24,9 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
     // --------------------------------------------------------------------- //
     // Persisted data
 
-    private final int[] output = new int[16];
-    private final int[] input = new int[16];
-    private int channel = 0;
+    private final short[] output = new short[16];
+    private final short[] input = new short[16];
+    private short channel = 0;
 
     // --------------------------------------------------------------------- //
     // Computed data
@@ -62,8 +64,8 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
     public void onDisabled() {
         assert (!getCasing().getCasingWorld().isRemote);
 
-        Arrays.fill(input, 0);
-        Arrays.fill(output, 0);
+        Arrays.fill(input, (short) 0);
+        Arrays.fill(output, (short) 0);
         channel = 0;
 
         final BundledRedstoneOutputChangedEvent event = new BundledRedstoneOutputChangedEvent(this, -1);
@@ -102,6 +104,10 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
         // Draw base overlay.
         RenderUtil.drawQuad();
 
+        if (!enabled) {
+            return;
+        }
+
         RenderUtil.bindTexture(LOCATION_COLORS_OVERLAY);
 
         // Draw output bar.
@@ -119,6 +125,13 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
                 RenderUtil.drawQuad(0.5f, v, 1, v + V_STEP);
             }
         }
+
+        // Draw active channel indicator.
+        GlStateManager.disableTexture2D();
+        final int color = ColorUtils.getColorByIndex(channel);
+        GlStateManager.color(ColorUtils.getRed(color), ColorUtils.getGreen(color), ColorUtils.getBlue(color));
+        RenderUtil.drawUntexturedQuad(7 / 16f, 7 / 16f, 2 / 16f, 2 / 16f);
+        GlStateManager.enableTexture2D();
     }
 
     @Override
@@ -127,26 +140,34 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
 
         final int[] outputNbt = nbt.getIntArray(TAG_OUTPUT);
         for (int i = 0; i < outputNbt.length; i++) {
-            outputNbt[i] = Math.max(0, Math.min(0xFFFF, outputNbt[i]));
+            output[i] = (short) outputNbt[i];
         }
-        System.arraycopy(outputNbt, 0, output, 0, Math.min(outputNbt.length, output.length));
 
         final int[] inputNbt = nbt.getIntArray(TAG_INPUT);
         for (int i = 0; i < inputNbt.length; i++) {
-            inputNbt[i] = Math.max(0, Math.min(0xFFFF, inputNbt[i]));
+            input[i] = (short) inputNbt[i];
         }
-        System.arraycopy(inputNbt, 0, input, 0, Math.min(inputNbt.length, input.length));
 
-        channel = Math.max(0, Math.min(input.length - 1, nbt.getInteger(TAG_CHANNEL)));
+        channel = (short) Math.max(0, Math.min(input.length - 1, nbt.getShort(TAG_CHANNEL)));
     }
 
     @Override
     public void writeToNBT(final NBTTagCompound nbt) {
         super.writeToNBT(nbt);
 
-        nbt.setIntArray(TAG_OUTPUT, output);
-        nbt.setIntArray(TAG_INPUT, input);
-        nbt.setInteger(TAG_CHANNEL, channel);
+        final int[] outputNbt = new int[output.length];
+        for (int i = 0; i < output.length; i++) {
+            outputNbt[i] = output[i];
+        }
+        nbt.setIntArray(TAG_OUTPUT, outputNbt);
+
+        final int[] inputNbt = new int[input.length];
+        for (int i = 0; i < input.length; i++) {
+            inputNbt[i] = input[i];
+        }
+        nbt.setIntArray(TAG_INPUT, inputNbt);
+
+        nbt.setShort(TAG_CHANNEL, channel);
     }
 
     // --------------------------------------------------------------------- //
@@ -158,7 +179,7 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
     }
 
     @Override
-    public void setBundledRedstoneInput(final int channel, final int value) {
+    public void setBundledRedstoneInput(final int channel, final short value) {
         // We never call this on the client side, but other might...
         if (getCasing().getCasingWorld().isRemote) {
             return;
@@ -215,8 +236,8 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
      * @param value the value that was read.
      */
     private void process(final int value) {
-        final int hi = (value & 0xFF00) >>> 8;
-        final int lo = value & 0xFF;
+        final short hi = (short) ((value & 0xFF00) >>> 8);
+        final short lo = (short) (value & 0xFF);
         if (hi == 0xFF) {
             // lo = new output channel
             if (lo < 0 || lo >= input.length) {
@@ -228,6 +249,9 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
 
                 // We changed channel, update what we pass on.
                 cancelWrite();
+
+                // Tell our client representation the channel changed.
+                sendData();
             }
         } else {
             // hi = channel, lo = value
@@ -241,7 +265,7 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
      * @param channel the channel to change the output of.
      * @param value   the new output value.
      */
-    private void setRedstoneOutput(final int channel, final int value) {
+    private void setRedstoneOutput(final int channel, final short value) {
         // Ignore invalid channels.
         if (channel < 0 || channel >= output.length) {
             return;

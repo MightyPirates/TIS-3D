@@ -23,7 +23,7 @@ public final class TargetInterfaceAny extends AbstractTargetInterfaceSide {
     // TargetInterface
 
     @Override
-    public boolean beginWrite(final int value) {
+    public boolean beginWrite(final short value) {
         for (final Port port : Port.VALUES) {
             if (!isWriting(port)) {
                 beginWrite(port, value);
@@ -64,7 +64,7 @@ public final class TargetInterfaceAny extends AbstractTargetInterfaceSide {
     }
 
     @Override
-    public int read() {
+    public short read() {
         for (final Port port : Port.VALUES) {
             if (canTransfer(port)) {
                 for (final Port otherPort : Port.VALUES) {

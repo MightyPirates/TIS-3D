@@ -4,16 +4,16 @@ import li.cil.tis3d.common.module.execution.Machine;
 import li.cil.tis3d.common.module.execution.MachineState;
 
 public final class InstructionAddImmediate implements Instruction {
-    private final int value;
+    private final short value;
 
-    public InstructionAddImmediate(final int value) {
+    public InstructionAddImmediate(final short value) {
         this.value = value;
     }
 
     @Override
     public void step(final Machine machine) {
         final MachineState state = machine.getState();
-        state.acc += value;
+        state.acc = (short) Math.max(Short.MIN_VALUE, Math.min(Short.MAX_VALUE, state.acc + value));
         state.pc++;
     }
 

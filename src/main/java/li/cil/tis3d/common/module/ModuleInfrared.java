@@ -33,7 +33,7 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
     // --------------------------------------------------------------------- //
     // Persisted data
 
-    private final Deque<Integer> receiveQueue = new LinkedList<>();
+    private final Deque<Short> receiveQueue = new LinkedList<>();
 
     // --------------------------------------------------------------------- //
     // Computed data
@@ -113,7 +113,7 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
         receiveQueue.clear();
         final int[] receiveQueueNbt = nbt.getIntArray(TAG_RECEIVE_QUEUE);
         for (final int value : receiveQueueNbt) {
-            receiveQueue.addLast(value);
+            receiveQueue.addLast((short) value);
         }
     }
 
@@ -139,7 +139,7 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
             return;
         }
 
-        final int value = packet.getPacketValue();
+        final short value = packet.getPacketValue();
         if (receiveQueue.size() < Settings.maxInfraredQueueLength) {
             receiveQueue.addLast(value);
         }
@@ -191,7 +191,7 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
      *
      * @param value the value to transmit.
      */
-    private void emitInfraredPacket(final int value) {
+    private void emitInfraredPacket(final short value) {
         final EnumFacing facing = Face.toEnumFacing(getFace());
         final BlockPos blockPos = getCasing().getPosition().offset(facing);
 

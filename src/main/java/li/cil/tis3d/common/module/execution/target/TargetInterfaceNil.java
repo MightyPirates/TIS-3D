@@ -18,7 +18,7 @@ public final class TargetInterfaceNil extends AbstractTargetInterface {
     // TargetInterface
 
     @Override
-    public boolean beginWrite(final int value) {
+    public boolean beginWrite(final short value) {
         return true;
     }
 
@@ -46,7 +46,7 @@ public final class TargetInterfaceNil extends AbstractTargetInterface {
     }
 
     @Override
-    public int read() {
+    public short read() {
         return 0;
     }
 

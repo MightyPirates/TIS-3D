@@ -19,8 +19,8 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
     // --------------------------------------------------------------------- //
     // Persisted data
 
-    private int output = 0;
-    private int input = 0;
+    private short output = 0;
+    private short input = 0;
 
     // --------------------------------------------------------------------- //
     // Computed data
@@ -119,6 +119,10 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
         // Draw base overlay.
         RenderUtil.drawQuad(0, 0, 1, 0.5f);
 
+        if (!enabled) {
+            return;
+        }
+
         // Draw output bar.
         final float relativeOutput = output / 15f;
         final float heightOutput = relativeOutput * SHARED_H;
@@ -136,8 +140,8 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
     public void readFromNBT(final NBTTagCompound nbt) {
         super.readFromNBT(nbt);
 
-        output = Math.max(0, Math.min(15, nbt.getInteger(TAG_OUTPUT)));
-        input = Math.max(0, Math.min(15, nbt.getInteger(TAG_INPUT)));
+        output = (short) Math.max(0, Math.min(15, nbt.getShort(TAG_OUTPUT)));
+        input = (short) Math.max(0, Math.min(15, nbt.getShort(TAG_INPUT)));
     }
 
     @Override
@@ -157,14 +161,14 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
     }
 
     @Override
-    public void setRedstoneInput(final int value) {
+    public void setRedstoneInput(final short value) {
         // We never call this on the client side, but other might...
         if (getCasing().getCasingWorld().isRemote) {
             return;
         }
 
         // Clamp to valid redstone range.
-        final int validatedValue = Math.max(0, Math.min(15, value));
+        final short validatedValue = (short) Math.max(0, Math.min(15, value));
         if (validatedValue == input) {
             return;
         }
@@ -215,9 +219,9 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
      *
      * @param value the new output value.
      */
-    private void setRedstoneOutput(final int value) {
+    private void setRedstoneOutput(final short value) {
         // Clamp to valid redstone range.
-        final int validatedValue = Math.max(0, Math.min(15, value));
+        final short validatedValue = (short) Math.max(0, Math.min(15, value));
         if (validatedValue == output) {
             return;
         }
