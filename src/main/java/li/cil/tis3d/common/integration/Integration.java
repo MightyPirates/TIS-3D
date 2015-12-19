@@ -4,7 +4,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import li.cil.tis3d.common.integration.redlogic.ModRedLogic;
-import li.cil.tis3d.common.integration.vanilla.ProxyMinecraft;
+import li.cil.tis3d.common.integration.minecraft.ProxyMinecraft;
 
 import java.util.ArrayList;
 import java.util.List;

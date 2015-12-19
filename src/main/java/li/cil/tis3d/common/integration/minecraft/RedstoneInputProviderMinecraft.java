@@ -1,16 +1,14 @@
-package li.cil.tis3d.common.integration.vanilla;
+package li.cil.tis3d.common.integration.minecraft;
 
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Redstone;
-import li.cil.tis3d.common.integration.redstone.RedstoneInputProvider;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
-public class RedstoneInputProviderVanilla implements RedstoneInputProvider {
-    @Override
-    public int getInput(final Redstone module) {
+public final class RedstoneInputProviderMinecraft {
+    public static int getInput(final Redstone module) {
         final Face face = module.getFace();
         final EnumFacing facing = Face.toEnumFacing(face);
         final World world = module.getCasing().getCasingWorld();
@@ -28,5 +26,8 @@ public class RedstoneInputProviderVanilla implements RedstoneInputProvider {
             final Block block = world.getBlock(inputX, inputY, inputZ);
             return (short) Math.max(input, block == Blocks.redstone_wire ? world.getBlockMetadata(inputX, inputY, inputZ) : 0);
         }
+    }
+
+    private RedstoneInputProviderMinecraft() {
     }
 }
