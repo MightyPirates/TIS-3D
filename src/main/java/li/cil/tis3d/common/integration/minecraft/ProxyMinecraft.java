@@ -1,4 +1,4 @@
-package li.cil.tis3d.common.integration.vanilla;
+package li.cil.tis3d.common.integration.minecraft;
 
 import li.cil.tis3d.common.integration.ModProxy;
 import li.cil.tis3d.common.integration.redstone.RedstoneIntegration;
@@ -12,6 +12,6 @@ public class ProxyMinecraft implements ModProxy {
 
     @Override
     public void init(final FMLInitializationEvent event) {
-        RedstoneIntegration.INSTANCE.addRedstoneInputProvider(new RedstoneInputProviderVanilla());
+        RedstoneIntegration.INSTANCE.addRedstoneInputProvider(RedstoneInputProviderMinecraft::getInput);
     }
 }
