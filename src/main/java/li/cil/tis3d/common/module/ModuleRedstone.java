@@ -12,17 +12,15 @@ import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 
 public final class ModuleRedstone extends AbstractModuleRotatable implements Redstone {
     // --------------------------------------------------------------------- //
     // Persisted data
 
-    private int output = 0;
-    private int input = 0;
+    private short output = 0;
+    private short input = 0;
 
     // --------------------------------------------------------------------- //
     // Computed data
@@ -43,8 +41,8 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
     private static final float SHARED_H = SHARED_V1 - SHARED_V0;
 
     /**
-     * The last tick we updated. Used to avoid changing output and recomputing
-     * input multiple times a tick, which is pointless and bad for performance.
+     * The last tick we updated. Used to avoid changing output multiple times a
+     * tick, which is usually pointless and really bad for performance.
      */
     private long lastStep = 0L;
 
@@ -65,9 +63,7 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
 
     @Override
     public void step() {
-        if (getCasing().getCasingWorld().getTotalWorldTime() > lastStep) {
-            setRedstoneInput(computeRedstoneInput());
-        }
+        assert (!getCasing().getCasingWorld().isRemote);
 
         for (final Port port : Port.VALUES) {
             stepOutput(port);
@@ -83,22 +79,21 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
 
     @Override
     public void onDisabled() {
+        assert (!getCasing().getCasingWorld().isRemote);
+
         input = 0;
         output = 0;
 
-        getCasing().markDirty();
         notifyNeighbors();
 
-        if (!getCasing().getCasingWorld().isRemote) {
-            sendData();
-        }
+        sendData();
     }
 
     @Override
     public void onEnabled() {
-        if (!getCasing().getCasingWorld().isRemote) {
-            sendData();
-        }
+        assert (!getCasing().getCasingWorld().isRemote);
+
+        sendData();
     }
 
     @Override
@@ -109,8 +104,7 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
 
     @Override
     public void onData(final NBTTagCompound nbt) {
-        output = nbt.getInteger(TAG_OUTPUT);
-        input = nbt.getInteger(TAG_INPUT);
+        readFromNBT(nbt);
     }
 
     @SideOnly(Side.CLIENT)
@@ -118,12 +112,16 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
     public void render(final boolean enabled, final float partialTicks) {
         rotateForRendering();
 
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 0 / 1.0F);
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
 
         RenderUtil.bindTexture(LOCATION_OVERLAY);
 
         // Draw base overlay.
         RenderUtil.drawQuad(0, 0, 1, 0.5f);
+
+        if (!enabled) {
+            return;
+        }
 
         // Draw output bar.
         final float relativeOutput = output / 15f;
@@ -142,8 +140,8 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
     public void readFromNBT(final NBTTagCompound nbt) {
         super.readFromNBT(nbt);
 
-        output = Math.max(0, Math.min(15, nbt.getInteger(TAG_OUTPUT)));
-        input = Math.max(0, Math.min(15, nbt.getInteger(TAG_INPUT)));
+        output = (short) Math.max(0, Math.min(15, nbt.getShort(TAG_OUTPUT)));
+        input = (short) Math.max(0, Math.min(15, nbt.getShort(TAG_INPUT)));
     }
 
     @Override
@@ -154,91 +152,40 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
         nbt.setInteger(TAG_INPUT, input);
     }
 
+    // --------------------------------------------------------------------- //
+    // Redstone
+
     @Override
     public int getRedstoneOutput() {
         return output;
     }
 
+    @Override
+    public void setRedstoneInput(final short value) {
+        // We never call this on the client side, but other might...
+        if (getCasing().getCasingWorld().isRemote) {
+            return;
+        }
+
+        // Clamp to valid redstone range.
+        final short validatedValue = (short) Math.max(0, Math.min(15, value));
+        if (validatedValue == input) {
+            return;
+        }
+
+        input = validatedValue;
+
+        // If the value changed, make sure we're saved.
+        getCasing().markDirty();
+
+        // The value changed, cancel our output to make sure it's up-to-date.
+        cancelWrite();
+
+        // Update client representation.
+        sendData();
+    }
+
     // --------------------------------------------------------------------- //
-
-    /**
-     * Update the known redstone input signal.
-     *
-     * @param value the new input value.
-     */
-    private void setRedstoneInput(final int value) {
-        if (value == input) {
-            return;
-        }
-
-        // Clamp to valid redstone range.
-        input = Math.max(0, Math.min(15, value));
-
-        if (!getCasing().getCasingWorld().isRemote) {
-            // If the value changed, cancel our output to make sure it's up-to-date.
-            cancelWrite();
-
-            sendData();
-        }
-    }
-
-    /**
-     * Update the redstone signal we're outputting.
-     *
-     * @param value the new output value.
-     */
-    private void setRedstoneOutput(final int value) {
-        if (value == output) {
-            return;
-        }
-
-        // Clamp to valid redstone range.
-        output = Math.max(0, Math.min(15, value));
-
-        if (!getCasing().getCasingWorld().isRemote) {
-            // If the value changed, notify neighboring blocks and make sure we're saved.
-            getCasing().markDirty();
-
-            // Avoid multiple world updates per tick.
-            if (getCasing().getCasingWorld().getTotalWorldTime() > lastStep) {
-                notifyNeighbors();
-            } else {
-                scheduledNeighborUpdate = true;
-            }
-
-            sendData();
-        }
-    }
-
-    /**
-     * Notify all neighbors of a block update, to let them realize our output changed.
-     */
-    private void notifyNeighbors() {
-        scheduledNeighborUpdate = false;
-        final Block blockType = getCasing().getCasingWorld().getBlock(getCasing().getPositionX(), getCasing().getPositionY(), getCasing().getPositionZ());
-        getCasing().getCasingWorld().notifyBlocksOfNeighborChange(getCasing().getPositionX(), getCasing().getPositionY(), getCasing().getPositionZ(), blockType);
-    }
-
-    /**
-     * Compute the redstone signal we're currently getting from the block in
-     * front of the module (i.e. in front of the case on the side of the
-     * module's face).
-     *
-     * @return the current input value.
-     */
-    private int computeRedstoneInput() {
-        final EnumFacing facing = Face.toEnumFacing(getFace());
-        final int inputX = getCasing().getPositionX() + facing.getFrontOffsetX();
-        final int inputY = getCasing().getPositionY() + facing.getFrontOffsetY();
-        final int inputZ = getCasing().getPositionZ() + facing.getFrontOffsetZ();
-        final int input = getCasing().getCasingWorld().isBlockProvidingPowerTo(inputX, inputY, inputZ, facing.ordinal());
-        if (input >= 15) {
-            return input;
-        } else {
-            final Block block = getCasing().getCasingWorld().getBlock(inputX, inputY, inputZ);
-            return Math.max(input, block == Blocks.redstone_wire ? getCasing().getCasingWorld().getBlockMetadata(inputX, inputY, inputZ) : 0);
-        }
-    }
 
     /**
      * Update the output of the module, pushing a value read from any pipe.
@@ -265,6 +212,42 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
             // Start reading again right away to read as fast as possible.
             receivingPipe.beginRead();
         }
+    }
+
+    /**
+     * Update the redstone signal we're outputting.
+     *
+     * @param value the new output value.
+     */
+    private void setRedstoneOutput(final short value) {
+        // Clamp to valid redstone range.
+        final short validatedValue = (short) Math.max(0, Math.min(15, value));
+        if (validatedValue == output) {
+            return;
+        }
+
+        output = validatedValue;
+
+        // If the value changed, make sure we're saved.
+        getCasing().markDirty();
+
+        // Notify neighbors, avoid multiple world updates per tick.
+        if (getCasing().getCasingWorld().getTotalWorldTime() > lastStep) {
+            notifyNeighbors();
+        } else {
+            scheduledNeighborUpdate = true;
+        }
+
+        sendData();
+    }
+
+    /**
+     * Notify all neighbors of a block update, to let them realize our output changed.
+     */
+    private void notifyNeighbors() {
+        scheduledNeighborUpdate = false;
+        final Block blockType = getCasing().getCasingWorld().getBlock(getCasing().getPositionX(), getCasing().getPositionY(), getCasing().getPositionZ());
+        getCasing().getCasingWorld().notifyBlocksOfNeighborChange(getCasing().getPositionX(), getCasing().getPositionY(), getCasing().getPositionZ(), blockType);
     }
 
     /**

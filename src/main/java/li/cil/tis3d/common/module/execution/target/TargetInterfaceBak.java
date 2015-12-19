@@ -19,7 +19,7 @@ public final class TargetInterfaceBak extends AbstractTargetInterface {
     // TargetInterface
 
     @Override
-    public boolean beginWrite(final int value) {
+    public boolean beginWrite(final short value) {
         throw throwOnWrite();
     }
 
@@ -49,7 +49,7 @@ public final class TargetInterfaceBak extends AbstractTargetInterface {
     }
 
     @Override
-    public int read() {
+    public short read() {
         throw throwOnRead();
     }
 

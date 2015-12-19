@@ -23,7 +23,7 @@ public final class TargetInterfaceSide extends AbstractTargetInterfaceSide {
     // TargetInterface
 
     @Override
-    public boolean beginWrite(final int value) {
+    public boolean beginWrite(final short value) {
         beginWrite(port, value);
         return false;
     }
@@ -54,7 +54,7 @@ public final class TargetInterfaceSide extends AbstractTargetInterfaceSide {
     }
 
     @Override
-    public int read() {
+    public short read() {
         return read(port);
     }
 

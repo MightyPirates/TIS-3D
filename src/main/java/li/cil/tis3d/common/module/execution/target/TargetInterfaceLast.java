@@ -23,7 +23,7 @@ public final class TargetInterfaceLast extends AbstractTargetInterfaceSide {
     // TargetInterface
 
     @Override
-    public boolean beginWrite(final int value) {
+    public boolean beginWrite(final short value) {
         getState().last.ifPresent(port -> beginWrite(port, value));
         return !getState().last.isPresent();
     }
@@ -54,8 +54,8 @@ public final class TargetInterfaceLast extends AbstractTargetInterfaceSide {
     }
 
     @Override
-    public int read() {
-        return getState().last.map(this::read).orElse(0);
+    public short read() {
+        return getState().last.map(this::read).orElse((short) 0);
     }
 
     // --------------------------------------------------------------------- //

@@ -12,7 +12,7 @@ import li.cil.tis3d.api.machine.Port;
  * {@link Target#ANY}, respectively).
  * <p>
  * Note that unlike for pipes, write operations may finish instantly here, when
- * writing to a register, for example. In that case {@link #beginWrite(int)}
+ * writing to a register, for example. In that case {@link #beginWrite(short)}
  * will return <tt>true</tt> to indicate this.
  */
 public interface TargetInterface {
@@ -26,7 +26,7 @@ public interface TargetInterface {
      * @return <tt>true</tt> if the operation finished synchronously, <tt>false</tt> otherwise.
      * @throws IllegalStateException if the target is already being written to.
      */
-    boolean beginWrite(final int value);
+    boolean beginWrite(final short value);
 
     /**
      * Cancel an active write operation.
@@ -38,10 +38,10 @@ public interface TargetInterface {
     /**
      * Whether the target is currently being written to.
      * <p>
-     * This is <tt>true</tt> as soon as {@link #beginWrite(int)} was called and
+     * This is <tt>true</tt> as soon as {@link #beginWrite(short)} was called and
      * until {@link #read()} or {@link #cancelWrite()} was called to finish or
      * cancel the operation, <em>unless</em> the operation was completed
-     * synchronously, in which case {@link #beginWrite(int)} returned <tt>true</tt>.
+     * synchronously, in which case {@link #beginWrite(short)} returned <tt>true</tt>.
      *
      * @return whether the target is currently being written to.
      */
@@ -95,7 +95,7 @@ public interface TargetInterface {
      * @return the value transferred through the target.
      * @throws IllegalStateException if the target is in an incorrect state.
      */
-    int read();
+    short read();
 
     /**
      * Finish a write operation started by the instruction, usually by

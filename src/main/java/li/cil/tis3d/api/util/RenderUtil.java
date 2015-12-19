@@ -21,6 +21,25 @@ public final class RenderUtil {
     }
 
     /**
+     * Draw a full one-by-one, untextured quad.
+     *
+     * @param x the x position of the quad.
+     * @param y the y position of the quad.
+     * @param w the width of the quad.
+     * @param h the height of the quad.
+     */
+    @SideOnly(Side.CLIENT)
+    public static void drawUntexturedQuad(final float x, final float y, final float w, final float h) {
+        final Tessellator tessellator = Tessellator.instance;
+        tessellator.startDrawingQuads();
+        tessellator.addVertex(x, y + h, 0);
+        tessellator.addVertex(x + w, y + h, 0);
+        tessellator.addVertex(x + w, y, 0);
+        tessellator.addVertex(x, y, 0);
+        tessellator.draw();
+    }
+
+    /**
      * Draw an arbitrarily sized quad with the specified texture coordinates.
      *
      * @param x  the x position of the quad.

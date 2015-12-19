@@ -14,7 +14,7 @@ public interface InfraredPacket {
      *
      * @return the value carried by the packet.
      */
-    int getPacketValue();
+    short getPacketValue();
 
     /**
      * Get the current position of the packet.

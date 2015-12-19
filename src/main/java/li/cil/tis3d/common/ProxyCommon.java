@@ -2,6 +2,7 @@ package li.cil.tis3d.common;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -19,11 +20,14 @@ import li.cil.tis3d.common.block.BlockCasing;
 import li.cil.tis3d.common.block.BlockController;
 import li.cil.tis3d.common.entity.EntityInfraredPacket;
 import li.cil.tis3d.common.event.TickHandlerInfraredPacket;
+import li.cil.tis3d.common.integration.Integration;
+import li.cil.tis3d.common.integration.RegistryBundledRedstone;
 import li.cil.tis3d.common.item.ItemBookCode;
 import li.cil.tis3d.common.item.ItemBookManual;
 import li.cil.tis3d.common.item.ItemModule;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.provider.ModuleProviderAudio;
+import li.cil.tis3d.common.provider.ModuleProviderBundledRedstone;
 import li.cil.tis3d.common.provider.ModuleProviderDisplay;
 import li.cil.tis3d.common.provider.ModuleProviderExecution;
 import li.cil.tis3d.common.provider.ModuleProviderInfrared;
@@ -86,6 +90,7 @@ public class ProxyCommon {
         registerBlock(Constants.NAME_BLOCK_CONTROLLER, BlockController::new, TileEntityController.class);
 
         registerModule(Constants.NAME_ITEM_MODULE_AUDIO);
+        registerModule(Constants.NAME_ITEM_MODULE_BUNDLED_REDSTONE);
         registerModule(Constants.NAME_ITEM_MODULE_DISPLAY);
         registerModule(Constants.NAME_ITEM_MODULE_EXECUTION);
         registerModule(Constants.NAME_ITEM_MODULE_INFRARED);
@@ -97,6 +102,9 @@ public class ProxyCommon {
         registerItem(Constants.NAME_ITEM_BOOK_MANUAL, ItemBookManual::new);
 
         registerItem(Constants.NAME_ITEM_PRISM, Item::new);
+
+        // Mod integration.
+        Integration.INSTANCE.preInit(event);
     }
 
     public void onInit(final FMLInitializationEvent event) {
@@ -105,6 +113,7 @@ public class ProxyCommon {
         OreDictionary.registerOre("book", GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_BOOK_MANUAL));
 
         registerModuleOre(Constants.NAME_ITEM_MODULE_AUDIO);
+        registerModuleOre(Constants.NAME_ITEM_MODULE_BUNDLED_REDSTONE);
         registerModuleOre(Constants.NAME_ITEM_MODULE_DISPLAY);
         registerModuleOre(Constants.NAME_ITEM_MODULE_EXECUTION);
         registerModuleOre(Constants.NAME_ITEM_MODULE_INFRARED);
@@ -117,6 +126,7 @@ public class ProxyCommon {
         addBlockRecipe(Constants.NAME_BLOCK_CONTROLLER, "gemDiamond", 1);
 
         addModuleRecipe(Constants.NAME_ITEM_MODULE_AUDIO, Item.getItemFromBlock(Blocks.noteblock));
+        addModuleRecipe(Constants.NAME_ITEM_MODULE_BUNDLED_REDSTONE, Items.comparator);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_DISPLAY, GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_PRISM));
         addModuleRecipe(Constants.NAME_ITEM_MODULE_EXECUTION, "ingotGold");
         addModuleRecipe(Constants.NAME_ITEM_MODULE_INFRARED, Items.spider_eye);
@@ -137,10 +147,12 @@ public class ProxyCommon {
         Network.INSTANCE.init();
 
         // Register event handlers.
+        FMLCommonHandler.instance().bus().register(RegistryBundledRedstone.INSTANCE);
         FMLCommonHandler.instance().bus().register(TickHandlerInfraredPacket.INSTANCE);
 
         // Register providers for built-in modules.
         ModuleAPI.addProvider(new ModuleProviderAudio());
+        ModuleAPI.addProvider(new ModuleProviderBundledRedstone());
         ModuleAPI.addProvider(new ModuleProviderDisplay());
         ModuleAPI.addProvider(new ModuleProviderExecution());
         ModuleAPI.addProvider(new ModuleProviderInfrared());
@@ -151,6 +163,14 @@ public class ProxyCommon {
         // Add default manual providers for server side stuff.
         ManualAPI.addProvider(new GameRegistryPathProvider());
         ManualAPI.addProvider(new ResourceContentProvider("tis3d", "doc/"));
+
+        // Mod integration.
+        Integration.INSTANCE.init(event);
+    }
+
+    public void onPostInit(final FMLPostInitializationEvent event) {
+        // Mod integration.
+        Integration.INSTANCE.postInit(event);
     }
 
     // --------------------------------------------------------------------- //

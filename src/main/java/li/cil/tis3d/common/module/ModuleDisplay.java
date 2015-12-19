@@ -8,6 +8,7 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
+import li.cil.tis3d.util.ColorUtils;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.nbt.NBTTagCompound;
@@ -54,28 +55,6 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
         }
     }
 
-    /**
-     * Mapping of indices to colors as ARGB.
-     */
-    private static final int[] COLORS = new int[]{
-            0xFFFFFFFF, // 0: White
-            0xFFFFCC33, // 1: Orange
-            0xFFCC66CC, // 2: Magenta
-            0xFF6699FF, // 3: Light Blue
-            0xFFFFFF33, // 4: Yellow
-            0xFF33CC33, // 5: Lime
-            0xFFFF6699, // 6: Pink
-            0xFF333333, // 7: Gray
-            0xFFCCCCCC, // 8: Silver
-            0xFF336699, // 9: Cyan
-            0xFF9933CC, // 10: Purple
-            0xFF333399, // 11: Blue
-            0xFF663300, // 12: Brown
-            0xFF336600, // 13: Green
-            0xFFFF3333, // 14: Red
-            0xFF000000  // 15: Black
-    };
-
     // Resolution of the screen in pixels, width = height.
     private static final int RESOLUTION = 32;
 
@@ -106,6 +85,8 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
 
     @Override
     public void step() {
+        assert (!getCasing().getCasingWorld().isRemote);
+
         for (final Port port : Port.VALUES) {
             stepInput(port);
         }
@@ -113,6 +94,8 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
 
     @Override
     public void onDisabled() {
+        assert (!getCasing().getCasingWorld().isRemote);
+
         Arrays.fill(image, 0);
         state = State.COLOR;
 
@@ -145,7 +128,7 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
 
         rotateForRendering();
 
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 0f);
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
 
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, getGlTextureId());
 
@@ -229,7 +212,7 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
             final int offset = y * RESOLUTION;
             for (int x = x0; x < x1; x++) {
                 final int index = offset + x;
-                image[index] = COLORS[color % COLORS.length];
+                image[index] = ColorUtils.getColorByIndex(color);
             }
         }
     }

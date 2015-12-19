@@ -32,7 +32,7 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
     // --------------------------------------------------------------------- //
     // Persisted data
 
-    private final Deque<Integer> receiveQueue = new LinkedList<>();
+    private final Deque<Short> receiveQueue = new LinkedList<>();
 
     // --------------------------------------------------------------------- //
     // Computed data
@@ -58,6 +58,8 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
 
     @Override
     public void step() {
+        assert (!getCasing().getCasingWorld().isRemote);
+
         stepOutput();
         stepInput();
 
@@ -66,13 +68,15 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
 
     @Override
     public void onDisabled() {
-        receiveQueue.clear();
+        assert (!getCasing().getCasingWorld().isRemote);
 
-        getCasing().markDirty();
+        receiveQueue.clear();
     }
 
     @Override
     public void onWriteComplete(final Port port) {
+        assert (!getCasing().getCasingWorld().isRemote);
+
         // Pop the top value (the one that was being written).
         receiveQueue.removeFirst();
 
@@ -92,7 +96,7 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
         }
 
         GL11.glEnable(GL11.GL_BLEND);
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 0 / 1.0F);
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
 
         Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
         final TextureAtlasSprite icon = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(TextureLoader.LOCATION_MODULE_INFRARED_OVERLAY.toString());
@@ -108,7 +112,7 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
         receiveQueue.clear();
         final int[] receiveQueueNbt = nbt.getIntArray(TAG_RECEIVE_QUEUE);
         for (final int value : receiveQueueNbt) {
-            receiveQueue.addLast(value);
+            receiveQueue.addLast((short) value);
         }
     }
 
@@ -134,7 +138,7 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
             return;
         }
 
-        final int value = packet.getPacketValue();
+        final short value = packet.getPacketValue();
         if (receiveQueue.size() < Settings.maxInfraredQueueLength) {
             receiveQueue.addLast(value);
         }
@@ -186,7 +190,7 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
      *
      * @param value the value to transmit.
      */
-    private void emitInfraredPacket(final int value) {
+    private void emitInfraredPacket(final short value) {
         final EnumFacing facing = Face.toEnumFacing(getFace());
         final int positionX = getCasing().getPositionX() + facing.getFrontOffsetX();
         final int positionY = getCasing().getPositionY() + facing.getFrontOffsetY();

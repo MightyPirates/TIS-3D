@@ -18,7 +18,7 @@ abstract class AbstractTargetInterfaceSide extends AbstractTargetInterface {
 
     // --------------------------------------------------------------------- //
 
-    protected final void beginWrite(final Port port, final int value) {
+    protected final void beginWrite(final Port port, final short value) {
         getCasing().getSendingPipe(face, port).beginWrite(value);
     }
 
@@ -46,7 +46,7 @@ abstract class AbstractTargetInterfaceSide extends AbstractTargetInterface {
         return getCasing().getReceivingPipe(face, port).canTransfer();
     }
 
-    protected final int read(final Port port) {
+    protected final short read(final Port port) {
         return getCasing().getReceivingPipe(face, port).read();
     }
 

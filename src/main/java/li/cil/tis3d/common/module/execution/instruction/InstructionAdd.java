@@ -12,7 +12,7 @@ public final class InstructionAdd extends AbstractInstructionRead {
     @Override
     protected void doStep(final Machine machine, final int value) {
         final MachineState state = machine.getState();
-        state.acc += value;
+        state.acc = (short) Math.max(Short.MIN_VALUE, Math.min(Short.MAX_VALUE, state.acc + value));
         state.pc++;
     }
 

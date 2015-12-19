@@ -7,6 +7,7 @@ import li.cil.tis3d.api.infrared.InfraredReceiver;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
+import li.cil.tis3d.api.module.Redstone;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.inventory.InventoryCasing;
 import li.cil.tis3d.common.inventory.SidedInventoryProxy;
@@ -17,7 +18,9 @@ import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageCasingState;
 import li.cil.tis3d.util.InventoryUtils;
 import li.cil.tis3d.util.OneEightCompat;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -26,6 +29,7 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.world.World;
 
 import java.util.ArrayDeque;
 import java.util.HashSet;
@@ -45,7 +49,8 @@ import java.util.Set;
  * Casings do not tick. The modules installed in them are driven by a
  * controller (transitively) connected to their casing.
  */
-public final class TileEntityCasing extends TileEntity implements SidedInventoryProxy, CasingProxy, InfraredReceiver {
+public final class TileEntityCasing extends TileEntity implements
+        SidedInventoryProxy, CasingProxy, InfraredReceiver {
     // --------------------------------------------------------------------- //
     // Persisted data
 
@@ -152,6 +157,17 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
         isEnabled = false;
         sendState();
         casing.onDisabled();
+    }
+
+    public void stepRedstone() {
+        for (final Face face : Face.VALUES) {
+            final Module module = getCasing().getModule(face);
+            if (module instanceof Redstone) {
+                final Redstone redstone = (Redstone) module;
+                final short input = computeRedstoneInput(face);
+                redstone.setRedstoneInput(input);
+            }
+        }
     }
 
     public void stepModules() {
@@ -331,6 +347,25 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
         // Could not find a controller, disable modules.
         onDisabled();
         return null;
+    }
+
+    private short computeRedstoneInput(final Face face) {
+        final EnumFacing facing = Face.toEnumFacing(face);
+        final World world = getCasing().getCasingWorld();
+        final int inputX = getCasing().getPositionX() + facing.getFrontOffsetX();
+        final int inputY = getCasing().getPositionY() + facing.getFrontOffsetY();
+        final int inputZ = getCasing().getPositionZ() + facing.getFrontOffsetZ();
+        if (!world.blockExists(inputX, inputY, inputZ)) {
+            return 0;
+        }
+
+        final int input = world.isBlockProvidingPowerTo(inputX, inputY, inputZ, facing.ordinal());
+        if (input >= 15) {
+            return (short) input;
+        } else {
+            final Block block = world.getBlock(inputX, inputY, inputZ);
+            return (short) Math.max(input, block == Blocks.redstone_wire ? world.getBlockMetadata(inputX, inputY, inputZ) : 0);
+        }
     }
 
     private void sendState() {

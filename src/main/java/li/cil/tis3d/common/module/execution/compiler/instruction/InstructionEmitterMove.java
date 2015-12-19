@@ -18,7 +18,7 @@ public final class InstructionEmitterMove extends AbstractInstructionEmitter {
 
     @Override
     public Instruction compile(final Matcher matcher, final int lineNumber, final List<Validator> validators) throws ParseException {
-        final Object src = checkTargetOrInt(lineNumber,
+        final Object src = checkTargetOrNumber(lineNumber,
                 checkArg(lineNumber, matcher, "arg1", "name"),
                 matcher.start("arg1"), matcher.end("arg1"));
         final Target dst = checkTarget(lineNumber,
@@ -29,7 +29,7 @@ public final class InstructionEmitterMove extends AbstractInstructionEmitter {
         if (src instanceof Target) {
             return new InstructionMove((Target) src, dst);
         } else /* if (src instanceof Integer) */ {
-            return new InstructionMoveImmediate((Integer) src, dst);
+            return new InstructionMoveImmediate((Short) src, dst);
         }
     }
 }

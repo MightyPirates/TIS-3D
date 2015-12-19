@@ -26,7 +26,7 @@ public final class PipeImpl implements Pipe {
     /**
      * The value currently being written over this pipe.
      */
-    private int value = Integer.MIN_VALUE;
+    private short value = 0;
 
     // --------------------------------------------------------------------- //
     // Computed data
@@ -107,31 +107,31 @@ public final class PipeImpl implements Pipe {
     public void readFromNBT(final NBTTagCompound nbt) {
         readState = State.valueOf(nbt.getString(TAG_READ_STATE));
         writeState = State.valueOf(nbt.getString(TAG_WRITE_STATE));
-        value = nbt.getInteger(TAG_VALUE);
+        value = nbt.getShort(TAG_VALUE);
     }
 
     public void writeToNBT(final NBTTagCompound nbt) {
         nbt.setString(TAG_READ_STATE, readState.name());
         nbt.setString(TAG_WRITE_STATE, writeState.name());
-        nbt.setInteger(TAG_VALUE, value);
+        nbt.setShort(TAG_VALUE, value);
     }
 
     // --------------------------------------------------------------------- //
     // Pipe
 
     @Override
-    public void beginWrite(final int value) {
+    public void beginWrite(final short value) {
         if (writeState != State.IDLE) {
             throw new IllegalStateException("Trying to write to a busy pipe. Check isWriting().");
         }
         writeState = State.BUSY;
-        this.value = Math.max(Short.MIN_VALUE, Math.min(Short.MAX_VALUE, value));
+        this.value = value;
     }
 
     @Override
     public void cancelWrite() {
         writeState = State.IDLE;
-        value = Integer.MIN_VALUE;
+        value = 0;
         if (readState == State.FLUSHING) {
             readState = State.READY;
         }
@@ -169,7 +169,7 @@ public final class PipeImpl implements Pipe {
     }
 
     @Override
-    public int read() {
+    public short read() {
         if (!canTransfer()) {
             throw new IllegalStateException("No data to read. Check canTransfer().");
         }
@@ -187,7 +187,7 @@ public final class PipeImpl implements Pipe {
         final NetworkRegistry.TargetPoint target = Network.getTargetPoint(world, x, y, z, Network.RANGE_LOW);
         Network.INSTANCE.getWrapper().sendToAllAround(message, target);
 
-        final int result = value;
+        final short result = value;
 
         cancelWrite();
         cancelRead();

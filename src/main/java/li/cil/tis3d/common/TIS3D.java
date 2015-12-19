@@ -3,6 +3,7 @@ package li.cil.tis3d.common;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import li.cil.tis3d.api.API;
 import org.apache.logging.log4j.Logger;
@@ -30,6 +31,11 @@ public final class TIS3D {
     @Mod.EventHandler
     public void onInit(final FMLInitializationEvent event) {
         proxy.onInit(event);
+    }
+
+    @Mod.EventHandler
+    public void onPostInit(final FMLPostInitializationEvent event) {
+        proxy.onPostInit(event);
     }
 
     // --------------------------------------------------------------------- //

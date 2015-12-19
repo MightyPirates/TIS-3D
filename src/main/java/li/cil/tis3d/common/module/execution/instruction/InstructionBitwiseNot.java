@@ -9,7 +9,7 @@ public final class InstructionBitwiseNot implements Instruction {
     @Override
     public void step(final Machine machine) {
         final MachineState state = machine.getState();
-        state.acc = ~state.acc;
+        state.acc = (short) ~state.acc;
         state.pc++;
     }
 

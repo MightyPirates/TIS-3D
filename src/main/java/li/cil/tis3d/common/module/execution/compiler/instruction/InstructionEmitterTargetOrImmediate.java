@@ -12,9 +12,9 @@ import java.util.regex.Matcher;
 public class InstructionEmitterTargetOrImmediate extends AbstractInstructionEmitter {
     private final String name;
     private final Function<Target, Instruction> constructorTarget;
-    private final Function<Integer, Instruction> constructorImmediate;
+    private final Function<Short, Instruction> constructorImmediate;
 
-    public InstructionEmitterTargetOrImmediate(final String name, final Function<Target, Instruction> target, final Function<Integer, Instruction> immediate) {
+    public InstructionEmitterTargetOrImmediate(final String name, final Function<Target, Instruction> target, final Function<Short, Instruction> immediate) {
         this.name = name;
         this.constructorTarget = target;
         this.constructorImmediate = immediate;
@@ -27,7 +27,7 @@ public class InstructionEmitterTargetOrImmediate extends AbstractInstructionEmit
 
     @Override
     public Instruction compile(final Matcher matcher, final int lineNumber, final List<Validator> validators) throws ParseException {
-        final Object src = checkTargetOrInt(lineNumber,
+        final Object src = checkTargetOrNumber(lineNumber,
                 checkArg(lineNumber, matcher, "arg1", "name"),
                 matcher.start("arg1"), matcher.end("arg1"));
         checkExcess(lineNumber, matcher, "arg2");
@@ -35,7 +35,7 @@ public class InstructionEmitterTargetOrImmediate extends AbstractInstructionEmit
         if (src instanceof Target) {
             return constructorTarget.apply((Target) src);
         } else /* if (src instanceof Integer) */ {
-            return constructorImmediate.apply((Integer) src);
+            return constructorImmediate.apply((Short) src);
         }
     }
 }

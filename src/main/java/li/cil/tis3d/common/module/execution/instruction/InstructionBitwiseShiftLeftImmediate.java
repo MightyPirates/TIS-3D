@@ -4,9 +4,9 @@ import li.cil.tis3d.common.module.execution.Machine;
 import li.cil.tis3d.common.module.execution.MachineState;
 
 public final class InstructionBitwiseShiftLeftImmediate implements Instruction {
-    private final int value;
+    private final short value;
 
-    public InstructionBitwiseShiftLeftImmediate(final int value) {
+    public InstructionBitwiseShiftLeftImmediate(final short value) {
         this.value = value;
     }
 

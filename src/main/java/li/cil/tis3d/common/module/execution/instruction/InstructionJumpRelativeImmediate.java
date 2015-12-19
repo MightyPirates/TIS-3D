@@ -3,9 +3,9 @@ package li.cil.tis3d.common.module.execution.instruction;
 import li.cil.tis3d.common.module.execution.Machine;
 
 public final class InstructionJumpRelativeImmediate implements Instruction {
-    private final int delta;
+    private final short delta;
 
-    public InstructionJumpRelativeImmediate(final int delta) {
+    public InstructionJumpRelativeImmediate(final short delta) {
         this.delta = delta;
     }
 

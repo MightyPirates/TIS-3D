@@ -97,6 +97,8 @@ public final class ModuleExecution extends AbstractModuleRotatable {
 
     @Override
     public void step() {
+        assert (!getCasing().getCasingWorld().isRemote);
+
         final State prevState = state;
 
         if (compileError != null) {
@@ -122,19 +124,19 @@ public final class ModuleExecution extends AbstractModuleRotatable {
 
     @Override
     public void onEnabled() {
-        if (!getCasing().getCasingWorld().isRemote) {
-            sendData(true);
-        }
+        assert (!getCasing().getCasingWorld().isRemote);
+
+        sendData(true);
     }
 
     @Override
     public void onDisabled() {
+        assert (!getCasing().getCasingWorld().isRemote);
+
         machine.getState().reset();
         state = State.IDLE;
 
-        if (!getCasing().getCasingWorld().isRemote) {
-            sendData(false);
-        }
+        sendData(false);
     }
 
     @Override
@@ -194,8 +196,8 @@ public final class ModuleExecution extends AbstractModuleRotatable {
             readFromNBT(nbt);
         } else {
             machine.getState().pc = nbt.getInteger(TAG_PC);
-            machine.getState().acc = nbt.getInteger(TAG_ACC);
-            machine.getState().bak = nbt.getInteger(TAG_BAK);
+            machine.getState().acc = nbt.getShort(TAG_ACC);
+            machine.getState().bak = nbt.getShort(TAG_BAK);
             if (nbt.hasKey(TAG_LAST)) {
                 try {
                     machine.getState().last = Optional.of(Enum.valueOf(Port.class, nbt.getString(TAG_LAST)));
@@ -224,7 +226,7 @@ public final class ModuleExecution extends AbstractModuleRotatable {
 
         rotateForRendering();
 
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 0 / 1.0F);
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
 
         final MachineState machineState = machine.getState();
 
@@ -322,8 +324,8 @@ public final class ModuleExecution extends AbstractModuleRotatable {
             writeToNBT(nbt);
         } else {
             nbt.setInteger(TAG_PC, machine.getState().pc);
-            nbt.setInteger(TAG_ACC, machine.getState().acc);
-            nbt.setInteger(TAG_BAK, machine.getState().bak);
+            nbt.setShort(TAG_ACC, machine.getState().acc);
+            nbt.setShort(TAG_BAK, machine.getState().bak);
             machine.getState().last.ifPresent(last -> nbt.setString(TAG_LAST, last.name()));
             nbt.setString(TAG_STATE, state.name());
         }

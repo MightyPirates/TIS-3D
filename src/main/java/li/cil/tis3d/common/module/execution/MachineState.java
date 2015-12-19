@@ -29,12 +29,12 @@ public final class MachineState {
     /**
      * Accumulator register.
      */
-    public int acc = 0;
+    public short acc = 0;
 
     /**
      * Backup register.
      */
-    public int bak = 0;
+    public short bak = 0;
 
     /**
      * The port last read from.
@@ -82,8 +82,6 @@ public final class MachineState {
         if (pc < 0 || pc >= instructions.size()) {
             pc = 0;
         }
-        acc = Math.max(Short.MIN_VALUE, Math.min(Short.MAX_VALUE, acc));
-        bak = Math.max(Short.MIN_VALUE, Math.min(Short.MAX_VALUE, bak));
     }
 
     /**
@@ -122,20 +120,19 @@ public final class MachineState {
         }
 
         pc = nbt.getInteger(TAG_PC);
-        acc = nbt.getInteger(TAG_ACC);
-        bak = nbt.getInteger(TAG_BAK);
+        acc = nbt.getShort(TAG_ACC);
+        bak = nbt.getShort(TAG_BAK);
         if (nbt.hasKey(TAG_LAST)) {
             last = Optional.of(Port.valueOf(nbt.getString(TAG_LAST)));
         }
 
         validate();
-
     }
 
     public void writeToNBT(final NBTTagCompound nbt) {
         nbt.setInteger(TAG_PC, pc);
-        nbt.setInteger(TAG_ACC, acc);
-        nbt.setInteger(TAG_BAK, bak);
+        nbt.setShort(TAG_ACC, acc);
+        nbt.setShort(TAG_BAK, bak);
         last.ifPresent(port -> nbt.setString(TAG_LAST, port.name()));
 
         if (code != null) {
