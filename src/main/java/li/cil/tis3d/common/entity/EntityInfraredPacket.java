@@ -375,7 +375,7 @@ public class EntityInfraredPacket extends Entity implements InfraredPacket {
 
         // Traveling through a portal?
         if (hit.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && block == Blocks.portal) {
-            func_181015_d(pos);
+            setPortal(pos);
             return;
         }
 
