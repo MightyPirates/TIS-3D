@@ -156,7 +156,7 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
     // Redstone
 
     @Override
-    public int getRedstoneOutput() {
+    public short getRedstoneOutput() {
         return output;
     }
 
