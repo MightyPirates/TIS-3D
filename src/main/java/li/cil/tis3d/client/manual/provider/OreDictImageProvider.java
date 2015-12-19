@@ -9,7 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
 public final class OreDictImageProvider implements ImageProvider {
-    private static final String WARNING_ORE_DICT_MISSING = API.MOD_ID + ".manual.warning.missing.oredict";
+    private static final String WARNING_ORE_DICT_MISSING = API.MOD_ID + ".manual.warning.missing.oreDict";
 
     @Override
     public ImageRenderer getImage(final String data) {

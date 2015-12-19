@@ -17,7 +17,7 @@ public final class TargetInterfaceAcc extends AbstractTargetInterface {
 
     @Override
     public boolean beginWrite(final short value) {
-        getState().acc = (short) value;
+        getState().acc = value;
         return true;
     }
 

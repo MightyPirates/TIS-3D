@@ -341,10 +341,10 @@ public final class ModuleExecution extends AbstractModuleRotatable {
         GL11.glColor4f(1f, 1f, 1f, 1f);
 
         // Draw register info on top.
-        final String accLast = String.format("ACC:%4X LAST:%s", (short) machineState.acc, machineState.last.map(Enum::name).orElse("NONE"));
+        final String accLast = String.format("ACC:%4X LAST:%s", machineState.acc, machineState.last.map(Enum::name).orElse("NONE"));
         FontRendererAPI.drawString(accLast);
         GL11.glTranslatef(0, FontRendererAPI.getCharHeight() + 4, 0);
-        final String bakState = String.format("BAK:%4X MODE:%s", (short) machineState.bak, state.name());
+        final String bakState = String.format("BAK:%4X MODE:%s", machineState.bak, state.name());
         FontRendererAPI.drawString(bakState);
         GL11.glTranslatef(0, FontRendererAPI.getCharHeight() + 4, 0);
         drawLine(1);
