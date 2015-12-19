@@ -201,6 +201,11 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
         sendData();
     }
 
+    @Override
+    public short getBundledRedstoneInput(final int channel) {
+        return input[channel];
+    }
+
     // --------------------------------------------------------------------- //
 
     /**

@@ -6,18 +6,26 @@ package li.cil.tis3d.api.module;
  */
 public interface BundledRedstone extends Module {
     /**
-     * Get the current bundled redstone output of the module.
+     * Get the current bundled redstone output on the specified channel.
      *
      * @param channel the bundle channel to get the value of.
-     * @return the current redstone output.
+     * @return the current redstone output on the channel.
      */
     int getBundledRedstoneOutput(int channel);
 
     /**
-     * Set the new bundled input value for the module.
+     * Set the new bundled input value on the specified channel.
      *
      * @param channel the bundled channel to set the value of.
-     * @param value   the new input value of the module.
+     * @param value   the new input value on the channel.
      */
     void setBundledRedstoneInput(int channel, short value);
+
+    /**
+     * Get the current bundled input value on the specified channel.
+     *
+     * @param channel the bundled channel to get the input value of.
+     * @return the current input value on the channel
+     */
+    short getBundledRedstoneInput(int channel);
 }
