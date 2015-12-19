@@ -5,7 +5,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import li.cil.tis3d.common.integration.ModProxy;
 import li.cil.tis3d.common.integration.RegistryBundledRedstone;
 
-public class ModRedLogic implements ModProxy {
+public final class ModRedLogic implements ModProxy {
     public static final String MOD_ID = "RedLogic";
 
     @Override
