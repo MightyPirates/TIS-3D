@@ -13,7 +13,7 @@ public interface Redstone extends Module {
      *
      * @return the current redstone output.
      */
-    int getRedstoneOutput();
+    short getRedstoneOutput();
 
     /**
      * Set the new input value for the module.
