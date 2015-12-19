@@ -18,9 +18,7 @@ public final class RedstoneIntegration {
     // --------------------------------------------------------------------- //
 
     private final List<BundledRedstoneOutputChangedCallback> callbacks = new ArrayList<>();
-
     private final List<RedstoneInputProvider> redstoneInputProviders = new ArrayList<>();
-
     private final List<BundledRedstoneInputProvider> bundledRedstoneInputProviders = new ArrayList<>();
 
     // --------------------------------------------------------------------- //
@@ -66,6 +64,8 @@ public final class RedstoneIntegration {
         }
         return maxSignal;
     }
+
+    // --------------------------------------------------------------------- //
 
     @SubscribeEvent
     public void onBundledRedstoneOutputChanged(final BundledRedstoneOutputChangedEvent event) {

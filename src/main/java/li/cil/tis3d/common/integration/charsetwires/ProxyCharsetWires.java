@@ -15,8 +15,8 @@ public class ProxyCharsetWires implements ModProxy {
 
     @Override
     public void init(final FMLInitializationEvent event) {
-        RedstoneIntegration.INSTANCE.addCallback(CharsetWiresCallback::onBundledOutputChanged);
-        RedstoneIntegration.INSTANCE.addRedstoneInputProvider(RedstoneInputProviderCharsetWires::getInput);
-        RedstoneIntegration.INSTANCE.addBundledRedstoneInputProvider(BundledRedstoneInputProviderCharsetWires::getBundledInput);
+        RedstoneIntegration.INSTANCE.addCallback(CharsetWiresCallbacks::onBundledOutputChanged);
+        RedstoneIntegration.INSTANCE.addRedstoneInputProvider(CharsetWiresCallbacks::getInput);
+        RedstoneIntegration.INSTANCE.addBundledRedstoneInputProvider(CharsetWiresCallbacks::getBundledInput);
     }
 }
