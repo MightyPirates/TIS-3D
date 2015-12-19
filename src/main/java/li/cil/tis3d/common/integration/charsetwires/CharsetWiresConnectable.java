@@ -11,11 +11,11 @@ import pl.asie.charset.api.wires.IConnectable;
 import pl.asie.charset.api.wires.WireFace;
 import pl.asie.charset.api.wires.WireType;
 
-@Optional.Interface(iface = "pl.asie.charset.api.wires.IConnectable", modid = ModCharsetWires.MOD_ID)
+@Optional.Interface(iface = "pl.asie.charset.api.wires.IConnectable", modid = ProxyCharsetWires.MOD_ID)
 public interface CharsetWiresConnectable extends IConnectable {
     Casing getCasing();
 
-    @Optional.Method(modid = ModCharsetWires.MOD_ID)
+    @Optional.Method(modid = ProxyCharsetWires.MOD_ID)
     @Override
     default boolean canConnect(final WireType wireType, final WireFace wireFace, final EnumFacing facing) {
         final Module module = getCasing().getModule(Face.fromEnumFacing(facing));

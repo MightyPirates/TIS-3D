@@ -1,6 +1,7 @@
 package li.cil.tis3d.common.integration;
 
-import li.cil.tis3d.common.integration.charsetwires.ModCharsetWires;
+import li.cil.tis3d.common.integration.charsetwires.ProxyCharsetWires;
+import li.cil.tis3d.common.integration.vanilla.ProxyMinecraft;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -19,7 +20,8 @@ public final class Integration {
     private final List<ModProxy> proxies = new ArrayList<>();
 
     private Integration() {
-        proxies.add(new ModCharsetWires());
+        proxies.add(new ProxyCharsetWires());
+        proxies.add(new ProxyMinecraft());
     }
 
     // --------------------------------------------------------------------- //

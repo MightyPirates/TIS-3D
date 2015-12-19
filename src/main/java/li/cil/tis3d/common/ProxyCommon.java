@@ -15,7 +15,7 @@ import li.cil.tis3d.common.block.BlockController;
 import li.cil.tis3d.common.entity.EntityInfraredPacket;
 import li.cil.tis3d.common.event.TickHandlerInfraredPacket;
 import li.cil.tis3d.common.integration.Integration;
-import li.cil.tis3d.common.integration.RegistryBundledRedstone;
+import li.cil.tis3d.common.integration.redstone.RedstoneIntegration;
 import li.cil.tis3d.common.item.ItemBookCode;
 import li.cil.tis3d.common.item.ItemBookManual;
 import li.cil.tis3d.common.item.ItemModule;
@@ -126,7 +126,7 @@ public class ProxyCommon {
         Network.INSTANCE.init();
 
         // Register event handlers.
-        MinecraftForge.EVENT_BUS.register(RegistryBundledRedstone.INSTANCE);
+        MinecraftForge.EVENT_BUS.register(RedstoneIntegration.INSTANCE);
         MinecraftForge.EVENT_BUS.register(TickHandlerInfraredPacket.INSTANCE);
 
         // Register providers for built-in modules.

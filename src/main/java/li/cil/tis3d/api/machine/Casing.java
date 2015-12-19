@@ -26,7 +26,9 @@ public interface Casing {
     BlockPos getPosition();
 
     /**
-     * Flag the casing as dirty so it is saved when the chunk containing it saved next.
+     * Flag the casing as dirty so it is saved when the chunk containing it
+     * saved next, as well as telling it to update its redstone inputs in the
+     * next update cycle for all of its modules.
      */
     void markDirty();
 

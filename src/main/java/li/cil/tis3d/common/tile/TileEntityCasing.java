@@ -4,13 +4,15 @@ import li.cil.tis3d.api.infrared.InfraredPacket;
 import li.cil.tis3d.api.infrared.InfraredReceiver;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
+import li.cil.tis3d.api.module.BundledRedstone;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.Redstone;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.integration.charsetwires.CharsetWiresBundledRedstone;
 import li.cil.tis3d.common.integration.charsetwires.CharsetWiresConnectable;
 import li.cil.tis3d.common.integration.charsetwires.CharsetWiresRedstone;
-import li.cil.tis3d.common.integration.charsetwires.ModCharsetWires;
+import li.cil.tis3d.common.integration.charsetwires.ProxyCharsetWires;
+import li.cil.tis3d.common.integration.redstone.RedstoneIntegration;
 import li.cil.tis3d.common.inventory.InventoryCasing;
 import li.cil.tis3d.common.inventory.SidedInventoryProxy;
 import li.cil.tis3d.common.machine.CasingImpl;
@@ -19,10 +21,7 @@ import li.cil.tis3d.common.module.ModuleForwarder;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageCasingState;
 import li.cil.tis3d.util.InventoryUtils;
-import net.minecraft.block.BlockRedstoneWire;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -32,7 +31,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -56,9 +54,9 @@ import java.util.Set;
  * controller (transitively) connected to their casing.
  */
 @Optional.InterfaceList({
-        @Optional.Interface(iface = "li.cil.tis3d.common.integration.charsetwires.CharsetWiresBundledRedstone", modid = ModCharsetWires.MOD_ID),
-        @Optional.Interface(iface = "li.cil.tis3d.common.integration.charsetwires.CharsetWiresConnectable", modid = ModCharsetWires.MOD_ID),
-        @Optional.Interface(iface = "li.cil.tis3d.common.integration.charsetwires.CharsetWiresRedstone", modid = ModCharsetWires.MOD_ID)
+        @Optional.Interface(iface = "li.cil.tis3d.common.integration.charsetwires.CharsetWiresBundledRedstone", modid = ProxyCharsetWires.MOD_ID),
+        @Optional.Interface(iface = "li.cil.tis3d.common.integration.charsetwires.CharsetWiresConnectable", modid = ProxyCharsetWires.MOD_ID),
+        @Optional.Interface(iface = "li.cil.tis3d.common.integration.charsetwires.CharsetWiresRedstone", modid = ProxyCharsetWires.MOD_ID)
 })
 public final class TileEntityCasing extends TileEntity implements
         CharsetWiresConnectable, CharsetWiresRedstone, CharsetWiresBundledRedstone,
@@ -80,6 +78,7 @@ public final class TileEntityCasing extends TileEntity implements
     private final TileEntityCasing[] neighbors = new TileEntityCasing[Face.VALUES.length];
     private TileEntityController controller;
     private boolean isEnabled;
+    private boolean redstoneDirty = true;
 
     // --------------------------------------------------------------------- //
     // Networking
@@ -170,12 +169,25 @@ public final class TileEntityCasing extends TileEntity implements
     }
 
     public void stepRedstone() {
+        if (!redstoneDirty) {
+            return;
+        }
+        redstoneDirty = false;
+
         for (final Face face : Face.VALUES) {
             final Module module = getCasing().getModule(face);
             if (module instanceof Redstone) {
                 final Redstone redstone = (Redstone) module;
-                final short input = computeRedstoneInput(face);
-                redstone.setRedstoneInput(input);
+                final short signal = (short) RedstoneIntegration.INSTANCE.getRedstoneInput(redstone);
+                redstone.setRedstoneInput(signal);
+            }
+
+            if (module instanceof BundledRedstone) {
+                final BundledRedstone bundledRedstone = (BundledRedstone) module;
+                for (int channel = 0; channel < 16; channel++) {
+                    final short signal = (short) RedstoneIntegration.INSTANCE.getBundledRedstoneInput(bundledRedstone, channel);
+                    bundledRedstone.setBundledRedstoneInput(channel, signal);
+                }
             }
         }
     }
@@ -231,6 +243,12 @@ public final class TileEntityCasing extends TileEntity implements
 
     // --------------------------------------------------------------------- //
     // TileEntity
+
+    @Override
+    public void markDirty() {
+        super.markDirty();
+        redstoneDirty = true;
+    }
 
     @Override
     public void invalidate() {
@@ -352,23 +370,6 @@ public final class TileEntityCasing extends TileEntity implements
         // Could not find a controller, disable modules.
         onDisabled();
         return null;
-    }
-
-    private short computeRedstoneInput(final Face face) {
-        final EnumFacing facing = Face.toEnumFacing(face);
-        final World world = getCasing().getCasingWorld();
-        final BlockPos inputPos = getCasing().getPosition().offset(facing);
-        if (!world.isBlockLoaded(inputPos)) {
-            return 0;
-        }
-
-        final int input = world.getRedstonePower(inputPos, facing);
-        if (input >= 15) {
-            return (short) input;
-        } else {
-            final IBlockState state = world.getBlockState(inputPos);
-            return (short) Math.max(input, state.getBlock() == Blocks.redstone_wire ? state.getValue(BlockRedstoneWire.POWER) : 0);
-        }
     }
 
     private void sendState() {
