@@ -82,6 +82,10 @@ task apiJar(type: Jar) {
     include 'li/cil/tis3d/api/**'
 }
 
+javadoc {
+    exclude "libs/**"
+}
+
 task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
     classifier 'javadoc'

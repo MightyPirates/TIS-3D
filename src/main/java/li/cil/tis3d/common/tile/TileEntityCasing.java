@@ -1,5 +1,6 @@
 package li.cil.tis3d.common.tile;
 
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import li.cil.tis3d.api.infrared.InfraredPacket;
@@ -9,6 +10,10 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.Redstone;
 import li.cil.tis3d.common.Settings;
+import li.cil.tis3d.common.integration.redlogic.ModRedLogic;
+import li.cil.tis3d.common.integration.redlogic.RedLogicBundledRedstone;
+import li.cil.tis3d.common.integration.redlogic.RedLogicConnectable;
+import li.cil.tis3d.common.integration.redlogic.RedLogicRedstone;
 import li.cil.tis3d.common.inventory.InventoryCasing;
 import li.cil.tis3d.common.inventory.SidedInventoryProxy;
 import li.cil.tis3d.common.machine.CasingImpl;
@@ -49,7 +54,13 @@ import java.util.Set;
  * Casings do not tick. The modules installed in them are driven by a
  * controller (transitively) connected to their casing.
  */
+@Optional.InterfaceList({
+        @Optional.Interface(iface = "li.cil.tis3d.common.integration.redlogic.RedLogicBundledRedstone", modid = ModRedLogic.MOD_ID),
+        @Optional.Interface(iface = "li.cil.tis3d.common.integration.redlogic.RedLogicConnectable", modid = ModRedLogic.MOD_ID),
+        @Optional.Interface(iface = "li.cil.tis3d.common.integration.redlogic.RedLogicRedstone", modid = ModRedLogic.MOD_ID)
+})
 public final class TileEntityCasing extends TileEntity implements
+        RedLogicConnectable, RedLogicRedstone, RedLogicBundledRedstone,
         SidedInventoryProxy, CasingProxy, InfraredReceiver {
     // --------------------------------------------------------------------- //
     // Persisted data

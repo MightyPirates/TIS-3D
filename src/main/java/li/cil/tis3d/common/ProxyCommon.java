@@ -42,6 +42,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
@@ -147,7 +148,7 @@ public class ProxyCommon {
         Network.INSTANCE.init();
 
         // Register event handlers.
-        FMLCommonHandler.instance().bus().register(RegistryBundledRedstone.INSTANCE);
+        MinecraftForge.EVENT_BUS.register(RegistryBundledRedstone.INSTANCE);
         FMLCommonHandler.instance().bus().register(TickHandlerInfraredPacket.INSTANCE);
 
         // Register providers for built-in modules.
