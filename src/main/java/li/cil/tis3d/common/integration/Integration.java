@@ -4,6 +4,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import li.cil.tis3d.common.integration.redlogic.ModRedLogic;
+import li.cil.tis3d.common.integration.vanilla.ProxyMinecraft;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ public final class Integration {
 
     private Integration() {
         proxies.add(new ModRedLogic());
+        proxies.add(new ProxyMinecraft());
     }
 
     // --------------------------------------------------------------------- //

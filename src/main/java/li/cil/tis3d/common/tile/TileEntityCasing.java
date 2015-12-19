@@ -7,6 +7,7 @@ import li.cil.tis3d.api.infrared.InfraredPacket;
 import li.cil.tis3d.api.infrared.InfraredReceiver;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
+import li.cil.tis3d.api.module.BundledRedstone;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.Redstone;
 import li.cil.tis3d.common.Settings;
@@ -14,6 +15,7 @@ import li.cil.tis3d.common.integration.redlogic.ModRedLogic;
 import li.cil.tis3d.common.integration.redlogic.RedLogicBundledRedstone;
 import li.cil.tis3d.common.integration.redlogic.RedLogicConnectable;
 import li.cil.tis3d.common.integration.redlogic.RedLogicRedstone;
+import li.cil.tis3d.common.integration.redstone.RedstoneIntegration;
 import li.cil.tis3d.common.inventory.InventoryCasing;
 import li.cil.tis3d.common.inventory.SidedInventoryProxy;
 import li.cil.tis3d.common.machine.CasingImpl;
@@ -23,9 +25,7 @@ import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageCasingState;
 import li.cil.tis3d.util.InventoryUtils;
 import li.cil.tis3d.util.OneEightCompat;
-import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -34,7 +34,6 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.world.World;
 
 import java.util.ArrayDeque;
 import java.util.HashSet;
@@ -79,6 +78,7 @@ public final class TileEntityCasing extends TileEntity implements
     private final TileEntityCasing[] neighbors = new TileEntityCasing[Face.VALUES.length];
     private TileEntityController controller;
     private boolean isEnabled;
+    private boolean redstoneDirty = true;
 
     // --------------------------------------------------------------------- //
     // Networking
@@ -171,12 +171,25 @@ public final class TileEntityCasing extends TileEntity implements
     }
 
     public void stepRedstone() {
+        if (!redstoneDirty) {
+            return;
+        }
+        redstoneDirty = false;
+
         for (final Face face : Face.VALUES) {
             final Module module = getCasing().getModule(face);
             if (module instanceof Redstone) {
                 final Redstone redstone = (Redstone) module;
-                final short input = computeRedstoneInput(face);
-                redstone.setRedstoneInput(input);
+                final short signal = (short) RedstoneIntegration.INSTANCE.getRedstoneInput(redstone);
+                redstone.setRedstoneInput(signal);
+            }
+
+            if (module instanceof BundledRedstone) {
+                final BundledRedstone bundledRedstone = (BundledRedstone) module;
+                for (int channel = 0; channel < 16; channel++) {
+                    final short signal = (short) RedstoneIntegration.INSTANCE.getBundledRedstoneInput(bundledRedstone, channel);
+                    bundledRedstone.setBundledRedstoneInput(channel, signal);
+                }
             }
         }
     }
@@ -236,6 +249,11 @@ public final class TileEntityCasing extends TileEntity implements
     @Override
     public boolean canUpdate() {
         return false;
+    }
+
+    public void markDirty() {
+        super.markDirty();
+        redstoneDirty = true;
     }
 
     @Override
@@ -358,25 +376,6 @@ public final class TileEntityCasing extends TileEntity implements
         // Could not find a controller, disable modules.
         onDisabled();
         return null;
-    }
-
-    private short computeRedstoneInput(final Face face) {
-        final EnumFacing facing = Face.toEnumFacing(face);
-        final World world = getCasing().getCasingWorld();
-        final int inputX = getCasing().getPositionX() + facing.getFrontOffsetX();
-        final int inputY = getCasing().getPositionY() + facing.getFrontOffsetY();
-        final int inputZ = getCasing().getPositionZ() + facing.getFrontOffsetZ();
-        if (!world.blockExists(inputX, inputY, inputZ)) {
-            return 0;
-        }
-
-        final int input = world.isBlockProvidingPowerTo(inputX, inputY, inputZ, facing.ordinal());
-        if (input >= 15) {
-            return (short) input;
-        } else {
-            final Block block = world.getBlock(inputX, inputY, inputZ);
-            return (short) Math.max(input, block == Blocks.redstone_wire ? world.getBlockMetadata(inputX, inputY, inputZ) : 0);
-        }
     }
 
     private void sendState() {
