@@ -61,6 +61,8 @@ public final class Settings {
 
         disabledModules.clear();
         checkModule(config, "module.audio", Constants.NAME_ITEM_MODULE_AUDIO);
+        checkModule(config, "module.bundledRedstone", Constants.NAME_ITEM_MODULE_BUNDLED_REDSTONE);
+        checkModule(config, "module.display", Constants.NAME_ITEM_MODULE_DISPLAY);
         checkModule(config, "module.execution", Constants.NAME_ITEM_MODULE_EXECUTION);
         checkModule(config, "module.infrared", Constants.NAME_ITEM_MODULE_INFRARED);
         checkModule(config, "module.random", Constants.NAME_ITEM_MODULE_RANDOM);

@@ -100,6 +100,7 @@ public final class CasingImpl implements Casing {
                 module.onEnabled();
             }
         }
+        markDirty();
     }
 
     /**
@@ -118,6 +119,7 @@ public final class CasingImpl implements Casing {
             pipe.cancelRead();
             pipe.cancelWrite();
         }
+        markDirty();
     }
 
     /**

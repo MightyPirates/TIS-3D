@@ -178,6 +178,9 @@ public final class TileEntityController extends TileEntity implements ITickable 
                 state = ControllerState.READY;
                 casings.forEach(TileEntityCasing::onDisabled);
             } else if (power > 1) {
+                // Operating, step all casings redstone input info once.
+                casings.forEach(TileEntityCasing::stepRedstone);
+
                 // 0 = off, we never have this or we'd be in the READY state.
                 // 1 = paused, i.e. we don't lose state, but don't step.
                 // [2-14] = step every 15-n-th step.

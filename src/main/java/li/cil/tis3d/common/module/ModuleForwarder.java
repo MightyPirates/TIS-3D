@@ -30,6 +30,35 @@ public final class ModuleForwarder extends AbstractModule {
         this.other = other;
     }
 
+    // --------------------------------------------------------------------- //
+    // Module
+
+    @Override
+    public void step() {
+        assert (!getCasing().getCasingWorld().isRemote);
+
+        for (final Port port : Port.VALUES) {
+            beginForwarding(port);
+        }
+    }
+
+    @Override
+    public void onWriteComplete(final Port port) {
+        assert (!getCasing().getCasingWorld().isRemote);
+
+        beginForwarding(port);
+    }
+
+    // --------------------------------------------------------------------- //
+    // Object
+
+    @Override
+    public String toString() {
+        return getCasing().getPosition().toString() + ": " + getFace().toString();
+    }
+
+    // --------------------------------------------------------------------- //
+
     private void beginForwarding(final Port port) {
         final Pipe receivingPipe = getCasing().getReceivingPipe(getFace(), port);
         final Pipe sendingPipe = other.getCasing().getSendingPipe(other.getFace(), flipSide(port));
@@ -47,28 +76,5 @@ public final class ModuleForwarder extends AbstractModule {
 
     private static Port flipSide(final Port port) {
         return (port == Port.LEFT || port == Port.RIGHT) ? port.getOpposite() : port;
-    }
-
-    // --------------------------------------------------------------------- //
-    // Module
-
-    @Override
-    public void step() {
-        for (final Port port : Port.VALUES) {
-            beginForwarding(port);
-        }
-    }
-
-    @Override
-    public void onWriteComplete(final Port port) {
-        beginForwarding(port);
-    }
-
-    // --------------------------------------------------------------------- //
-    // Object
-
-    @Override
-    public String toString() {
-        return getCasing().getPosition().toString() + ": " + getFace().toString();
     }
 }

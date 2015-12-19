@@ -99,6 +99,8 @@ public final class ModuleExecution extends AbstractModuleRotatable {
 
     @Override
     public void step() {
+        assert (!getCasing().getCasingWorld().isRemote);
+
         final State prevState = state;
 
         if (compileError != null) {
@@ -124,19 +126,19 @@ public final class ModuleExecution extends AbstractModuleRotatable {
 
     @Override
     public void onEnabled() {
-        if (!getCasing().getCasingWorld().isRemote) {
-            sendData(true);
-        }
+        assert (!getCasing().getCasingWorld().isRemote);
+
+        sendData(true);
     }
 
     @Override
     public void onDisabled() {
+        assert (!getCasing().getCasingWorld().isRemote);
+
         machine.getState().reset();
         state = State.IDLE;
 
-        if (!getCasing().getCasingWorld().isRemote) {
-            sendData(false);
-        }
+        sendData(false);
     }
 
     @Override
@@ -226,7 +228,7 @@ public final class ModuleExecution extends AbstractModuleRotatable {
 
         rotateForRendering();
 
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 0 / 1.0F);
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
 
         final MachineState machineState = machine.getState();
 

@@ -27,6 +27,8 @@ public final class ModuleRandom extends AbstractModule {
 
     @Override
     public void step() {
+        assert (!getCasing().getCasingWorld().isRemote);
+
         for (final Port port : Port.VALUES) {
             stepOutput(port);
         }
@@ -34,6 +36,8 @@ public final class ModuleRandom extends AbstractModule {
 
     @Override
     public void onWriteComplete(final Port port) {
+        assert (!getCasing().getCasingWorld().isRemote);
+
         // No need to clear other writing pipes because we're outputting random
         // values anyway, so yey.
 
@@ -49,7 +53,7 @@ public final class ModuleRandom extends AbstractModule {
         }
 
         GlStateManager.enableBlend();
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 0 / 1.0F);
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
 
         Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
         final TextureAtlasSprite icon = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(TextureLoader.LOCATION_MODULE_RANDOM_OVERLAY.toString());

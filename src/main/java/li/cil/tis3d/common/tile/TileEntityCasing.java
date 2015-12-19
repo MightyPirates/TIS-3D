@@ -5,7 +5,12 @@ import li.cil.tis3d.api.infrared.InfraredReceiver;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
+import li.cil.tis3d.api.module.Redstone;
 import li.cil.tis3d.common.Settings;
+import li.cil.tis3d.common.integration.charsetwires.CharsetWiresBundledRedstone;
+import li.cil.tis3d.common.integration.charsetwires.CharsetWiresConnectable;
+import li.cil.tis3d.common.integration.charsetwires.CharsetWiresRedstone;
+import li.cil.tis3d.common.integration.charsetwires.ModCharsetWires;
 import li.cil.tis3d.common.inventory.InventoryCasing;
 import li.cil.tis3d.common.inventory.SidedInventoryProxy;
 import li.cil.tis3d.common.machine.CasingImpl;
@@ -14,7 +19,10 @@ import li.cil.tis3d.common.module.ModuleForwarder;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageCasingState;
 import li.cil.tis3d.util.InventoryUtils;
+import net.minecraft.block.BlockRedstoneWire;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -24,6 +32,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -45,7 +55,14 @@ import java.util.Set;
  * Casings do not tick. The modules installed in them are driven by a
  * controller (transitively) connected to their casing.
  */
-public final class TileEntityCasing extends TileEntity implements SidedInventoryProxy, CasingProxy, InfraredReceiver {
+@Optional.InterfaceList({
+        @Optional.Interface(iface = "li.cil.tis3d.common.integration.charsetwires.CharsetWiresBundledRedstone", modid = ModCharsetWires.MOD_ID),
+        @Optional.Interface(iface = "li.cil.tis3d.common.integration.charsetwires.CharsetWiresConnectable", modid = ModCharsetWires.MOD_ID),
+        @Optional.Interface(iface = "li.cil.tis3d.common.integration.charsetwires.CharsetWiresRedstone", modid = ModCharsetWires.MOD_ID)
+})
+public final class TileEntityCasing extends TileEntity implements
+        CharsetWiresConnectable, CharsetWiresRedstone, CharsetWiresBundledRedstone,
+        SidedInventoryProxy, CasingProxy, InfraredReceiver {
     // --------------------------------------------------------------------- //
     // Persisted data
 
@@ -150,6 +167,17 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
         isEnabled = false;
         sendState();
         casing.onDisabled();
+    }
+
+    public void stepRedstone() {
+        for (final Face face : Face.VALUES) {
+            final Module module = getCasing().getModule(face);
+            if (module instanceof Redstone) {
+                final Redstone redstone = (Redstone) module;
+                final int input = computeRedstoneInput(face);
+                redstone.setRedstoneInput(input);
+            }
+        }
     }
 
     public void stepModules() {
@@ -324,6 +352,23 @@ public final class TileEntityCasing extends TileEntity implements SidedInventory
         // Could not find a controller, disable modules.
         onDisabled();
         return null;
+    }
+
+    private int computeRedstoneInput(final Face face) {
+        final EnumFacing facing = Face.toEnumFacing(face);
+        final World world = getCasing().getCasingWorld();
+        final BlockPos inputPos = getCasing().getPosition().offset(facing);
+        if (!world.isBlockLoaded(inputPos)) {
+            return 0;
+        }
+
+        final int input = world.getRedstonePower(inputPos, facing);
+        if (input >= 15) {
+            return input;
+        } else {
+            final IBlockState state = world.getBlockState(inputPos);
+            return Math.max(input, state.getBlock() == Blocks.redstone_wire ? state.getValue(BlockRedstoneWire.POWER) : 0);
+        }
     }
 
     private void sendState() {

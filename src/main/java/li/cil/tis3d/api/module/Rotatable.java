@@ -11,7 +11,7 @@ import li.cil.tis3d.api.machine.Port;
  * <p>
  * The set orientation represents where {@link Port#UP} is pointing.
  */
-public interface Rotatable {
+public interface Rotatable extends Module {
     /**
      * Get the current orientation of the module.
      *

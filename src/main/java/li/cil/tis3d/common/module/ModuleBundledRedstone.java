@@ -5,22 +5,26 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
-import li.cil.tis3d.api.module.Redstone;
+import li.cil.tis3d.api.module.BundledRedstone;
+import li.cil.tis3d.api.module.BundledRedstoneOutputChangedEvent;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
-import net.minecraft.block.Block;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public final class ModuleRedstone extends AbstractModuleRotatable implements Redstone {
+import java.util.Arrays;
+
+public final class ModuleBundledRedstone extends AbstractModuleRotatable implements BundledRedstone {
     // --------------------------------------------------------------------- //
     // Persisted data
 
-    private int output = 0;
-    private int input = 0;
+    private final int[] output = new int[16];
+    private final int[] input = new int[16];
+    private int channel = 0;
 
     // --------------------------------------------------------------------- //
     // Computed data
@@ -28,33 +32,16 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
     // NBT tag names.
     private static final String TAG_OUTPUT = "output";
     private static final String TAG_INPUT = "input";
+    private static final String TAG_CHANNEL = "channel";
 
     // Rendering info.
-    private static final ResourceLocation LOCATION_OVERLAY = new ResourceLocation(API.MOD_ID, "textures/blocks/overlay/moduleRedstone.png");
-    private static final float LEFT_U0 = 9 / 32f;
-    private static final float LEFT_U1 = 12 / 32f;
-    private static final float RIGHT_U0 = 20 / 32f;
-    private static final float RIGHT_U1 = 23 / 32f;
-    private static final float SHARED_V0 = 42 / 64f;
-    private static final float SHARED_V1 = 57 / 64f;
-    private static final float SHARED_W = 3 / 32f;
-    private static final float SHARED_H = SHARED_V1 - SHARED_V0;
-
-    /**
-     * The last tick we updated. Used to avoid changing output multiple times a
-     * tick, which is usually pointless and really bad for performance.
-     */
-    private long lastStep = 0L;
-
-    /**
-     * Something changed last tick after the first neighbor block update, so
-     * we need to update again in the next tick (if we don't anyway).
-     */
-    private boolean scheduledNeighborUpdate = false;
+    private static final ResourceLocation LOCATION_OVERLAY = new ResourceLocation(API.MOD_ID, "textures/blocks/overlay/moduleBundledRedstone.png");
+    private static final ResourceLocation LOCATION_COLORS_OVERLAY = new ResourceLocation(API.MOD_ID, "textures/blocks/overlay/moduleBundledRedstoneColors.png");
+    private static final float V_STEP = 1 / 16f;
 
     // --------------------------------------------------------------------- //
 
-    public ModuleRedstone(final Casing casing, final Face face) {
+    public ModuleBundledRedstone(final Casing casing, final Face face) {
         super(casing, face);
     }
 
@@ -69,22 +56,18 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
             stepOutput(port);
             stepInput(port);
         }
-
-        lastStep = getCasing().getCasingWorld().getTotalWorldTime();
-
-        if (scheduledNeighborUpdate) {
-            notifyNeighbors();
-        }
     }
 
     @Override
     public void onDisabled() {
         assert (!getCasing().getCasingWorld().isRemote);
 
-        input = 0;
-        output = 0;
+        Arrays.fill(input, 0);
+        Arrays.fill(output, 0);
+        channel = 0;
 
-        notifyNeighbors();
+        final BundledRedstoneOutputChangedEvent event = new BundledRedstoneOutputChangedEvent(this, -1);
+        MinecraftForge.EVENT_BUS.post(event);
 
         sendData();
     }
@@ -117,59 +100,75 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
         RenderUtil.bindTexture(LOCATION_OVERLAY);
 
         // Draw base overlay.
-        RenderUtil.drawQuad(0, 0, 1, 0.5f);
+        RenderUtil.drawQuad();
+
+        RenderUtil.bindTexture(LOCATION_COLORS_OVERLAY);
 
         // Draw output bar.
-        final float relativeOutput = output / 15f;
-        final float heightOutput = relativeOutput * SHARED_H;
-        final float v0Output = SHARED_V1 - heightOutput;
-        RenderUtil.drawQuad(LEFT_U0, (v0Output - 0.5f) * 2f, SHARED_W, heightOutput * 2, LEFT_U0, v0Output, LEFT_U1, SHARED_V1);
+        for (int channel = 0; channel < output.length; channel++) {
+            if (output[channel] > 0) {
+                final float v = channel * V_STEP;
+                RenderUtil.drawQuad(0, v, 0.5f, v + V_STEP);
+            }
+        }
 
         // Draw input bar.
-        final float relativeInput = input / 15f;
-        final float heightInput = relativeInput * SHARED_H;
-        final float v0Input = SHARED_V1 - heightInput;
-        RenderUtil.drawQuad(RIGHT_U0, (v0Input - 0.5f) * 2f, SHARED_W, heightInput * 2, RIGHT_U0, v0Input, RIGHT_U1, SHARED_V1);
+        for (int channel = 0; channel < input.length; channel++) {
+            if (input[channel] > 0) {
+                final float v = channel * V_STEP;
+                RenderUtil.drawQuad(0.5f, v, 1, v + V_STEP);
+            }
+        }
     }
 
     @Override
     public void readFromNBT(final NBTTagCompound nbt) {
         super.readFromNBT(nbt);
 
-        output = Math.max(0, Math.min(15, nbt.getInteger(TAG_OUTPUT)));
-        input = Math.max(0, Math.min(15, nbt.getInteger(TAG_INPUT)));
+        final int[] outputNbt = nbt.getIntArray(TAG_OUTPUT);
+        for (int i = 0; i < outputNbt.length; i++) {
+            outputNbt[i] = Math.max(0, Math.min(0xFFFF, outputNbt[i]));
+        }
+        System.arraycopy(outputNbt, 0, output, 0, Math.min(outputNbt.length, output.length));
+
+        final int[] inputNbt = nbt.getIntArray(TAG_INPUT);
+        for (int i = 0; i < inputNbt.length; i++) {
+            inputNbt[i] = Math.max(0, Math.min(0xFFFF, inputNbt[i]));
+        }
+        System.arraycopy(inputNbt, 0, input, 0, Math.min(inputNbt.length, input.length));
+
+        channel = Math.max(0, Math.min(input.length - 1, nbt.getInteger(TAG_CHANNEL)));
     }
 
     @Override
     public void writeToNBT(final NBTTagCompound nbt) {
         super.writeToNBT(nbt);
 
-        nbt.setInteger(TAG_OUTPUT, output);
-        nbt.setInteger(TAG_INPUT, input);
+        nbt.setIntArray(TAG_OUTPUT, output);
+        nbt.setIntArray(TAG_INPUT, input);
+        nbt.setInteger(TAG_CHANNEL, channel);
     }
 
     // --------------------------------------------------------------------- //
-    // Redstone
+    // BundledRedstone
 
     @Override
-    public int getRedstoneOutput() {
-        return output;
+    public int getBundledRedstoneOutput(final int channel) {
+        return output[channel];
     }
 
     @Override
-    public void setRedstoneInput(final int value) {
+    public void setBundledRedstoneInput(final int channel, final int value) {
         // We never call this on the client side, but other might...
         if (getCasing().getCasingWorld().isRemote) {
             return;
         }
 
-        // Clamp to valid redstone range.
-        final int validatedValue = Math.max(0, Math.min(15, value));
-        if (validatedValue == input) {
+        if (value == input[channel]) {
             return;
         }
 
-        input = validatedValue;
+        input[channel] = value;
 
         // If the value changed, make sure we're saved.
         getCasing().markDirty();
@@ -189,7 +188,7 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
     private void stepOutput(final Port port) {
         final Pipe sendingPipe = getCasing().getSendingPipe(getFace(), port);
         if (!sendingPipe.isWriting()) {
-            sendingPipe.beginWrite(input);
+            sendingPipe.beginWrite(input[channel]);
         }
     }
 
@@ -203,7 +202,7 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
             receivingPipe.beginRead();
         }
         if (receivingPipe.canTransfer()) {
-            setRedstoneOutput(receivingPipe.read());
+            process(receivingPipe.read());
 
             // Start reading again right away to read as fast as possible.
             receivingPipe.beginRead();
@@ -211,39 +210,57 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
     }
 
     /**
+     * Handle a read value, perform appropriate action.
+     *
+     * @param value the value that was read.
+     */
+    private void process(final int value) {
+        final int hi = (value & 0xFF00) >>> 8;
+        final int lo = value & 0xFF;
+        if (hi == 0xFF) {
+            // lo = new output channel
+            if (lo < 0 || lo >= input.length) {
+                return;
+            }
+
+            if (lo != channel) {
+                channel = lo;
+
+                // We changed channel, update what we pass on.
+                cancelWrite();
+            }
+        } else {
+            // hi = channel, lo = value
+            setRedstoneOutput(hi, lo);
+        }
+    }
+
+    /**
      * Update the redstone signal we're outputting.
      *
-     * @param value the new output value.
+     * @param channel the channel to change the output of.
+     * @param value   the new output value.
      */
-    private void setRedstoneOutput(final int value) {
-        // Clamp to valid redstone range.
-        final int validatedValue = Math.max(0, Math.min(15, value));
-        if (validatedValue == output) {
+    private void setRedstoneOutput(final int channel, final int value) {
+        // Ignore invalid channels.
+        if (channel < 0 || channel >= output.length) {
             return;
         }
 
-        output = validatedValue;
+        if (value == output[channel]) {
+            return;
+        }
+
+        output[channel] = value;
 
         // If the value changed, make sure we're saved.
         getCasing().markDirty();
 
-        // Notify neighbors, avoid multiple world updates per tick.
-        if (getCasing().getCasingWorld().getTotalWorldTime() > lastStep) {
-            notifyNeighbors();
-        } else {
-            scheduledNeighborUpdate = true;
-        }
+        // Notify bundled redstone APIs.
+        final BundledRedstoneOutputChangedEvent event = new BundledRedstoneOutputChangedEvent(this, channel);
+        MinecraftForge.EVENT_BUS.post(event);
 
         sendData();
-    }
-
-    /**
-     * Notify all neighbors of a block update, to let them realize our output changed.
-     */
-    private void notifyNeighbors() {
-        scheduledNeighborUpdate = false;
-        final Block blockType = getCasing().getCasingWorld().getBlockState(getCasing().getPosition()).getBlock();
-        getCasing().getCasingWorld().notifyNeighborsOfStateChange(getCasing().getPosition(), blockType);
     }
 
     /**

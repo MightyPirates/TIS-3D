@@ -59,6 +59,8 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
 
     @Override
     public void step() {
+        assert (!getCasing().getCasingWorld().isRemote);
+
         stepOutput();
         stepInput();
 
@@ -67,13 +69,15 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
 
     @Override
     public void onDisabled() {
-        receiveQueue.clear();
+        assert (!getCasing().getCasingWorld().isRemote);
 
-        getCasing().markDirty();
+        receiveQueue.clear();
     }
 
     @Override
     public void onWriteComplete(final Port port) {
+        assert (!getCasing().getCasingWorld().isRemote);
+
         // Pop the top value (the one that was being written).
         receiveQueue.removeFirst();
 
@@ -93,7 +97,7 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
         }
 
         GlStateManager.enableBlend();
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 0 / 1.0F);
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
 
         Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
         final TextureAtlasSprite icon = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(TextureLoader.LOCATION_MODULE_INFRARED_OVERLAY.toString());

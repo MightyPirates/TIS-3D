@@ -55,12 +55,16 @@ public final class ModuleStack extends AbstractModuleRotatable {
 
     @Override
     public void step() {
+        assert (!getCasing().getCasingWorld().isRemote);
+
         stepOutput();
         stepInput();
     }
 
     @Override
     public void onDisabled() {
+        assert (!getCasing().getCasingWorld().isRemote);
+
         // Clear stack on shutdown.
         top = -1;
 
@@ -69,6 +73,8 @@ public final class ModuleStack extends AbstractModuleRotatable {
 
     @Override
     public void onWriteComplete(final Port port) {
+        assert (!getCasing().getCasingWorld().isRemote);
+
         // Pop the top value (the one that was being written).
         pop();
 
@@ -94,7 +100,7 @@ public final class ModuleStack extends AbstractModuleRotatable {
 
         rotateForRendering();
 
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 0 / 1.0F);
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
 
         RenderUtil.bindTexture(LOCATION_OVERLAY);
 
