@@ -41,7 +41,7 @@ Example:
 `MOV 0, ACC # Reset`
 
 ### Labels
-Labels are denoted by a string followed by a `:` (:) color character. A label always refers to the instruction following it. When used as the target of a jump instruction, that instruction is be jumped to directly. This also means that with respect to the program's execution, it makes no difference whether a label is placed on the same line, or the line preceeding the instruction it references.
+Labels are denoted by a string followed by a `:` (:) color character. A label always refers to the instruction following it. When used as the target of a jump instruction, that instruction is be jumped to directly. This also means that with respect to the program's execution, it makes no difference whether a label is placed on the same line, or the line preceding the instruction it references.
 Example:
 `START: MOV 8, ACC`
 `LOOP:`
@@ -57,7 +57,7 @@ Pseudo-instruction that has no effect on the state of the execution module's por
 #### Data Transfer
 `MOV <SRC> <DST>`
 Transfers data from the target `SRC` to the target `DST`. See above for a list of valid targets. Note that operating on registers / internal state is typically faster than operating on ports. Exact timings are not part of the specification, and vendor specific.
-Exaple:
+Example:
 `MOV 8, ACC` Writes the value 8 to the `ACC` register.
 `MOV LEFT, RIGHT` Reads a value from the left port, then writes the read value to the right port.
 `MOV DOWN, NIL` Reads the value from the bottom port and writes it to `NIL`, effectively discarding it.

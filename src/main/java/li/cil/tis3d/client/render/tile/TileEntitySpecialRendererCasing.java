@@ -71,6 +71,8 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
                     casing.getPosition().offset(Face.toEnumFacing(face)), 0);
             OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, brightness % 65536, brightness / 65536);
 
+            GlStateManager.color(1, 1, 1, 1);
+
             try {
                 module.render(casing.isEnabled(), partialTicks);
             } catch (final Exception e) {
