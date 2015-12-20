@@ -31,6 +31,7 @@ import li.cil.tis3d.common.provider.ModuleProviderBundledRedstone;
 import li.cil.tis3d.common.provider.ModuleProviderDisplay;
 import li.cil.tis3d.common.provider.ModuleProviderExecution;
 import li.cil.tis3d.common.provider.ModuleProviderInfrared;
+import li.cil.tis3d.common.provider.ModuleProviderKeypad;
 import li.cil.tis3d.common.provider.ModuleProviderRandom;
 import li.cil.tis3d.common.provider.ModuleProviderRedstone;
 import li.cil.tis3d.common.provider.ModuleProviderStack;
@@ -95,6 +96,7 @@ public class ProxyCommon {
         registerModule(Constants.NAME_ITEM_MODULE_DISPLAY);
         registerModule(Constants.NAME_ITEM_MODULE_EXECUTION);
         registerModule(Constants.NAME_ITEM_MODULE_INFRARED);
+        registerModule(Constants.NAME_ITEM_MODULE_KEYPAD);
         registerModule(Constants.NAME_ITEM_MODULE_RANDOM);
         registerModule(Constants.NAME_ITEM_MODULE_REDSTONE);
         registerModule(Constants.NAME_ITEM_MODULE_STACK);
@@ -118,6 +120,7 @@ public class ProxyCommon {
         registerModuleOre(Constants.NAME_ITEM_MODULE_DISPLAY);
         registerModuleOre(Constants.NAME_ITEM_MODULE_EXECUTION);
         registerModuleOre(Constants.NAME_ITEM_MODULE_INFRARED);
+        registerModuleOre(Constants.NAME_ITEM_MODULE_KEYPAD);
         registerModuleOre(Constants.NAME_ITEM_MODULE_RANDOM);
         registerModuleOre(Constants.NAME_ITEM_MODULE_REDSTONE);
         registerModuleOre(Constants.NAME_ITEM_MODULE_STACK);
@@ -131,6 +134,7 @@ public class ProxyCommon {
         addModuleRecipe(Constants.NAME_ITEM_MODULE_DISPLAY, GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_PRISM));
         addModuleRecipe(Constants.NAME_ITEM_MODULE_EXECUTION, "ingotGold");
         addModuleRecipe(Constants.NAME_ITEM_MODULE_INFRARED, Items.spider_eye);
+        addModuleRecipe(Constants.NAME_ITEM_MODULE_KEYPAD, Blocks.stone_button);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_RANDOM, Items.ender_pearl);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_REDSTONE, Items.repeater);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_STACK, Item.getItemFromBlock(Blocks.chest));
@@ -157,6 +161,7 @@ public class ProxyCommon {
         ModuleAPI.addProvider(new ModuleProviderDisplay());
         ModuleAPI.addProvider(new ModuleProviderExecution());
         ModuleAPI.addProvider(new ModuleProviderInfrared());
+        ModuleAPI.addProvider(new ModuleProviderKeypad());
         ModuleAPI.addProvider(new ModuleProviderStack());
         ModuleAPI.addProvider(new ModuleProviderRandom());
         ModuleAPI.addProvider(new ModuleProviderRedstone());

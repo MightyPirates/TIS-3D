@@ -78,6 +78,8 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
             final int brightness = casing.getWorldObj().getLightBrightnessForSkyBlocks(neighborX, neighborY, neighborZ, 0);
             OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, brightness % 65536, brightness / 65536);
 
+            GL11.glColor4f(1, 1, 1, 1);
+
             try {
                 module.render(casing.isEnabled(), partialTicks);
             } catch (final Exception e) {

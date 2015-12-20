@@ -65,6 +65,7 @@ public final class Settings {
         checkModule(config, "module.display", Constants.NAME_ITEM_MODULE_DISPLAY);
         checkModule(config, "module.execution", Constants.NAME_ITEM_MODULE_EXECUTION);
         checkModule(config, "module.infrared", Constants.NAME_ITEM_MODULE_INFRARED);
+        checkModule(config, "module.keypad", Constants.NAME_ITEM_MODULE_KEYPAD);
         checkModule(config, "module.random", Constants.NAME_ITEM_MODULE_RANDOM);
         checkModule(config, "module.redstone", Constants.NAME_ITEM_MODULE_REDSTONE);
         checkModule(config, "module.stack", Constants.NAME_ITEM_MODULE_STACK);

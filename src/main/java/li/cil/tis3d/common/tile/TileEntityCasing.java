@@ -258,6 +258,7 @@ public final class TileEntityCasing extends TileEntity implements
     public boolean canUpdate() {
         return false;
     }
+
     @Override
     public void invalidate() {
         super.invalidate();
@@ -344,13 +345,16 @@ public final class TileEntityCasing extends TileEntity implements
         final Queue<TileEntity> queue = new ArrayDeque<>();
 
         // Number of casings we encountered for optional early exit.
-        int casings = 1;
+        int casings = 0;
 
         // Start at our location, keep going until there's nothing left to do.
         processed.add(this);
         queue.add(this);
         while (!queue.isEmpty()) {
             final TileEntity tileEntity = queue.remove();
+            if (tileEntity.isInvalid()) {
+                continue;
+            }
 
             // Check what we have. We only add controllers and casings to this list,
             // so we can skip the type check in the else branch.

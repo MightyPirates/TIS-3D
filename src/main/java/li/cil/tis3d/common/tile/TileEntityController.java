@@ -107,6 +107,10 @@ public final class TileEntityController extends TileEntity {
         // Safe to always call this because the casings track their own enabled
         // state and just won't do anything if they're already disabled.
         casings.forEach(TileEntityCasing::onDisabled);
+        for (final TileEntityCasing casing : casings) {
+            casing.setController(null);
+        }
+        casings.clear();
 
         // Tell our neighbors about our untimely death.
         for (final EnumFacing facing : EnumFacing.values()) {
@@ -287,7 +291,6 @@ public final class TileEntityController extends TileEntity {
 
                 // Register as the controller with the casing and add neighbors.
                 final TileEntityCasing casing = (TileEntityCasing) tileEntity;
-                casing.setController(this);
                 newCasings.add(casing);
                 addNeighbors(casing, processed, queue);
             }
@@ -297,6 +300,7 @@ public final class TileEntityController extends TileEntity {
         // sure we don't have to disable our old ones.
         casings.clear();
         casings.addAll(newCasings);
+        casings.forEach(c -> c.setController(this));
 
         // Ensure our casings know their neighbors.
         casings.forEach(TileEntityCasing::checkNeighbors);
@@ -355,7 +359,7 @@ public final class TileEntityController extends TileEntity {
         // Disable modules if we're in an errored state. If we're in an
         // incomplete state or rescanning, leave the state as is to avoid
         // unnecessarily resetting the computer.
-        if (toState != ControllerState.INCOMPLETE && toState != ControllerState.SCANNING) {
+        if (toState != ControllerState.INCOMPLETE) {
             casings.forEach(TileEntityCasing::onDisabled);
         }
         casings.clear();

@@ -12,6 +12,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
 
 /**
  * Base implementation of a module, taking care of the boilerplate code.
@@ -68,6 +69,68 @@ public abstract class AbstractModule implements Module {
                 getCasing().getPositionY() == hit.blockY &&
                 getCasing().getPositionZ() == hit.blockZ &&
                 hit.sideHit == Face.toEnumFacing(getFace()).ordinal();
+    }
+
+    /**
+     * Utility method for determining the hit coordinate on the module's face the player is
+     * looking at. This will return <tt>null</tt> if the player is not currently looking
+     * at the module.
+     * <p>
+     * Note that this will return the unadjusted X, Y and Z components. To transform this
+     * coordinate to a UV coordinate mapped to the module's face, pass this into
+     * {@link #hitToUV}. Note that this method is overridden in {@link AbstractModuleRotatable}
+     * to also take into account the module's rotation.
+     *
+     * @return the UV coordinate the player is looking at as the X and Y components.
+     */
+    @SideOnly(Side.CLIENT)
+    protected Vec3 getPlayerLookAt() {
+        final MovingObjectPosition hit = Minecraft.getMinecraft().objectMouseOver;
+        if (hit != null &&
+                hit.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK &&
+                getCasing().getPositionX() == hit.blockX &&
+                getCasing().getPositionY() == hit.blockY &&
+                getCasing().getPositionZ() == hit.blockZ &&
+                hit.sideHit == Face.toEnumFacing(getFace()).ordinal()) {
+            return Vec3.createVectorHelper(hit.hitVec.xCoord - hit.blockX,
+                    hit.hitVec.yCoord - hit.blockY,
+                    hit.hitVec.zCoord - hit.blockZ);
+        } else {
+            return null;
+        }
+    }
+
+    // --------------------------------------------------------------------- //
+    // General utility
+
+    /**
+     * Project a hit position on the surface of a casing to a UV coordinate on
+     * the face of this module.
+     * <p>
+     * Note that this is also overridden in {@link AbstractModuleRotatable} to
+     * take into account the module's rotation.
+     *
+     * @param hitPos the hit position to project.
+     * @return the projected UV coordinate, with the Z component being 0.
+     * @see #getPlayerLookAt()
+     * @see #onActivate(EntityPlayer, float, float, float)
+     */
+    protected Vec3 hitToUV(final Vec3 hitPos) {
+        switch (getFace()) {
+            case Y_NEG:
+                return Vec3.createVectorHelper(1 - hitPos.xCoord, hitPos.zCoord, 0);
+            case Y_POS:
+                return Vec3.createVectorHelper(1 - hitPos.xCoord, 1 - hitPos.zCoord, 0);
+            case Z_NEG:
+                return Vec3.createVectorHelper(1 - hitPos.xCoord, 1 - hitPos.yCoord, 0);
+            case Z_POS:
+                return Vec3.createVectorHelper(hitPos.xCoord, 1 - hitPos.yCoord, 0);
+            case X_NEG:
+                return Vec3.createVectorHelper(hitPos.zCoord, 1 - hitPos.yCoord, 0);
+            case X_POS:
+                return Vec3.createVectorHelper(1 - hitPos.zCoord, 1 - hitPos.yCoord, 0);
+        }
+        return null;
     }
 
     // --------------------------------------------------------------------- //

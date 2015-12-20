@@ -8,6 +8,7 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Rotatable;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.Vec3;
 import org.apache.logging.log4j.LogManager;
 import org.lwjgl.opengl.GL11;
 
@@ -40,6 +41,7 @@ public abstract class AbstractModuleRotatable extends AbstractModule implements 
     }
 
     // --------------------------------------------------------------------- //
+    // Rendering utility
 
     /**
      * Apply the module's rotation to the OpenGL state.
@@ -50,6 +52,41 @@ public abstract class AbstractModuleRotatable extends AbstractModule implements 
         GL11.glTranslatef(0.5f, 0.5f, 0);
         GL11.glRotatef(90 * rotation, 0, 0, Face.toEnumFacing(getFace()).getFrontOffsetY());
         GL11.glTranslatef(-0.5f, -0.5f, 0);
+    }
+
+    // --------------------------------------------------------------------- //
+    // General utility
+
+    @Override
+    protected Vec3 hitToUV(final Vec3 hitPos) {
+        final Vec3 uv = super.hitToUV(hitPos);
+        switch (getFace()) {
+            case Y_NEG:
+                switch (getFacing()) {
+                    case LEFT:
+                        return Vec3.createVectorHelper(uv.yCoord, 1 - uv.xCoord, 0);
+                    case RIGHT:
+                        return Vec3.createVectorHelper(1 - uv.yCoord, uv.xCoord, 0);
+                    case UP:
+                        return uv;
+                    case DOWN:
+                        return Vec3.createVectorHelper(1 - uv.xCoord, 1 - uv.yCoord, 0);
+                }
+                break;
+            case Y_POS:
+                switch (getFacing()) {
+                    case LEFT:
+                        return Vec3.createVectorHelper(1 - uv.yCoord, uv.xCoord, 0);
+                    case RIGHT:
+                        return Vec3.createVectorHelper(uv.yCoord, 1 - uv.xCoord, 0);
+                    case UP:
+                        return uv;
+                    case DOWN:
+                        return Vec3.createVectorHelper(1 - uv.xCoord, 1 - uv.yCoord, 0);
+                }
+                break;
+        }
+        return uv;
     }
 
     // --------------------------------------------------------------------- //

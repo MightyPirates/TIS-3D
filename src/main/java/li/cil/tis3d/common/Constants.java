@@ -24,6 +24,7 @@ public final class Constants {
     public static final String NAME_ITEM_MODULE_DISPLAY = "moduleDisplay";
     public static final String NAME_ITEM_MODULE_EXECUTION = "moduleExecution";
     public static final String NAME_ITEM_MODULE_INFRARED = "moduleInfrared";
+    public static final String NAME_ITEM_MODULE_KEYPAD = "moduleKeypad";
     public static final String NAME_ITEM_MODULE_REDSTONE = "moduleRedstone";
     public static final String NAME_ITEM_MODULE_STACK = "moduleStack";
     public static final String NAME_ITEM_MODULE_RANDOM = "moduleRandom";
