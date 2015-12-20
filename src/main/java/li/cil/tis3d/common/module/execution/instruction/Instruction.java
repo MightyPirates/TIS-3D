@@ -20,6 +20,12 @@ public interface Instruction {
     void step(Machine machine);
 
     /**
+     * Reset the state of the instruction if it has any.
+     */
+    default void reset() {
+    }
+
+    /**
      * Finish a write operation started by the instruction, usually by
      * advancing the program counter.
      * <p>

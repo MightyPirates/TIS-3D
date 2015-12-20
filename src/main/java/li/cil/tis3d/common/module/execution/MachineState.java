@@ -92,6 +92,7 @@ public final class MachineState {
         acc = 0;
         bak = 0;
         last = Optional.empty();
+        instructions.forEach(Instruction::reset);
     }
 
     /**
