@@ -35,4 +35,110 @@ abstract class AbstractISBRH implements ISimpleBlockRenderingHandler {
     }
 
     protected abstract void renderBlock(final RenderBlocks renderer, final Runnable renderCall);
+
+    protected final void drawFrame(final RenderBlocks renderer, final Runnable renderCall) {
+        renderer.setRenderBounds(
+                0 / 16f, 0 / 16f, 0 / 16f,
+                1 / 16f, 1 / 16f, 16 / 16f);
+        renderCall.run();
+        renderer.setRenderBounds(
+                15 / 16f, 0 / 16f, 0 / 16f,
+                16 / 16f, 1 / 16f, 16 / 16f);
+        renderCall.run();
+        renderer.setRenderBounds(
+                0 / 16f, 15 / 16f, 0 / 16f,
+                1 / 16f, 16 / 16f, 16 / 16f);
+        renderCall.run();
+        renderer.setRenderBounds(
+                15 / 16f, 15 / 16f, 0 / 16f,
+                16 / 16f, 16 / 16f, 16 / 16f);
+        renderCall.run();
+
+        renderer.setRenderBounds(
+                1 / 16f, 0 / 16f, 0 / 16f,
+                15 / 16f, 1 / 16f, 1 / 16f);
+        renderCall.run();
+        renderer.setRenderBounds(
+                1 / 16f, 0 / 16f, 15 / 16f,
+                15 / 16f, 1 / 16f, 16 / 16f);
+        renderCall.run();
+        renderer.setRenderBounds(
+                1 / 16f, 15 / 16f, 0 / 16f,
+                15 / 16f, 16 / 16f, 1 / 16f);
+        renderCall.run();
+        renderer.setRenderBounds(
+                1 / 16f, 15 / 16f, 15 / 16f,
+                15 / 16f, 16 / 16f, 16 / 16f);
+        renderCall.run();
+
+        renderer.setRenderBounds(
+                0 / 16f, 1 / 16f, 0 / 16f,
+                1 / 16f, 15 / 16f, 1 / 16f);
+        renderCall.run();
+        renderer.setRenderBounds(
+                15 / 16f, 1 / 16f, 0 / 16f,
+                16 / 16f, 15 / 16f, 1 / 16f);
+        renderCall.run();
+        renderer.setRenderBounds(
+                0 / 16f, 1 / 16f, 15 / 16f,
+                1 / 16f, 15 / 16f, 16 / 16f);
+        renderCall.run();
+        renderer.setRenderBounds(
+                15 / 16f, 1 / 16f, 15 / 16f,
+                16 / 16f, 15 / 16f, 16 / 16f);
+        renderCall.run();
+    }
+
+    protected final void drawRivets(final RenderBlocks renderer, final Runnable renderCall) {
+        renderer.setRenderBounds(
+                2 / 16f, 2 / 16f, 0.5f / 16f,
+                3 / 16f, 3 / 16f, 15.5f / 16f);
+        renderCall.run();
+        renderer.setRenderBounds(
+                13 / 16f, 2 / 16f, 0.5f / 16f,
+                14 / 16f, 3 / 16f, 15.5f / 16f);
+        renderCall.run();
+        renderer.setRenderBounds(
+                2 / 16f, 13 / 16f, 0.5f / 16f,
+                3 / 16f, 14 / 16f, 15.5f / 16f);
+        renderCall.run();
+        renderer.setRenderBounds(
+                13 / 16f, 13 / 16f, 0.5f / 16f,
+                14 / 16f, 14 / 16f, 15.5f / 16f);
+        renderCall.run();
+
+        renderer.setRenderBounds(
+                0.5f / 16f, 2 / 16f, 2 / 16f,
+                15.5f / 16f, 3 / 16f, 3 / 16f);
+        renderCall.run();
+        renderer.setRenderBounds(
+                0.5f / 16f, 13 / 16f, 2 / 16f,
+                15.5f / 16f, 14 / 16f, 3 / 16f);
+        renderCall.run();
+        renderer.setRenderBounds(
+                0.5f / 16f, 2 / 16f, 13 / 16f,
+                15.5f / 16f, 3 / 16f, 14 / 16f);
+        renderCall.run();
+        renderer.setRenderBounds(
+                0 / 16f, 13 / 16f, 13 / 16f,
+                15.5f / 16f, 14 / 16f, 14 / 16f);
+        renderCall.run();
+
+        renderer.setRenderBounds(
+                2 / 16f, 0.5f / 16f, 2 / 16f,
+                3 / 16f, 15.5f / 16f, 3 / 16f);
+        renderCall.run();
+        renderer.setRenderBounds(
+                13 / 16f, 0.5f / 16f, 2 / 16f,
+                14 / 16f, 15.5f / 16f, 3 / 16f);
+        renderCall.run();
+        renderer.setRenderBounds(
+                2 / 16f, 0.5f / 16f, 13 / 16f,
+                3 / 16f, 15.5f / 16f, 14 / 16f);
+        renderCall.run();
+        renderer.setRenderBounds(
+                13 / 16f, 0.5f / 16f, 13 / 16f,
+                14 / 16f, 15.5f / 16f, 14 / 16f);
+        renderCall.run();
+    }
 }

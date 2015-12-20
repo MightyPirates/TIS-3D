@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 
-public class ISBRHCasing extends AbstractISBRH {
+public final class ISBRHCasing extends AbstractISBRH {
     public ISBRHCasing() {
         TIS3D.proxy.setCasingRenderId(getRenderId());
     }
@@ -33,7 +33,7 @@ public class ISBRHCasing extends AbstractISBRH {
                     final float offsetY = Face.toEnumFacing(face).getFrontOffsetY();
                     final float offsetZ = Face.toEnumFacing(face).getFrontOffsetZ();
 
-                    final float x0, y0, z0, x1, y1, z1;
+                    final float x0, x1;
                     if (offsetX > 0) {
                         x0 = min + offsetMin * offsetX;
                         x1 = max + offsetMax * offsetX;
@@ -41,6 +41,8 @@ public class ISBRHCasing extends AbstractISBRH {
                         x0 = min + offsetMax * offsetX;
                         x1 = max + offsetMin * offsetX;
                     }
+
+                    final float y0, y1;
                     if (offsetY > 0) {
                         y0 = min + offsetMin * offsetY;
                         y1 = max + offsetMax * offsetY;
@@ -48,6 +50,8 @@ public class ISBRHCasing extends AbstractISBRH {
                         y0 = min + offsetMax * offsetY;
                         y1 = max + offsetMin * offsetY;
                     }
+
+                    final float z0, z1;
                     if (offsetZ > 0) {
                         z0 = min + offsetMin * offsetZ;
                         z1 = max + offsetMax * offsetZ;
@@ -68,57 +72,7 @@ public class ISBRHCasing extends AbstractISBRH {
 
     @Override
     protected void renderBlock(final RenderBlocks renderer, final Runnable renderCall) {
-        // Frame.
-        renderer.setRenderBounds(
-                0 / 16f, 0 / 16f, 0 / 16f,
-                1 / 16f, 1 / 16f, 16 / 16f);
-        renderCall.run();
-        renderer.setRenderBounds(
-                15 / 16f, 0 / 16f, 0 / 16f,
-                16 / 16f, 1 / 16f, 16 / 16f);
-        renderCall.run();
-        renderer.setRenderBounds(
-                0 / 16f, 15 / 16f, 0 / 16f,
-                1 / 16f, 16 / 16f, 16 / 16f);
-        renderCall.run();
-        renderer.setRenderBounds(
-                15 / 16f, 15 / 16f, 0 / 16f,
-                16 / 16f, 16 / 16f, 16 / 16f);
-        renderCall.run();
-
-        renderer.setRenderBounds(
-                1 / 16f, 0 / 16f, 0 / 16f,
-                15 / 16f, 1 / 16f, 1 / 16f);
-        renderCall.run();
-        renderer.setRenderBounds(
-                1 / 16f, 0 / 16f, 15 / 16f,
-                15 / 16f, 1 / 16f, 16 / 16f);
-        renderCall.run();
-        renderer.setRenderBounds(
-                1 / 16f, 15 / 16f, 0 / 16f,
-                15 / 16f, 16 / 16f, 1 / 16f);
-        renderCall.run();
-        renderer.setRenderBounds(
-                1 / 16f, 15 / 16f, 15 / 16f,
-                15 / 16f, 16 / 16f, 16 / 16f);
-        renderCall.run();
-
-        renderer.setRenderBounds(
-                0 / 16f, 1 / 16f, 0 / 16f,
-                1 / 16f, 15 / 16f, 1 / 16f);
-        renderCall.run();
-        renderer.setRenderBounds(
-                15 / 16f, 1 / 16f, 0 / 16f,
-                16 / 16f, 15 / 16f, 1 / 16f);
-        renderCall.run();
-        renderer.setRenderBounds(
-                0 / 16f, 1 / 16f, 15 / 16f,
-                1 / 16f, 15 / 16f, 16 / 16f);
-        renderCall.run();
-        renderer.setRenderBounds(
-                15 / 16f, 1 / 16f, 15 / 16f,
-                16 / 16f, 15 / 16f, 16 / 16f);
-        renderCall.run();
+        drawFrame(renderer, renderCall);
 
         // Block.
         renderer.setRenderBounds(
@@ -176,5 +130,7 @@ public class ISBRHCasing extends AbstractISBRH {
                 2 / 16f, 2 / 16f, 2 / 16f,
                 14 / 16f, 14 / 16f, 14 / 16f);
         renderCall.run();
+
+        drawRivets(renderer, renderCall);
     }
 }
