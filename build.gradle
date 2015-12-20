@@ -16,6 +16,7 @@ buildscript {
 }
 
 apply plugin: 'forge'
+apply plugin: 'idea'
 apply plugin: 'maven-publish'
 
 sourceCompatibility = 1.8
@@ -51,6 +52,25 @@ else
 
 ext.simpleVersion = version
 version = "MC${config.minecraft.version}-${project.version}"
+
+repositories {
+    maven {
+        name = "BluePower"
+        url = "http://maven.bluepowermod.com/"
+    }
+}
+
+configurations {
+    provided
+    compile.extendsFrom provided
+}
+
+dependencies {
+    provided "com.bluepowermod:BluePower:${config.bluepower.version}:deobf"
+    provided "qmunity:QmunityLib:${config.qmunitylib.version}:deobf"
+}
+
+idea.module.scopes.PROVIDED.plus += [configurations.provided]
 
 minecraft {
     version = "${config.minecraft.version}-${config.forge.version}"

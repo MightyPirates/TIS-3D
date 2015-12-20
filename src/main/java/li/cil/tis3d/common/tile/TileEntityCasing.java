@@ -11,7 +11,7 @@ import li.cil.tis3d.api.module.BundledRedstone;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.Redstone;
 import li.cil.tis3d.common.Settings;
-import li.cil.tis3d.common.integration.redlogic.ModRedLogic;
+import li.cil.tis3d.common.integration.redlogic.ProxyRedLogic;
 import li.cil.tis3d.common.integration.redlogic.RedLogicBundledRedstone;
 import li.cil.tis3d.common.integration.redlogic.RedLogicConnectable;
 import li.cil.tis3d.common.integration.redlogic.RedLogicRedstone;
@@ -54,9 +54,9 @@ import java.util.Set;
  * controller (transitively) connected to their casing.
  */
 @Optional.InterfaceList({
-        @Optional.Interface(iface = "li.cil.tis3d.common.integration.redlogic.RedLogicBundledRedstone", modid = ModRedLogic.MOD_ID),
-        @Optional.Interface(iface = "li.cil.tis3d.common.integration.redlogic.RedLogicConnectable", modid = ModRedLogic.MOD_ID),
-        @Optional.Interface(iface = "li.cil.tis3d.common.integration.redlogic.RedLogicRedstone", modid = ModRedLogic.MOD_ID)
+        @Optional.Interface(iface = "li.cil.tis3d.common.integration.redlogic.RedLogicBundledRedstone", modid = ProxyRedLogic.MOD_ID),
+        @Optional.Interface(iface = "li.cil.tis3d.common.integration.redlogic.RedLogicConnectable", modid = ProxyRedLogic.MOD_ID),
+        @Optional.Interface(iface = "li.cil.tis3d.common.integration.redlogic.RedLogicRedstone", modid = ProxyRedLogic.MOD_ID)
 })
 public final class TileEntityCasing extends TileEntity implements
         RedLogicConnectable, RedLogicRedstone, RedLogicBundledRedstone,

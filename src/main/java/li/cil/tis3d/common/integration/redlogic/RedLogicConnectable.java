@@ -10,11 +10,11 @@ import mods.immibis.redlogic.api.wiring.IBundledWire;
 import mods.immibis.redlogic.api.wiring.IConnectable;
 import mods.immibis.redlogic.api.wiring.IWire;
 
-@Optional.Interface(iface = "mods.immibis.redlogic.api.wiring.IConnectable", modid = ModRedLogic.MOD_ID)
+@Optional.Interface(iface = "mods.immibis.redlogic.api.wiring.IConnectable", modid = ProxyRedLogic.MOD_ID)
 public interface RedLogicConnectable extends IConnectable {
     Casing getCasing();
 
-    @Optional.Method(modid = ModRedLogic.MOD_ID)
+    @Optional.Method(modid = ProxyRedLogic.MOD_ID)
     @Override
     default boolean connects(final IWire wire, final int blockFace, final int fromDirection) {
         final Module module = getCasing().getModule(Face.VALUES[fromDirection]);
