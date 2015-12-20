@@ -250,12 +250,6 @@ public final class TileEntityCasing extends TileEntity implements
     public boolean canUpdate() {
         return false;
     }
-
-    public void markDirty() {
-        super.markDirty();
-        redstoneDirty = true;
-    }
-
     @Override
     public void invalidate() {
         super.invalidate();
@@ -376,6 +370,10 @@ public final class TileEntityCasing extends TileEntity implements
         // Could not find a controller, disable modules.
         onDisabled();
         return null;
+    }
+
+    public void markRedstoneDirty() {
+        redstoneDirty = true;
     }
 
     private void sendState() {

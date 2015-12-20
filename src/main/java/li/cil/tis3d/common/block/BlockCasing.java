@@ -185,6 +185,7 @@ public final class BlockCasing extends Block {
         if (tileEntity instanceof TileEntityCasing) {
             final TileEntityCasing casing = (TileEntityCasing) tileEntity;
             casing.checkNeighbors();
+            casing.markRedstoneDirty();
         }
         super.onNeighborBlockChange(world, x, y, z, neighborBlock);
     }
