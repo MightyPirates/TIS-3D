@@ -261,6 +261,8 @@ public final class ModuleExecution extends AbstractModuleRotatable {
         if (nbt.hasKey(TAG_COMPILE_ERROR)) {
             final NBTTagCompound errorNbt = nbt.getCompoundTag(TAG_COMPILE_ERROR);
             compileError = new ParseException(errorNbt.getString(TAG_MESSAGE), errorNbt.getInteger(TAG_LINE_NUMBER), errorNbt.getInteger(TAG_START), errorNbt.getInteger(TAG_END));
+        } else {
+            compileError = null;
         }
     }
 
