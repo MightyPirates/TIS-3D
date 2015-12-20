@@ -10,6 +10,7 @@ import li.cil.tis3d.api.module.BundledRedstoneOutputChangedEvent;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.util.ColorUtils;
+import net.minecraft.block.Block;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.nbt.NBTTagCompound;
@@ -41,6 +42,18 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
     private static final ResourceLocation LOCATION_COLORS_OVERLAY = new ResourceLocation(API.MOD_ID, "textures/blocks/overlay/moduleBundledRedstoneColors.png");
     private static final float V_STEP = 1 / 16f;
 
+    /**
+     * The last tick we updated. Used to avoid changing output multiple times a
+     * tick, which is usually pointless and really bad for performance.
+     */
+    private long lastStep = 0L;
+
+    /**
+     * Something changed last tick after the first neighbor block update, so
+     * we need to update again in the next tick (if we don't anyway).
+     */
+    private boolean scheduledNeighborUpdate = false;
+
     // --------------------------------------------------------------------- //
 
     public ModuleBundledRedstone(final Casing casing, final Face face) {
@@ -57,6 +70,12 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
         for (final Port port : Port.VALUES) {
             stepOutput(port);
             stepInput(port);
+        }
+
+        lastStep = getCasing().getCasingWorld().getTotalWorldTime();
+
+        if (scheduledNeighborUpdate) {
+            notifyNeighbors();
         }
     }
 
@@ -285,11 +304,27 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
         // If the value changed, make sure we're saved.
         getCasing().markDirty();
 
+        // Notify neighbors, avoid multiple world updates per tick.
+        if (getCasing().getCasingWorld().getTotalWorldTime() > lastStep) {
+            notifyNeighbors();
+        } else {
+            scheduledNeighborUpdate = true;
+        }
+
         // Notify bundled redstone APIs.
         final BundledRedstoneOutputChangedEvent event = new BundledRedstoneOutputChangedEvent(this, channel);
         MinecraftForge.EVENT_BUS.post(event);
 
         sendData();
+    }
+
+    /**
+     * Notify all neighbors of a block update, to let them realize our output changed.
+     */
+    private void notifyNeighbors() {
+        scheduledNeighborUpdate = false;
+        final Block blockType = getCasing().getCasingWorld().getBlockState(getCasing().getPosition()).getBlock();
+        getCasing().getCasingWorld().notifyNeighborsOfStateChange(getCasing().getPosition(), blockType);
     }
 
     /**
