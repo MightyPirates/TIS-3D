@@ -205,6 +205,14 @@ public final class TileEntityCasing extends TileEntity implements
     }
 
     // --------------------------------------------------------------------- //
+    // CharsetWiresConnectable, CharsetWiresRedstone, CharsetWiresBundledRedstone
+
+    @Override
+    public TileEntityCasing getTileEntity() {
+        return this;
+    }
+
+    // --------------------------------------------------------------------- //
     // IInventory
 
     @Override
@@ -243,12 +251,6 @@ public final class TileEntityCasing extends TileEntity implements
 
     // --------------------------------------------------------------------- //
     // TileEntity
-
-    @Override
-    public void markDirty() {
-        super.markDirty();
-        redstoneDirty = true;
-    }
 
     @Override
     public void invalidate() {
@@ -370,6 +372,10 @@ public final class TileEntityCasing extends TileEntity implements
         // Could not find a controller, disable modules.
         onDisabled();
         return null;
+    }
+
+    public void markRedstoneDirty() {
+        redstoneDirty = true;
     }
 
     private void sendState() {

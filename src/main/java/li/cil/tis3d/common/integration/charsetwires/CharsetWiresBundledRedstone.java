@@ -1,9 +1,9 @@
 package li.cil.tis3d.common.integration.charsetwires;
 
-import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.BundledRedstone;
 import li.cil.tis3d.api.module.Module;
+import li.cil.tis3d.common.tile.TileEntityCasing;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fml.common.Optional;
 import pl.asie.charset.api.wires.IBundledEmitter;
@@ -15,12 +15,12 @@ import pl.asie.charset.api.wires.WireFace;
         @Optional.Interface(iface = "pl.asie.charset.api.wires.IBundledUpdatable", modid = ProxyCharsetWires.MOD_ID)
 })
 public interface CharsetWiresBundledRedstone extends IBundledEmitter, IBundledUpdatable {
-    Casing getCasing();
+    TileEntityCasing getTileEntity();
 
     @Optional.Method(modid = ProxyCharsetWires.MOD_ID)
     @Override
     default byte[] getBundledSignal(final WireFace wireFace, final EnumFacing facing) {
-        final Module module = getCasing().getModule(Face.fromEnumFacing(facing));
+        final Module module = getTileEntity().getModule(Face.fromEnumFacing(facing));
         if (module instanceof BundledRedstone) {
             final BundledRedstone bundledRedstone = (BundledRedstone) module;
 
@@ -36,6 +36,6 @@ public interface CharsetWiresBundledRedstone extends IBundledEmitter, IBundledUp
     @Optional.Method(modid = ProxyCharsetWires.MOD_ID)
     @Override
     default void onBundledInputChanged(final EnumFacing facing) {
-        getCasing().markDirty();
+        getTileEntity().markRedstoneDirty();
     }
 }
