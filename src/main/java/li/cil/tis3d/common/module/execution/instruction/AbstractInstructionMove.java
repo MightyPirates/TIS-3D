@@ -26,6 +26,11 @@ abstract class AbstractInstructionMove implements Instruction {
         }
     }
 
+    @Override
+    public void reset() {
+        isDone = false;
+    }
+
     protected abstract void doStep(final Machine machine);
 
     @Override
