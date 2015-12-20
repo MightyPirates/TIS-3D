@@ -71,11 +71,11 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
             stepInput(port);
         }
 
-        lastStep = getCasing().getCasingWorld().getTotalWorldTime();
-
-        if (scheduledNeighborUpdate) {
+        if (scheduledNeighborUpdate && getCasing().getCasingWorld().getTotalWorldTime() > lastStep) {
             notifyNeighbors();
         }
+
+        lastStep = getCasing().getCasingWorld().getTotalWorldTime();
     }
 
     @Override
@@ -304,11 +304,7 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
         getCasing().markDirty();
 
         // Notify neighbors, avoid multiple world updates per tick.
-        if (getCasing().getCasingWorld().getTotalWorldTime() > lastStep) {
-            notifyNeighbors();
-        } else {
-            scheduledNeighborUpdate = true;
-        }
+        scheduledNeighborUpdate = true;
 
         // Notify bundled redstone APIs.
         final BundledRedstoneOutputChangedEvent event = new BundledRedstoneOutputChangedEvent(this, channel);

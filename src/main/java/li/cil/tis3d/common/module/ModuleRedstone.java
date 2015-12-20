@@ -70,11 +70,11 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
             stepInput(port);
         }
 
-        lastStep = getCasing().getCasingWorld().getTotalWorldTime();
-
-        if (scheduledNeighborUpdate) {
+        if (scheduledNeighborUpdate && getCasing().getCasingWorld().getTotalWorldTime() > lastStep) {
             notifyNeighbors();
         }
+
+        lastStep = getCasing().getCasingWorld().getTotalWorldTime();
     }
 
     @Override
@@ -232,11 +232,7 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
         getCasing().markDirty();
 
         // Notify neighbors, avoid multiple world updates per tick.
-        if (getCasing().getCasingWorld().getTotalWorldTime() > lastStep) {
-            notifyNeighbors();
-        } else {
-            scheduledNeighborUpdate = true;
-        }
+        scheduledNeighborUpdate = true;
 
         sendData();
     }
