@@ -41,6 +41,12 @@ public class GuiBookCode extends GuiScreen {
     private static final int CODE_POS_Y = 16;
     private static final int CODE_WIDTH = 120;
     private static final int CODE_MARGIN = 30;
+    private static final int PAGE_NUMBER_X = 74;
+    private static final int PAGE_NUMBER_Y = 212;
+
+    private static final int COLOR_CODE = 0xFF333333;
+    private static final int COLOR_CODE_SELECTED = 0xFFEEEEEE;
+    private static final int COLOR_SELECTION = 0xCC333399;
 
     private static final int ID_BUTTON_PAGE_NEXT = 1;
     private static final int ID_BUTTON_PAGE_PREV = 2;
@@ -124,6 +130,10 @@ public class GuiBookCode extends GuiScreen {
 
         // Draw current program.
         drawProgram(mouseX, mouseY);
+
+        // Draw page number.
+        final String pageInfo = String.format("%d/%d", data.getSelectedProgram() + 1, data.getProgramCount());
+        fontRendererObj.drawString(pageInfo, guiX + PAGE_NUMBER_X - fontRendererObj.getStringWidth(pageInfo) / 2, guiY + PAGE_NUMBER_Y, COLOR_CODE);
     }
 
     @Override
@@ -531,20 +541,20 @@ public class GuiBookCode extends GuiScreen {
                 final int selected = Math.min(line.length() - prefix, getSelectionEnd() - (position + prefix));
 
                 final String prefixText = line.substring(0, prefix);
-                fontRendererObj.drawString(prefixText, currX, lineY, 0xFF333333, false);
+                fontRendererObj.drawString(prefixText, currX, lineY, COLOR_CODE, false);
                 currX += fontRendererObj.getStringWidth(prefixText);
 
                 final String selectedText = line.substring(prefix, prefix + selected);
                 final int selectedWidth = fontRendererObj.getStringWidth(selectedText);
-                drawRect(currX - 1, lineY - 1, currX + selectedWidth, lineY + fontRendererObj.FONT_HEIGHT - 1, 0xCC333399);
-                fontRendererObj.drawString(selectedText, currX, lineY, 0xFFEEEEEE, false);
+                drawRect(currX - 1, lineY - 1, currX + selectedWidth, lineY + fontRendererObj.FONT_HEIGHT - 1, COLOR_SELECTION);
+                fontRendererObj.drawString(selectedText, currX, lineY, COLOR_CODE_SELECTED, false);
                 currX += selectedWidth;
 
                 final String postfixString = line.substring(prefix + selected);
-                fontRendererObj.drawString(postfixString, currX, lineY, 0xFF333333, false);
+                fontRendererObj.drawString(postfixString, currX, lineY, COLOR_CODE, false);
             } else {
                 // No selection here, just draw the line. Get it? "draw the line"?
-                fontRendererObj.drawString(line.toString(), lineX, lineY, 0xFF333333, false);
+                fontRendererObj.drawString(line.toString(), lineX, lineY, COLOR_CODE, false);
             }
 
             position += line.length() + 1;
@@ -585,7 +595,7 @@ public class GuiBookCode extends GuiScreen {
             final int x = guiX + CODE_POS_X + fontRendererObj.getStringWidth(sb.substring(0, column)) - 1;
             final int y = guiY + CODE_POS_Y + line * fontRendererObj.FONT_HEIGHT - 1;
             drawRect(x + 1, y + 1, x + 2 + 1, y + fontRendererObj.FONT_HEIGHT + 1, 0xCC333333);
-            drawRect(x, y, x + 2, y + fontRendererObj.FONT_HEIGHT, 0xFFEEEEEE);
+            drawRect(x, y, x + 2, y + fontRendererObj.FONT_HEIGHT, COLOR_CODE_SELECTED);
         }
     }
 

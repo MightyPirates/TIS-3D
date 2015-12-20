@@ -1,6 +1,8 @@
 package li.cil.tis3d.common.item;
 
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
@@ -9,6 +11,8 @@ import li.cil.tis3d.client.gui.GuiHandlerClient;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.module.ModuleExecution;
 import li.cil.tis3d.common.module.execution.MachineState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBook;
 import net.minecraft.item.ItemStack;
@@ -36,20 +40,27 @@ public final class ItemBookCode extends ItemBook {
         setMaxStackSize(1);
     }
 
-    @Override
-    public boolean isItemTool(final ItemStack stack) {
-        return false;
+    // --------------------------------------------------------------------- //
+
+    public static boolean isBookCode(final ItemStack stack) {
+        return stack != null && stack.getItem() == GameRegistry.findItem(API.MOD_ID, li.cil.tis3d.common.Constants.NAME_ITEM_BOOK_CODE);
     }
 
+    // --------------------------------------------------------------------- //
+    // Item
+
+    @SideOnly(Side.CLIENT)
     @Override
-    public int getItemEnchantability() {
-        return 0;
+    public FontRenderer getFontRenderer(final ItemStack stack) {
+        return Minecraft.getMinecraft().fontRenderer;
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public void addInformation(final ItemStack stack, final EntityPlayer player, final List tooltip, final boolean advanced) {
         super.addInformation(stack, player, tooltip, advanced);
-        tooltip.add(StatCollector.translateToLocal(TOOLTIP_BOOK_CODE));
+        final String info = StatCollector.translateToLocal(TOOLTIP_BOOK_CODE);
+        tooltip.addAll(getFontRenderer(stack).listFormattedStringToWidth(info, li.cil.tis3d.common.Constants.MAX_TOOLTIP_WIDTH));
     }
 
     @Override
@@ -87,8 +98,17 @@ public final class ItemBookCode extends ItemBook {
         return super.onItemRightClick(stack, world, player);
     }
 
-    public static boolean isBookCode(final ItemStack stack) {
-        return stack != null && stack.getItem() == GameRegistry.findItem(API.MOD_ID, li.cil.tis3d.common.Constants.NAME_ITEM_BOOK_CODE);
+    // --------------------------------------------------------------------- //
+    // ItemBook
+
+    @Override
+    public boolean isItemTool(final ItemStack stack) {
+        return false;
+    }
+
+    @Override
+    public int getItemEnchantability() {
+        return 0;
     }
 
     // --------------------------------------------------------------------- //
