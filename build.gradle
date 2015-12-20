@@ -55,8 +55,7 @@ version = "MC${config.minecraft.version}-${project.version}"
 
 repositories {
     maven {
-        name = "BluePower"
-        url = "http://maven.bluepowermod.com/"
+        url = "http://maven.cil.li/"
     }
 }
 
@@ -68,6 +67,7 @@ configurations {
 dependencies {
     provided "com.bluepowermod:BluePower:${config.bluepower.version}:deobf"
     provided "qmunity:QmunityLib:${config.qmunitylib.version}:deobf"
+    provided "mrtjp:ProjectRed:${config.projectred.version}:dev"
 }
 
 idea.module.scopes.PROVIDED.plus += [configurations.provided]

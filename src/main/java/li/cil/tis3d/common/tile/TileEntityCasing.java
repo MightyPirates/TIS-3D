@@ -207,6 +207,14 @@ public final class TileEntityCasing extends TileEntity implements
     }
 
     // --------------------------------------------------------------------- //
+    // RedLogicConnectable, RedLogicRedstone, RedLogicBundledRedstone
+
+    @Override
+    public TileEntityCasing getTileEntity() {
+        return this;
+    }
+
+    // --------------------------------------------------------------------- //
     // IInventory
 
     @Override

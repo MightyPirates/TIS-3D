@@ -12,8 +12,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 public final class BluePowerCallbacks {
     public static void onBundledOutputChanged(final BundledRedstone module, final int channel) {
-        final World world = module.getCasing().getCasingWorld();
         final EnumFacing facing = Face.toEnumFacing(module.getFace());
+        final World world = module.getCasing().getCasingWorld();
         final int neighborX = module.getCasing().getPositionX() + facing.getFrontOffsetX();
         final int neighborY = module.getCasing().getPositionY() + facing.getFrontOffsetY();
         final int neighborZ = module.getCasing().getPositionZ() + facing.getFrontOffsetZ();

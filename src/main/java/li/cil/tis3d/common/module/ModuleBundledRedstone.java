@@ -12,6 +12,7 @@ import li.cil.tis3d.api.module.BundledRedstoneOutputChangedEvent;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.util.ColorUtils;
+import net.minecraft.block.Block;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
@@ -318,8 +319,8 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
      */
     private void notifyNeighbors() {
         scheduledNeighborUpdate = false;
-        final Block blockType = getCasing().getCasingWorld().getBlockState(getCasing().getPosition()).getBlock();
-        getCasing().getCasingWorld().notifyNeighborsOfStateChange(getCasing().getPosition(), blockType);
+        final Block blockType = getCasing().getCasingWorld().getBlock(getCasing().getPositionX(), getCasing().getPositionY(), getCasing().getPositionZ());
+        getCasing().getCasingWorld().notifyBlocksOfNeighborChange(getCasing().getPositionX(), getCasing().getPositionY(), getCasing().getPositionZ(), blockType);
     }
 
     /**
