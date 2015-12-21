@@ -182,7 +182,7 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
      * @param value the value that was read.
      */
     private void process(final int value) {
-        drawCall[state.ordinal()] = (byte) (value & 0xFF);
+        drawCall[state.ordinal()] = (byte) value;
         state = state.getNext();
         if (state == State.COLOR) {
             // Draw call completed, apply and send to client.
@@ -212,7 +212,7 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
             final int offset = y * RESOLUTION;
             for (int x = x0; x < x1; x++) {
                 final int index = offset + x;
-                image[index] = ColorUtils.getColorByIndex(color);
+                image[index] = ColorUtils.getColorByIndex(Math.max(0, color));
             }
         }
     }
