@@ -5,7 +5,7 @@ import li.cil.tis3d.common.integration.redstone.RedstoneIntegration;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 
-public class ProxyCharsetWires implements ModProxy {
+public final class ProxyCharsetWires implements ModProxy {
     public static final String MOD_ID = "CharsetWires";
 
     @Override

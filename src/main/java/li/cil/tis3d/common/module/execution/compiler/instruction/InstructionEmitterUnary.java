@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 
-public class InstructionEmitterUnary extends AbstractInstructionEmitter {
+public final class InstructionEmitterUnary extends AbstractInstructionEmitter {
     private final String name;
     private final Supplier<Instruction> constructor;
 

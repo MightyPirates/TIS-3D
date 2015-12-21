@@ -9,7 +9,7 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameData;
 
-public class GameRegistryPathProvider implements PathProvider {
+public final class GameRegistryPathProvider implements PathProvider {
     @Override
     public String pathFor(final ItemStack stack) {
         if (stack != null) {

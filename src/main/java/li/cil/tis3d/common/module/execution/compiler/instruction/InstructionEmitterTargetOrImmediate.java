@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 
-public class InstructionEmitterTargetOrImmediate extends AbstractInstructionEmitter {
+public final class InstructionEmitterTargetOrImmediate extends AbstractInstructionEmitter {
     private final String name;
     private final Function<Target, Instruction> constructorTarget;
     private final Function<Short, Instruction> constructorImmediate;
