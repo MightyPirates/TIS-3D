@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 /**
  * GUI for the code book, used to write and manage ASM programs.
  */
-public class GuiBookCode extends GuiScreen {
+public final class GuiBookCode extends GuiScreen {
     private static final ResourceLocation LOCATION_BACKGROUND = new ResourceLocation(API.MOD_ID, "textures/gui/bookCode.png");
     private static final int GUI_WIDTH = 148;
     private static final int GUI_HEIGHT = 230;

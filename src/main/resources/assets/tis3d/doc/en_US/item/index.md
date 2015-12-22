@@ -10,6 +10,7 @@ This index lists all of the documented items in TIS-3D. If you're looking for a 
 * [Infrared Module](moduleInfrared.md)
 * [Keypad Module](moduleKeypad.md)
 * [Random Module](moduleRandom.md)
+* [RAM Module](moduleRandomAccessMemory.md)
 * [Redstone Module](moduleRedstone.md)
 * [Stack Module](moduleStack.md)
 

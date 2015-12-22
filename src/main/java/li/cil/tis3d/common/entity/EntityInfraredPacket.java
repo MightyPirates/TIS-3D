@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * Represents a single value in transmission, sent by an {@link li.cil.tis3d.common.module.ModuleInfrared}.
  */
-public class EntityInfraredPacket extends Entity implements InfraredPacket {
+public final class EntityInfraredPacket extends Entity implements InfraredPacket {
     // --------------------------------------------------------------------- //
     // Computed data
 

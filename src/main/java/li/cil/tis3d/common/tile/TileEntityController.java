@@ -1,9 +1,15 @@
 package li.cil.tis3d.common.tile;
 
+import cpw.mods.fml.common.network.NetworkRegistry;
+import li.cil.tis3d.api.machine.HaltAndCatchFireException;
 import li.cil.tis3d.common.Settings;
+import li.cil.tis3d.common.network.Network;
+import li.cil.tis3d.common.network.message.MessageHaltAndCatchFire;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.world.World;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -26,6 +32,11 @@ import java.util.Set;
 public final class TileEntityController extends TileEntity {
     // --------------------------------------------------------------------- //
     // Computed data
+
+    /**
+     * Time in ticks to wait before restarting execution after an HCF event.
+     */
+    private static final int COOLDOWN_HCF = 60;
 
     /**
      * Possible states of a controller.
@@ -72,6 +83,17 @@ public final class TileEntityController extends TileEntity {
      */
     private ControllerState state = ControllerState.SCANNING;
 
+    // NBT tag names.
+    private static final String TAG_HCF_COOLDOWN = "hcfCooldown";
+
+    // --------------------------------------------------------------------- //
+    // Persisted data
+
+    /**
+     * Time to keep waiting before resuming execution after an HCF event.
+     */
+    private int hcfCooldown = 0;
+
     // --------------------------------------------------------------------- //
 
     /**
@@ -90,6 +112,20 @@ public final class TileEntityController extends TileEntity {
      */
     public void scheduleScan() {
         state = ControllerState.SCANNING;
+    }
+
+    /**
+     * Reset the controller, pause for a moment and catch fire.
+     */
+    public void haltAndCatchFire() {
+        if (!getWorldObj().isRemote) {
+            state = ControllerState.READY;
+            casings.forEach(TileEntityCasing::onDisabled);
+            final MessageHaltAndCatchFire message = new MessageHaltAndCatchFire(getWorldObj(), xCoord, yCoord, zCoord);
+            final NetworkRegistry.TargetPoint target = Network.getTargetPoint(getWorldObj(), xCoord, yCoord, zCoord, Network.RANGE_MEDIUM);
+            Network.INSTANCE.getWrapper().sendToAllAround(message, target);
+        }
+        hcfCooldown = COOLDOWN_HCF;
     }
 
     // --------------------------------------------------------------------- //
@@ -141,9 +177,51 @@ public final class TileEntityController extends TileEntity {
     }
 
     @Override
+    public void readFromNBT(final NBTTagCompound nbt) {
+        super.readFromNBT(nbt);
+
+        hcfCooldown = nbt.getInteger(TAG_HCF_COOLDOWN);
+    }
+
+    @Override
+    public void writeToNBT(final NBTTagCompound nbt) {
+        super.writeToNBT(nbt);
+
+        nbt.setInteger(TAG_HCF_COOLDOWN, hcfCooldown);
+    }
+
+    @Override
     public void updateEntity() {
         // Only update multi-block and casings on the server.
         if (getWorldObj().isRemote) {
+            if (hcfCooldown > 0) {
+                --hcfCooldown;
+
+                // Spawn some fire particles! No actual fire, that'd be... problematic.
+                final World world = getWorldObj();
+                for (final EnumFacing facing : EnumFacing.values()) {
+                    final int neighborX = xCoord + facing.getFrontOffsetX();
+                    final int neighborY = yCoord + facing.getFrontOffsetY();
+                    final int neighborZ = zCoord + facing.getFrontOffsetZ();
+                    if (world.getBlock(neighborX, neighborY, neighborZ).isOpaqueCube()) {
+                        continue;
+                    }
+                    if (world.rand.nextFloat() > 0.25f) {
+                        continue;
+                    }
+                    final float ox = neighborX + world.rand.nextFloat();
+                    final float oy = neighborY + world.rand.nextFloat();
+                    final float oz = neighborZ + world.rand.nextFloat();
+                    world.spawnParticle("flame", ox, oy, oz, 0, 0, 0);
+                }
+            }
+
+            return;
+        }
+
+        // Enforce cooldown after HCF event.
+        if (hcfCooldown > 0) {
+            --hcfCooldown;
             return;
         }
 
@@ -183,24 +261,28 @@ public final class TileEntityController extends TileEntity {
                 // Operating, step all casings redstone input info once.
                 casings.forEach(TileEntityCasing::stepRedstone);
 
-                // 0 = off, we never have this or we'd be in the READY state.
-                // 1 = paused, i.e. we don't lose state, but don't step.
-                // [2-14] = step every 15-n-th step.
-                // 15 = step every tick.
-                // [16-75] = step n/15 times a tick.
-                // 75 = step 5 times a tick.
-                if (power < 15) {
-                    // Stepping slower than 100%.
-                    final int delay = 15 - power;
-                    if (getWorldObj().getTotalWorldTime() % delay == 0) {
-                        stepCasings();
+                try {
+                    // 0 = off, we never have this or we'd be in the READY state.
+                    // 1 = paused, i.e. we don't lose state, but don't step.
+                    // [2-14] = step every 15-n-th step.
+                    // 15 = step every tick.
+                    // [16-75] = step n/15 times a tick.
+                    // 75 = step 5 times a tick.
+                    if (power < 15) {
+                        // Stepping slower than 100%.
+                        final int delay = 15 - power;
+                        if (getWorldObj().getTotalWorldTime() % delay == 0) {
+                            stepCasings();
+                        }
+                    } else {
+                        // Stepping faster than 100%.
+                        final int steps = power / 15;
+                        for (int step = 0; step < steps; step++) {
+                            stepCasings();
+                        }
                     }
-                } else {
-                    // Stepping faster than 100%.
-                    final int steps = power / 15;
-                    for (int step = 0; step < steps; step++) {
-                        stepCasings();
-                    }
+                } catch (final HaltAndCatchFireException e) {
+                    haltAndCatchFire();
                 }
             }
         }

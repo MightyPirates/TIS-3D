@@ -10,7 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
-public class GameRegistryPathProvider implements PathProvider {
+public final class GameRegistryPathProvider implements PathProvider {
     @Override
     public String pathFor(final ItemStack stack) {
         if (stack != null) {

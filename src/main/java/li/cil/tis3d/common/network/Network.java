@@ -5,11 +5,13 @@ import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.client.network.handler.MessageHandlerCasingState;
+import li.cil.tis3d.client.network.handler.MessageHandlerHaltAndCatchFire;
 import li.cil.tis3d.client.network.handler.MessageHandlerParticleEffects;
 import li.cil.tis3d.common.network.handler.MessageHandlerBookCodeData;
 import li.cil.tis3d.common.network.handler.MessageHandlerModuleData;
-import li.cil.tis3d.common.network.message.MessageCasingState;
 import li.cil.tis3d.common.network.message.MessageBookCodeData;
+import li.cil.tis3d.common.network.message.MessageCasingState;
+import li.cil.tis3d.common.network.message.MessageHaltAndCatchFire;
 import li.cil.tis3d.common.network.message.MessageModuleData;
 import li.cil.tis3d.common.network.message.MessageParticleEffect;
 import net.minecraft.tileentity.TileEntity;
@@ -27,11 +29,15 @@ public final class Network {
 
     public void init() {
         wrapper = NetworkRegistry.INSTANCE.newSimpleChannel(API.MOD_ID);
-        wrapper.registerMessage(MessageHandlerModuleData.class, MessageModuleData.class, 1, Side.CLIENT);
-        wrapper.registerMessage(MessageHandlerModuleData.class, MessageModuleData.class, 2, Side.SERVER);
-        wrapper.registerMessage(MessageHandlerParticleEffects.class, MessageParticleEffect.class, 3, Side.CLIENT);
-        wrapper.registerMessage(MessageHandlerCasingState.class, MessageCasingState.class, 4, Side.CLIENT);
-        wrapper.registerMessage(MessageHandlerBookCodeData.class, MessageBookCodeData.class, 5, Side.SERVER);
+
+        int discriminator = 1;
+
+        wrapper.registerMessage(MessageHandlerModuleData.class, MessageModuleData.class, discriminator++, Side.CLIENT);
+        wrapper.registerMessage(MessageHandlerModuleData.class, MessageModuleData.class, discriminator++, Side.SERVER);
+        wrapper.registerMessage(MessageHandlerParticleEffects.class, MessageParticleEffect.class, discriminator++, Side.CLIENT);
+        wrapper.registerMessage(MessageHandlerCasingState.class, MessageCasingState.class, discriminator++, Side.CLIENT);
+        wrapper.registerMessage(MessageHandlerBookCodeData.class, MessageBookCodeData.class, discriminator++, Side.SERVER);
+        wrapper.registerMessage(MessageHandlerHaltAndCatchFire.class, MessageHaltAndCatchFire.class, discriminator++, Side.CLIENT);
     }
 
     public SimpleNetworkWrapper getWrapper() {
