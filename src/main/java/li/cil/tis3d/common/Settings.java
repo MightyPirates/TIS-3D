@@ -59,16 +59,14 @@ public final class Settings {
                 Settings.maxInfraredQueueLength, 1, 64,
                 "The maximum number of infrared packets that can be stored in the receiver's buffer.");
 
+        // Rebuild list of disabled modules.
         disabledModules.clear();
-        checkModule(config, "module.audio", Constants.NAME_ITEM_MODULE_AUDIO);
-        checkModule(config, "module.bundledRedstone", Constants.NAME_ITEM_MODULE_BUNDLED_REDSTONE);
-        checkModule(config, "module.display", Constants.NAME_ITEM_MODULE_DISPLAY);
-        checkModule(config, "module.execution", Constants.NAME_ITEM_MODULE_EXECUTION);
-        checkModule(config, "module.infrared", Constants.NAME_ITEM_MODULE_INFRARED);
-        checkModule(config, "module.keypad", Constants.NAME_ITEM_MODULE_KEYPAD);
-        checkModule(config, "module.random", Constants.NAME_ITEM_MODULE_RANDOM);
-        checkModule(config, "module.redstone", Constants.NAME_ITEM_MODULE_REDSTONE);
-        checkModule(config, "module.stack", Constants.NAME_ITEM_MODULE_STACK);
+        // Strip module and first letter from internal name, lowercase first letter.
+        final int prefixLength = "module*".length();
+        for (final String module : Constants.MODULES) {
+            final String name = String.valueOf(module.charAt(prefixLength)).toLowerCase() + module.substring(prefixLength);
+            checkModule(config, "module." + name, module);
+        }
 
         if (config.hasChanged()) {
             config.save();

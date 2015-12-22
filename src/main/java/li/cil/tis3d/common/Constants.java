@@ -28,11 +28,25 @@ public final class Constants {
     public static final String NAME_ITEM_MODULE_REDSTONE = "moduleRedstone";
     public static final String NAME_ITEM_MODULE_STACK = "moduleStack";
     public static final String NAME_ITEM_MODULE_RANDOM = "moduleRandom";
+    public static final String NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY = "moduleRandomAccessMemory";
     public static final String NAME_ITEM_PRISM = "prism";
 
     public static final String NAME_ENTITY_INFRARED_PACKET = API.MOD_ID + ":infraredPacket";
 
     public static final String NAME_INVENTORY_CASING = "container.casing";
+
+    public static final String[] MODULES = new String[]{
+            NAME_ITEM_MODULE_AUDIO,
+            NAME_ITEM_MODULE_BUNDLED_REDSTONE,
+            NAME_ITEM_MODULE_DISPLAY,
+            NAME_ITEM_MODULE_EXECUTION,
+            NAME_ITEM_MODULE_INFRARED,
+            NAME_ITEM_MODULE_KEYPAD,
+            NAME_ITEM_MODULE_REDSTONE,
+            NAME_ITEM_MODULE_STACK,
+            NAME_ITEM_MODULE_RANDOM,
+            NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY
+    };
 
     // --------------------------------------------------------------------- //
     // Compiler errors

@@ -27,6 +27,7 @@ import li.cil.tis3d.common.provider.ModuleProviderExecution;
 import li.cil.tis3d.common.provider.ModuleProviderInfrared;
 import li.cil.tis3d.common.provider.ModuleProviderKeypad;
 import li.cil.tis3d.common.provider.ModuleProviderRandom;
+import li.cil.tis3d.common.provider.ModuleProviderRandomAccessMemory;
 import li.cil.tis3d.common.provider.ModuleProviderRedstone;
 import li.cil.tis3d.common.provider.ModuleProviderStack;
 import li.cil.tis3d.common.tile.TileEntityCasing;
@@ -69,15 +70,9 @@ public class ProxyCommon {
         registerBlock(Constants.NAME_BLOCK_CASING, BlockCasing::new, TileEntityCasing.class);
         registerBlock(Constants.NAME_BLOCK_CONTROLLER, BlockController::new, TileEntityController.class);
 
-        registerModule(Constants.NAME_ITEM_MODULE_AUDIO);
-        registerModule(Constants.NAME_ITEM_MODULE_BUNDLED_REDSTONE);
-        registerModule(Constants.NAME_ITEM_MODULE_DISPLAY);
-        registerModule(Constants.NAME_ITEM_MODULE_EXECUTION);
-        registerModule(Constants.NAME_ITEM_MODULE_INFRARED);
-        registerModule(Constants.NAME_ITEM_MODULE_KEYPAD);
-        registerModule(Constants.NAME_ITEM_MODULE_RANDOM);
-        registerModule(Constants.NAME_ITEM_MODULE_REDSTONE);
-        registerModule(Constants.NAME_ITEM_MODULE_STACK);
+        for (final String module : Constants.MODULES) {
+            registerModule(module);
+        }
 
         registerItem(Constants.NAME_ITEM_BOOK_CODE, ItemBookCode::new);
         registerItem(Constants.NAME_ITEM_BOOK_MANUAL, ItemBookManual::new);
@@ -93,15 +88,9 @@ public class ProxyCommon {
         OreDictionary.registerOre("book", GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_BOOK_CODE));
         OreDictionary.registerOre("book", GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_BOOK_MANUAL));
 
-        registerModuleOre(Constants.NAME_ITEM_MODULE_AUDIO);
-        registerModuleOre(Constants.NAME_ITEM_MODULE_BUNDLED_REDSTONE);
-        registerModuleOre(Constants.NAME_ITEM_MODULE_DISPLAY);
-        registerModuleOre(Constants.NAME_ITEM_MODULE_EXECUTION);
-        registerModuleOre(Constants.NAME_ITEM_MODULE_INFRARED);
-        registerModuleOre(Constants.NAME_ITEM_MODULE_KEYPAD);
-        registerModuleOre(Constants.NAME_ITEM_MODULE_RANDOM);
-        registerModuleOre(Constants.NAME_ITEM_MODULE_REDSTONE);
-        registerModuleOre(Constants.NAME_ITEM_MODULE_STACK);
+        for (final String module : Constants.MODULES) {
+            registerModuleOre(module);
+        }
 
         // Hardcoded recipes!
         addBlockRecipe(Constants.NAME_BLOCK_CASING, "blockIron", 8);
@@ -114,6 +103,7 @@ public class ProxyCommon {
         addModuleRecipe(Constants.NAME_ITEM_MODULE_INFRARED, Items.spider_eye);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_KEYPAD, Blocks.stone_button);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_RANDOM, Items.ender_pearl);
+        addModuleRecipe(Constants.NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY, "gemEmerald");
         addModuleRecipe(Constants.NAME_ITEM_MODULE_REDSTONE, Items.repeater);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_STACK, Item.getItemFromBlock(Blocks.chest));
 
@@ -142,6 +132,7 @@ public class ProxyCommon {
         ModuleAPI.addProvider(new ModuleProviderKeypad());
         ModuleAPI.addProvider(new ModuleProviderStack());
         ModuleAPI.addProvider(new ModuleProviderRandom());
+        ModuleAPI.addProvider(new ModuleProviderRandomAccessMemory());
         ModuleAPI.addProvider(new ModuleProviderRedstone());
 
         // Add default manual providers for server side stuff.
