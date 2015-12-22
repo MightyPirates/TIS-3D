@@ -26,6 +26,7 @@ import li.cil.tis3d.common.module.execution.instruction.InstructionBitwiseShiftR
 import li.cil.tis3d.common.module.execution.instruction.InstructionBitwiseShiftRightImmediate;
 import li.cil.tis3d.common.module.execution.instruction.InstructionBitwiseXor;
 import li.cil.tis3d.common.module.execution.instruction.InstructionBitwiseXorImmediate;
+import li.cil.tis3d.common.module.execution.instruction.InstructionHaltAndCatchFire;
 import li.cil.tis3d.common.module.execution.instruction.InstructionJump;
 import li.cil.tis3d.common.module.execution.instruction.InstructionJumpEqualZero;
 import li.cil.tis3d.common.module.execution.instruction.InstructionJumpGreaterThanZero;
@@ -175,6 +176,8 @@ public final class Compiler {
 
         // Special handling: actually emits an `ADD NIL`.
         addInstructionEmitter(builder, new InstructionEmitterUnary("NOP", () -> INSTRUCTION_NOP));
+        // Special handling: does super-special magic.
+        addInstructionEmitter(builder, new InstructionEmitterUnary("HCF", InstructionHaltAndCatchFire::new));
 
         // Jumps.
         addInstructionEmitter(builder, new InstructionEmitterLabel("JMP", InstructionJump::new));
