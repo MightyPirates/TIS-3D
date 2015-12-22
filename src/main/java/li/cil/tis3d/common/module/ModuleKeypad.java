@@ -15,6 +15,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.opengl.GL11;
 
 import java.util.Optional;
 
@@ -125,11 +126,9 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
         }
 
         rotateForRendering();
-
         GlStateManager.enableBlend();
-
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
-
         RenderUtil.bindTexture(LOCATION_OVERLAY);
 
         // Draw base texture. Draw half transparent while writing current value,
@@ -248,7 +247,7 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
         final float w = buttonToNumber(button) == 0 ? (KEYS_SIZE_U + KEYS_STEP_U) : KEYS_SIZE_U;
         final float h = row == 3 ? KEYS_SIZE_V_LAST : KEYS_SIZE_V;
         GlStateManager.disableTexture2D();
-        GlStateManager.color(0.5f, 0.5f, 0.5f, 0.5f);
+        GlStateManager.color(1, 1, 1, 0.5f);
         RenderUtil.drawUntexturedQuad(x, y, w, h);
         GlStateManager.enableTexture2D();
     }
