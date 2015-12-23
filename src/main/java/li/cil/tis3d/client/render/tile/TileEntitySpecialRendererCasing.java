@@ -67,6 +67,9 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
 
             GlStateManager.pushAttrib();
 
+            // Ensure sanity.
+            GlStateManager.enableTexture2D();
+
             final int brightness = getWorld().getCombinedLight(
                     casing.getPosition().offset(Face.toEnumFacing(face)), 0);
             OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, brightness % 65536, brightness / 65536);
