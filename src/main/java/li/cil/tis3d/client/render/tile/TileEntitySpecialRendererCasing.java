@@ -71,6 +71,9 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
 
             GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 
+            // Ensure sanity.
+            GL11.glEnable(GL11.GL_TEXTURE_2D);
+
             final EnumFacing facing = Face.toEnumFacing(face);
             final int neighborX = casing.getPositionX() + facing.getFrontOffsetX();
             final int neighborY = casing.getPositionY() + facing.getFrontOffsetY();
