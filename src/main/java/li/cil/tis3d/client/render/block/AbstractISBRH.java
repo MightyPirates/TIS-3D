@@ -120,7 +120,7 @@ abstract class AbstractISBRH implements ISimpleBlockRenderingHandler {
                 15.5f / 16f, 3 / 16f, 14 / 16f);
         renderCall.run();
         renderer.setRenderBounds(
-                0 / 16f, 13 / 16f, 13 / 16f,
+                0.5f / 16f, 13 / 16f, 13 / 16f,
                 15.5f / 16f, 14 / 16f, 14 / 16f);
         renderCall.run();
 
