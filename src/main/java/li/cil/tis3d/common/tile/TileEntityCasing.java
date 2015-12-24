@@ -372,7 +372,7 @@ public final class TileEntityCasing extends TileEntity implements
                 }
 
                 // Keep looking...
-                if (!TileEntityController.addNeighbors(tileEntity, processed, queue)) {
+                if (!TileEntityController.addNeighbors(getWorld(), tileEntity, processed, queue)) {
                     // Hit end of loaded area, so scheduling would just result in
                     // error again anyway. Do *not* disable casings, keep last
                     // known valid state when all parts were loaded.
