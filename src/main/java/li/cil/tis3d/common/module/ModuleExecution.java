@@ -26,7 +26,6 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -148,40 +147,61 @@ public final class ModuleExecution extends AbstractModuleRotatable {
 
     @Override
     public boolean onActivate(final EntityPlayer player, final float hitX, final float hitY, final float hitZ) {
+        // Watcha holding there?
         final ItemStack stack = player.getHeldItem();
-        if (stack != null) {
-            final Item item = stack.getItem();
-            if (item == Items.book) {
-                if (!player.getEntityWorld().isRemote) {
-                    if (!player.capabilities.isCreativeMode) {
-                        stack.splitStack(1);
-                    }
-                    final ItemStack bookCode = new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_BOOK_CODE));
-                    if (player.inventory.addItemStackToInventory(bookCode)) {
-                        player.inventoryContainer.detectAndSendChanges();
-                    }
-                    if (bookCode.stackSize > 0) {
-                        player.func_146097_a(bookCode, false, false);
-                    }
+
+        // Vanilla book? If so, make that a code book.
+        if (stack != null && stack.getItem() == Items.book) {
+            if (!player.getEntityWorld().isRemote) {
+                if (!player.capabilities.isCreativeMode) {
+                    stack.splitStack(1);
                 }
-                return true;
+                final ItemStack bookCode = new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_BOOK_CODE));
+                if (player.inventory.addItemStackToInventory(bookCode)) {
+                    player.inventoryContainer.detectAndSendChanges();
+                }
+                if (bookCode.stackSize > 0) {
+                    player.func_146097_a(bookCode, false, false);
+                }
             }
+
+            return true;
         }
 
+        // Code book? Store current program on it if sneaking.
+        if (ItemBookCode.isBookCode(stack) && player.isSneaking()) {
+            final ItemBookCode.Data data = ItemBookCode.Data.loadFromStack(stack);
+            if (getState().code != null && getState().code.length > 0) {
+                data.addProgram(Arrays.asList(getState().code));
+                ItemBookCode.Data.saveToStack(stack, data);
+            }
+
+            return true;
+        }
+
+        // If sneaking otherwise, ignore interaction.
         if (player.isSneaking()) {
             return false;
         }
 
+        // Following is programming. If the casing is locked, don't allow changing code.
+        if (getCasing().isLocked()) {
+            return false;
+        }
+
+        // Get the provider for the item, if any.
         final SourceCodeProvider provider = providerFor(stack);
         if (provider == null) {
             return false;
         }
 
+        // Get the code from the item, if any.
         final Iterable<String> code = provider.codeFor(stack);
         if (code == null || !code.iterator().hasNext()) {
             return true; // Handled, but does nothing.
         }
 
+        // Compile the code into our machine state.
         if (!getCasing().getCasingWorld().isRemote) {
             compile(code, player);
             sendData(true);

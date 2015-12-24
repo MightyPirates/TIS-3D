@@ -99,6 +99,7 @@ public class ProxyCommon {
         registerItem(Constants.NAME_ITEM_BOOK_CODE, ItemBookCode::new);
         registerItem(Constants.NAME_ITEM_BOOK_MANUAL, ItemBookManual::new);
 
+        registerItem(Constants.NAME_ITEM_KEY, Item::new).setMaxStackSize(1);
         registerItem(Constants.NAME_ITEM_PRISM, Item::new);
 
         // Mod integration.
@@ -129,6 +130,15 @@ public class ProxyCommon {
         addModuleRecipe(Constants.NAME_ITEM_MODULE_REDSTONE, Items.repeater);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_STACK, Item.getItemFromBlock(Blocks.chest));
 
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_KEY), 1),
+                "GI ",
+                "GI ",
+                "LRQ",
+                'G', "nuggetGold",
+                'I', "ingotIron",
+                'L', "gemLapis",
+                'R', "dustRedstone",
+                'Q', "gemQuartz"));
         GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_PRISM), 1),
                 "gemQuartz",
                 "dustRedstone",

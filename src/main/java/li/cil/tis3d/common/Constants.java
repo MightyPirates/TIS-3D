@@ -17,8 +17,10 @@ public final class Constants {
 
     public static final String NAME_BLOCK_CASING = "casing";
     public static final String NAME_BLOCK_CONTROLLER = "controller";
+
     public static final String NAME_ITEM_BOOK_CODE = "bookCode";
     public static final String NAME_ITEM_BOOK_MANUAL = "bookManual";
+    public static final String NAME_ITEM_KEY = "key";
     public static final String NAME_ITEM_MODULE_AUDIO = "moduleAudio";
     public static final String NAME_ITEM_MODULE_BUNDLED_REDSTONE = "moduleBundledRedstone";
     public static final String NAME_ITEM_MODULE_DISPLAY = "moduleDisplay";

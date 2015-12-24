@@ -5,6 +5,7 @@ import li.cil.tis3d.client.render.TextureLoader;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
@@ -22,7 +23,7 @@ public final class ISBRHCasing extends AbstractISBRH {
         final TileEntity tileEntity = world.getTileEntity(x, y, z);
         if (tileEntity instanceof TileEntityCasing) {
             final TileEntityCasing casing = (TileEntityCasing) tileEntity;
-            renderer.overrideBlockTexture = TextureLoader.ICON_CASING_MODULE;
+            renderer.overrideBlockTexture = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(TextureLoader.LOCATION_CASING_MODULE.toString());
             for (final Face face : Face.VALUES) {
                 if (casing.getModule(face) != null) {
                     final float min = 1 / 16f;

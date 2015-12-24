@@ -27,6 +27,7 @@ import li.cil.tis3d.util.InventoryUtils;
 import li.cil.tis3d.util.OneEightCompat;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -206,6 +207,14 @@ public final class TileEntityCasing extends TileEntity implements
         casing.setModule(face, module);
     }
 
+    public void lock(final ItemStack stack) {
+        casing.lock(stack);
+    }
+
+    public void unlock(final ItemStack stack) {
+        casing.unlock(stack);
+    }
+
     // --------------------------------------------------------------------- //
     // RedLogicConnectable, RedLogicRedstone, RedLogicBundledRedstone
 
@@ -370,7 +379,7 @@ public final class TileEntityCasing extends TileEntity implements
                 }
 
                 // Keep looking...
-                if (!TileEntityController.addNeighbors(tileEntity, processed, queue)) {
+                if (!TileEntityController.addNeighbors(getWorldObj(), tileEntity, processed, queue)) {
                     // Hit end of loaded area, so scheduling would just result in
                     // error again anyway. Do *not* disable casings, keep last
                     // known valid state when all parts were loaded.

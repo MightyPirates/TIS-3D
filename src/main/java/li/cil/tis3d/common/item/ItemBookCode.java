@@ -5,12 +5,8 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
-import li.cil.tis3d.api.machine.Face;
-import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.client.gui.GuiHandlerClient;
 import li.cil.tis3d.common.TIS3D;
-import li.cil.tis3d.common.module.ModuleExecution;
-import li.cil.tis3d.common.module.execution.MachineState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,8 +15,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
@@ -64,38 +58,16 @@ public final class ItemBookCode extends ItemBook {
     }
 
     @Override
-    public boolean onItemUse(final ItemStack stack, final EntityPlayer player, final World world, final int x, final int y, final int z, final int side, final float hitX, final float hitY, final float hitZ) {
-        final TileEntity tileEntity = world.getTileEntity(x, y, z);
-        if (tileEntity instanceof Casing) {
-            final Casing casing = (Casing) tileEntity;
-            final Module module = casing.getModule(Face.fromEnumFacing(EnumFacing.getFront(side)));
-            if (module instanceof ModuleExecution) {
-                final ModuleExecution moduleExecution = (ModuleExecution) module;
-                final MachineState state = moduleExecution.getState();
-                final Data data = Data.loadFromStack(stack);
-                if (player.isSneaking()) {
-                    if (state.code != null && state.code.length > 0) {
-                        data.addProgram(Arrays.asList(state.code));
-                        Data.saveToStack(stack, data);
-                    }
-                } else {
-                    if (data.getProgramCount() > 0) {
-                        final List<String> code = data.getProgram(data.getSelectedProgram());
-                        moduleExecution.compile(code, player);
-                    }
-                }
-                return true;
-            }
-        }
-        return super.onItemUse(stack, player, world, x, y, z, side, hitX, hitY, hitZ);
-    }
-
-    @Override
     public ItemStack onItemRightClick(final ItemStack stack, final World world, final EntityPlayer player) {
         if (world.isRemote) {
             player.openGui(TIS3D.instance, GuiHandlerClient.ID_GUI_BOOK_CODE, world, 0, 0, 0);
         }
         return super.onItemRightClick(stack, world, player);
+    }
+
+    @Override
+    public boolean doesSneakBypassUse(final World world, final int x, final int y, final int z, final EntityPlayer player) {
+        return world.blockExists(x, y, z) && world.getTileEntity(x, y, z) instanceof Casing;
     }
 
     // --------------------------------------------------------------------- //

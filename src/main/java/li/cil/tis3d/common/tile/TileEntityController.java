@@ -301,22 +301,31 @@ public final class TileEntityController extends TileEntity {
      * <p>
      * Note that this is also used in {@link TileEntityCasing} for the reverse
      * search when trying to notify a controller.
+     * <p>
+     * <em>Important</em>: we have to pass along a valid world object here
+     * instead of relying on the passed tile entity's world, since we may
+     * have caused tile entity creation in rare cases (e.g. broken saves
+     * where tile entities were not restored during load), which will not have
+     * their world set if this is called from the update loop (where newly
+     * created tile entities are added to a separate list, and will be added
+     * to their chunk and thus get their world set later on).
      *
+     * @param world      the world we're scanning for tile entities in.
      * @param tileEntity the tile entity to get the neighbors for.
      * @param processed  the list of processed tile entities.
      * @param queue      the list of pending tile entities.
      * @return <tt>true</tt> if all neighbors could be checked, <tt>false</tt> otherwise.
      */
-    static boolean addNeighbors(final TileEntity tileEntity, final Set<TileEntity> processed, final Queue<TileEntity> queue) {
+    static boolean addNeighbors(final World world, final TileEntity tileEntity, final Set<TileEntity> processed, final Queue<TileEntity> queue) {
         for (final EnumFacing facing : EnumFacing.values()) {
             final int neighborX = tileEntity.xCoord + facing.getFrontOffsetX();
             final int neighborY = tileEntity.yCoord + facing.getFrontOffsetY();
             final int neighborZ = tileEntity.zCoord + facing.getFrontOffsetZ();
-            if (!tileEntity.getWorldObj().blockExists(neighborX, neighborY, neighborZ)) {
+            if (!world.blockExists(neighborX, neighborY, neighborZ)) {
                 return false;
             }
 
-            final TileEntity neighborTileEntity = tileEntity.getWorldObj().getTileEntity(neighborX, neighborY, neighborZ);
+            final TileEntity neighborTileEntity = world.getTileEntity(neighborX, neighborY, neighborZ);
             if (neighborTileEntity == null) {
                 continue;
             }
@@ -355,7 +364,7 @@ public final class TileEntityController extends TileEntity {
             if (tileEntity instanceof TileEntityController) {
                 if (tileEntity == this) {
                     // Special case: first iteration, add the neighbors.
-                    if (!addNeighbors(tileEntity, processed, queue)) {
+                    if (!addNeighbors(getWorldObj(), tileEntity, processed, queue)) {
                         clear(ControllerState.INCOMPLETE);
                         return;
                     }
@@ -374,8 +383,16 @@ public final class TileEntityController extends TileEntity {
                 // Register as the controller with the casing and add neighbors.
                 final TileEntityCasing casing = (TileEntityCasing) tileEntity;
                 newCasings.add(casing);
-                addNeighbors(casing, processed, queue);
+                addNeighbors(getWorldObj(), casing, processed, queue);
             }
+        }
+
+        // Special handling in case we triggered tile entity creation while
+        // scanning (see comment on addNeighbors), re-scan next tick when
+        // they all have their world object set... but only exit after having
+        // touched all of them, to make sure they've been created.
+        if (newCasings.stream().anyMatch(c -> c.getWorldObj() == null)) {
+            return;
         }
 
         // Replace old list of casings with the new found ones, now that we're
