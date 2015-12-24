@@ -1,6 +1,7 @@
 package li.cil.tis3d.common.item;
 
 import li.cil.tis3d.api.API;
+import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.client.gui.GuiHandlerClient;
 import li.cil.tis3d.common.TIS3D;
 import net.minecraft.client.Minecraft;
@@ -11,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
@@ -62,6 +64,11 @@ public final class ItemBookCode extends ItemBook {
             player.openGui(TIS3D.instance, GuiHandlerClient.ID_GUI_BOOK_CODE, world, 0, 0, 0);
         }
         return super.onItemRightClick(stack, world, player);
+    }
+
+    @Override
+    public boolean doesSneakBypassUse(final World world, final BlockPos pos, final EntityPlayer player) {
+        return world.isBlockLoaded(pos) && world.getTileEntity(pos) instanceof Casing;
     }
 
     // --------------------------------------------------------------------- //
