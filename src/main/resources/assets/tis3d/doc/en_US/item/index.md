@@ -15,5 +15,6 @@ This index lists all of the documented items in TIS-3D. If you're looking for a 
 * [Stack Module](moduleStack.md)
 
 ## Utility
+* [Key](key.md)
 * [Manual](bookManual.md)
 * [Code Bible](bookCode.md)

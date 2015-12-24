@@ -20,6 +20,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
+import java.util.Optional;
+import java.util.UUID;
+
 /**
  * Implementation of a {@link Casing}, holding up to six {@link Module}s.
  */
@@ -38,6 +41,13 @@ public final class CasingImpl implements Casing {
      * Indexed by face and port using {@link #pack(Face, Port)}.
      */
     private final PipeImpl[] pipes = new PipeImpl[24];
+
+    /**
+     * The key the casing is currently locked with. If this is set, players
+     * cannot add or remove modules from the casing. A key with the correct
+     * UUID in its NBT tag is required to unlock a casing.
+     */
+    private Optional<UUID> lock = Optional.empty();
 
     // --------------------------------------------------------------------- //
     // Computed data.
@@ -71,6 +81,8 @@ public final class CasingImpl implements Casing {
     // NBT tag names.
     private static final String TAG_MODULES = "modules";
     private static final String TAG_PIPES = "pipes";
+    private static final String TAG_KEY_MS = "keyMostSignificant";
+    private static final String TAG_KEY_LS = "keyLeastSignificant";
 
     /**
      * The tile entity hosting this casing.
@@ -155,6 +167,42 @@ public final class CasingImpl implements Casing {
     public void stepPipes() {
         for (final PipeImpl pipe : pipes) {
             pipe.step();
+        }
+    }
+
+    /**
+     * Locks the casing and returns the key for unlocking it.
+     *
+     * @throws IllegalStateException if the casing is already locked.
+     */
+    public void lock(final ItemStack stack) {
+        if (isLocked()) {
+            throw new IllegalStateException("Casing is already locked.");
+        }
+        final UUID key = getKeyFromStack(stack).orElse(UUID.randomUUID());
+        setKeyForStack(stack, key);
+        lock = Optional.of(key);
+        getCasingWorld().markBlockForUpdate(getPosition());
+    }
+
+    /**
+     * Try to unlock the casing with the key stored on the specified item.
+     *
+     * @param stack the item containing the key.
+     */
+    public void unlock(final ItemStack stack) {
+        getKeyFromStack(stack).ifPresent(this::unlock);
+    }
+
+    /**
+     * Try to unlock the casing with the specified key.
+     *
+     * @param key the key to use to unlock the casing.
+     */
+    public void unlock(final UUID key) {
+        if (lock.map(key::equals).orElse(false)) {
+            lock = Optional.empty();
+            getCasingWorld().markBlockForUpdate(getPosition());
         }
     }
 
@@ -256,6 +304,12 @@ public final class CasingImpl implements Casing {
         for (int i = 0; i < pipeCount; i++) {
             pipes[i].readFromNBT(pipesNbt.getCompoundTagAt(i));
         }
+
+        if (nbt.hasKey(TAG_KEY_MS) && nbt.hasKey(TAG_KEY_LS)) {
+            lock = Optional.of(new UUID(nbt.getLong(TAG_KEY_MS), nbt.getLong(TAG_KEY_LS)));
+        } else {
+            lock = Optional.empty();
+        }
     }
 
     /**
@@ -281,6 +335,9 @@ public final class CasingImpl implements Casing {
             pipesNbt.appendTag(portNbt);
         }
         nbt.setTag(TAG_PIPES, pipesNbt);
+
+        lock.ifPresent(key -> nbt.setLong(TAG_KEY_MS, key.getMostSignificantBits()));
+        lock.ifPresent(key -> nbt.setLong(TAG_KEY_LS, key.getLeastSignificantBits()));
     }
 
     // --------------------------------------------------------------------- //
@@ -332,6 +389,38 @@ public final class CasingImpl implements Casing {
         return mapFace(face, port).ordinal() * Port.VALUES.length + mapSide(face, port).ordinal();
     }
 
+    /**
+     * Read a stored key from the specified stack.
+     *
+     * @param stack the stack to get the key from.
+     * @return the key, if present.
+     */
+    private static Optional<UUID> getKeyFromStack(final ItemStack stack) {
+        if (!stack.hasTagCompound()) {
+            return Optional.empty();
+        }
+        final NBTTagCompound nbt = stack.getTagCompound();
+        if (!nbt.hasKey(TAG_KEY_MS) || !nbt.hasKey(TAG_KEY_LS)) {
+            return Optional.empty();
+        }
+        return Optional.of(new UUID(nbt.getLong(TAG_KEY_MS), nbt.getLong(TAG_KEY_LS)));
+    }
+
+    /**
+     * Store the specified key on the specified item stack.
+     *
+     * @param stack the stack to store the key on.
+     * @param key   the key to store on the stack.
+     */
+    private static void setKeyForStack(final ItemStack stack, final UUID key) {
+        if (!stack.hasTagCompound()) {
+            stack.setTagCompound(new NBTTagCompound());
+        }
+        final NBTTagCompound nbt = stack.getTagCompound();
+        nbt.setLong(TAG_KEY_MS, key.getMostSignificantBits());
+        nbt.setLong(TAG_KEY_LS, key.getLeastSignificantBits());
+    }
+
     // --------------------------------------------------------------------- //
     // Casing
 
@@ -348,6 +437,11 @@ public final class CasingImpl implements Casing {
     @Override
     public void markDirty() {
         tileEntity.markDirty();
+    }
+
+    @Override
+    public boolean isLocked() {
+        return lock.isPresent();
     }
 
     @Override

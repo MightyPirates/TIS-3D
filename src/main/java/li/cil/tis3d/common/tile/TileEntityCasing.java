@@ -23,6 +23,7 @@ import li.cil.tis3d.common.network.message.MessageCasingState;
 import li.cil.tis3d.util.InventoryUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -202,6 +203,14 @@ public final class TileEntityCasing extends TileEntity implements
 
     public void setModule(final Face face, final Module module) {
         casing.setModule(face, module);
+    }
+
+    public void lock(final ItemStack stack) {
+        casing.lock(stack);
+    }
+
+    public void unlock(final ItemStack stack) {
+        casing.unlock(stack);
     }
 
     // --------------------------------------------------------------------- //

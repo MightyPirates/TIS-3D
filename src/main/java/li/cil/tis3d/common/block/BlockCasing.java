@@ -1,11 +1,13 @@
 package li.cil.tis3d.common.block;
 
+import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.Redstone;
 import li.cil.tis3d.api.module.Rotatable;
+import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.item.ItemBookManual;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import li.cil.tis3d.util.InventoryUtils;
@@ -29,6 +31,7 @@ import net.minecraftforge.client.model.obj.OBJModel;
 import net.minecraftforge.common.property.ExtendedBlockState;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -146,7 +149,22 @@ public final class BlockCasing extends Block {
             if (tileEntity instanceof TileEntityCasing) {
                 final TileEntityCasing casing = (TileEntityCasing) tileEntity;
 
+                // Watcha holding there?
                 final ItemStack stack = player.getHeldItem();
+
+                // Locking or unlocking the casing?
+                if (stack != null && stack.getItem() == GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_KEY)) {
+                    if (!world.isRemote) {
+                        if (casing.isLocked()) {
+                            casing.unlock(stack);
+                        } else {
+                            casing.lock(stack);
+                        }
+                    }
+                    return true;
+                }
+
+                // Trying to look something up in the manual?
                 if (ItemBookManual.isBookManual(stack)) {
                     final ItemStack moduleStack = casing.getStackInSlot(side.ordinal());
                     if (ItemBookManual.tryOpenManual(world, player, ManualAPI.pathFor(moduleStack))) {
@@ -154,13 +172,21 @@ public final class BlockCasing extends Block {
                     }
                 }
 
+                // Let the module handle the activation.
                 final Module module = casing.getModule(Face.fromEnumFacing(side));
                 if (module != null && module.onActivate(player, hitX, hitY, hitZ)) {
                     return true;
                 }
 
+                // Don't allow changing modules while casing is locked.
+                if (casing.isLocked()) {
+                    return true;
+                }
+
+                //
                 final ItemStack oldModule = casing.getStackInSlot(side.ordinal());
                 if (oldModule != null) {
+                    // Removing a present module from the casing.
                     if (!world.isRemote) {
                         final EntityItem entity = InventoryUtils.drop(world, pos, casing, side.ordinal(), 1, side);
                         if (entity != null) {
@@ -171,6 +197,7 @@ public final class BlockCasing extends Block {
                     }
                     return true;
                 } else {
+                    // Installing a new module in the casing.
                     if (casing.canInsertItem(side.ordinal(), stack, side)) {
                         if (!world.isRemote) {
                             if (player.capabilities.isCreativeMode) {

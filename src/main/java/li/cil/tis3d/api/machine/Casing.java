@@ -1,6 +1,7 @@
 package li.cil.tis3d.api.machine;
 
 import li.cil.tis3d.api.module.Module;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
@@ -32,6 +33,19 @@ public interface Casing {
     void markDirty();
 
     // --------------------------------------------------------------------- //
+
+    /**
+     * Get whether the casing is locked.
+     * <p>
+     * Casings can be locked, preventing players to remove modules from the
+     * casing or add modules to the casing. Some modules may choose to also
+     * ignore {@link Module#onActivate(EntityPlayer, float, float, float)}
+     * calls while their casing is locks (such as the execution module to
+     * prevent reprogramming).
+     *
+     * @return <tt>true</tt> if the casing is currently locked.
+     */
+    boolean isLocked();
 
     /**
      * Get the module installed on the specified face of the casing.

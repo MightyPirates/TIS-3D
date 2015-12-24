@@ -28,6 +28,11 @@ public interface CasingProxy extends Casing {
     }
 
     @Override
+    default boolean isLocked() {
+        return getCasing().isLocked();
+    }
+
+    @Override
     default Module getModule(final Face face) {
         return getCasing().getModule(face);
     }
