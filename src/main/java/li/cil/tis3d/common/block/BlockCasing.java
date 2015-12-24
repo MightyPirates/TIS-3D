@@ -183,7 +183,7 @@ public final class BlockCasing extends Block {
                     return true;
                 }
 
-                //
+                // Remove old module or install new one.
                 final ItemStack oldModule = casing.getStackInSlot(side.ordinal());
                 if (oldModule != null) {
                     // Removing a present module from the casing.
