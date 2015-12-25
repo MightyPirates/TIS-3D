@@ -1,9 +1,7 @@
 package li.cil.tis3d.common.module;
 
-import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.FontRendererAPI;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
@@ -11,8 +9,8 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.render.TextureLoader;
-import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.TIS3D;
+import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ItemBookCode;
 import li.cil.tis3d.common.module.execution.MachineImpl;
 import li.cil.tis3d.common.module.execution.MachineState;
@@ -25,7 +23,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -151,12 +148,12 @@ public final class ModuleExecution extends AbstractModuleRotatable {
         final ItemStack stack = player.getHeldItem();
 
         // Vanilla book? If so, make that a code book.
-        if (stack != null && stack.getItem() == Items.book) {
+        if (stack != null && stack.getItem() == net.minecraft.init.Items.book) {
             if (!player.getEntityWorld().isRemote) {
                 if (!player.capabilities.isCreativeMode) {
                     stack.splitStack(1);
                 }
-                final ItemStack bookCode = new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_BOOK_CODE));
+                final ItemStack bookCode = new ItemStack(Items.bookCode);
                 if (player.inventory.addItemStackToInventory(bookCode)) {
                     player.inventoryContainer.detectAndSendChanges();
                 }
@@ -169,7 +166,7 @@ public final class ModuleExecution extends AbstractModuleRotatable {
         }
 
         // Code book? Store current program on it if sneaking.
-        if (ItemBookCode.isBookCode(stack) && player.isSneaking()) {
+        if (Items.isBookCode(stack) && player.isSneaking()) {
             final ItemBookCode.Data data = ItemBookCode.Data.loadFromStack(stack);
             if (getState().code != null && getState().code.length > 0) {
                 data.addProgram(Arrays.asList(getState().code));
@@ -441,7 +438,7 @@ public final class ModuleExecution extends AbstractModuleRotatable {
     private static final class SourceCodeProviderVanilla implements SourceCodeProvider {
         @Override
         public boolean worksFor(final ItemStack stack) {
-            return (stack.getItem() == Items.written_book) || (stack.getItem() == Items.writable_book);
+            return (stack.getItem() == net.minecraft.init.Items.written_book) || (stack.getItem() == net.minecraft.init.Items.writable_book);
         }
 
         @Override
@@ -467,7 +464,7 @@ public final class ModuleExecution extends AbstractModuleRotatable {
     private static final class SourceCodeProviderBookCode implements SourceCodeProvider {
         @Override
         public boolean worksFor(final ItemStack stack) {
-            return stack.getItem() == GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_BOOK_CODE);
+            return stack.getItem() == Items.bookCode;
         }
 
         @Override

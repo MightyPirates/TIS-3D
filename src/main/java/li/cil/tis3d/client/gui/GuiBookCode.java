@@ -2,6 +2,7 @@ package li.cil.tis3d.client.gui;
 
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.common.Settings;
+import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ItemBookCode;
 import li.cil.tis3d.common.module.execution.MachineState;
 import li.cil.tis3d.common.module.execution.compiler.Compiler;
@@ -110,7 +111,7 @@ public final class GuiBookCode extends GuiScreen {
 
     @Override
     public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
-        if (!player.isEntityAlive() || !ItemBookCode.isBookCode(player.getHeldItem())) {
+        if (!player.isEntityAlive() || !Items.isBookCode(player.getHeldItem())) {
             Minecraft.getMinecraft().displayGuiScreen(null);
             return;
         }

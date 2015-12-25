@@ -1,15 +1,13 @@
 package li.cil.tis3d.common.block;
 
-import cpw.mods.fml.common.registry.GameRegistry;
-import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.Redstone;
 import li.cil.tis3d.api.module.Rotatable;
-import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.TIS3D;
+import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ItemBookManual;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import li.cil.tis3d.util.InventoryUtils;
@@ -92,7 +90,7 @@ public final class BlockCasing extends Block {
                 final ItemStack stack = player.getHeldItem();
 
                 // Locking or unlocking the casing?
-                if (stack != null && stack.getItem() == GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_KEY)) {
+                if (Items.isKey(stack)) {
                     if (!world.isRemote) {
                         if (casing.isLocked()) {
                             casing.unlock(stack);
@@ -104,7 +102,7 @@ public final class BlockCasing extends Block {
                 }
 
                 // Trying to look something up in the manual?
-                if (ItemBookManual.isBookManual(stack)) {
+                if (Items.isBookManual(stack)) {
                     final ItemStack moduleStack = casing.getStackInSlot(side);
                     if (ItemBookManual.tryOpenManual(world, player, ManualAPI.pathFor(moduleStack))) {
                         return true;
@@ -122,6 +120,7 @@ public final class BlockCasing extends Block {
                     return true;
                 }
 
+                // Remove old module or install new one.
                 final ItemStack oldModule = casing.getStackInSlot(side);
                 if (oldModule != null) {
                     // Removing a present module from the casing.

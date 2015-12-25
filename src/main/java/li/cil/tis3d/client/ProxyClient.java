@@ -5,7 +5,6 @@ import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.registry.GameRegistry;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.api.prefab.client.SimpleModuleRenderer;
@@ -23,6 +22,8 @@ import li.cil.tis3d.client.render.tile.TileEntitySpecialRendererCasing;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.ProxyCommon;
 import li.cil.tis3d.common.TIS3D;
+import li.cil.tis3d.common.init.Blocks;
+import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -62,14 +63,14 @@ public final class ProxyClient extends ProxyCommon {
         ManualAPI.addProvider("oredict", new OreDictImageProvider());
 
         ManualAPI.addTab(new TextureTabIconRenderer(new ResourceLocation(API.MOD_ID, "textures/gui/manualHome.png")), "tis3d.manual.home", "%LANGUAGE%/index.md");
-        ManualAPI.addTab(new ItemStackTabIconRenderer(new ItemStack(GameRegistry.findBlock(API.MOD_ID, Constants.NAME_BLOCK_CONTROLLER))), "tis3d.manual.blocks", "%LANGUAGE%/block/index.md");
-        ManualAPI.addTab(new ItemStackTabIconRenderer(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_EXECUTION))), "tis3d.manual.items", "%LANGUAGE%/item/index.md");
+        ManualAPI.addTab(new ItemStackTabIconRenderer(new ItemStack(Blocks.controller)), "tis3d.manual.blocks", "%LANGUAGE%/block/index.md");
+        ManualAPI.addTab(new ItemStackTabIconRenderer(new ItemStack(Items.modules.get(Constants.NAME_ITEM_MODULE_EXECUTION))), "tis3d.manual.items", "%LANGUAGE%/item/index.md");
     }
 
     // --------------------------------------------------------------------- //
 
     @Override
-    protected Item registerModule(final String name) {
+    public Item registerModule(final String name) {
         final Item item = super.registerModule(name);
         MinecraftForgeClient.registerItemRenderer(item, new SimpleModuleRenderer().setIgnoreLighting(true));
         return item;

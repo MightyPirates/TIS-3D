@@ -9,6 +9,7 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.ModuleProvider;
 import li.cil.tis3d.api.module.Redstone;
+import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageModuleData;
 import li.cil.tis3d.common.tile.TileEntityCasing;
@@ -178,9 +179,13 @@ public final class CasingImpl implements Casing {
         if (isLocked()) {
             throw new IllegalStateException("Casing is already locked.");
         }
+        if (Items.isKeyCreative(stack)) {
+            lock = Optional.of(UUID.randomUUID());
+        } else {
         final UUID key = getKeyFromStack(stack).orElse(UUID.randomUUID());
         setKeyForStack(stack, key);
         lock = Optional.of(key);
+        }
         getCasingWorld().markBlockForUpdate(getPositionX(), getPositionY(), getPositionZ());
     }
 
@@ -190,7 +195,12 @@ public final class CasingImpl implements Casing {
      * @param stack the item containing the key.
      */
     public void unlock(final ItemStack stack) {
-        getKeyFromStack(stack).ifPresent(this::unlock);
+        if (Items.isKeyCreative(stack)) {
+            lock = Optional.empty();
+            getCasingWorld().markBlockForUpdate(getPositionX(), getPositionY(), getPositionZ());
+        } else {
+            getKeyFromStack(stack).ifPresent(this::unlock);
+        }
     }
 
     /**

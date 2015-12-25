@@ -16,14 +16,12 @@ import li.cil.tis3d.common.api.FontRendererAPIImpl;
 import li.cil.tis3d.common.api.InfraredAPIImpl;
 import li.cil.tis3d.common.api.ManualAPIImpl;
 import li.cil.tis3d.common.api.ModuleAPIImpl;
-import li.cil.tis3d.common.block.BlockCasing;
-import li.cil.tis3d.common.block.BlockController;
 import li.cil.tis3d.common.entity.EntityInfraredPacket;
 import li.cil.tis3d.common.event.TickHandlerInfraredPacket;
+import li.cil.tis3d.common.init.Blocks;
+import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.integration.Integration;
 import li.cil.tis3d.common.integration.redstone.RedstoneIntegration;
-import li.cil.tis3d.common.item.ItemBookCode;
-import li.cil.tis3d.common.item.ItemBookManual;
 import li.cil.tis3d.common.item.ItemModule;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.provider.ModuleProviderAudio;
@@ -36,18 +34,11 @@ import li.cil.tis3d.common.provider.ModuleProviderRandom;
 import li.cil.tis3d.common.provider.ModuleProviderRandomAccessMemory;
 import li.cil.tis3d.common.provider.ModuleProviderRedstone;
 import li.cil.tis3d.common.provider.ModuleProviderStack;
-import li.cil.tis3d.common.tile.TileEntityCasing;
-import li.cil.tis3d.common.tile.TileEntityController;
 import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.oredict.OreDictionary;
-import net.minecraftforge.oredict.ShapedOreRecipe;
-import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import java.util.function.Supplier;
 
@@ -89,61 +80,25 @@ public class ProxyCommon {
         API.moduleAPI = new ModuleAPIImpl();
 
         // Register blocks and items.
-        registerBlock(Constants.NAME_BLOCK_CASING, BlockCasing::new, TileEntityCasing.class);
-        registerBlock(Constants.NAME_BLOCK_CONTROLLER, BlockController::new, TileEntityController.class);
-
-        for (final String module : Constants.MODULES) {
-            registerModule(module);
-        }
-
-        registerItem(Constants.NAME_ITEM_BOOK_CODE, ItemBookCode::new);
-        registerItem(Constants.NAME_ITEM_BOOK_MANUAL, ItemBookManual::new);
-
-        registerItem(Constants.NAME_ITEM_KEY, Item::new).setMaxStackSize(1);
-        registerItem(Constants.NAME_ITEM_PRISM, Item::new);
+        Blocks.registerBlocks(this);
+        Items.register(this);
 
         // Mod integration.
-        Integration.INSTANCE.preInit(event);
+        Integration.preInit(event);
     }
 
     public void onInit(final FMLInitializationEvent event) {
         // Register Ore Dictionary entries.
-        OreDictionary.registerOre("book", GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_BOOK_CODE));
-        OreDictionary.registerOre("book", GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_BOOK_MANUAL));
+        OreDictionary.registerOre("book", Items.bookCode);
+        OreDictionary.registerOre("book", Items.bookManual);
 
         for (final String module : Constants.MODULES) {
             registerModuleOre(module);
         }
 
         // Hardcoded recipes!
-        addBlockRecipe(Constants.NAME_BLOCK_CASING, "blockIron", 8);
-        addBlockRecipe(Constants.NAME_BLOCK_CONTROLLER, "gemDiamond", 1);
-
-        addModuleRecipe(Constants.NAME_ITEM_MODULE_AUDIO, Item.getItemFromBlock(Blocks.noteblock));
-        addModuleRecipe(Constants.NAME_ITEM_MODULE_BUNDLED_REDSTONE, Items.comparator);
-        addModuleRecipe(Constants.NAME_ITEM_MODULE_DISPLAY, GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_PRISM));
-        addModuleRecipe(Constants.NAME_ITEM_MODULE_EXECUTION, "ingotGold");
-        addModuleRecipe(Constants.NAME_ITEM_MODULE_INFRARED, Items.spider_eye);
-        addModuleRecipe(Constants.NAME_ITEM_MODULE_KEYPAD, Blocks.stone_button);
-        addModuleRecipe(Constants.NAME_ITEM_MODULE_RANDOM, Items.ender_pearl);
-        addModuleRecipe(Constants.NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY, "gemEmerald");
-        addModuleRecipe(Constants.NAME_ITEM_MODULE_REDSTONE, Items.repeater);
-        addModuleRecipe(Constants.NAME_ITEM_MODULE_STACK, Item.getItemFromBlock(Blocks.chest));
-
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_KEY), 1),
-                "GI ",
-                "GI ",
-                "LRQ",
-                'G', "nuggetGold",
-                'I', "ingotIron",
-                'L', "gemLapis",
-                'R', "dustRedstone",
-                'Q', "gemQuartz"));
-        GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_PRISM), 1),
-                "gemQuartz",
-                "dustRedstone",
-                "gemLapis",
-                "gemEmerald"));
+        Blocks.addRecipes();
+        Items.addRecipes();
 
         // Register entities.
         EntityRegistry.registerModEntity(EntityInfraredPacket.class, Constants.NAME_ENTITY_INFRARED_PACKET, 1, TIS3D.instance, 16, 1, true);
@@ -172,17 +127,17 @@ public class ProxyCommon {
         ManualAPI.addProvider(new ResourceContentProvider("tis3d", "doc/"));
 
         // Mod integration.
-        Integration.INSTANCE.init(event);
+        Integration.init(event);
     }
 
     public void onPostInit(final FMLPostInitializationEvent event) {
         // Mod integration.
-        Integration.INSTANCE.postInit(event);
+        Integration.postInit(event);
     }
 
     // --------------------------------------------------------------------- //
 
-    protected Block registerBlock(final String name, final Supplier<Block> constructor, final Class<? extends TileEntity> tileEntity) {
+    public Block registerBlock(final String name, final Supplier<Block> constructor, final Class<? extends TileEntity> tileEntity) {
         final Block block = constructor.get().
                 setBlockName(API.MOD_ID + "." + name).
                 setBlockTextureName(API.MOD_ID + ":" + name).
@@ -192,7 +147,7 @@ public class ProxyCommon {
         return block;
     }
 
-    protected Item registerItem(final String name, final Supplier<Item> constructor) {
+    public Item registerItem(final String name, final Supplier<Item> constructor) {
         final Item item = constructor.get().
                 setUnlocalizedName(API.MOD_ID + "." + name).
                 setTextureName(API.MOD_ID + ":" + name).
@@ -201,7 +156,7 @@ public class ProxyCommon {
         return item;
     }
 
-    protected Item registerModule(final String name) {
+    public Item registerModule(final String name) {
         if (Settings.disabledModules.contains(name)) {
             return null;
         }
@@ -217,28 +172,4 @@ public class ProxyCommon {
         OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findItem(API.MOD_ID, name));
     }
 
-    private static void addBlockRecipe(final String name, final Object specialIngredient, final int count) {
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(GameRegistry.findBlock(API.MOD_ID, name), count),
-                "IRI",
-                "RSR",
-                "IRI",
-                'I', "ingotIron",
-                'R', "dustRedstone",
-                'S', specialIngredient));
-    }
-
-    private static void addModuleRecipe(final String name, final Object specialIngredient) {
-        if (Settings.disabledModules.contains(name)) {
-            return;
-        }
-
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(GameRegistry.findItem(API.MOD_ID, name), 2),
-                "PPP",
-                "ISI",
-                " R ",
-                'P', "paneGlassColorless",
-                'I', "ingotIron",
-                'R', "dustRedstone",
-                'S', specialIngredient));
-    }
 }

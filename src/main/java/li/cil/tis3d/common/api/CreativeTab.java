@@ -1,10 +1,9 @@
 package li.cil.tis3d.common.api;
 
-import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import li.cil.tis3d.api.API;
-import li.cil.tis3d.common.Constants;
+import li.cil.tis3d.common.init.Blocks;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 
@@ -19,6 +18,6 @@ public final class CreativeTab extends CreativeTabs {
     @SideOnly(Side.CLIENT)
     @Override
     public Item getTabIconItem() {
-        return GameRegistry.findItem(API.MOD_ID, Constants.NAME_BLOCK_CONTROLLER);
+        return Item.getItemFromBlock(Blocks.controller);
     }
 }

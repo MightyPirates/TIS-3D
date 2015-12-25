@@ -3,6 +3,7 @@ itemGroup.tis3d=TIS-3D
 item.tis3d.bookCode.name=Code Bible
 item.tis3d.bookManual.name=TIS-3D Reference Manual
 item.tis3d.key.name=Key
+item.tis3d.keyCreative.name=Skeleton Key
 item.tis3d.moduleAudio.name=Audio Module
 item.tis3d.moduleBundledRedstone.name=Bundled Redstone Module
 item.tis3d.moduleDisplay.name=Display Module

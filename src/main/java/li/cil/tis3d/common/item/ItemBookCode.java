@@ -1,9 +1,7 @@
 package li.cil.tis3d.common.item;
 
-import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.client.gui.GuiHandlerClient;
 import li.cil.tis3d.common.TIS3D;
@@ -32,12 +30,6 @@ public final class ItemBookCode extends ItemBook {
 
     public ItemBookCode() {
         setMaxStackSize(1);
-    }
-
-    // --------------------------------------------------------------------- //
-
-    public static boolean isBookCode(final ItemStack stack) {
-        return stack != null && stack.getItem() == GameRegistry.findItem(API.MOD_ID, li.cil.tis3d.common.Constants.NAME_ITEM_BOOK_CODE);
     }
 
     // --------------------------------------------------------------------- //
