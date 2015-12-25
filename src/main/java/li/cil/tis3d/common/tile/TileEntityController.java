@@ -394,6 +394,14 @@ public final class TileEntityController extends TileEntity implements ITickable 
             return;
         }
 
+        // Handle splits by first getting the set of casings we originally had
+        // control over but no longer, setting their controller to null and
+        // telling them to reschedule, just in case (onDisable *should* be fine
+        // but better safe than sorry).
+        casings.removeAll(newCasings);
+        casings.forEach(c -> c.setController(null));
+        casings.forEach(TileEntityCasing::scheduleScan);
+
         // Replace old list of casings with the new found ones, now that we're
         // sure we don't have to disable our old ones.
         casings.clear();

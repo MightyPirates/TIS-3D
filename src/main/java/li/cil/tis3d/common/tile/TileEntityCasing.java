@@ -105,8 +105,8 @@ public final class TileEntityCasing extends TileEntity implements
         if (getWorld().isRemote) {
             return;
         }
-        if (controller != null) {
-            controller.scheduleScan();
+        if (getController() != null) {
+            getController().scheduleScan();
         } else {
             // If we don't have a controller there either isn't one, or
             // the controller is in an error state. In the latter case we
@@ -396,8 +396,8 @@ public final class TileEntityCasing extends TileEntity implements
     }
 
     private void dispose() {
-        if (controller != null) {
-            controller.scheduleScan();
+        if (getController() != null) {
+            getController().scheduleScan();
         }
         casing.onDisposed();
     }
