@@ -1,6 +1,5 @@
 package li.cil.tis3d.common.module.execution.compiler;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import li.cil.tis3d.common.Constants;
@@ -86,11 +85,18 @@ public final class Compiler {
                 }
 
                 // Get current line, strip comments, trim whitespace and uppercase.
-                final Matcher matcher = PATTERN_COMMENT.matcher(lines[lineNumber]);
-                final String line = matcher.replaceFirst("").trim();
+                final Matcher commentMatcher = PATTERN_COMMENT.matcher(lines[lineNumber]);
+                final String line = commentMatcher.replaceFirst("");
 
                 // Extract a label, if any, pass the rest onto the instruction parser.
-                parseInstruction(parseLabel(line, state, lineNumber), state, lineNumber, validators);
+                final Matcher lineMatcher = PATTERN_LINE.matcher(line);
+                if (lineMatcher.matches()) {
+                    parseLabel(lineMatcher, state, lineNumber);
+                    parseInstruction(lineMatcher, state, lineNumber, validators);
+                } else {
+                    // This should be pretty much impossible...
+                    throw new ParseException(Constants.MESSAGE_UNEXPECTED_TOKEN, lineNumber, 0, 0);
+                }
             }
 
             // Run all registered validators as a post-processing step. This is used
@@ -110,63 +116,53 @@ public final class Compiler {
     /**
      * Look for a label on the specified line and store it if present.
      *
-     * @param line       the line to parse.
+     * @param matcher    the matcher for the line to parse.
      * @param state      the machine state to store the label in.
      * @param lineNumber the current line number.
-     * @return the remainder of the line, or the full line if there was no label.
      */
-    private static String parseLabel(final String line, final MachineState state, final int lineNumber) throws ParseException {
-        final Matcher matcher = PATTERN_LABEL.matcher(line);
-        if (matcher.matches()) {
-            // Got a label, store it and the address it represents.
-            final String label = matcher.group("label");
-            if (state.labels.containsKey(label)) {
-                throw new ParseException(Constants.MESSAGE_DUPLICATE_LABEL, lineNumber, matcher.start("label"), matcher.end("label"));
-            }
-            state.labels.put(label, state.instructions.size());
-            // Return the remainder of the line.
-            return matcher.group("rest");
-        } else {
-            // No label, return line as-is.
-            return line;
+    private static void parseLabel(final Matcher matcher, final MachineState state, final int lineNumber) throws ParseException {
+        final String label = matcher.group("label");
+        if (label == null) {
+            return;
         }
+
+        // Got a label, store it and the address it represents.
+        if (state.labels.containsKey(label)) {
+            throw new ParseException(Constants.MESSAGE_DUPLICATE_LABEL, lineNumber, matcher.start("label"), matcher.end("label"));
+        }
+        state.labels.put(label, state.instructions.size());
     }
 
     /**
      * Look for an instruction on the specified line and store it if present.
      *
-     * @param line       the line to parse.
+     * @param matcher    the matcher for the line to parse.
      * @param state      the machine state to store the generated instruction in.
      * @param lineNumber the number of the line we're parsing (for exceptions).
      * @param validators list of validators instruction emitters may add to.
      * @throws ParseException if there was a syntax error.
      */
-    private static void parseInstruction(final String line, final MachineState state, final int lineNumber, final List<Validator> validators) throws ParseException {
-        // Skip blank lines and empty remainders of label parsing.
-        if (Strings.isNullOrEmpty(line)) return;
-
-        final Matcher matcher = PATTERN_INSTRUCTION.matcher(line);
-        if (matcher.matches()) {
-            // Got an instruction, process arguments and instantiate it.
-            final Instruction instruction = EMITTER_MAP.getOrDefault(matcher.group("name"), EMITTER_MISSING).
-                    compile(matcher, lineNumber, validators);
-
-            // Remember line numbers for debugging.
-            state.lineNumbers.put(state.instructions.size(), lineNumber);
-
-            // Store the instruction in the machine state (after just to skip the -1 :P).
-            state.instructions.add(instruction);
-        } else {
-            // This should be pretty much impossible...
-            throw new ParseException(Constants.MESSAGE_UNEXPECTED_TOKEN, lineNumber, 0, 0);
+    private static void parseInstruction(final Matcher matcher, final MachineState state, final int lineNumber, final List<Validator> validators) throws ParseException {
+        final String name = matcher.group("name");
+        if (name == null) {
+            return;
         }
+
+        // Got an instruction, process arguments and instantiate it.
+        final Instruction instruction = EMITTER_MAP.getOrDefault(name, EMITTER_MISSING).
+                compile(matcher, lineNumber, validators);
+
+        // Remember line numbers for debugging.
+        state.lineNumbers.put(state.instructions.size(), lineNumber);
+
+        // Store the instruction in the machine state (after just to skip the -1 :P).
+        state.instructions.add(instruction);
     }
 
     // --------------------------------------------------------------------- //
 
     private static final Pattern PATTERN_COMMENT = Pattern.compile("#.*$");
-    private static final Pattern PATTERN_LABEL = Pattern.compile("(?<label>[^:]+)\\s*:\\s*(?<rest>.*)");
-    private static final Pattern PATTERN_INSTRUCTION = Pattern.compile("^(?<name>\\S+)\\s*(?<arg1>[^,\\s]+)?\\s*,?\\s*(?<arg2>[^,\\s]+)?\\s*(?<excess>.+)?$");
+    private static final Pattern PATTERN_LINE = Pattern.compile("^\\s*(?:(?<label>[^:\\s]+)\\s*:\\s*)?(?:(?<name>\\S+)\\s*(?<arg1>[^,\\s]+)?\\s*,?\\s*(?<arg2>[^,\\s]+)?\\s*(?<excess>.+)?)?\\s*$");
     private static final Instruction INSTRUCTION_NOP = new InstructionAdd(Target.NIL);
     private static final InstructionEmitter EMITTER_MISSING = new InstructionEmitterMissing();
     private static final Map<String, InstructionEmitter> EMITTER_MAP;
