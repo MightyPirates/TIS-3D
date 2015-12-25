@@ -1,12 +1,11 @@
 package li.cil.tis3d.client.render.tile;
 
-import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.render.TextureLoader;
-import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.TIS3D;
+import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -16,9 +15,6 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -31,7 +27,6 @@ import java.util.Set;
  */
 public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRenderer<TileEntityCasing> {
     private final static Set<Class<?>> BLACKLIST = new HashSet<>();
-    private static Item key;
 
     @Override
     public void renderTileEntityAt(final TileEntityCasing casing, final double x, final double y, final double z, final float partialTicks, final int destroyStage) {
@@ -144,14 +139,7 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
     }
 
     private boolean isPlayerHoldingKey() {
-        // Cache the key item reference to avoid having to query the game
-        // registry every rendered frame.
-        if (key == null) {
-            key = GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_KEY);
-        }
-
         final EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-        final ItemStack stack = player.getHeldItem();
-        return stack != null && stack.getItem() == key;
+        return Items.isKey(player.getHeldItem());
     }
 }

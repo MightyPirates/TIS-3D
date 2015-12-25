@@ -1,6 +1,5 @@
 package li.cil.tis3d.common.item;
 
-import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.client.gui.GuiHandlerClient;
 import li.cil.tis3d.common.TIS3D;
@@ -16,7 +15,6 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -33,12 +31,6 @@ public final class ItemBookCode extends ItemBook {
 
     public ItemBookCode() {
         setMaxStackSize(1);
-    }
-
-    // --------------------------------------------------------------------- //
-
-    public static boolean isBookCode(final ItemStack stack) {
-        return stack != null && stack.getItem() == GameRegistry.findItem(API.MOD_ID, li.cil.tis3d.common.Constants.NAME_ITEM_BOOK_CODE);
     }
 
     // --------------------------------------------------------------------- //

@@ -1,6 +1,5 @@
 package li.cil.tis3d.common.item;
 
-import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.common.Constants;
 import net.minecraft.client.Minecraft;
@@ -12,7 +11,6 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -25,10 +23,6 @@ public final class ItemBookManual extends ItemBook {
     private static final String TOOLTIP_BOOK_MANUAL = "tis3d.tooltip.bookManual";
 
     // --------------------------------------------------------------------- //
-
-    public static boolean isBookManual(final ItemStack stack) {
-        return stack != null && stack.getItem() == GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_BOOK_MANUAL);
-    }
 
     public static boolean tryOpenManual(final World world, final EntityPlayer player, final String path) {
         if (path == null) {

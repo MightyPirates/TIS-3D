@@ -13,28 +13,27 @@ import java.util.List;
  * Central registry tracking mod proxies and initializing them.
  */
 public final class Integration {
-    public static final Integration INSTANCE = new Integration();
+    private static final List<ModProxy> proxies = new ArrayList<>();
 
-    // --------------------------------------------------------------------- //
-
-    private final List<ModProxy> proxies = new ArrayList<>();
-
-    private Integration() {
+    static {
         proxies.add(new ProxyCharsetWires());
         proxies.add(new ProxyMinecraft());
     }
 
     // --------------------------------------------------------------------- //
 
-    public void preInit(final FMLPreInitializationEvent event) {
+    public static void preInit(final FMLPreInitializationEvent event) {
         proxies.stream().filter(ModProxy::isAvailable).forEach(proxy -> proxy.preInit(event));
     }
 
-    public void init(final FMLInitializationEvent event) {
+    public static void init(final FMLInitializationEvent event) {
         proxies.stream().filter(ModProxy::isAvailable).forEach(proxy -> proxy.init(event));
     }
 
-    public void postInit(final FMLPostInitializationEvent event) {
+    public static void postInit(final FMLPostInitializationEvent event) {
         proxies.stream().filter(ModProxy::isAvailable).forEach(proxy -> proxy.postInit(event));
+    }
+
+    private Integration() {
     }
 }

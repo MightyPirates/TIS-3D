@@ -14,6 +14,8 @@ import li.cil.tis3d.client.render.tile.TileEntitySpecialRendererCasing;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.ProxyCommon;
 import li.cil.tis3d.common.TIS3D;
+import li.cil.tis3d.common.init.Blocks;
+import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import net.minecraft.block.Block;
 import net.minecraft.client.resources.model.ModelResourceLocation;
@@ -28,7 +30,6 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import java.util.function.Supplier;
 
@@ -63,21 +64,21 @@ public final class ProxyClient extends ProxyCommon {
         ManualAPI.addProvider("oredict", new OreDictImageProvider());
 
         ManualAPI.addTab(new TextureTabIconRenderer(new ResourceLocation(API.MOD_ID, "textures/gui/manualHome.png")), "tis3d.manual.home", "%LANGUAGE%/index.md");
-        ManualAPI.addTab(new ItemStackTabIconRenderer(new ItemStack(GameRegistry.findBlock(API.MOD_ID, Constants.NAME_BLOCK_CONTROLLER))), "tis3d.manual.blocks", "%LANGUAGE%/block/index.md");
-        ManualAPI.addTab(new ItemStackTabIconRenderer(new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_MODULE_EXECUTION))), "tis3d.manual.items", "%LANGUAGE%/item/index.md");
+        ManualAPI.addTab(new ItemStackTabIconRenderer(new ItemStack(Blocks.controller)), "tis3d.manual.blocks", "%LANGUAGE%/block/index.md");
+        ManualAPI.addTab(new ItemStackTabIconRenderer(new ItemStack(Items.modules.get(Constants.NAME_ITEM_MODULE_EXECUTION))), "tis3d.manual.items", "%LANGUAGE%/item/index.md");
     }
 
     // --------------------------------------------------------------------- //
 
     @Override
-    protected Block registerBlock(final String name, final Supplier<Block> constructor, final Class<? extends TileEntity> tileEntity) {
+    public Block registerBlock(final String name, final Supplier<Block> constructor, final Class<? extends TileEntity> tileEntity) {
         final Block block = super.registerBlock(name, constructor, tileEntity);
         setCustomBlockModelResourceLocation(name, block);
         return block;
     }
 
     @Override
-    protected Item registerItem(final String name, final Supplier<Item> constructor) {
+    public Item registerItem(final String name, final Supplier<Item> constructor) {
         final Item item = super.registerItem(name, constructor);
         setCustomItemModelResourceLocation(name, item);
         return item;

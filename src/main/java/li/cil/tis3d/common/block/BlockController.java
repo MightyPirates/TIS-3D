@@ -1,14 +1,12 @@
 package li.cil.tis3d.common.block;
 
-import li.cil.tis3d.api.API;
-import li.cil.tis3d.common.Constants;
+import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import li.cil.tis3d.common.tile.TileEntityController;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -16,7 +14,6 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 /**
  * Block for the controller driving the casings.
@@ -56,12 +53,12 @@ public final class BlockController extends Block {
         final ItemStack stack = player.getHeldItem();
         if (stack != null) {
             final Item item = stack.getItem();
-            if (item == Items.book) {
+            if (item == net.minecraft.init.Items.book) {
                 if (!world.isRemote) {
                     if (!player.capabilities.isCreativeMode) {
                         stack.splitStack(1);
                     }
-                    final ItemStack bookManual = new ItemStack(GameRegistry.findItem(API.MOD_ID, Constants.NAME_ITEM_BOOK_MANUAL));
+                    final ItemStack bookManual = new ItemStack(Items.bookManual);
                     if (player.inventory.addItemStackToInventory(bookManual)) {
                         player.inventoryContainer.detectAndSendChanges();
                     }
