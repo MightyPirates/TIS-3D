@@ -59,7 +59,7 @@ public final class ModuleExecution extends AbstractModuleRotatable {
     }
 
     private static final String[] STATE_LOCATIONS = new String[]{
-            null,
+            TextureLoader.LOCATION_MODULE_EXECUTION_OVERLAY_IDLE.toString(),
             TextureLoader.LOCATION_MODULE_EXECUTION_OVERLAY_ERROR.toString(),
             TextureLoader.LOCATION_MODULE_EXECUTION_OVERLAY_RUNNING.toString(),
             TextureLoader.LOCATION_MODULE_EXECUTION_OVERLAY_WAITING.toString()
