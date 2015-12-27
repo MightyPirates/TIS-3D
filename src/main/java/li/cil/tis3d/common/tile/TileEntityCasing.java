@@ -7,6 +7,7 @@ import li.cil.tis3d.api.infrared.InfraredPacket;
 import li.cil.tis3d.api.infrared.InfraredReceiver;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
+import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.BundledRedstone;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.Redstone;
@@ -20,7 +21,6 @@ import li.cil.tis3d.common.inventory.InventoryCasing;
 import li.cil.tis3d.common.inventory.SidedInventoryProxy;
 import li.cil.tis3d.common.machine.CasingImpl;
 import li.cil.tis3d.common.machine.CasingProxy;
-import li.cil.tis3d.common.module.ModuleForwarder;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageCasingState;
 import li.cil.tis3d.util.InventoryUtils;
@@ -59,7 +59,7 @@ import java.util.Set;
         @Optional.Interface(iface = "li.cil.tis3d.common.integration.redlogic.RedLogicConnectable", modid = ProxyRedLogic.MOD_ID),
         @Optional.Interface(iface = "li.cil.tis3d.common.integration.redlogic.RedLogicRedstone", modid = ProxyRedLogic.MOD_ID)
 })
-public final class TileEntityCasing extends TileEntity implements
+public final class TileEntityCasing extends TileEntityComputer implements
         RedLogicConnectable, RedLogicRedstone, RedLogicBundledRedstone,
         SidedInventoryProxy, CasingProxy, InfraredReceiver {
     // --------------------------------------------------------------------- //
@@ -76,7 +76,6 @@ public final class TileEntityCasing extends TileEntity implements
     private static final String TAG_CASING = "casing";
     private static final String TAG_ENABLED = "enabled";
 
-    private final TileEntityCasing[] neighbors = new TileEntityCasing[Face.VALUES.length];
     private TileEntityController controller;
     private boolean isEnabled;
     private boolean redstoneDirty = true;
@@ -114,41 +113,6 @@ public final class TileEntityCasing extends TileEntity implements
             final TileEntityController controller = findController();
             if (controller != null) {
                 controller.scheduleScan();
-            }
-        }
-    }
-
-    public void checkNeighbors() {
-        // When a neighbor changed, check all neighbors and register them in
-        // our tile entity. If a neighbor changed in that list, do a rescan
-        // in our controller (if any).
-        for (final EnumFacing facing : EnumFacing.values()) {
-            final int neighborX = getPositionX() + facing.getFrontOffsetX();
-            final int neighborY = getPositionY() + facing.getFrontOffsetY();
-            final int neighborZ = getPositionZ() + facing.getFrontOffsetZ();
-            if (getWorldObj().blockExists(neighborX, neighborY, neighborZ)) {
-                // If we have a casing, set it as our neighbor.
-                final TileEntity neighborTileEntity = getWorldObj().getTileEntity(neighborX, neighborY, neighborZ);
-                if (neighborTileEntity instanceof TileEntityCasing) {
-                    setNeighbor(Face.fromEnumFacing(facing), (TileEntityCasing) neighborTileEntity);
-                } else {
-                    setNeighbor(Face.fromEnumFacing(facing), null);
-                }
-
-                if (neighborTileEntity instanceof TileEntityController) {
-                    // If we have a controller, clear the module on that face.
-                    setModule(Face.fromEnumFacing(facing), null);
-
-                    // If we have a controller and it's not our controller, tell our
-                    // controller to do a re-scan (because now we have more than one
-                    // controller, which is invalid).
-                    if (getController() != neighborTileEntity && getController() != null) {
-                        getController().scheduleScan();
-                    }
-                }
-            } else {
-                // Neighbor is in unloaded area.
-                setNeighbor(Face.fromEnumFacing(facing), null);
             }
         }
     }
@@ -199,10 +163,6 @@ public final class TileEntityCasing extends TileEntity implements
         casing.stepModules();
     }
 
-    public void stepPipes() {
-        casing.stepPipes();
-    }
-
     public void setModule(final Face face, final Module module) {
         casing.setModule(face, module);
     }
@@ -213,6 +173,38 @@ public final class TileEntityCasing extends TileEntity implements
 
     public void unlock(final ItemStack stack) {
         casing.unlock(stack);
+    }
+
+    // --------------------------------------------------------------------- //
+    // PipeHost
+
+    @Override
+    protected void setNeighbor(final Face face, final TileEntityComputer neighbor) {
+        super.setNeighbor(face, neighbor);
+
+        // Ensure there are no modules installed between two casings.
+        if (neighbors[face.ordinal()] != null) {
+            InventoryUtils.drop(getWorldObj(), xCoord, yCoord, zCoord, this, face.ordinal(), getInventoryStackLimit(), Face.toEnumFacing(face));
+        }
+
+        if (neighbor instanceof TileEntityController) {
+            // If we have a controller and it's not our controller, tell our
+            // controller to do a re-scan (because now we have more than one
+            // controller, which is invalid).
+            if (getController() != neighbor && getController() != null) {
+                getController().scheduleScan();
+            }
+        }
+    }
+
+    @Override
+    public void onWriteComplete(final Face sendingFace, final Port sendingPort) {
+        super.onWriteComplete(sendingFace, sendingPort);
+
+        final Module module = getModule(sendingFace);
+        if (module != null) {
+            module.onWriteComplete(sendingPort);
+        }
     }
 
     // --------------------------------------------------------------------- //
@@ -310,42 +302,6 @@ public final class TileEntityCasing extends TileEntity implements
     }
 
     // --------------------------------------------------------------------- //
-
-    private void setNeighbor(final Face face, final TileEntityCasing neighbor) {
-        final TileEntityCasing oldNeighbor = neighbors[face.ordinal()];
-        if (neighbor != oldNeighbor) {
-            neighbors[face.ordinal()] = neighbor;
-            scheduleScan();
-        }
-
-        // Ensure there are no modules installed between two casings.
-        if (neighbors[face.ordinal()] != null) {
-            InventoryUtils.drop(getWorldObj(), getPositionX(), getPositionY(), getPositionZ(), this, face.ordinal(), getInventoryStackLimit(), Face.toEnumFacing(face));
-            InventoryUtils.drop(neighbor.getWorldObj(), neighbor.getPositionX(), neighbor.getPositionY(), neighbor.getPositionZ(), neighbor, face.getOpposite().ordinal(), neighbor.getInventoryStackLimit(), Face.toEnumFacing(face.getOpposite()));
-        }
-
-        // Adjust ports, connecting multiple casings.
-        if (neighbor == null) {
-            // No neighbor, remove the virtual connector module.
-            if (casing.getModule(face) instanceof ModuleForwarder) {
-                casing.setModule(face, null);
-            }
-            // Also remove it from our old neighbor, if we had one.
-            if (oldNeighbor != null && oldNeighbor.casing.getModule(face.getOpposite()) instanceof ModuleForwarder) {
-                oldNeighbor.casing.setModule(face.getOpposite(), null);
-            }
-        } else if (!(casing.getModule(face) instanceof ModuleForwarder)) {
-            // Got a new connection, and we have not yet been set up by our
-            // neighbor. Create a virtual module that will be responsible
-            // for transferring data between the two casings.
-            final ModuleForwarder forwarder = new ModuleForwarder(casing, face);
-            final ModuleForwarder neighborForwarder = new ModuleForwarder(neighbor.casing, face.getOpposite());
-            forwarder.setSink(neighborForwarder);
-            neighborForwarder.setSink(forwarder);
-            casing.setModule(face, forwarder);
-            neighbor.casing.setModule(face.getOpposite(), neighborForwarder);
-        }
-    }
 
     private TileEntityController findController() {
         // List of processed tile entities to avoid loops.

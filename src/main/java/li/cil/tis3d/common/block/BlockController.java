@@ -2,7 +2,6 @@ package li.cil.tis3d.common.block;
 
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.init.Items;
-import li.cil.tis3d.common.tile.TileEntityCasing;
 import li.cil.tis3d.common.tile.TileEntityController;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -10,7 +9,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -103,33 +101,8 @@ public final class BlockController extends Block {
         final TileEntity tileEntity = world.getTileEntity(x, y, z);
         if (tileEntity instanceof TileEntityController) {
             final TileEntityController controller = (TileEntityController) tileEntity;
-            for (final EnumFacing facing : EnumFacing.values()) {
-                checkNeighbor(controller, facing);
-            }
+            controller.checkNeighbors();
         }
         super.onNeighborBlockChange(world, x, y, z, neighborBlock);
-    }
-
-    private static void checkNeighbor(final TileEntityController controller, final EnumFacing facing) {
-        final int neighborX = controller.xCoord + facing.getFrontOffsetX();
-        final int neighborY = controller.yCoord + facing.getFrontOffsetY();
-        final int neighborZ = controller.zCoord + facing.getFrontOffsetZ();
-        if (controller.getWorldObj().blockExists(neighborX, neighborY, neighborZ)) {
-            final TileEntity neighborTileEntity = controller.getWorldObj().getTileEntity(neighborX, neighborY, neighborZ);
-            if (neighborTileEntity instanceof TileEntityController) {
-                // If we have a controller that means we have more than one in
-                // our multi-block. Rescan to enter appropriate error state.
-                controller.scheduleScan();
-            } else if (neighborTileEntity instanceof TileEntityCasing) {
-                // Rescan if we don't know that casing (yet).
-                final TileEntityCasing casing = (TileEntityCasing) neighborTileEntity;
-                if (casing.getController() != controller) {
-                    controller.scheduleScan();
-                }
-            }
-        } else {
-            // Make sure we notice we're on the border of the loaded area.
-            controller.scheduleScan();
-        }
     }
 }

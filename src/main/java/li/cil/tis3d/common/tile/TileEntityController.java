@@ -29,7 +29,7 @@ import java.util.Set;
  * Controllers have no real state. They are active when powered by a redstone
  * signal, and can be reset by right-clicking them.
  */
-public final class TileEntityController extends TileEntity {
+public final class TileEntityController extends TileEntityComputer {
     // --------------------------------------------------------------------- //
     // Computed data
 
@@ -272,13 +272,13 @@ public final class TileEntityController extends TileEntity {
                         // Stepping slower than 100%.
                         final int delay = 15 - power;
                         if (getWorldObj().getTotalWorldTime() % delay == 0) {
-                            stepCasings();
+                            step();
                         }
                     } else {
                         // Stepping faster than 100%.
                         final int steps = power / 15;
                         for (int step = 0; step < steps; step++) {
-                            stepCasings();
+                            step();
                         }
                     }
                 } catch (final HaltAndCatchFireException e) {
@@ -409,8 +409,9 @@ public final class TileEntityController extends TileEntity {
         casings.addAll(newCasings);
         casings.forEach(c -> c.setController(this));
 
-        // Ensure our casings know their neighbors.
+        // Ensure our parts know their neighbors.
         casings.forEach(TileEntityCasing::checkNeighbors);
+        checkNeighbors();
 
         // Sort casings for deterministic order of execution (important when modules
         // write / read from multiple ports but only want to make the data available
@@ -438,11 +439,15 @@ public final class TileEntityController extends TileEntity {
     }
 
     /**
-     * Advance all casings by one step.
+     * Advance all computer parts by one step.
      */
-    private void stepCasings() {
+    private void step() {
         casings.forEach(TileEntityCasing::stepModules);
         casings.forEach(TileEntityCasing::stepPipes);
+        casings.forEach(TileEntityCasing::stepForwarders);
+
+        stepPipes();
+        stepForwarders();
     }
 
     /**

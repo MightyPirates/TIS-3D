@@ -20,6 +20,7 @@ import net.minecraft.world.World;
 public final class Network {
     public static final Network INSTANCE = new Network();
 
+    public static final int RANGE_HIGH = 64;
     public static final int RANGE_MEDIUM = 32;
     public static final int RANGE_LOW = 16;
 

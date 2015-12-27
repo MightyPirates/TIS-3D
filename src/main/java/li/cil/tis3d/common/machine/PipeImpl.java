@@ -65,9 +65,9 @@ public final class PipeImpl implements Pipe {
     private static final String TAG_VALUE = "value";
 
     /**
-     * The casing this pipe belongs to.
+     * The container this pipe belongs to.
      */
-    private final Casing casing;
+    private final PipeHost host;
 
     /**
      * The faces this pipe is connected to in the owning {@link Casing}.
@@ -81,8 +81,8 @@ public final class PipeImpl implements Pipe {
 
     // --------------------------------------------------------------------- //
 
-    public PipeImpl(final Casing casing, final Face receivingFace, final Face sendingFace, final Port sendingPort) {
-        this.casing = casing;
+    public PipeImpl(final PipeHost host, final Face receivingFace, final Face sendingFace, final Port sendingPort) {
+        this.host = host;
         this.receivingFace = receivingFace;
         this.sendingFace = sendingFace;
         this.sendingPort = sendingPort;
@@ -177,12 +177,12 @@ public final class PipeImpl implements Pipe {
         final double ox = Face.toEnumFacing(receivingFace).getFrontOffsetX() + Face.toEnumFacing(sendingFace).getFrontOffsetX();
         final double oy = Face.toEnumFacing(receivingFace).getFrontOffsetY() + Face.toEnumFacing(sendingFace).getFrontOffsetY();
         final double oz = Face.toEnumFacing(receivingFace).getFrontOffsetZ() + Face.toEnumFacing(sendingFace).getFrontOffsetZ();
-        final double x = ox * 0.55 + casing.getPositionX() + 0.5;
-        final double y = oy * 0.55 + casing.getPositionY() + 0.5;
-        final double z = oz * 0.55 + casing.getPositionZ() + 0.5;
+        final double x = ox * 0.55 + host.getPipeHostPositionX() + 0.5;
+        final double y = oy * 0.55 + host.getPipeHostPositionY() + 0.5;
+        final double z = oz * 0.55 + host.getPipeHostPositionZ() + 0.5;
         final double extraOffsetY = oy < 0 ? -0.2 : (oy > 0) ? 0.1 : 0;
 
-        final World world = casing.getCasingWorld();
+        final World world = host.getPipeHostWorld();
         final MessageParticleEffect message = new MessageParticleEffect(world, "reddust", x, y + extraOffsetY, z);
         final NetworkRegistry.TargetPoint target = Network.getTargetPoint(world, x, y, z, Network.RANGE_LOW);
         Network.INSTANCE.getWrapper().sendToAllAround(message, target);
@@ -192,7 +192,7 @@ public final class PipeImpl implements Pipe {
         cancelWrite();
         cancelRead();
 
-        casing.getModule(sendingFace).onWriteComplete(sendingPort);
+        host.onWriteComplete(sendingFace, sendingPort);
         return result;
     }
 
@@ -201,6 +201,6 @@ public final class PipeImpl implements Pipe {
 
     @Override
     public String toString() {
-        return "{" + casing.getPositionX() + ", " + casing.getPositionY() + ", " + casing.getPositionZ() + "}: " + sendingFace + " [" + writeState + "] -> " + receivingFace + " [" + readState + "]";
+        return "{" + host.getPipeHostPositionX() + ", " + host.getPipeHostPositionY() + ", " + host.getPipeHostPositionZ() + "}: " + sendingFace + " [" + writeState + "] -> " + receivingFace + " [" + readState + "]";
     }
 }
