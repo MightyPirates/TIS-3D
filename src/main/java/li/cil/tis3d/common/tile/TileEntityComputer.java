@@ -22,7 +22,7 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
      * <p>
      * Indexed by face and port using {@link #pack(Face, Port)}.
      */
-    private final PipeImpl[] pipes = new PipeImpl[24];
+    private final PipeImpl[] pipes = new PipeImpl[Face.VALUES.length * Port.VALUES.length];
 
     // --------------------------------------------------------------------- //
     // Computed data.
