@@ -37,13 +37,6 @@ public final class CasingImpl implements Casing {
     private final Module[] modules = new Module[Face.VALUES.length];
 
     /**
-     * The flat list of all {@link Pipe}s on this casing.
-     * <p>
-     * Indexed by face and port using {@link #pack(Face, Port)}.
-     */
-    private final PipeImpl[] pipes = new PipeImpl[24];
-
-    /**
      * The key the casing is currently locked with. If this is set, players
      * cannot add or remove modules from the casing. A key with the correct
      * UUID in its NBT tag is required to unlock a casing.
@@ -53,35 +46,8 @@ public final class CasingImpl implements Casing {
     // --------------------------------------------------------------------- //
     // Computed data.
 
-    // Mapping for faces and ports around edges, i.e. to get the other side
-    // of an edge specified by a face and port.
-    private static final Face[][] FACE_MAPPING;
-    private static final Port[][] PORT_MAPPING;
-
-    static {
-        FACE_MAPPING = new Face[][]{
-                {Face.X_NEG, Face.X_POS, Face.Z_POS, Face.Z_NEG}, // Y_NEG
-                {Face.X_POS, Face.X_NEG, Face.Z_POS, Face.Z_NEG}, // Y_POS
-                {Face.X_POS, Face.X_NEG, Face.Y_POS, Face.Y_NEG}, // Z_NEG
-                {Face.X_NEG, Face.X_POS, Face.Y_POS, Face.Y_NEG}, // Z_POS
-                {Face.Z_NEG, Face.Z_POS, Face.Y_POS, Face.Y_NEG}, // X_NEG
-                {Face.Z_POS, Face.Z_NEG, Face.Y_POS, Face.Y_NEG}  // X_POS
-                //    LEFT        RIGHT       UP          DOWN
-        };
-        PORT_MAPPING = new Port[][]{
-                {Port.DOWN,  Port.DOWN,  Port.DOWN,  Port.DOWN},   // Y_NEG
-                {Port.UP,    Port.UP,    Port.UP,    Port.UP},     // Y_POS
-                {Port.RIGHT, Port.LEFT,  Port.DOWN,  Port.DOWN},   // Z_NEG
-                {Port.RIGHT, Port.LEFT,  Port.UP,    Port.UP},     // Z_POS
-                {Port.RIGHT, Port.LEFT,  Port.RIGHT, Port.LEFT},   // X_NEG
-                {Port.RIGHT, Port.LEFT,  Port.LEFT,  Port.RIGHT}   // X_POS
-                //    LEFT        RIGHT       UP          DOWN
-        };
-    }
-
     // NBT tag names.
     private static final String TAG_MODULES = "modules";
-    private static final String TAG_PIPES = "pipes";
     private static final String TAG_KEY_MS = "keyMostSignificant";
     private static final String TAG_KEY_LS = "keyLeastSignificant";
 
@@ -94,12 +60,6 @@ public final class CasingImpl implements Casing {
 
     public CasingImpl(final TileEntityCasing tileEntity) {
         this.tileEntity = tileEntity;
-
-        for (final Face face : Face.VALUES) {
-            for (final Port port : Port.VALUES) {
-                pipes[pack(face, port)] = new PipeImpl(this, face, mapFace(face, port), mapSide(face, port));
-            }
-        }
     }
 
     /**
@@ -128,7 +88,7 @@ public final class CasingImpl implements Casing {
                 module.onDisabled();
             }
         }
-        for (final PipeImpl pipe : pipes) {
+        for (final Pipe pipe : tileEntity.getPipes()) {
             pipe.cancelRead();
             pipe.cancelWrite();
         }
@@ -156,18 +116,6 @@ public final class CasingImpl implements Casing {
             if (module != null) {
                 module.step();
             }
-        }
-    }
-
-    /**
-     * Advances the logic of all pipes by calling {@link PipeImpl#step()} on them.
-     * <p>
-     * This will advance pipes with both an active read and write operation to
-     * transferring mode, if they're not already in transferring mode.
-     */
-    public void stepPipes() {
-        for (final PipeImpl pipe : pipes) {
-            pipe.step();
         }
     }
 
@@ -309,12 +257,6 @@ public final class CasingImpl implements Casing {
             }
         }
 
-        final NBTTagList pipesNbt = nbt.getTagList(TAG_PIPES, Constants.NBT.TAG_COMPOUND);
-        final int pipeCount = Math.min(pipesNbt.tagCount(), pipes.length);
-        for (int i = 0; i < pipeCount; i++) {
-            pipes[i].readFromNBT(pipesNbt.getCompoundTagAt(i));
-        }
-
         if (nbt.hasKey(TAG_KEY_MS) && nbt.hasKey(TAG_KEY_LS)) {
             lock = Optional.of(new UUID(nbt.getLong(TAG_KEY_MS), nbt.getLong(TAG_KEY_LS)));
         } else {
@@ -338,66 +280,11 @@ public final class CasingImpl implements Casing {
         }
         nbt.setTag(TAG_MODULES, modulesNbt);
 
-        final NBTTagList pipesNbt = new NBTTagList();
-        for (final PipeImpl pipe : pipes) {
-            final NBTTagCompound portNbt = new NBTTagCompound();
-            pipe.writeToNBT(portNbt);
-            pipesNbt.appendTag(portNbt);
-        }
-        nbt.setTag(TAG_PIPES, pipesNbt);
-
         lock.ifPresent(key -> nbt.setLong(TAG_KEY_MS, key.getMostSignificantBits()));
         lock.ifPresent(key -> nbt.setLong(TAG_KEY_LS, key.getLeastSignificantBits()));
     }
 
     // --------------------------------------------------------------------- //
-
-    /**
-     * Get the the face on the other side of an edge.
-     *
-     * @param face the face defining the edge.
-     * @param port the port defining the edge.
-     * @return the face on the other side of the edge.
-     */
-    private static Face mapFace(final Face face, final Port port) {
-        return FACE_MAPPING[face.ordinal()][port.ordinal()];
-    }
-
-    /**
-     * Get the the port on the other side of an edge, relative to the face on
-     * the other side of the edge.
-     *
-     * @param face the face defining the edge.
-     * @param port the port defining the edge.
-     * @return the port on the other side of the edge.
-     */
-    private static Port mapSide(final Face face, final Port port) {
-        return PORT_MAPPING[face.ordinal()][port.ordinal()];
-    }
-
-    /**
-     * Convert a face-port tuple to a unique number.
-     *
-     * @param face the face to pack into the number.
-     * @param port the port to pack into the number.
-     * @return the compressed representation of the face-port tuple.
-     */
-    private static int pack(final Face face, final Port port) {
-        return face.ordinal() * Port.VALUES.length + port.ordinal();
-    }
-
-    /**
-     * Map a face-port tuple to the face-tuple representing its opposite (i.e.
-     * the face-port tuple defining the same edge but from the other side),
-     * then convert it to a unique number.
-     *
-     * @param face the face defining the edge to the face to pack.
-     * @param port the port defining the edge to the port to pack.
-     * @return the compressed representation of the mapped face-port tuple.
-     */
-    private static int packMapped(final Face face, final Port port) {
-        return mapFace(face, port).ordinal() * Port.VALUES.length + mapSide(face, port).ordinal();
-    }
 
     /**
      * Read a stored key from the specified stack.
@@ -461,12 +348,12 @@ public final class CasingImpl implements Casing {
 
     @Override
     public Pipe getReceivingPipe(final Face face, final Port port) {
-        return pipes[pack(face, port)];
+        return tileEntity.getReceivingPipe(face, port);
     }
 
     @Override
     public Pipe getSendingPipe(final Face face, final Port port) {
-        return pipes[packMapped(face, port)];
+        return tileEntity.getSendingPipe(face, port);
     }
 
     @Override
@@ -475,7 +362,7 @@ public final class CasingImpl implements Casing {
         if (getCasingWorld().isRemote) {
             Network.INSTANCE.getWrapper().sendToServer(message);
         } else {
-            final NetworkRegistry.TargetPoint point = Network.getTargetPoint(tileEntity, Network.RANGE_MEDIUM);
+            final NetworkRegistry.TargetPoint point = Network.getTargetPoint(tileEntity, Network.RANGE_HIGH);
             Network.INSTANCE.getWrapper().sendToAllAround(message, point);
         }
     }

@@ -1,7 +1,6 @@
 package li.cil.tis3d.common.block;
 
 import li.cil.tis3d.common.init.Items;
-import li.cil.tis3d.common.tile.TileEntityCasing;
 import li.cil.tis3d.common.tile.TileEntityController;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -98,31 +97,8 @@ public final class BlockController extends Block {
         final TileEntity tileEntity = world.getTileEntity(pos);
         if (tileEntity instanceof TileEntityController) {
             final TileEntityController controller = (TileEntityController) tileEntity;
-            for (final EnumFacing facing : EnumFacing.VALUES) {
-                checkNeighbor(controller, facing);
-            }
+            controller.checkNeighbors();
         }
         super.onNeighborBlockChange(world, pos, state, neighborBlock);
-    }
-
-    private static void checkNeighbor(final TileEntityController controller, final EnumFacing facing) {
-        final BlockPos neighborPos = controller.getPos().offset(facing);
-        if (controller.getWorld().isBlockLoaded(neighborPos)) {
-            final TileEntity neighborTileEntity = controller.getWorld().getTileEntity(neighborPos);
-            if (neighborTileEntity instanceof TileEntityController) {
-                // If we have a controller that means we have more than one in
-                // our multi-block. Rescan to enter appropriate error state.
-                controller.scheduleScan();
-            } else if (neighborTileEntity instanceof TileEntityCasing) {
-                // Rescan if we don't know that casing (yet).
-                final TileEntityCasing casing = (TileEntityCasing) neighborTileEntity;
-                if (casing.getController() != controller) {
-                    controller.scheduleScan();
-                }
-            }
-        } else {
-            // Make sure we notice we're on the border of the loaded area.
-            controller.scheduleScan();
-        }
     }
 }

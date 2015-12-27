@@ -67,9 +67,9 @@ public final class PipeImpl implements Pipe {
     private static final String TAG_VALUE = "value";
 
     /**
-     * The casing this pipe belongs to.
+     * The container this pipe belongs to.
      */
-    private final Casing casing;
+    private final PipeHost host;
 
     /**
      * The faces this pipe is connected to in the owning {@link Casing}.
@@ -83,8 +83,8 @@ public final class PipeImpl implements Pipe {
 
     // --------------------------------------------------------------------- //
 
-    public PipeImpl(final Casing casing, final Face receivingFace, final Face sendingFace, final Port sendingPort) {
-        this.casing = casing;
+    public PipeImpl(final PipeHost host, final Face receivingFace, final Face sendingFace, final Port sendingPort) {
+        this.host = host;
         this.receivingFace = receivingFace;
         this.sendingFace = sendingFace;
         this.sendingPort = sendingPort;
@@ -176,7 +176,7 @@ public final class PipeImpl implements Pipe {
             throw new IllegalStateException("No data to read. Check canTransfer().");
         }
 
-        final BlockPos position = casing.getPosition();
+        final BlockPos position = host.getPipeHostPosition();
         final double ox = Face.toEnumFacing(receivingFace).getFrontOffsetX() + Face.toEnumFacing(sendingFace).getFrontOffsetX();
         final double oy = Face.toEnumFacing(receivingFace).getFrontOffsetY() + Face.toEnumFacing(sendingFace).getFrontOffsetY();
         final double oz = Face.toEnumFacing(receivingFace).getFrontOffsetZ() + Face.toEnumFacing(sendingFace).getFrontOffsetZ();
@@ -185,7 +185,7 @@ public final class PipeImpl implements Pipe {
         final double z = oz * 0.55 + position.getZ() + 0.5;
         final double extraOffsetY = oy < 0 ? -0.2 : (oy > 0) ? 0.1 : 0;
 
-        final World world = casing.getCasingWorld();
+        final World world = host.getPipeHostWorld();
         final MessageParticleEffect message = new MessageParticleEffect(world, EnumParticleTypes.REDSTONE, x, y + extraOffsetY, z);
         final NetworkRegistry.TargetPoint target = Network.getTargetPoint(world, x, y, z, Network.RANGE_LOW);
         Network.INSTANCE.getWrapper().sendToAllAround(message, target);
@@ -195,7 +195,7 @@ public final class PipeImpl implements Pipe {
         cancelWrite();
         cancelRead();
 
-        casing.getModule(sendingFace).onWriteComplete(sendingPort);
+        host.onWriteComplete(sendingFace, sendingPort);
         return result;
     }
 
@@ -204,6 +204,6 @@ public final class PipeImpl implements Pipe {
 
     @Override
     public String toString() {
-        return casing.getPosition() + ": " + sendingFace + " [" + writeState + "] -> " + receivingFace + " [" + readState + "]";
+        return host.getPipeHostPosition() + ": " + sendingFace + " [" + writeState + "] -> " + receivingFace + " [" + readState + "]";
     }
 }
