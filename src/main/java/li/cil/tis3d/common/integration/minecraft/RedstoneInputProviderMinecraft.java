@@ -1,7 +1,7 @@
 package li.cil.tis3d.common.integration.minecraft;
 
 import li.cil.tis3d.api.machine.Face;
-import li.cil.tis3d.api.module.Redstone;
+import li.cil.tis3d.api.module.traits.Redstone;
 import net.minecraft.block.BlockRedstoneWire;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;

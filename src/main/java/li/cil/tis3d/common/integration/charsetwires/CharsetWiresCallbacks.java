@@ -1,8 +1,8 @@
 package li.cil.tis3d.common.integration.charsetwires;
 
 import li.cil.tis3d.api.machine.Face;
-import li.cil.tis3d.api.module.BundledRedstone;
-import li.cil.tis3d.api.module.Redstone;
+import li.cil.tis3d.api.module.traits.BundledRedstone;
+import li.cil.tis3d.api.module.traits.Redstone;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;

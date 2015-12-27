@@ -10,6 +10,7 @@ import li.cil.tis3d.common.api.FontRendererAPIImpl;
 import li.cil.tis3d.common.api.InfraredAPIImpl;
 import li.cil.tis3d.common.api.ManualAPIImpl;
 import li.cil.tis3d.common.api.ModuleAPIImpl;
+import li.cil.tis3d.common.api.SerialAPIImpl;
 import li.cil.tis3d.common.entity.EntityInfraredPacket;
 import li.cil.tis3d.common.event.TickHandlerInfraredPacket;
 import li.cil.tis3d.common.init.Blocks;
@@ -27,6 +28,7 @@ import li.cil.tis3d.common.provider.ModuleProviderKeypad;
 import li.cil.tis3d.common.provider.ModuleProviderRandom;
 import li.cil.tis3d.common.provider.ModuleProviderRandomAccessMemory;
 import li.cil.tis3d.common.provider.ModuleProviderRedstone;
+import li.cil.tis3d.common.provider.ModuleProviderSerialPort;
 import li.cil.tis3d.common.provider.ModuleProviderStack;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -56,6 +58,7 @@ public class ProxyCommon {
         API.infraredAPI = new InfraredAPIImpl();
         API.manualAPI = ManualAPIImpl.INSTANCE;
         API.moduleAPI = new ModuleAPIImpl();
+        API.serialAPI = new SerialAPIImpl();
 
         // Register blocks and items.
         Blocks.registerBlocks(this);
@@ -95,6 +98,7 @@ public class ProxyCommon {
         ModuleAPI.addProvider(new ModuleProviderExecution());
         ModuleAPI.addProvider(new ModuleProviderInfrared());
         ModuleAPI.addProvider(new ModuleProviderKeypad());
+        ModuleAPI.addProvider(new ModuleProviderSerialPort());
         ModuleAPI.addProvider(new ModuleProviderStack());
         ModuleAPI.addProvider(new ModuleProviderRandom());
         ModuleAPI.addProvider(new ModuleProviderRandomAccessMemory());

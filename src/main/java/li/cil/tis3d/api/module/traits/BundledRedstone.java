@@ -1,4 +1,6 @@
-package li.cil.tis3d.api.module;
+package li.cil.tis3d.api.module.traits;
+
+import li.cil.tis3d.api.module.Module;
 
 /**
  * Modules implementing this will be queried for bundled redstone output when

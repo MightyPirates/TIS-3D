@@ -5,9 +5,10 @@ import li.cil.tis3d.api.infrared.InfraredReceiver;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
-import li.cil.tis3d.api.module.BundledRedstone;
 import li.cil.tis3d.api.module.Module;
-import li.cil.tis3d.api.module.Redstone;
+import li.cil.tis3d.api.module.traits.BlockChangeAware;
+import li.cil.tis3d.api.module.traits.BundledRedstone;
+import li.cil.tis3d.api.module.traits.Redstone;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.integration.charsetwires.CharsetWiresBundledRedstone;
 import li.cil.tis3d.common.integration.charsetwires.CharsetWiresConnectable;
@@ -21,6 +22,7 @@ import li.cil.tis3d.common.machine.CasingProxy;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageCasingState;
 import li.cil.tis3d.util.InventoryUtils;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
@@ -171,6 +173,15 @@ public final class TileEntityCasing extends TileEntityComputer implements
 
     public void unlock(final ItemStack stack) {
         casing.unlock(stack);
+    }
+
+    public void notifyModulesOfBlockChange(final Block neighborBlock) {
+        for (final Face face : Face.VALUES) {
+            final Module module = getModule(face);
+            if (module instanceof BlockChangeAware) {
+                ((BlockChangeAware) module).onNeighborBlockChange(neighborBlock);
+            }
+        }
     }
 
     // --------------------------------------------------------------------- //

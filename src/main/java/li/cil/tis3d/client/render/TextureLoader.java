@@ -10,6 +10,7 @@ public final class TextureLoader {
     public static final ResourceLocation LOCATION_CASING_UNLOCKED_OVERLAY = new ResourceLocation(API.MOD_ID, "blocks/overlay/casingUnlocked");
     public static final ResourceLocation LOCATION_MODULE_AUDIO_OVERLAY = new ResourceLocation(API.MOD_ID, "blocks/overlay/moduleAudio");
     public static final ResourceLocation LOCATION_MODULE_EXECUTION_OVERLAY_ERROR = new ResourceLocation(API.MOD_ID, "blocks/overlay/moduleExecutionError");
+    public static final ResourceLocation LOCATION_MODULE_EXECUTION_OVERLAY_IDLE = new ResourceLocation(API.MOD_ID, "blocks/overlay/moduleExecutionIdle");
     public static final ResourceLocation LOCATION_MODULE_EXECUTION_OVERLAY_RUNNING = new ResourceLocation(API.MOD_ID, "blocks/overlay/moduleExecutionRunning");
     public static final ResourceLocation LOCATION_MODULE_EXECUTION_OVERLAY_WAITING = new ResourceLocation(API.MOD_ID, "blocks/overlay/moduleExecutionWaiting");
     public static final ResourceLocation LOCATION_MODULE_INFRARED_OVERLAY = new ResourceLocation(API.MOD_ID, "blocks/overlay/moduleInfrared");
@@ -22,9 +23,10 @@ public final class TextureLoader {
         event.map.registerSprite(LOCATION_CASING_LOCKED_OVERLAY);
         event.map.registerSprite(LOCATION_CASING_UNLOCKED_OVERLAY);
         event.map.registerSprite(LOCATION_MODULE_AUDIO_OVERLAY);
+        event.map.registerSprite(LOCATION_MODULE_EXECUTION_OVERLAY_ERROR);
+        event.map.registerSprite(LOCATION_MODULE_EXECUTION_OVERLAY_IDLE);
         event.map.registerSprite(LOCATION_MODULE_EXECUTION_OVERLAY_RUNNING);
         event.map.registerSprite(LOCATION_MODULE_EXECUTION_OVERLAY_WAITING);
-        event.map.registerSprite(LOCATION_MODULE_EXECUTION_OVERLAY_ERROR);
         event.map.registerSprite(LOCATION_MODULE_INFRARED_OVERLAY);
         event.map.registerSprite(LOCATION_MODULE_RANDOM_OVERLAY);
     }

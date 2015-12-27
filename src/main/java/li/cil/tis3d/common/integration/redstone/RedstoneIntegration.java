@@ -1,8 +1,8 @@
 package li.cil.tis3d.common.integration.redstone;
 
-import li.cil.tis3d.api.module.BundledRedstone;
-import li.cil.tis3d.api.module.BundledRedstoneOutputChangedEvent;
-import li.cil.tis3d.api.module.Redstone;
+import li.cil.tis3d.api.module.traits.BundledRedstone;
+import li.cil.tis3d.api.module.traits.BundledRedstoneOutputChangedEvent;
+import li.cil.tis3d.api.module.traits.Redstone;
 import li.cil.tis3d.common.TIS3D;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
