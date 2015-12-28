@@ -10,7 +10,7 @@ import net.minecraftforge.fml.common.eventhandler.Event;
  * querying {@link BundledRedstone#getBundledRedstoneOutput(int)} will already
  * return the new value.
  */
-public final class BundledRedstoneOutputChangedEvent extends Event {
+public class BundledRedstoneOutputChangedEvent extends Event {
     private final BundledRedstone module;
     private final int channel;
 
