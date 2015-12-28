@@ -232,7 +232,9 @@ public final class ModuleStack extends AbstractModuleRotatable {
                 cancelWrite();
 
                 // Start reading again right away to read as fast as possible.
-                receivingPipe.beginRead();
+                if (!isFull()) {
+                    receivingPipe.beginRead();
+                }
             }
         }
     }

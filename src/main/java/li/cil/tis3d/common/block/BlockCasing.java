@@ -4,8 +4,8 @@ import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
-import li.cil.tis3d.api.module.Redstone;
-import li.cil.tis3d.api.module.Rotatable;
+import li.cil.tis3d.api.module.traits.Redstone;
+import li.cil.tis3d.api.module.traits.Rotatable;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ItemBookManual;
@@ -210,6 +210,7 @@ public final class BlockCasing extends Block {
         if (tileEntity instanceof TileEntityCasing) {
             final TileEntityCasing casing = (TileEntityCasing) tileEntity;
             casing.checkNeighbors();
+            casing.notifyModulesOfBlockChange(neighborBlock);
             casing.markRedstoneDirty();
         }
         super.onNeighborBlockChange(world, x, y, z, neighborBlock);

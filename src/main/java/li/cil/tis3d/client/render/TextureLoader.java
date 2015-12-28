@@ -11,6 +11,7 @@ public final class TextureLoader {
     public static final ResourceLocation LOCATION_CASING_UNLOCKED_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/casingUnlocked");
     public static final ResourceLocation LOCATION_MODULE_AUDIO_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/moduleAudio");
     public static final ResourceLocation LOCATION_MODULE_EXECUTION_OVERLAY_ERROR = new ResourceLocation(API.MOD_ID, "overlay/moduleExecutionError");
+    public static final ResourceLocation LOCATION_MODULE_EXECUTION_OVERLAY_IDLE = new ResourceLocation(API.MOD_ID, "overlay/moduleExecutionIdle");
     public static final ResourceLocation LOCATION_MODULE_EXECUTION_OVERLAY_RUNNING = new ResourceLocation(API.MOD_ID, "overlay/moduleExecutionRunning");
     public static final ResourceLocation LOCATION_MODULE_EXECUTION_OVERLAY_WAITING = new ResourceLocation(API.MOD_ID, "overlay/moduleExecutionWaiting");
     public static final ResourceLocation LOCATION_MODULE_INFRARED_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/moduleInfrared");
@@ -29,6 +30,7 @@ public final class TextureLoader {
         event.map.registerIcon(LOCATION_CASING_UNLOCKED_OVERLAY.toString());
         event.map.registerIcon(LOCATION_MODULE_AUDIO_OVERLAY.toString());
         event.map.registerIcon(LOCATION_MODULE_EXECUTION_OVERLAY_ERROR.toString());
+        event.map.registerIcon(LOCATION_MODULE_EXECUTION_OVERLAY_IDLE.toString());
         event.map.registerIcon(LOCATION_MODULE_EXECUTION_OVERLAY_RUNNING.toString());
         event.map.registerIcon(LOCATION_MODULE_EXECUTION_OVERLAY_WAITING.toString());
         event.map.registerIcon(LOCATION_MODULE_INFRARED_OVERLAY.toString());

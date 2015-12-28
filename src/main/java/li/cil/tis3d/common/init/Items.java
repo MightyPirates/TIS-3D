@@ -26,6 +26,8 @@ public final class Items {
     public static Item keyCreative;
     public static Item prism;
 
+    // --------------------------------------------------------------------- //
+
     public static boolean isItem(final ItemStack stack, final Item item) {
         return stack != null && stack.getItem() == item;
     }
@@ -45,6 +47,8 @@ public final class Items {
     public static boolean isKeyCreative(final ItemStack stack) {
         return isItem(stack, keyCreative);
     }
+
+    // --------------------------------------------------------------------- //
 
     public static void register(final ProxyCommon proxy) {
         for (final String module : Constants.MODULES) {
@@ -69,6 +73,7 @@ public final class Items {
         addModuleRecipe(Constants.NAME_ITEM_MODULE_RANDOM, net.minecraft.init.Items.ender_pearl);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY, "gemEmerald");
         addModuleRecipe(Constants.NAME_ITEM_MODULE_REDSTONE, net.minecraft.init.Items.repeater);
+        addModuleRecipe(Constants.NAME_ITEM_MODULE_SERIAL_PORT, "blockQuartz");
         addModuleRecipe(Constants.NAME_ITEM_MODULE_STACK, Item.getItemFromBlock(net.minecraft.init.Blocks.chest));
 
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(key, 1),
@@ -101,6 +106,8 @@ public final class Items {
                 'R', "dustRedstone",
                 'S', specialIngredient));
     }
+
+    // --------------------------------------------------------------------- //
 
     private Items() {
     }

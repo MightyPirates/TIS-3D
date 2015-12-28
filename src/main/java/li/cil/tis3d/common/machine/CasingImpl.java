@@ -8,7 +8,7 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.ModuleProvider;
-import li.cil.tis3d.api.module.Redstone;
+import li.cil.tis3d.api.module.traits.Redstone;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageModuleData;
@@ -121,6 +121,7 @@ public final class CasingImpl implements Casing {
     /**
      * Locks the casing and returns the key for unlocking it.
      *
+     * @param stack the item to store the key for unlocking on.
      * @throws IllegalStateException if the casing is already locked.
      */
     public void lock(final ItemStack stack) {

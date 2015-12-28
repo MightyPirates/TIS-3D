@@ -13,6 +13,7 @@ item.tis3d.moduleKeypad.name=Keypad Module
 item.tis3d.moduleRandom.name=Random Module
 item.tis3d.moduleRandomAccessMemory.name=RAM Module
 item.tis3d.moduleRedstone.name=Redstone Module
+item.tis3d.moduleSerialPort.name=Serial Port Module
 item.tis3d.moduleStack.name=Stack Module
 item.tis3d.prism.name=Prism
 
@@ -32,6 +33,7 @@ tis3d.compiler.labelDuplicate=Label is already defined
 tis3d.manual.home=Home
 tis3d.manual.blocks=Blocks
 tis3d.manual.items=Items
+tis3d.manual.serialProtocols=Serial Protocols
 tis3d.manual.warning.missing.block=Block unavailable.
 tis3d.manual.warning.missing.image=Image not found.
 tis3d.manual.warning.missing.item=Item unavailable.

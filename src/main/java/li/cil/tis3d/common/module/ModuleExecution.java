@@ -57,7 +57,7 @@ public final class ModuleExecution extends AbstractModuleRotatable {
     }
 
     private static final String[] STATE_LOCATIONS = new String[]{
-            null,
+            TextureLoader.LOCATION_MODULE_EXECUTION_OVERLAY_IDLE.toString(),
             TextureLoader.LOCATION_MODULE_EXECUTION_OVERLAY_ERROR.toString(),
             TextureLoader.LOCATION_MODULE_EXECUTION_OVERLAY_RUNNING.toString(),
             TextureLoader.LOCATION_MODULE_EXECUTION_OVERLAY_WAITING.toString()
@@ -248,11 +248,9 @@ public final class ModuleExecution extends AbstractModuleRotatable {
         final MachineState machineState = machine.getState();
 
         // Draw status texture.
-        if (state != State.IDLE) {
-            Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
-            final TextureAtlasSprite icon = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(STATE_LOCATIONS[state.ordinal()]);
-            RenderUtil.drawQuad(icon.getMinU(), icon.getMinV(), icon.getMaxU(), icon.getMaxV());
-        }
+        Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
+        final TextureAtlasSprite icon = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(STATE_LOCATIONS[state.ordinal()]);
+        RenderUtil.drawQuad(icon.getMinU(), icon.getMinV(), icon.getMaxU(), icon.getMaxV());
 
         // Render detailed state when player is close.
         if (machineState.code != null && OneEightCompat.getDistanceSqToCenter(Minecraft.getMinecraft().thePlayer, getCasing().getPositionX(), getCasing().getPositionY(), getCasing().getPositionZ()) < 64) {

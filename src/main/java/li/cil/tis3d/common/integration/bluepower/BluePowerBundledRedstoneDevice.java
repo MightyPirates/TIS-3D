@@ -5,7 +5,7 @@ import com.bluepowermod.api.connect.ConnectionType;
 import com.bluepowermod.api.connect.IConnectionCache;
 import com.bluepowermod.api.misc.MinecraftColor;
 import com.bluepowermod.api.wire.redstone.IBundledDevice;
-import li.cil.tis3d.api.module.BundledRedstone;
+import li.cil.tis3d.api.module.traits.BundledRedstone;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 

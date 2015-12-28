@@ -3,7 +3,7 @@ package li.cil.tis3d.common.integration.redlogic;
 import cpw.mods.fml.common.Optional;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
-import li.cil.tis3d.api.module.Redstone;
+import li.cil.tis3d.api.module.traits.Redstone;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import mods.immibis.redlogic.api.wiring.IRedstoneEmitter;
 import mods.immibis.redlogic.api.wiring.IRedstoneUpdatable;
