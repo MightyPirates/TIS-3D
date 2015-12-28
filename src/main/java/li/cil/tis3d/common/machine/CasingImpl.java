@@ -122,6 +122,7 @@ public final class CasingImpl implements Casing {
     /**
      * Locks the casing and returns the key for unlocking it.
      *
+     * @param stack the item to store the key for unlocking on.
      * @throws IllegalStateException if the casing is already locked.
      */
     public void lock(final ItemStack stack) {
