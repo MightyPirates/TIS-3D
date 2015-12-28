@@ -88,6 +88,15 @@ public final class TileEntityController extends TileEntityComputer implements IT
     // NBT tag names.
     private static final String TAG_HCF_COOLDOWN = "hcfCooldown";
 
+    /**
+     * User scheduled a forced step for the next tick.
+     * <p>
+     * This only matters if the machine is currently paused; in particular,
+     * this is ignored if the machine is currently powered down. Therefore
+     * there's not need to save the value to NBT, either.
+     */
+    private boolean forceStep;
+
     // --------------------------------------------------------------------- //
     // Persisted data
 
@@ -114,6 +123,18 @@ public final class TileEntityController extends TileEntityComputer implements IT
      */
     public void scheduleScan() {
         state = ControllerState.SCANNING;
+    }
+
+    /**
+     * If the controller is running, force at least one step in the next tick,
+     * even if the controller is currently in the paused state. This will not
+     * cause additional steps when not in the paused step!
+     */
+    public void forceStep() {
+        if (state == ControllerState.RUNNING) {
+            forceStep = true;
+            getWorld().playSoundEffect(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, "random.click", 0.2f, 0.8f + getWorld().rand.nextFloat() * 0.1f);
+        }
     }
 
     /**
@@ -253,12 +274,15 @@ public final class TileEntityController extends TileEntityComputer implements IT
         }
 
         if (state == ControllerState.RUNNING) {
+            // Ignore forceStep when not paused.
+            forceStep = forceStep && power == 1;
+
             // Are we powered?
             if (!getWorld().isBlockPowered(getPos())) {
                 // Nope, fall back to ready state, disable modules.
                 state = ControllerState.READY;
                 casings.forEach(TileEntityCasing::onDisabled);
-            } else if (power > 1) {
+            } else if (power > 1 || forceStep) {
                 // Operating, step all casings redstone input info once.
                 casings.forEach(TileEntityCasing::stepRedstone);
 
@@ -272,7 +296,7 @@ public final class TileEntityController extends TileEntityComputer implements IT
                     if (power < 15) {
                         // Stepping slower than 100%.
                         final int delay = 15 - power;
-                        if (getWorld().getTotalWorldTime() % delay == 0) {
+                        if (getWorld().getTotalWorldTime() % delay == 0 || forceStep) {
                             step();
                         }
                     } else {
@@ -286,6 +310,9 @@ public final class TileEntityController extends TileEntityComputer implements IT
                     haltAndCatchFire();
                 }
             }
+
+            // Processed our forced step either way, reset flag.
+            forceStep = false;
         }
     }
 
