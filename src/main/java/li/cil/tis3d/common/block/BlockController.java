@@ -72,6 +72,18 @@ public final class BlockController extends Block {
                 return true;
             }
         }
+
+        final TileEntity tileEntity = world.getTileEntity(x, y, z);
+        if (tileEntity instanceof TileEntityController) {
+            final TileEntityController controller = (TileEntityController) tileEntity;
+
+            if (!world.isRemote) {
+                controller.forceStep();
+            }
+
+            return true;
+        }
+
         return super.onBlockActivated(world, x, y, z, player, side, hitX, hitY, hitZ);
     }
 
