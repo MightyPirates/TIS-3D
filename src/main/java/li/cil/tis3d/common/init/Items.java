@@ -26,6 +26,8 @@ public final class Items {
     public static Item keyCreative;
     public static Item prism;
 
+    // --------------------------------------------------------------------- //
+
     public static boolean isItem(final ItemStack stack, final Item item) {
         return stack != null && stack.getItem() == item;
     }
@@ -45,6 +47,8 @@ public final class Items {
     public static boolean isKeyCreative(final ItemStack stack) {
         return isItem(stack, keyCreative);
     }
+
+    // --------------------------------------------------------------------- //
 
     public static void register(final ProxyCommon proxy) {
         for (final String module : Constants.MODULES) {
@@ -102,6 +106,8 @@ public final class Items {
                 'R', "dustRedstone",
                 'S', specialIngredient));
     }
+
+    // --------------------------------------------------------------------- //
 
     private Items() {
     }

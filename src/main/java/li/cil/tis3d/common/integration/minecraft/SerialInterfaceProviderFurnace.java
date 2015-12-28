@@ -2,6 +2,7 @@ package li.cil.tis3d.common.integration.minecraft;
 
 import li.cil.tis3d.api.serial.SerialInterface;
 import li.cil.tis3d.api.serial.SerialInterfaceProvider;
+import li.cil.tis3d.api.serial.SerialProtocolDocumentationReference;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
@@ -16,6 +17,11 @@ public final class SerialInterfaceProviderFurnace implements SerialInterfaceProv
     @Override
     public SerialInterface interfaceFor(final World world, final BlockPos position, final EnumFacing side) {
         return new SerialInterfaceFurnace((TileEntityFurnace) world.getTileEntity(position));
+    }
+
+    @Override
+    public SerialProtocolDocumentationReference getDocumentationReference() {
+        return new SerialProtocolDocumentationReference("Minecraft Furnace", "protocols/minecraftFurnace.md");
     }
 
     @Override

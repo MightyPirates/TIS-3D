@@ -58,7 +58,7 @@ public class ProxyCommon {
         API.infraredAPI = new InfraredAPIImpl();
         API.manualAPI = ManualAPIImpl.INSTANCE;
         API.moduleAPI = new ModuleAPIImpl();
-        API.serialAPI = new SerialAPIImpl();
+        API.serialAPI = SerialAPIImpl.INSTANCE;
 
         // Register blocks and items.
         Blocks.registerBlocks(this);
@@ -106,7 +106,8 @@ public class ProxyCommon {
 
         // Add default manual providers for server side stuff.
         ManualAPI.addProvider(new GameRegistryPathProvider());
-        ManualAPI.addProvider(new ResourceContentProvider("tis3d", "doc/"));
+        ManualAPI.addProvider(new ResourceContentProvider(API.MOD_ID, "doc/"));
+        ManualAPI.addProvider(SerialAPIImpl.INSTANCE.getSerialProtocolContentProvider());
 
         // Mod integration.
         Integration.init(event);
@@ -143,6 +144,8 @@ public class ProxyCommon {
 
         return registerItem(name, ItemModule::new);
     }
+
+    // --------------------------------------------------------------------- //
 
     private static void registerModuleOre(final String name) {
         if (Settings.disabledModules.contains(name)) {
