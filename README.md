@@ -17,7 +17,7 @@ The general rule of thumb should be this:
 - if you're adding integration for a general *concept*, usually support for some interface implemented by numerous blocks, such as Minecraft's `IInventory`, use a *module*. 
 - if you're adding integration for one specific *block*, such as Minecraft's command block, use a *protocol* so that the block can be communicated with using the serial port module.
 
-The rationale here being that in the former case the serial protocol is excplicitly defined by the *module*, whereas in the latter case the serial protocol is explicitly defined by the *block*. Again, if at all possible, prefer avoiding either of the two and use redstone (and comparators) instead.
+The rationale here being that in the former case the serial protocol is explicitly defined by the *module*, whereas in the latter case the serial protocol is explicitly defined by the *block*. Again, if at all possible, prefer avoiding either of the two and use redstone (and comparators) instead.
 
 ### Gradle
 To add a dependency to TIS-3D for use in your mod, add the following to your `build.gradle`:
