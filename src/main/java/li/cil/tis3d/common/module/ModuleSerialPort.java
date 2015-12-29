@@ -41,10 +41,12 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
 
     // NBT data names.
     private static final String TAG_VALUE = "value";
+    private static final String TAG_SERIAL_INTERFACE = "serialInterface";
 
     private static final ResourceLocation LOCATION_OVERLAY = new ResourceLocation(API.MOD_ID, "textures/blocks/overlay/moduleSerialPort.png");
 
     private Optional<SerialInterface> serialInterface = Optional.empty();
+    private Optional<NBTTagCompound> serialInterfaceNbt = Optional.empty();
     private boolean isScanScheduled = true;
 
     // --------------------------------------------------------------------- //
@@ -116,6 +118,14 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
         super.readFromNBT(nbt);
 
         writing = nbt.getShort(TAG_VALUE);
+
+        if (nbt.hasKey(TAG_SERIAL_INTERFACE)) {
+            if (serialInterface.isPresent()) {
+                serialInterface.get().readFromNBT(nbt.getCompoundTag(TAG_SERIAL_INTERFACE));
+            } else {
+                serialInterfaceNbt = Optional.of(nbt.getCompoundTag(TAG_SERIAL_INTERFACE));
+            }
+        }
     }
 
     @Override
@@ -123,6 +133,14 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
         super.writeToNBT(nbt);
 
         nbt.setShort(TAG_VALUE, writing);
+
+        if (serialInterface.isPresent()) {
+            final NBTTagCompound serialInterfaceNbt = new NBTTagCompound();
+            serialInterface.get().writeToNBT(serialInterfaceNbt);
+            if (!nbt.hasNoTags()) {
+                nbt.setTag(TAG_SERIAL_INTERFACE, serialInterfaceNbt);
+            }
+        }
     }
 
     // --------------------------------------------------------------------- //
@@ -151,6 +169,10 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
                     // or the interface has become invalid, so create a new one.
                     reset();
                     serialInterface = Optional.ofNullable(provider.interfaceFor(world, neighborPos, neighborSide));
+                    if (serialInterface.isPresent() && serialInterfaceNbt.isPresent()) {
+                        serialInterface.get().readFromNBT(serialInterfaceNbt.get());
+                        serialInterfaceNbt = Optional.empty(); // Done reading, don't re-use.
+                    }
                 } // else: interface still valid.
             } else {
                 // No provider for neighbor, can't interact.

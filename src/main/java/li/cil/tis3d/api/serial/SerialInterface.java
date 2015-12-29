@@ -1,5 +1,7 @@
 package li.cil.tis3d.api.serial;
 
+import net.minecraft.nbt.NBTTagCompound;
+
 /**
  * Provides serial input and output on an arbitrary block position.
  * <p>
@@ -92,4 +94,26 @@ public interface SerialInterface {
      * removed from its casing.
      */
     void reset();
+
+    /**
+     * Called when the serial port module is saved, allows storing state of the
+     * serial interface to be restored using {@link #readFromNBT(NBTTagCompound)}.
+     *
+     * @param nbt the tag to write the interface's state to.
+     */
+    void writeToNBT(NBTTagCompound nbt);
+
+    /**
+     * Called when a serial port module is created and an earlier interface had
+     * some state to save. This is usually called after the creation of the
+     * module, but in... unpredictable scenarios it <em>might</em> happen that
+     * this is called at a later time. In general, to play it safe, interfaces
+     * might want to add some unique identifier to their saved data, to know
+     * whether to use the data to try restoring state or not (in case the data
+     * actually belonged to another interface). Note that such incorrect
+     * assignments can typically only happen if the save-game was tampered with.
+     *
+     * @param nbt the tag to restore the interface's state from.
+     */
+    void readFromNBT(NBTTagCompound nbt);
 }
