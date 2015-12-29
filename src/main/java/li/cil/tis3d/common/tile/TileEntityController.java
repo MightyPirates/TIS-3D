@@ -442,7 +442,7 @@ public final class TileEntityController extends TileEntityComputer implements IT
         // Sort casings for deterministic order of execution (important when modules
         // write / read from multiple ports but only want to make the data available
         // to the first [e.g. execution module's ANY target]).
-        casings.sort(Comparator.comparing(TileEntity::getPos));
+        casings.sort(Comparator.comparing(TileEntityCasing::getPosition));
 
         // All done. Make sure this comes after the checkNeighbors or we get CMEs!
         state = ControllerState.READY;
