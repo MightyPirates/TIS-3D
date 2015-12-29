@@ -8,6 +8,7 @@ import li.cil.tis3d.api.prefab.manual.ResourceContentProvider;
 import li.cil.tis3d.api.serial.SerialInterfaceProvider;
 import li.cil.tis3d.api.serial.SerialProtocolDocumentationReference;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -120,7 +121,7 @@ public final class SerialAPIImpl implements SerialAPI {
                 final StringBuilder sb = new StringBuilder();
                 protocols.sort(Comparator.comparing(s -> s.name));
                 for (final SerialProtocolDocumentationReference protocol : protocols) {
-                    sb.append("- [").append(protocol.name).append("](").append(protocol.link).append(")\n");
+                    sb.append("- [").append(StatCollector.translateToLocal(protocol.name)).append("](").append(protocol.link).append(")\n");
                 }
                 cachedList = Optional.of(sb.toString());
             }
