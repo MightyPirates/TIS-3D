@@ -47,8 +47,8 @@ public abstract class AbstractModule implements Module {
      */
     protected void cancelRead() {
         for (final Port port : Port.VALUES) {
-            final Pipe sendingPipe = getCasing().getSendingPipe(getFace(), port);
-            sendingPipe.cancelRead();
+            final Pipe receivingPipe = getCasing().getReceivingPipe(getFace(), port);
+            receivingPipe.cancelRead();
         }
     }
 
