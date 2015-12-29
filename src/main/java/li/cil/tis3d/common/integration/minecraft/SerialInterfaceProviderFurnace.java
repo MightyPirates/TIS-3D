@@ -3,9 +3,11 @@ package li.cil.tis3d.common.integration.minecraft;
 import li.cil.tis3d.api.serial.SerialInterface;
 import li.cil.tis3d.api.serial.SerialInterfaceProvider;
 import li.cil.tis3d.api.serial.SerialProtocolDocumentationReference;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 
 public final class SerialInterfaceProviderFurnace implements SerialInterfaceProvider {
     @Override
@@ -31,6 +33,8 @@ public final class SerialInterfaceProviderFurnace implements SerialInterfaceProv
     // --------------------------------------------------------------------- //
 
     private static final class SerialInterfaceFurnace implements SerialInterface {
+        private static final String TAG_MODE = "mode";
+
         private enum FurnaceField {
             /**
              * How many more ticks the furnace will continue operating before
@@ -129,6 +133,18 @@ public final class SerialInterfaceProviderFurnace implements SerialInterfaceProv
         @Override
         public void reset() {
             mode = Mode.PercentageFuel;
+        }
+
+        @Override
+        public void readFromNBT(final NBTTagCompound nbt) {
+            if (nbt.hasKey(TAG_MODE, Constants.NBT.TAG_STRING)) {
+                mode = Enum.valueOf(SerialInterfaceFurnace.Mode.class, nbt.getString(TAG_MODE));
+            }
+        }
+
+        @Override
+        public void writeToNBT(final NBTTagCompound nbt) {
+            nbt.setString(TAG_MODE, mode.name());
         }
     }
 }
