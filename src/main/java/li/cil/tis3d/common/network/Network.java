@@ -112,12 +112,11 @@ public final class Network {
     // --------------------------------------------------------------------- //
     // Particle message queueing
 
-    private static final int PARTICLE_SEND_INTERVAL_BASE = 500;
-    private static final int PARTICLE_SEND_INTERVAL_MAX = 1000;
+    private static final int TICK_TIME = 50;
     private static final Set<Position> particleQueue = new HashSet<>();
     private static long lastParticlesSent = 0;
     private static int particlesSent = 0;
-    private static int particleSendInterval = PARTICLE_SEND_INTERVAL_BASE;
+    private static int particleSendInterval = TICK_TIME;
 
     private static void queueParticleEffect(final World world, final float x, final float y, final float z) {
         final Position position = new Position(world, x, y, z);
@@ -133,7 +132,13 @@ public final class Network {
 
         particlesSent = 0;
         particleQueue.forEach(Position::sendMessage);
-        particleSendInterval = Math.max(PARTICLE_SEND_INTERVAL_BASE, Math.min(PARTICLE_SEND_INTERVAL_MAX, particlesSent * 5));
+
+        if (particlesSent > Settings.maxParticlesPerTick) {
+            final int throttle = (int) Math.ceil(particlesSent / (float) Settings.maxParticlesPerTick);
+            particleSendInterval = Math.min(1000, TICK_TIME * throttle);
+        } else {
+            particleSendInterval = TICK_TIME;
+        }
 
         particleQueue.clear();
     }

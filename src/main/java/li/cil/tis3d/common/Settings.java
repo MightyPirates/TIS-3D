@@ -17,6 +17,12 @@ public final class Settings {
     public static int maxPacketsPerTick = 25;
 
     /**
+     * The maximum number of particle effects to allow sending per tick
+     * before throttling kicks in, killing duplicate effects.
+     */
+    public static int maxParticlesPerTick = 10;
+
+    /**
      * The maximum number of casings that may be connected to a controller.
      */
     public static int maxCasingsPerController = 8;
@@ -54,6 +60,9 @@ public final class Settings {
         maxPacketsPerTick = config.getInt("maxPacketsPerTick", "network",
                 maxPacketsPerTick, 1, 500,
                 "The maximum number of status packets modules may send per tick. When this is exceeded, throttling kicks in.");
+        maxParticlesPerTick = config.getInt("maxParticlesPerTick", "network",
+                maxParticlesPerTick, 1, 500,
+                "The maximum number of particle effects data transfer may trigger per tick. When this is exceeded, throttling kicks in.");
 
         maxCasingsPerController = config.getInt("maxCasings", "controller",
                 maxCasingsPerController, 1, 512,
@@ -74,7 +83,7 @@ public final class Settings {
         // Strip module and first letter from internal name, lowercase first letter.
         final int prefixLength = "module*".length();
         for (final String module : Constants.MODULES) {
-            final String name = String.valueOf(module.charAt(prefixLength)).toLowerCase() + module.substring(prefixLength);
+            final String name = String.valueOf(module.charAt(prefixLength - 1)).toLowerCase() + module.substring(prefixLength);
             checkModule(config, "module." + name, module);
         }
 
