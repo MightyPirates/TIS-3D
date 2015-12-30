@@ -33,6 +33,9 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
     // NBT tag names.
     public static final String TAG_VALUE = "value";
 
+    // Data packet types.
+    private static final byte DATA_TYPE_VALUE = 0;
+
     // Rendering info.
     private static final ResourceLocation LOCATION_OVERLAY = new ResourceLocation(API.MOD_ID, "textures/blocks/overlay/moduleKeypad.png");
     public static final float KEYS_U0 = 5 / 32f;
@@ -67,7 +70,7 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
         cancelWrite();
 
         // Tell clients we can input again.
-        getCasing().sendData(getFace(), new NBTTagCompound());
+        getCasing().sendData(getFace(), new NBTTagCompound(), DATA_TYPE_VALUE);
     }
 
     @Override
@@ -95,7 +98,7 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
 
             final NBTTagCompound nbt = new NBTTagCompound();
             nbt.setShort(TAG_VALUE, number);
-            getCasing().sendData(getFace(), nbt);
+            getCasing().sendData(getFace(), nbt, DATA_TYPE_VALUE);
         }
 
         return true;
@@ -113,7 +116,7 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
         } else if (!value.isPresent() && nbt.hasKey(TAG_VALUE)) {
             // Got an input and don't have one yet.
             value = Optional.of(nbt.getShort(TAG_VALUE));
-            getCasing().sendData(getFace(), nbt);
+            getCasing().sendData(getFace(), nbt, DATA_TYPE_VALUE);
         }
     }
 

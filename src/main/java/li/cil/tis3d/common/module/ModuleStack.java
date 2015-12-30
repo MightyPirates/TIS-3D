@@ -38,6 +38,9 @@ public final class ModuleStack extends AbstractModuleRotatable {
     private static final String TAG_STACK = "stack";
     private static final String TAG_TOP = "top";
 
+    // Data packet types.
+    private static final byte DATA_TYPE_UPDATE = 0;
+
     /**
      * The number of elements the stack may store.
      */
@@ -242,7 +245,7 @@ public final class ModuleStack extends AbstractModuleRotatable {
     private void sendData() {
         final NBTTagCompound nbt = new NBTTagCompound();
         writeToNBT(nbt);
-        getCasing().sendData(getFace(), nbt);
+        getCasing().sendData(getFace(), nbt, DATA_TYPE_UPDATE);
     }
 
     @SideOnly(Side.CLIENT)

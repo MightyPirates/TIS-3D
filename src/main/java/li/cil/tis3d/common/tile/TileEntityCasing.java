@@ -25,8 +25,8 @@ import li.cil.tis3d.common.machine.CasingProxy;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageCasingState;
 import li.cil.tis3d.util.InventoryUtils;
-import net.minecraft.block.Block;
 import li.cil.tis3d.util.OneEightCompat;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
@@ -310,6 +310,11 @@ public final class TileEntityCasing extends TileEntityComputer implements
         final NBTTagCompound nbt = new NBTTagCompound();
         save(nbt);
         return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, -1, nbt);
+    }
+
+    @Override
+    public double getMaxRenderDistanceSquared() {
+        return Network.RANGE_HIGH * Network.RANGE_HIGH;
     }
 
     // --------------------------------------------------------------------- //

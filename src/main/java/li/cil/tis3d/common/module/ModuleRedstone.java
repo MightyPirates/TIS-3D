@@ -29,6 +29,9 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
     private static final String TAG_OUTPUT = "output";
     private static final String TAG_INPUT = "input";
 
+    // Data packet types.
+    private static final byte DATA_TYPE_UPDATE = 0;
+
     // Rendering info.
     private static final ResourceLocation LOCATION_OVERLAY = new ResourceLocation(API.MOD_ID, "textures/blocks/overlay/moduleRedstone.png");
     private static final float LEFT_U0 = 9 / 32f;
@@ -252,6 +255,6 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
     private void sendData() {
         final NBTTagCompound nbt = new NBTTagCompound();
         writeToNBT(nbt);
-        getCasing().sendData(getFace(), nbt);
+        getCasing().sendData(getFace(), nbt, DATA_TYPE_UPDATE);
     }
 }

@@ -2,14 +2,13 @@ package li.cil.tis3d.api.prefab.module;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.traits.Rotatable;
+import li.cil.tis3d.util.EnumUtils;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Vec3;
-import org.apache.logging.log4j.LogManager;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -94,19 +93,12 @@ public abstract class AbstractModuleRotatable extends AbstractModule implements 
 
     @Override
     public void readFromNBT(final NBTTagCompound nbt) {
-        if (nbt.hasKey(TAG_FACING)) {
-            try {
-                facing = Enum.valueOf(Port.class, nbt.getString(TAG_FACING));
-            } catch (final IllegalArgumentException e) {
-                // This can only happen if someone messes with the save.
-                LogManager.getLogger(API.MOD_ID).warn("Broken save, module facing is invalid.", e);
-            }
-        }
+        facing = EnumUtils.readFromNBT(Port.class, TAG_FACING, nbt);
     }
 
     @Override
     public void writeToNBT(final NBTTagCompound nbt) {
-        nbt.setString(TAG_FACING, facing.name());
+        EnumUtils.writeToNBT(facing, TAG_FACING, nbt);
     }
 
     // --------------------------------------------------------------------- //

@@ -142,6 +142,7 @@ public interface Module {
      * this way and vice versa).
      *
      * @param nbt the received data.
+     * @see Casing#sendData(Face, NBTTagCompound, byte)
      * @see Casing#sendData(Face, NBTTagCompound)
      */
     void onData(final NBTTagCompound nbt);

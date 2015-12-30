@@ -57,6 +57,11 @@ public interface CasingProxy extends Casing {
     }
 
     @Override
+    default void sendData(final Face face, final NBTTagCompound data, final byte type) {
+        getCasing().sendData(face, data, type);
+    }
+
+    @Override
     default void sendData(final Face face, final NBTTagCompound data) {
         getCasing().sendData(face, data);
     }

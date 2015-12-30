@@ -110,6 +110,7 @@ public class ProxyCommon {
         Network.INSTANCE.init();
 
         // Register event handlers.
+        FMLCommonHandler.instance().bus().register(Network.INSTANCE);
         MinecraftForge.EVENT_BUS.register(RedstoneIntegration.INSTANCE);
         FMLCommonHandler.instance().bus().register(TickHandlerInfraredPacket.INSTANCE);
 

@@ -2,46 +2,38 @@ package li.cil.tis3d.common.network.message;
 
 import io.netty.buffer.ByteBuf;
 import li.cil.tis3d.api.machine.Casing;
-import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.common.TIS3D;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 
 import java.io.IOException;
 
-public final class MessageModuleData extends AbstractMessageWithLocation {
-    private Face face;
+public class MessageCasingData extends AbstractMessageWithLocation {
     private NBTTagCompound nbt;
 
-    public MessageModuleData(final Casing casing, final Face face, final NBTTagCompound nbt) {
+    public MessageCasingData(final Casing casing, final NBTTagCompound nbt) {
         super(casing.getCasingWorld(), casing.getPositionX(), casing.getPositionY(), casing.getPositionZ());
-        this.face = face;
         this.nbt = nbt;
     }
 
-    public MessageModuleData() {
+    public MessageCasingData() {
     }
 
     // --------------------------------------------------------------------- //
-
-    public Face getFace() {
-        return face;
-    }
 
     public NBTTagCompound getNbt() {
         return nbt;
     }
 
     // --------------------------------------------------------------------- //
-    // IMessage
+
 
     @Override
     public void fromBytes(final ByteBuf buf) {
-        try {
-            super.fromBytes(buf);
+        super.fromBytes(buf);
 
-            final PacketBuffer buffer = new PacketBuffer(buf);
-            face = Face.valueOf(buffer.readStringFromBuffer(32));
+        final PacketBuffer buffer = new PacketBuffer(buf);
+        try {
             nbt = buffer.readNBTTagCompoundFromBuffer();
         } catch (final IOException | IllegalArgumentException e) {
             TIS3D.getLog().warn("Invalid packet received.", e);
@@ -54,7 +46,6 @@ public final class MessageModuleData extends AbstractMessageWithLocation {
             super.toBytes(buf);
 
             final PacketBuffer buffer = new PacketBuffer(buf);
-            buffer.writeStringToBuffer(face.name());
             buffer.writeNBTTagCompoundToBuffer(nbt);
         } catch (final IOException e) {
             TIS3D.getLog().warn("Failed sending packet", e);

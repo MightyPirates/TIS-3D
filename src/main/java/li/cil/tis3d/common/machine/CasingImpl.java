@@ -1,6 +1,5 @@
 package li.cil.tis3d.common.machine;
 
-import cpw.mods.fml.common.network.NetworkRegistry;
 import li.cil.tis3d.api.ModuleAPI;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
@@ -11,7 +10,6 @@ import li.cil.tis3d.api.module.ModuleProvider;
 import li.cil.tis3d.api.module.traits.Redstone;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.network.Network;
-import li.cil.tis3d.common.network.message.MessageModuleData;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import li.cil.tis3d.common.tile.TileEntityController;
 import net.minecraft.item.ItemStack;
@@ -367,13 +365,12 @@ public final class CasingImpl implements Casing {
     }
 
     @Override
+    public void sendData(final Face face, final NBTTagCompound data, final byte type) {
+        Network.sendModuleData(this, face, data, type);
+    }
+
+    @Override
     public void sendData(final Face face, final NBTTagCompound data) {
-        final MessageModuleData message = new MessageModuleData(this, face, data);
-        if (getCasingWorld().isRemote) {
-            Network.INSTANCE.getWrapper().sendToServer(message);
-        } else {
-            final NetworkRegistry.TargetPoint point = Network.getTargetPoint(tileEntity, Network.RANGE_HIGH);
-            Network.INSTANCE.getWrapper().sendToAllAround(message, point);
-        }
+        sendData(face, data, (byte) -1);
     }
 }

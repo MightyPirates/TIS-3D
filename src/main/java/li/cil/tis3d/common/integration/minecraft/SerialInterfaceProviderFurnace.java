@@ -3,11 +3,11 @@ package li.cil.tis3d.common.integration.minecraft;
 import li.cil.tis3d.api.serial.SerialInterface;
 import li.cil.tis3d.api.serial.SerialInterfaceProvider;
 import li.cil.tis3d.api.serial.SerialProtocolDocumentationReference;
+import li.cil.tis3d.util.EnumUtils;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
 
 public final class SerialInterfaceProviderFurnace implements SerialInterfaceProvider {
     @Override
@@ -137,14 +137,12 @@ public final class SerialInterfaceProviderFurnace implements SerialInterfaceProv
 
         @Override
         public void readFromNBT(final NBTTagCompound nbt) {
-            if (nbt.hasKey(TAG_MODE, Constants.NBT.TAG_STRING)) {
-                mode = Enum.valueOf(SerialInterfaceFurnace.Mode.class, nbt.getString(TAG_MODE));
-            }
+            mode = EnumUtils.readFromNBT(SerialInterfaceFurnace.Mode.class, TAG_MODE, nbt);
         }
 
         @Override
         public void writeToNBT(final NBTTagCompound nbt) {
-            nbt.setString(TAG_MODE, mode.name());
+            EnumUtils.writeToNBT(mode, TAG_MODE, nbt);
         }
     }
 }
