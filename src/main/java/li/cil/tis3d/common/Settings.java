@@ -11,6 +11,12 @@ import java.util.Set;
  */
 public final class Settings {
     /**
+     * The maximum number of packets to allow sending per tick before
+     * throttling kicks in, killing duplicate data packets.
+     */
+    public static int maxPacketsPerTick = 25;
+
+    /**
      * The maximum number of casings that may be connected to a controller.
      */
     public static int maxCasingsPerController = 8;
@@ -45,18 +51,22 @@ public final class Settings {
 
         config.load();
 
+        maxPacketsPerTick = config.getInt("maxPacketsPerTick", "network",
+                maxPacketsPerTick, 1, 500,
+                "The maximum number of status packets modules may send per tick. When this is exceeded, throttling kicks in.");
+
         maxCasingsPerController = config.getInt("maxCasings", "controller",
-                Settings.maxCasingsPerController, 1, 512,
+                maxCasingsPerController, 1, 512,
                 "The maximum number of casings a single controller supports.");
 
         maxLinesPerProgram = config.getInt("maxLinesPerProgram", "module.execution",
-                Settings.maxLinesPerProgram, 1, 200,
+                maxLinesPerProgram, 1, 200,
                 "The maximum number of lines an ASM program for an execution node may have.");
         maxColumnsPerLine = config.getInt("maxColumnsPerLine", "module.execution",
-                Settings.maxColumnsPerLine, 1, 80,
+                maxColumnsPerLine, 1, 80,
                 "The maximum number of columns per line of an ASM program for an execution node may have.");
         maxInfraredQueueLength = config.getInt("maxQueueLength", "module.infrared",
-                Settings.maxInfraredQueueLength, 1, 64,
+                maxInfraredQueueLength, 1, 64,
                 "The maximum number of infrared packets that can be stored in the receiver's buffer.");
 
         // Rebuild list of disabled modules.

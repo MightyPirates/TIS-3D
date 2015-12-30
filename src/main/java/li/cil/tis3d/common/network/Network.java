@@ -6,6 +6,7 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.client.network.handler.MessageHandlerCasingState;
 import li.cil.tis3d.client.network.handler.MessageHandlerHaltAndCatchFire;
 import li.cil.tis3d.client.network.handler.MessageHandlerParticleEffects;
+import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.network.handler.MessageHandlerBookCodeData;
 import li.cil.tis3d.common.network.handler.MessageHandlerCasingData;
 import li.cil.tis3d.common.network.message.MessageBookCodeData;
@@ -96,6 +97,53 @@ public final class Network {
 
     // --------------------------------------------------------------------- //
 
+    private static int packetsSentServer = 0;
+    private static int packetsSentClient = 0;
+    private static int throttleServer = 0;
+    private static int throttleClient = 0;
+
+    private static int getPacketsSent(final Side side) {
+        return side == Side.CLIENT ? packetsSentClient : packetsSentServer;
+    }
+
+    private static void resetPacketsSent(final Side side) {
+        if (side == Side.CLIENT) {
+            packetsSentClient = 0;
+        } else {
+            packetsSentServer = 0;
+        }
+    }
+
+    private static void incrementPacketsSent(final Side side) {
+        if (side == Side.CLIENT) {
+            packetsSentClient++;
+        } else {
+            packetsSentServer++;
+        }
+    }
+
+    private static int getThrottle(final Side side) {
+        return side == Side.CLIENT ? throttleClient : throttleServer;
+    }
+
+    private static void setThrottle(final Side side, final int value) {
+        if (side == Side.CLIENT) {
+            throttleClient = value;
+        } else {
+            throttleServer = value;
+        }
+    }
+
+    private static void decrementThrottle(final Side side) {
+        if (side == Side.CLIENT) {
+            throttleClient--;
+        } else {
+            throttleServer--;
+        }
+    }
+
+    // --------------------------------------------------------------------- //
+
     private static final Stack<CasingSendQueue> queuePool = new Stack<>();
     private static final Map<Casing, CasingSendQueue> clientQueues = new HashMap<>();
     private static final Map<Casing, CasingSendQueue> serverQueues = new HashMap<>();
@@ -126,9 +174,22 @@ public final class Network {
     }
 
     private static void flushQueues(final Side side) {
+        if (getThrottle(side) > 0) {
+            decrementThrottle(side);
+            return;
+        }
+
+        resetPacketsSent(side);
+
         final Map<Casing, CasingSendQueue> queues = getQueues(side);
         queues.forEach(Network::flushQueue);
         clearQueues(queues);
+
+        final int sent = getPacketsSent(side);
+        if (sent > Settings.maxPacketsPerTick) {
+            final int throttle = (int) Math.min(20, Math.ceil(sent / (float) Settings.maxPacketsPerTick));
+            setThrottle(side, throttle);
+        }
     }
 
     private static void flushQueue(final Casing casing, final CasingSendQueue queue) {
@@ -159,16 +220,18 @@ public final class Network {
         }
 
         public void flush(final Casing casing) {
+            final Side side = casing.getCasingWorld().isRemote ? Side.CLIENT : Side.SERVER;
             final NBTTagCompound nbt = new NBTTagCompound();
             collectData(nbt);
             if (!nbt.hasNoTags()) {
                 final MessageCasingData message = new MessageCasingData(casing, nbt);
-                if (casing.getCasingWorld().isRemote) {
+                if (side == Side.CLIENT) {
                     Network.INSTANCE.getWrapper().sendToServer(message);
                 } else {
                     final NetworkRegistry.TargetPoint point = Network.getTargetPoint(casing.getCasingWorld(), casing.getPosition(), Network.RANGE_HIGH);
                     Network.INSTANCE.getWrapper().sendToAllAround(message, point);
                 }
+                incrementPacketsSent(side);
             }
         }
 
