@@ -305,6 +305,11 @@ public final class TileEntityCasing extends TileEntityComputer implements
         return new S35PacketUpdateTileEntity(pos, -1, nbt);
     }
 
+    @Override
+    public double getMaxRenderDistanceSquared() {
+        return Network.RANGE_HIGH * Network.RANGE_HIGH;
+    }
+
     // --------------------------------------------------------------------- //
 
     private TileEntityController findController() {

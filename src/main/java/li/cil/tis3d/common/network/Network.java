@@ -14,15 +14,18 @@ import li.cil.tis3d.common.network.message.MessageCasingData;
 import li.cil.tis3d.common.network.message.MessageCasingState;
 import li.cil.tis3d.common.network.message.MessageHaltAndCatchFire;
 import li.cil.tis3d.common.network.message.MessageParticleEffect;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.handshake.NetworkDispatcher;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -36,7 +39,7 @@ import java.util.Stack;
 public final class Network {
     public static final Network INSTANCE = new Network();
 
-    public static final int RANGE_HIGH = 64;
+    public static final int RANGE_HIGH = 48;
     public static final int RANGE_MEDIUM = 32;
     public static final int RANGE_LOW = 16;
 
@@ -225,14 +228,35 @@ public final class Network {
             collectData(nbt);
             if (!nbt.hasNoTags()) {
                 final MessageCasingData message = new MessageCasingData(casing, nbt);
+                final boolean didSend;
                 if (side == Side.CLIENT) {
                     Network.INSTANCE.getWrapper().sendToServer(message);
+                    didSend = true;
                 } else {
                     final NetworkRegistry.TargetPoint point = Network.getTargetPoint(casing.getCasingWorld(), casing.getPosition(), Network.RANGE_HIGH);
                     Network.INSTANCE.getWrapper().sendToAllAround(message, point);
+                    didSend = areAnyPlayersNear(point);
                 }
-                incrementPacketsSent(side);
+                if (didSend) {
+                    incrementPacketsSent(side);
+                }
             }
+        }
+
+        private boolean areAnyPlayersNear(final NetworkRegistry.TargetPoint tp) {
+            for (final EntityPlayerMP player : FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().playerEntityList) {
+                if (player.dimension == tp.dimension) {
+                    final double dx = tp.x - player.posX;
+                    final double dy = tp.y - player.posY;
+                    final double dz = tp.z - player.posZ;
+
+                    if (dx * dx + dy * dy + dz * dz < tp.range * tp.range) {
+                        final NetworkDispatcher dispatcher = player.playerNetServerHandler.netManager.channel().attr(NetworkDispatcher.FML_DISPATCHER).get();
+                        if (dispatcher != null) return true;
+                    }
+                }
+            }
+            return false;
         }
 
         private void collectData(final NBTTagCompound nbt) {
