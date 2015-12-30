@@ -1,5 +1,6 @@
 package li.cil.tis3d.common.network;
 
+import io.netty.buffer.ByteBuf;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
@@ -15,6 +16,8 @@ import li.cil.tis3d.common.network.message.MessageCasingState;
 import li.cil.tis3d.common.network.message.MessageHaltAndCatchFire;
 import li.cil.tis3d.common.network.message.MessageParticleEffect;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagByteArray;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
@@ -84,6 +87,10 @@ public final class Network {
     // --------------------------------------------------------------------- //
 
     public static void sendModuleData(final Casing casing, final Face face, final NBTTagCompound data, final byte type) {
+        getQueueFor(casing).queueData(face, data, type);
+    }
+
+    public static void sendModuleData(final Casing casing, final Face face, final ByteBuf data, final byte type) {
         getQueueFor(casing).queueData(face, data, type);
     }
 
@@ -314,6 +321,10 @@ public final class Network {
             moduleQueues[face.ordinal()].queueData(data, type);
         }
 
+        public void queueData(final Face face, final ByteBuf data, final byte type) {
+            moduleQueues[face.ordinal()].queueData(data, type);
+        }
+
         public void flush(final Casing casing) {
             final Side side = casing.getCasingWorld().isRemote ? Side.CLIENT : Side.SERVER;
             final NBTTagCompound nbt = new NBTTagCompound();
@@ -359,7 +370,17 @@ public final class Network {
          * @param type the type of the data.
          */
         public void queueData(final NBTTagCompound data, final byte type) {
-            sendQueue.add(new QueueEntry(type, data));
+            sendQueue.add(new QueueEntryNBT(type, data));
+        }
+
+        /**
+         * Enqueue the specified data packet.
+         *
+         * @param data the data to enqueue.
+         * @param type the type of the data.
+         */
+        public void queueData(final ByteBuf data, final byte type) {
+            sendQueue.add(new QueueEntryByteBuf(type, data));
         }
 
         /**
@@ -379,8 +400,8 @@ public final class Network {
                     }
                     sentTypes.set(type);
                 }
-                final NBTTagCompound data = sendQueue.get(i).data;
-                nbt.appendTag(data);
+
+                nbt.appendTag(sendQueue.get(i).toNBT());
             }
 
             sendQueue.clear();
@@ -389,13 +410,41 @@ public final class Network {
             return nbt;
         }
 
-        private static final class QueueEntry {
+        private static abstract class QueueEntry {
             public final byte type;
+
+            protected QueueEntry(final byte type) {
+                this.type = type;
+            }
+
+            public abstract NBTBase toNBT();
+        }
+
+        private static final class QueueEntryNBT extends QueueEntry {
             public final NBTTagCompound data;
 
-            private QueueEntry(final byte type, final NBTTagCompound data) {
-                this.type = type;
+            public QueueEntryNBT(final byte type, final NBTTagCompound data) {
+                super(type);
                 this.data = data;
+            }
+
+            @Override
+            public NBTBase toNBT() {
+                return data;
+            }
+        }
+
+        private static final class QueueEntryByteBuf extends QueueEntry {
+            public final ByteBuf data;
+
+            public QueueEntryByteBuf(final byte type, final ByteBuf data) {
+                super(type);
+                this.data = data;
+            }
+
+            @Override
+            public NBTBase toNBT() {
+                return new NBTTagByteArray(data.array());
             }
         }
     }

@@ -1,5 +1,7 @@
 package li.cil.tis3d.common.module;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
@@ -67,7 +69,6 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
     // NBT tag names.
     private static final String TAG_IMAGE = "image";
     private static final String TAG_STATE = "state";
-    private static final String TAG_CLEAR = "clear";
     private static final String TAG_DRAW_CALL = "drawCall";
 
     // Data packet types.
@@ -114,11 +115,12 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
     }
 
     @Override
-    public void onData(final NBTTagCompound nbt) {
-        if (nbt.getBoolean(TAG_CLEAR)) {
+    public void onData(final ByteBuf data) {
+        if (data.readBoolean()) {
             Arrays.fill(image, 0);
         } else {
-            applyDrawCall(nbt.getByteArray(TAG_DRAW_CALL));
+            data.readBytes(drawCall);
+            applyDrawCall(drawCall);
         }
         TextureUtil.uploadTexture(getGlTextureId(), image, RESOLUTION, RESOLUTION);
     }
@@ -249,17 +251,18 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
      * Indicate to our client representation to clear the image data.
      */
     private void sendClear() {
-        final NBTTagCompound nbt = new NBTTagCompound();
-        nbt.setBoolean(TAG_CLEAR, true);
-        getCasing().sendData(getFace(), nbt, DATA_TYPE_CLEAR);
+        final ByteBuf data = Unpooled.buffer();
+        data.writeBoolean(true);
+        getCasing().sendData(getFace(), data, DATA_TYPE_CLEAR);
     }
 
     /**
      * Send a draw call to our client representation.
      */
     private void sendDrawCall() {
-        final NBTTagCompound nbt = new NBTTagCompound();
-        nbt.setByteArray(TAG_DRAW_CALL, drawCall);
-        getCasing().sendData(getFace(), nbt);
+        final ByteBuf data = Unpooled.buffer();
+        data.writeBoolean(false);
+        data.writeBytes(drawCall);
+        getCasing().sendData(getFace(), data);
     }
 }

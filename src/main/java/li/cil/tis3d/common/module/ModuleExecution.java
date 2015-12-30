@@ -1,5 +1,7 @@
 package li.cil.tis3d.common.module;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.FontRendererAPI;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
@@ -66,7 +68,6 @@ public final class ModuleExecution extends AbstractModuleRotatable {
     };
 
     // NBT tag names.
-    private static final String TAG_FULL = "full";
     private static final String TAG_STATE = "state";
     private static final String TAG_MACHINE = "machine";
     private static final String TAG_COMPILE_ERROR = "compileError";
@@ -74,10 +75,6 @@ public final class ModuleExecution extends AbstractModuleRotatable {
     private static final String TAG_LINE_NUMBER = "lineNumber";
     private static final String TAG_START = "columnStart";
     private static final String TAG_END = "columnEnd";
-    private static final String TAG_PC = MachineState.TAG_PC;
-    private static final String TAG_ACC = MachineState.TAG_ACC;
-    private static final String TAG_BAK = MachineState.TAG_BAK;
-    private static final String TAG_LAST = MachineState.TAG_LAST;
 
     // Data packet types.
     private static final byte DATA_TYPE_FULL = 0;
@@ -111,7 +108,7 @@ public final class ModuleExecution extends AbstractModuleRotatable {
             if (machine.step()) {
                 state = State.RUN;
                 getCasing().markDirty();
-                sendData(false);
+                sendPartialState();
                 return; // Don't send data twice.
             } else {
                 state = State.WAIT;
@@ -120,7 +117,7 @@ public final class ModuleExecution extends AbstractModuleRotatable {
 
         if (prevState != state) {
             getCasing().markDirty();
-            sendData(false);
+            sendPartialState();
         }
     }
 
@@ -128,7 +125,7 @@ public final class ModuleExecution extends AbstractModuleRotatable {
     public void onEnabled() {
         assert (!getCasing().getCasingWorld().isRemote);
 
-        sendData(true);
+        sendFullState();
     }
 
     @Override
@@ -138,7 +135,7 @@ public final class ModuleExecution extends AbstractModuleRotatable {
         machine.getState().reset();
         state = State.IDLE;
 
-        sendData(false);
+        sendPartialState();
     }
 
     @Override
@@ -207,7 +204,7 @@ public final class ModuleExecution extends AbstractModuleRotatable {
         // Compile the code into our machine state.
         if (!getCasing().getCasingWorld().isRemote) {
             compile(code, player);
-            sendData(true);
+            sendFullState();
         }
 
         return true;
@@ -215,21 +212,20 @@ public final class ModuleExecution extends AbstractModuleRotatable {
 
     @Override
     public void onData(final NBTTagCompound nbt) {
-        if (nbt.getBoolean(TAG_FULL)) {
-            readFromNBT(nbt);
+        readFromNBT(nbt);
+    }
+
+    @Override
+    public void onData(final ByteBuf data) {
+        machine.getState().pc = data.readShort();
+        machine.getState().acc = data.readShort();
+        machine.getState().bak = data.readShort();
+        if (data.readBoolean()) {
+            machine.getState().last = Optional.of(Port.values()[data.readByte()]);
         } else {
-            machine.getState().pc = nbt.getInteger(TAG_PC);
-            machine.getState().acc = nbt.getShort(TAG_ACC);
-            machine.getState().bak = nbt.getShort(TAG_BAK);
-            if (nbt.hasKey(TAG_LAST)) {
-                machine.getState().last = Optional.of(EnumUtils.readFromNBT(Port.class, TAG_LAST, nbt));
-            } else {
-                machine.getState().last = Optional.empty();
-            }
-            if (nbt.hasKey(TAG_STATE)) {
-                state = EnumUtils.readFromNBT(State.class, TAG_STATE, nbt);
-            }
+            machine.getState().last = Optional.empty();
         }
+        state = State.values()[data.readByte()];
     }
 
     @SideOnly(Side.CLIENT)
@@ -320,27 +316,30 @@ public final class ModuleExecution extends AbstractModuleRotatable {
     }
 
     /**
-     * Send the current execution state to the client.
-     * <p>
-     * May be used to send the full state in case of larger changes, such as
-     * the program we're running being changed.
-     *
-     * @param full if <tt>true</tt>, the full machine state will be sent.
+     * Send the full state to the client.
      */
-    private void sendData(final boolean full) {
+    private void sendFullState() {
         final NBTTagCompound nbt = new NBTTagCompound();
-        nbt.setBoolean(TAG_FULL, full);
-        if (full) {
-            writeToNBT(nbt);
-            getCasing().sendData(getFace(), nbt, DATA_TYPE_FULL);
-        } else {
-            nbt.setInteger(TAG_PC, machine.getState().pc);
-            nbt.setShort(TAG_ACC, machine.getState().acc);
-            nbt.setShort(TAG_BAK, machine.getState().bak);
-            machine.getState().last.ifPresent(last -> EnumUtils.writeToNBT(last, TAG_LAST, nbt));
-            EnumUtils.writeToNBT(state, TAG_STATE, nbt);
-            getCasing().sendData(getFace(), nbt, DATA_TYPE_INCREMENTAL);
+        writeToNBT(nbt);
+        getCasing().sendData(getFace(), nbt, DATA_TYPE_FULL);
+    }
+
+    /**
+     * Send the current execution state to the client.
+     */
+    private void sendPartialState() {
+        final ByteBuf data = Unpooled.buffer();
+
+        data.writeShort((short) machine.getState().pc);
+        data.writeShort(machine.getState().acc);
+        data.writeShort(machine.getState().bak);
+        data.writeBoolean(machine.getState().last.isPresent());
+        if (machine.getState().last.isPresent()) {
+            data.writeByte((byte) machine.getState().last.get().ordinal());
         }
+        data.writeByte(state.ordinal());
+
+        getCasing().sendData(getFace(), data, DATA_TYPE_INCREMENTAL);
     }
 
     @SideOnly(Side.CLIENT)

@@ -1,5 +1,6 @@
 package li.cil.tis3d.common.machine;
 
+import io.netty.buffer.ByteBuf;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
@@ -54,6 +55,16 @@ public interface CasingProxy extends Casing {
 
     @Override
     default void sendData(final Face face, final NBTTagCompound data) {
+        getCasing().sendData(face, data);
+    }
+
+    @Override
+    default void sendData(final Face face, final ByteBuf data, final byte type) {
+        getCasing().sendData(face, data, type);
+    }
+
+    @Override
+    default void sendData(final Face face, final ByteBuf data) {
         getCasing().sendData(face, data);
     }
 }

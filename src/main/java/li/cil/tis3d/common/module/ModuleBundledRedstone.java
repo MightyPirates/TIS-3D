@@ -1,5 +1,7 @@
 package li.cil.tis3d.common.module;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
@@ -110,8 +112,14 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
     }
 
     @Override
-    public void onData(final NBTTagCompound nbt) {
-        readFromNBT(nbt);
+    public void onData(final ByteBuf data) {
+        for (int i = 0; i < input.length; i++) {
+            input[i] = data.readShort();
+        }
+        for (int i = 0; i < output.length; i++) {
+            output[i] = data.readShort();
+        }
+        channel = data.readShort();
     }
 
     @SideOnly(Side.CLIENT)
@@ -330,8 +338,14 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
      * Send the current state of the module (to the client).
      */
     private void sendData() {
-        final NBTTagCompound nbt = new NBTTagCompound();
-        writeToNBT(nbt);
-        getCasing().sendData(getFace(), nbt, DATA_TYPE_UPDATE);
+        final ByteBuf data = Unpooled.buffer();
+        for (final short i : input) {
+            data.writeShort(input[i]);
+        }
+        for (final short i : output) {
+            data.writeShort(output[i]);
+        }
+        data.writeShort(channel);
+        getCasing().sendData(getFace(), data, DATA_TYPE_UPDATE);
     }
 }

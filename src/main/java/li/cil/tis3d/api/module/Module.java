@@ -1,5 +1,6 @@
 package li.cil.tis3d.api.module;
 
+import io.netty.buffer.ByteBuf;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
@@ -146,6 +147,19 @@ public interface Module {
      * @see Casing#sendData(Face, NBTTagCompound)
      */
     void onData(final NBTTagCompound nbt);
+
+    /**
+     * Called with data sent from the remote instance of the module.
+     * <p>
+     * This can be called on both the server and the client, depending on which
+     * side sent the message (i.e. the client can send messages to the server
+     * this way and vice versa).
+     *
+     * @param data the received data.
+     * @see Casing#sendData(Face, ByteBuf, byte)
+     * @see Casing#sendData(Face, ByteBuf)
+     */
+    void onData(ByteBuf data);
 
     // --------------------------------------------------------------------- //
 

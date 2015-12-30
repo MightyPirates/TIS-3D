@@ -1,5 +1,7 @@
 package li.cil.tis3d.common.module;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.FontRendererAPI;
 import li.cil.tis3d.api.machine.Casing;
@@ -90,8 +92,11 @@ public final class ModuleStack extends AbstractModuleRotatable {
     }
 
     @Override
-    public void onData(final NBTTagCompound nbt) {
-        readFromNBT(nbt);
+    public void onData(final ByteBuf data) {
+        top = data.readByte();
+        for (int i = 0; i < stack.length; i++) {
+            stack[i] = data.readShort();
+        }
     }
 
     @SideOnly(Side.CLIENT)
@@ -242,9 +247,12 @@ public final class ModuleStack extends AbstractModuleRotatable {
     }
 
     private void sendData() {
-        final NBTTagCompound nbt = new NBTTagCompound();
-        writeToNBT(nbt);
-        getCasing().sendData(getFace(), nbt, DATA_TYPE_UPDATE);
+        final ByteBuf data = Unpooled.buffer();
+        data.writeByte(top);
+        for (final short value : stack) {
+            data.writeShort(value);
+        }
+        getCasing().sendData(getFace(), data, DATA_TYPE_UPDATE);
     }
 
     @SideOnly(Side.CLIENT)
