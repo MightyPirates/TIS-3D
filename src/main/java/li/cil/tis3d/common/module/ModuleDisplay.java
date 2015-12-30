@@ -7,6 +7,7 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.util.ColorUtils;
+import li.cil.tis3d.util.EnumUtils;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.texture.TextureUtil;
@@ -68,6 +69,9 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
     private static final String TAG_STATE = "state";
     private static final String TAG_CLEAR = "clear";
     private static final String TAG_DRAW_CALL = "drawCall";
+
+    // Data packet types.
+    private static final byte DATA_TYPE_CLEAR = 0;
 
     /**
      * The ID of the uploaded texture on the GPU (client only).
@@ -142,7 +146,7 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
         final int[] imageNbt = nbt.getIntArray(TAG_IMAGE);
         System.arraycopy(imageNbt, 0, image, 0, Math.min(imageNbt.length, image.length));
 
-        state = State.valueOf(nbt.getString(TAG_STATE));
+        state = EnumUtils.readFromNBT(State.class, TAG_STATE, nbt);
 
         final byte[] drawCallNbt = nbt.getByteArray(TAG_DRAW_CALL);
         System.arraycopy(drawCallNbt, 0, drawCall, 0, Math.min(drawCallNbt.length, drawCall.length));
@@ -153,7 +157,7 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
         super.writeToNBT(nbt);
 
         nbt.setIntArray(TAG_IMAGE, image);
-        nbt.setString(TAG_STATE, state.name());
+        EnumUtils.writeToNBT(state, TAG_STATE, nbt);
         nbt.setByteArray(TAG_DRAW_CALL, drawCall);
     }
 
@@ -247,7 +251,7 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
     private void sendClear() {
         final NBTTagCompound nbt = new NBTTagCompound();
         nbt.setBoolean(TAG_CLEAR, true);
-        getCasing().sendData(getFace(), nbt);
+        getCasing().sendData(getFace(), nbt, DATA_TYPE_CLEAR);
     }
 
     /**

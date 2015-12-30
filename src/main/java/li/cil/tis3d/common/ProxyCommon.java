@@ -88,6 +88,7 @@ public class ProxyCommon {
         Network.INSTANCE.init();
 
         // Register event handlers.
+        MinecraftForge.EVENT_BUS.register(Network.INSTANCE);
         MinecraftForge.EVENT_BUS.register(RedstoneIntegration.INSTANCE);
         MinecraftForge.EVENT_BUS.register(TickHandlerInfraredPacket.INSTANCE);
 

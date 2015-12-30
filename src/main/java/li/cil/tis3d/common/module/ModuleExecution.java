@@ -7,13 +7,13 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.render.TextureLoader;
-import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ItemBookCode;
 import li.cil.tis3d.common.module.execution.MachineImpl;
 import li.cil.tis3d.common.module.execution.MachineState;
 import li.cil.tis3d.common.module.execution.compiler.Compiler;
 import li.cil.tis3d.common.module.execution.compiler.ParseException;
+import li.cil.tis3d.util.EnumUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -78,6 +78,10 @@ public final class ModuleExecution extends AbstractModuleRotatable {
     private static final String TAG_ACC = MachineState.TAG_ACC;
     private static final String TAG_BAK = MachineState.TAG_BAK;
     private static final String TAG_LAST = MachineState.TAG_LAST;
+
+    // Data packet types.
+    private static final byte DATA_TYPE_FULL = 0;
+    private static final byte DATA_TYPE_INCREMENTAL = 1;
 
     // --------------------------------------------------------------------- //
 
@@ -218,20 +222,12 @@ public final class ModuleExecution extends AbstractModuleRotatable {
             machine.getState().acc = nbt.getShort(TAG_ACC);
             machine.getState().bak = nbt.getShort(TAG_BAK);
             if (nbt.hasKey(TAG_LAST)) {
-                try {
-                    machine.getState().last = Optional.of(Enum.valueOf(Port.class, nbt.getString(TAG_LAST)));
-                } catch (final IllegalArgumentException e) {
-                    TIS3D.getLog().warn("Invalid machine state received.", e);
-                }
+                machine.getState().last = Optional.of(EnumUtils.readFromNBT(Port.class, TAG_LAST, nbt));
             } else {
                 machine.getState().last = Optional.empty();
             }
             if (nbt.hasKey(TAG_STATE)) {
-                try {
-                    state = Enum.valueOf(State.class, nbt.getString(TAG_STATE));
-                } catch (final IllegalArgumentException e) {
-                    TIS3D.getLog().warn("Invalid executable module state received.", e);
-                }
+                state = EnumUtils.readFromNBT(State.class, TAG_STATE, nbt);
             }
         }
     }
@@ -264,14 +260,9 @@ public final class ModuleExecution extends AbstractModuleRotatable {
     public void readFromNBT(final NBTTagCompound nbt) {
         super.readFromNBT(nbt);
 
-        try {
-            final NBTTagCompound machineNbt = nbt.getCompoundTag(TAG_MACHINE);
-            machine.getState().readFromNBT(machineNbt);
-            state = Enum.valueOf(State.class, nbt.getString(TAG_STATE));
-        } catch (final IllegalArgumentException e) {
-            // This can only happen if someone messes with the save.
-            TIS3D.getLog().warn("Broken save, execution module state is invalid.", e);
-        }
+        final NBTTagCompound machineNbt = nbt.getCompoundTag(TAG_MACHINE);
+        machine.getState().readFromNBT(machineNbt);
+        state = EnumUtils.readFromNBT(State.class, TAG_STATE, nbt);
 
         if (nbt.hasKey(TAG_COMPILE_ERROR)) {
             final NBTTagCompound errorNbt = nbt.getCompoundTag(TAG_COMPILE_ERROR);
@@ -288,7 +279,7 @@ public final class ModuleExecution extends AbstractModuleRotatable {
         final NBTTagCompound machineNbt = new NBTTagCompound();
         machine.getState().writeToNBT(machineNbt);
         nbt.setTag(TAG_MACHINE, machineNbt);
-        nbt.setString(TAG_STATE, state.name());
+        EnumUtils.writeToNBT(state, TAG_STATE, nbt);
 
         if (compileError != null) {
             final NBTTagCompound errorNbt = new NBTTagCompound();
@@ -341,14 +332,15 @@ public final class ModuleExecution extends AbstractModuleRotatable {
         nbt.setBoolean(TAG_FULL, full);
         if (full) {
             writeToNBT(nbt);
+            getCasing().sendData(getFace(), nbt, DATA_TYPE_FULL);
         } else {
             nbt.setInteger(TAG_PC, machine.getState().pc);
             nbt.setShort(TAG_ACC, machine.getState().acc);
             nbt.setShort(TAG_BAK, machine.getState().bak);
-            machine.getState().last.ifPresent(last -> nbt.setString(TAG_LAST, last.name()));
-            nbt.setString(TAG_STATE, state.name());
+            machine.getState().last.ifPresent(last -> EnumUtils.writeToNBT(last, TAG_LAST, nbt));
+            EnumUtils.writeToNBT(state, TAG_STATE, nbt);
+            getCasing().sendData(getFace(), nbt, DATA_TYPE_INCREMENTAL);
         }
-        getCasing().sendData(getFace(), nbt);
     }
 
     @SideOnly(Side.CLIENT)

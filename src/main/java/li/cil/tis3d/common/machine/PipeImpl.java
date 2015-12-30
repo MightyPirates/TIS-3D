@@ -7,6 +7,7 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageParticleEffect;
+import li.cil.tis3d.util.EnumUtils;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumParticleTypes;
@@ -107,14 +108,14 @@ public final class PipeImpl implements Pipe {
     }
 
     public void readFromNBT(final NBTTagCompound nbt) {
-        readState = State.valueOf(nbt.getString(TAG_READ_STATE));
-        writeState = State.valueOf(nbt.getString(TAG_WRITE_STATE));
+        readState = EnumUtils.readFromNBT(State.class, TAG_READ_STATE, nbt);
+        writeState = EnumUtils.readFromNBT(State.class, TAG_WRITE_STATE, nbt);
         value = nbt.getShort(TAG_VALUE);
     }
 
     public void writeToNBT(final NBTTagCompound nbt) {
-        nbt.setString(TAG_READ_STATE, readState.name());
-        nbt.setString(TAG_WRITE_STATE, writeState.name());
+        EnumUtils.writeToNBT(readState, TAG_READ_STATE, nbt);
+        EnumUtils.writeToNBT(writeState, TAG_WRITE_STATE, nbt);
         nbt.setShort(TAG_VALUE, value);
     }
 

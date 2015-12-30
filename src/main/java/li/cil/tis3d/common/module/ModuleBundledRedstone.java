@@ -37,6 +37,9 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
     private static final String TAG_INPUT = "input";
     private static final String TAG_CHANNEL = "channel";
 
+    // Data packet types.
+    private static final byte DATA_TYPE_UPDATE = 0;
+
     // Rendering info.
     private static final ResourceLocation LOCATION_OVERLAY = new ResourceLocation(API.MOD_ID, "textures/blocks/overlay/moduleBundledRedstone.png");
     private static final ResourceLocation LOCATION_COLORS_OVERLAY = new ResourceLocation(API.MOD_ID, "textures/blocks/overlay/moduleBundledRedstoneColors.png");
@@ -329,6 +332,6 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
     private void sendData() {
         final NBTTagCompound nbt = new NBTTagCompound();
         writeToNBT(nbt);
-        getCasing().sendData(getFace(), nbt);
+        getCasing().sendData(getFace(), nbt, DATA_TYPE_UPDATE);
     }
 }

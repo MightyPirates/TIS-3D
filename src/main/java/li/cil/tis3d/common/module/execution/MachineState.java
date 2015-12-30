@@ -6,6 +6,7 @@ import li.cil.tis3d.common.item.ItemBookCode;
 import li.cil.tis3d.common.module.execution.compiler.Compiler;
 import li.cil.tis3d.common.module.execution.compiler.ParseException;
 import li.cil.tis3d.common.module.execution.instruction.Instruction;
+import li.cil.tis3d.util.EnumUtils;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.ArrayList;
@@ -124,7 +125,9 @@ public final class MachineState {
         acc = nbt.getShort(TAG_ACC);
         bak = nbt.getShort(TAG_BAK);
         if (nbt.hasKey(TAG_LAST)) {
-            last = Optional.of(Port.valueOf(nbt.getString(TAG_LAST)));
+            last = Optional.of(EnumUtils.readFromNBT(Port.class, TAG_LAST, nbt));
+        } else {
+            last = Optional.empty();
         }
 
         validate();
@@ -134,7 +137,7 @@ public final class MachineState {
         nbt.setInteger(TAG_PC, pc);
         nbt.setShort(TAG_ACC, acc);
         nbt.setShort(TAG_BAK, bak);
-        last.ifPresent(port -> nbt.setString(TAG_LAST, port.name()));
+        last.ifPresent(port -> EnumUtils.writeToNBT(port, TAG_LAST, nbt));
 
         if (code != null) {
             nbt.setString(TAG_CODE, String.join("\n", code));

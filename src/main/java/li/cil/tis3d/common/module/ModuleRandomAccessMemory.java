@@ -6,7 +6,7 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.common.TIS3D;
+import li.cil.tis3d.util.EnumUtils;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.nbt.NBTTagCompound;
@@ -51,6 +51,9 @@ public final class ModuleRandomAccessMemory extends AbstractModuleRotatable {
     private static final String TAG_STATE = "state";
     private static final String TAG_CLEAR = "clear";
     private static final String TAG_VALUE = "value";
+
+    // Data packet types.
+    private static final byte DATA_TYPE_CLEAR = 0;
 
     // Rendering info.
     public static final float QUADS_U0 = 5 / 32f;
@@ -146,12 +149,7 @@ public final class ModuleRandomAccessMemory extends AbstractModuleRotatable {
 
         memory = nbt.getByteArray(TAG_MEMORY);
         address = nbt.getByte(TAG_ADDRESS);
-        try {
-            state = Enum.valueOf(State.class, nbt.getString(TAG_STATE));
-        } catch (final IllegalArgumentException e) {
-            // This can only happen if someone messes with the save.
-            TIS3D.getLog().warn("Broken save, RAM module state is invalid.", e);
-        }
+        state = EnumUtils.readFromNBT(State.class, TAG_STATE, nbt);
     }
 
     @Override
@@ -160,7 +158,7 @@ public final class ModuleRandomAccessMemory extends AbstractModuleRotatable {
 
         nbt.setByteArray(TAG_MEMORY, memory);
         nbt.setByte(TAG_ADDRESS, address);
-        nbt.setString(TAG_STATE, state.name());
+        EnumUtils.writeToNBT(state, TAG_STATE, nbt);
     }
 
     // --------------------------------------------------------------------- //
@@ -245,7 +243,7 @@ public final class ModuleRandomAccessMemory extends AbstractModuleRotatable {
     private void sendClear() {
         final NBTTagCompound nbt = new NBTTagCompound();
         nbt.setBoolean(TAG_CLEAR, true);
-        getCasing().sendData(getFace(), nbt);
+        getCasing().sendData(getFace(), nbt, DATA_TYPE_CLEAR);
     }
 
     private void sendData() {
