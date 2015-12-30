@@ -9,6 +9,8 @@ import cpw.mods.fml.common.network.handshake.NetworkDispatcher;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufOutputStream;
+import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
@@ -24,13 +26,12 @@ import li.cil.tis3d.common.network.message.MessageCasingState;
 import li.cil.tis3d.common.network.message.MessageHaltAndCatchFire;
 import li.cil.tis3d.common.network.message.MessageParticleEffect;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagByteArray;
+import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
@@ -321,10 +322,10 @@ public final class Network {
 
         public void flush(final Casing casing) {
             final Side side = casing.getCasingWorld().isRemote ? Side.CLIENT : Side.SERVER;
-            final NBTTagCompound nbt = new NBTTagCompound();
-            collectData(nbt);
-            if (!nbt.hasNoTags()) {
-                final MessageCasingData message = new MessageCasingData(casing, nbt);
+            final ByteBuf data = Unpooled.buffer();
+            collectData(data);
+            if (data.readableBytes() > 0) {
+                final MessageCasingData message = new MessageCasingData(casing, data);
                 final boolean didSend;
                 if (side == Side.CLIENT) {
                     Network.INSTANCE.getWrapper().sendToServer(message);
@@ -340,11 +341,13 @@ public final class Network {
             }
         }
 
-        private void collectData(final NBTTagCompound nbt) {
+        private void collectData(final ByteBuf data) {
             for (int i = 0; i < moduleQueues.length; i++) {
-                final NBTTagList data = moduleQueues[i].collectData();
-                if (data.tagCount() > 0) {
-                    nbt.setTag(String.valueOf(i), data);
+                final ByteBuf moduleData = moduleQueues[i].collectData();
+                if (moduleData.readableBytes() > 0) {
+                    data.writeByte(i);
+                    data.writeInt(moduleData.readableBytes());
+                    data.writeBytes(moduleData);
                 }
             }
         }
@@ -382,10 +385,10 @@ public final class Network {
          *
          * @return the collected data for the module.
          */
-        public NBTTagList collectData() {
+        public ByteBuf collectData() {
             // Building the list backwards to easily use the last data of
             // any type without having to remove from the queue.
-            final NBTTagList nbt = new NBTTagList();
+            final ByteBuf data = Unpooled.buffer();
             for (int i = sendQueue.size() - 1; i >= 0; i--) {
                 final byte type = sendQueue.get(i).type;
                 if (type >= 0) {
@@ -395,13 +398,13 @@ public final class Network {
                     sentTypes.set(type);
                 }
 
-                nbt.appendTag(sendQueue.get(i).toNBT());
+                sendQueue.get(i).write(data);
             }
 
             sendQueue.clear();
             sentTypes.clear();
 
-            return nbt;
+            return data;
         }
 
         private static abstract class QueueEntry {
@@ -411,7 +414,7 @@ public final class Network {
                 this.type = type;
             }
 
-            public abstract NBTBase toNBT();
+            public abstract void write(final ByteBuf buffer);
         }
 
         private static final class QueueEntryNBT extends QueueEntry {
@@ -423,8 +426,19 @@ public final class Network {
             }
 
             @Override
-            public NBTBase toNBT() {
-                return data;
+            public void write(final ByteBuf buffer) {
+                final ByteBuf data = Unpooled.buffer();
+                final ByteBufOutputStream bos = new ByteBufOutputStream(data);
+                try {
+                    CompressedStreamTools.writeCompressed(this.data, bos);
+                    if (data.readableBytes() > 0) {
+                        buffer.writeBoolean(true);
+                        buffer.writeInt(data.readableBytes());
+                        buffer.writeBytes(data);
+                    }
+                } catch (final IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -437,8 +451,12 @@ public final class Network {
             }
 
             @Override
-            public NBTBase toNBT() {
-                return new NBTTagByteArray(data.array());
+            public void write(final ByteBuf buffer) {
+                if (data.readableBytes() > 0) {
+                    buffer.writeBoolean(false);
+                    buffer.writeInt(data.readableBytes());
+                    buffer.writeBytes(data);
+                }
             }
         }
     }
