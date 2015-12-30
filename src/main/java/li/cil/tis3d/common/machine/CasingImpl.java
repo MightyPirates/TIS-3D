@@ -1,5 +1,6 @@
 package li.cil.tis3d.common.machine;
 
+import io.netty.buffer.ByteBuf;
 import li.cil.tis3d.api.ModuleAPI;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
@@ -371,6 +372,16 @@ public final class CasingImpl implements Casing {
 
     @Override
     public void sendData(final Face face, final NBTTagCompound data) {
+        sendData(face, data, (byte) -1);
+    }
+
+    @Override
+    public void sendData(final Face face, final ByteBuf data, final byte type) {
+        Network.sendModuleData(this, face, data, type);
+    }
+
+    @Override
+    public void sendData(final Face face, final ByteBuf data) {
         sendData(face, data, (byte) -1);
     }
 }

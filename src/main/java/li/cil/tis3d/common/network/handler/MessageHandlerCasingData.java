@@ -1,14 +1,18 @@
 package li.cil.tis3d.common.network.handler;
 
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
+import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.network.message.MessageCasingData;
 import li.cil.tis3d.common.tile.TileEntityCasing;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagByteArray;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.util.Constants;
 
 public final class MessageHandlerCasingData extends AbstractMessageHandlerWithLocation<MessageCasingData> {
     @Override
@@ -28,10 +32,17 @@ public final class MessageHandlerCasingData extends AbstractMessageHandlerWithLo
                 continue;
             }
 
-            final NBTTagList datums = nbt.getTagList((String) key, Constants.NBT.TAG_COMPOUND);
-            for (int j = 0; j < datums.tagCount(); j++) {
-                final NBTTagCompound data = datums.getCompoundTagAt(j);
-                module.onData(data);
+            final NBTTagList datums = (NBTTagList) nbt.getTag((String) key);
+            for (int j = datums.tagCount() - 1; j >= 0; j--) {
+                final NBTBase data = datums.removeTag(j);
+                if (data instanceof NBTTagByteArray) {
+                    final ByteBuf buf = Unpooled.wrappedBuffer(((NBTTagByteArray) data).func_150292_c());
+                    module.onData(buf);
+                } else if (data instanceof NBTTagCompound) {
+                    module.onData((NBTTagCompound) data);
+                } else {
+                    TIS3D.getLog().warn("Unexpected casing data type! (" + data.getId() + ")");
+                }
             }
         }
     }

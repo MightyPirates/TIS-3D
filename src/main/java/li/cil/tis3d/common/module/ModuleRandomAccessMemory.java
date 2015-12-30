@@ -2,6 +2,8 @@ package li.cil.tis3d.common.module;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
@@ -48,8 +50,6 @@ public final class ModuleRandomAccessMemory extends AbstractModuleRotatable {
     private static final String TAG_MEMORY = "memory";
     private static final String TAG_ADDRESS = "address";
     private static final String TAG_STATE = "state";
-    private static final String TAG_CLEAR = "clear";
-    private static final String TAG_VALUE = "value";
 
     // Data packet types.
     private static final byte DATA_TYPE_CLEAR = 0;
@@ -103,12 +103,12 @@ public final class ModuleRandomAccessMemory extends AbstractModuleRotatable {
     }
 
     @Override
-    public void onData(final NBTTagCompound nbt) {
-        if (nbt.getBoolean(TAG_CLEAR)) {
+    public void onData(final ByteBuf data) {
+        if (data.readBoolean()) {
             Arrays.fill(memory, (byte) 0);
         } else {
-            address = nbt.getByte(TAG_ADDRESS);
-            set(nbt.getByte(TAG_VALUE));
+            address = data.readByte();
+            set(data.readByte());
         }
     }
 
@@ -240,16 +240,17 @@ public final class ModuleRandomAccessMemory extends AbstractModuleRotatable {
     }
 
     private void sendClear() {
-        final NBTTagCompound nbt = new NBTTagCompound();
-        nbt.setBoolean(TAG_CLEAR, true);
-        getCasing().sendData(getFace(), nbt, DATA_TYPE_CLEAR);
+        final ByteBuf data = Unpooled.buffer();
+        data.writeBoolean(true);
+        getCasing().sendData(getFace(), data, DATA_TYPE_CLEAR);
     }
 
     private void sendData() {
-        final NBTTagCompound nbt = new NBTTagCompound();
-        nbt.setByte(TAG_ADDRESS, address);
-        nbt.setByte(TAG_VALUE, memory[address & 0xFF]);
-        getCasing().sendData(getFace(), nbt);
+        final ByteBuf data = Unpooled.buffer();
+        data.writeBoolean(false);
+        data.writeByte(address);
+        data.writeByte(memory[address & 0xFF]);
+        getCasing().sendData(getFace(), data);
     }
 
     private float sectorSum(final int offset) {

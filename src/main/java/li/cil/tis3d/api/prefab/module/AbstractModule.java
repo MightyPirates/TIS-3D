@@ -2,6 +2,7 @@ package li.cil.tis3d.api.prefab.module;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import io.netty.buffer.ByteBuf;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
@@ -181,6 +182,10 @@ public abstract class AbstractModule implements Module {
 
     @Override
     public void onData(final NBTTagCompound nbt) {
+    }
+
+    @Override
+    public void onData(final ByteBuf data) {
     }
 
     @SideOnly(Side.CLIENT)

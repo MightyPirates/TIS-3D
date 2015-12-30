@@ -2,6 +2,8 @@ package li.cil.tis3d.common.module;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
@@ -106,8 +108,9 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
     }
 
     @Override
-    public void onData(final NBTTagCompound nbt) {
-        readFromNBT(nbt);
+    public void onData(final ByteBuf data) {
+        input = data.readShort();
+        output = data.readShort();
     }
 
     @SideOnly(Side.CLIENT)
@@ -253,8 +256,9 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
      * Send the current state of the module (to the client).
      */
     private void sendData() {
-        final NBTTagCompound nbt = new NBTTagCompound();
-        writeToNBT(nbt);
-        getCasing().sendData(getFace(), nbt, DATA_TYPE_UPDATE);
+        final ByteBuf data = Unpooled.buffer();
+        data.writeShort(input);
+        data.writeShort(output);
+        getCasing().sendData(getFace(), data, DATA_TYPE_UPDATE);
     }
 }

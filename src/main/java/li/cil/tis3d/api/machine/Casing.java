@@ -1,5 +1,6 @@
 package li.cil.tis3d.api.machine;
 
+import io.netty.buffer.ByteBuf;
 import li.cil.tis3d.api.module.Module;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -110,17 +111,59 @@ public interface Casing {
      * will replace the previously queued data. A negative value indicates
      * that no specific type is set and data should not be replaced in the
      * send queue.
+     * <p>
+     * Note that this is a convenience alternative for {@link #sendData(Face, ByteBuf, byte)}
+     * that is meant to be used for <em>non-frequent</em> data, i.e. data
+     * that's only sent every so often. For data you expect may be sent
+     * each tick, prefer using the more light-weight {@link ByteBuf}.
      *
      * @param face the face the module is installed in.
      * @param data the data to send to the client.
      * @param type the type of the data being sent.
      */
-    void sendData(Face face, NBTTagCompound data, byte type);
+    void sendData(Face face, NBTTagCompound data, final byte type);
 
     /**
      * Call this to send some data from a module to it's other representation.
      * <p>
-     * This behaves like {@link #sendData(Face, NBTTagCompound, byte)}, except
+     * This behaves like {@link #sendData(Face, ByteBuf, byte)}, except
+     * with no specific type associated, so new data will never replace old
+     * data. Where at all possible, providing a type is strongly recommended,
+     * to reduce generated network traffic.
+     * <p>
+     * Note that this is a convenience alternative for {@link #sendData(Face, ByteBuf)}
+     * that is meant to be used for <em>non-frequent</em> data, i.e. data
+     * that's only sent every so often. For data you expect may be sent
+     * each tick, prefer using the more light-weight {@link ByteBuf}.
+     *
+     * @param face the face the module is installed in.
+     * @param data the data to send to the client.
+     */
+    void sendData(Face face, NBTTagCompound data);
+
+    /**
+     * Call this to send some data from a module to it's other representation.
+     * <p>
+     * That is, when called from the client, it will send the data to the
+     * instance representing the module on the specified face on the server,
+     * when called on the server it will send the data to the client.
+     * <p>
+     * Data is collected each tick, and sent in one big packet. If more than
+     * one send request is performed in one tick with the same type, the data
+     * will replace the previously queued data. A negative value indicates
+     * that no specific type is set and data should not be replaced in the
+     * send queue.
+     *
+     * @param face the face the module is installed in.
+     * @param data the data to send to the client.
+     * @param type the type of the data being sent.
+     */
+    void sendData(Face face, ByteBuf data, final byte type);
+
+    /**
+     * Call this to send some data from a module to it's other representation.
+     * <p>
+     * This behaves like {@link #sendData(Face, ByteBuf, byte)}, except
      * with no specific type associated, so new data will never replace old
      * data. Where at all possible, providing a type is strongly recommended,
      * to reduce generated network traffic.
@@ -128,5 +171,5 @@ public interface Casing {
      * @param face the face the module is installed in.
      * @param data the data to send to the client.
      */
-    void sendData(Face face, NBTTagCompound data);
+    void sendData(Face face, ByteBuf data);
 }
