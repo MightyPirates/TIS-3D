@@ -14,13 +14,13 @@ public final class Settings {
      * The maximum number of packets to allow sending per tick before
      * throttling kicks in, killing duplicate data packets.
      */
-    public static int maxPacketsPerTick = 25;
+    public static int maxPacketsPerTick = 10;
 
     /**
      * The maximum number of particle effects to allow sending per tick
      * before throttling kicks in, killing duplicate effects.
      */
-    public static int maxParticlesPerTick = 10;
+    public static int maxParticlesPerTick = 5;
 
     /**
      * The maximum number of casings that may be connected to a controller.
