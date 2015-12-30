@@ -107,7 +107,7 @@ public interface Casing {
     /**
      * Call this to send some data from a module to it's other representation.
      * <p>
-     * This behaves like {@link #sendData(Face, NBTTagCompound, int)}, except
+     * This behaves like {@link #sendData(Face, NBTTagCompound, byte)}, except
      * with no specific type associated, so new data will never replace old
      * data. Where at all possible, providing a type is strongly recommended,
      * to reduce generated network traffic.
