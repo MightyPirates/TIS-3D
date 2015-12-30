@@ -9,6 +9,7 @@ import li.cil.tis3d.common.tile.TileEntityCasing;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import java.io.IOException;
@@ -25,10 +26,10 @@ public final class MessageHandlerCasingData extends AbstractMessageHandlerWithLo
         final ByteBuf data = message.getData();
         while (data.readableBytes() > 0) {
             final Module module = casing.getModule(Face.VALUES[data.readByte()]);
-            final ByteBuf moduleData = data.readBytes(data.readInt());
+            final ByteBuf moduleData = data.readBytes(ByteBufUtils.readVarShort(data));
             while (moduleData.readableBytes() > 0) {
                 final boolean isNbt = moduleData.readBoolean();
-                final ByteBuf packet = moduleData.readBytes(moduleData.readInt());
+                final ByteBuf packet = moduleData.readBytes(ByteBufUtils.readVarShort(moduleData));
                 if (module != null) {
                     if (isNbt) {
                         try {
