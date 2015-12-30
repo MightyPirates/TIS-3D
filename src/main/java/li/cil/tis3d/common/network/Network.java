@@ -19,6 +19,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -32,8 +33,10 @@ import net.minecraftforge.fml.relauncher.Side;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 public final class Network {
@@ -84,21 +87,104 @@ public final class Network {
         getQueueFor(casing).queueData(face, data, type);
     }
 
+    public static void sendPipeEffect(final World world, final double x, final double y, final double z) {
+        queueParticleEffect(world, (float) x, (float) y, (float) z);
+    }
+
+    // --------------------------------------------------------------------- //
+    // Message flushing
+
     @SubscribeEvent
     public void onServerTick(final TickEvent.ServerTickEvent event) {
         if (event.type == TickEvent.Type.SERVER && event.getPhase() == EventPriority.NORMAL) {
-            flushQueues(Side.SERVER);
+            flushCasingQueues(Side.SERVER);
+            flushParticleQueue();
         }
     }
 
     @SubscribeEvent
     public void onClientTick(final TickEvent.ClientTickEvent event) {
         if (event.type == TickEvent.Type.CLIENT && event.getPhase() == EventPriority.NORMAL) {
-            flushQueues(Side.CLIENT);
+            flushCasingQueues(Side.CLIENT);
         }
     }
 
     // --------------------------------------------------------------------- //
+    // Particle message queueing
+
+    private static final int PARTICLE_SEND_INTERVAL_BASE = 500;
+    private static final int PARTICLE_SEND_INTERVAL_MAX = 1000;
+    private static final Set<Position> particleQueue = new HashSet<>();
+    private static long lastParticlesSent = 0;
+    private static int particlesSent = 0;
+    private static int particleSendInterval = PARTICLE_SEND_INTERVAL_BASE;
+
+    private static void queueParticleEffect(final World world, final float x, final float y, final float z) {
+        final Position position = new Position(world, x, y, z);
+        particleQueue.add(position);
+    }
+
+    private static void flushParticleQueue() {
+        final long now = System.currentTimeMillis();
+        if (now - lastParticlesSent < particleSendInterval) {
+            return;
+        }
+        lastParticlesSent = now;
+
+        particlesSent = 0;
+        particleQueue.forEach(Position::sendMessage);
+        particleSendInterval = Math.max(PARTICLE_SEND_INTERVAL_BASE, Math.min(PARTICLE_SEND_INTERVAL_MAX, particlesSent * 5));
+
+        particleQueue.clear();
+    }
+
+    private static final class Position {
+        private final World world;
+        private final float x;
+        private final float y;
+        private final float z;
+
+        private Position(final World world, final float x, final float y, final float z) {
+            this.world = world;
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+
+        public void sendMessage() {
+            final MessageParticleEffect message = new MessageParticleEffect(world, EnumParticleTypes.REDSTONE, x, y, z);
+            final NetworkRegistry.TargetPoint target = new NetworkRegistry.TargetPoint(world.provider.getDimensionId(), x, y, z, RANGE_LOW);
+            Network.INSTANCE.getWrapper().sendToAllAround(message, target);
+            if (areAnyPlayersNear(target)) {
+                particlesSent++;
+            }
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            if (this == obj) return true;
+            if (obj == null || getClass() != obj.getClass()) return false;
+
+            final Position that = (Position) obj;
+            return world.provider.getDimensionId() == that.world.provider.getDimensionId() &&
+                    Float.compare(that.x, x) == 0 &&
+                    Float.compare(that.y, y) == 0 &&
+                    Float.compare(that.z, z) == 0;
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = world.provider.getDimensionId();
+            result = 31 * result + (x != +0.0f ? Float.floatToIntBits(x) : 0);
+            result = 31 * result + (y != +0.0f ? Float.floatToIntBits(y) : 0);
+            result = 31 * result + (z != +0.0f ? Float.floatToIntBits(z) : 0);
+            return result;
+        }
+    }
+
+    // --------------------------------------------------------------------- //
+    // Module data metering
 
     private static int packetsSentServer = 0;
     private static int packetsSentClient = 0;
@@ -146,6 +232,7 @@ public final class Network {
     }
 
     // --------------------------------------------------------------------- //
+    // Module data queueing
 
     private static final Stack<CasingSendQueue> queuePool = new Stack<>();
     private static final Map<Casing, CasingSendQueue> clientQueues = new HashMap<>();
@@ -176,7 +263,7 @@ public final class Network {
         return queue;
     }
 
-    private static void flushQueues(final Side side) {
+    private static void flushCasingQueues(final Side side) {
         if (getThrottle(side) > 0) {
             decrementThrottle(side);
             return;
@@ -185,7 +272,7 @@ public final class Network {
         resetPacketsSent(side);
 
         final Map<Casing, CasingSendQueue> queues = getQueues(side);
-        queues.forEach(Network::flushQueue);
+        queues.forEach(Network::flushCasingQueue);
         clearQueues(queues);
 
         final int sent = getPacketsSent(side);
@@ -195,7 +282,7 @@ public final class Network {
         }
     }
 
-    private static void flushQueue(final Casing casing, final CasingSendQueue queue) {
+    private static void flushCasingQueue(final Casing casing, final CasingSendQueue queue) {
         queue.flush(casing);
     }
 
@@ -241,22 +328,6 @@ public final class Network {
                     incrementPacketsSent(side);
                 }
             }
-        }
-
-        private boolean areAnyPlayersNear(final NetworkRegistry.TargetPoint tp) {
-            for (final EntityPlayerMP player : FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().playerEntityList) {
-                if (player.dimension == tp.dimension) {
-                    final double dx = tp.x - player.posX;
-                    final double dy = tp.y - player.posY;
-                    final double dz = tp.z - player.posZ;
-
-                    if (dx * dx + dy * dy + dz * dz < tp.range * tp.range) {
-                        final NetworkDispatcher dispatcher = player.playerNetServerHandler.netManager.channel().attr(NetworkDispatcher.FML_DISPATCHER).get();
-                        if (dispatcher != null) return true;
-                    }
-                }
-            }
-            return false;
         }
 
         private void collectData(final NBTTagCompound nbt) {
@@ -322,6 +393,24 @@ public final class Network {
                 this.data = data;
             }
         }
+    }
+
+    // --------------------------------------------------------------------- //
+
+    private static boolean areAnyPlayersNear(final NetworkRegistry.TargetPoint target) {
+        for (final EntityPlayerMP player : FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().playerEntityList) {
+            if (player.dimension == target.dimension) {
+                final double dx = target.x - player.posX;
+                final double dy = target.y - player.posY;
+                final double dz = target.z - player.posZ;
+
+                if (dx * dx + dy * dy + dz * dz < target.range * target.range) {
+                    final NetworkDispatcher dispatcher = player.playerNetServerHandler.netManager.channel().attr(NetworkDispatcher.FML_DISPATCHER).get();
+                    if (dispatcher != null) return true;
+                }
+            }
+        }
+        return false;
     }
 
     // --------------------------------------------------------------------- //
