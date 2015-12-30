@@ -4,6 +4,7 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.handshake.NetworkDispatcher;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
@@ -137,7 +138,7 @@ public final class Network {
 
         if (particlesSent > Settings.maxParticlesPerTick) {
             final int throttle = (int) Math.ceil(particlesSent / (float) Settings.maxParticlesPerTick);
-            particleSendInterval = Math.min(1000, TICK_TIME * throttle);
+            particleSendInterval = Math.min(2000, TICK_TIME * throttle);
         } else {
             particleSendInterval = TICK_TIME;
         }
@@ -284,7 +285,7 @@ public final class Network {
 
         final int sent = getPacketsSent(side);
         if (sent > Settings.maxPacketsPerTick) {
-            final int throttle = (int) Math.min(20, Math.ceil(sent / (float) Settings.maxPacketsPerTick));
+            final int throttle = (int) Math.min(40, Math.ceil(sent / (float) Settings.maxPacketsPerTick));
             setThrottle(side, throttle);
         }
     }
@@ -346,7 +347,7 @@ public final class Network {
                 final ByteBuf moduleData = moduleQueues[i].collectData();
                 if (moduleData.readableBytes() > 0) {
                     data.writeByte(i);
-                    data.writeInt(moduleData.readableBytes());
+                    ByteBufUtils.writeVarShort(data, moduleData.readableBytes());
                     data.writeBytes(moduleData);
                 }
             }
@@ -433,7 +434,7 @@ public final class Network {
                     CompressedStreamTools.writeCompressed(this.data, bos);
                     if (data.readableBytes() > 0) {
                         buffer.writeBoolean(true);
-                        buffer.writeInt(data.readableBytes());
+                        ByteBufUtils.writeVarShort(buffer, data.readableBytes());
                         buffer.writeBytes(data);
                     }
                 } catch (final IOException e) {
@@ -454,7 +455,7 @@ public final class Network {
             public void write(final ByteBuf buffer) {
                 if (data.readableBytes() > 0) {
                     buffer.writeBoolean(false);
-                    buffer.writeInt(data.readableBytes());
+                    ByteBufUtils.writeVarShort(buffer, data.readableBytes());
                     buffer.writeBytes(data);
                 }
             }

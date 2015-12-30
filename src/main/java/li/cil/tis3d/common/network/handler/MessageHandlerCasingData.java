@@ -1,5 +1,6 @@
 package li.cil.tis3d.common.network.handler;
 
+import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
@@ -25,10 +26,10 @@ public final class MessageHandlerCasingData extends AbstractMessageHandlerWithLo
         final ByteBuf data = message.getData();
         while (data.readableBytes() > 0) {
             final Module module = casing.getModule(Face.VALUES[data.readByte()]);
-            final ByteBuf moduleData = data.readBytes(data.readInt());
+            final ByteBuf moduleData = data.readBytes(ByteBufUtils.readVarShort(data));
             while (moduleData.readableBytes() > 0) {
                 final boolean isNbt = moduleData.readBoolean();
-                final ByteBuf packet = moduleData.readBytes(moduleData.readInt());
+                final ByteBuf packet = moduleData.readBytes(ByteBufUtils.readVarShort(moduleData));
                 if (module != null) {
                     if (isNbt) {
                         try {
