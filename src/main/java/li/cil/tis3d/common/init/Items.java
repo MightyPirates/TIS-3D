@@ -6,6 +6,7 @@ import li.cil.tis3d.common.ProxyCommon;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.item.ItemBookCode;
 import li.cil.tis3d.common.item.ItemBookManual;
+import li.cil.tis3d.common.item.ItemModuleLightweight;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -66,6 +67,8 @@ public final class Items {
     public static void addRecipes() {
         addModuleRecipe(Constants.NAME_ITEM_MODULE_AUDIO, Item.getItemFromBlock(net.minecraft.init.Blocks.noteblock));
         addModuleRecipe(Constants.NAME_ITEM_MODULE_BUNDLED_REDSTONE, net.minecraft.init.Items.comparator);
+        if (Settings.customModules.length != 0)
+            addModuleRecipe(Constants.NAME_ITEM_MODULE_CUSTOM, net.minecraft.init.Items.apple);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_DISPLAY, prism);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_EXECUTION, "ingotGold");
         addModuleRecipe(Constants.NAME_ITEM_MODULE_INFRARED, net.minecraft.init.Items.spider_eye);

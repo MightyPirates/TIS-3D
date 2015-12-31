@@ -18,18 +18,9 @@ import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.integration.Integration;
 import li.cil.tis3d.common.integration.redstone.RedstoneIntegration;
 import li.cil.tis3d.common.item.ItemModule;
+import li.cil.tis3d.common.item.ItemModuleLightweight;
 import li.cil.tis3d.common.network.Network;
-import li.cil.tis3d.common.provider.ModuleProviderAudio;
-import li.cil.tis3d.common.provider.ModuleProviderBundledRedstone;
-import li.cil.tis3d.common.provider.ModuleProviderDisplay;
-import li.cil.tis3d.common.provider.ModuleProviderExecution;
-import li.cil.tis3d.common.provider.ModuleProviderInfrared;
-import li.cil.tis3d.common.provider.ModuleProviderKeypad;
-import li.cil.tis3d.common.provider.ModuleProviderRandom;
-import li.cil.tis3d.common.provider.ModuleProviderRandomAccessMemory;
-import li.cil.tis3d.common.provider.ModuleProviderRedstone;
-import li.cil.tis3d.common.provider.ModuleProviderSerialPort;
-import li.cil.tis3d.common.provider.ModuleProviderStack;
+import li.cil.tis3d.common.provider.*;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
@@ -104,6 +95,7 @@ public class ProxyCommon {
         ModuleAPI.addProvider(new ModuleProviderRandom());
         ModuleAPI.addProvider(new ModuleProviderRandomAccessMemory());
         ModuleAPI.addProvider(new ModuleProviderRedstone());
+        ModuleAPI.addProvider(new ModuleProviderLightweight());
 
         // Add default manual providers for server side stuff.
         ManualAPI.addProvider(new GameRegistryPathProvider());
@@ -142,6 +134,10 @@ public class ProxyCommon {
         if (Settings.disabledModules.contains(name)) {
             return null;
         }
+
+        // Custom Module has special functionality
+        if (name.equals(Constants.NAME_ITEM_MODULE_CUSTOM))
+            return registerItem(name, ItemModuleLightweight::new);
 
         return registerItem(name, ItemModule::new);
     }
