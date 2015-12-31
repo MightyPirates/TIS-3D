@@ -125,6 +125,10 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
     @SideOnly(Side.CLIENT)
     @Override
     public void render(final boolean enabled, final float partialTicks) {
+        if (!isVisible()) {
+            return;
+        }
+
         rotateForRendering();
 
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);

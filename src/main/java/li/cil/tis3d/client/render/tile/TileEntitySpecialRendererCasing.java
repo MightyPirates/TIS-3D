@@ -34,6 +34,10 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
     @Override
     public void renderTileEntityAt(final TileEntity tileEntity, final double x, final double y, final double z, final float partialTicks) {
         final TileEntityCasing casing = (TileEntityCasing) tileEntity;
+        final double dx = x + 0.5;
+        final double dy = y + 0.5;
+        final double dz = z + 0.5;
+
 
         GL11.glPushMatrix();
         GL11.glTranslated(x + 0.5, y + 0.5, z + 0.5);
@@ -43,6 +47,10 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
         // Render all modules, adjust GL state to allow easily rendering an
         // overlay in (0, 0, 0) to (1, 1, 0).
         for (final Face face : Face.VALUES) {
+            if (isRenderingBackFace(face, dx, dy, dz)) {
+                continue;
+            }
+
             GL11.glPushMatrix();
             GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 
@@ -63,6 +71,12 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
         RenderHelper.enableStandardItemLighting();
 
         GL11.glPopMatrix();
+    }
+
+    private boolean isRenderingBackFace(final Face face, final double dx, final double dy, final double dz) {
+        final EnumFacing facing = Face.toEnumFacing(face.getOpposite());
+        final double dotProduct = facing.getFrontOffsetX() * dx + facing.getFrontOffsetY() * dy + facing.getFrontOffsetZ() * dz;
+        return dotProduct < 0;
     }
 
     private void setupMatrix(final Face face) {

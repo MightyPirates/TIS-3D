@@ -231,7 +231,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
     @SideOnly(Side.CLIENT)
     @Override
     public void render(final boolean enabled, final float partialTicks) {
-        if (!enabled && !isPlayerLookingAt()) {
+        if ((!enabled || !isVisible()) && !isPlayerLookingAt()) {
             return;
         }
 
