@@ -1,6 +1,7 @@
 package li.cil.tis3d.common;
 
 import net.minecraftforge.common.config.Configuration;
+import sun.text.bidi.BidiBase;
 
 import java.io.File;
 import java.util.HashSet;
@@ -50,6 +51,15 @@ public final class Settings {
      */
     public static final Set<String> disabledModules = new HashSet<>();
 
+    /**
+     * The list of <em>custom</em> modules that are selectable.
+     * This is <em>not</em> the list of custom modules that are usable, if they already exist in the world.
+     * Items are affected, but in-world modules are not.
+     * These are classnames. A server owner can drop in a custom module into the classpath,
+     * add it to here, and then begin interfacing their server with whatever via TIS-3D.
+     */
+    public static String[] customModules;
+
     // --------------------------------------------------------------------- //
 
     public static void load(final File configFile) {
@@ -86,6 +96,8 @@ public final class Settings {
             final String name = String.valueOf(module.charAt(prefixLength - 1)).toLowerCase() + module.substring(prefixLength);
             checkModule(config, "module." + name, module);
         }
+
+        customModules = config.getStringList("customModules", "module.custom", new String[]{"li.cil.tis3d.common.lightweight.LightweightModuleExample"}, "The Lightweight Modules available to place.");
 
         if (config.hasChanged()) {
             config.save();

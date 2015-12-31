@@ -33,6 +33,7 @@ public final class Constants {
     public static final String NAME_ITEM_MODULE_STACK = "moduleStack";
     public static final String NAME_ITEM_MODULE_RANDOM = "moduleRandom";
     public static final String NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY = "moduleRandomAccessMemory";
+    public static final String NAME_ITEM_MODULE_CUSTOM = "moduleCustom";
     public static final String NAME_ITEM_PRISM = "prism";
 
     public static final String NAME_ENTITY_INFRARED_PACKET = API.MOD_ID + ":infraredPacket";
@@ -50,7 +51,8 @@ public final class Constants {
             NAME_ITEM_MODULE_SERIAL_PORT,
             NAME_ITEM_MODULE_STACK,
             NAME_ITEM_MODULE_RANDOM,
-            NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY
+            NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY,
+            NAME_ITEM_MODULE_CUSTOM
     };
 
     // --------------------------------------------------------------------- //

@@ -6,6 +6,7 @@ item.tis3d.key.name=Key
 item.tis3d.keyCreative.name=Skeleton Key
 item.tis3d.moduleAudio.name=Audio Module
 item.tis3d.moduleBundledRedstone.name=Bundled Redstone Module
+item.tis3d.moduleCustom.name=Custom Module
 item.tis3d.moduleDisplay.name=Display Module
 item.tis3d.moduleExecution.name=Execution Module
 item.tis3d.moduleInfrared.name=Infrared Module
@@ -41,3 +42,6 @@ tis3d.manual.warning.missing.oreDict=Ore dictionary entry unavailable.
 
 tis3d.tooltip.bookCode=§7Use a book on an installed execution module to get a copy.
 tis3d.tooltip.bookManual=§7Use a book on a controller block to get a copy.
+tis3d.tooltip.customCurrentFunction=§7Current Function:
+tis3d.tooltip.customNoFunction=No function.
+tis3d.tooltip.customChangeFunction=§7Change Function: Sneak & Right-click
