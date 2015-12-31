@@ -6,12 +6,16 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
+import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -128,6 +132,34 @@ public abstract class AbstractModule implements Module {
                 return new Vec3(1 - hitPos.zCoord, 1 - hitPos.yCoord, 0);
         }
         return null;
+    }
+
+    /**
+     * Convenience check for determining whether a module is actually visible.
+     * <p>
+     * This can allow for some optimizations, such as sending state updates
+     * much more or infrequently (or not at all) while invisible. If rendering
+     * a module's overlay is exceptionally complex,
+     *
+     * @return whether the module is currently visible.
+     */
+    protected boolean isVisible() {
+        final World world = getCasing().getCasingWorld();
+        final BlockPos neighborPos = getCasing().getPosition().offset(Face.toEnumFacing(getFace()));
+        if (!world.isBlockLoaded(neighborPos)) {
+            // If the neighbor isn't loaded, we can assume we're also not visible on that side.
+            return false;
+        }
+
+        final Chunk chunk = world.getChunkFromBlockCoords(neighborPos);
+        if (chunk == null || chunk.isEmpty()) {
+            // If the neighbor chunk is empty, we must assume we're visible.
+            return true;
+        }
+
+        // Otherwise check if the neighboring block blocks visibility to our face.
+        final Block neighborBlock = world.getBlockState(neighborPos).getBlock();
+        return !neighborBlock.doesSideBlockRendering(world, neighborPos, Face.toEnumFacing(getFace().getOpposite()));
     }
 
     // --------------------------------------------------------------------- //
