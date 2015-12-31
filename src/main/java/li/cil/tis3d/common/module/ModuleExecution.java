@@ -6,6 +6,7 @@ import li.cil.tis3d.api.FontRendererAPI;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
+import li.cil.tis3d.api.module.traits.BlockChangeAware;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.render.TextureLoader;
@@ -16,6 +17,7 @@ import li.cil.tis3d.common.module.execution.MachineState;
 import li.cil.tis3d.common.module.execution.compiler.Compiler;
 import li.cil.tis3d.common.module.execution.compiler.ParseException;
 import li.cil.tis3d.util.EnumUtils;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -42,7 +44,7 @@ import java.util.Optional;
 /**
  * The programmable execution module.
  */
-public final class ModuleExecution extends AbstractModuleRotatable {
+public final class ModuleExecution extends AbstractModuleRotatable implements BlockChangeAware {
     // --------------------------------------------------------------------- //
     // Persisted data
 
@@ -288,6 +290,16 @@ public final class ModuleExecution extends AbstractModuleRotatable {
     }
 
     // --------------------------------------------------------------------- //
+    // BlockChangeAware
+
+    @Override
+    public void onNeighborBlockChange(final Block neighborBlock) {
+        if (isVisible()) {
+            sendPartialState();
+        }
+    }
+
+    // --------------------------------------------------------------------- //
 
     /**
      * Compile the specified lines of code, assuming this was issued by the
@@ -328,6 +340,10 @@ public final class ModuleExecution extends AbstractModuleRotatable {
      * Send the current execution state to the client.
      */
     private void sendPartialState() {
+        if (!isVisible()) {
+            return;
+        }
+
         final ByteBuf data = Unpooled.buffer();
 
         data.writeShort((short) machine.getState().pc);
