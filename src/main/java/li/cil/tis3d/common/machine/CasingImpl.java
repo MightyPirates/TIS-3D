@@ -375,4 +375,14 @@ public final class CasingImpl implements Casing {
     public void sendData(final Face face, final ByteBuf data) {
         sendData(face, data, (byte) -1);
     }
+
+    @Override
+    public void sendOrderedData(final Face face, final ByteBuf data, final byte type) {
+        Network.sendModuleOrderedData(this, face, data, type);
+    }
+
+    @Override
+    public void sendOrderedData(final Face face, final ByteBuf data) {
+        sendOrderedData(face, data, (byte) -1);
+    }
 }

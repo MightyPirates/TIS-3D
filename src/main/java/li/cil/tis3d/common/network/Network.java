@@ -10,6 +10,7 @@ import li.cil.tis3d.client.network.handler.MessageHandlerCasingState;
 import li.cil.tis3d.client.network.handler.MessageHandlerHaltAndCatchFire;
 import li.cil.tis3d.client.network.handler.MessageHandlerParticleEffects;
 import li.cil.tis3d.common.Settings;
+import li.cil.tis3d.common.machine.CasingImpl;
 import li.cil.tis3d.common.network.handler.MessageHandlerBookCodeData;
 import li.cil.tis3d.common.network.handler.MessageHandlerCasingData;
 import li.cil.tis3d.common.network.message.MessageBookCodeData;
@@ -94,6 +95,10 @@ public final class Network {
 
     public static void sendModuleData(final Casing casing, final Face face, final ByteBuf data, final byte type) {
         getQueueFor(casing).queueData(face, data, type);
+    }
+
+    public static void sendModuleOrderedData(final Casing casing, final Face face, final ByteBuf data, final byte type) {
+        getQueueFor(casing).reverseQueueData(face, data, type);
     }
 
     public static void sendPipeEffect(final World world, final double x, final double y, final double z) {
@@ -333,6 +338,10 @@ public final class Network {
             moduleQueues[face.ordinal()].queueData(data, type);
         }
 
+        public void reverseQueueData(Face face, ByteBuf data, byte type) {
+            moduleQueues[face.ordinal()].reverseQueueData(data, type);
+        }
+
         public void flush(final Casing casing) {
             final Side side = casing.getCasingWorld().isRemote ? Side.CLIENT : Side.SERVER;
             final ByteBuf data = Unpooled.buffer();
@@ -391,6 +400,28 @@ public final class Network {
          */
         public void queueData(final ByteBuf data, final byte type) {
             sendQueue.add(new QueueEntryByteBuf(type, data));
+        }
+
+        /**
+         * Enqueue the specified data packet such that if all packets are sent with this function,
+         * they will arrive in the order they were queued (as opposed to the opposite order, usually used so more recent data arrives first)
+         *
+         * @param data the data to enqueue
+         * @param type the type of the data
+         */
+        public void reverseQueueData(final ByteBuf data, final byte type) {
+            sendQueue.add(0, new QueueEntryByteBuf(type, data));
+        }
+
+        /**
+         * Enqueue the specified data packet such that if all packets are sent with this function,
+         * they will arrive in the order they were queued (as opposed to the opposite order, usually used so more recent data arrives first)
+         *
+         * @param data the data to enqueue
+         * @param type the type of the data
+         */
+        public void reverseQueueData(final NBTTagCompound data, final byte type) {
+            sendQueue.add(0, new QueueEntryNBT(type, data));
         }
 
         /**
