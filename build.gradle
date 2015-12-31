@@ -60,7 +60,7 @@ repositories {
 }
 
 dependencies {
-    //deobfCompile "mezz.jei:jei_1.8.8:${config.jei.version}"
+    deobfCompile "mezz.jei:jei_1.8.9:${config.jei.version}"
 }
 
 processResources {
