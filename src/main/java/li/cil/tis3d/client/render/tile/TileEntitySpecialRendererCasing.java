@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumFacing;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -30,14 +31,22 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
 
     @Override
     public void renderTileEntityAt(final TileEntityCasing casing, final double x, final double y, final double z, final float partialTicks, final int destroyStage) {
+        final double dx = x + 0.5;
+        final double dy = y + 0.5;
+        final double dz = z + 0.5;
+
         GlStateManager.pushMatrix();
-        GlStateManager.translate(x + 0.5, y + 0.5, z + 0.5);
+        GlStateManager.translate(dx, dy, dz);
 
         RenderHelper.disableStandardItemLighting();
 
         // Render all modules, adjust GL state to allow easily rendering an
         // overlay in (0, 0, 0) to (1, 1, 0).
         for (final Face face : Face.VALUES) {
+            if (isRenderingBackFace(face, dx, dy, dz)) {
+                continue;
+            }
+
             GlStateManager.pushMatrix();
             GlStateManager.pushAttrib();
 
@@ -58,6 +67,12 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
         RenderHelper.enableStandardItemLighting();
 
         GlStateManager.popMatrix();
+    }
+
+    private boolean isRenderingBackFace(final Face face, final double dx, final double dy, final double dz) {
+        final EnumFacing facing = Face.toEnumFacing(face.getOpposite());
+        final double dotProduct = facing.getFrontOffsetX() * dx + facing.getFrontOffsetY() * dy + facing.getFrontOffsetZ() * dz;
+        return dotProduct < 0;
     }
 
     private void setupMatrix(final Face face) {

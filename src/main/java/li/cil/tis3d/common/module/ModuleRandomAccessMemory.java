@@ -116,7 +116,7 @@ public final class ModuleRandomAccessMemory extends AbstractModuleRotatable {
     @SideOnly(Side.CLIENT)
     @Override
     public void render(final boolean enabled, final float partialTicks) {
-        if (!enabled) {
+        if (!enabled || !isVisible()) {
             return;
         }
 
