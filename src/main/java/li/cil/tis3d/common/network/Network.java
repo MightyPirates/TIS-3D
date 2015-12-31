@@ -91,8 +91,10 @@ public final class Network {
     }
 
     public static void sendPipeEffect(final World world, final double x, final double y, final double z) {
-        final BlockPos position = new BlockPos(x, y, z);
-        if (!world.isBlockLoaded(position) || world.getBlockState(position).getBlock().isVisuallyOpaque()) {
+        final int positionX = (int) Math.floor(x);
+        final int positionY = (int) Math.floor(y);
+        final int positionZ = (int) Math.floor(z);
+        if (!world.blockExists(positionX, positionY, positionZ) || world.getBlock(positionX, positionY, positionZ).isOpaqueCube()) {
             // Skip particle emission when inside a block where they aren't visible anyway.
             return;
         }
