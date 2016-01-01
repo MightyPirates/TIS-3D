@@ -104,7 +104,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
 
         if (compileError != null) {
             state = State.ERR;
-        } else if (machine.getState().instructions.isEmpty()) {
+        } else if (getState().instructions.isEmpty()) {
             state = State.IDLE;
         } else {
             if (machine.step()) {
@@ -134,7 +134,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
     public void onDisabled() {
         assert (!getCasing().getCasingWorld().isRemote);
 
-        machine.getState().reset();
+        getState().reset();
         state = State.IDLE;
 
         sendPartialState();
@@ -219,13 +219,13 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
 
     @Override
     public void onData(final ByteBuf data) {
-        machine.getState().pc = data.readShort();
-        machine.getState().acc = data.readShort();
-        machine.getState().bak = data.readShort();
+        getState().pc = data.readShort();
+        getState().acc = data.readShort();
+        getState().bak = data.readShort();
         if (data.readBoolean()) {
-            machine.getState().last = Optional.of(Port.values()[data.readByte()]);
+            getState().last = Optional.of(Port.values()[data.readByte()]);
         } else {
-            machine.getState().last = Optional.empty();
+            getState().last = Optional.empty();
         }
         state = State.values()[data.readByte()];
     }
@@ -241,7 +241,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
 
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
 
-        final MachineState machineState = machine.getState();
+        final MachineState machineState = getState();
 
         // Draw status texture.
         Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
@@ -259,7 +259,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         super.readFromNBT(nbt);
 
         final NBTTagCompound machineNbt = nbt.getCompoundTag(TAG_MACHINE);
-        machine.getState().readFromNBT(machineNbt);
+        getState().readFromNBT(machineNbt);
         state = EnumUtils.readFromNBT(State.class, TAG_STATE, nbt);
 
         if (nbt.hasKey(TAG_COMPILE_ERROR)) {
@@ -275,7 +275,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         super.writeToNBT(nbt);
 
         final NBTTagCompound machineNbt = new NBTTagCompound();
-        machine.getState().writeToNBT(machineNbt);
+        getState().writeToNBT(machineNbt);
         nbt.setTag(TAG_MACHINE, machineNbt);
         EnumUtils.writeToNBT(state, TAG_STATE, nbt);
 
@@ -317,8 +317,8 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
 
         compileError = null;
         try {
-            machine.getState().clear();
-            Compiler.compile(code, machine.getState());
+            getState().clear();
+            Compiler.compile(code, getState());
         } catch (final ParseException e) {
             compileError = e;
             if (player != null) {
@@ -346,12 +346,12 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
 
         final ByteBuf data = Unpooled.buffer();
 
-        data.writeShort((short) machine.getState().pc);
-        data.writeShort(machine.getState().acc);
-        data.writeShort(machine.getState().bak);
-        data.writeBoolean(machine.getState().last.isPresent());
-        if (machine.getState().last.isPresent()) {
-            data.writeByte((byte) machine.getState().last.get().ordinal());
+        data.writeShort((short) getState().pc);
+        data.writeShort(getState().acc);
+        data.writeShort(getState().bak);
+        data.writeBoolean(getState().last.isPresent());
+        if (getState().last.isPresent()) {
+            data.writeByte((byte) getState().last.get().ordinal());
         }
         data.writeByte(state.ordinal());
 
