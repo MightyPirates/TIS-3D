@@ -71,7 +71,7 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
 
     private boolean isRenderingBackFace(final Face face, final double dx, final double dy, final double dz) {
         final EnumFacing facing = Face.toEnumFacing(face.getOpposite());
-        final double dotProduct = facing.getFrontOffsetX() * dx + facing.getFrontOffsetY() * dy + facing.getFrontOffsetZ() * dz;
+        final double dotProduct = facing.getFrontOffsetX() * dx + facing.getFrontOffsetY() * (dy - Minecraft.getMinecraft().thePlayer.getEyeHeight()) + facing.getFrontOffsetZ() * dz;
         return dotProduct < 0;
     }
 
