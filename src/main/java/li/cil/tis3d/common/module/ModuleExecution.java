@@ -382,7 +382,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         final int totalLines = machineState.code.length;
         final int currentLine;
         if (machineState.lineNumbers.size() > 0) {
-            currentLine = machineState.lineNumbers.get(machineState.pc);
+            currentLine = Optional.ofNullable(machineState.lineNumbers.get(machineState.pc)).orElse(-1);
         } else if (compileError != null) {
             currentLine = compileError.getLineNumber();
         } else {
