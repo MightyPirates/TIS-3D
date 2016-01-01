@@ -100,18 +100,20 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
 
         final State prevState = state;
 
-        if (compileError != null) {
-            state = State.ERR;
-        } else if (machine.getState().instructions.isEmpty()) {
-            state = State.IDLE;
-        } else {
-            if (machine.step()) {
-                state = State.RUN;
-                getCasing().markDirty();
-                sendPartialState();
-                return; // Don't send data twice.
+        synchronized (machine) {
+            if (compileError != null) {
+                state = State.ERR;
+            } else if (getState().instructions.isEmpty()) {
+                state = State.IDLE;
             } else {
-                state = State.WAIT;
+                if (machine.step()) {
+                    state = State.RUN;
+                    getCasing().markDirty();
+                    sendPartialState();
+                    return; // Don't send data twice.
+                } else {
+                    state = State.WAIT;
+                }
             }
         }
 
@@ -132,8 +134,10 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
     public void onDisabled() {
         assert (!getCasing().getCasingWorld().isRemote);
 
-        machine.getState().reset();
-        state = State.IDLE;
+        synchronized (machine) {
+            getState().reset();
+            state = State.IDLE;
+        }
 
         sendPartialState();
     }
@@ -171,9 +175,11 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         // Code book? Store current program on it if sneaking.
         if (Items.isBookCode(stack) && player.isSneaking()) {
             final ItemBookCode.Data data = ItemBookCode.Data.loadFromStack(stack);
-            if (getState().code != null && getState().code.length > 0) {
-                data.addProgram(Arrays.asList(getState().code));
-                ItemBookCode.Data.saveToStack(stack, data);
+            synchronized (machine) {
+                if (getState().code != null && getState().code.length > 0) {
+                    data.addProgram(Arrays.asList(getState().code));
+                    ItemBookCode.Data.saveToStack(stack, data);
+                }
             }
 
             return true;
@@ -217,15 +223,17 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
 
     @Override
     public void onData(final ByteBuf data) {
-        machine.getState().pc = data.readShort();
-        machine.getState().acc = data.readShort();
-        machine.getState().bak = data.readShort();
-        if (data.readBoolean()) {
-            machine.getState().last = Optional.of(Port.values()[data.readByte()]);
-        } else {
-            machine.getState().last = Optional.empty();
+        synchronized (machine) {
+            getState().pc = data.readShort();
+            getState().acc = data.readShort();
+            getState().bak = data.readShort();
+            if (data.readBoolean()) {
+                getState().last = Optional.of(Port.values()[data.readByte()]);
+            } else {
+                getState().last = Optional.empty();
+            }
+            state = State.values()[data.readByte()];
         }
-        state = State.values()[data.readByte()];
     }
 
     @SideOnly(Side.CLIENT)
@@ -239,16 +247,19 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
 
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
 
-        final MachineState machineState = machine.getState();
-
         // Draw status texture.
         Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
         final TextureAtlasSprite icon = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(STATE_LOCATIONS[state.ordinal()]);
         RenderUtil.drawQuad(icon.getMinU(), icon.getMinV(), icon.getMaxU(), icon.getMaxV());
 
         // Render detailed state when player is close.
-        if (machineState.code != null && OneEightCompat.getDistanceSqToCenter(Minecraft.getMinecraft().thePlayer, getCasing().getPositionX(), getCasing().getPositionY(), getCasing().getPositionZ()) < 64) {
-            renderState(machineState);
+        if (OneEightCompat.getDistanceSqToCenter(Minecraft.getMinecraft().thePlayer, getCasing().getPositionX(), getCasing().getPositionY(), getCasing().getPositionZ()) < 64) {
+            synchronized (machine) {
+                final MachineState machineState = machine.getState();
+                if (machineState.code != null) {
+                    renderState(machineState);
+                }
+            }
         }
     }
 
@@ -256,15 +267,17 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
     public void readFromNBT(final NBTTagCompound nbt) {
         super.readFromNBT(nbt);
 
-        final NBTTagCompound machineNbt = nbt.getCompoundTag(TAG_MACHINE);
-        machine.getState().readFromNBT(machineNbt);
-        state = EnumUtils.readFromNBT(State.class, TAG_STATE, nbt);
+        synchronized (machine) {
+            final NBTTagCompound machineNbt = nbt.getCompoundTag(TAG_MACHINE);
+            getState().readFromNBT(machineNbt);
+            state = EnumUtils.readFromNBT(State.class, TAG_STATE, nbt);
 
-        if (nbt.hasKey(TAG_COMPILE_ERROR)) {
-            final NBTTagCompound errorNbt = nbt.getCompoundTag(TAG_COMPILE_ERROR);
-            compileError = new ParseException(errorNbt.getString(TAG_MESSAGE), errorNbt.getInteger(TAG_LINE_NUMBER), errorNbt.getInteger(TAG_START), errorNbt.getInteger(TAG_END));
-        } else {
-            compileError = null;
+            if (nbt.hasKey(TAG_COMPILE_ERROR)) {
+                final NBTTagCompound errorNbt = nbt.getCompoundTag(TAG_COMPILE_ERROR);
+                compileError = new ParseException(errorNbt.getString(TAG_MESSAGE), errorNbt.getInteger(TAG_LINE_NUMBER), errorNbt.getInteger(TAG_START), errorNbt.getInteger(TAG_END));
+            } else {
+                compileError = null;
+            }
         }
     }
 
@@ -272,18 +285,20 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
     public void writeToNBT(final NBTTagCompound nbt) {
         super.writeToNBT(nbt);
 
-        final NBTTagCompound machineNbt = new NBTTagCompound();
-        machine.getState().writeToNBT(machineNbt);
-        nbt.setTag(TAG_MACHINE, machineNbt);
-        EnumUtils.writeToNBT(state, TAG_STATE, nbt);
+        synchronized (machine) {
+            final NBTTagCompound machineNbt = new NBTTagCompound();
+            getState().writeToNBT(machineNbt);
+            nbt.setTag(TAG_MACHINE, machineNbt);
+            EnumUtils.writeToNBT(state, TAG_STATE, nbt);
 
-        if (compileError != null) {
-            final NBTTagCompound errorNbt = new NBTTagCompound();
-            errorNbt.setString(TAG_MESSAGE, compileError.getMessage());
-            errorNbt.setInteger(TAG_LINE_NUMBER, compileError.getLineNumber());
-            errorNbt.setInteger(TAG_START, compileError.getStart());
-            errorNbt.setInteger(TAG_END, compileError.getEnd());
-            nbt.setTag(TAG_COMPILE_ERROR, errorNbt);
+            if (compileError != null) {
+                final NBTTagCompound errorNbt = new NBTTagCompound();
+                errorNbt.setString(TAG_MESSAGE, compileError.getMessage());
+                errorNbt.setInteger(TAG_LINE_NUMBER, compileError.getLineNumber());
+                errorNbt.setInteger(TAG_START, compileError.getStart());
+                errorNbt.setInteger(TAG_END, compileError.getEnd());
+                nbt.setTag(TAG_COMPILE_ERROR, errorNbt);
+            }
         }
     }
 
@@ -313,14 +328,16 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
             return; // When called from ItemBookCode e.g.
         }
 
-        compileError = null;
-        try {
-            machine.getState().clear();
-            Compiler.compile(code, machine.getState());
-        } catch (final ParseException e) {
-            compileError = e;
-            if (player != null) {
-                player.addChatMessage(new ChatComponentText(String.format("Compile error @%s.", e)));
+        synchronized (machine) {
+            compileError = null;
+            try {
+                getState().clear();
+                Compiler.compile(code, getState());
+            } catch (final ParseException e) {
+                compileError = e;
+                if (player != null) {
+                    player.addChatMessage(new ChatComponentText(String.format("Compile error @%s.", e)));
+                }
             }
         }
     }
@@ -344,14 +361,16 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
 
         final ByteBuf data = Unpooled.buffer();
 
-        data.writeShort((short) machine.getState().pc);
-        data.writeShort(machine.getState().acc);
-        data.writeShort(machine.getState().bak);
-        data.writeBoolean(machine.getState().last.isPresent());
-        if (machine.getState().last.isPresent()) {
-            data.writeByte((byte) machine.getState().last.get().ordinal());
+        synchronized (machine) {
+            data.writeShort((short) getState().pc);
+            data.writeShort(getState().acc);
+            data.writeShort(getState().bak);
+            data.writeBoolean(getState().last.isPresent());
+            if (getState().last.isPresent()) {
+                data.writeByte((byte) getState().last.get().ordinal());
+            }
+            data.writeByte(state.ordinal());
         }
-        data.writeByte(state.ordinal());
 
         getCasing().sendData(getFace(), data, DATA_TYPE_INCREMENTAL);
     }

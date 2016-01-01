@@ -343,11 +343,11 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
      */
     private void sendData() {
         final ByteBuf data = Unpooled.buffer();
-        for (final short i : input) {
-            data.writeShort(input[i]);
+        for (final short value : input) {
+            data.writeShort(value);
         }
-        for (final short i : output) {
-            data.writeShort(output[i]);
+        for (final short value : output) {
+            data.writeShort(value);
         }
         data.writeShort(channel);
         getCasing().sendData(getFace(), data, DATA_TYPE_UPDATE);
