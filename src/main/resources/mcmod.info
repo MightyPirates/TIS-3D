@@ -11,7 +11,7 @@
   "credits": "Zachtronics for TIS-100",
   "logoFile": "",
   "screenshots": [],
-  "requiredMods": [ "Forge@[11.15.0.1663,)" ],
+  "requiredMods": [ "Forge@[11.15.0.1655,)" ],
   "dependencies": []
 }
 ]
