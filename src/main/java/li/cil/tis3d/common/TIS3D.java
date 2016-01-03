@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 /**
  * Entry point for FML.
  */
-@Mod(modid = API.MOD_ID, version = API.MOD_VERSION)
+@Mod(modid = API.MOD_ID, version = API.MOD_VERSION, useMetadata = true)
 public final class TIS3D {
     // --------------------------------------------------------------------- //
     // FML / Forge
