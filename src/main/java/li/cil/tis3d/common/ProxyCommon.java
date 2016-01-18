@@ -145,6 +145,8 @@ public class ProxyCommon {
 
     public Block registerBlock(final String name, final Supplier<Block> constructor, final Class<? extends TileEntity> tileEntity) {
         final Block block = constructor.get().
+                setHardness(5).
+                setResistance(10).
                 setBlockName(API.MOD_ID + "." + name).
                 setBlockTextureName(API.MOD_ID + ":" + name).
                 setCreativeTab(API.creativeTab);

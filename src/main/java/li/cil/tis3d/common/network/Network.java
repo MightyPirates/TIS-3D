@@ -42,6 +42,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+/**
+ * Central networking hub for TIS-3D.
+ * <p>
+ * Aside from managing the mod's channel this also has facilities for throttling
+ * package throughput to avoid overloading the network when a large number of
+ * casings are active and nearby players. Throttling is applied to particle
+ * effect emission and module packets where possible.
+ */
 public final class Network {
     public static final Network INSTANCE = new Network();
 
@@ -154,6 +162,10 @@ public final class Network {
         particleQueue.clear();
     }
 
+    /**
+     * Track dimensional position of particle emission for culling duplicates
+     * when currently throttling.
+     */
     private static final class Position {
         private final World world;
         private final float x;
@@ -329,6 +341,11 @@ public final class Network {
             moduleQueues[face.ordinal()].queueData(data, type);
         }
 
+        /**
+         * Flush the casing's queue, sending all queued packets to clients.
+         *
+         * @param casing the casing this queue belongs to.
+         */
         public void flush(final Casing casing) {
             final Side side = casing.getCasingWorld().isRemote ? Side.CLIENT : Side.SERVER;
             final ByteBuf data = Unpooled.buffer();
@@ -416,6 +433,9 @@ public final class Network {
             return data;
         }
 
+        /**
+         * Base class for collected data packets.
+         */
         private static abstract class QueueEntry {
             public final byte type;
 
@@ -423,9 +443,17 @@ public final class Network {
                 this.type = type;
             }
 
+            /**
+             * Serialize the queue entry into the specified byte buffer.
+             *
+             * @param buffer the buffer to write into.
+             */
             public abstract void write(final ByteBuf buffer);
         }
 
+        /**
+         * Queue entry for pending NBT data.
+         */
         private static final class QueueEntryNBT extends QueueEntry {
             public final NBTTagCompound data;
 
@@ -451,6 +479,9 @@ public final class Network {
             }
         }
 
+        /**
+         * Queue entry for pending raw data.
+         */
         private static final class QueueEntryByteBuf extends QueueEntry {
             public final ByteBuf data;
 
@@ -472,6 +503,15 @@ public final class Network {
 
     // --------------------------------------------------------------------- //
 
+    /**
+     * Check if there are any players nearby the specified target point.
+     * <p>
+     * Used to determine whether a packet will actually be sent to any
+     * clients.
+     *
+     * @param target the target point to check for.
+     * @return <tt>true</tt> if there are nearby players; <tt>false</tt> otherwise.
+     */
     @SuppressWarnings("unchecked")
     private static boolean areAnyPlayersNear(final NetworkRegistry.TargetPoint target) {
         for (final EntityPlayerMP player : (List<EntityPlayerMP>) FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().playerEntityList) {
