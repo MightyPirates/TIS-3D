@@ -61,19 +61,26 @@ public final class Network {
 
     private static SimpleNetworkWrapper wrapper;
 
+    private enum Messages {
+        CasingDataClient,
+        CasingDataServer,
+        ParticleEffects,
+        CasingState,
+        BookCodeData,
+        HaltAndCatchFire
+    }
+
     // --------------------------------------------------------------------- //
 
     public void init() {
         wrapper = NetworkRegistry.INSTANCE.newSimpleChannel(API.MOD_ID);
 
-        int discriminator = 1;
-
-        wrapper.registerMessage(MessageHandlerCasingData.class, MessageCasingData.class, discriminator++, Side.CLIENT);
-        wrapper.registerMessage(MessageHandlerCasingData.class, MessageCasingData.class, discriminator++, Side.SERVER);
-        wrapper.registerMessage(MessageHandlerParticleEffects.class, MessageParticleEffect.class, discriminator++, Side.CLIENT);
-        wrapper.registerMessage(MessageHandlerCasingState.class, MessageCasingState.class, discriminator++, Side.CLIENT);
-        wrapper.registerMessage(MessageHandlerBookCodeData.class, MessageBookCodeData.class, discriminator++, Side.SERVER);
-        wrapper.registerMessage(MessageHandlerHaltAndCatchFire.class, MessageHaltAndCatchFire.class, discriminator++, Side.CLIENT);
+        wrapper.registerMessage(MessageHandlerCasingData.class, MessageCasingData.class, Messages.CasingDataClient.ordinal(), Side.CLIENT);
+        wrapper.registerMessage(MessageHandlerCasingData.class, MessageCasingData.class, Messages.CasingDataServer.ordinal(), Side.SERVER);
+        wrapper.registerMessage(MessageHandlerParticleEffects.class, MessageParticleEffect.class, Messages.ParticleEffects.ordinal(), Side.CLIENT);
+        wrapper.registerMessage(MessageHandlerCasingState.class, MessageCasingState.class, Messages.CasingState.ordinal(), Side.CLIENT);
+        wrapper.registerMessage(MessageHandlerBookCodeData.class, MessageBookCodeData.class, Messages.BookCodeData.ordinal(), Side.SERVER);
+        wrapper.registerMessage(MessageHandlerHaltAndCatchFire.class, MessageHaltAndCatchFire.class, Messages.HaltAndCatchFire.ordinal(), Side.CLIENT);
     }
 
     public SimpleNetworkWrapper getWrapper() {
