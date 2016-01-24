@@ -1,14 +1,40 @@
 {
     "forge_marker": 1,
     "defaults": {
-        "textures": {},
-        "model": "tis3d:module.obj"
-     },
+        "model": "forge:multi-layer",
+        "transform": "forge:default-block",
+        "custom": {
+            "base": "tis3d:moduleAudio#base",
+            "Solid": "tis3d:moduleAudio#base",
+            "Mipped Cutout": "tis3d:moduleAudio#overlay"
+        }
+    },
     "variants": {
-        "normal": [{}],
-        "inventory": [{
-            "transform": "forge:default-block",
-            "textures" : { "#casing:Module" : "tis3d:items/moduleAudio" }
-        }]
+        "normal": [{ }],
+        "inventory": [{ }],
+        "base": [
+            {
+                "model": "tis3d:module",
+                "textures": {
+                    "all": "tis3d:blocks/casingModule"
+                },
+                "transform": {
+                    "translation": [0.5, 0, 0],
+                    "scale": [1, 0.875, 0.875]
+                }
+            }
+        ],
+        "overlay": [
+            {
+                "model": "tis3d:moduleOverlay",
+                "textures": {
+                    "overlay": "tis3d:items/moduleAudio"
+                },
+                "transform": {
+                    "translation": [0.5, 0, 0],
+                    "scale": [1, 0.875,0.875]
+                }
+            }
+        ]
     }
 }
