@@ -10,10 +10,6 @@ import li.cil.tis3d.api.module.traits.BlockChangeAware;
 import li.cil.tis3d.api.module.traits.BundledRedstone;
 import li.cil.tis3d.api.module.traits.Redstone;
 import li.cil.tis3d.common.Settings;
-import li.cil.tis3d.common.integration.charsetwires.CharsetWiresBundledRedstone;
-import li.cil.tis3d.common.integration.charsetwires.CharsetWiresConnectable;
-import li.cil.tis3d.common.integration.charsetwires.CharsetWiresRedstone;
-import li.cil.tis3d.common.integration.charsetwires.ProxyCharsetWires;
 import li.cil.tis3d.common.integration.redstone.RedstoneIntegration;
 import li.cil.tis3d.common.inventory.InventoryCasing;
 import li.cil.tis3d.common.inventory.SidedInventoryProxy;
@@ -32,7 +28,6 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
-import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -54,13 +49,7 @@ import java.util.Set;
  * Casings do not tick. The modules installed in them are driven by a
  * controller (transitively) connected to their casing.
  */
-@Optional.InterfaceList({
-        @Optional.Interface(iface = "li.cil.tis3d.common.integration.charsetwires.CharsetWiresBundledRedstone", modid = ProxyCharsetWires.MOD_ID),
-        @Optional.Interface(iface = "li.cil.tis3d.common.integration.charsetwires.CharsetWiresConnectable", modid = ProxyCharsetWires.MOD_ID),
-        @Optional.Interface(iface = "li.cil.tis3d.common.integration.charsetwires.CharsetWiresRedstone", modid = ProxyCharsetWires.MOD_ID)
-})
 public final class TileEntityCasing extends TileEntityComputer implements
-        CharsetWiresConnectable, CharsetWiresRedstone, CharsetWiresBundledRedstone,
         SidedInventoryProxy, CasingProxy, InfraredReceiver {
     // --------------------------------------------------------------------- //
     // Persisted data
@@ -214,14 +203,6 @@ public final class TileEntityCasing extends TileEntityComputer implements
         if (module != null) {
             module.onWriteComplete(sendingPort);
         }
-    }
-
-    // --------------------------------------------------------------------- //
-    // CharsetWiresConnectable, CharsetWiresRedstone, CharsetWiresBundledRedstone
-
-    @Override
-    public TileEntityCasing getTileEntity() {
-        return this;
     }
 
     // --------------------------------------------------------------------- //
