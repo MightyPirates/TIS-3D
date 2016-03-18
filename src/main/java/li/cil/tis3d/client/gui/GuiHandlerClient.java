@@ -3,6 +3,7 @@ package li.cil.tis3d.client.gui;
 import li.cil.tis3d.common.init.Items;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 
@@ -24,7 +25,7 @@ public final class GuiHandlerClient implements IGuiHandler {
             case ID_GUI_BOOK_MANUAL:
                 return new GuiManual();
             case ID_GUI_BOOK_CODE:
-                if (Items.isBookCode(player.getHeldItem()) && player == Minecraft.getMinecraft().thePlayer) {
+                if (Items.isBookCode(player.getHeldItem(EnumHand.MAIN_HAND)) && player == Minecraft.getMinecraft().thePlayer) {
                     return new GuiBookCode(player);
                 }
                 break;

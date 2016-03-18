@@ -13,9 +13,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.util.BlockPos;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.NoteBlockEvent;
@@ -31,9 +34,9 @@ public final class ModuleAudio extends AbstractModule {
     // Computed data
 
     /**
-     * Resolve instrument ID to name of sound used for instrument.
+     * Resolve instrument ID to sound event used for instrument.
      */
-    private static final String[] INSTRUMENT_SOUND_NAMES = new String[]{"note.harp", "note.bd", "note.snare", "note.hat", "note.bassattack"};
+    private static final SoundEvent[] INSTRUMENTS = new SoundEvent[]{SoundEvents.block_note_harp, SoundEvents.block_note_basedrum, SoundEvents.block_note_snare, SoundEvents.block_note_hat, SoundEvents.block_note_bass};
 
     /**
      * The last tick we made a sound. Used to avoid emitting multiple sounds
@@ -121,7 +124,7 @@ public final class ModuleAudio extends AbstractModule {
             // Not cancelled, get pitch, sound effect name.
             final int note = event.getVanillaNoteId();
             final float pitch = (float) Math.pow(2, (note - 12) / 12.0);
-            final String sound = INSTRUMENT_SOUND_NAMES[event.instrument.ordinal()];
+            final SoundEvent sound = INSTRUMENTS[event.instrument.ordinal()];
 
             // Offset to have the actual origin be in front of the module.
             final EnumFacing facing = Face.toEnumFacing(getFace());
@@ -130,7 +133,7 @@ public final class ModuleAudio extends AbstractModule {
             final double z = pos.getZ() + 0.5 + facing.getFrontOffsetZ() * 0.6;
 
             // Let there be sound!
-            world.playSoundEffect(x, y, z, sound, volume, pitch);
+            world.playSound(null, x, y, z, sound, SoundCategory.BLOCKS, volume, pitch);
             final MessageParticleEffect message = new MessageParticleEffect(world, EnumParticleTypes.NOTE, x, y, z);
             final NetworkRegistry.TargetPoint target = Network.getTargetPoint(world, x, y, z, Network.RANGE_LOW);
             Network.INSTANCE.getWrapper().sendToAllAround(message, target);

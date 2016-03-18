@@ -1,7 +1,7 @@
 package li.cil.tis3d.api;
 
 import li.cil.tis3d.api.infrared.InfraredPacket;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 /**
@@ -20,7 +20,7 @@ public final class InfraredAPI {
      * @param value     the value the packet carries.
      * @return the packet that was spawned.
      */
-    public static InfraredPacket sendPacket(final World world, final Vec3 position, final Vec3 direction, final short value) {
+    public static InfraredPacket sendPacket(final World world, final Vec3d position, final Vec3d direction, final short value) {
         if (API.infraredAPI != null)
             return API.infraredAPI.sendPacket(world, position, direction, value);
         return null;

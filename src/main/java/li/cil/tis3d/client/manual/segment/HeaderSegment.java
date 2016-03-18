@@ -1,7 +1,7 @@
 package li.cil.tis3d.client.manual.segment;
 
+import com.mojang.realmsclient.gui.ChatFormatting;
 import joptsimple.internal.Strings;
-import net.minecraft.util.EnumChatFormatting;
 
 import java.util.Optional;
 
@@ -22,7 +22,7 @@ public final class HeaderSegment extends TextSegment {
 
     @Override
     protected String format() {
-        return EnumChatFormatting.UNDERLINE.toString();
+        return ChatFormatting.UNDERLINE.toString();
     }
 
     @Override

@@ -12,11 +12,11 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.translation.I18n;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -112,13 +112,13 @@ public final class GuiManual extends GuiScreen {
         currentSegment = Document.render(document, guiLeft + 16, guiTop + 48, documentMaxWidth, documentMaxHeight, offset(), fontRendererObj, mouseX, mouseY);
 
         if (!isDragging) {
-            currentSegment.ifPresent(s -> s.tooltip().ifPresent(t -> drawHoveringText(Collections.singletonList(StatCollector.translateToLocal(t)), mouseX, mouseY, fontRendererObj)));
+            currentSegment.ifPresent(s -> s.tooltip().ifPresent(t -> drawHoveringText(Collections.singletonList(I18n.translateToLocal(t)), mouseX, mouseY, fontRendererObj)));
 
             for (int i = 0; i < ManualAPIImpl.getTabs().size() && i < maxTabsPerSide; i++) {
                 final ManualAPIImpl.Tab tab = ManualAPIImpl.getTabs().get(i);
                 final ImageButton button = (ImageButton) buttonList.get(i);
                 if (mouseX > button.xPosition && mouseX < button.xPosition + button.width && mouseY > button.yPosition && mouseY < button.yPosition + button.height) {
-                    tab.tooltip.ifPresent(t -> drawHoveringText(Collections.singletonList(StatCollector.translateToLocal(t)), mouseX, mouseY, fontRendererObj));
+                    tab.tooltip.ifPresent(t -> drawHoveringText(Collections.singletonList(I18n.translateToLocal(t)), mouseX, mouseY, fontRendererObj));
                 }
             }
         }
@@ -291,12 +291,12 @@ public final class GuiManual extends GuiScreen {
                 final double v1 = v0 + 0.5;
 
                 final Tessellator t = Tessellator.getInstance();
-                final WorldRenderer r = t.getWorldRenderer();
-                r.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-                r.pos(x0, y1, zLevel).tex(u0, v1).endVertex();
-                r.pos(x1, y1, zLevel).tex(u1, v1).endVertex();
-                r.pos(x1, y0, zLevel).tex(u1, v0).endVertex();
-                r.pos(x0, y0, zLevel).tex(u0, v0).endVertex();
+                final VertexBuffer b = t.getBuffer();
+                b.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+                b.pos(x0, y1, zLevel).tex(u0, v1).endVertex();
+                b.pos(x1, y1, zLevel).tex(u1, v1).endVertex();
+                b.pos(x1, y0, zLevel).tex(u1, v0).endVertex();
+                b.pos(x0, y0, zLevel).tex(u0, v0).endVertex();
                 t.draw();
             }
         }

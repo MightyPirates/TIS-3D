@@ -19,15 +19,16 @@ import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageCasingState;
 import li.cil.tis3d.util.InventoryUtils;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -235,7 +236,7 @@ public final class TileEntityCasing extends TileEntityComputer implements
     // InfraredReceiver
 
     @Override
-    public void onInfraredPacket(final InfraredPacket packet, final MovingObjectPosition hit) {
+    public void onInfraredPacket(final InfraredPacket packet, final RayTraceResult hit) {
         final Module module = getModule(Face.fromEnumFacing(hit.sideHit));
         if (module instanceof InfraredReceiver) {
             ((InfraredReceiver) module).onInfraredPacket(packet, hit);
@@ -273,17 +274,18 @@ public final class TileEntityCasing extends TileEntityComputer implements
     }
 
     @Override
-    public void onDataPacket(final NetworkManager manager, final S35PacketUpdateTileEntity packet) {
+    public void onDataPacket(final NetworkManager manager, final SPacketUpdateTileEntity packet) {
         final NBTTagCompound nbt = packet.getNbtCompound();
         load(nbt);
-        getCasingWorld().markBlockForUpdate(getPos());
+        final IBlockState state = getWorld().getBlockState(getPos());
+        getCasingWorld().notifyBlockUpdate(getPos(), state, state, 3);
     }
 
     @Override
     public Packet getDescriptionPacket() {
         final NBTTagCompound nbt = new NBTTagCompound();
         save(nbt);
-        return new S35PacketUpdateTileEntity(pos, -1, nbt);
+        return new SPacketUpdateTileEntity(pos, -1, nbt);
     }
 
     @Override
@@ -345,7 +347,7 @@ public final class TileEntityCasing extends TileEntityComputer implements
 
     private void sendState() {
         final MessageCasingState message = new MessageCasingState(this, isEnabled);
-        Network.INSTANCE.getWrapper().sendToDimension(message, getWorld().provider.getDimensionId());
+        Network.INSTANCE.getWrapper().sendToDimension(message, getWorld().provider.getDimension());
     }
 
     private void dispose() {

@@ -10,9 +10,11 @@ import li.cil.tis3d.api.util.RenderUtil;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
@@ -75,7 +77,7 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
     }
 
     @Override
-    public boolean onActivate(final EntityPlayer player, final float hitX, final float hitY, final float hitZ) {
+    public boolean onActivate(final EntityPlayer player, final EnumHand hand, final ItemStack heldItem, final float hitX, final float hitY, final float hitZ) {
         if (player.isSneaking()) {
             return false;
         }
@@ -89,7 +91,7 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
         // hit position resolution (MC sends this to the server at a super
         // low resolution for some reason).
         if (getCasing().getCasingWorld().isRemote) {
-            final Vec3 uv = hitToUV(new Vec3(hitX, hitY, hitZ));
+            final Vec3d uv = hitToUV(new Vec3d(hitX, hitY, hitZ));
             final int button = uvToButton((float) uv.xCoord, (float) uv.yCoord);
             if (button == -1) {
                 // No button here.
@@ -145,9 +147,9 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
 
         // Draw overlay for hovered button if we can currently input a value.
         if (!value.isPresent()) {
-            final Vec3 hitPos = getPlayerLookAt();
+            final Vec3d hitPos = getPlayerLookAt();
             if (hitPos != null) {
-                final Vec3 uv = hitToUV(hitPos);
+                final Vec3d uv = hitToUV(hitPos);
                 final int button = uvToButton((float) uv.xCoord, (float) uv.yCoord);
                 if (button >= 0) {
                     drawButtonOverlay(button);

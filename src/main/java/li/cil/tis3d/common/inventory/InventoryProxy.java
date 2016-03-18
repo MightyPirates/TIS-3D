@@ -3,7 +3,7 @@ package li.cil.tis3d.common.inventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.text.ITextComponent;
 
 public interface InventoryProxy extends IInventory {
     IInventory getInventory();
@@ -94,7 +94,7 @@ public interface InventoryProxy extends IInventory {
     }
 
     @Override
-    default IChatComponent getDisplayName() {
+    default ITextComponent getDisplayName() {
         return getInventory().getDisplayName();
     }
 }

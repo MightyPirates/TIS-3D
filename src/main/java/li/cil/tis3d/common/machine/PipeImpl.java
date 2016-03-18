@@ -8,7 +8,7 @@ import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.util.EnumUtils;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 
 /**
  * Implementation of {@link Pipe}s for passing data between {@link Module}s.

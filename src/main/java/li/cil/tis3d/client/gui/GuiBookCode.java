@@ -15,8 +15,9 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.text.translation.I18n;
 import org.lwjgl.input.Keyboard;
 
 import java.io.IOException;
@@ -72,7 +73,7 @@ public final class GuiBookCode extends GuiScreen {
 
     public GuiBookCode(final EntityPlayer player) {
         this.player = player;
-        this.data = ItemBookCode.Data.loadFromStack(player.getHeldItem());
+        this.data = ItemBookCode.Data.loadFromStack(player.getHeldItem(EnumHand.MAIN_HAND));
 
         rebuildLines();
     }
@@ -111,7 +112,7 @@ public final class GuiBookCode extends GuiScreen {
 
     @Override
     public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
-        if (!player.isEntityAlive() || !Items.isBookCode(player.getHeldItem())) {
+        if (!player.isEntityAlive() || !Items.isBookCode(player.getHeldItem(EnumHand.MAIN_HAND))) {
             Minecraft.getMinecraft().displayGuiScreen(null);
             return;
         }
@@ -582,7 +583,7 @@ public final class GuiBookCode extends GuiScreen {
             final int endX = Math.max(columnToX(exception.getLineNumber(), exception.getEnd()), startX + fontRendererObj.getCharWidth(' '));
 
             if (mouseX >= startX && mouseX <= endX && mouseY >= startY && mouseY <= startY + fontRendererObj.FONT_HEIGHT) {
-                drawHoveringText(Arrays.asList(ItemBookCode.Data.PATTERN_LINES.split(StatCollector.translateToLocal(exception.getMessage()))), mouseX, mouseY);
+                drawHoveringText(Arrays.asList(ItemBookCode.Data.PATTERN_LINES.split(I18n.translateToLocal(exception.getMessage()))), mouseX, mouseY);
                 GlStateManager.disableLighting();
             }
         }

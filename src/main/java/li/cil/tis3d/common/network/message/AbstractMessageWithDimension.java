@@ -9,7 +9,7 @@ public abstract class AbstractMessageWithDimension implements IMessage {
     private int dimension;
 
     protected AbstractMessageWithDimension(final World world) {
-        this.dimension = world.provider.getDimensionId();
+        this.dimension = world.provider.getDimension();
     }
 
     protected AbstractMessageWithDimension() {

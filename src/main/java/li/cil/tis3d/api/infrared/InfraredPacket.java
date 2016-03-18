@@ -1,7 +1,7 @@
 package li.cil.tis3d.api.infrared;
 
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 
 /**
  * Represents an infrared packet carrying a single value.
@@ -21,14 +21,14 @@ public interface InfraredPacket {
      *
      * @return the current position of the packet.
      */
-    Vec3 getPacketPosition();
+    Vec3d getPacketPosition();
 
     /**
      * Get the normalized direction the packet is currently heading.
      *
      * @return the current heading of the packet.
      */
-    Vec3 getPacketDirection();
+    Vec3d getPacketDirection();
 
     /**
      * Instead of consuming the packet, this can be used to redirect the
@@ -37,7 +37,7 @@ public interface InfraredPacket {
      * a packet's lifetime.
      * <p>
      * When changing the direction of a packet, you may want to set the new
-     * position to the hit position (passed to {@link InfraredReceiver#onInfraredPacket(InfraredPacket, MovingObjectPosition)}).
+     * position to the hit position (passed to {@link InfraredReceiver#onInfraredPacket(InfraredPacket, RayTraceResult)}).
      * Any changes to the position will be taken into account automatically,
      * so that packets do not travel further due to this than they otherwise
      * would. Note that you cannot move a packet further than it would travel
@@ -47,5 +47,5 @@ public interface InfraredPacket {
      * @param direction     the new direction the packet should be heading.
      * @param addedLifetime how many ticks to add to the packet's lifetime.
      */
-    void redirectPacket(Vec3 position, Vec3 direction, int addedLifetime);
+    void redirectPacket(Vec3d position, Vec3d direction, int addedLifetime);
 }

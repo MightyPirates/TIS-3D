@@ -2,7 +2,7 @@ package li.cil.tis3d.api.infrared;
 
 import li.cil.tis3d.api.machine.Casing;
 import net.minecraft.block.material.Material;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.math.RayTraceResult;
 
 /**
  * When implemented this will be used let the instance handle a received
@@ -28,5 +28,5 @@ public interface InfraredReceiver {
      * @param packet the packet that collided with this.
      * @param hit    the information on the hit.
      */
-    void onInfraredPacket(InfraredPacket packet, MovingObjectPosition hit);
+    void onInfraredPacket(InfraredPacket packet, RayTraceResult hit);
 }

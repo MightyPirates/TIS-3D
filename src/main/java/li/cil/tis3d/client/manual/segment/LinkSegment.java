@@ -3,7 +3,7 @@ package li.cil.tis3d.client.manual.segment;
 import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.common.api.ManualAPIImpl;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
 
 import java.net.URI;
 import java.util.Optional;
@@ -93,7 +93,7 @@ public final class LinkSegment extends TextSegment implements InteractiveSegment
             final Object instance = desktop.getMethod("getDesktop").invoke(null);
             desktop.getMethod("browse", URI.class).invoke(instance, new URI(url));
         } catch (final Throwable t) {
-            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(t.toString()));
+            Minecraft.getMinecraft().thePlayer.addChatMessage(new TextComponentString(t.toString()));
         }
     }
 

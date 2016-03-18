@@ -6,8 +6,8 @@ import li.cil.tis3d.api.serial.SerialProtocolDocumentationReference;
 import li.cil.tis3d.util.EnumUtils;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntityFurnace;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public final class SerialInterfaceProviderFurnace implements SerialInterfaceProvider {

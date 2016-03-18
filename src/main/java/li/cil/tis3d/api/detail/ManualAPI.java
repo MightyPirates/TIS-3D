@@ -7,7 +7,7 @@ import li.cil.tis3d.api.manual.PathProvider;
 import li.cil.tis3d.api.manual.TabIconRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public interface ManualAPI {

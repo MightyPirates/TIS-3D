@@ -1,6 +1,7 @@
 package li.cil.tis3d.client.manual.segment;
 
-import net.minecraft.util.EnumChatFormatting;
+
+import com.mojang.realmsclient.gui.ChatFormatting;
 
 public final class BoldSegment extends TextSegment {
     public BoldSegment(final Segment parent, final String text) {
@@ -9,7 +10,7 @@ public final class BoldSegment extends TextSegment {
 
     @Override
     protected String format() {
-        return EnumChatFormatting.BOLD.toString();
+        return ChatFormatting.BOLD.toString();
     }
 
     @Override

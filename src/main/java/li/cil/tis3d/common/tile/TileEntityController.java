@@ -4,12 +4,15 @@ import li.cil.tis3d.api.machine.HaltAndCatchFireException;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageHaltAndCatchFire;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
@@ -133,7 +136,7 @@ public final class TileEntityController extends TileEntityComputer implements IT
     public void forceStep() {
         if (state == ControllerState.RUNNING) {
             forceStep = true;
-            getWorld().playSoundEffect(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, "random.click", 0.2f, 0.8f + getWorld().rand.nextFloat() * 0.1f);
+            getWorld().playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.block_stone_button_click_on, SoundCategory.BLOCKS, 0.2f, 0.8f + getWorld().rand.nextFloat() * 0.1f);
         }
     }
 
@@ -225,7 +228,8 @@ public final class TileEntityController extends TileEntityComputer implements IT
                 final World world = getWorld();
                 for (final EnumFacing facing : EnumFacing.VALUES) {
                     final BlockPos neighborPos = getPos().offset(facing);
-                    if (world.getBlockState(neighborPos).getBlock().isOpaqueCube()) {
+                    final IBlockState neighborState = getWorld().getBlockState(neighborPos);
+                    if (world.getBlockState(neighborPos).getBlock().isOpaqueCube(neighborState)) {
                         continue;
                     }
                     if (world.rand.nextFloat() > 0.25f) {

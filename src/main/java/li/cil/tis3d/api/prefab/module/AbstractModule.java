@@ -7,13 +7,15 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.relauncher.Side;
@@ -67,9 +69,9 @@ public abstract class AbstractModule implements Module {
      */
     @SideOnly(Side.CLIENT)
     protected boolean isPlayerLookingAt() {
-        final MovingObjectPosition hit = Minecraft.getMinecraft().objectMouseOver;
+        final RayTraceResult hit = Minecraft.getMinecraft().objectMouseOver;
         return hit != null &&
-                hit.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK &&
+                hit.typeOfHit == RayTraceResult.Type.BLOCK &&
                 getCasing().getPosition().equals(hit.getBlockPos()) &&
                 hit.sideHit == Face.toEnumFacing(getFace());
     }
@@ -87,13 +89,13 @@ public abstract class AbstractModule implements Module {
      * @return the UV coordinate the player is looking at as the X and Y components.
      */
     @SideOnly(Side.CLIENT)
-    protected Vec3 getPlayerLookAt() {
-        final MovingObjectPosition hit = Minecraft.getMinecraft().objectMouseOver;
+    protected Vec3d getPlayerLookAt() {
+        final RayTraceResult hit = Minecraft.getMinecraft().objectMouseOver;
         if (hit != null &&
-                hit.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK &&
+                hit.typeOfHit == RayTraceResult.Type.BLOCK &&
                 getCasing().getPosition().equals(hit.getBlockPos()) &&
                 hit.sideHit == Face.toEnumFacing(getFace())) {
-            return new Vec3(hit.hitVec.xCoord - hit.getBlockPos().getX(),
+            return new Vec3d(hit.hitVec.xCoord - hit.getBlockPos().getX(),
                     hit.hitVec.yCoord - hit.getBlockPos().getY(),
                     hit.hitVec.zCoord - hit.getBlockPos().getZ());
         } else {
@@ -114,22 +116,22 @@ public abstract class AbstractModule implements Module {
      * @param hitPos the hit position to project.
      * @return the projected UV coordinate, with the Z component being 0.
      * @see #getPlayerLookAt()
-     * @see #onActivate(EntityPlayer, float, float, float)
+     * @see Module#onActivate(EntityPlayer, EnumHand, ItemStack, float, float, float)
      */
-    protected Vec3 hitToUV(final Vec3 hitPos) {
+    protected Vec3d hitToUV(final Vec3d hitPos) {
         switch (getFace()) {
             case Y_NEG:
-                return new Vec3(1 - hitPos.xCoord, hitPos.zCoord, 0);
+                return new Vec3d(1 - hitPos.xCoord, hitPos.zCoord, 0);
             case Y_POS:
-                return new Vec3(1 - hitPos.xCoord, 1 - hitPos.zCoord, 0);
+                return new Vec3d(1 - hitPos.xCoord, 1 - hitPos.zCoord, 0);
             case Z_NEG:
-                return new Vec3(1 - hitPos.xCoord, 1 - hitPos.yCoord, 0);
+                return new Vec3d(1 - hitPos.xCoord, 1 - hitPos.yCoord, 0);
             case Z_POS:
-                return new Vec3(hitPos.xCoord, 1 - hitPos.yCoord, 0);
+                return new Vec3d(hitPos.xCoord, 1 - hitPos.yCoord, 0);
             case X_NEG:
-                return new Vec3(hitPos.zCoord, 1 - hitPos.yCoord, 0);
+                return new Vec3d(hitPos.zCoord, 1 - hitPos.yCoord, 0);
             case X_POS:
-                return new Vec3(1 - hitPos.zCoord, 1 - hitPos.yCoord, 0);
+                return new Vec3d(1 - hitPos.zCoord, 1 - hitPos.yCoord, 0);
         }
         return null;
     }
@@ -158,8 +160,9 @@ public abstract class AbstractModule implements Module {
         }
 
         // Otherwise check if the neighboring block blocks visibility to our face.
-        final Block neighborBlock = world.getBlockState(neighborPos).getBlock();
-        return !neighborBlock.doesSideBlockRendering(world, neighborPos, Face.toEnumFacing(getFace().getOpposite()));
+        final IBlockState neighborState = world.getBlockState(neighborPos);
+        final Block neighborBlock = neighborState.getBlock();
+        return !neighborBlock.doesSideBlockRendering(neighborState, world, neighborPos, Face.toEnumFacing(getFace().getOpposite()));
     }
 
     // --------------------------------------------------------------------- //
@@ -204,7 +207,7 @@ public abstract class AbstractModule implements Module {
     }
 
     @Override
-    public boolean onActivate(final EntityPlayer player, final float hitX, final float hitY, final float hitZ) {
+    public boolean onActivate(final EntityPlayer player, final EnumHand hand, final ItemStack heldItem, final float hitX, final float hitY, final float hitZ) {
         return false;
     }
 

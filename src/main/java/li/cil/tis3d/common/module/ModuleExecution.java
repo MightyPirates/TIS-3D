@@ -22,7 +22,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -30,7 +30,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
@@ -148,15 +149,12 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
     }
 
     @Override
-    public boolean onActivate(final EntityPlayer player, final float hitX, final float hitY, final float hitZ) {
-        // Watcha holding there?
-        final ItemStack stack = player.getHeldItem();
-
+    public boolean onActivate(final EntityPlayer player, final EnumHand hand, final ItemStack heldItem, final float hitX, final float hitY, final float hitZ) {
         // Vanilla book? If so, make that a code book.
-        if (stack != null && stack.getItem() == net.minecraft.init.Items.book) {
+        if (heldItem != null && heldItem.getItem() == net.minecraft.init.Items.book) {
             if (!player.getEntityWorld().isRemote) {
                 if (!player.capabilities.isCreativeMode) {
-                    stack.splitStack(1);
+                    heldItem.splitStack(1);
                 }
                 final ItemStack bookCode = new ItemStack(Items.bookCode);
                 if (player.inventory.addItemStackToInventory(bookCode)) {
@@ -171,11 +169,11 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         }
 
         // Code book? Store current program on it if sneaking.
-        if (Items.isBookCode(stack) && player.isSneaking()) {
-            final ItemBookCode.Data data = ItemBookCode.Data.loadFromStack(stack);
+        if (Items.isBookCode(heldItem) && player.isSneaking()) {
+            final ItemBookCode.Data data = ItemBookCode.Data.loadFromStack(heldItem);
             if (getState().code != null && getState().code.length > 0) {
                 data.addProgram(Arrays.asList(getState().code));
-                ItemBookCode.Data.saveToStack(stack, data);
+                ItemBookCode.Data.saveToStack(heldItem, data);
             }
 
             return true;
@@ -192,13 +190,13 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         }
 
         // Get the provider for the item, if any.
-        final SourceCodeProvider provider = providerFor(stack);
+        final SourceCodeProvider provider = providerFor(heldItem);
         if (provider == null) {
             return false;
         }
 
         // Get the code from the item, if any.
-        final Iterable<String> code = provider.codeFor(stack);
+        final Iterable<String> code = provider.codeFor(heldItem);
         if (code == null || !code.iterator().hasNext()) {
             return true; // Handled, but does nothing.
         }
@@ -322,7 +320,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         } catch (final ParseException e) {
             compileError = e;
             if (player != null) {
-                player.addChatMessage(new ChatComponentText(String.format("Compile error @%s.", e)));
+                player.addChatMessage(new TextComponentString(String.format("Compile error @%s.", e)));
             }
         }
     }
@@ -423,12 +421,12 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         GlStateManager.disableTexture2D();
 
         final Tessellator tessellator = Tessellator.getInstance();
-        final WorldRenderer worldRenderer = tessellator.getWorldRenderer();
-        worldRenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
-        worldRenderer.pos(-0.5f, height + 0.5f, 0).endVertex();
-        worldRenderer.pos(71.5f, height + 0.5f, 0).endVertex();
-        worldRenderer.pos(71.5f, -0.5f, 0).endVertex();
-        worldRenderer.pos(-0.5f, -0.5f, 0).endVertex();
+        final VertexBuffer buffer = tessellator.getBuffer();
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
+        buffer.pos(-0.5f, height + 0.5f, 0).endVertex();
+        buffer.pos(71.5f, height + 0.5f, 0).endVertex();
+        buffer.pos(71.5f, -0.5f, 0).endVertex();
+        buffer.pos(-0.5f, -0.5f, 0).endVertex();
         tessellator.draw();
 
         GlStateManager.depthMask(true);

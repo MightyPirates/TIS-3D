@@ -45,7 +45,7 @@ public abstract class AbstractMessageHandler<T extends IMessage> implements IMes
         if (world == null) {
             return null;
         }
-        if (world.provider.getDimensionId() != dimension) {
+        if (world.provider.getDimension() != dimension) {
             return null;
         }
         return world;

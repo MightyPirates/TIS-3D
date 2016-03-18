@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -155,6 +156,6 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
 
     private boolean isPlayerHoldingKey() {
         final EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-        return Items.isKey(player.getHeldItem());
+        return Items.isKey(player.getHeldItem(EnumHand.MAIN_HAND));
     }
 }

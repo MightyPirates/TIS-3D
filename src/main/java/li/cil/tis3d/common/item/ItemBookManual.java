@@ -7,9 +7,12 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBook;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -51,24 +54,24 @@ public final class ItemBookManual extends ItemBook {
     @Override
     public void addInformation(final ItemStack stack, final EntityPlayer player, final List<String> tooltip, final boolean advanced) {
         super.addInformation(stack, player, tooltip, advanced);
-        final String info = StatCollector.translateToLocal(TOOLTIP_BOOK_MANUAL);
+        final String info = I18n.translateToLocal(TOOLTIP_BOOK_MANUAL);
         tooltip.addAll(getFontRenderer(stack).listFormattedStringToWidth(info, Constants.MAX_TOOLTIP_WIDTH));
     }
 
     @Override
-    public boolean onItemUse(final ItemStack stack, final EntityPlayer player, final World world, final BlockPos pos, final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
-        return tryOpenManual(world, player, ManualAPI.pathFor(world, pos));
+    public EnumActionResult onItemUse(final ItemStack stack, final EntityPlayer player, final World world, final BlockPos pos, final EnumHand hand, final EnumFacing facing, final float hitX, final float hitY, final float hitZ) {
+        return tryOpenManual(world, player, ManualAPI.pathFor(world, pos)) ? EnumActionResult.SUCCESS : EnumActionResult.PASS;
     }
 
     @Override
-    public ItemStack onItemRightClick(final ItemStack stack, final World world, final EntityPlayer playerIn) {
+    public ActionResult<ItemStack> onItemRightClick(final ItemStack stack, final World world, final EntityPlayer player, final EnumHand hand) {
         if (world.isRemote) {
-            if (playerIn.isSneaking()) {
+            if (player.isSneaking()) {
                 ManualAPI.reset();
             }
-            ManualAPI.openFor(playerIn);
+            ManualAPI.openFor(player);
         }
-        return super.onItemRightClick(stack, world, playerIn);
+        return super.onItemRightClick(stack, world, player, hand);
     }
 
     // --------------------------------------------------------------------- //

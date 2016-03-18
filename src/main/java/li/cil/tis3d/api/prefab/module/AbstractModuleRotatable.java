@@ -7,7 +7,7 @@ import li.cil.tis3d.api.module.traits.Rotatable;
 import li.cil.tis3d.util.EnumUtils;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -57,31 +57,31 @@ public abstract class AbstractModuleRotatable extends AbstractModule implements 
     // General utility
 
     @Override
-    protected Vec3 hitToUV(final Vec3 hitPos) {
-        final Vec3 uv = super.hitToUV(hitPos);
+    protected Vec3d hitToUV(final Vec3d hitPos) {
+        final Vec3d uv = super.hitToUV(hitPos);
         switch (getFace()) {
             case Y_NEG:
                 switch (getFacing()) {
                     case LEFT:
-                        return new Vec3(uv.yCoord, 1 - uv.xCoord, 0);
+                        return new Vec3d(uv.yCoord, 1 - uv.xCoord, 0);
                     case RIGHT:
-                        return new Vec3(1 - uv.yCoord, uv.xCoord, 0);
+                        return new Vec3d(1 - uv.yCoord, uv.xCoord, 0);
                     case UP:
                         return uv;
                     case DOWN:
-                        return new Vec3(1 - uv.xCoord, 1 - uv.yCoord, 0);
+                        return new Vec3d(1 - uv.xCoord, 1 - uv.yCoord, 0);
                 }
                 break;
             case Y_POS:
                 switch (getFacing()) {
                     case LEFT:
-                        return new Vec3(1 - uv.yCoord, uv.xCoord, 0);
+                        return new Vec3d(1 - uv.yCoord, uv.xCoord, 0);
                     case RIGHT:
-                        return new Vec3(uv.yCoord, 1 - uv.xCoord, 0);
+                        return new Vec3d(uv.yCoord, 1 - uv.xCoord, 0);
                     case UP:
                         return uv;
                     case DOWN:
-                        return new Vec3(1 - uv.xCoord, 1 - uv.yCoord, 0);
+                        return new Vec3d(1 - uv.xCoord, 1 - uv.yCoord, 0);
                 }
                 break;
         }

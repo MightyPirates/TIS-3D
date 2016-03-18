@@ -21,8 +21,8 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -90,7 +90,7 @@ public final class Network {
     // --------------------------------------------------------------------- //
 
     public static NetworkRegistry.TargetPoint getTargetPoint(final World world, final double x, final double y, final double z, final int range) {
-        return new NetworkRegistry.TargetPoint(world.provider.getDimensionId(), x, y, z, range);
+        return new NetworkRegistry.TargetPoint(world.provider.getDimension(), x, y, z, range);
     }
 
     public static NetworkRegistry.TargetPoint getTargetPoint(final World world, final BlockPos position, final int range) {
@@ -192,7 +192,7 @@ public final class Network {
 
         public void sendMessage() {
             final MessageParticleEffect message = new MessageParticleEffect(world, EnumParticleTypes.REDSTONE, x, y, z);
-            final NetworkRegistry.TargetPoint target = new NetworkRegistry.TargetPoint(world.provider.getDimensionId(), x, y, z, RANGE_LOW);
+            final NetworkRegistry.TargetPoint target = new NetworkRegistry.TargetPoint(world.provider.getDimension(), x, y, z, RANGE_LOW);
             Network.INSTANCE.getWrapper().sendToAllAround(message, target);
             if (areAnyPlayersNear(target)) {
                 particlesSent++;
@@ -205,7 +205,7 @@ public final class Network {
             if (obj == null || getClass() != obj.getClass()) return false;
 
             final Position that = (Position) obj;
-            return world.provider.getDimensionId() == that.world.provider.getDimensionId() &&
+            return world.provider.getDimension() == that.world.provider.getDimension() &&
                     Float.compare(that.x, x) == 0 &&
                     Float.compare(that.y, y) == 0 &&
                     Float.compare(that.z, z) == 0;
@@ -214,7 +214,7 @@ public final class Network {
 
         @Override
         public int hashCode() {
-            int result = world.provider.getDimensionId();
+            int result = world.provider.getDimension();
             result = 31 * result + (x != +0.0f ? Float.floatToIntBits(x) : 0);
             result = 31 * result + (y != +0.0f ? Float.floatToIntBits(y) : 0);
             result = 31 * result + (z != +0.0f ? Float.floatToIntBits(z) : 0);
@@ -524,7 +524,7 @@ public final class Network {
      * @return <tt>true</tt> if there are nearby players; <tt>false</tt> otherwise.
      */
     private static boolean areAnyPlayersNear(final NetworkRegistry.TargetPoint target) {
-        for (final EntityPlayerMP player : FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().playerEntityList) {
+        for (final EntityPlayerMP player : FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerList()) {
             if (player.dimension == target.dimension) {
                 final double dx = target.x - player.posX;
                 final double dy = target.y - player.posY;

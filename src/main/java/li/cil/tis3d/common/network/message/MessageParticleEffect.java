@@ -14,7 +14,7 @@ public final class MessageParticleEffect implements IMessage {
     private double z;
 
     public MessageParticleEffect(final World world, final EnumParticleTypes particleType, final double x, final double y, final double z) {
-        this.dimension = world.provider.getDimensionId();
+        this.dimension = world.provider.getDimension();
         this.particleType = particleType;
         this.x = x;
         this.y = y;

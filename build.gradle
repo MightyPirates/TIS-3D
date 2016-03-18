@@ -51,7 +51,7 @@ version = "MC${config.minecraft.version}-${project.version}"
 minecraft {
     version = "${config.minecraft.version}-${config.forge.version}"
     runDir = "run"
-    mappings = "stable_20"
+    mappings = "snapshot_20160312"
     replace "@VERSION@", project.simpleVersion
 }
 
@@ -60,7 +60,7 @@ repositories {
 }
 
 dependencies {
-    deobfCompile "mezz.jei:jei_1.8.9:${config.jei.version}"
+    //deobfCompile "mezz.jei:jei_1.8.9:${config.jei.version}"
 }
 
 processResources {

@@ -11,8 +11,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.translation.I18n;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.relauncher.Side;
@@ -46,21 +49,21 @@ public final class ItemBookCode extends ItemBook {
     @Override
     public void addInformation(final ItemStack stack, final EntityPlayer playerIn, final List<String> tooltip, final boolean advanced) {
         super.addInformation(stack, playerIn, tooltip, advanced);
-        final String info = StatCollector.translateToLocal(TOOLTIP_BOOK_CODE);
+        final String info = I18n.translateToLocal(TOOLTIP_BOOK_CODE);
         tooltip.addAll(getFontRenderer(stack).listFormattedStringToWidth(info, li.cil.tis3d.common.Constants.MAX_TOOLTIP_WIDTH));
     }
 
     @Override
-    public ItemStack onItemRightClick(final ItemStack stack, final World world, final EntityPlayer player) {
+    public ActionResult<ItemStack> onItemRightClick(final ItemStack stack, final World world, final EntityPlayer player, final EnumHand hand) {
         if (world.isRemote) {
             player.openGui(TIS3D.instance, GuiHandlerClient.ID_GUI_BOOK_CODE, world, 0, 0, 0);
         }
-        return super.onItemRightClick(stack, world, player);
+        return super.onItemRightClick(stack, world, player, hand);
     }
 
     @Override
-    public boolean doesSneakBypassUse(final World world, final BlockPos pos, final EntityPlayer player) {
-        return world.isBlockLoaded(pos) && world.getTileEntity(pos) instanceof Casing;
+    public boolean doesSneakBypassUse(final ItemStack stack, final IBlockAccess world, final BlockPos pos, final EntityPlayer player) {
+        return world.getTileEntity(pos) instanceof Casing;
     }
 
     // --------------------------------------------------------------------- //

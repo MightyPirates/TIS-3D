@@ -4,7 +4,7 @@ import li.cil.tis3d.api.manual.ImageRenderer;
 import li.cil.tis3d.api.manual.InteractiveImageRenderer;
 import li.cil.tis3d.client.manual.Document;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Optional;

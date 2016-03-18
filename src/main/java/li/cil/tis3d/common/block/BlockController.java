@@ -9,8 +9,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -26,13 +27,13 @@ public final class BlockController extends Block {
     // Common
 
     @Override
-    public boolean isSideSolid(final IBlockAccess world, final BlockPos pos, final EnumFacing side) {
+    public boolean isSideSolid(final IBlockState state, final IBlockAccess world, final BlockPos pos, final EnumFacing side) {
         // Allow levers to be placed on us (wouldn't work because of isFullCube = false otherwise).
         return true;
     }
 
     @Override
-    public boolean isFullCube() {
+    public boolean isFullCube(final IBlockState state) {
         // Prevent fences from visually connecting.
         return false;
     }
@@ -48,14 +49,13 @@ public final class BlockController extends Block {
     }
 
     @Override
-    public boolean onBlockActivated(final World world, final BlockPos pos, final IBlockState state, final EntityPlayer player, final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
-        final ItemStack stack = player.getHeldItem();
-        if (stack != null) {
-            final Item item = stack.getItem();
+    public boolean onBlockActivated(final World world, final BlockPos pos, final IBlockState state, final EntityPlayer player, final EnumHand hand, final ItemStack heldItem, final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
+        if (heldItem != null) {
+            final Item item = heldItem.getItem();
             if (item == net.minecraft.init.Items.book) {
                 if (!world.isRemote) {
                     if (!player.capabilities.isCreativeMode) {
-                        stack.splitStack(1);
+                        heldItem.splitStack(1);
                     }
                     final ItemStack bookManual = new ItemStack(Items.bookManual);
                     if (player.inventory.addItemStackToInventory(bookManual)) {
@@ -79,20 +79,19 @@ public final class BlockController extends Block {
 
             return true;
         }
-
-        return super.onBlockActivated(world, pos, state, player, side, hitX, hitY, hitZ);
+        return super.onBlockActivated(world, pos, state, player, hand, heldItem, side, hitX, hitY, hitZ);
     }
 
     // --------------------------------------------------------------------- //
     // Redstone
 
     @Override
-    public boolean hasComparatorInputOverride() {
+    public boolean hasComparatorInputOverride(final IBlockState state) {
         return true;
     }
 
     @Override
-    public int getComparatorInputOverride(final World world, final BlockPos pos) {
+    public int getComparatorInputOverride(final IBlockState state, final World world, final BlockPos pos) {
         final TileEntity tileEntity = world.getTileEntity(pos);
         if (tileEntity instanceof TileEntityController) {
             final TileEntityController controller = (TileEntityController) tileEntity;

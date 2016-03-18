@@ -13,10 +13,11 @@ import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import li.cil.tis3d.common.tile.TileEntityController;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
@@ -135,7 +136,8 @@ public final class CasingImpl implements Casing {
             setKeyForStack(stack, key);
             lock = Optional.of(key);
         }
-        getCasingWorld().markBlockForUpdate(getPosition());
+        final IBlockState state = getCasingWorld().getBlockState(getPosition());
+        getCasingWorld().notifyBlockUpdate(getPosition(), state, state, 3);
     }
 
     /**
@@ -146,7 +148,8 @@ public final class CasingImpl implements Casing {
     public void unlock(final ItemStack stack) {
         if (Items.isKeyCreative(stack)) {
             lock = Optional.empty();
-            getCasingWorld().markBlockForUpdate(getPosition());
+            final IBlockState state = getCasingWorld().getBlockState(getPosition());
+            getCasingWorld().notifyBlockUpdate(getPosition(), state, state, 3);
         } else {
             getKeyFromStack(stack).ifPresent(this::unlock);
         }
@@ -160,7 +163,8 @@ public final class CasingImpl implements Casing {
     public void unlock(final UUID key) {
         if (lock.map(key::equals).orElse(false)) {
             lock = Optional.empty();
-            getCasingWorld().markBlockForUpdate(getPosition());
+            final IBlockState state = getCasingWorld().getBlockState(getPosition());
+            getCasingWorld().notifyBlockUpdate(getPosition(), state, state, 3);
         }
     }
 

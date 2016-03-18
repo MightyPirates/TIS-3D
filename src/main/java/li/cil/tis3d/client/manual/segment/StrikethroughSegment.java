@@ -1,6 +1,6 @@
 package li.cil.tis3d.client.manual.segment;
 
-import net.minecraft.util.EnumChatFormatting;
+import com.mojang.realmsclient.gui.ChatFormatting;
 
 public final class StrikethroughSegment extends TextSegment {
     public StrikethroughSegment(final Segment parent, final String text) {
@@ -9,7 +9,7 @@ public final class StrikethroughSegment extends TextSegment {
 
     @Override
     protected String format() {
-        return EnumChatFormatting.STRIKETHROUGH.toString();
+        return ChatFormatting.STRIKETHROUGH.toString();
     }
 
     @Override

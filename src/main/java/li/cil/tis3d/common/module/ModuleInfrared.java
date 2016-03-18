@@ -18,10 +18,10 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -134,7 +134,7 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
     // InfraredReceiver
 
     @Override
-    public void onInfraredPacket(final InfraredPacket packet, final MovingObjectPosition hit) {
+    public void onInfraredPacket(final InfraredPacket packet, final RayTraceResult hit) {
         if (getCasing().getCasingWorld().isRemote) {
             return;
         }
@@ -196,8 +196,8 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
         final BlockPos blockPos = getCasing().getPosition().offset(facing);
 
         final World world = getCasing().getCasingWorld();
-        final Vec3 position = new Vec3(blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5);
-        final Vec3 direction = new Vec3(facing.getFrontOffsetX(), facing.getFrontOffsetY(), facing.getFrontOffsetZ());
+        final Vec3d position = new Vec3d(blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5);
+        final Vec3d direction = new Vec3d(facing.getFrontOffsetX(), facing.getFrontOffsetY(), facing.getFrontOffsetZ());
 
         InfraredAPI.sendPacket(world, position, direction, value);
     }

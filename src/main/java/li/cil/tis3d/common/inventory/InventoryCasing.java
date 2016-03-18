@@ -6,6 +6,7 @@ import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.ModuleProvider;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.tile.TileEntityCasing;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
@@ -33,7 +34,8 @@ public final class InventoryCasing extends Inventory implements ISidedInventory 
     public void markDirty() {
         tileEntity.markDirty();
         if (tileEntity.getWorld() != null) {
-            tileEntity.getWorld().markBlockForUpdate(tileEntity.getPos());
+            final IBlockState state = tileEntity.getWorld().getBlockState(tileEntity.getPos());
+            tileEntity.getWorld().notifyBlockUpdate(tileEntity.getPos(), state, state, 3);
         }
     }
 
