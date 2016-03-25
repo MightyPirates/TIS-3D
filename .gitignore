@@ -1,23 +1,18 @@
-# Gradle
-/.gradle
-/build
+/*
 
-# Eclipse
-/.classpath
-/.project
-/.settings
-/bin
+# folders
+!/gradle
+!/src
 
-# IntelliJ IDEA
-/*.iml
-/*.ipr
-/*.iws
-/.idea
-/out
+# files
+!/.gitignore
+!/README.md
+!/build.gradle
+!/build.properties
+!/gradlew
+!/gradlew.bat
+!/changelog.md
 
-# Debugging
-/eclipse
-/run
-
-# OS X
-.DS_Store
+# APIs and dependencies
+!/libs
+/libs/*
