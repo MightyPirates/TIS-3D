@@ -90,16 +90,21 @@ abstract class BasicTextSegment extends AbstractSegment implements Segment {
         while (pos < s.length()) {
             pos += 1;
             final int width = stringWidth(s.substring(0, pos), renderer);
-            if (width >= maxWidth) {
-                if (lastBreak > 0 || fullWidth <= maxLineWidth || containsBreak(s))
-                    if (maxWidth == maxLineWidth && fullWidth == maxLineWidth && !containsBreak(s)) {
-                        return s.length();
-                    } else {
-                        return lastBreak + 1;
-                    }
-                else {
-                    return pos - 1;
+            final boolean exceedsLineLength = width >= maxWidth;
+            if (exceedsLineLength) {
+                final boolean mayUseFullLine = maxWidth == maxLineWidth;
+                final boolean canFitInLine = fullWidth <= maxLineWidth;
+                final boolean matchesFullLine = fullWidth == maxLineWidth;
+                if (lastBreak >= 0) {
+                    return lastBreak + 1; // Can do a soft split.
                 }
+                if (mayUseFullLine && matchesFullLine) {
+                    return s.length(); // Special case for exact match.
+                }
+                if (canFitInLine && !mayUseFullLine) {
+                    return 0; // Wrap line, use next line.
+                }
+                return pos - 1; // Gotta split hard.
             }
             if (pos < s.length() && BREAKS.contains(s.charAt(pos))) {
                 lastBreak = pos;

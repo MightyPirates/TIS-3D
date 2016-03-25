@@ -6,4 +6,4 @@ The casing block houses up to six (6) modules, one on each of its faces. Because
 
 Casings provide four ports for each installed module, which can be used to transfer data across an edge of the casing block. If there is another casing block in the direction of the edge, the data will be transferred through the connecting face and to the adjacent port of the neighboring casing block. Otherwise the port will connect to the module around the respective edge of the casing.
 
-This means there is always a slot for a module behind a port. However, if no module is installed in such a slot, reading from the port leading to it will not succeed, nor will writing to i
+This means there is always a slot for a module behind a port. However, if no module is installed in such a slot, reading from the port leading to it will not succeed, nor will writing to it.
