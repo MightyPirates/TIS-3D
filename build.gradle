@@ -51,7 +51,7 @@ version = "MC${config.minecraft.version}-${project.version}"
 minecraft {
     version = "${config.minecraft.version}-${config.forge.version}"
     runDir = "run"
-    mappings = "snapshot_20160312"
+    mappings = "snapshot_20160506"
     replace "@VERSION@", project.simpleVersion
 }
 

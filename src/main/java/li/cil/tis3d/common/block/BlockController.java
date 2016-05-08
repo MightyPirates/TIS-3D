@@ -20,7 +20,7 @@ import net.minecraft.world.World;
  */
 public final class BlockController extends Block {
     public BlockController() {
-        super(Material.iron);
+        super(Material.IRON);
     }
 
     // --------------------------------------------------------------------- //
@@ -52,7 +52,7 @@ public final class BlockController extends Block {
     public boolean onBlockActivated(final World world, final BlockPos pos, final IBlockState state, final EntityPlayer player, final EnumHand hand, final ItemStack heldItem, final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
         if (heldItem != null) {
             final Item item = heldItem.getItem();
-            if (item == net.minecraft.init.Items.book) {
+            if (item == net.minecraft.init.Items.BOOK) {
                 if (!world.isRemote) {
                     if (!player.capabilities.isCreativeMode) {
                         heldItem.splitStack(1);

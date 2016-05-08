@@ -32,7 +32,9 @@ import li.cil.tis3d.common.provider.ModuleProviderSerialPort;
 import li.cil.tis3d.common.provider.ModuleProviderStack;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -126,17 +128,24 @@ public class ProxyCommon {
                 setHardness(5).
                 setResistance(10).
                 setUnlocalizedName(API.MOD_ID + "." + name).
-                setCreativeTab(API.creativeTab);
-        GameRegistry.registerBlock(block, name);
+                setCreativeTab(API.creativeTab).
+                setRegistryName(name);
+        GameRegistry.register(block);
         GameRegistry.registerTileEntity(tileEntity, name);
+
+        final Item itemBlock = new ItemBlock(block).
+                setRegistryName(name);
+        GameRegistry.register(itemBlock);
+
         return block;
     }
 
     public Item registerItem(final String name, final Supplier<Item> constructor) {
         final Item item = constructor.get().
                 setUnlocalizedName(API.MOD_ID + "." + name).
-                setCreativeTab(API.creativeTab);
-        GameRegistry.registerItem(item, name);
+                setCreativeTab(API.creativeTab).
+                setRegistryName(name);
+        GameRegistry.register(item);
         return item;
     }
 
@@ -155,7 +164,7 @@ public class ProxyCommon {
             return;
         }
 
-        OreDictionary.registerOre(API.MOD_ID + ":module", GameRegistry.findItem(API.MOD_ID, name));
+        OreDictionary.registerOre(API.MOD_ID + ":module", Item.REGISTRY.getObject(new ResourceLocation(API.MOD_ID, name)));
     }
 
 }

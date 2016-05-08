@@ -53,7 +53,7 @@ public final class BlockCasing extends Block {
     };
 
     public BlockCasing() {
-        super(Material.iron);
+        super(Material.IRON);
     }
 
     // --------------------------------------------------------------------- //
@@ -61,7 +61,7 @@ public final class BlockCasing extends Block {
 
     @Override
     public BlockStateContainer createBlockState() {
-        return new ExtendedBlockState(this, new IProperty[0], new IUnlistedProperty[]{OBJModel.OBJProperty.instance});
+        return new ExtendedBlockState(this, new IProperty[0], new IUnlistedProperty[]{OBJModel.OBJProperty.INSTANCE});
     }
 
     @Override
@@ -69,7 +69,7 @@ public final class BlockCasing extends Block {
         final IExtendedBlockState baseState = (IExtendedBlockState) state;
         final TileEntity tileEntity = world.getTileEntity(pos);
         final int mask = packVisibility(tileEntity);
-        return baseState.withProperty(OBJModel.OBJProperty.instance, getCachedObjState(mask));
+        return baseState.withProperty(OBJModel.OBJProperty.INSTANCE, getCachedObjState(mask));
     }
 
     private OBJModel.OBJState getCachedObjState(final int mask) {
@@ -190,7 +190,7 @@ public final class BlockCasing extends Block {
                         if (entity != null) {
                             entity.setNoPickupDelay();
                             entity.onCollideWithPlayer(player);
-                            world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.block_piston_contract, SoundCategory.BLOCKS, 0.2f, 0.8f + world.rand.nextFloat() * 0.1f);
+                            world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.BLOCK_PISTON_CONTRACT, SoundCategory.BLOCKS, 0.2f, 0.8f + world.rand.nextFloat() * 0.1f);
                         }
                     }
                     return true;
@@ -211,7 +211,7 @@ public final class BlockCasing extends Block {
                                     ((Rotatable) newModule).setFacing(orientation);
                                 }
                             }
-                            world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.block_piston_extend, SoundCategory.BLOCKS, 0.2f, 0.8f + world.rand.nextFloat() * 0.1f);
+                            world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.BLOCK_PISTON_EXTEND, SoundCategory.BLOCKS, 0.2f, 0.8f + world.rand.nextFloat() * 0.1f);
                         }
                         return true;
                     }

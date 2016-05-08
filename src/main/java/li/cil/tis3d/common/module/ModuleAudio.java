@@ -36,7 +36,7 @@ public final class ModuleAudio extends AbstractModule {
     /**
      * Resolve instrument ID to sound event used for instrument.
      */
-    private static final SoundEvent[] INSTRUMENTS = new SoundEvent[]{SoundEvents.block_note_harp, SoundEvents.block_note_basedrum, SoundEvents.block_note_snare, SoundEvents.block_note_hat, SoundEvents.block_note_bass};
+    private static final SoundEvent[] INSTRUMENTS = new SoundEvent[]{SoundEvents.BLOCK_NOTE_HARP, SoundEvents.BLOCK_NOTE_BASEDRUM, SoundEvents.BLOCK_NOTE_SNARE, SoundEvents.BLOCK_NOTE_HAT, SoundEvents.BLOCK_NOTE_BASS};
 
     /**
      * The last tick we made a sound. Used to avoid emitting multiple sounds
@@ -70,7 +70,7 @@ public final class ModuleAudio extends AbstractModule {
 
         GlStateManager.enableBlend();
 
-        Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
+        Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         final TextureAtlasSprite icon = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(TextureLoader.LOCATION_MODULE_AUDIO_OVERLAY.toString());
         RenderUtil.drawQuad(icon.getMinU(), icon.getMinV(), icon.getMaxU(), icon.getMaxV());
 
@@ -124,7 +124,7 @@ public final class ModuleAudio extends AbstractModule {
             // Not cancelled, get pitch, sound effect name.
             final int note = event.getVanillaNoteId();
             final float pitch = (float) Math.pow(2, (note - 12) / 12.0);
-            final SoundEvent sound = INSTRUMENTS[event.instrument.ordinal()];
+            final SoundEvent sound = INSTRUMENTS[event.getInstrument().ordinal()];
 
             // Offset to have the actual origin be in front of the module.
             final EnumFacing facing = Face.toEnumFacing(getFace());

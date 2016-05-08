@@ -92,7 +92,7 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
         motionZ = direction.zCoord * TRAVEL_SPEED;
         lifetime = DEFAULT_LIFETIME;
         this.value = value;
-        dataWatcher.set(DATA_VALUE, value & 0xFFFF);
+        getDataManager().set(DATA_VALUE, value & 0xFFFF);
     }
 
     /**
@@ -118,7 +118,7 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
 
     @Override
     protected void entityInit() {
-        dataWatcher.register(DATA_VALUE, 0);
+        getDataManager().register(DATA_VALUE, 0);
         if (!getEntityWorld().isRemote) {
             TickHandlerInfraredPacket.INSTANCE.watchPacket(this);
         }
@@ -377,7 +377,7 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
         final Block block = world.getBlockState(pos).getBlock();
 
         // Traveling through a portal?
-        if (hit.typeOfHit == RayTraceResult.Type.BLOCK && block == Blocks.portal) {
+        if (hit.typeOfHit == RayTraceResult.Type.BLOCK && block == Blocks.PORTAL) {
             setPortal(pos);
             return;
         }

@@ -120,7 +120,7 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
 
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
 
-        RenderUtil.bindTexture(TextureMap.locationBlocksTexture);
+        RenderUtil.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 
         final TextureAtlasSprite icon;
         if (casing.isLocked()) {

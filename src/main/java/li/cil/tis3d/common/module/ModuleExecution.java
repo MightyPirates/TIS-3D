@@ -151,7 +151,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
     @Override
     public boolean onActivate(final EntityPlayer player, final EnumHand hand, final ItemStack heldItem, final float hitX, final float hitY, final float hitZ) {
         // Vanilla book? If so, make that a code book.
-        if (heldItem != null && heldItem.getItem() == net.minecraft.init.Items.book) {
+        if (heldItem != null && heldItem.getItem() == net.minecraft.init.Items.BOOK) {
             if (!player.getEntityWorld().isRemote) {
                 if (!player.capabilities.isCreativeMode) {
                     heldItem.splitStack(1);
@@ -242,7 +242,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         final MachineState machineState = getState();
 
         // Draw status texture.
-        Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
+        Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         final TextureAtlasSprite icon = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(STATE_LOCATIONS[state.ordinal()]);
         RenderUtil.drawQuad(icon.getMinU(), icon.getMinV(), icon.getMaxU(), icon.getMaxV());
 
@@ -444,7 +444,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
     private static final class SourceCodeProviderVanilla implements SourceCodeProvider {
         @Override
         public boolean worksFor(final ItemStack stack) {
-            return (stack.getItem() == net.minecraft.init.Items.written_book) || (stack.getItem() == net.minecraft.init.Items.writable_book);
+            return (stack.getItem() == net.minecraft.init.Items.WRITTEN_BOOK) || (stack.getItem() == net.minecraft.init.Items.WRITABLE_BOOK);
         }
 
         @Override

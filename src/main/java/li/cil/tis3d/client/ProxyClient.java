@@ -42,7 +42,7 @@ public final class ProxyClient extends ProxyCommon {
         super.onPreInit(event);
 
         // Set up OBJ loader for this mod.
-        OBJLoader.instance.addDomain(API.MOD_ID.toLowerCase());
+        OBJLoader.INSTANCE.addDomain(API.MOD_ID.toLowerCase());
 
         MinecraftForge.EVENT_BUS.register(TextureLoader.INSTANCE);
     }

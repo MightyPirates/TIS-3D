@@ -25,7 +25,7 @@ public final class ItemImageProvider implements ImageProvider {
             optMeta = "";
         }
         final int meta = (Strings.isNullOrEmpty(optMeta)) ? 0 : Integer.parseInt(optMeta.substring(1));
-        final Item item = Item.itemRegistry.getObject(new ResourceLocation(name));
+        final Item item = Item.REGISTRY.getObject(new ResourceLocation(name));
         if (item != null) {
             return new ItemStackImageRenderer(new ItemStack(item, 1, meta));
         } else {

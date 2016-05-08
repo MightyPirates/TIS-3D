@@ -26,7 +26,7 @@ public final class BlockImageProvider implements ImageProvider {
             optMeta = "";
         }
         final int meta = (Strings.isNullOrEmpty(optMeta)) ? 0 : Integer.parseInt(optMeta.substring(1));
-        final Block block = Block.blockRegistry.getObject(new ResourceLocation(name));
+        final Block block = Block.REGISTRY.getObject(new ResourceLocation(name));
         if (block != null && Item.getItemFromBlock(block) != null) {
             return new ItemStackImageRenderer(new ItemStack(block, 1, meta));
         } else {

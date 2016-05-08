@@ -24,7 +24,7 @@ public final class RedstoneInputProviderMinecraft {
             return (short) input;
         } else {
             final IBlockState state = world.getBlockState(inputPos);
-            return (short) Math.max(input, state.getBlock() == Blocks.redstone_wire ? state.getValue(BlockRedstoneWire.POWER) : 0);
+            return (short) Math.max(input, state.getBlock() == Blocks.REDSTONE_WIRE ? state.getValue(BlockRedstoneWire.POWER) : 0);
         }
     }
 

@@ -8,7 +8,9 @@ import li.cil.tis3d.common.block.BlockController;
 import li.cil.tis3d.common.tile.TileEntityCasing;
 import li.cil.tis3d.common.tile.TileEntityController;
 import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
@@ -30,7 +32,7 @@ public final class Blocks {
     }
 
     private static void addBlockRecipe(final String name, final Object specialIngredient, final int count) {
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(GameRegistry.findBlock(API.MOD_ID, name), count),
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(API.MOD_ID, name)), count),
                 "IRI",
                 "RSR",
                 "IRI",

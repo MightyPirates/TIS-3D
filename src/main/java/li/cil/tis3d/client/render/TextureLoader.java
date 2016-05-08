@@ -20,15 +20,15 @@ public final class TextureLoader {
 
     @SubscribeEvent
     public void onTextureStitchPre(final TextureStitchEvent.Pre event) {
-        event.map.registerSprite(LOCATION_CASING_LOCKED_OVERLAY);
-        event.map.registerSprite(LOCATION_CASING_UNLOCKED_OVERLAY);
-        event.map.registerSprite(LOCATION_MODULE_AUDIO_OVERLAY);
-        event.map.registerSprite(LOCATION_MODULE_EXECUTION_OVERLAY_ERROR);
-        event.map.registerSprite(LOCATION_MODULE_EXECUTION_OVERLAY_IDLE);
-        event.map.registerSprite(LOCATION_MODULE_EXECUTION_OVERLAY_RUNNING);
-        event.map.registerSprite(LOCATION_MODULE_EXECUTION_OVERLAY_WAITING);
-        event.map.registerSprite(LOCATION_MODULE_INFRARED_OVERLAY);
-        event.map.registerSprite(LOCATION_MODULE_RANDOM_OVERLAY);
+        event.getMap().registerSprite(LOCATION_CASING_LOCKED_OVERLAY);
+        event.getMap().registerSprite(LOCATION_CASING_UNLOCKED_OVERLAY);
+        event.getMap().registerSprite(LOCATION_MODULE_AUDIO_OVERLAY);
+        event.getMap().registerSprite(LOCATION_MODULE_EXECUTION_OVERLAY_ERROR);
+        event.getMap().registerSprite(LOCATION_MODULE_EXECUTION_OVERLAY_IDLE);
+        event.getMap().registerSprite(LOCATION_MODULE_EXECUTION_OVERLAY_RUNNING);
+        event.getMap().registerSprite(LOCATION_MODULE_EXECUTION_OVERLAY_WAITING);
+        event.getMap().registerSprite(LOCATION_MODULE_INFRARED_OVERLAY);
+        event.getMap().registerSprite(LOCATION_MODULE_RANDOM_OVERLAY);
     }
 
     // --------------------------------------------------------------------- //
