@@ -158,8 +158,8 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
     }
 
     @Override
-    public void writeToNBT(final NBTTagCompound nbt) {
-        super.writeToNBT(nbt);
+    public NBTTagCompound writeToNBT(final NBTTagCompound nbtIn) {
+        final NBTTagCompound nbt = super.writeToNBT(nbtIn);
 
         final NBTTagList pipesNbt = new NBTTagList();
         for (final PipeImpl pipe : pipes) {
@@ -168,6 +168,8 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
             pipesNbt.appendTag(portNbt);
         }
         nbt.setTag(TAG_PIPES, pipesNbt);
+
+        return nbt;
     }
 
     // --------------------------------------------------------------------- //

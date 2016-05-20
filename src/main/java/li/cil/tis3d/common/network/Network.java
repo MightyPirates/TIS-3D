@@ -531,7 +531,7 @@ public final class Network {
                 final double dz = target.z - player.posZ;
 
                 if (dx * dx + dy * dy + dz * dz < target.range * target.range) {
-                    final NetworkDispatcher dispatcher = player.playerNetServerHandler.netManager.channel().attr(NetworkDispatcher.FML_DISPATCHER).get();
+                    final NetworkDispatcher dispatcher = player.connection.netManager.channel().attr(NetworkDispatcher.FML_DISPATCHER).get();
                     if (dispatcher != null) return true;
                 }
             }

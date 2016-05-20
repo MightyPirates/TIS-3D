@@ -7,7 +7,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
     }
 }
 
@@ -51,7 +51,7 @@ version = "MC${config.minecraft.version}-${project.version}"
 minecraft {
     version = "${config.minecraft.version}-${config.forge.version}"
     runDir = "run"
-    mappings = "snapshot_20160506"
+    mappings = "${config.minecraft.mappings}"
     replace "@VERSION@", project.simpleVersion
 }
 

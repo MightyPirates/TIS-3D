@@ -104,12 +104,12 @@ public final class BlockController extends Block {
     // Networking
 
     @Override
-    public void onNeighborBlockChange(final World world, final BlockPos pos, final IBlockState state, final Block neighborBlock) {
+    public void neighborChanged(final IBlockState state, final World world, final BlockPos pos, final Block neighborBlock) {
         final TileEntity tileEntity = world.getTileEntity(pos);
         if (tileEntity instanceof TileEntityController) {
             final TileEntityController controller = (TileEntityController) tileEntity;
             controller.checkNeighbors();
         }
-        super.onNeighborBlockChange(world, pos, state, neighborBlock);
+        super.neighborChanged(state, world, pos, neighborBlock);
     }
 }

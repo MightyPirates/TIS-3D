@@ -208,10 +208,12 @@ public final class TileEntityController extends TileEntityComputer implements IT
     }
 
     @Override
-    public void writeToNBT(final NBTTagCompound nbt) {
-        super.writeToNBT(nbt);
+    public NBTTagCompound writeToNBT(final NBTTagCompound nbtIn) {
+        final NBTTagCompound nbt = super.writeToNBT(nbtIn);
 
         nbt.setInteger(TAG_HCF_COOLDOWN, hcfCooldown);
+
+        return nbt;
     }
 
     // --------------------------------------------------------------------- //

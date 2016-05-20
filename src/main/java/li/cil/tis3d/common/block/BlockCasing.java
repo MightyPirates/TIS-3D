@@ -266,7 +266,7 @@ public final class BlockCasing extends Block {
     // Networking
 
     @Override
-    public void onNeighborBlockChange(final World world, final BlockPos pos, final IBlockState state, final Block neighborBlock) {
+    public void neighborChanged(final IBlockState state, final World world, final BlockPos pos, final Block neighborBlock) {
         final TileEntity tileEntity = world.getTileEntity(pos);
         if (tileEntity instanceof TileEntityCasing) {
             final TileEntityCasing casing = (TileEntityCasing) tileEntity;
@@ -274,6 +274,6 @@ public final class BlockCasing extends Block {
             casing.notifyModulesOfBlockChange(neighborBlock);
             casing.markRedstoneDirty();
         }
-        super.onNeighborBlockChange(world, pos, state, neighborBlock);
+        super.neighborChanged(state, world, pos, neighborBlock);
     }
 }

@@ -25,13 +25,13 @@ import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
 import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.Queue;
@@ -268,9 +268,10 @@ public final class TileEntityCasing extends TileEntityComputer implements
     }
 
     @Override
-    public void writeToNBT(final NBTTagCompound nbt) {
-        super.writeToNBT(nbt);
+    public NBTTagCompound writeToNBT(final NBTTagCompound nbtIn) {
+        final NBTTagCompound nbt = super.writeToNBT(nbtIn);
         save(nbt);
+        return nbt;
     }
 
     @Override
@@ -282,10 +283,16 @@ public final class TileEntityCasing extends TileEntityComputer implements
     }
 
     @Override
-    public Packet getDescriptionPacket() {
-        final NBTTagCompound nbt = new NBTTagCompound();
+    @Nullable
+    public SPacketUpdateTileEntity getUpdatePacket() {
+        return new SPacketUpdateTileEntity(getPos(), getBlockMetadata(), getUpdateTag());
+    }
+
+    @Override
+    public NBTTagCompound getUpdateTag() {
+        final NBTTagCompound nbt = super.getUpdateTag();
         save(nbt);
-        return new SPacketUpdateTileEntity(pos, -1, nbt);
+        return nbt;
     }
 
     @Override
