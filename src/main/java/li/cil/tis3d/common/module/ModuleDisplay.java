@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -90,7 +91,8 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
 
     @Override
     public void step() {
-        assert (!getCasing().getCasingWorld().isRemote);
+        final World world = getCasing().getCasingWorld();
+        assert (world != null && !world.isRemote);
 
         for (final Port port : Port.VALUES) {
             stepInput(port);
@@ -99,7 +101,8 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
 
     @Override
     public void onDisabled() {
-        assert (!getCasing().getCasingWorld().isRemote);
+        final World world = getCasing().getCasingWorld();
+        assert (world != null && !world.isRemote);
 
         Arrays.fill(image, 0);
         state = State.COLOR;
@@ -109,6 +112,9 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
 
     @Override
     public void onDisposed() {
+        final World world = getCasing().getCasingWorld();
+        assert (world != null);
+
         if (getCasing().getCasingWorld().isRemote) {
             deleteTexture();
         }

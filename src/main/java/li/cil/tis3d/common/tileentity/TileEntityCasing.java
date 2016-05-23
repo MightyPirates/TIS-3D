@@ -73,11 +73,12 @@ public final class TileEntityCasing extends TileEntityComputer implements
     // --------------------------------------------------------------------- //
     // Networking
 
+    @Nullable
     public TileEntityController getController() {
         return controller;
     }
 
-    public void setController(final TileEntityController controller) {
+    public void setController(@Nullable final TileEntityController controller) {
         this.controller = controller;
     }
 
@@ -178,7 +179,7 @@ public final class TileEntityCasing extends TileEntityComputer implements
     // PipeHost
 
     @Override
-    protected void setNeighbor(final Face face, final TileEntityComputer neighbor) {
+    protected void setNeighbor(final Face face, @Nullable final TileEntityComputer neighbor) {
         super.setNeighbor(face, neighbor);
 
         // Ensure there are no modules installed between two casings.
@@ -249,7 +250,7 @@ public final class TileEntityCasing extends TileEntityComputer implements
     @Override
     public void invalidate() {
         super.invalidate();
-        if (!getCasingWorld().isRemote) {
+        if (!getWorld().isRemote) {
             onDisabled();
         }
         dispose();
@@ -279,7 +280,7 @@ public final class TileEntityCasing extends TileEntityComputer implements
         final NBTTagCompound nbt = packet.getNbtCompound();
         load(nbt);
         final IBlockState state = getWorld().getBlockState(getPos());
-        getCasingWorld().notifyBlockUpdate(getPos(), state, state, 3);
+        getWorld().notifyBlockUpdate(getPos(), state, state, 3);
     }
 
     @Override

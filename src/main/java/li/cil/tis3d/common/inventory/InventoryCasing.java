@@ -33,7 +33,7 @@ public final class InventoryCasing extends Inventory implements ISidedInventory 
     @Override
     public void markDirty() {
         tileEntity.markDirty();
-        if (tileEntity.getWorld() != null) {
+        if (tileEntity.hasWorldObj()) {
             final IBlockState state = tileEntity.getWorld().getBlockState(tileEntity.getPos());
             tileEntity.getWorld().notifyBlockUpdate(tileEntity.getPos(), state, state, 3);
         }

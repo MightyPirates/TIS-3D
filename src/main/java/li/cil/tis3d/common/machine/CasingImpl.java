@@ -21,6 +21,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -180,7 +181,7 @@ public final class CasingImpl implements Casing {
      * @param face   the face to install the module on.
      * @param module the module to install on the face, or <tt>null</tt> for none.
      */
-    public void setModule(final Face face, final Module module) {
+    public void setModule(final Face face, @Nullable final Module module) {
         if (getModule(face) == module) {
             return;
         }
@@ -297,10 +298,10 @@ public final class CasingImpl implements Casing {
      * @return the key, if present.
      */
     private static Optional<UUID> getKeyFromStack(final ItemStack stack) {
-        if (!stack.hasTagCompound()) {
+        final NBTTagCompound nbt = stack.getTagCompound();
+        if (nbt == null) {
             return Optional.empty();
         }
-        final NBTTagCompound nbt = stack.getTagCompound();
         if (!nbt.hasKey(TAG_KEY_MS) || !nbt.hasKey(TAG_KEY_LS)) {
             return Optional.empty();
         }
@@ -314,10 +315,10 @@ public final class CasingImpl implements Casing {
      * @param key   the key to store on the stack.
      */
     private static void setKeyForStack(final ItemStack stack, final UUID key) {
-        if (!stack.hasTagCompound()) {
-            stack.setTagCompound(new NBTTagCompound());
+        NBTTagCompound nbt = stack.getTagCompound();
+        if (nbt == null) {
+            stack.setTagCompound(nbt = new NBTTagCompound());
         }
-        final NBTTagCompound nbt = stack.getTagCompound();
         nbt.setLong(TAG_KEY_MS, key.getMostSignificantBits());
         nbt.setLong(TAG_KEY_LS, key.getLeastSignificantBits());
     }
@@ -326,6 +327,7 @@ public final class CasingImpl implements Casing {
     // Casing
 
     @Override
+    @Nullable
     public World getCasingWorld() {
         return tileEntity.getWorld();
     }
@@ -346,6 +348,7 @@ public final class CasingImpl implements Casing {
     }
 
     @Override
+    @Nullable
     public Module getModule(final Face face) {
         return modules[face.ordinal()];
     }

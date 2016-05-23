@@ -286,7 +286,10 @@ public final class Network {
     }
 
     private static CasingSendQueue getQueueFor(final Casing casing) {
-        final Side side = casing.getCasingWorld().isRemote ? Side.CLIENT : Side.SERVER;
+        final World world = casing.getCasingWorld();
+        assert (world != null);
+
+        final Side side = world.isRemote ? Side.CLIENT : Side.SERVER;
         final Map<Casing, CasingSendQueue> queues = getQueues(side);
         CasingSendQueue queue = queues.get(casing);
         if (queue == null) {
@@ -358,7 +361,10 @@ public final class Network {
          * @param casing the casing this queue belongs to.
          */
         public void flush(final Casing casing) {
-            final Side side = casing.getCasingWorld().isRemote ? Side.CLIENT : Side.SERVER;
+            final World world = casing.getCasingWorld();
+            assert (world != null);
+
+            final Side side = world.isRemote ? Side.CLIENT : Side.SERVER;
             final ByteBuf data = Unpooled.buffer();
             collectData(data);
             if (data.readableBytes() > 0) {

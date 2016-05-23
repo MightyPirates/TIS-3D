@@ -14,6 +14,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -68,7 +69,8 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
 
     @Override
     public void step() {
-        assert (!getCasing().getCasingWorld().isRemote);
+        final World world = getCasing().getCasingWorld();
+        assert (world != null && !world.isRemote);
 
         for (final Port port : Port.VALUES) {
             stepOutput(port);
@@ -84,7 +86,8 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
 
     @Override
     public void onDisabled() {
-        assert (!getCasing().getCasingWorld().isRemote);
+        final World world = getCasing().getCasingWorld();
+        assert (world != null && !world.isRemote);
 
         input = 0;
         output = 0;
@@ -96,7 +99,8 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
 
     @Override
     public void onEnabled() {
-        assert (!getCasing().getCasingWorld().isRemote);
+        final World world = getCasing().getCasingWorld();
+        assert (world != null && !world.isRemote);
 
         sendData();
     }
@@ -169,7 +173,9 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
     @Override
     public void setRedstoneInput(final short value) {
         // We never call this on the client side, but other might...
-        if (getCasing().getCasingWorld().isRemote) {
+        final World world = getCasing().getCasingWorld();
+        assert (world != null);
+        if (world.isRemote) {
             return;
         }
 
@@ -247,8 +253,11 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
      * Notify all neighbors of a block update, to let them realize our output changed.
      */
     private void notifyNeighbors() {
+        final World world = getCasing().getCasingWorld();
+        assert (world != null);
+
         scheduledNeighborUpdate = false;
-        final Block blockType = getCasing().getCasingWorld().getBlockState(getCasing().getPosition()).getBlock();
+        final Block blockType = world.getBlockState(getCasing().getPosition()).getBlock();
         getCasing().getCasingWorld().notifyNeighborsOfStateChange(getCasing().getPosition(), blockType);
     }
 

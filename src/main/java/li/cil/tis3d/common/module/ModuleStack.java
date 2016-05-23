@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -60,7 +61,8 @@ public final class ModuleStack extends AbstractModuleRotatable {
 
     @Override
     public void step() {
-        assert (!getCasing().getCasingWorld().isRemote);
+        final World world = getCasing().getCasingWorld();
+        assert (world != null && !world.isRemote);
 
         stepOutput();
         stepInput();
@@ -68,7 +70,8 @@ public final class ModuleStack extends AbstractModuleRotatable {
 
     @Override
     public void onDisabled() {
-        assert (!getCasing().getCasingWorld().isRemote);
+        final World world = getCasing().getCasingWorld();
+        assert (world != null && !world.isRemote);
 
         // Clear stack on shutdown.
         top = -1;
@@ -78,7 +81,8 @@ public final class ModuleStack extends AbstractModuleRotatable {
 
     @Override
     public void onWriteComplete(final Port port) {
-        assert (!getCasing().getCasingWorld().isRemote);
+        final World world = getCasing().getCasingWorld();
+        assert (world != null && !world.isRemote);
 
         // Pop the top value (the one that was being written).
         pop();

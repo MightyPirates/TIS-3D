@@ -32,6 +32,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
@@ -99,7 +100,8 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
 
     @Override
     public void step() {
-        assert (!getCasing().getCasingWorld().isRemote);
+        final World world = getCasing().getCasingWorld();
+        assert (world != null && !world.isRemote);
 
         final State prevState = state;
 
@@ -126,14 +128,16 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
 
     @Override
     public void onEnabled() {
-        assert (!getCasing().getCasingWorld().isRemote);
+        final World world = getCasing().getCasingWorld();
+        assert (world != null && !world.isRemote);
 
         sendFullState();
     }
 
     @Override
     public void onDisabled() {
-        assert (!getCasing().getCasingWorld().isRemote);
+        final World world = getCasing().getCasingWorld();
+        assert (world != null && !world.isRemote);
 
         getState().reset();
         state = State.IDLE;
@@ -202,7 +206,9 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         }
 
         // Compile the code into our machine state.
-        if (!getCasing().getCasingWorld().isRemote) {
+        final World world = getCasing().getCasingWorld();
+        assert (world != null);
+        if (!world.isRemote) {
             compile(code, player);
             sendFullState();
         }
@@ -309,7 +315,9 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
      * @param player the player that issued the compile, or <tt>null</tt>.
      */
     public void compile(final Iterable<String> code, final EntityPlayer player) {
-        if (getCasing().getCasingWorld().isRemote) {
+        final World world = getCasing().getCasingWorld();
+        assert (world != null);
+        if (world.isRemote) {
             return; // When called from ItemBookCode e.g.
         }
 
@@ -449,11 +457,11 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
 
         @Override
         public Iterable<String> codeFor(final ItemStack stack) {
-            if (!stack.hasTagCompound()) {
+            final NBTTagCompound nbt = stack.getTagCompound();
+            if (nbt == null) {
                 return null;
             }
 
-            final NBTTagCompound nbt = stack.getTagCompound();
             final NBTTagList pages = nbt.getTagList("pages", net.minecraftforge.common.util.Constants.NBT.TAG_STRING);
             if (pages.tagCount() < 1) {
                 return null;

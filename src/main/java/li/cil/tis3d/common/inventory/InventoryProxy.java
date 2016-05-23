@@ -5,6 +5,8 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 
+import javax.annotation.Nullable;
+
 public interface InventoryProxy extends IInventory {
     IInventory getInventory();
 
@@ -29,7 +31,7 @@ public interface InventoryProxy extends IInventory {
     }
 
     @Override
-    default void setInventorySlotContents(final int slot, final ItemStack stack) {
+    default void setInventorySlotContents(final int slot, @Nullable final ItemStack stack) {
         getInventory().setInventorySlotContents(slot, stack);
     }
 

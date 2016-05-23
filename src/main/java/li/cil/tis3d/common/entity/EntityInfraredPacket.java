@@ -26,6 +26,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -255,7 +256,7 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
 
     // --------------------------------------------------------------------- //
 
-    private void emitParticles(final RayTraceResult hit) {
+    private void emitParticles(@Nullable final RayTraceResult hit) {
         final World world = getEntityWorld();
         if (world.isRemote) {
             // Entities regularly die too quickly for the client to have a
@@ -343,6 +344,7 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
         }
     }
 
+    @Nullable
     private RayTraceResult checkEntityCollision(final World world, final Vec3d start, final Vec3d target) {
         RayTraceResult entityHit = null;
         double bestSqrDistance = Double.POSITIVE_INFINITY;

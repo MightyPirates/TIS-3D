@@ -68,7 +68,8 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
 
     @Override
     public void step() {
-        assert (!getCasing().getCasingWorld().isRemote);
+        final World world = getCasing().getCasingWorld();
+        assert (world != null && !world.isRemote);
 
         scan();
         stepOutput();
@@ -77,7 +78,8 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
 
     @Override
     public void onDisabled() {
-        assert (!getCasing().getCasingWorld().isRemote);
+        final World world = getCasing().getCasingWorld();
+        assert (world != null && !world.isRemote);
 
         // Reset serial interface on shutdown.
         serialInterface.ifPresent(SerialInterface::reset);
@@ -85,7 +87,8 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
 
     @Override
     public void onWriteComplete(final Port port) {
-        assert (!getCasing().getCasingWorld().isRemote);
+        final World world = getCasing().getCasingWorld();
+        assert (world != null && !world.isRemote);
 
         // Consume the read value (the one that was being written).
         serialInterface.ifPresent(SerialInterface::skip);
@@ -159,6 +162,7 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
         isScanScheduled = false;
 
         final World world = getCasing().getCasingWorld();
+        assert (world != null);
         final BlockPos neighborPos = getCasing().getPosition().offset(Face.toEnumFacing(getFace()));
         final EnumFacing neighborSide = Face.toEnumFacing(getFace().getOpposite());
         if (world.isBlockLoaded(neighborPos)) {

@@ -6,14 +6,15 @@ import li.cil.tis3d.common.ProxyCommon;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.item.ItemBookCode;
 import li.cil.tis3d.common.item.ItemBookManual;
-import net.minecraft.init.*;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,19 +31,19 @@ public final class Items {
 
     // --------------------------------------------------------------------- //
 
-    public static boolean isItem(final ItemStack stack, final Item item) {
+    public static boolean isItem(@Nullable final ItemStack stack, final Item item) {
         return stack != null && stack.getItem() == item;
     }
 
-    public static boolean isBookCode(final ItemStack stack) {
+    public static boolean isBookCode(@Nullable final ItemStack stack) {
         return isItem(stack, bookCode);
     }
 
-    public static boolean isBookManual(final ItemStack stack) {
+    public static boolean isBookManual(@Nullable final ItemStack stack) {
         return isItem(stack, bookManual);
     }
 
-    public static boolean isKey(final ItemStack stack) {
+    public static boolean isKey(@Nullable final ItemStack stack) {
         return isItem(stack, key) || isKeyCreative(stack);
     }
 
@@ -99,7 +100,8 @@ public final class Items {
             return;
         }
 
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(API.MOD_ID, name)), 2),
+        final Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(API.MOD_ID, name));
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(item, 2),
                 "PPP",
                 "ISI",
                 " R ",

@@ -10,10 +10,13 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
+
 public interface CasingProxy extends Casing {
     Casing getCasing();
 
     @Override
+    @Nullable
     default World getCasingWorld() {
         return getCasing().getCasingWorld();
     }
@@ -34,6 +37,7 @@ public interface CasingProxy extends Casing {
     }
 
     @Override
+    @Nullable
     default Module getModule(final Face face) {
         return getCasing().getModule(face);
     }

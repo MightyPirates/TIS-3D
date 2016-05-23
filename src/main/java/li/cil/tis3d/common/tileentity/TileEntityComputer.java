@@ -13,6 +13,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
+import javax.annotation.Nullable;
+
 public abstract class TileEntityComputer extends TileEntity implements PipeHost {
     // --------------------------------------------------------------------- //
     // Persisted data.
@@ -126,6 +128,7 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
     // PipeHost
 
     @Override
+    @Nullable
     public World getPipeHostWorld() {
         return getWorld();
     }
@@ -196,7 +199,7 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
         }
     }
 
-    protected void setNeighbor(final Face face, final TileEntityComputer neighbor) {
+    protected void setNeighbor(final Face face, @Nullable final TileEntityComputer neighbor) {
         // If a neighbor changed, do a rescan in the controller.
         final TileEntityComputer oldNeighbor = neighbors[face.ordinal()];
         if (neighbor != oldNeighbor) {

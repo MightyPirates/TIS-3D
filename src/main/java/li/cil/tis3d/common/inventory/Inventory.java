@@ -10,6 +10,8 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.util.Constants;
 
+import javax.annotation.Nullable;
+
 /**
  * Base implementation of an array based inventory.
  */
@@ -109,7 +111,7 @@ public class Inventory implements IInventory {
     }
 
     @Override
-    public void setInventorySlotContents(final int index, final ItemStack stack) {
+    public void setInventorySlotContents(final int index, @Nullable final ItemStack stack) {
         if (items[index] == stack) {
             return;
         }

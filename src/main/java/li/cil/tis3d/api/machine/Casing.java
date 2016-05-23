@@ -9,6 +9,8 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
+
 /**
  * A casing for TIS-3D modules.
  * <p>
@@ -20,6 +22,7 @@ public interface Casing {
      *
      * @return the world the casing lives in.
      */
+    @Nullable
     World getCasingWorld();
 
     /**
@@ -56,6 +59,7 @@ public interface Casing {
      * @param face the face to get the module for.
      * @return the module installed on that face, or <tt>null</tt>.
      */
+    @Nullable
     Module getModule(Face face);
 
     /**

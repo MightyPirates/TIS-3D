@@ -34,6 +34,7 @@ import net.minecraftforge.common.property.ExtendedBlockState;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,7 +89,7 @@ public final class BlockCasing extends Block {
         }
     }
 
-    private int packVisibility(final TileEntity tileEntity) {
+    private int packVisibility(@Nullable final TileEntity tileEntity) {
         int mask = 0;
         if (tileEntity instanceof TileEntityCasing) {
             final TileEntityCasing casing = (TileEntityCasing) tileEntity;
@@ -144,7 +145,7 @@ public final class BlockCasing extends Block {
     }
 
     @Override
-    public boolean onBlockActivated(final World world, final BlockPos pos, final IBlockState state, final EntityPlayer player, final EnumHand hand, final ItemStack heldItem, final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
+    public boolean onBlockActivated(final World world, final BlockPos pos, final IBlockState state, final EntityPlayer player, final EnumHand hand, @Nullable final ItemStack heldItem, final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
         if (world.isBlockLoaded(pos)) {
             final TileEntity tileEntity = world.getTileEntity(pos);
             if (tileEntity instanceof TileEntityCasing) {
@@ -194,7 +195,7 @@ public final class BlockCasing extends Block {
                         }
                     }
                     return true;
-                } else {
+                } else if (heldItem != null) {
                     // Installing a new module in the casing.
                     if (casing.canInsertItem(side.ordinal(), heldItem, side)) {
                         if (!world.isRemote) {

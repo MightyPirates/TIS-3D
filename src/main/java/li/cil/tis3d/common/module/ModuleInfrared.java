@@ -59,7 +59,8 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
 
     @Override
     public void step() {
-        assert (!getCasing().getCasingWorld().isRemote);
+        final World world = getCasing().getCasingWorld();
+        assert (world != null && !world.isRemote);
 
         stepOutput();
         stepInput();
@@ -69,14 +70,16 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
 
     @Override
     public void onDisabled() {
-        assert (!getCasing().getCasingWorld().isRemote);
+        final World world = getCasing().getCasingWorld();
+        assert (world != null && !world.isRemote);
 
         receiveQueue.clear();
     }
 
     @Override
     public void onWriteComplete(final Port port) {
-        assert (!getCasing().getCasingWorld().isRemote);
+        final World world = getCasing().getCasingWorld();
+        assert (world != null && !world.isRemote);
 
         // Pop the top value (the one that was being written).
         receiveQueue.removeFirst();
@@ -135,7 +138,9 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
 
     @Override
     public void onInfraredPacket(final InfraredPacket packet, final RayTraceResult hit) {
-        if (getCasing().getCasingWorld().isRemote) {
+        final World world = getCasing().getCasingWorld();
+        assert (world != null);
+        if (world.isRemote) {
             return;
         }
 
@@ -176,7 +181,9 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
             }
             if (receivingPipe.canTransfer()) {
                 // Don't actually read more values if we already sent a packet this tick.
-                if (getCasing().getCasingWorld().getTotalWorldTime() > lastStep) {
+                final World world = getCasing().getCasingWorld();
+                assert (world != null);
+                if (world.getTotalWorldTime() > lastStep) {
                     emitInfraredPacket(receivingPipe.read());
 
                     // Start reading again right away to read as fast as possible.

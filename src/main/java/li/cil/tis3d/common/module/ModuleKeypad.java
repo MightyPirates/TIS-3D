@@ -15,6 +15,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
@@ -90,7 +91,9 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
         // Handle input on the client and send it to the server for higher
         // hit position resolution (MC sends this to the server at a super
         // low resolution for some reason).
-        if (getCasing().getCasingWorld().isRemote) {
+        final World world = getCasing().getCasingWorld();
+        assert (world != null);
+        if (world.isRemote) {
             final Vec3d uv = hitToUV(new Vec3d(hitX, hitY, hitZ));
             final int button = uvToButton((float) uv.xCoord, (float) uv.yCoord);
             if (button == -1) {
@@ -109,7 +112,9 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
 
     @Override
     public void onData(final NBTTagCompound nbt) {
-        if (getCasing().getCasingWorld().isRemote) {
+        final World world = getCasing().getCasingWorld();
+        assert (world != null);
+        if (world.isRemote) {
             // Got state on which key is currently 'pressed'.
             if (nbt.hasKey(TAG_VALUE)) {
                 value = Optional.of(nbt.getShort(TAG_VALUE));
