@@ -11,11 +11,18 @@ import net.minecraft.util.MovingObjectPosition;
  * <p>
  * Things checked for this interface are:
  * <ul>
- * <li>{@link net.minecraft.entity.Entity}</li>
  * <li>{@link net.minecraft.block.Block}</li>
- * <li>{@link net.minecraft.tileentity.TileEntity}</li>
  * <li>{@link li.cil.tis3d.api.module.Module} in {@link Casing}.</li>
  * </ul>
+ * <p>
+ * Things checked for capabilities of this type are:
+ * <ul>
+ * <li>{@link net.minecraft.entity.Entity}</li>
+ * <li>{@link net.minecraft.tileentity.TileEntity}</li>
+ * </ul>
+ * <p>
+ * For compatibility, entities and tile entities implementing this interface will have
+ * the corresponding capability attached automatically.
  * <p>
  * Note that for non-opaque blocks, defined as <tt>!{@link Material#blocksMovement()} ||
  * !{@link Material#isOpaque()} || !{@link Material#blocksLight()})</tt>) this will

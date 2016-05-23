@@ -6,7 +6,7 @@ import net.minecraft.util.Vec3;
 /**
  * Represents an infrared packet carrying a single value.
  * <p>
- * Implement the {@link InfraredReceiver} interface to interact with these.
+ * Use the {@link InfraredReceiver} interface to interact with these.
  */
 public interface InfraredPacket {
     /**

@@ -2,6 +2,7 @@ package li.cil.tis3d.common.entity;
 
 import li.cil.tis3d.api.infrared.InfraredPacket;
 import li.cil.tis3d.api.infrared.InfraredReceiver;
+import li.cil.tis3d.common.capabilities.CapabilityInfraredReceiver;
 import li.cil.tis3d.common.event.TickHandlerInfraredPacket;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageParticleEffect;
@@ -388,8 +389,11 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
         }
 
         final TileEntity tileEntity = world.getTileEntity(pos);
-        if (tileEntity instanceof InfraredReceiver) {
-            ((InfraredReceiver) tileEntity).onInfraredPacket(this, hit);
+        if (tileEntity != null) {
+            final InfraredReceiver capability = tileEntity.getCapability(CapabilityInfraredReceiver.INFRARED_RECEIVER_CAPABILITY, hit.sideHit);
+            if (capability != null) {
+                capability.onInfraredPacket(this, hit);
+            }
         }
     }
 
@@ -399,8 +403,11 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
 
         // Next up, notify receiver, if any.
         final Entity entity = hit.entityHit;
-        if (entity instanceof InfraredReceiver) {
-            ((InfraredReceiver) entity).onInfraredPacket(this, hit);
+        if (entity != null) {
+            final InfraredReceiver capability = entity.getCapability(CapabilityInfraredReceiver.INFRARED_RECEIVER_CAPABILITY, hit.sideHit);
+            if (capability != null) {
+                capability.onInfraredPacket(this, hit);
+            }
         }
     }
 }
