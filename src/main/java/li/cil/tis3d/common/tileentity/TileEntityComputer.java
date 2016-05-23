@@ -1,4 +1,4 @@
-package li.cil.tis3d.common.tile;
+package li.cil.tis3d.common.tileentity;
 
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;

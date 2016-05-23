@@ -11,6 +11,7 @@ import li.cil.tis3d.common.api.InfraredAPIImpl;
 import li.cil.tis3d.common.api.ManualAPIImpl;
 import li.cil.tis3d.common.api.ModuleAPIImpl;
 import li.cil.tis3d.common.api.SerialAPIImpl;
+import li.cil.tis3d.common.capabilities.CapabilityInfraredReceiver;
 import li.cil.tis3d.common.entity.EntityInfraredPacket;
 import li.cil.tis3d.common.event.TickHandlerInfraredPacket;
 import li.cil.tis3d.common.init.Blocks;
@@ -61,6 +62,9 @@ public class ProxyCommon {
         API.manualAPI = ManualAPIImpl.INSTANCE;
         API.moduleAPI = new ModuleAPIImpl();
         API.serialAPI = SerialAPIImpl.INSTANCE;
+
+        // Initialize capabilities.
+        CapabilityInfraredReceiver.register();
 
         // Register blocks and items.
         Blocks.registerBlocks(this);

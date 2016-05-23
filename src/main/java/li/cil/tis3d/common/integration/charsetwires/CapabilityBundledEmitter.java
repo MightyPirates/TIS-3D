@@ -4,7 +4,7 @@ import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.traits.BundledRedstone;
-import li.cil.tis3d.common.tile.TileEntityCasing;
+import li.cil.tis3d.common.tileentity.TileEntityCasing;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;

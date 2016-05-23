@@ -14,8 +14,8 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'maven-publish'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
 file "build.properties" withReader {
     def prop = new Properties()
@@ -23,9 +23,9 @@ file "build.properties" withReader {
     ext.config = new ConfigSlurper().parse prop
 }
 
-version = "${config.mod.version}"
-group = "li.cil.tis3d"
-archivesBaseName = "TIS-3D"
+version = config.mod.version
+group = config.mod.group
+archivesBaseName = config.mod.name
 
 def getGitRef() {
   try {
@@ -51,7 +51,7 @@ version = "MC${config.minecraft.version}-${project.version}"
 minecraft {
     version = "${config.minecraft.version}-${config.forge.version}"
     runDir = "run"
-    mappings = "${config.minecraft.mappings}"
+    mappings = config.minecraft.mappings
     replace "@VERSION@", project.simpleVersion
 }
 

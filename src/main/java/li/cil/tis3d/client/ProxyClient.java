@@ -16,7 +16,7 @@ import li.cil.tis3d.common.ProxyCommon;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.init.Blocks;
 import li.cil.tis3d.common.init.Items;
-import li.cil.tis3d.common.tile.TileEntityCasing;
+import li.cil.tis3d.common.tileentity.TileEntityCasing;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
