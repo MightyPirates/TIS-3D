@@ -24,7 +24,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.client.model.obj.OBJLoader;
+import li.cil.tis3d.client.model.obj.OBJLoader;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -43,6 +44,7 @@ public final class ProxyClient extends ProxyCommon {
 
         // Set up OBJ loader for this mod.
         OBJLoader.INSTANCE.addDomain(API.MOD_ID.toLowerCase());
+        ModelLoaderRegistry.registerLoader(OBJLoader.INSTANCE);
 
         MinecraftForge.EVENT_BUS.register(TextureLoader.INSTANCE);
     }
