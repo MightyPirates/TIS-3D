@@ -2,7 +2,7 @@ package li.cil.tis3d.client.network.handler;
 
 import li.cil.tis3d.common.network.handler.AbstractMessageHandlerWithLocation;
 import li.cil.tis3d.common.network.message.MessageHaltAndCatchFire;
-import li.cil.tis3d.common.tile.TileEntityController;
+import li.cil.tis3d.common.tileentity.TileEntityController;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
