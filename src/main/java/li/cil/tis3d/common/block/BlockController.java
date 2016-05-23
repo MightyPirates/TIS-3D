@@ -2,7 +2,7 @@ package li.cil.tis3d.common.block;
 
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.init.Items;
-import li.cil.tis3d.common.tile.TileEntityController;
+import li.cil.tis3d.common.tileentity.TileEntityController;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;

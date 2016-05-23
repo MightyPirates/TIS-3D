@@ -7,7 +7,7 @@ import io.netty.buffer.ByteBufInputStream;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.common.network.message.MessageCasingData;
-import li.cil.tis3d.common.tile.TileEntityCasing;
+import li.cil.tis3d.common.tileentity.TileEntityCasing;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;

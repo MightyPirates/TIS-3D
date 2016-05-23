@@ -9,7 +9,7 @@ import li.cil.tis3d.api.module.traits.Rotatable;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ItemBookManual;
-import li.cil.tis3d.common.tile.TileEntityCasing;
+import li.cil.tis3d.common.tileentity.TileEntityCasing;
 import li.cil.tis3d.util.InventoryUtils;
 import li.cil.tis3d.util.OneEightCompat;
 import net.minecraft.block.Block;

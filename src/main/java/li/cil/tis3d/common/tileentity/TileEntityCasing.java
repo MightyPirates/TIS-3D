@@ -1,4 +1,4 @@
-package li.cil.tis3d.common.tile;
+package li.cil.tis3d.common.tileentity;
 
 import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.relauncher.Side;
