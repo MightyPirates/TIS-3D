@@ -1338,7 +1338,7 @@ public class OBJModel implements IRetexturableModel, IModelCustomData
                             faces.addAll(g.applyTransform(transform));
                         }
                     }
-                    else
+                    else if (state != null)
                     {
                         transform = state.apply(Optional.<IModelPart>absent());
                         faces.addAll(g.applyTransform(transform));
