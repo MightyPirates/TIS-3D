@@ -25,6 +25,7 @@ import li.cil.tis3d.common.module.execution.instruction.InstructionBitwiseShiftR
 import li.cil.tis3d.common.module.execution.instruction.InstructionBitwiseShiftRightImmediate;
 import li.cil.tis3d.common.module.execution.instruction.InstructionBitwiseXor;
 import li.cil.tis3d.common.module.execution.instruction.InstructionBitwiseXorImmediate;
+import li.cil.tis3d.common.module.execution.instruction.InstructionCall;
 import li.cil.tis3d.common.module.execution.instruction.InstructionHaltAndCatchFire;
 import li.cil.tis3d.common.module.execution.instruction.InstructionJump;
 import li.cil.tis3d.common.module.execution.instruction.InstructionJumpEqualZero;
@@ -34,6 +35,7 @@ import li.cil.tis3d.common.module.execution.instruction.InstructionJumpNotZero;
 import li.cil.tis3d.common.module.execution.instruction.InstructionJumpRelative;
 import li.cil.tis3d.common.module.execution.instruction.InstructionJumpRelativeImmediate;
 import li.cil.tis3d.common.module.execution.instruction.InstructionNegate;
+import li.cil.tis3d.common.module.execution.instruction.InstructionReturn;
 import li.cil.tis3d.common.module.execution.instruction.InstructionSave;
 import li.cil.tis3d.common.module.execution.instruction.InstructionSubtract;
 import li.cil.tis3d.common.module.execution.instruction.InstructionSubtractImmediate;
@@ -182,6 +184,10 @@ public final class Compiler {
         addInstructionEmitter(builder, new InstructionEmitterLabel("JLZ", InstructionJumpLessThanZero::new));
         addInstructionEmitter(builder, new InstructionEmitterLabel("JNZ", InstructionJumpNotZero::new));
         addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate("JRO", InstructionJumpRelative::new, InstructionJumpRelativeImmediate::new));
+        
+        //Call and Return.
+        addInstructionEmitter(builder, new InstructionEmitterLabel("CALL", InstructionCall::new));
+        addInstructionEmitter(builder, new InstructionEmitterUnary("RET", InstructionReturn::new));
 
         // Data transfer.
         addInstructionEmitter(builder, new InstructionEmitterMove());

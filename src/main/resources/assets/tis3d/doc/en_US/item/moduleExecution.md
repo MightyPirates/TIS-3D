@@ -105,3 +105,9 @@ If the current value of `ACC` is *less than* zero (0), jump to the instruction r
 
 `JRO <SRC>`
 Unconditionally jump to a relative address, read from the specified target `SRC`. This modifies the program counter by adding the value read from `SRC` to it. Execution resumes at the new address. `JRO 0` effectively halts the execution module indefinitely.
+
+`CALL <LABEL>`
+Unconditionally jumps to the instruction referenced by the specified label `LABEL`. It also stores the address of the next instruction for use by `RET`.
+
+`RET`
+Jumps to the instruction after the most recent `CALL`. If `CALL` has not been used yet in the program it defaults to jump to the beginning of the program.
