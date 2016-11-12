@@ -135,7 +135,7 @@ public class ProxyCommon {
                 setCreativeTab(API.creativeTab).
                 setRegistryName(name);
         GameRegistry.register(block);
-        GameRegistry.registerTileEntity(tileEntity, name);
+        GameRegistry.registerTileEntityWithAlternatives(tileEntity, API.MOD_ID + ": " + name, name);
 
         final Item itemBlock = new ItemBlock(block).
                 setRegistryName(name);
@@ -170,5 +170,4 @@ public class ProxyCommon {
 
         OreDictionary.registerOre(API.MOD_ID + ":module", Item.REGISTRY.getObject(new ResourceLocation(API.MOD_ID, name)));
     }
-
 }
