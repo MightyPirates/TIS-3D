@@ -65,8 +65,12 @@ public final class Constants {
     public static final String MESSAGE_DUPLICATE_LABEL = "tis3d.compiler.label_duplicate";
 
     // --------------------------------------------------------------------- //
+    // Tooltips
 
     public static final int MAX_TOOLTIP_WIDTH = 200;
+
+    public static final String TOOLTIP_BOOK_CODE = "tis3d.tooltip.book_code";
+    public static final String TOOLTIP_BOOK_MANUAL = "tis3d.tooltip.book_manual";
 
     // --------------------------------------------------------------------- //
 

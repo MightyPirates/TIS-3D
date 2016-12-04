@@ -31,7 +31,6 @@ import java.util.regex.Pattern;
  * The code book, utility book for coding ASM programs for execution modules.
  */
 public final class ItemBookCode extends ItemBook {
-    private static final String TOOLTIP_BOOK_CODE = "tis3d.tooltip.bookCode";
 
     public ItemBookCode() {
         setMaxStackSize(1);
@@ -50,7 +49,7 @@ public final class ItemBookCode extends ItemBook {
     @Override
     public void addInformation(final ItemStack stack, final EntityPlayer playerIn, final List<String> tooltip, final boolean advanced) {
         super.addInformation(stack, playerIn, tooltip, advanced);
-        final String info = I18n.translateToLocal(TOOLTIP_BOOK_CODE);
+        final String info = I18n.translateToLocal(li.cil.tis3d.common.Constants.TOOLTIP_BOOK_CODE);
         tooltip.addAll(getFontRenderer(stack).listFormattedStringToWidth(info, li.cil.tis3d.common.Constants.MAX_TOOLTIP_WIDTH));
     }
 
