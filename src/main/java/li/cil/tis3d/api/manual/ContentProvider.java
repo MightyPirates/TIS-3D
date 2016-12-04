@@ -2,6 +2,8 @@ package li.cil.tis3d.api.manual;
 
 import li.cil.tis3d.api.prefab.manual.ResourceContentProvider;
 
+import javax.annotation.Nullable;
+
 /**
  * This interface allows implementation of content providers for the manual.
  * <p>
@@ -26,5 +28,6 @@ public interface ContentProvider {
      * @param path the path to the manual page we're looking for.
      * @return the content of the document at that path, or <tt>null</tt>.
      */
+    @Nullable
     Iterable<String> getContent(String path);
 }

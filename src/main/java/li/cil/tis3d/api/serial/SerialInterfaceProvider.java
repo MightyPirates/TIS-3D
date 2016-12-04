@@ -4,6 +4,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
+
 /**
  * Creates a serial interface instance for a specified block position.
  * <p>
@@ -29,6 +31,7 @@ public interface SerialInterfaceProvider {
      * @param side     the side of the position in question.
      * @return the interface to use for communicating with the position.
      */
+    @Nullable
     SerialInterface interfaceFor(World world, BlockPos position, EnumFacing side);
 
     /**
@@ -51,6 +54,7 @@ public interface SerialInterfaceProvider {
      *
      * @return the description of the link to the manual page for the interface's protocol.
      */
+    @Nullable
     SerialProtocolDocumentationReference getDocumentationReference();
 
     /**

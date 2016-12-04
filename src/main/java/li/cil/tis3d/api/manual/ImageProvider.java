@@ -1,5 +1,7 @@
 package li.cil.tis3d.api.manual;
 
+import javax.annotation.Nullable;
+
 /**
  * This allows implementing custom image providers for rendering custom content
  * in manual pages. Each provider can be registered for one or more prefixes,
@@ -22,7 +24,8 @@ public interface ImageProvider {
      * return <tt>null</tt>, it should <em>never</em> throw an exception.
      *
      * @param data the data part of the image definition.
-     * @return the image renderer for the data.
+     * @return the image renderer for the data, or <tt>null</tt> if none exists.
      */
+    @Nullable
     ImageRenderer getImage(String data);
 }

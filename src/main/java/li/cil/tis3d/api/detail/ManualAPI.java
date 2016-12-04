@@ -10,6 +10,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
+
 public interface ManualAPI {
     /**
      * Register a tab to be displayed next to the manual.
@@ -23,7 +25,7 @@ public interface ManualAPI {
      * @param tooltip  the unlocalized tooltip of the tab, or <tt>null</tt>.
      * @param path     the path to the page to open when the tab is clicked.
      */
-    void addTab(TabIconRenderer renderer, String tooltip, String path);
+    void addTab(TabIconRenderer renderer, @Nullable String tooltip, String path);
 
     /**
      * Register a path provider.
@@ -74,6 +76,7 @@ public interface ManualAPI {
      * @param stack the stack to find the documentation path for.
      * @return the path to the page, <tt>null</tt> if none is known.
      */
+    @Nullable
     String pathFor(ItemStack stack);
 
     /**
@@ -83,6 +86,7 @@ public interface ManualAPI {
      * @param pos   the position of the block.
      * @return the path to the page, <tt>null</tt> if none is known.
      */
+    @Nullable
     String pathFor(World world, BlockPos pos);
 
     /**
@@ -95,6 +99,7 @@ public interface ManualAPI {
      * @param path the path of the page to get the content of.
      * @return the content of the page, or <tt>null</tt> if none exists.
      */
+    @Nullable
     Iterable<String> contentFor(String path);
 
     /**
@@ -105,8 +110,9 @@ public interface ManualAPI {
      * does not provide a renderer, this will return <tt>null</tt>.
      *
      * @param path the path to the image to get the renderer for.
-     * @return the custom renderer for that path.
+     * @return the custom renderer for that path, or <tt>null</tt> if none exists.
      */
+    @Nullable
     ImageRenderer imageFor(String path);
 
     // ----------------------------------------------------------------------- //
