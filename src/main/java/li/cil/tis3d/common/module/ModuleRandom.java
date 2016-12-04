@@ -28,8 +28,7 @@ public final class ModuleRandom extends AbstractModule {
 
     @Override
     public void step() {
-        final World world = getCasing().getCasingWorld();
-        assert (world != null && !world.isRemote);
+        assert (!getCasing().getCasingWorld().isRemote);
 
         for (final Port port : Port.VALUES) {
             stepOutput(port);
@@ -38,8 +37,7 @@ public final class ModuleRandom extends AbstractModule {
 
     @Override
     public void onWriteComplete(final Port port) {
-        final World world = getCasing().getCasingWorld();
-        assert (world != null && !world.isRemote);
+        assert (!getCasing().getCasingWorld().isRemote);
 
         // No need to clear other writing pipes because we're outputting random
         // values anyway, so yey.
@@ -76,7 +74,6 @@ public final class ModuleRandom extends AbstractModule {
         final Pipe sendingPipe = getCasing().getSendingPipe(getFace(), port);
         if (!sendingPipe.isWriting()) {
             final World world = getCasing().getCasingWorld();
-            assert (world != null);
             final Random random = world.rand;
             final short value = (short) random.nextInt(0xFFFF + 1);
             sendingPipe.beginWrite(value);

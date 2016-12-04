@@ -16,7 +16,6 @@ public interface CasingProxy extends Casing {
     Casing getCasing();
 
     @Override
-    @Nullable
     default World getCasingWorld() {
         return getCasing().getCasingWorld();
     }

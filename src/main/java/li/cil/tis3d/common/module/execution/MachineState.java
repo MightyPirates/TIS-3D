@@ -140,7 +140,7 @@ public final class MachineState {
         last.ifPresent(port -> EnumUtils.writeToNBT(port, TAG_LAST, nbt));
 
         if (code != null) {
-            nbt.setString(TAG_CODE, String.join("\n", code));
+            nbt.setString(TAG_CODE, String.join("\n", (CharSequence[]) code));
         }
     }
 }

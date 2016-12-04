@@ -14,7 +14,6 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
-import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,19 +30,19 @@ public final class Items {
 
     // --------------------------------------------------------------------- //
 
-    public static boolean isItem(@Nullable final ItemStack stack, final Item item) {
-        return stack != null && stack.getItem() == item;
+    public static boolean isItem(final ItemStack stack, final Item item) {
+        return !stack.isEmpty() && stack.getItem() == item;
     }
 
-    public static boolean isBookCode(@Nullable final ItemStack stack) {
+    public static boolean isBookCode(final ItemStack stack) {
         return isItem(stack, bookCode);
     }
 
-    public static boolean isBookManual(@Nullable final ItemStack stack) {
+    public static boolean isBookManual(final ItemStack stack) {
         return isItem(stack, bookManual);
     }
 
-    public static boolean isKey(@Nullable final ItemStack stack) {
+    public static boolean isKey(final ItemStack stack) {
         return isItem(stack, key) || isKeyCreative(stack);
     }
 
@@ -54,8 +53,11 @@ public final class Items {
     // --------------------------------------------------------------------- //
 
     public static void register(final ProxyCommon proxy) {
-        for (final String module : Constants.MODULES) {
-            modules.put(module, proxy.registerModule(module));
+        for (final String moduleName : Constants.MODULES) {
+            final Item module = proxy.registerModule(moduleName);
+            if (module != null) {
+                modules.put(moduleName, module);
+            }
         }
 
         bookCode = proxy.registerItem(Constants.NAME_ITEM_BOOK_CODE, ItemBookCode::new);

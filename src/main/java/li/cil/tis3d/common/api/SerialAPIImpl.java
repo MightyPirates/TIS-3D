@@ -12,6 +12,7 @@ import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -49,12 +50,11 @@ public final class SerialAPIImpl implements SerialAPI {
     }
 
     @Override
+    @Nullable
     public SerialInterfaceProvider getProviderFor(final World world, final BlockPos position, final EnumFacing side) {
-        if (world != null && position != null) {
-            for (final SerialInterfaceProvider provider : providers) {
-                if (provider.worksWith(world, position, side)) {
-                    return provider;
-                }
+        for (final SerialInterfaceProvider provider : providers) {
+            if (provider.worksWith(world, position, side)) {
+                return provider;
             }
         }
         return null;
@@ -72,8 +72,8 @@ public final class SerialAPIImpl implements SerialAPI {
     private static final class SerialProtocolContentProvider extends ResourceContentProvider {
         private static final String LANGUAGE_KEY = "%LANGUAGE%";
         private static final Pattern PATTERN_LANGUAGE_KEY = Pattern.compile(LANGUAGE_KEY);
-        private static final String SERIAL_PROTOCOLS_PATH = "%LANGUAGE%/serialProtocols.md";
-        private static final String SERIAL_PROTOCOLS_TEMPLATE = "%LANGUAGE%/template/serialProtocols.md";
+        private static final String SERIAL_PROTOCOLS_PATH = "%LANGUAGE%/serial_protocols.md";
+        private static final String SERIAL_PROTOCOLS_TEMPLATE = "%LANGUAGE%/template/serial_protocols.md";
         private static final Pattern PATTERN_LIST = Pattern.compile("@PROTOCOLS@");
         private static final Pattern PATTERN_LINE_END = Pattern.compile("\r?\n");
 
@@ -88,7 +88,7 @@ public final class SerialAPIImpl implements SerialAPI {
             super(API.MOD_ID, "doc/");
         }
 
-        public void addReference(final SerialProtocolDocumentationReference reference) {
+        public void addReference(@Nullable final SerialProtocolDocumentationReference reference) {
             if (reference != null && !protocols.contains(reference)) {
                 protocols.add(reference);
                 cachedList = Optional.empty();
@@ -98,6 +98,7 @@ public final class SerialAPIImpl implements SerialAPI {
         // --------------------------------------------------------------------- //
 
         @Override
+        @Nullable
         public Iterable<String> getContent(final String path) {
             final String language = FMLCommonHandler.instance().getCurrentLanguage();
             final String localizedProtocolsPath = PATTERN_LANGUAGE_KEY.matcher(SERIAL_PROTOCOLS_PATH).replaceAll(language);
@@ -110,7 +111,9 @@ public final class SerialAPIImpl implements SerialAPI {
 
         // --------------------------------------------------------------------- //
 
-        private Iterable<String> populateTemplate(final Iterable<String> template) {
+        @Nullable
+        private Iterable<String> populateTemplate(@Nullable final Iterable<String> template) {
+            if (template == null) return null;
             return StreamSupport.
                     stream(template.spliterator(), false).
                     flatMap(line -> Arrays.stream(PATTERN_LINE_END.split(PATTERN_LIST.matcher(line).replaceAll(compileLinkList())))).

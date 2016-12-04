@@ -60,26 +60,24 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
     @Override
     public void step() {
         final World world = getCasing().getCasingWorld();
-        assert (world != null && !world.isRemote);
+        assert (!world.isRemote);
 
         stepOutput();
         stepInput();
 
-        lastStep = getCasing().getCasingWorld().getTotalWorldTime();
+        lastStep = world.getTotalWorldTime();
     }
 
     @Override
     public void onDisabled() {
-        final World world = getCasing().getCasingWorld();
-        assert (world != null && !world.isRemote);
+        assert (!getCasing().getCasingWorld().isRemote);
 
         receiveQueue.clear();
     }
 
     @Override
     public void onWriteComplete(final Port port) {
-        final World world = getCasing().getCasingWorld();
-        assert (world != null && !world.isRemote);
+        assert (!getCasing().getCasingWorld().isRemote);
 
         // Pop the top value (the one that was being written).
         receiveQueue.removeFirst();
@@ -139,7 +137,6 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
     @Override
     public void onInfraredPacket(final InfraredPacket packet, final RayTraceResult hit) {
         final World world = getCasing().getCasingWorld();
-        assert (world != null);
         if (world.isRemote) {
             return;
         }
@@ -182,7 +179,6 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
             if (receivingPipe.canTransfer()) {
                 // Don't actually read more values if we already sent a packet this tick.
                 final World world = getCasing().getCasingWorld();
-                assert (world != null);
                 if (world.getTotalWorldTime() > lastStep) {
                     emitInfraredPacket(receivingPipe.read());
 

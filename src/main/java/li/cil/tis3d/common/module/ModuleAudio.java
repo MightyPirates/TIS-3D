@@ -57,7 +57,7 @@ public final class ModuleAudio extends AbstractModule {
     @Override
     public void step() {
         final World world = getCasing().getCasingWorld();
-        assert (world != null && !world.isRemote);
+        assert (!world.isRemote);
 
         stepInput();
 
@@ -95,7 +95,6 @@ public final class ModuleAudio extends AbstractModule {
             if (receivingPipe.canTransfer()) {
                 // Don't actually read more values if we already sent a packet this tick.
                 final World world = getCasing().getCasingWorld();
-                assert (world != null);
                 if (world.getTotalWorldTime() > lastStep) {
                     playNote(receivingPipe.read());
 
@@ -123,7 +122,6 @@ public final class ModuleAudio extends AbstractModule {
 
         // Send event to check if the sound may be played / should be modulated.
         final World world = getCasing().getCasingWorld();
-        assert (world != null);
         final BlockPos pos = getCasing().getPosition();
         final NoteBlockEvent.Play event = new NoteBlockEvent.Play(world, pos, world.getBlockState(pos), noteId, instrumentId);
         if (!MinecraftForge.EVENT_BUS.post(event)) {

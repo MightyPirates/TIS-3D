@@ -11,7 +11,7 @@ import java.util.regex.Matcher;
 public final class InstructionEmitterMissing implements InstructionEmitter {
     @Override
     public String getInstructionName() {
-        return null;
+        return "";
     }
 
     @Override
