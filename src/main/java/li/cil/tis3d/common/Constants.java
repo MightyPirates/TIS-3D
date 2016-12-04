@@ -54,15 +54,15 @@ public final class Constants {
     // --------------------------------------------------------------------- //
     // Compiler errors
 
-    public static final String MESSAGE_TOO_MANY_LINES = "tis3d.compiler.tooManyLines";
-    public static final String MESSAGE_LINE_TOO_LONG = "tis3d.compiler.tooManyColumns";
-    public static final String MESSAGE_UNEXPECTED_TOKEN = "tis3d.compiler.invalidFormat";
-    public static final String MESSAGE_UNKNOWN_INSTRUCTION = "tis3d.compiler.invalidInstruction";
-    public static final String MESSAGE_MISSING_PARAMETER = "tis3d.compiler.parameterUnderflow";
-    public static final String MESSAGE_INVALID_TARGET = "tis3d.compiler.parameterInvalid";
-    public static final String MESSAGE_EXCESS_TOKENS = "tis3d.compiler.parameterOverflow";
-    public static final String MESSAGE_NO_SUCH_LABEL = "tis3d.compiler.labelNotFound";
-    public static final String MESSAGE_DUPLICATE_LABEL = "tis3d.compiler.labelDuplicate";
+    public static final String MESSAGE_TOO_MANY_LINES = "tis3d.compiler.too_many_lines";
+    public static final String MESSAGE_LINE_TOO_LONG = "tis3d.compiler.too_many_columns";
+    public static final String MESSAGE_UNEXPECTED_TOKEN = "tis3d.compiler.invalid_format";
+    public static final String MESSAGE_UNKNOWN_INSTRUCTION = "tis3d.compiler.invalid_instruction";
+    public static final String MESSAGE_MISSING_PARAMETER = "tis3d.compiler.parameter_underflow";
+    public static final String MESSAGE_INVALID_TARGET = "tis3d.compiler.parameter_invalid";
+    public static final String MESSAGE_EXCESS_TOKENS = "tis3d.compiler.parameter_overflow";
+    public static final String MESSAGE_NO_SUCH_LABEL = "tis3d.compiler.label_not_found";
+    public static final String MESSAGE_DUPLICATE_LABEL = "tis3d.compiler.label_duplicate";
 
     // --------------------------------------------------------------------- //
 

@@ -20,15 +20,15 @@ item.tis3d.prism.name=棱镜
 tile.tis3d.casing.name=外壳
 tile.tis3d.controller.name=控制器
 
-tis3d.compiler.tooManyLines=行太多
-tis3d.compiler.tooManyColumns=行太长
-tis3d.compiler.invalidFormat=意外的标记
-tis3d.compiler.invalidInstruction=无效操作码
-tis3d.compiler.parameterUnderflow=缺少操作数
-tis3d.compiler.parameterInvalid=无效寄存器
-tis3d.compiler.parameterOverflow=太多操作数
-tis3d.compiler.labelNotFound=未定义标签
-tis3d.compiler.labelDuplicate=标签已经定义
+tis3d.compiler.too_many_lines=行太多
+tis3d.compiler.too_many_columns=行太长
+tis3d.compiler.invalid_format=意外的标记
+tis3d.compiler.invalid_instruction=无效操作码
+tis3d.compiler.parameter_underflow=缺少操作数
+tis3d.compiler.parameter_invalid=无效寄存器
+tis3d.compiler.parameter_overflow=太多操作数
+tis3d.compiler.label_not_found=未定义标签
+tis3d.compiler.label_duplicate=标签已经定义
 
 tis3d.manual.home=主页
 tis3d.manual.blocks=方块
