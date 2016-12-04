@@ -19,18 +19,19 @@ import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.integration.Integration;
 import li.cil.tis3d.common.integration.redstone.RedstoneIntegration;
 import li.cil.tis3d.common.item.ItemModule;
+import li.cil.tis3d.common.module.ModuleAudio;
+import li.cil.tis3d.common.module.ModuleBundledRedstone;
+import li.cil.tis3d.common.module.ModuleDisplay;
+import li.cil.tis3d.common.module.ModuleExecution;
+import li.cil.tis3d.common.module.ModuleInfrared;
+import li.cil.tis3d.common.module.ModuleKeypad;
+import li.cil.tis3d.common.module.ModuleRandom;
+import li.cil.tis3d.common.module.ModuleRandomAccessMemory;
+import li.cil.tis3d.common.module.ModuleRedstone;
+import li.cil.tis3d.common.module.ModuleSerialPort;
+import li.cil.tis3d.common.module.ModuleStack;
 import li.cil.tis3d.common.network.Network;
-import li.cil.tis3d.common.provider.ModuleProviderAudio;
-import li.cil.tis3d.common.provider.ModuleProviderBundledRedstone;
-import li.cil.tis3d.common.provider.ModuleProviderDisplay;
-import li.cil.tis3d.common.provider.ModuleProviderExecution;
-import li.cil.tis3d.common.provider.ModuleProviderInfrared;
-import li.cil.tis3d.common.provider.ModuleProviderKeypad;
-import li.cil.tis3d.common.provider.ModuleProviderRandom;
-import li.cil.tis3d.common.provider.ModuleProviderRandomAccessMemory;
-import li.cil.tis3d.common.provider.ModuleProviderRedstone;
-import li.cil.tis3d.common.provider.ModuleProviderSerialPort;
-import li.cil.tis3d.common.provider.ModuleProviderStack;
+import li.cil.tis3d.common.provider.SimpleModuleProvider;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -44,6 +45,7 @@ import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 
+import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 /**
@@ -88,7 +90,7 @@ public class ProxyCommon {
         Items.addRecipes();
 
         // Register entities.
-        EntityRegistry.registerModEntity(EntityInfraredPacket.class, Constants.NAME_ENTITY_INFRARED_PACKET, 1, TIS3D.instance, 16, 1, true);
+        EntityRegistry.registerModEntity(new ResourceLocation(API.MOD_ID, Constants.NAME_ENTITY_INFRARED_PACKET), EntityInfraredPacket.class, Constants.NAME_ENTITY_INFRARED_PACKET, 1, TIS3D.instance, 16, 1, true);
 
         // Register network handler.
         Network.INSTANCE.init();
@@ -99,17 +101,17 @@ public class ProxyCommon {
         MinecraftForge.EVENT_BUS.register(TickHandlerInfraredPacket.INSTANCE);
 
         // Register providers for built-in modules.
-        ModuleAPI.addProvider(new ModuleProviderAudio());
-        ModuleAPI.addProvider(new ModuleProviderBundledRedstone());
-        ModuleAPI.addProvider(new ModuleProviderDisplay());
-        ModuleAPI.addProvider(new ModuleProviderExecution());
-        ModuleAPI.addProvider(new ModuleProviderInfrared());
-        ModuleAPI.addProvider(new ModuleProviderKeypad());
-        ModuleAPI.addProvider(new ModuleProviderSerialPort());
-        ModuleAPI.addProvider(new ModuleProviderStack());
-        ModuleAPI.addProvider(new ModuleProviderRandom());
-        ModuleAPI.addProvider(new ModuleProviderRandomAccessMemory());
-        ModuleAPI.addProvider(new ModuleProviderRedstone());
+        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_AUDIO, ModuleAudio::new));
+        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_BUNDLED_REDSTONE, ModuleBundledRedstone::new));
+        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_DISPLAY, ModuleDisplay::new));
+        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_EXECUTION, ModuleExecution::new));
+        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_INFRARED, ModuleInfrared::new));
+        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_KEYPAD, ModuleKeypad::new));
+        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_SERIAL_PORT, ModuleSerialPort::new));
+        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_STACK, ModuleStack::new));
+        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_RANDOM, ModuleRandom::new));
+        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY, ModuleRandomAccessMemory::new));
+        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_REDSTONE, ModuleRedstone::new));
 
         // Add default manual providers for server side stuff.
         ManualAPI.addProvider(new GameRegistryPathProvider());
@@ -153,6 +155,7 @@ public class ProxyCommon {
         return item;
     }
 
+    @Nullable
     public Item registerModule(final String name) {
         if (Settings.disabledModules.contains(name)) {
             return null;
