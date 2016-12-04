@@ -21,6 +21,7 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -54,11 +55,11 @@ public final class ItemBookCode extends ItemBook {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(final ItemStack stack, final World world, final EntityPlayer player, final EnumHand hand) {
+    public ActionResult<ItemStack> onItemRightClick(final World world, final EntityPlayer player, final EnumHand hand) {
         if (world.isRemote) {
             player.openGui(TIS3D.instance, GuiHandlerClient.ID_GUI_BOOK_CODE, world, 0, 0, 0);
         }
-        return super.onItemRightClick(stack, world, player, hand);
+        return super.onItemRightClick(world, player, hand);
     }
 
     @Override
@@ -70,7 +71,7 @@ public final class ItemBookCode extends ItemBook {
     // ItemBook
 
     @Override
-    public boolean isItemTool(final ItemStack stack) {
+    public boolean isEnchantable(final ItemStack stack) {
         return false;
     }
 
@@ -213,7 +214,7 @@ public final class ItemBookCode extends ItemBook {
          * @param nbt the tag to load the data from.
          * @return the data loaded from the tag.
          */
-        public static Data loadFromNBT(final NBTTagCompound nbt) {
+        public static Data loadFromNBT(@Nullable final NBTTagCompound nbt) {
             final Data data = new Data();
             if (nbt != null) {
                 data.readFromNBT(nbt);
@@ -238,10 +239,11 @@ public final class ItemBookCode extends ItemBook {
          * @param data  the data to save to the item stack.
          */
         public static void saveToStack(final ItemStack stack, final Data data) {
-            if (!stack.hasTagCompound()) {
-                stack.setTagCompound(new NBTTagCompound());
+            NBTTagCompound nbt = stack.getTagCompound();
+            if (nbt == null) {
+                stack.setTagCompound(nbt = new NBTTagCompound());
             }
-            data.writeToNBT(stack.getTagCompound());
+            data.writeToNBT(nbt);
         }
     }
 }

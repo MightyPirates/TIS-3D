@@ -6,6 +6,7 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.traits.Redstone;
 import li.cil.tis3d.api.module.traits.Rotatable;
+import li.cil.tis3d.client.model.obj.OBJModel;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ItemBookManual;
 import li.cil.tis3d.common.tileentity.TileEntityCasing;
@@ -29,7 +30,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import li.cil.tis3d.client.model.obj.OBJModel;
 import net.minecraftforge.common.property.ExtendedBlockState;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
@@ -112,7 +112,7 @@ public final class BlockCasing extends Block {
         if (tileEntity instanceof TileEntityCasing) {
             final TileEntityCasing casing = (TileEntityCasing) tileEntity;
             final ItemStack stack = casing.getStackInSlot(target.sideHit.ordinal());
-            if (stack != null) {
+            if (!stack.isEmpty()) {
                 return stack.copy();
             }
         }
@@ -145,11 +145,12 @@ public final class BlockCasing extends Block {
     }
 
     @Override
-    public boolean onBlockActivated(final World world, final BlockPos pos, final IBlockState state, final EntityPlayer player, final EnumHand hand, @Nullable final ItemStack heldItem, final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
+    public boolean onBlockActivated(final World world, final BlockPos pos, final IBlockState state, final EntityPlayer player, final EnumHand hand, final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
         if (world.isBlockLoaded(pos)) {
             final TileEntity tileEntity = world.getTileEntity(pos);
             if (tileEntity instanceof TileEntityCasing) {
                 final TileEntityCasing casing = (TileEntityCasing) tileEntity;
+                final ItemStack heldItem = player.getHeldItem(hand);
 
                 // Locking or unlocking the casing?
                 if (Items.isKey(heldItem)) {
@@ -184,7 +185,7 @@ public final class BlockCasing extends Block {
 
                 // Remove old module or install new one.
                 final ItemStack oldModule = casing.getStackInSlot(side.ordinal());
-                if (oldModule != null) {
+                if (!oldModule.isEmpty()) {
                     // Removing a present module from the casing.
                     if (!world.isRemote) {
                         final EntityItem entity = InventoryUtils.drop(world, pos, casing, side.ordinal(), 1, side);
@@ -195,7 +196,7 @@ public final class BlockCasing extends Block {
                         }
                     }
                     return true;
-                } else if (heldItem != null) {
+                } else if (!heldItem.isEmpty()) {
                     // Installing a new module in the casing.
                     if (casing.canInsertItem(side.ordinal(), heldItem, side)) {
                         if (!world.isRemote) {
@@ -219,7 +220,7 @@ public final class BlockCasing extends Block {
                 }
             }
         }
-        return super.onBlockActivated(world, pos, state, player, hand, heldItem, side, hitX, hitY, hitZ);
+        return super.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
     }
 
     @Override
@@ -267,7 +268,7 @@ public final class BlockCasing extends Block {
     // Networking
 
     @Override
-    public void neighborChanged(final IBlockState state, final World world, final BlockPos pos, final Block neighborBlock) {
+    public void neighborChanged(final IBlockState state, final World world, final BlockPos pos, final Block neighborBlock, final BlockPos neighborPos) {
         final TileEntity tileEntity = world.getTileEntity(pos);
         if (tileEntity instanceof TileEntityCasing) {
             final TileEntityCasing casing = (TileEntityCasing) tileEntity;
@@ -275,6 +276,6 @@ public final class BlockCasing extends Block {
             casing.notifyModulesOfBlockChange(neighborBlock);
             casing.markRedstoneDirty();
         }
-        super.neighborChanged(state, world, pos, neighborBlock);
+        super.neighborChanged(state, world, pos, neighborBlock, neighborPos);
     }
 }

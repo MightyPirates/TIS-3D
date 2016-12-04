@@ -13,7 +13,7 @@ public final class OreDictImageProvider implements ImageProvider {
 
     @Override
     public ImageRenderer getImage(final String data) {
-        final ItemStack[] stacks = OreDictionary.getOres(data).stream().filter(stack -> stack != null && stack.getItem() != null).toArray(ItemStack[]::new);
+        final ItemStack[] stacks = OreDictionary.getOres(data).stream().filter(stack -> !stack.isEmpty()).toArray(ItemStack[]::new);
         if (stacks != null && stacks.length > 0) {
             return new ItemStackImageRenderer(stacks);
         } else {

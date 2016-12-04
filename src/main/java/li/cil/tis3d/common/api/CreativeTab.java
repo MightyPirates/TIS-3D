@@ -4,6 +4,7 @@ import li.cil.tis3d.api.API;
 import li.cil.tis3d.common.init.Blocks;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -17,7 +18,7 @@ public final class CreativeTab extends CreativeTabs {
 
     @SideOnly(Side.CLIENT)
     @Override
-    public Item getTabIconItem() {
-        return Item.getItemFromBlock(Blocks.controller);
+    public ItemStack getTabIconItem() {
+        return new ItemStack(Item.getItemFromBlock(Blocks.controller));
     }
 }

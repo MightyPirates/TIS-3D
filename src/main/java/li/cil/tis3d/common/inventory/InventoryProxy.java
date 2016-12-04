@@ -5,14 +5,17 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 
-import javax.annotation.Nullable;
-
 public interface InventoryProxy extends IInventory {
     IInventory getInventory();
 
     @Override
     default int getSizeInventory() {
         return getInventory().getSizeInventory();
+    }
+
+    @Override
+    default boolean isEmpty() {
+        return getInventory().isEmpty();
     }
 
     @Override
@@ -31,7 +34,7 @@ public interface InventoryProxy extends IInventory {
     }
 
     @Override
-    default void setInventorySlotContents(final int slot, @Nullable final ItemStack stack) {
+    default void setInventorySlotContents(final int slot, final ItemStack stack) {
         getInventory().setInventorySlotContents(slot, stack);
     }
 
@@ -46,8 +49,8 @@ public interface InventoryProxy extends IInventory {
     }
 
     @Override
-    default boolean isUseableByPlayer(final EntityPlayer player) {
-        return getInventory().isUseableByPlayer(player);
+    default boolean isUsableByPlayer(final EntityPlayer player) {
+        return getInventory().isUsableByPlayer(player);
     }
 
     @Override

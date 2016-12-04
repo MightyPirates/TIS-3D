@@ -423,7 +423,7 @@ public final class TileEntityController extends TileEntityComputer implements IT
         // scanning (see comment on addNeighbors), re-scan next tick when
         // they all have their world object set... but only exit after having
         // touched all of them, to make sure they've been created.
-        if (newCasings.stream().anyMatch(c -> !c.hasWorldObj())) {
+        if (newCasings.stream().anyMatch(c -> !c.hasWorld())) {
             return;
         }
 

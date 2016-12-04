@@ -72,7 +72,7 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
 
     private boolean isRenderingBackFace(final Face face, final double dx, final double dy, final double dz) {
         final EnumFacing facing = Face.toEnumFacing(face.getOpposite());
-        final double dotProduct = facing.getFrontOffsetX() * dx + facing.getFrontOffsetY() * (dy - Minecraft.getMinecraft().thePlayer.getEyeHeight()) + facing.getFrontOffsetZ() * dz;
+        final double dotProduct = facing.getFrontOffsetX() * dx + facing.getFrontOffsetY() * (dy - Minecraft.getMinecraft().player.getEyeHeight()) + facing.getFrontOffsetZ() * dz;
         return dotProduct < 0;
     }
 
@@ -150,12 +150,12 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
     }
 
     private boolean isPlayerKindaClose(final TileEntityCasing casing) {
-        final EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+        final EntityPlayer player = Minecraft.getMinecraft().player;
         return player.getDistanceSqToCenter(casing.getPos()) < 16 * 16;
     }
 
     private boolean isPlayerHoldingKey() {
-        final EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-        return Items.isKey(player.getHeldItem(EnumHand.MAIN_HAND));
+        final EntityPlayer player = Minecraft.getMinecraft().player;
+        return Items.isKey(player.getHeldItem(EnumHand.MAIN_HAND)) || Items.isKey(player.getHeldItem(EnumHand.OFF_HAND));
     }
 }

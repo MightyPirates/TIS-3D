@@ -15,8 +15,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
-
 /**
  * Block for the controller driving the casings.
  */
@@ -51,8 +49,9 @@ public final class BlockController extends Block {
     }
 
     @Override
-    public boolean onBlockActivated(final World world, final BlockPos pos, final IBlockState state, final EntityPlayer player, final EnumHand hand, @Nullable final ItemStack heldItem, final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
-        if (heldItem != null) {
+    public boolean onBlockActivated(final World world, final BlockPos pos, final IBlockState state, final EntityPlayer player, final EnumHand hand, final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
+        final ItemStack heldItem = player.getHeldItem(hand);
+        if (!heldItem.isEmpty()) {
             final Item item = heldItem.getItem();
             if (item == net.minecraft.init.Items.BOOK) {
                 if (!world.isRemote) {
@@ -63,7 +62,7 @@ public final class BlockController extends Block {
                     if (player.inventory.addItemStackToInventory(bookManual)) {
                         player.inventoryContainer.detectAndSendChanges();
                     }
-                    if (bookManual.stackSize > 0) {
+                    if (bookManual.getCount() > 0) {
                         player.dropItem(bookManual, false, false);
                     }
                 }
@@ -81,7 +80,7 @@ public final class BlockController extends Block {
 
             return true;
         }
-        return super.onBlockActivated(world, pos, state, player, hand, heldItem, side, hitX, hitY, hitZ);
+        return super.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
     }
 
     // --------------------------------------------------------------------- //
@@ -106,12 +105,12 @@ public final class BlockController extends Block {
     // Networking
 
     @Override
-    public void neighborChanged(final IBlockState state, final World world, final BlockPos pos, final Block neighborBlock) {
+    public void neighborChanged(final IBlockState state, final World world, final BlockPos pos, final Block neighborBlock, final BlockPos neighborPos) {
         final TileEntity tileEntity = world.getTileEntity(pos);
         if (tileEntity instanceof TileEntityController) {
             final TileEntityController controller = (TileEntityController) tileEntity;
             controller.checkNeighbors();
         }
-        super.neighborChanged(state, world, pos, neighborBlock);
+        super.neighborChanged(state, world, pos, neighborBlock, neighborPos);
     }
 }

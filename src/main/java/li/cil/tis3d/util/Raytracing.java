@@ -8,6 +8,8 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
+
 /**
  * Custom ray-tracing implementation for ray-block tests, to allow custom
  * filter methods for blocks to take into account.
@@ -70,6 +72,7 @@ public final class Raytracing {
      * @param end   the end of the line to trace.
      * @return the first detected hit, or <tt>null</tt> if there was none.
      */
+    @Nullable
     public static RayTraceResult raytrace(final World world, final Vec3d start, final Vec3d end) {
         return raytrace(world, start, end, Raytracing::intersectIgnoringLiquids);
     }
@@ -83,16 +86,17 @@ public final class Raytracing {
      * @param callback the method to call for each potential hit to perform collision logic.
      * @return the first detected hit, or <tt>null</tt> if there was none.
      */
+    @Nullable
     public static RayTraceResult raytrace(final World world, final Vec3d start, final Vec3d end, final CollisionDetector callback) {
         // Adapted from http://jsfiddle.net/wivlaro/mkaWf/6/
 
-        final int startPosX = MathHelper.floor_double(start.xCoord);
-        final int startPosY = MathHelper.floor_double(start.yCoord);
-        final int startPosZ = MathHelper.floor_double(start.zCoord);
+        final int startPosX = MathHelper.floor(start.xCoord);
+        final int startPosY = MathHelper.floor(start.yCoord);
+        final int startPosZ = MathHelper.floor(start.zCoord);
 
-        final int endPosX = MathHelper.floor_double(end.xCoord);
-        final int endPosY = MathHelper.floor_double(end.yCoord);
-        final int endPosZ = MathHelper.floor_double(end.zCoord);
+        final int endPosX = MathHelper.floor(end.xCoord);
+        final int endPosY = MathHelper.floor(end.yCoord);
+        final int endPosZ = MathHelper.floor(end.zCoord);
 
         final int stepX = endPosX > startPosX ? 1 : endPosX < startPosX ? -1 : 0;
         final int stepY = endPosY > startPosY ? 1 : endPosY < startPosY ? -1 : 0;

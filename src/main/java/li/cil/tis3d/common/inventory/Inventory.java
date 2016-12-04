@@ -10,7 +10,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.util.Constants;
 
-import javax.annotation.Nullable;
+import java.util.Arrays;
 
 /**
  * Base implementation of an array based inventory.
@@ -23,7 +23,7 @@ public class Inventory implements IInventory {
 
     public Inventory(final String name, final int size) {
         this.name = name;
-        this.items = new ItemStack[size];
+        Arrays.fill(items = new ItemStack[size], ItemStack.EMPTY);
     }
 
     // --------------------------------------------------------------------- //
@@ -32,7 +32,7 @@ public class Inventory implements IInventory {
         final NBTTagList itemList = nbt.getTagList(TAG_ITEMS, Constants.NBT.TAG_COMPOUND);
         final int count = Math.min(itemList.tagCount(), items.length);
         for (int index = 0; index < count; index++) {
-            items[index] = ItemStack.loadItemStackFromNBT(itemList.getCompoundTagAt(index));
+            items[index] = new ItemStack(itemList.getCompoundTagAt(index));
         }
     }
 
@@ -82,6 +82,16 @@ public class Inventory implements IInventory {
         return items.length;
     }
 
+    public boolean isEmpty() {
+        for (final ItemStack stack : items) {
+            if (!stack.isEmpty()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     @Override
     public ItemStack getStackInSlot(final int index) {
         return items[index];
@@ -89,14 +99,12 @@ public class Inventory implements IInventory {
 
     @Override
     public ItemStack decrStackSize(final int index, final int count) {
-        if (items[index] == null) {
-            return null;
-        } else if (items[index].stackSize <= count) {
+        if (items[index].getCount() <= count) {
             return removeStackFromSlot(index);
         } else {
             final ItemStack stack = items[index].splitStack(count);
-            if (items[index].stackSize < 1) {
-                items[index] = null;
+            if (items[index].getCount() < 1) {
+                items[index] = ItemStack.EMPTY;
             }
             markDirty();
             return stack;
@@ -106,23 +114,23 @@ public class Inventory implements IInventory {
     @Override
     public ItemStack removeStackFromSlot(final int index) {
         final ItemStack stack = items[index];
-        setInventorySlotContents(index, null);
+        setInventorySlotContents(index, ItemStack.EMPTY);
         return stack;
     }
 
     @Override
-    public void setInventorySlotContents(final int index, @Nullable final ItemStack stack) {
+    public void setInventorySlotContents(final int index, final ItemStack stack) {
         if (items[index] == stack) {
             return;
         }
 
-        if (items[index] != null) {
+        if (!items[index].isEmpty()) {
             onItemRemoved(index);
         }
 
         items[index] = stack;
 
-        if (items[index] != null) {
+        if (!items[index].isEmpty()) {
             onItemAdded(index);
         }
 
@@ -139,7 +147,7 @@ public class Inventory implements IInventory {
     }
 
     @Override
-    public boolean isUseableByPlayer(final EntityPlayer player) {
+    public boolean isUsableByPlayer(final EntityPlayer player) {
         return true;
     }
 

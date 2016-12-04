@@ -30,7 +30,7 @@ public final class MessageBookCodeData implements IMessage {
     public void fromBytes(final ByteBuf buf) {
         final PacketBuffer buffer = new PacketBuffer(buf);
         try {
-            nbt = buffer.readNBTTagCompoundFromBuffer();
+            nbt = buffer.readCompoundTag();
         } catch (final IOException e) {
             e.printStackTrace();
         }
@@ -39,6 +39,6 @@ public final class MessageBookCodeData implements IMessage {
     @Override
     public void toBytes(final ByteBuf buf) {
         final PacketBuffer buffer = new PacketBuffer(buf);
-        buffer.writeNBTTagCompoundToBuffer(nbt);
+        buffer.writeCompoundTag(nbt);
     }
 }

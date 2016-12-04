@@ -27,13 +27,13 @@ public abstract class AbstractMessageWithDimension implements IMessage {
     @Override
     public void fromBytes(final ByteBuf buf) {
         final PacketBuffer buffer = new PacketBuffer(buf);
-        dimension = buffer.readVarIntFromBuffer();
+        dimension = buffer.readVarInt();
 
     }
 
     @Override
     public void toBytes(final ByteBuf buf) {
         final PacketBuffer buffer = new PacketBuffer(buf);
-        buffer.writeVarIntToBuffer(dimension);
+        buffer.writeVarInt(dimension);
     }
 }

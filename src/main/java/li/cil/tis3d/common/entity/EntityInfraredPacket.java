@@ -189,7 +189,7 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
 
     @Override
     public ItemStack getPickedResult(final RayTraceResult hit) {
-        return null;
+        return ItemStack.EMPTY;
     }
 
     @SideOnly(Side.CLIENT)

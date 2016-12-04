@@ -7,6 +7,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
 import java.util.Random;
 
 /**
@@ -24,6 +25,7 @@ public final class InventoryUtils {
      * @param towards   the direction in which to drop the item.
      * @return the entity representing the dropped item stack, or <tt>null</tt> if the stack was null or empty.
      */
+    @Nullable
     public static EntityItem drop(final World world, final BlockPos pos, final IInventory inventory, final int index, final int count, final EnumFacing towards) {
         final ItemStack stack = inventory.decrStackSize(index, count);
         return spawnStackInWorld(world, pos, stack, towards);
@@ -38,8 +40,9 @@ public final class InventoryUtils {
      * @param towards the direction in which to drop the item.
      * @return the entity representing the dropped item stack, or <tt>null</tt> if the stack was null or empty.
      */
+    @Nullable
     public static EntityItem spawnStackInWorld(final World world, final BlockPos pos, final ItemStack stack, final EnumFacing towards) {
-        if (stack == null || stack.stackSize < 1) {
+        if (stack.isEmpty()) {
             return null;
         }
 
@@ -61,7 +64,7 @@ public final class InventoryUtils {
         entity.motionY = 0.0125 * (rng.nextDouble() - 0.5) + oy * 0.08 + (ox + oz) * 0.03;
         entity.motionZ = 0.0125 * (rng.nextDouble() - 0.5) + oz * 0.03;
         entity.setPickupDelay(15);
-        world.spawnEntityInWorld(entity);
+        world.spawnEntity(entity);
 
         return entity;
     }

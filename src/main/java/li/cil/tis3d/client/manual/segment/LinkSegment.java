@@ -93,7 +93,7 @@ public final class LinkSegment extends TextSegment implements InteractiveSegment
             final Object instance = desktop.getMethod("getDesktop").invoke(null);
             desktop.getMethod("browse", URI.class).invoke(instance, new URI(url));
         } catch (final Throwable t) {
-            Minecraft.getMinecraft().thePlayer.addChatMessage(new TextComponentString(t.toString()));
+            Minecraft.getMinecraft().player.sendMessage(new TextComponentString(t.toString()));
         }
     }
 

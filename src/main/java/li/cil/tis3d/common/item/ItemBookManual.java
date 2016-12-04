@@ -17,6 +17,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -27,7 +28,7 @@ public final class ItemBookManual extends ItemBook {
 
     // --------------------------------------------------------------------- //
 
-    public static boolean tryOpenManual(final World world, final EntityPlayer player, final String path) {
+    public static boolean tryOpenManual(final World world, final EntityPlayer player, @Nullable final String path) {
         if (path == null) {
             return false;
         }
@@ -59,26 +60,26 @@ public final class ItemBookManual extends ItemBook {
     }
 
     @Override
-    public EnumActionResult onItemUse(final ItemStack stack, final EntityPlayer player, final World world, final BlockPos pos, final EnumHand hand, final EnumFacing facing, final float hitX, final float hitY, final float hitZ) {
+    public EnumActionResult onItemUse(final EntityPlayer player, final World world, final BlockPos pos, final EnumHand hand, final EnumFacing facing, final float hitX, final float hitY, final float hitZ) {
         return tryOpenManual(world, player, ManualAPI.pathFor(world, pos)) ? EnumActionResult.SUCCESS : EnumActionResult.PASS;
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(final ItemStack stack, final World world, final EntityPlayer player, final EnumHand hand) {
+    public ActionResult<ItemStack> onItemRightClick(final World world, final EntityPlayer player, final EnumHand hand) {
         if (world.isRemote) {
             if (player.isSneaking()) {
                 ManualAPI.reset();
             }
             ManualAPI.openFor(player);
         }
-        return super.onItemRightClick(stack, world, player, hand);
+        return super.onItemRightClick(world, player, hand);
     }
 
     // --------------------------------------------------------------------- //
     // ItemBook
 
     @Override
-    public boolean isItemTool(final ItemStack stack) {
+    public boolean isEnchantable(final ItemStack stack) {
         return false;
     }
 
