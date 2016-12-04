@@ -1,0 +1,40 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "model": "forge:multi-layer",
+        "transform": "forge:default-block",
+        "custom": {
+            "base": "tis3d:module_stack#base",
+            "Solid": "tis3d:module_stack#base",
+            "Mipped Cutout": "tis3d:module_stack#overlay"
+        }
+    },
+    "variants": {
+        "normal": [{ }],
+        "inventory": [{ }],
+        "base": [
+            {
+                "model": "tis3d:module",
+                "textures": {
+                    "all": "tis3d:blocks/casing_module"
+                },
+                "transform": {
+                    "translation": [0.5, 0, 0],
+                    "scale": [1, 0.875, 0.875]
+                }
+            }
+        ],
+        "overlay": [
+            {
+                "model": "tis3d:module_overlay",
+                "textures": {
+                    "overlay": "tis3d:items/module_stack"
+                },
+                "transform": {
+                    "translation": [0.5, 0, 0],
+                    "scale": [1, 0.875,0.875]
+                }
+            }
+        ]
+    }
+}

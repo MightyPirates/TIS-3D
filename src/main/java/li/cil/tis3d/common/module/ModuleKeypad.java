@@ -1,19 +1,18 @@
 package li.cil.tis3d.common.module;
 
-import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
+import li.cil.tis3d.client.render.TextureLoader;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -41,7 +40,6 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
     private static final byte DATA_TYPE_VALUE = 0;
 
     // Rendering info.
-    private static final ResourceLocation LOCATION_OVERLAY = new ResourceLocation(API.MOD_ID, "textures/blocks/overlay/moduleKeypad.png");
     public static final float KEYS_U0 = 5 / 32f;
     public static final float KEYS_V0 = 5 / 32f;
     public static final float KEYS_SIZE_U = 5 / 32f;
@@ -92,7 +90,6 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
         // hit position resolution (MC sends this to the server at a super
         // low resolution for some reason).
         final World world = getCasing().getCasingWorld();
-        assert (world != null);
         if (world.isRemote) {
             final Vec3d uv = hitToUV(new Vec3d(hitX, hitY, hitZ));
             final int button = uvToButton((float) uv.xCoord, (float) uv.yCoord);
@@ -113,7 +110,6 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
     @Override
     public void onData(final NBTTagCompound nbt) {
         final World world = getCasing().getCasingWorld();
-        assert (world != null);
         if (world.isRemote) {
             // Got state on which key is currently 'pressed'.
             if (nbt.hasKey(TAG_VALUE)) {
@@ -139,7 +135,7 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
-        RenderUtil.bindTexture(LOCATION_OVERLAY);
+        RenderUtil.bindTexture(TextureLoader.LOCATION_MODULE_KEYPAD_OVERLAY);
 
         // Draw base texture. Draw half transparent while writing current value,
         // i.e. while no input is possible.

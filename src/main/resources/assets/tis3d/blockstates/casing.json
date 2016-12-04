@@ -9,7 +9,7 @@
         "normal": [{}],
         "inventory": [{
             "transform": "forge:default-block",
-            "model": "tis3d:casingItem.obj"
+            "model": "tis3d:casing_item.obj"
         }],
         "yneg": {
             "true": {

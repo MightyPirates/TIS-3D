@@ -2,7 +2,6 @@ package li.cil.tis3d.common.module;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
@@ -11,12 +10,12 @@ import li.cil.tis3d.api.module.traits.BundledRedstone;
 import li.cil.tis3d.api.module.traits.BundledRedstoneOutputChangedEvent;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
+import li.cil.tis3d.client.render.TextureLoader;
 import li.cil.tis3d.util.ColorUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
@@ -44,8 +43,6 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
     private static final byte DATA_TYPE_UPDATE = 0;
 
     // Rendering info.
-    private static final ResourceLocation LOCATION_OVERLAY = new ResourceLocation(API.MOD_ID, "textures/blocks/overlay/moduleBundledRedstone.png");
-    private static final ResourceLocation LOCATION_COLORS_OVERLAY = new ResourceLocation(API.MOD_ID, "textures/blocks/overlay/moduleBundledRedstoneColors.png");
     private static final float V_STEP = 1 / 16f;
 
     /**
@@ -72,7 +69,7 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
     @Override
     public void step() {
         final World world = getCasing().getCasingWorld();
-        assert (world != null && !world.isRemote);
+        assert (!world.isRemote);
 
         for (final Port port : Port.VALUES) {
             stepOutput(port);
@@ -88,8 +85,7 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
 
     @Override
     public void onDisabled() {
-        final World world = getCasing().getCasingWorld();
-        assert (world != null && !world.isRemote);
+        assert (!getCasing().getCasingWorld().isRemote);
 
         Arrays.fill(input, (short) 0);
         Arrays.fill(output, (short) 0);
@@ -103,8 +99,7 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
 
     @Override
     public void onEnabled() {
-        final World world = getCasing().getCasingWorld();
-        assert (world != null && !world.isRemote);
+        assert (!getCasing().getCasingWorld().isRemote);
 
         sendData();
     }
@@ -137,7 +132,7 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
 
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
 
-        RenderUtil.bindTexture(LOCATION_OVERLAY);
+        RenderUtil.bindTexture(TextureLoader.LOCATION_MODULE_BUNDLED_REDSTONE_OVERLAY);
 
         // Draw base overlay.
         RenderUtil.drawQuad();
@@ -146,7 +141,7 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
             return;
         }
 
-        RenderUtil.bindTexture(LOCATION_COLORS_OVERLAY);
+        RenderUtil.bindTexture(TextureLoader.LOCATION_MODULE_BUNDLED_REDSTONE_COLORS_OVERLAY);
 
         // Draw output bar.
         for (int channel = 0; channel < output.length; channel++) {
@@ -220,7 +215,6 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
     public void setBundledRedstoneInput(final int channel, final short value) {
         // We never call this on the client side, but other might...
         final World world = getCasing().getCasingWorld();
-        assert (world != null);
         if (world.isRemote) {
             return;
         }
@@ -340,11 +334,10 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
      */
     private void notifyNeighbors() {
         final World world = getCasing().getCasingWorld();
-        assert (world != null);
 
         scheduledNeighborUpdate = false;
         final Block blockType = world.getBlockState(getCasing().getPosition()).getBlock();
-        world.notifyNeighborsOfStateChange(getCasing().getPosition(), blockType);
+        world.notifyNeighborsOfStateChange(getCasing().getPosition(), blockType, false);
     }
 
     /**

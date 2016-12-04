@@ -3,19 +3,19 @@
 This index lists all of the documented items in TIS-3D. If you're looking for a block, check out the [block index](../block/index.md) instead.
 
 ## Modules
-- [Audio Module](moduleAudio.md)
-- [Bundled Redstone Module](moduleBundledRedstone.md)
-- [Display Module](moduleDisplay.md)
-- [Execution Module](moduleExecution.md)
-- [Infrared Module](moduleInfrared.md)
-- [Keypad Module](moduleKeypad.md)
-- [Random Module](moduleRandom.md)
-- [RAM Module](moduleRandomAccessMemory.md)
-- [Redstone Module](moduleRedstone.md)
-- [Serial Port Module](moduleSerialPort.md)
-- [Stack Module](moduleStack.md)
+- [Audio Module](module_audio.md)
+- [Bundled Redstone Module](module_bundled_redstone.md)
+- [Display Module](module_display.md)
+- [Execution Module](module_execution.md)
+- [Infrared Module](module_infrared.md)
+- [Keypad Module](module_keypad.md)
+- [Random Module](module_random.md)
+- [RAM Module](module_random_access_memory.md)
+- [Redstone Module](module_redstone.md)
+- [Serial Port Module](module_serial_port.md)
+- [Stack Module](module_stack.md)
 
 ## Utility
 - [Key](key.md)
-- [Manual](bookManual.md)
-- [Code Bible](bookCode.md)
+- [Manual](book_manual.md)
+- [Code Bible](book_code.md)

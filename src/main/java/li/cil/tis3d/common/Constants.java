@@ -1,7 +1,5 @@
 package li.cil.tis3d.common;
 
-import li.cil.tis3d.api.API;
-
 /**
  * Collection of constants used throughout the mod.
  */
@@ -18,24 +16,24 @@ public final class Constants {
     public static final String NAME_BLOCK_CASING = "casing";
     public static final String NAME_BLOCK_CONTROLLER = "controller";
 
-    public static final String NAME_ITEM_BOOK_CODE = "bookCode";
-    public static final String NAME_ITEM_BOOK_MANUAL = "bookManual";
+    public static final String NAME_ITEM_BOOK_CODE = "book_code";
+    public static final String NAME_ITEM_BOOK_MANUAL = "book_manual";
     public static final String NAME_ITEM_KEY = "key";
-    public static final String NAME_ITEM_KEY_CREATIVE = "keyCreative";
-    public static final String NAME_ITEM_MODULE_AUDIO = "moduleAudio";
-    public static final String NAME_ITEM_MODULE_BUNDLED_REDSTONE = "moduleBundledRedstone";
-    public static final String NAME_ITEM_MODULE_DISPLAY = "moduleDisplay";
-    public static final String NAME_ITEM_MODULE_EXECUTION = "moduleExecution";
-    public static final String NAME_ITEM_MODULE_INFRARED = "moduleInfrared";
-    public static final String NAME_ITEM_MODULE_KEYPAD = "moduleKeypad";
-    public static final String NAME_ITEM_MODULE_REDSTONE = "moduleRedstone";
-    public static final String NAME_ITEM_MODULE_SERIAL_PORT = "moduleSerialPort";
-    public static final String NAME_ITEM_MODULE_STACK = "moduleStack";
-    public static final String NAME_ITEM_MODULE_RANDOM = "moduleRandom";
-    public static final String NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY = "moduleRandomAccessMemory";
+    public static final String NAME_ITEM_KEY_CREATIVE = "key_creative";
+    public static final String NAME_ITEM_MODULE_AUDIO = "module_audio";
+    public static final String NAME_ITEM_MODULE_BUNDLED_REDSTONE = "module_bundled_redstone";
+    public static final String NAME_ITEM_MODULE_DISPLAY = "module_display";
+    public static final String NAME_ITEM_MODULE_EXECUTION = "module_execution";
+    public static final String NAME_ITEM_MODULE_INFRARED = "module_infrared";
+    public static final String NAME_ITEM_MODULE_KEYPAD = "module_keypad";
+    public static final String NAME_ITEM_MODULE_REDSTONE = "module_redstone";
+    public static final String NAME_ITEM_MODULE_SERIAL_PORT = "module_serial_port";
+    public static final String NAME_ITEM_MODULE_STACK = "module_stack";
+    public static final String NAME_ITEM_MODULE_RANDOM = "module_random";
+    public static final String NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY = "module_random_access_memory";
     public static final String NAME_ITEM_PRISM = "prism";
 
-    public static final String NAME_ENTITY_INFRARED_PACKET = API.MOD_ID + ":infraredPacket";
+    public static final String NAME_ENTITY_INFRARED_PACKET = "infrared_packet";
 
     public static final String NAME_INVENTORY_CASING = "container.casing";
 
