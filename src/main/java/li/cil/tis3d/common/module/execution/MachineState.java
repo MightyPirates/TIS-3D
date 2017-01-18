@@ -26,6 +26,11 @@ public final class MachineState {
      * Program counter, i.e. the index of the next operation to execute.
      */
     public int pc = 0;
+    
+    /**
+     * Address ret should return to.
+     */
+    public int reta = 0;
 
     /**
      * Accumulator register.
@@ -53,6 +58,7 @@ public final class MachineState {
     // NBT tag names.
     public static final String TAG_CODE = "code";
     public static final String TAG_PC = "pc";
+    public static final String TAG_RETA = "reta";
     public static final String TAG_ACC = "acc";
     public static final String TAG_BAK = "bak";
     public static final String TAG_LAST = "last";
@@ -90,6 +96,7 @@ public final class MachineState {
      */
     public void reset() {
         pc = 0;
+        reta = 0;
         acc = 0;
         bak = 0;
         last = Optional.empty();
@@ -122,6 +129,7 @@ public final class MachineState {
         }
 
         pc = nbt.getInteger(TAG_PC);
+        reta = nbt.getInteger(TAG_RETA);
         acc = nbt.getShort(TAG_ACC);
         bak = nbt.getShort(TAG_BAK);
         if (nbt.hasKey(TAG_LAST)) {
@@ -135,6 +143,7 @@ public final class MachineState {
 
     public void writeToNBT(final NBTTagCompound nbt) {
         nbt.setInteger(TAG_PC, pc);
+        nbt.setInteger(TAG_RETA, reta);
         nbt.setShort(TAG_ACC, acc);
         nbt.setShort(TAG_BAK, bak);
         last.ifPresent(port -> EnumUtils.writeToNBT(port, TAG_LAST, nbt));
