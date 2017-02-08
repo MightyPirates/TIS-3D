@@ -10,6 +10,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
+
 /**
  * This API allows interfacing with the in-game manual of OpenComputers.
  * <p>
@@ -98,6 +100,7 @@ public final class ManualAPI {
      * @param path the path to the image to get the renderer for.
      * @return the custom renderer for that path.
      */
+    @Nullable
     public static ImageRenderer imageFor(final String path) {
         if (API.manualAPI != null)
             return API.manualAPI.imageFor(path);
@@ -112,6 +115,7 @@ public final class ManualAPI {
      * @param stack the stack to find the documentation path for.
      * @return the path to the page, <tt>null</tt> if none is known.
      */
+    @Nullable
     public static String pathFor(final ItemStack stack) {
         if (API.manualAPI != null)
             return API.manualAPI.pathFor(stack);
@@ -125,6 +129,7 @@ public final class ManualAPI {
      * @param pos   the position of the block.
      * @return the path to the page, <tt>null</tt> if none is known.
      */
+    @Nullable
     public static String pathFor(final World world, final BlockPos pos) {
         if (API.manualAPI != null)
             return API.manualAPI.pathFor(world, pos);
@@ -137,6 +142,7 @@ public final class ManualAPI {
      * @param path the path of the page to get the content of.
      * @return the content of the page, or <tt>null</tt> if none exists.
      */
+    @Nullable
     public static Iterable<String> contentFor(final String path) {
         if (API.manualAPI != null)
             return API.manualAPI.contentFor(path);

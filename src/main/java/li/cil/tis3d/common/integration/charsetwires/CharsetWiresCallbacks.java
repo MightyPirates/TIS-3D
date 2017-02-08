@@ -18,9 +18,9 @@ public final class CharsetWiresCallbacks {
     public static final CharsetWiresCallbacks INSTANCE = new CharsetWiresCallbacks();
 
     @SubscribeEvent
-    public void onAttachCapabilities(final AttachCapabilitiesEvent.TileEntity event) {
-        if (event.getTileEntity() instanceof TileEntityCasing) {
-            final TileEntityCasing tileEntity = (TileEntityCasing) event.getTileEntity();
+    public void onAttachTileEntityCapabilities(final AttachCapabilitiesEvent<TileEntity> event) {
+        if (event.getObject() instanceof TileEntityCasing) {
+            final TileEntityCasing tileEntity = (TileEntityCasing) event.getObject();
             event.addCapability(CapabilityRedstoneEmitter.PROVIDER_REDSTONE_EMITTER, new CapabilityRedstoneEmitter.Provider(tileEntity));
             event.addCapability(CapabilityRedstoneReceiver.PROVIDER_REDSTONE_RECEIVER, new CapabilityRedstoneReceiver.Provider(tileEntity));
             event.addCapability(CapabilityBundledEmitter.PROVIDER_BUNDLED_EMITTER, new CapabilityBundledEmitter.Provider(tileEntity));

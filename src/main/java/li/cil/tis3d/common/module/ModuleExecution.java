@@ -311,12 +311,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
      * @param code   the code to compile.
      * @param player the player that issued the compile.
      */
-    public void compile(final Iterable<String> code, final EntityPlayer player) {
-        final World world = getCasing().getCasingWorld();
-        if (world.isRemote) {
-            return; // When called from ItemBookCode e.g.
-        }
-
+    private void compile(final Iterable<String> code, final EntityPlayer player) {
         compileError = null;
         try {
             getState().clear();
@@ -450,8 +445,8 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
             return (stack.getItem() == net.minecraft.init.Items.WRITTEN_BOOK) || (stack.getItem() == net.minecraft.init.Items.WRITABLE_BOOK);
         }
 
-        @Override
         @Nullable
+        @Override
         public Iterable<String> codeFor(final ItemStack stack) {
             final NBTTagCompound nbt = stack.getTagCompound();
             if (nbt == null) {
@@ -477,6 +472,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
             return stack.getItem() == Items.bookCode;
         }
 
+        @Nullable
         @Override
         public Iterable<String> codeFor(final ItemStack stack) {
             final ItemBookCode.Data data = ItemBookCode.Data.loadFromStack(stack);
@@ -492,6 +488,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
             new SourceCodeProviderBookCode()
     ));
 
+    @Nullable
     private static SourceCodeProvider providerFor(final ItemStack stack) {
         if (!stack.isEmpty()) {
             return providers.stream().filter(p -> p.worksFor(stack)).findFirst().orElse(null);

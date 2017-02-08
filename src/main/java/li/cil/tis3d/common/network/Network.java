@@ -116,7 +116,7 @@ public final class Network {
         final BlockPos position = new BlockPos(x, y, z);
         if (!world.isBlockLoaded(position)) {
             final IBlockState state = world.getBlockState(position);
-            if (state.getBlock().isBlockNormalCube(state)) {
+            if (state.isFullCube()) {
                 // Skip particle emission when inside a block where they aren't visible anyway.
                 return;
             }

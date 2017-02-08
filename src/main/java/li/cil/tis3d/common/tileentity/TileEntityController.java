@@ -231,7 +231,7 @@ public final class TileEntityController extends TileEntityComputer implements IT
                 for (final EnumFacing facing : EnumFacing.VALUES) {
                     final BlockPos neighborPos = getPos().offset(facing);
                     final IBlockState neighborState = getWorld().getBlockState(neighborPos);
-                    if (world.getBlockState(neighborPos).getBlock().isOpaqueCube(neighborState)) {
+                    if (neighborState.isFullCube()) {
                         continue;
                     }
                     if (world.rand.nextFloat() > 0.25f) {

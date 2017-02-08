@@ -6,7 +6,6 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.traits.Redstone;
 import li.cil.tis3d.api.module.traits.Rotatable;
-import li.cil.tis3d.client.model.obj.OBJModel;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ItemBookManual;
 import li.cil.tis3d.common.tileentity.TileEntityCasing;
@@ -33,26 +32,12 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.property.ExtendedBlockState;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
-
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
+import net.minecraftforge.common.property.Properties;
 
 /**
  * Block for the module casings.
  */
 public final class BlockCasing extends Block {
-    private static final OBJModel.OBJState[] OBJ_STATE_CACHE = new OBJModel.OBJState[1 << Face.VALUES.length];
-    private static final List<String> VISIBLE_GROUPS = new ArrayList<>(6);
-    private static final String[] FACE_TO_GROUP = new String[]{
-            "casing:module.Y_NEG",
-            "casing:module.Y_POS",
-            "casing:module.Z_NEG",
-            "casing:module.Z_POS",
-            "casing:module.X_NEG",
-            "casing:module.X_POS"
-    };
-
     public BlockCasing() {
         super(Material.IRON);
     }
@@ -62,44 +47,18 @@ public final class BlockCasing extends Block {
 
     @Override
     public BlockStateContainer createBlockState() {
-        return new ExtendedBlockState(this, new IProperty[0], new IUnlistedProperty[]{OBJModel.OBJProperty.INSTANCE});
+        return new ExtendedBlockState(this, new IProperty[0], new IUnlistedProperty[]{Properties.AnimationProperty});
     }
 
     @Override
     public IBlockState getExtendedState(final IBlockState state, final IBlockAccess world, final BlockPos pos) {
-        final IExtendedBlockState baseState = (IExtendedBlockState) state;
         final TileEntity tileEntity = world.getTileEntity(pos);
-        final int mask = packVisibility(tileEntity);
-        return baseState.withProperty(OBJModel.OBJProperty.INSTANCE, getCachedObjState(mask));
-    }
-
-    private OBJModel.OBJState getCachedObjState(final int mask) {
-        synchronized (OBJ_STATE_CACHE) {
-            if (OBJ_STATE_CACHE[mask] == null) {
-                VISIBLE_GROUPS.clear();
-                VISIBLE_GROUPS.add("casing:casing");
-                for (final Face face : Face.VALUES) {
-                    if ((mask & (1 << face.ordinal())) != 0) {
-                        VISIBLE_GROUPS.add(FACE_TO_GROUP[face.ordinal()]);
-                    }
-                }
-                OBJ_STATE_CACHE[mask] = new OBJModel.OBJState(VISIBLE_GROUPS, true);
-            }
-            return OBJ_STATE_CACHE[mask];
+        if (!(tileEntity instanceof TileEntityCasing)) {
+            return state;
         }
-    }
-
-    private int packVisibility(@Nullable final TileEntity tileEntity) {
-        int mask = 0;
-        if (tileEntity instanceof TileEntityCasing) {
-            final TileEntityCasing casing = (TileEntityCasing) tileEntity;
-            for (final Face face : Face.VALUES) {
-                if (casing.getModule(face) != null) {
-                    mask |= 1 << face.ordinal();
-                }
-            }
-        }
-        return mask;
+        final TileEntityCasing casing = (TileEntityCasing) tileEntity;
+        final IExtendedBlockState baseState = (IExtendedBlockState) state;
+        return baseState.withProperty(Properties.AnimationProperty, casing.getModelState());
     }
 
     // --------------------------------------------------------------------- //
@@ -128,8 +87,9 @@ public final class BlockCasing extends Block {
         return false;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
-    public boolean isFullCube(final IBlockState state) {
+    public boolean isFullBlock(final IBlockState state) {
         // Prevent fences from visually connecting.
         return false;
     }
@@ -236,16 +196,19 @@ public final class BlockCasing extends Block {
     // --------------------------------------------------------------------- //
     // Redstone
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean hasComparatorInputOverride(final IBlockState state) {
         return true;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public int getComparatorInputOverride(final IBlockState state, final World world, final BlockPos pos) {
         return Container.calcRedstone(world.getTileEntity(pos));
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public int getWeakPower(final IBlockState blockState, final IBlockAccess world, final BlockPos pos, final EnumFacing side) {
         final TileEntity tileentity = world.getTileEntity(pos);
@@ -259,6 +222,7 @@ public final class BlockCasing extends Block {
         return super.getWeakPower(blockState, world, pos, side);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean canProvidePower(final IBlockState state) {
         return true;
@@ -267,6 +231,7 @@ public final class BlockCasing extends Block {
     // --------------------------------------------------------------------- //
     // Networking
 
+    @SuppressWarnings("deprecation")
     @Override
     public void neighborChanged(final IBlockState state, final World world, final BlockPos pos, final Block neighborBlock, final BlockPos neighborPos) {
         final TileEntity tileEntity = world.getTileEntity(pos);

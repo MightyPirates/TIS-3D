@@ -13,10 +13,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.text.translation.I18n;
 import org.lwjgl.input.Keyboard;
 
 import java.io.IOException;
@@ -581,7 +581,7 @@ public final class GuiBookCode extends GuiScreen {
             final int endX = Math.max(columnToX(exception.getLineNumber(), exception.getEnd()), startX + fontRenderer.getCharWidth(' '));
 
             if (mouseX >= startX && mouseX <= endX && mouseY >= startY && mouseY <= startY + fontRenderer.FONT_HEIGHT) {
-                drawHoveringText(Arrays.asList(ItemBookCode.Data.PATTERN_LINES.split(I18n.translateToLocal(exception.getMessage()))), mouseX, mouseY);
+                drawHoveringText(Arrays.asList(ItemBookCode.Data.PATTERN_LINES.split(I18n.format(exception.getMessage()))), mouseX, mouseY);
                 GlStateManager.disableLighting();
             }
         }

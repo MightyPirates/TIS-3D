@@ -52,16 +52,16 @@ public final class CapabilityInfraredReceiver {
     }
 
     @SubscribeEvent
-    public void onAttachCapabilities(final AttachCapabilitiesEvent.TileEntity event) {
-        final TileEntity tileEntity = event.getTileEntity();
+    public void onAttachTileEntityCapabilities(final AttachCapabilitiesEvent<TileEntity> event) {
+        final TileEntity tileEntity = event.getObject();
         if (tileEntity instanceof InfraredReceiver) {
             event.addCapability(INFRARED_RECEIVER_LOCATION, new InfraredReceiverCapabilityProvider((InfraredReceiver) tileEntity));
         }
     }
 
     @SubscribeEvent
-    public void onAttachCapabilities(final AttachCapabilitiesEvent.Entity event) {
-        final Entity entity = event.getEntity();
+    public void onAttachEntityCapabilities(final AttachCapabilitiesEvent<Entity> event) {
+        final Entity entity = event.getObject();
         if (entity instanceof InfraredReceiver) {
             event.addCapability(INFRARED_RECEIVER_LOCATION, new InfraredReceiverCapabilityProvider((InfraredReceiver) entity));
         }
