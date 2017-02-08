@@ -47,7 +47,7 @@ public final class ItemBookManual extends ItemBook {
     @SideOnly(Side.CLIENT)
     @Override
     public FontRenderer getFontRenderer(final ItemStack stack) {
-        return Minecraft.getMinecraft().fontRendererObj;
+        return Minecraft.getMinecraft().fontRenderer;
     }
 
     @SideOnly(Side.CLIENT)

@@ -105,24 +105,24 @@ public final class GuiManual extends GuiScreen {
             GL11.glPopMatrix();
         }
 
-        currentSegment = Document.render(document, guiLeft + 16, guiTop + 48, documentMaxWidth, documentMaxHeight, offset(), fontRendererObj, mouseX, mouseY);
+        currentSegment = Document.render(document, guiLeft + 16, guiTop + 48, documentMaxWidth, documentMaxHeight, offset(), fontRenderer, mouseX, mouseY);
 
         if (!isDragging) {
-            currentSegment.ifPresent(s -> s.tooltip().ifPresent(t -> drawHoveringText(Collections.singletonList(I18n.translateToLocal(t)), mouseX, mouseY, fontRendererObj)));
+            currentSegment.ifPresent(s -> s.tooltip().ifPresent(t -> drawHoveringText(Collections.singletonList(I18n.translateToLocal(t)), mouseX, mouseY, fontRenderer)));
 
             for (int i = 0; i < ManualAPIImpl.getTabs().size() && i < maxTabsPerSide; i++) {
                 final ManualAPIImpl.Tab tab = ManualAPIImpl.getTabs().get(i);
                 final ImageButton button = (ImageButton) buttonList.get(i);
                 if (mouseX > button.xPosition && mouseX < button.xPosition + button.width && mouseY > button.yPosition && mouseY < button.yPosition + button.height) {
                     if (tab.tooltip != null) {
-                        drawHoveringText(Collections.singletonList(I18n.translateToLocal(tab.tooltip)), mouseX, mouseY, fontRendererObj);
+                        drawHoveringText(Collections.singletonList(I18n.translateToLocal(tab.tooltip)), mouseX, mouseY, fontRenderer);
                     }
                 }
             }
         }
 
         if (canScroll() && (isCoordinateOverScrollBar(mouseX - guiLeft, mouseY - guiTop) || isDragging)) {
-            drawHoveringText(Collections.singletonList(100 * offset() / maxOffset() + "%"), guiLeft + scrollPosX + scrollWidth, scrollButton.yPosition + scrollButton.height + 1, fontRendererObj);
+            drawHoveringText(Collections.singletonList(100 * offset() / maxOffset() + "%"), guiLeft + scrollPosX + scrollWidth, scrollButton.yPosition + scrollButton.height + 1, fontRenderer);
         }
     }
 
@@ -209,7 +209,7 @@ public final class GuiManual extends GuiScreen {
     private void refreshPage() {
         final Iterable<String> content = ManualAPI.contentFor(ManualAPIImpl.peekPath());
         document = Document.parse(content != null ? content : Collections.singletonList("Document not found: " + ManualAPIImpl.peekPath()));
-        documentHeight = Document.height(document, documentMaxWidth, fontRendererObj);
+        documentHeight = Document.height(document, documentMaxWidth, fontRenderer);
         scrollTo(offset());
     }
 
@@ -227,11 +227,11 @@ public final class GuiManual extends GuiScreen {
     }
 
     private void scrollUp() {
-        scrollTo(offset() - Document.lineHeight(fontRendererObj) * 3);
+        scrollTo(offset() - Document.lineHeight(fontRenderer) * 3);
     }
 
     private void scrollDown() {
-        scrollTo(offset() + Document.lineHeight(fontRendererObj) * 3);
+        scrollTo(offset() + Document.lineHeight(fontRenderer) * 3);
     }
 
     private void scrollTo(final int row) {
