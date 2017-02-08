@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Optional;
 
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public final class GuiManual extends GuiScreen {
     private static final int documentMaxWidth = 220;
     private static final int documentMaxHeight = 176;

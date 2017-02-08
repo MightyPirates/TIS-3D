@@ -53,7 +53,12 @@ public final class ItemBookManual extends ItemBook {
     public void addInformation(final ItemStack stack, final EntityPlayer player, final List<String> tooltip, final boolean advanced) {
         super.addInformation(stack, player, tooltip, advanced);
         final String info = I18n.format(Constants.TOOLTIP_BOOK_MANUAL);
-        tooltip.addAll(getFontRenderer(stack).listFormattedStringToWidth(info, Constants.MAX_TOOLTIP_WIDTH));
+        final FontRenderer fontRenderer = getFontRenderer(stack);
+        if (fontRenderer != null) {
+            tooltip.addAll(fontRenderer.listFormattedStringToWidth(info, Constants.MAX_TOOLTIP_WIDTH));
+        } else {
+            tooltip.add(info);
+        }
     }
 
     @Override

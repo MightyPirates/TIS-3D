@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 /**
  * GUI for the code book, used to write and manage ASM programs.
  */
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public final class GuiBookCode extends GuiScreen {
     private static final int GUI_WIDTH = 148;
     private static final int GUI_HEIGHT = 230;
