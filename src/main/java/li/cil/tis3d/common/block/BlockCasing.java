@@ -107,7 +107,7 @@ public final class BlockCasing extends Block {
 
     @SuppressWarnings("deprecation")
     @Override
-    public boolean isFullBlock(final IBlockState state) {
+    public boolean isFullCube(final IBlockState state) {
         // Prevent fences from visually connecting.
         return false;
     }
