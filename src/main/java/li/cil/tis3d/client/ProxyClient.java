@@ -24,8 +24,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
-import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -41,10 +39,6 @@ public final class ProxyClient extends ProxyCommon {
     @Override
     public void onPreInit(final FMLPreInitializationEvent event) {
         super.onPreInit(event);
-
-        // Set up OBJ loader for this mod.
-        OBJLoader.INSTANCE.addDomain(API.MOD_ID.toLowerCase());
-        ModelLoaderRegistry.registerLoader(OBJLoader.INSTANCE);
 
         MinecraftForge.EVENT_BUS.register(TextureLoader.INSTANCE);
     }
@@ -76,29 +70,21 @@ public final class ProxyClient extends ProxyCommon {
     @Override
     public Block registerBlock(final String name, final Supplier<Block> constructor, final Class<? extends TileEntity> tileEntity) {
         final Block block = super.registerBlock(name, constructor, tileEntity);
-        setCustomBlockModelResourceLocation(name, block);
+        setCustomItemModelResourceLocation(Item.getItemFromBlock(block));
         return block;
     }
 
     @Override
     public Item registerItem(final String name, final Supplier<Item> constructor) {
         final Item item = super.registerItem(name, constructor);
-        setCustomItemModelResourceLocation(name, item);
+        setCustomItemModelResourceLocation(item);
         return item;
     }
 
     // --------------------------------------------------------------------- //
 
-    private static void setCustomBlockModelResourceLocation(final String name, final Block block) {
-        final Item item = Item.getItemFromBlock(block);
-        final String path = API.MOD_ID.toLowerCase() + ":" + name;
-        final ModelResourceLocation location = new ModelResourceLocation(path, "inventory");
-        ModelLoader.setCustomModelResourceLocation(item, 0, location);
-    }
-
-    private static void setCustomItemModelResourceLocation(final String name, final Item item) {
-        final String path = API.MOD_ID.toLowerCase() + ":" + name;
-        final ModelResourceLocation location = new ModelResourceLocation(path, "inventory");
+    private static void setCustomItemModelResourceLocation(final Item item) {
+        final ModelResourceLocation location = new ModelResourceLocation(item.getRegistryName(), "inventory");
         ModelLoader.setCustomModelResourceLocation(item, 0, location);
     }
 }

@@ -1,7 +1,5 @@
 package li.cil.tis3d.common.tileentity;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.UnmodifiableIterator;
 import li.cil.tis3d.api.infrared.InfraredPacket;
 import li.cil.tis3d.api.infrared.InfraredReceiver;
 import li.cil.tis3d.api.machine.Casing;
@@ -30,10 +28,6 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraftforge.common.model.IModelPart;
-import net.minecraftforge.common.model.IModelState;
-import net.minecraftforge.common.model.Models;
-import net.minecraftforge.common.model.TRSRTransformation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -72,16 +66,9 @@ public final class TileEntityCasing extends TileEntityComputer implements
     private static final String TAG_CASING = "casing";
     private static final String TAG_ENABLED = "enabled";
 
-    private final IModelState state = new CasingModelState(this);
     private TileEntityController controller;
     private boolean isEnabled;
     private boolean redstoneDirty = true;
-
-    // --------------------------------------------------------------------- //
-
-    public IModelState getModelState() {
-        return state;
-    }
 
     // --------------------------------------------------------------------- //
     // Networking
@@ -399,57 +386,5 @@ public final class TileEntityCasing extends TileEntityComputer implements
         nbt.setTag(TAG_CASING, casingNbt);
 
         nbt.setBoolean(TAG_ENABLED, isEnabled());
-    }
-
-    // --------------------------------------------------------------------- //
-
-    private static final class CasingModelState implements IModelState {
-        private final TileEntityCasing casing;
-
-        @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-        private final Optional<TRSRTransformation> value = Optional.of(TRSRTransformation.identity());
-
-        private CasingModelState(final TileEntityCasing casing) {
-            this.casing = casing;
-        }
-
-        @Override
-        public Optional<TRSRTransformation> apply(@SuppressWarnings("OptionalUsedAsFieldOrParameterType") final Optional<? extends IModelPart> part) {
-            if (part.isPresent()) {
-                final UnmodifiableIterator<String> parts = Models.getParts(part.get());
-                while (parts.hasNext()) {
-                    final String name = parts.next();
-                    final Face face;
-                    switch (name) {
-                        case "casing:module.Y_NEG":
-                            face = Face.Y_NEG;
-                            break;
-                        case "casing:module.Y_POS":
-                            face = Face.Y_POS;
-                            break;
-                        case "casing:module.Z_NEG":
-                            face = Face.Z_NEG;
-                            break;
-                        case "casing:module.Z_POS":
-                            face = Face.Z_POS;
-                            break;
-                        case "casing:module.X_NEG":
-                            face = Face.X_NEG;
-                            break;
-                        case "casing:module.X_POS":
-                            face = Face.X_POS;
-                            break;
-                        default:
-                            continue;
-                    }
-                    if (casing.getModule(face) != null) {
-                        return Optional.absent();
-                    } else {
-                        return value;
-                    }
-                }
-            }
-            return Optional.absent();
-        }
     }
 }

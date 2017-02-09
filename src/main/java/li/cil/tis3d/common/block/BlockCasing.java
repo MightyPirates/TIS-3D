@@ -12,7 +12,7 @@ import li.cil.tis3d.common.tileentity.TileEntityCasing;
 import li.cil.tis3d.util.InventoryUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
@@ -27,17 +27,24 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.ChunkCache;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.common.property.ExtendedBlockState;
-import net.minecraftforge.common.property.IExtendedBlockState;
-import net.minecraftforge.common.property.IUnlistedProperty;
-import net.minecraftforge.common.property.Properties;
+import net.minecraft.world.chunk.Chunk;
 
 /**
  * Block for the module casings.
  */
 public final class BlockCasing extends Block {
+    public static final PropertyBool MODULE_X_NEG = PropertyBool.create("xneg");
+    public static final PropertyBool MODULE_X_POS = PropertyBool.create("xpos");
+    public static final PropertyBool MODULE_Y_NEG = PropertyBool.create("yneg");
+    public static final PropertyBool MODULE_Y_POS = PropertyBool.create("ypos");
+    public static final PropertyBool MODULE_Z_NEG = PropertyBool.create("zneg");
+    public static final PropertyBool MODULE_Z_POS = PropertyBool.create("zpos");
+
+    // --------------------------------------------------------------------- //
+
     public BlockCasing() {
         super(Material.IRON);
     }
@@ -47,18 +54,29 @@ public final class BlockCasing extends Block {
 
     @Override
     public BlockStateContainer createBlockState() {
-        return new ExtendedBlockState(this, new IProperty[0], new IUnlistedProperty[]{Properties.AnimationProperty});
+        return new BlockStateContainer(this, MODULE_X_NEG, MODULE_X_POS, MODULE_Y_NEG, MODULE_Y_POS, MODULE_Z_NEG, MODULE_Z_POS);
     }
 
     @Override
-    public IBlockState getExtendedState(final IBlockState state, final IBlockAccess world, final BlockPos pos) {
-        final TileEntity tileEntity = world.getTileEntity(pos);
+    public int getMetaFromState(final IBlockState state) {
+        return 0;
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public IBlockState getActualState(final IBlockState state, final IBlockAccess world, final BlockPos pos) {
+        final TileEntity tileEntity = world instanceof ChunkCache ? ((ChunkCache) world).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK) : world.getTileEntity(pos);
         if (!(tileEntity instanceof TileEntityCasing)) {
-            return state;
+            return super.getActualState(state, world, pos);
         }
         final TileEntityCasing casing = (TileEntityCasing) tileEntity;
-        final IExtendedBlockState baseState = (IExtendedBlockState) state;
-        return baseState.withProperty(Properties.AnimationProperty, casing.getModelState());
+        return state.
+                withProperty(MODULE_X_NEG, casing.getModule(Face.X_NEG) != null).
+                withProperty(MODULE_X_POS, casing.getModule(Face.X_POS) != null).
+                withProperty(MODULE_Y_NEG, casing.getModule(Face.Y_NEG) != null).
+                withProperty(MODULE_Y_POS, casing.getModule(Face.Y_POS) != null).
+                withProperty(MODULE_Z_NEG, casing.getModule(Face.Z_NEG) != null).
+                withProperty(MODULE_Z_POS, casing.getModule(Face.Z_POS) != null);
     }
 
     // --------------------------------------------------------------------- //
