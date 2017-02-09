@@ -5,6 +5,7 @@ import li.cil.tis3d.client.gui.GuiHandlerClient;
 import li.cil.tis3d.common.TIS3D;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBook;
 import net.minecraft.item.ItemStack;
@@ -14,13 +15,13 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,8 +31,6 @@ import java.util.regex.Pattern;
  * The code book, utility book for coding ASM programs for execution modules.
  */
 public final class ItemBookCode extends ItemBook {
-    private static final String TOOLTIP_BOOK_CODE = "tis3d.tooltip.bookCode";
-
     public ItemBookCode() {
         setMaxStackSize(1);
     }
@@ -40,6 +39,7 @@ public final class ItemBookCode extends ItemBook {
     // Item
 
     @SideOnly(Side.CLIENT)
+    @Nullable
     @Override
     public FontRenderer getFontRenderer(final ItemStack stack) {
         return Minecraft.getMinecraft().fontRendererObj;
@@ -49,8 +49,13 @@ public final class ItemBookCode extends ItemBook {
     @Override
     public void addInformation(final ItemStack stack, final EntityPlayer playerIn, final List<String> tooltip, final boolean advanced) {
         super.addInformation(stack, playerIn, tooltip, advanced);
-        final String info = I18n.translateToLocal(TOOLTIP_BOOK_CODE);
-        tooltip.addAll(getFontRenderer(stack).listFormattedStringToWidth(info, li.cil.tis3d.common.Constants.MAX_TOOLTIP_WIDTH));
+        final String info = I18n.format(li.cil.tis3d.common.Constants.TOOLTIP_BOOK_CODE);
+        final FontRenderer fontRenderer = getFontRenderer(stack);
+        if (fontRenderer != null) {
+            tooltip.addAll(fontRenderer.listFormattedStringToWidth(info, li.cil.tis3d.common.Constants.MAX_TOOLTIP_WIDTH));
+        } else {
+            tooltip.add(info);
+        }
     }
 
     @Override
@@ -70,7 +75,7 @@ public final class ItemBookCode extends ItemBook {
     // ItemBook
 
     @Override
-    public boolean isItemTool(final ItemStack stack) {
+    public boolean isEnchantable(final ItemStack stack) {
         return false;
     }
 
@@ -213,7 +218,7 @@ public final class ItemBookCode extends ItemBook {
          * @param nbt the tag to load the data from.
          * @return the data loaded from the tag.
          */
-        public static Data loadFromNBT(final NBTTagCompound nbt) {
+        public static Data loadFromNBT(@Nullable final NBTTagCompound nbt) {
             final Data data = new Data();
             if (nbt != null) {
                 data.readFromNBT(nbt);
@@ -227,8 +232,8 @@ public final class ItemBookCode extends ItemBook {
          * @param stack the item stack to load the data from.
          * @return the data loaded from the stack.
          */
-        public static Data loadFromStack(final ItemStack stack) {
-            return loadFromNBT(stack.getTagCompound());
+        public static Data loadFromStack(@Nullable final ItemStack stack) {
+            return loadFromNBT(stack != null ? stack.getTagCompound() : null);
         }
 
         /**
@@ -238,10 +243,11 @@ public final class ItemBookCode extends ItemBook {
          * @param data  the data to save to the item stack.
          */
         public static void saveToStack(final ItemStack stack, final Data data) {
-            if (!stack.hasTagCompound()) {
-                stack.setTagCompound(new NBTTagCompound());
+            NBTTagCompound nbt = stack.getTagCompound();
+            if (nbt == null) {
+                stack.setTagCompound(nbt = new NBTTagCompound());
             }
-            data.writeToNBT(stack.getTagCompound());
+            data.writeToNBT(nbt);
         }
     }
 }

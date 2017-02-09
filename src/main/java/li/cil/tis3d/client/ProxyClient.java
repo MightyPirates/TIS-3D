@@ -24,8 +24,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
-import li.cil.tis3d.client.model.obj.OBJLoader;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -41,10 +39,6 @@ public final class ProxyClient extends ProxyCommon {
     @Override
     public void onPreInit(final FMLPreInitializationEvent event) {
         super.onPreInit(event);
-
-        // Set up OBJ loader for this mod.
-        OBJLoader.INSTANCE.addDomain(API.MOD_ID.toLowerCase());
-        ModelLoaderRegistry.registerLoader(OBJLoader.INSTANCE);
 
         MinecraftForge.EVENT_BUS.register(TextureLoader.INSTANCE);
     }
@@ -65,10 +59,10 @@ public final class ProxyClient extends ProxyCommon {
         ManualAPI.addProvider("block", new BlockImageProvider());
         ManualAPI.addProvider("oredict", new OreDictImageProvider());
 
-        ManualAPI.addTab(new TextureTabIconRenderer(new ResourceLocation(API.MOD_ID, "textures/gui/manualHome.png")), "tis3d.manual.home", "%LANGUAGE%/index.md");
+        ManualAPI.addTab(new TextureTabIconRenderer(new ResourceLocation(API.MOD_ID, "textures/gui/manual_home.png")), "tis3d.manual.home", "%LANGUAGE%/index.md");
         ManualAPI.addTab(new ItemStackTabIconRenderer(new ItemStack(Blocks.controller)), "tis3d.manual.blocks", "%LANGUAGE%/block/index.md");
         ManualAPI.addTab(new ItemStackTabIconRenderer(new ItemStack(Items.modules.get(Constants.NAME_ITEM_MODULE_EXECUTION))), "tis3d.manual.items", "%LANGUAGE%/item/index.md");
-        ManualAPI.addTab(new TextureTabIconRenderer(new ResourceLocation(API.MOD_ID, "textures/gui/manualSerialProtocols.png")), "tis3d.manual.serialProtocols", "%LANGUAGE%/serialProtocols.md");
+        ManualAPI.addTab(new TextureTabIconRenderer(new ResourceLocation(API.MOD_ID, "textures/gui/manual_serial_protocols.png")), "tis3d.manual.serialProtocols", "%LANGUAGE%/serial_protocols.md");
     }
 
     // --------------------------------------------------------------------- //
@@ -76,29 +70,23 @@ public final class ProxyClient extends ProxyCommon {
     @Override
     public Block registerBlock(final String name, final Supplier<Block> constructor, final Class<? extends TileEntity> tileEntity) {
         final Block block = super.registerBlock(name, constructor, tileEntity);
-        setCustomBlockModelResourceLocation(name, block);
+        final Item item = Item.getItemFromBlock(block);
+        assert item != null;
+        setCustomItemModelResourceLocation(item);
         return block;
     }
 
     @Override
     public Item registerItem(final String name, final Supplier<Item> constructor) {
         final Item item = super.registerItem(name, constructor);
-        setCustomItemModelResourceLocation(name, item);
+        setCustomItemModelResourceLocation(item);
         return item;
     }
 
     // --------------------------------------------------------------------- //
 
-    private static void setCustomBlockModelResourceLocation(final String name, final Block block) {
-        final Item item = Item.getItemFromBlock(block);
-        final String path = API.MOD_ID.toLowerCase() + ":" + name;
-        final ModelResourceLocation location = new ModelResourceLocation(path, "inventory");
-        ModelLoader.setCustomModelResourceLocation(item, 0, location);
-    }
-
-    private static void setCustomItemModelResourceLocation(final String name, final Item item) {
-        final String path = API.MOD_ID.toLowerCase() + ":" + name;
-        final ModelResourceLocation location = new ModelResourceLocation(path, "inventory");
+    private static void setCustomItemModelResourceLocation(final Item item) {
+        final ModelResourceLocation location = new ModelResourceLocation(item.getRegistryName(), "inventory");
         ModelLoader.setCustomModelResourceLocation(item, 0, location);
     }
 }

@@ -154,7 +154,7 @@ public final class TileEntityCasing extends TileEntityComputer implements
         casing.stepModules();
     }
 
-    public void setModule(final Face face, final Module module) {
+    public void setModule(final Face face, @Nullable final Module module) {
         casing.setModule(face, module);
     }
 
@@ -211,8 +211,8 @@ public final class TileEntityCasing extends TileEntityComputer implements
     // IInventory
 
     @Override
-    public boolean isUseableByPlayer(final EntityPlayer player) {
-        if (worldObj.getTileEntity(pos) != this) return false;
+    public boolean isUsableByPlayer(final EntityPlayer player) {
+        if (getWorld().getTileEntity(pos) != this) return false;
         final double maxDistance = 64;
         return player.getDistanceSqToCenter(pos) <= maxDistance;
     }
@@ -303,6 +303,7 @@ public final class TileEntityCasing extends TileEntityComputer implements
 
     // --------------------------------------------------------------------- //
 
+    @Nullable
     private TileEntityController findController() {
         // List of processed tile entities to avoid loops.
         final Set<TileEntity> processed = new HashSet<>();

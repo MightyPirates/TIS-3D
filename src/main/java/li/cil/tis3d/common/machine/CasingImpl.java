@@ -42,7 +42,7 @@ public final class CasingImpl implements Casing {
      * cannot add or remove modules from the casing. A key with the correct
      * UUID in its NBT tag is required to unlock a casing.
      */
-    private Optional<UUID> lock = Optional.empty();
+    private UUID lock = null;
 
     // --------------------------------------------------------------------- //
     // Computed data.
@@ -131,11 +131,11 @@ public final class CasingImpl implements Casing {
             throw new IllegalStateException("Casing is already locked.");
         }
         if (Items.isKeyCreative(stack)) {
-            lock = Optional.of(UUID.randomUUID());
+            lock = UUID.randomUUID();
         } else {
             final UUID key = getKeyFromStack(stack).orElse(UUID.randomUUID());
             setKeyForStack(stack, key);
-            lock = Optional.of(key);
+            lock = key;
         }
         final IBlockState state = getCasingWorld().getBlockState(getPosition());
         getCasingWorld().notifyBlockUpdate(getPosition(), state, state, 3);
@@ -148,7 +148,7 @@ public final class CasingImpl implements Casing {
      */
     public void unlock(final ItemStack stack) {
         if (Items.isKeyCreative(stack)) {
-            lock = Optional.empty();
+            lock = null;
             final IBlockState state = getCasingWorld().getBlockState(getPosition());
             getCasingWorld().notifyBlockUpdate(getPosition(), state, state, 3);
         } else {
@@ -162,8 +162,8 @@ public final class CasingImpl implements Casing {
      * @param key the key to use to unlock the casing.
      */
     public void unlock(final UUID key) {
-        if (lock.map(key::equals).orElse(false)) {
-            lock = Optional.empty();
+        if (key.equals(lock)) {
+            lock = null;
             final IBlockState state = getCasingWorld().getBlockState(getPosition());
             getCasingWorld().notifyBlockUpdate(getPosition(), state, state, 3);
         }
@@ -188,7 +188,7 @@ public final class CasingImpl implements Casing {
 
         // End-of-life notification for module if it was active.
         final Module oldModule = getModule(face);
-        if (tileEntity.isEnabled() && oldModule != null && getCasingWorld() != null && !getCasingWorld().isRemote) {
+        if (tileEntity.isEnabled() && oldModule != null && !getCasingWorld().isRemote) {
             oldModule.onDisabled();
         }
 
@@ -217,7 +217,7 @@ public final class CasingImpl implements Casing {
         }
 
         // Activate the module if the controller is active.
-        if (tileEntity.isEnabled() && module != null && getCasingWorld() != null && !getCasingWorld().isRemote) {
+        if (tileEntity.isEnabled() && module != null && !getCasingWorld().isRemote) {
             module.onEnabled();
         }
 
@@ -263,9 +263,9 @@ public final class CasingImpl implements Casing {
         }
 
         if (nbt.hasKey(TAG_KEY_MS) && nbt.hasKey(TAG_KEY_LS)) {
-            lock = Optional.of(new UUID(nbt.getLong(TAG_KEY_MS), nbt.getLong(TAG_KEY_LS)));
+            lock = new UUID(nbt.getLong(TAG_KEY_MS), nbt.getLong(TAG_KEY_LS));
         } else {
-            lock = Optional.empty();
+            lock = null;
         }
     }
 
@@ -285,8 +285,10 @@ public final class CasingImpl implements Casing {
         }
         nbt.setTag(TAG_MODULES, modulesNbt);
 
-        lock.ifPresent(key -> nbt.setLong(TAG_KEY_MS, key.getMostSignificantBits()));
-        lock.ifPresent(key -> nbt.setLong(TAG_KEY_LS, key.getLeastSignificantBits()));
+        if (lock != null) {
+            nbt.setLong(TAG_KEY_MS, lock.getMostSignificantBits());
+            nbt.setLong(TAG_KEY_LS, lock.getLeastSignificantBits());
+        }
     }
 
     // --------------------------------------------------------------------- //
@@ -327,7 +329,6 @@ public final class CasingImpl implements Casing {
     // Casing
 
     @Override
-    @Nullable
     public World getCasingWorld() {
         return tileEntity.getWorld();
     }
@@ -344,7 +345,7 @@ public final class CasingImpl implements Casing {
 
     @Override
     public boolean isLocked() {
-        return lock.isPresent();
+        return lock != null;
     }
 
     @Override

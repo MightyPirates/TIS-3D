@@ -6,6 +6,7 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.ModuleProvider;
 import net.minecraft.item.ItemStack;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,12 +26,11 @@ public final class ModuleAPIImpl implements ModuleAPI {
     }
 
     @Override
+    @Nullable
     public ModuleProvider getProviderFor(final ItemStack stack, final Casing casing, final Face face) {
-        if (stack != null) {
-            for (final ModuleProvider provider : providers) {
-                if (provider.worksWith(stack, casing, face)) {
-                    return provider;
-                }
+        for (final ModuleProvider provider : providers) {
+            if (provider.worksWith(stack, casing, face)) {
+                return provider;
             }
         }
         return null;

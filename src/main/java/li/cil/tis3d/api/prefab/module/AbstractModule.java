@@ -21,6 +21,8 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
+
 /**
  * Base implementation of a module, taking care of the boilerplate code.
  */
@@ -89,6 +91,7 @@ public abstract class AbstractModule implements Module {
      * @return the UV coordinate the player is looking at as the X and Y components.
      */
     @SideOnly(Side.CLIENT)
+    @Nullable
     protected Vec3d getPlayerLookAt() {
         final RayTraceResult hit = Minecraft.getMinecraft().objectMouseOver;
         if (hit != null &&
@@ -154,7 +157,7 @@ public abstract class AbstractModule implements Module {
         }
 
         final Chunk chunk = world.getChunkFromBlockCoords(neighborPos);
-        if (chunk == null || chunk.isEmpty()) {
+        if (chunk.isEmpty()) {
             // If the neighbor chunk is empty, we must assume we're visible.
             return true;
         }
@@ -207,7 +210,7 @@ public abstract class AbstractModule implements Module {
     }
 
     @Override
-    public boolean onActivate(final EntityPlayer player, final EnumHand hand, final ItemStack heldItem, final float hitX, final float hitY, final float hitZ) {
+    public boolean onActivate(final EntityPlayer player, final EnumHand hand, @Nullable final ItemStack heldItem, final float hitX, final float hitY, final float hitZ) {
         return false;
     }
 

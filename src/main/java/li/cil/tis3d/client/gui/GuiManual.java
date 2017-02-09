@@ -1,10 +1,10 @@
 package li.cil.tis3d.client.gui;
 
-import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.client.manual.Document;
 import li.cil.tis3d.client.manual.segment.InteractiveSegment;
 import li.cil.tis3d.client.manual.segment.Segment;
+import li.cil.tis3d.client.render.TextureLoader;
 import li.cil.tis3d.common.api.ManualAPIImpl;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -14,9 +14,9 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.translation.I18n;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Optional;
 
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public final class GuiManual extends GuiScreen {
     private static final int documentMaxWidth = 220;
     private static final int documentMaxHeight = 176;
@@ -39,10 +40,6 @@ public final class GuiManual extends GuiScreen {
     private static final int maxTabsPerSide = 7;
     private static final int windowWidth = 256;
     private static final int windowHeight = 256;
-
-    private static final ResourceLocation backgroundImage = new ResourceLocation(API.MOD_ID, "textures/gui/manual.png");
-    private static final ResourceLocation tabImage = new ResourceLocation(API.MOD_ID, "textures/gui/manualTab.png");
-    private static final ResourceLocation scrollImage = new ResourceLocation(API.MOD_ID, "textures/gui/manualScroll.png");
 
     private int guiLeft = 0;
     private int guiTop = 0;
@@ -79,10 +76,10 @@ public final class GuiManual extends GuiScreen {
         for (int i = 0; i < ManualAPIImpl.getTabs().size() && i < maxTabsPerSide; i++) {
             final int x = guiLeft + tabPosX;
             final int y = guiTop + tabPosY + i * (tabHeight - tabOverlap);
-            buttonList.add(new ImageButton(i, x, y, tabWidth, tabHeight - tabOverlap - 1, tabImage).setImageHeight(tabHeight).setVerticalImageOffset(-tabOverlap / 2));
+            buttonList.add(new ImageButton(i, x, y, tabWidth, tabHeight - tabOverlap - 1, TextureLoader.LOCATION_MANUAL_TAB).setImageHeight(tabHeight).setVerticalImageOffset(-tabOverlap / 2));
         }
 
-        scrollButton = new ImageButton(-1, guiLeft + scrollPosX, guiTop + scrollPosY, 26, 13, scrollImage);
+        scrollButton = new ImageButton(-1, guiLeft + scrollPosX, guiTop + scrollPosY, 26, 13, TextureLoader.LOCATION_MANUAL_SCROLL);
         buttonList.add(scrollButton);
 
         refreshPage();
@@ -94,7 +91,7 @@ public final class GuiManual extends GuiScreen {
 
         super.drawScreen(mouseX, mouseY, partialTicks);
 
-        mc.renderEngine.bindTexture(backgroundImage);
+        mc.renderEngine.bindTexture(TextureLoader.LOCATION_MANUAL_BACKGROUND);
         Gui.drawModalRectWithCustomSizedTexture(guiLeft, guiTop, 0, 0, xSize, ySize, windowWidth, windowHeight);
 
         scrollButton.enabled = canScroll();
@@ -112,13 +109,15 @@ public final class GuiManual extends GuiScreen {
         currentSegment = Document.render(document, guiLeft + 16, guiTop + 48, documentMaxWidth, documentMaxHeight, offset(), fontRendererObj, mouseX, mouseY);
 
         if (!isDragging) {
-            currentSegment.ifPresent(s -> s.tooltip().ifPresent(t -> drawHoveringText(Collections.singletonList(I18n.translateToLocal(t)), mouseX, mouseY, fontRendererObj)));
+            currentSegment.ifPresent(s -> s.tooltip().ifPresent(t -> drawHoveringText(Collections.singletonList(I18n.format(t)), mouseX, mouseY, fontRendererObj)));
 
             for (int i = 0; i < ManualAPIImpl.getTabs().size() && i < maxTabsPerSide; i++) {
                 final ManualAPIImpl.Tab tab = ManualAPIImpl.getTabs().get(i);
                 final ImageButton button = (ImageButton) buttonList.get(i);
                 if (mouseX > button.xPosition && mouseX < button.xPosition + button.width && mouseY > button.yPosition && mouseY < button.yPosition + button.height) {
-                    tab.tooltip.ifPresent(t -> drawHoveringText(Collections.singletonList(I18n.translateToLocal(t)), mouseX, mouseY, fontRendererObj));
+                    if (tab.tooltip != null) {
+                        drawHoveringText(Collections.singletonList(I18n.format(tab.tooltip)), mouseX, mouseY, fontRendererObj);
+                    }
                 }
             }
         }
@@ -146,7 +145,7 @@ public final class GuiManual extends GuiScreen {
         if (code == mc.gameSettings.keyBindJump.getKeyCode()) {
             popPage();
         } else if (code == mc.gameSettings.keyBindInventory.getKeyCode()) {
-            mc.thePlayer.closeScreen();
+            mc.player.closeScreen();
         } else {
             super.keyTyped(ch, code);
         }
@@ -220,7 +219,7 @@ public final class GuiManual extends GuiScreen {
             ManualAPIImpl.popPath();
             refreshPage();
         } else {
-            Minecraft.getMinecraft().thePlayer.closeScreen();
+            Minecraft.getMinecraft().player.closeScreen();
         }
     }
 
@@ -322,8 +321,8 @@ public final class GuiManual extends GuiScreen {
                 --scaleFactor;
             }
 
-            this.scaledWidth = MathHelper.ceiling_double_int(width / (double) scaleFactor);
-            this.scaledHeight = MathHelper.ceiling_double_int(height / (double) scaleFactor);
+            this.scaledWidth = MathHelper.ceil(width / (double) scaleFactor);
+            this.scaledHeight = MathHelper.ceil(height / (double) scaleFactor);
         }
     }
 }

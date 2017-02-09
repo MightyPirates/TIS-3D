@@ -4,6 +4,7 @@ import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.common.Constants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBook;
 import net.minecraft.item.ItemStack;
@@ -12,22 +13,18 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
  * The manual!
  */
 public final class ItemBookManual extends ItemBook {
-    private static final String TOOLTIP_BOOK_MANUAL = "tis3d.tooltip.bookManual";
-
-    // --------------------------------------------------------------------- //
-
-    public static boolean tryOpenManual(final World world, final EntityPlayer player, final String path) {
+    public static boolean tryOpenManual(final World world, final EntityPlayer player, @Nullable final String path) {
         if (path == null) {
             return false;
         }
@@ -45,6 +42,7 @@ public final class ItemBookManual extends ItemBook {
     // Item
 
     @SideOnly(Side.CLIENT)
+    @Nullable
     @Override
     public FontRenderer getFontRenderer(final ItemStack stack) {
         return Minecraft.getMinecraft().fontRendererObj;
@@ -54,8 +52,13 @@ public final class ItemBookManual extends ItemBook {
     @Override
     public void addInformation(final ItemStack stack, final EntityPlayer player, final List<String> tooltip, final boolean advanced) {
         super.addInformation(stack, player, tooltip, advanced);
-        final String info = I18n.translateToLocal(TOOLTIP_BOOK_MANUAL);
-        tooltip.addAll(getFontRenderer(stack).listFormattedStringToWidth(info, Constants.MAX_TOOLTIP_WIDTH));
+        final String info = I18n.format(Constants.TOOLTIP_BOOK_MANUAL);
+        final FontRenderer fontRenderer = getFontRenderer(stack);
+        if (fontRenderer != null) {
+            tooltip.addAll(fontRenderer.listFormattedStringToWidth(info, Constants.MAX_TOOLTIP_WIDTH));
+        } else {
+            tooltip.add(info);
+        }
     }
 
     @Override
@@ -78,7 +81,7 @@ public final class ItemBookManual extends ItemBook {
     // ItemBook
 
     @Override
-    public boolean isItemTool(final ItemStack stack) {
+    public boolean isEnchantable(final ItemStack stack) {
         return false;
     }
 

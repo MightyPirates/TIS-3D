@@ -4,6 +4,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
+
 /**
  * Allows providing paths for item stacks and blocks in the world.
  * <p>
@@ -28,7 +30,8 @@ public interface PathProvider {
      * @param stack the stack to get the documentation path to.
      * @return the path to the page, <tt>null</tt> if none is known.
      */
-    String pathFor(ItemStack stack);
+    @Nullable
+    String pathFor(@Nullable ItemStack stack);
 
     /**
      * Get the path to the documentation page for the provided block.
@@ -40,5 +43,6 @@ public interface PathProvider {
      * @param pos   the position coordinate of the block.
      * @return the path to the page, <tt>null</tt> if none is known.
      */
+    @Nullable
     String pathFor(World world, BlockPos pos);
 }

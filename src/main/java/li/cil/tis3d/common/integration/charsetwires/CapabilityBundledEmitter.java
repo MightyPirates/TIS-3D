@@ -12,6 +12,8 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import pl.asie.charset.api.wires.IBundledEmitter;
 
+import javax.annotation.Nullable;
+
 public final class CapabilityBundledEmitter {
     public static final ResourceLocation PROVIDER_BUNDLED_EMITTER = new ResourceLocation(API.MOD_ID, "charset_bundled_emitter");
 
@@ -28,8 +30,11 @@ public final class CapabilityBundledEmitter {
         }
 
         @Override
-        public boolean hasCapability(final Capability<?> capability, final EnumFacing facing) {
+        public boolean hasCapability(final Capability<?> capability, @Nullable final EnumFacing facing) {
             if (capability != INSTANCE) {
+                return false;
+            }
+            if (facing == null) {
                 return false;
             }
 
@@ -39,8 +44,10 @@ public final class CapabilityBundledEmitter {
 
         @SuppressWarnings("unchecked")
         @Override
-        public <T> T getCapability(final Capability<T> capability, final EnumFacing facing) {
+        @Nullable
+        public <T> T getCapability(final Capability<T> capability, @Nullable final EnumFacing facing) {
             if (hasCapability(capability, facing)) {
+                assert facing != null;
                 return (T) emitters[facing.ordinal()];
             }
             return null;

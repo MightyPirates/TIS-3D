@@ -17,6 +17,7 @@ import li.cil.tis3d.common.network.message.MessageCasingData;
 import li.cil.tis3d.common.network.message.MessageCasingState;
 import li.cil.tis3d.common.network.message.MessageHaltAndCatchFire;
 import li.cil.tis3d.common.network.message.MessageParticleEffect;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
@@ -113,9 +114,12 @@ public final class Network {
 
     public static void sendPipeEffect(final World world, final double x, final double y, final double z) {
         final BlockPos position = new BlockPos(x, y, z);
-        if (!world.isBlockLoaded(position) || world.getBlockState(position).getBlock().isVisuallyOpaque()) {
-            // Skip particle emission when inside a block where they aren't visible anyway.
-            return;
+        if (!world.isBlockLoaded(position)) {
+            final IBlockState state = world.getBlockState(position);
+            if (state.isFullCube()) {
+                // Skip particle emission when inside a block where they aren't visible anyway.
+                return;
+            }
         }
 
         queueParticleEffect(world, (float) x, (float) y, (float) z);
@@ -287,8 +291,6 @@ public final class Network {
 
     private static CasingSendQueue getQueueFor(final Casing casing) {
         final World world = casing.getCasingWorld();
-        assert (world != null);
-
         final Side side = world.isRemote ? Side.CLIENT : Side.SERVER;
         final Map<Casing, CasingSendQueue> queues = getQueues(side);
         CasingSendQueue queue = queues.get(casing);
@@ -362,8 +364,6 @@ public final class Network {
          */
         public void flush(final Casing casing) {
             final World world = casing.getCasingWorld();
-            assert (world != null);
-
             final Side side = world.isRemote ? Side.CLIENT : Side.SERVER;
             final ByteBuf data = Unpooled.buffer();
             collectData(data);
@@ -530,7 +530,7 @@ public final class Network {
      * @return <tt>true</tt> if there are nearby players; <tt>false</tt> otherwise.
      */
     private static boolean areAnyPlayersNear(final NetworkRegistry.TargetPoint target) {
-        for (final EntityPlayerMP player : FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerList()) {
+        for (final EntityPlayerMP player : FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayers()) {
             if (player.dimension == target.dimension) {
                 final double dx = target.x - player.posX;
                 final double dy = target.y - player.posY;

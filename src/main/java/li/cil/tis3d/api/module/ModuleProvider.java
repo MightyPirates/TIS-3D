@@ -4,6 +4,8 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import net.minecraft.item.ItemStack;
 
+import javax.annotation.Nullable;
+
 /**
  * Creates a module instance for a specified item stack.
  */
@@ -28,5 +30,6 @@ public interface ModuleProvider {
      * @param face   the face the module will be installed on.
      * @return a new module instance, or <tt>null</tt>.
      */
+    @Nullable
     Module createModule(ItemStack stack, Casing casing, Face face);
 }

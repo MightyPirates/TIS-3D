@@ -22,7 +22,6 @@ public interface Casing {
      *
      * @return the world the casing lives in.
      */
-    @Nullable
     World getCasingWorld();
 
     /**

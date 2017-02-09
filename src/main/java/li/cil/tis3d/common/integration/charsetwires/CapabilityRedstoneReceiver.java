@@ -12,6 +12,8 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import pl.asie.charset.api.wires.IRedstoneReceiver;
 
+import javax.annotation.Nullable;
+
 public final class CapabilityRedstoneReceiver {
     public static final ResourceLocation PROVIDER_REDSTONE_RECEIVER = new ResourceLocation(API.MOD_ID, "charset_redstone_receiver");
 
@@ -26,8 +28,11 @@ public final class CapabilityRedstoneReceiver {
         }
 
         @Override
-        public boolean hasCapability(final Capability<?> capability, final EnumFacing facing) {
+        public boolean hasCapability(final Capability<?> capability, @Nullable final EnumFacing facing) {
             if (capability != INSTANCE) {
+                return false;
+            }
+            if (facing == null) {
                 return false;
             }
 
@@ -37,7 +42,7 @@ public final class CapabilityRedstoneReceiver {
 
         @SuppressWarnings("unchecked")
         @Override
-        public <T> T getCapability(final Capability<T> capability, final EnumFacing facing) {
+        public <T> T getCapability(final Capability<T> capability, @Nullable final EnumFacing facing) {
             if (hasCapability(capability, facing)) {
                 return (T) this;
             }

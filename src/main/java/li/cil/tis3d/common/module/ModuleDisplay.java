@@ -91,8 +91,7 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
 
     @Override
     public void step() {
-        final World world = getCasing().getCasingWorld();
-        assert (world != null && !world.isRemote);
+        assert (!getCasing().getCasingWorld().isRemote);
 
         for (final Port port : Port.VALUES) {
             stepInput(port);
@@ -101,8 +100,7 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
 
     @Override
     public void onDisabled() {
-        final World world = getCasing().getCasingWorld();
-        assert (world != null && !world.isRemote);
+        assert (!getCasing().getCasingWorld().isRemote);
 
         Arrays.fill(image, 0);
         state = State.COLOR;
@@ -113,9 +111,7 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
     @Override
     public void onDisposed() {
         final World world = getCasing().getCasingWorld();
-        assert (world != null);
-
-        if (getCasing().getCasingWorld().isRemote) {
+        if (world.isRemote) {
             deleteTexture();
         }
     }

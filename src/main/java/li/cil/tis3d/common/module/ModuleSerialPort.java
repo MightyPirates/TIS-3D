@@ -1,6 +1,5 @@
 package li.cil.tis3d.common.module;
 
-import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.SerialAPI;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
@@ -11,11 +10,11 @@ import li.cil.tis3d.api.prefab.module.AbstractModule;
 import li.cil.tis3d.api.serial.SerialInterface;
 import li.cil.tis3d.api.serial.SerialInterfaceProvider;
 import li.cil.tis3d.api.util.RenderUtil;
+import li.cil.tis3d.client.render.TextureLoader;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -43,8 +42,6 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
     private static final String TAG_VALUE = "value";
     private static final String TAG_SERIAL_INTERFACE = "serialInterface";
 
-    private static final ResourceLocation LOCATION_OVERLAY = new ResourceLocation(API.MOD_ID, "textures/blocks/overlay/moduleSerialPort.png");
-
     private Optional<SerialInterface> serialInterface = Optional.empty();
     private Optional<NBTTagCompound> serialInterfaceNbt = Optional.empty();
     private boolean isScanScheduled = true;
@@ -68,8 +65,7 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
 
     @Override
     public void step() {
-        final World world = getCasing().getCasingWorld();
-        assert (world != null && !world.isRemote);
+        assert (!getCasing().getCasingWorld().isRemote);
 
         scan();
         stepOutput();
@@ -78,8 +74,7 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
 
     @Override
     public void onDisabled() {
-        final World world = getCasing().getCasingWorld();
-        assert (world != null && !world.isRemote);
+        assert (!getCasing().getCasingWorld().isRemote);
 
         // Reset serial interface on shutdown.
         serialInterface.ifPresent(SerialInterface::reset);
@@ -87,8 +82,7 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
 
     @Override
     public void onWriteComplete(final Port port) {
-        final World world = getCasing().getCasingWorld();
-        assert (world != null && !world.isRemote);
+        assert (!getCasing().getCasingWorld().isRemote);
 
         // Consume the read value (the one that was being written).
         serialInterface.ifPresent(SerialInterface::skip);
@@ -110,7 +104,7 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
 
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
 
-        RenderUtil.bindTexture(LOCATION_OVERLAY);
+        RenderUtil.bindTexture(TextureLoader.LOCATION_MODULE_SERIAL_PORT_OVERLAY);
 
         // Draw base overlay.
         RenderUtil.drawQuad();
@@ -162,7 +156,6 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
         isScanScheduled = false;
 
         final World world = getCasing().getCasingWorld();
-        assert (world != null);
         final BlockPos neighborPos = getCasing().getPosition().offset(Face.toEnumFacing(getFace()));
         final EnumFacing neighborSide = Face.toEnumFacing(getFace().getOpposite());
         if (world.isBlockLoaded(neighborPos)) {

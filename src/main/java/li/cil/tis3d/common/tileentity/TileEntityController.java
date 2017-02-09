@@ -231,7 +231,7 @@ public final class TileEntityController extends TileEntityComputer implements IT
                 for (final EnumFacing facing : EnumFacing.VALUES) {
                     final BlockPos neighborPos = getPos().offset(facing);
                     final IBlockState neighborState = getWorld().getBlockState(neighborPos);
-                    if (world.getBlockState(neighborPos).getBlock().isOpaqueCube(neighborState)) {
+                    if (neighborState.isFullCube()) {
                         continue;
                     }
                     if (world.rand.nextFloat() > 0.25f) {
@@ -423,7 +423,7 @@ public final class TileEntityController extends TileEntityComputer implements IT
         // scanning (see comment on addNeighbors), re-scan next tick when
         // they all have their world object set... but only exit after having
         // touched all of them, to make sure they've been created.
-        if (newCasings.stream().anyMatch(c -> !c.hasWorldObj())) {
+        if (newCasings.stream().anyMatch(c -> !c.hasWorld())) {
             return;
         }
 

@@ -12,6 +12,8 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import pl.asie.charset.api.wires.IRedstoneEmitter;
 
+import javax.annotation.Nullable;
+
 public final class CapabilityRedstoneEmitter {
     public static final ResourceLocation PROVIDER_REDSTONE_EMITTER = new ResourceLocation(API.MOD_ID, "charset_redstone_emitter");
 
@@ -28,8 +30,11 @@ public final class CapabilityRedstoneEmitter {
         }
 
         @Override
-        public boolean hasCapability(final Capability<?> capability, final EnumFacing facing) {
+        public boolean hasCapability(final Capability<?> capability, @Nullable final EnumFacing facing) {
             if (capability != INSTANCE) {
+                return false;
+            }
+            if (facing == null) {
                 return false;
             }
 
@@ -39,7 +44,7 @@ public final class CapabilityRedstoneEmitter {
 
         @SuppressWarnings("unchecked")
         @Override
-        public <T> T getCapability(final Capability<T> capability, final EnumFacing facing) {
+        public <T> T getCapability(final Capability<T> capability, @Nullable final EnumFacing facing) {
             if (hasCapability(capability, facing)) {
                 return (T) this;
             }

@@ -1,6 +1,6 @@
 package li.cil.tis3d.client.gui;
 
-import li.cil.tis3d.api.API;
+import li.cil.tis3d.client.render.TextureLoader;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ItemBookCode;
@@ -13,11 +13,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.translation.I18n;
 import org.lwjgl.input.Keyboard;
 
 import java.io.IOException;
@@ -31,8 +30,8 @@ import java.util.stream.Collectors;
 /**
  * GUI for the code book, used to write and manage ASM programs.
  */
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public final class GuiBookCode extends GuiScreen {
-    private static final ResourceLocation LOCATION_BACKGROUND = new ResourceLocation(API.MOD_ID, "textures/gui/bookCode.png");
     private static final int GUI_WIDTH = 148;
     private static final int GUI_HEIGHT = 230;
     private static final int BUTTON_PAGE_CHANGE_PREV_X = 8;
@@ -119,7 +118,7 @@ public final class GuiBookCode extends GuiScreen {
 
         // Background.
         GlStateManager.color(1, 1, 1, 1);
-        Minecraft.getMinecraft().getTextureManager().bindTexture(LOCATION_BACKGROUND);
+        Minecraft.getMinecraft().getTextureManager().bindTexture(TextureLoader.LOCATION_BOOK_CODE_BACKGROUND);
         drawTexturedModalRect(guiX, guiY, 0, 0, GUI_WIDTH, GUI_HEIGHT);
 
         // Check page change button availability.
@@ -583,7 +582,7 @@ public final class GuiBookCode extends GuiScreen {
             final int endX = Math.max(columnToX(exception.getLineNumber(), exception.getEnd()), startX + fontRendererObj.getCharWidth(' '));
 
             if (mouseX >= startX && mouseX <= endX && mouseY >= startY && mouseY <= startY + fontRendererObj.FONT_HEIGHT) {
-                drawHoveringText(Arrays.asList(ItemBookCode.Data.PATTERN_LINES.split(I18n.translateToLocal(exception.getMessage()))), mouseX, mouseY);
+                drawHoveringText(Arrays.asList(ItemBookCode.Data.PATTERN_LINES.split(I18n.format(exception.getMessage()))), mouseX, mouseY);
                 GlStateManager.disableLighting();
             }
         }
@@ -629,7 +628,7 @@ public final class GuiBookCode extends GuiScreen {
 
             final boolean isHovered = mouseX >= xPosition && mouseY >= yPosition && mouseX < xPosition + width && mouseY < yPosition + height;
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            mc.getTextureManager().bindTexture(LOCATION_BACKGROUND);
+            mc.getTextureManager().bindTexture(TextureLoader.LOCATION_BOOK_CODE_BACKGROUND);
             final int offsetX = isHovered ? BUTTON_WIDTH : 0;
             final int offsetY = type == PageChangeType.Previous ? BUTTON_HEIGHT : 0;
             drawTexturedModalRect(xPosition, yPosition, TEXTURE_X + offsetX, TEXTURE_Y + offsetY, BUTTON_WIDTH, BUTTON_HEIGHT);
@@ -654,7 +653,7 @@ public final class GuiBookCode extends GuiScreen {
 
             final boolean isHovered = mouseX >= xPosition && mouseY >= yPosition && mouseX < xPosition + width && mouseY < yPosition + height;
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            mc.getTextureManager().bindTexture(LOCATION_BACKGROUND);
+            mc.getTextureManager().bindTexture(TextureLoader.LOCATION_BOOK_CODE_BACKGROUND);
             final int offsetX = isHovered ? BUTTON_WIDTH : 0;
             drawTexturedModalRect(xPosition, yPosition, TEXTURE_X + offsetX, TEXTURE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
         }

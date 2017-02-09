@@ -5,6 +5,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
+
 /**
  * Allows registering {@link li.cil.tis3d.api.serial.SerialInterfaceProvider}s.
  * <p>
@@ -29,5 +31,6 @@ public interface SerialAPI {
      * @param side     the side of the block the provider should work for.
      * @return the first provider supporting the item stack, or <tt>null</tt>.
      */
+    @Nullable
     SerialInterfaceProvider getProviderFor(World world, BlockPos position, EnumFacing side);
 }

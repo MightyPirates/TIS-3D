@@ -127,13 +127,4 @@ abstract class BasicTextSegment extends AbstractSegment implements Segment {
         }
         return s.length();
     }
-
-    protected static boolean containsBreak(final String s) {
-        for (int i = 0; i < s.length(); i++) {
-            if (BREAKS.contains(s.charAt(i))) {
-                return true;
-            }
-        }
-        return false;
-    }
 }

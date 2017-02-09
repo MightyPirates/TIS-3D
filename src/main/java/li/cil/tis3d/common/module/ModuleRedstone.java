@@ -2,7 +2,6 @@ package li.cil.tis3d.common.module;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
@@ -10,10 +9,10 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.traits.Redstone;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
+import li.cil.tis3d.client.render.TextureLoader;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -36,7 +35,6 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
     private static final byte DATA_TYPE_UPDATE = 0;
 
     // Rendering info.
-    private static final ResourceLocation LOCATION_OVERLAY = new ResourceLocation(API.MOD_ID, "textures/blocks/overlay/moduleRedstone.png");
     private static final float LEFT_U0 = 9 / 32f;
     private static final float LEFT_U1 = 12 / 32f;
     private static final float RIGHT_U0 = 20 / 32f;
@@ -70,24 +68,23 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
     @Override
     public void step() {
         final World world = getCasing().getCasingWorld();
-        assert (world != null && !world.isRemote);
+        assert (!world.isRemote);
 
         for (final Port port : Port.VALUES) {
             stepOutput(port);
             stepInput(port);
         }
 
-        if (scheduledNeighborUpdate && getCasing().getCasingWorld().getTotalWorldTime() > lastStep) {
+        if (scheduledNeighborUpdate && world.getTotalWorldTime() > lastStep) {
             notifyNeighbors();
         }
 
-        lastStep = getCasing().getCasingWorld().getTotalWorldTime();
+        lastStep = world.getTotalWorldTime();
     }
 
     @Override
     public void onDisabled() {
-        final World world = getCasing().getCasingWorld();
-        assert (world != null && !world.isRemote);
+        assert (!getCasing().getCasingWorld().isRemote);
 
         input = 0;
         output = 0;
@@ -99,8 +96,7 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
 
     @Override
     public void onEnabled() {
-        final World world = getCasing().getCasingWorld();
-        assert (world != null && !world.isRemote);
+        assert (!getCasing().getCasingWorld().isRemote);
 
         sendData();
     }
@@ -124,7 +120,7 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
 
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
 
-        RenderUtil.bindTexture(LOCATION_OVERLAY);
+        RenderUtil.bindTexture(TextureLoader.LOCATION_MODULE_REDSTONE_OVERLAY);
 
         // Draw base overlay.
         RenderUtil.drawQuad(0, 0, 1, 0.5f);
@@ -174,7 +170,6 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
     public void setRedstoneInput(final short value) {
         // We never call this on the client side, but other might...
         final World world = getCasing().getCasingWorld();
-        assert (world != null);
         if (world.isRemote) {
             return;
         }
@@ -254,11 +249,10 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
      */
     private void notifyNeighbors() {
         final World world = getCasing().getCasingWorld();
-        assert (world != null);
 
         scheduledNeighborUpdate = false;
         final Block blockType = world.getBlockState(getCasing().getPosition()).getBlock();
-        getCasing().getCasingWorld().notifyNeighborsOfStateChange(getCasing().getPosition(), blockType);
+        world.notifyNeighborsOfStateChange(getCasing().getPosition(), blockType);
     }
 
     /**

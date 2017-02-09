@@ -37,6 +37,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -100,8 +101,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
 
     @Override
     public void step() {
-        final World world = getCasing().getCasingWorld();
-        assert (world != null && !world.isRemote);
+        assert (!getCasing().getCasingWorld().isRemote);
 
         final State prevState = state;
 
@@ -128,16 +128,14 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
 
     @Override
     public void onEnabled() {
-        final World world = getCasing().getCasingWorld();
-        assert (world != null && !world.isRemote);
+        assert (!getCasing().getCasingWorld().isRemote);
 
         sendFullState();
     }
 
     @Override
     public void onDisabled() {
-        final World world = getCasing().getCasingWorld();
-        assert (world != null && !world.isRemote);
+        assert (!getCasing().getCasingWorld().isRemote);
 
         getState().reset();
         state = State.IDLE;
@@ -153,7 +151,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
     }
 
     @Override
-    public boolean onActivate(final EntityPlayer player, final EnumHand hand, final ItemStack heldItem, final float hitX, final float hitY, final float hitZ) {
+    public boolean onActivate(final EntityPlayer player, final EnumHand hand, @Nullable final ItemStack heldItem, final float hitX, final float hitY, final float hitZ) {
         // Vanilla book? If so, make that a code book.
         if (heldItem != null && heldItem.getItem() == net.minecraft.init.Items.BOOK) {
             if (!player.getEntityWorld().isRemote) {
@@ -207,7 +205,6 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
 
         // Compile the code into our machine state.
         final World world = getCasing().getCasingWorld();
-        assert (world != null);
         if (!world.isRemote) {
             compile(code, player);
             sendFullState();
@@ -253,7 +250,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         RenderUtil.drawQuad(icon.getMinU(), icon.getMinV(), icon.getMaxU(), icon.getMaxV());
 
         // Render detailed state when player is close.
-        if (machineState.code != null && Minecraft.getMinecraft().thePlayer.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
+        if (machineState.code != null && Minecraft.getMinecraft().player.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
             renderState(machineState);
         }
     }
@@ -312,24 +309,16 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
      * be left in a reset state.
      *
      * @param code   the code to compile.
-     * @param player the player that issued the compile, or <tt>null</tt>.
+     * @param player the player that issued the compile.
      */
-    public void compile(final Iterable<String> code, final EntityPlayer player) {
-        final World world = getCasing().getCasingWorld();
-        assert (world != null);
-        if (world.isRemote) {
-            return; // When called from ItemBookCode e.g.
-        }
-
+    private void compile(final Iterable<String> code, final EntityPlayer player) {
         compileError = null;
         try {
             getState().clear();
             Compiler.compile(code, getState());
         } catch (final ParseException e) {
             compileError = e;
-            if (player != null) {
-                player.addChatMessage(new TextComponentString(String.format("Compile error @%s.", e)));
-            }
+            player.sendMessage(new TextComponentString(String.format("Compile error @%s.", e)));
         }
     }
 
@@ -444,17 +433,19 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
     // --------------------------------------------------------------------- //
 
     private interface SourceCodeProvider {
-        boolean worksFor(ItemStack stack);
+        boolean worksFor(@Nullable final ItemStack stack);
 
-        Iterable<String> codeFor(ItemStack stack);
+        @Nullable
+        Iterable<String> codeFor(final ItemStack stack);
     }
 
     private static final class SourceCodeProviderVanilla implements SourceCodeProvider {
         @Override
-        public boolean worksFor(final ItemStack stack) {
+        public boolean worksFor(@Nullable final ItemStack stack) {
             return (stack.getItem() == net.minecraft.init.Items.WRITTEN_BOOK) || (stack.getItem() == net.minecraft.init.Items.WRITABLE_BOOK);
         }
 
+        @Nullable
         @Override
         public Iterable<String> codeFor(final ItemStack stack) {
             final NBTTagCompound nbt = stack.getTagCompound();
@@ -477,10 +468,11 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
 
     private static final class SourceCodeProviderBookCode implements SourceCodeProvider {
         @Override
-        public boolean worksFor(final ItemStack stack) {
+        public boolean worksFor(@Nullable final ItemStack stack) {
             return stack.getItem() == Items.bookCode;
         }
 
+        @Nullable
         @Override
         public Iterable<String> codeFor(final ItemStack stack) {
             final ItemBookCode.Data data = ItemBookCode.Data.loadFromStack(stack);
@@ -496,7 +488,8 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
             new SourceCodeProviderBookCode()
     ));
 
-    private static SourceCodeProvider providerFor(final ItemStack stack) {
+    @Nullable
+    private static SourceCodeProvider providerFor(@Nullable final ItemStack stack) {
         if (stack != null) {
             return providers.stream().filter(p -> p.worksFor(stack)).findFirst().orElse(null);
         }

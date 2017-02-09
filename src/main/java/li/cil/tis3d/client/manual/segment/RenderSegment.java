@@ -116,6 +116,6 @@ public final class RenderSegment extends AbstractSegment implements InteractiveS
     }
 
     private int imageHeight(final int maxWidth) {
-        return MathHelper.ceiling_float_int(imageRenderer.getHeight() * scale(maxWidth)) + 4;
+        return MathHelper.ceil(imageRenderer.getHeight() * scale(maxWidth)) + 4;
     }
 }

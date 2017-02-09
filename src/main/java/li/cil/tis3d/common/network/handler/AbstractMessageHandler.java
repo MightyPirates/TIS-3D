@@ -11,8 +11,11 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
+
 public abstract class AbstractMessageHandler<T extends IMessage> implements IMessageHandler<T, IMessage> {
     @Override
+    @Nullable
     public IMessage onMessage(final T message, final MessageContext context) {
         final IThreadListener thread = FMLCommonHandler.instance().getWorldThread(context.netHandler);
         if (thread.isCallingFromMinecraftThread()) {
@@ -29,6 +32,7 @@ public abstract class AbstractMessageHandler<T extends IMessage> implements IMes
 
     // --------------------------------------------------------------------- //
 
+    @Nullable
     protected World getWorld(final int dimension, final MessageContext context) {
         switch (context.side) {
             case CLIENT:
@@ -40,8 +44,9 @@ public abstract class AbstractMessageHandler<T extends IMessage> implements IMes
     }
 
     @SideOnly(Side.CLIENT)
+    @Nullable
     private static World getWorldClient(final int dimension) {
-        final World world = FMLClientHandler.instance().getClient().theWorld;
+        final World world = FMLClientHandler.instance().getClient().world;
         if (world == null) {
             return null;
         }
@@ -51,6 +56,7 @@ public abstract class AbstractMessageHandler<T extends IMessage> implements IMes
         return world;
     }
 
+    @Nullable
     private static World getWorldServer(final int dimension) {
         return DimensionManager.getWorld(dimension);
     }

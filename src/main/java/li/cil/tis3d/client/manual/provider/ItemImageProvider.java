@@ -10,10 +10,13 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
+import javax.annotation.Nullable;
+
 public final class ItemImageProvider implements ImageProvider {
     private static final String WARNING_ITEM_MISSING = API.MOD_ID + ".manual.warning.missing.item";
 
     @Override
+    @Nullable
     public ImageRenderer getImage(final String data) {
         final int splitIndex = data.lastIndexOf('@');
         final String name, optMeta;

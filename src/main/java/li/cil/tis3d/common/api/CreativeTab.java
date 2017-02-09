@@ -18,6 +18,8 @@ public final class CreativeTab extends CreativeTabs {
     @SideOnly(Side.CLIENT)
     @Override
     public Item getTabIconItem() {
-        return Item.getItemFromBlock(Blocks.controller);
+        final Item item = Item.getItemFromBlock(Blocks.controller);
+        assert item != null;
+        return item;
     }
 }

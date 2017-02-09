@@ -128,7 +128,6 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
     // PipeHost
 
     @Override
-    @Nullable
     public World getPipeHostWorld() {
         return getWorld();
     }

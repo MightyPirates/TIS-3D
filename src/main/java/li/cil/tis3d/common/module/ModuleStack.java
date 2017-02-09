@@ -2,7 +2,6 @@ package li.cil.tis3d.common.module;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.FontRendererAPI;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
@@ -10,12 +9,11 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
+import li.cil.tis3d.client.render.TextureLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -48,8 +46,6 @@ public final class ModuleStack extends AbstractModuleRotatable {
      */
     private static final int STACK_SIZE = 16;
 
-    private static final ResourceLocation LOCATION_OVERLAY = new ResourceLocation(API.MOD_ID, "textures/blocks/overlay/moduleStack.png");
-
     // --------------------------------------------------------------------- //
 
     public ModuleStack(final Casing casing, final Face face) {
@@ -61,8 +57,7 @@ public final class ModuleStack extends AbstractModuleRotatable {
 
     @Override
     public void step() {
-        final World world = getCasing().getCasingWorld();
-        assert (world != null && !world.isRemote);
+        assert (!getCasing().getCasingWorld().isRemote);
 
         stepOutput();
         stepInput();
@@ -70,8 +65,7 @@ public final class ModuleStack extends AbstractModuleRotatable {
 
     @Override
     public void onDisabled() {
-        final World world = getCasing().getCasingWorld();
-        assert (world != null && !world.isRemote);
+        assert (!getCasing().getCasingWorld().isRemote);
 
         // Clear stack on shutdown.
         top = -1;
@@ -81,8 +75,7 @@ public final class ModuleStack extends AbstractModuleRotatable {
 
     @Override
     public void onWriteComplete(final Port port) {
-        final World world = getCasing().getCasingWorld();
-        assert (world != null && !world.isRemote);
+        assert (!getCasing().getCasingWorld().isRemote);
 
         // Pop the top value (the one that was being written).
         pop();
@@ -114,13 +107,13 @@ public final class ModuleStack extends AbstractModuleRotatable {
 
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
 
-        RenderUtil.bindTexture(LOCATION_OVERLAY);
+        RenderUtil.bindTexture(TextureLoader.LOCATION_MODULE_STACK_OVERLAY);
 
         // Draw base overlay.
         RenderUtil.drawQuad();
 
         // Render detailed state when player is close.
-        if (!isEmpty() && Minecraft.getMinecraft().thePlayer.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
+        if (!isEmpty() && Minecraft.getMinecraft().player.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
             drawState();
         }
     }

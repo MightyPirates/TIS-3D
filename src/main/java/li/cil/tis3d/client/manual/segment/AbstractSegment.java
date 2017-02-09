@@ -2,6 +2,7 @@ package li.cil.tis3d.client.manual.segment;
 
 import net.minecraft.client.gui.FontRenderer;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -11,7 +12,8 @@ abstract class AbstractSegment implements Segment {
 
     @Override
     public Segment root() {
-        return (parent() == null) ? this : parent().root();
+        final Segment parent = parent();
+        return parent == null ? this : parent.root();
     }
 
     @Override
@@ -30,12 +32,13 @@ abstract class AbstractSegment implements Segment {
     }
 
     @Override
-    public void setNext(final Segment segment) {
+    public void setNext(@Nullable final Segment segment) {
         next = segment;
     }
 
     @Override
     public boolean isLast() {
-        return next() == null || root() != next().root();
+        final Segment next = next();
+        return next == null || root() != next.root();
     }
 }

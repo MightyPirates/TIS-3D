@@ -12,6 +12,8 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import pl.asie.charset.api.wires.IBundledReceiver;
 
+import javax.annotation.Nullable;
+
 public final class CapabilityBundledReceiver {
     public static final ResourceLocation PROVIDER_BUNDLED_RECEIVER = new ResourceLocation(API.MOD_ID, "charset_bundled_receiver");
 
@@ -26,8 +28,11 @@ public final class CapabilityBundledReceiver {
         }
 
         @Override
-        public boolean hasCapability(final Capability<?> capability, final EnumFacing facing) {
+        public boolean hasCapability(final Capability<?> capability, @Nullable final EnumFacing facing) {
             if (capability != INSTANCE) {
+                return false;
+            }
+            if (facing == null) {
                 return false;
             }
 
@@ -37,7 +42,7 @@ public final class CapabilityBundledReceiver {
 
         @SuppressWarnings("unchecked")
         @Override
-        public <T> T getCapability(final Capability<T> capability, final EnumFacing facing) {
+        public <T> T getCapability(final Capability<T> capability, @Nullable final EnumFacing facing) {
             if (hasCapability(capability, facing)) {
                 return (T) this;
             }

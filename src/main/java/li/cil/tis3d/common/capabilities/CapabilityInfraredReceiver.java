@@ -17,6 +17,7 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import javax.annotation.Nullable;
 import java.util.concurrent.Callable;
 
 public final class CapabilityInfraredReceiver {
@@ -32,6 +33,7 @@ public final class CapabilityInfraredReceiver {
     public static void register() {
         CapabilityManager.INSTANCE.register(InfraredReceiver.class, new Capability.IStorage<InfraredReceiver>() {
             @Override
+            @Nullable
             public NBTBase writeNBT(final Capability<InfraredReceiver> capability, final InfraredReceiver instance, final EnumFacing side) {
                 return null;
             }
@@ -50,16 +52,16 @@ public final class CapabilityInfraredReceiver {
     }
 
     @SubscribeEvent
-    public void onAttachCapabilities(final AttachCapabilitiesEvent.TileEntity event) {
-        final TileEntity tileEntity = event.getTileEntity();
+    public void onAttachTileEntityCapabilities(final AttachCapabilitiesEvent<TileEntity> event) {
+        final TileEntity tileEntity = event.getObject();
         if (tileEntity instanceof InfraredReceiver) {
             event.addCapability(INFRARED_RECEIVER_LOCATION, new InfraredReceiverCapabilityProvider((InfraredReceiver) tileEntity));
         }
     }
 
     @SubscribeEvent
-    public void onAttachCapabilities(final AttachCapabilitiesEvent.Entity event) {
-        final Entity entity = event.getEntity();
+    public void onAttachEntityCapabilities(final AttachCapabilitiesEvent<Entity> event) {
+        final Entity entity = event.getObject();
         if (entity instanceof InfraredReceiver) {
             event.addCapability(INFRARED_RECEIVER_LOCATION, new InfraredReceiverCapabilityProvider((InfraredReceiver) entity));
         }
@@ -73,13 +75,14 @@ public final class CapabilityInfraredReceiver {
         }
 
         @Override
-        public boolean hasCapability(final Capability<?> capability, final EnumFacing facing) {
+        public boolean hasCapability(final Capability<?> capability, @Nullable final EnumFacing facing) {
             return capability == INFRARED_RECEIVER_CAPABILITY;
         }
 
         @SuppressWarnings("unchecked")
         @Override
-        public <T> T getCapability(final Capability<T> capability, final EnumFacing facing) {
+        @Nullable
+        public <T> T getCapability(final Capability<T> capability, @Nullable final EnumFacing facing) {
             return capability == INFRARED_RECEIVER_CAPABILITY ? (T) receiver : null;
         }
     }

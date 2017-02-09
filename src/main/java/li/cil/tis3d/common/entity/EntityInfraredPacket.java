@@ -187,6 +187,7 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
         return true;
     }
 
+    @Nullable
     @Override
     public ItemStack getPickedResult(final RayTraceResult hit) {
         return null;

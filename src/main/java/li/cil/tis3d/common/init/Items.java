@@ -47,15 +47,18 @@ public final class Items {
         return isItem(stack, key) || isKeyCreative(stack);
     }
 
-    public static boolean isKeyCreative(final ItemStack stack) {
+    public static boolean isKeyCreative(@Nullable final ItemStack stack) {
         return isItem(stack, keyCreative);
     }
 
     // --------------------------------------------------------------------- //
 
     public static void register(final ProxyCommon proxy) {
-        for (final String module : Constants.MODULES) {
-            modules.put(module, proxy.registerModule(module));
+        for (final String moduleName : Constants.MODULES) {
+            final Item module = proxy.registerModule(moduleName);
+            if (module != null) {
+                modules.put(moduleName, module);
+            }
         }
 
         bookCode = proxy.registerItem(Constants.NAME_ITEM_BOOK_CODE, ItemBookCode::new);

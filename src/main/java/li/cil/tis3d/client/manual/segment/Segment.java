@@ -2,6 +2,7 @@ package li.cil.tis3d.client.manual.segment;
 
 import net.minecraft.client.gui.FontRenderer;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -13,6 +14,7 @@ public interface Segment {
      *
      * @return the parent segment.
      */
+    @Nullable
     Segment parent();
 
     /**
@@ -86,6 +88,7 @@ public interface Segment {
      *
      * @return the next segment in the linked list of segments.
      */
+    @Nullable
     Segment next();
 
     void setNext(Segment segment);

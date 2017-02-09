@@ -4,6 +4,7 @@ import li.cil.tis3d.client.manual.Document;
 import net.minecraft.client.gui.FontRenderer;
 import org.lwjgl.opengl.GL11;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -14,12 +15,13 @@ public class TextSegment extends BasicTextSegment {
     private final Segment parent;
     private final String text;
 
-    public TextSegment(final Segment parent, final String text) {
+    public TextSegment(@Nullable final Segment parent, final String text) {
         this.parent = parent;
         this.text = text;
     }
 
     @Override
+    @Nullable
     public Segment parent() {
         return parent;
     }
@@ -158,10 +160,13 @@ public class TextSegment extends BasicTextSegment {
     private Optional<InteractiveSegment> resolvedInteractive() {
         if (this instanceof InteractiveSegment) {
             return Optional.of((InteractiveSegment) this);
-        } else if (parent() instanceof TextSegment) {
-            return ((TextSegment) parent()).resolvedInteractive();
         } else {
-            return Optional.empty();
+            final Segment parent = parent();
+            if (parent instanceof TextSegment) {
+                return ((TextSegment) parent).resolvedInteractive();
+            } else {
+                return Optional.empty();
+            }
         }
     }
 }

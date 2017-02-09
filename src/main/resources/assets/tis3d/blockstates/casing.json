@@ -1,51 +1,39 @@
 {
     "forge_marker": 1,
     "defaults": {
-        "textures": {},
-        "model": "tis3d:casing.obj",
-        "custom": {"show": ["casing"]}
-     },
+        "textures": {
+            "casing": "tis3d:blocks/casing_empty",
+            "module": "tis3d:blocks/casing_module",
+            "particle": "tis3d:blocks/casing_empty"
+        }
+    },
     "variants": {
-        "normal": [{}],
         "inventory": [{
-            "transform": "forge:default-block",
-            "model": "tis3d:casingItem.obj"
+            "model": "tis3d:casing_all"
         }],
-        "yneg": {
-            "true": {
-                "custom": {"show": ["moduleXNeg"]}
-            },
-            "false": {}
-        },
-        "ypos": {
-            "true": {
-                "custom": {"show": ["moduleXPos"]}
-            },
-            "false": {}
-        },
-        "zneg": {
-            "true": {
-                "custom": {"show": ["moduleZNeg"]}
-            },
-            "false": {}
-        },
-        "zpos": {
-            "true": {
-                "custom": {"show": ["moduleZPos"]}
-            },
-            "false": {}
-        },
         "xneg": {
-            "true": {
-                "custom": {"show": ["moduleXNeg"]}
-            },
-            "false": {}
+            "false": { "submodel": "tis3d:casing_empty", "y": 270 },
+            "true": { "submodel": "tis3d:casing_module", "y": 270 }
         },
         "xpos": {
-            "true": {
-                "custom": {"show": ["moduleXPos"]}
-            },
-            "false": {}
+            "false": { "submodel": "tis3d:casing_empty", "y": 90 },
+            "true": { "submodel": "tis3d:casing_module", "y": 90 }
+        },
+        "yneg": {
+            "false": { "submodel": "tis3d:casing_empty", "x": 90 },
+            "true": { "submodel": "tis3d:casing_module", "x": 90 }
+        },
+        "ypos": {
+            "false": { "submodel": "tis3d:casing_empty", "x": 270 },
+            "true": { "submodel": "tis3d:casing_module", "x": 270 }
+        },
+        "zneg": {
+            "false": { "submodel": "tis3d:casing_empty" },
+            "true": { "submodel": "tis3d:casing_module" }
+        },
+        "zpos": {
+            "false": { "submodel": "tis3d:casing_empty", "y": 180 },
+            "true": { "submodel": "tis3d:casing_module", "y": 180 }
         }
     }
 }

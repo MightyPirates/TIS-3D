@@ -30,12 +30,13 @@ public final class BlockController extends Block {
 
     @Override
     public boolean isSideSolid(final IBlockState state, final IBlockAccess world, final BlockPos pos, final EnumFacing side) {
-        // Allow levers to be placed on us (wouldn't work because of isFullCube = false otherwise).
+        // Allow levers to be placed on us (wouldn't work because of isFullCube (???) = false otherwise).
         return true;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
-    public boolean isFullCube(final IBlockState state) {
+    public boolean isFullBlock(final IBlockState state) {
         // Prevent fences from visually connecting.
         return false;
     }
@@ -87,11 +88,13 @@ public final class BlockController extends Block {
     // --------------------------------------------------------------------- //
     // Redstone
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean hasComparatorInputOverride(final IBlockState state) {
         return true;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public int getComparatorInputOverride(final IBlockState state, final World world, final BlockPos pos) {
         final TileEntity tileEntity = world.getTileEntity(pos);
@@ -105,6 +108,7 @@ public final class BlockController extends Block {
     // --------------------------------------------------------------------- //
     // Networking
 
+    @SuppressWarnings("deprecation")
     @Override
     public void neighborChanged(final IBlockState state, final World world, final BlockPos pos, final Block neighborBlock) {
         final TileEntity tileEntity = world.getTileEntity(pos);

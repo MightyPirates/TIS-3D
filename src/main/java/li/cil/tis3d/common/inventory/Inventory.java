@@ -139,7 +139,7 @@ public class Inventory implements IInventory {
     }
 
     @Override
-    public boolean isUseableByPlayer(final EntityPlayer player) {
+    public boolean isUsableByPlayer(final EntityPlayer player) {
         return true;
     }
 

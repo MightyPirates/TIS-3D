@@ -18,12 +18,16 @@ public final class SerialInterfaceProviderFurnace implements SerialInterfaceProv
 
     @Override
     public SerialInterface interfaceFor(final World world, final BlockPos position, final EnumFacing side) {
-        return new SerialInterfaceFurnace((TileEntityFurnace) world.getTileEntity(position));
+        final TileEntityFurnace furnace = (TileEntityFurnace) world.getTileEntity(position);
+        if (furnace == null) {
+            throw new IllegalArgumentException("Provided location does not contain a furnace. Check via worksWith first.");
+        }
+        return new SerialInterfaceFurnace(furnace);
     }
 
     @Override
     public SerialProtocolDocumentationReference getDocumentationReference() {
-        return new SerialProtocolDocumentationReference("Minecraft Furnace", "protocols/minecraftFurnace.md");
+        return new SerialProtocolDocumentationReference("Minecraft Furnace", "protocols/minecraft_furnace.md");
     }
 
     @Override

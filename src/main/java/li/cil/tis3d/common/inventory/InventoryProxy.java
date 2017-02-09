@@ -46,8 +46,8 @@ public interface InventoryProxy extends IInventory {
     }
 
     @Override
-    default boolean isUseableByPlayer(final EntityPlayer player) {
-        return getInventory().isUseableByPlayer(player);
+    default boolean isUsableByPlayer(final EntityPlayer player) {
+        return getInventory().isUsableByPlayer(player);
     }
 
     @Override

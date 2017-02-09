@@ -187,10 +187,6 @@ public final class Document {
     // ----------------------------------------------------------------------- //
 
     private static String trimRight(final String s) {
-        if (s == null) {
-            return "";
-        }
-
         for (int i = s.length(); i > 0; i--) {
             if (!Character.isWhitespace(s.charAt(i - 1))) {
                 return s.substring(0, i);

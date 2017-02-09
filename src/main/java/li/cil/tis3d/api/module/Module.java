@@ -11,6 +11,8 @@ import net.minecraft.util.EnumHand;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
+
 /**
  * A module that can be installed in a TIS-3D {@link Casing}.
  */
@@ -136,7 +138,7 @@ public interface Module {
      * @param hitZ     the relative z position that was clicked.
      * @return <tt>true</tt> if the click was handled, <tt>false</tt> otherwise.
      */
-    boolean onActivate(final EntityPlayer player, final EnumHand hand, final ItemStack heldItem, final float hitX, final float hitY, final float hitZ);
+    boolean onActivate(final EntityPlayer player, final EnumHand hand, @Nullable final ItemStack heldItem, final float hitX, final float hitY, final float hitZ);
 
     /**
      * Called with NBT data sent from the remote instance of the module.

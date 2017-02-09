@@ -19,6 +19,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -106,8 +107,8 @@ public final class ManualAPIImpl implements ManualAPI {
     // --------------------------------------------------------------------- //
 
     @Override
-    public void addTab(final TabIconRenderer renderer, final String tooltip, final String path) {
-        tabs.add(new Tab(renderer, Optional.of(tooltip), path));
+    public void addTab(final TabIconRenderer renderer, @Nullable final String tooltip, final String path) {
+        tabs.add(new Tab(renderer, tooltip, path));
         if (tabs.size() > 7) {
             TIS3D.getLog().warn("Gosh I'm popular! Too many tabs were added to the in-game manual, so some won't be shown. In case this actually happens, let me know and I'll look into making them scrollable or something...");
         }
@@ -139,16 +140,19 @@ public final class ManualAPIImpl implements ManualAPI {
     }
 
     @Override
-    public String pathFor(final ItemStack stack) {
+    @Nullable
+    public String pathFor(@Nullable final ItemStack stack) {
         return pathFor(p -> p.pathFor(stack), MESSAGE_PATH_PROVIDER_ITEM_EXCEPTION);
     }
 
     @Override
+    @Nullable
     public String pathFor(final World world, final BlockPos pos) {
         return pathFor(p -> p.pathFor(world, pos), MESSAGE_PATH_PROVIDER_BLOCK_EXCEPTION);
     }
 
     @Override
+    @Nullable
     public Iterable<String> contentFor(final String path) {
         final String cleanPath = Files.simplifyPath(path);
         final String language = FMLCommonHandler.instance().getCurrentLanguage();
@@ -160,6 +164,7 @@ public final class ManualAPIImpl implements ManualAPI {
     }
 
     @Override
+    @Nullable
     public ImageRenderer imageFor(final String href) {
         for (int i = imageProviders.size() - 1; i >= 0; i--) {
             final PrefixedImageProvider entry = imageProviders.get(i);
@@ -295,10 +300,10 @@ public final class ManualAPIImpl implements ManualAPI {
 
     public static final class Tab {
         public final TabIconRenderer renderer;
-        public final Optional<String> tooltip;
+        public final String tooltip;
         public final String path;
 
-        public Tab(final TabIconRenderer renderer, final Optional<String> tooltip, final String path) {
+        public Tab(final TabIconRenderer renderer, @Nullable final String tooltip, final String path) {
             this.renderer = renderer;
             this.tooltip = tooltip;
             this.path = path;
@@ -317,6 +322,7 @@ public final class ManualAPIImpl implements ManualAPI {
 
     @FunctionalInterface
     private interface ProviderQuery {
+        @Nullable
         String pathFor(PathProvider provider);
     }
 }
