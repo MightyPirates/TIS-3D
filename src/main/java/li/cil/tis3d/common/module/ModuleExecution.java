@@ -442,7 +442,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
     private static final class SourceCodeProviderVanilla implements SourceCodeProvider {
         @Override
         public boolean worksFor(@Nullable final ItemStack stack) {
-            return (stack.getItem() == net.minecraft.init.Items.WRITTEN_BOOK) || (stack.getItem() == net.minecraft.init.Items.WRITABLE_BOOK);
+            return Items.isItem(stack, net.minecraft.init.Items.WRITTEN_BOOK) || Items.isItem(stack, net.minecraft.init.Items.WRITABLE_BOOK);
         }
 
         @Nullable
@@ -469,7 +469,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
     private static final class SourceCodeProviderBookCode implements SourceCodeProvider {
         @Override
         public boolean worksFor(@Nullable final ItemStack stack) {
-            return stack.getItem() == Items.bookCode;
+            return Items.isBookCode(stack);
         }
 
         @Nullable

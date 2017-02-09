@@ -86,7 +86,9 @@ public final class ProxyClient extends ProxyCommon {
     // --------------------------------------------------------------------- //
 
     private static void setCustomItemModelResourceLocation(final Item item) {
-        final ModelResourceLocation location = new ModelResourceLocation(item.getRegistryName(), "inventory");
+        final ResourceLocation registryName = item.getRegistryName();
+        assert registryName != null;
+        final ModelResourceLocation location = new ModelResourceLocation(registryName, "inventory");
         ModelLoader.setCustomModelResourceLocation(item, 0, location);
     }
 }

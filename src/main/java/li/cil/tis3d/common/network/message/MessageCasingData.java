@@ -11,6 +11,7 @@ public class MessageCasingData extends AbstractMessageWithLocation {
         this.data = data;
     }
 
+    @SuppressWarnings("unused") // For deserialization.
     public MessageCasingData() {
     }
 

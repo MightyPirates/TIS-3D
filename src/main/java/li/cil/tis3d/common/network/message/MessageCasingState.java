@@ -11,6 +11,7 @@ public final class MessageCasingState extends AbstractMessageWithLocation {
         this.isEnabled = isEnabled;
     }
 
+    @SuppressWarnings("unused") // For deserialization.
     public MessageCasingState() {
     }
 

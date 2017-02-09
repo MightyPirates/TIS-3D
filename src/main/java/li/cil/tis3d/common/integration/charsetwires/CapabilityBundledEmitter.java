@@ -62,6 +62,7 @@ public final class CapabilityBundledEmitter {
                 this.facing = facing;
             }
 
+            @Nullable
             @Override
             public byte[] getBundledSignal() {
                 final Module module = tileEntity.getModule(Face.fromEnumFacing(facing));
