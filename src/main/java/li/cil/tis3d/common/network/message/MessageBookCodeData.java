@@ -14,6 +14,7 @@ public final class MessageBookCodeData implements IMessage {
         this.nbt = nbt;
     }
 
+    @SuppressWarnings("unused") // For deserialization.
     public MessageBookCodeData() {
     }
 

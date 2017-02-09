@@ -287,6 +287,7 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
         Network.INSTANCE.getWrapper().sendToAllAround(message, target);
     }
 
+    @Nullable
     private RayTraceResult checkCollisions() {
         final RayTraceResult hit = checkCollision();
         if (hit != null) {
@@ -316,6 +317,7 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
         return hit;
     }
 
+    @Nullable
     private RayTraceResult checkCollision() {
         final World world = getEntityWorld();
         final Vec3d start = new Vec3d(posX, posY, posZ);

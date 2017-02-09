@@ -230,6 +230,7 @@ public final class ManualAPIImpl implements ManualAPI {
 
     // --------------------------------------------------------------------- //
 
+    @Nullable
     private String pathFor(final ProviderQuery query, final String warning) {
         for (final PathProvider provider : pathProviders) {
             try {

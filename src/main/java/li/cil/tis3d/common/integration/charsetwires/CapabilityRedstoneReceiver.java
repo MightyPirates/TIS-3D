@@ -41,6 +41,7 @@ public final class CapabilityRedstoneReceiver {
         }
 
         @SuppressWarnings("unchecked")
+        @Nullable
         @Override
         public <T> T getCapability(final Capability<T> capability, @Nullable final EnumFacing facing) {
             if (hasCapability(capability, facing)) {

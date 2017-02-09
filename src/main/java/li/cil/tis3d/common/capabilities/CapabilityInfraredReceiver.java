@@ -80,8 +80,8 @@ public final class CapabilityInfraredReceiver {
         }
 
         @SuppressWarnings("unchecked")
-        @Override
         @Nullable
+        @Override
         public <T> T getCapability(final Capability<T> capability, @Nullable final EnumFacing facing) {
             return capability == INFRARED_RECEIVER_CAPABILITY ? (T) receiver : null;
         }

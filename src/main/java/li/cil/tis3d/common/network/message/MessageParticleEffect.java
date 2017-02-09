@@ -21,6 +21,7 @@ public final class MessageParticleEffect implements IMessage {
         this.z = z;
     }
 
+    @SuppressWarnings("unused") // For deserialization.
     public MessageParticleEffect() {
     }
 

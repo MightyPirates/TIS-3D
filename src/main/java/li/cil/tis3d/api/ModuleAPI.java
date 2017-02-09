@@ -5,6 +5,8 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.ModuleProvider;
 import net.minecraft.item.ItemStack;
 
+import javax.annotation.Nullable;
+
 /**
  * API entry point for registering {@link ModuleProvider}s and other
  * module related tasks.
@@ -34,6 +36,7 @@ public final class ModuleAPI {
      * @param face   the face the module would be installed on.
      * @return the first provider supporting the item stack, or <tt>null</tt>.
      */
+    @Nullable
     public static ModuleProvider getProviderFor(final ItemStack stack, final Casing casing, final Face face) {
         if (API.moduleAPI != null)
             return API.moduleAPI.getProviderFor(stack, casing, face);
