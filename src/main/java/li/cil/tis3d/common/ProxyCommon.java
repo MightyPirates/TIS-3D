@@ -39,6 +39,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLMissingMappingsEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
@@ -46,6 +47,9 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -125,6 +129,55 @@ public class ProxyCommon {
     public void onPostInit(final FMLPostInitializationEvent event) {
         // Mod integration.
         Integration.postInit(event);
+    }
+
+    public void onMissingMappings(final FMLMissingMappingsEvent event) {
+        final Map<String, String> renames = new HashMap<>();
+
+        // 1.10 -> 1.11 renaming, because 1.11 enforces all lower-case.
+        renames.put("bookCode", "book_code");
+        renames.put("bookManual", "book_manual");
+        renames.put("keyCreative", "key_creative");
+        renames.put("moduleAudio", "module_audio");
+        renames.put("moduleBundledRedstone", "module_bundled_redstone");
+        renames.put("moduleDisplay", "module_display");
+        renames.put("moduleExecution", "module_execution");
+        renames.put("moduleInfrared", "module_infrared");
+        renames.put("moduleKeypad", "module_keypad");
+        renames.put("moduleRedstone", "module_redstone");
+        renames.put("moduleSerialPort", "module_serial_port");
+        renames.put("moduleStack", "module_stack");
+        renames.put("moduleRandom", "module_random");
+        renames.put("moduleRandomAccessMemory", "module_random_access_memory");
+
+        for (final FMLMissingMappingsEvent.MissingMapping missingMapping : event.get()) {
+            assert Objects.equals(missingMapping.resourceLocation.getResourceDomain(), API.MOD_ID);
+            final String newName = renames.get(missingMapping.resourceLocation.getResourcePath());
+            if (newName == null) {
+                missingMapping.ignore();
+                continue;
+            }
+
+            final ResourceLocation newResourceLocation = new ResourceLocation(API.MOD_ID, newName);
+            switch (missingMapping.type) {
+                case BLOCK:
+                    final Block newBlock = Block.REGISTRY.getObject(newResourceLocation);
+                    if (newBlock != net.minecraft.init.Blocks.AIR) {
+                        missingMapping.remap(newBlock);
+                    } else {
+                        missingMapping.warn();
+                    }
+                    break;
+                case ITEM:
+                    final Item newItem = Item.REGISTRY.getObject(newResourceLocation);
+                    if (newItem != null) {
+                        missingMapping.remap(newItem);
+                    } else {
+                        missingMapping.warn();
+                    }
+                    break;
+            }
+        }
     }
 
     // --------------------------------------------------------------------- //
