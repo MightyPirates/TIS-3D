@@ -307,6 +307,8 @@ public final class TileEntityCasing extends TileEntityComputer implements
 
     @Override
     protected void readFromNBTCommon(final NBTTagCompound nbt) {
+        super.readFromNBTCommon(nbt);
+
         final NBTTagCompound inventoryNbt = nbt.getCompoundTag(TAG_INVENTORY);
         inventory.readFromNBT(inventoryNbt);
 
@@ -316,6 +318,8 @@ public final class TileEntityCasing extends TileEntityComputer implements
 
     @Override
     protected void writeToNBTCommon(final NBTTagCompound nbt) {
+        super.writeToNBTCommon(nbt);
+
         // Needed on the client also, for picking and for actually instantiating
         // the installed modules on the client side (to find the provider).
         final NBTTagCompound inventoryNbt = new NBTTagCompound();
