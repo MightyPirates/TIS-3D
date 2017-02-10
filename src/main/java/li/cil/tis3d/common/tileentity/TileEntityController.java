@@ -14,6 +14,7 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 import java.util.ArrayDeque;
@@ -75,7 +76,14 @@ public final class TileEntityController extends TileEntityComputer implements IT
         /**
          * The controller is in operational state and powered, updating connected casings each tick.
          */
-        RUNNING
+        RUNNING;
+
+        // --------------------------------------------------------------------- //
+
+        /**
+         * All possible enum values for quick indexing.
+         */
+        public static final ControllerState[] VALUES = ControllerState.values();
     }
 
     /**
@@ -88,8 +96,14 @@ public final class TileEntityController extends TileEntityComputer implements IT
      */
     private ControllerState state = ControllerState.SCANNING;
 
+    /**
+     * The last state we sent to clients, i.e. the state clients think the controller is in.
+     */
+    private ControllerState lastSentState = ControllerState.SCANNING;
+
     // NBT tag names.
     private static final String TAG_HCF_COOLDOWN = "hcfCooldown";
+    private static final String TAG_STATE = "state";
 
     /**
      * User scheduled a forced step for the next tick.
@@ -200,20 +214,35 @@ public final class TileEntityController extends TileEntityComputer implements IT
         }
     }
 
+    // --------------------------------------------------------------------- //
+    // TileEntityComputer
+
     @Override
-    public void readFromNBT(final NBTTagCompound nbt) {
-        super.readFromNBT(nbt);
+    protected void readFromNBTForServer(final NBTTagCompound nbt) {
+        super.readFromNBTForServer(nbt);
 
         hcfCooldown = nbt.getInteger(TAG_HCF_COOLDOWN);
     }
 
     @Override
-    public NBTTagCompound writeToNBT(final NBTTagCompound nbtIn) {
-        final NBTTagCompound nbt = super.writeToNBT(nbtIn);
+    protected void writeToNBTForServer(final NBTTagCompound nbt) {
+        super.writeToNBTForServer(nbt);
 
         nbt.setInteger(TAG_HCF_COOLDOWN, hcfCooldown);
+    }
 
-        return nbt;
+    @Override
+    protected void readFromNBTForClient(final NBTTagCompound nbt) {
+        super.readFromNBTForClient(nbt);
+
+        state = ControllerState.VALUES[nbt.getByte(TAG_STATE) & 0xFF];
+    }
+
+    @Override
+    protected void writeToNBTForClient(final NBTTagCompound nbt) {
+        super.writeToNBTForClient(nbt);
+
+        nbt.setByte(TAG_STATE, (byte) state.ordinal());
     }
 
     // --------------------------------------------------------------------- //
@@ -221,16 +250,17 @@ public final class TileEntityController extends TileEntityComputer implements IT
 
     @Override
     public void update() {
+        final World world = getWorld();
+
         // Only update multi-block and casings on the server.
-        if (getWorld().isRemote) {
+        if (world.isRemote) {
             if (hcfCooldown > 0) {
                 --hcfCooldown;
 
                 // Spawn some fire particles! No actual fire, that'd be... problematic.
-                final World world = getWorld();
                 for (final EnumFacing facing : EnumFacing.VALUES) {
                     final BlockPos neighborPos = getPos().offset(facing);
-                    final IBlockState neighborState = getWorld().getBlockState(neighborPos);
+                    final IBlockState neighborState = world.getBlockState(neighborPos);
                     if (neighborState.isFullCube()) {
                         continue;
                     }
@@ -245,6 +275,13 @@ public final class TileEntityController extends TileEntityComputer implements IT
             }
 
             return;
+        }
+
+        if (state != lastSentState) {
+            final Chunk chunk = world.getChunkFromBlockCoords(pos);
+            final IBlockState blockState = world.getBlockState(getPos());
+            world.markAndNotifyBlock(getPos(), chunk, blockState, blockState, 7);
+            lastSentState = state;
         }
 
         // Enforce cooldown after HCF event.
@@ -284,7 +321,7 @@ public final class TileEntityController extends TileEntityComputer implements IT
             forceStep = forceStep && power == 1;
 
             // Are we powered?
-            if (!getWorld().isBlockPowered(getPos())) {
+            if (!world.isBlockPowered(getPos())) {
                 // Nope, fall back to ready state, disable modules.
                 state = ControllerState.READY;
                 casings.forEach(TileEntityCasing::onDisabled);
@@ -302,7 +339,7 @@ public final class TileEntityController extends TileEntityComputer implements IT
                     if (power < 15) {
                         // Stepping slower than 100%.
                         final int delay = 15 - power;
-                        if (getWorld().getTotalWorldTime() % delay == 0 || forceStep) {
+                        if (world.getTotalWorldTime() % delay == 0 || forceStep) {
                             step();
                         }
                     } else {

@@ -160,7 +160,7 @@ public final class BlockCasing extends Block {
 
                 // Don't allow changing modules while casing is locked.
                 if (casing.isLocked()) {
-                    return true;
+                    return super.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
                 }
 
                 // Remove old module or install new one.

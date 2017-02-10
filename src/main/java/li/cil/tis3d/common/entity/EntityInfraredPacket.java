@@ -15,13 +15,13 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -395,14 +395,7 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
         if (block instanceof InfraredReceiver) {
             ((InfraredReceiver) block).onInfraredPacket(this, hit);
         }
-
-        final TileEntity tileEntity = world.getTileEntity(pos);
-        if (tileEntity != null) {
-            final InfraredReceiver capability = tileEntity.getCapability(CapabilityInfraredReceiver.INFRARED_RECEIVER_CAPABILITY, hit.sideHit);
-            if (capability != null) {
-                capability.onInfraredPacket(this, hit);
-            }
-        }
+        onCapabilityProviderCollision(hit, world.getTileEntity(pos));
     }
 
     private void onEntityCollision(final RayTraceResult hit) {
@@ -410,9 +403,12 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
         setDead();
 
         // Next up, notify receiver, if any.
-        final Entity entity = hit.entityHit;
-        if (entity != null) {
-            final InfraredReceiver capability = entity.getCapability(CapabilityInfraredReceiver.INFRARED_RECEIVER_CAPABILITY, hit.sideHit);
+        onCapabilityProviderCollision(hit, hit.entityHit);
+    }
+
+    private void onCapabilityProviderCollision(final RayTraceResult hit, @Nullable final ICapabilityProvider provider) {
+        if (provider != null) {
+            final InfraredReceiver capability = provider.getCapability(CapabilityInfraredReceiver.INFRARED_RECEIVER_CAPABILITY, hit.sideHit);
             if (capability != null) {
                 capability.onInfraredPacket(this, hit);
             }
