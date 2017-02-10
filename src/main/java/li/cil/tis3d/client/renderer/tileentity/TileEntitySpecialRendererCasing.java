@@ -59,7 +59,7 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
 
             setupMatrix(face);
 
-            ensureSanity(casing, face);
+            ensureSanity();
 
             if (!isPlayerHoldingKey() || !drawConfigOverlay(casing, face)) {
                 drawModuleOverlay(casing, face, partialTicks);
@@ -106,12 +106,12 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
         GlStateManager.scale(-1, -1, 1);
     }
 
-    private void ensureSanity(final TileEntityCasing casing, final Face face) {
+    private void ensureSanity() {
         GlStateManager.enableTexture2D();
 
-        final int brightness = getWorld().getCombinedLight(
-                casing.getPosition().offset(Face.toEnumFacing(face)), 0);
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, brightness % 65536, brightness / 65536);
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
+
+        RenderUtil.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 
         GlStateManager.color(1, 1, 1, 1);
     }
@@ -121,10 +121,6 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
         if (!isPlayerKindaClose(casing)) {
             return false;
         }
-
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
-
-        RenderUtil.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 
         final TextureMap textureMap = Minecraft.getMinecraft().getTextureMapBlocks();
         if (isPlayerSneaking()) {
@@ -208,6 +204,10 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
         if (BLACKLIST.contains(module.getClass())) {
             return;
         }
+
+        final int brightness = getWorld().getCombinedLight(
+                casing.getPosition().offset(Face.toEnumFacing(face)), 0);
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, brightness % 65536, brightness / 65536);
 
         try {
             module.render(casing.isEnabled(), partialTicks);
