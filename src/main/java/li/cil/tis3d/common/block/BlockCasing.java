@@ -6,6 +6,7 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.traits.Redstone;
 import li.cil.tis3d.api.module.traits.Rotatable;
+import li.cil.tis3d.api.util.TransformUtil;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ItemBookManual;
 import li.cil.tis3d.common.tileentity.TileEntityCasing;
@@ -27,6 +28,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -130,11 +132,18 @@ public final class BlockCasing extends Block {
                 final TileEntityCasing casing = (TileEntityCasing) tileEntity;
                 final ItemStack heldItem = player.getHeldItem(hand);
 
-                // Locking or unlocking the casing?
+                // Locking or unlocking the casing or a port?
                 if (Items.isKey(heldItem)) {
                     if (!world.isRemote) {
                         if (casing.isLocked()) {
                             casing.unlock(heldItem);
+                        } else if (player.isSneaking()) {
+                            final Face face = Face.fromEnumFacing(side);
+                            final Vec3d uv = TransformUtil.hitToUV(face, new Vec3d(hitX, hitY, hitZ));
+                            assert uv != null;
+                            final Port port = Port.fromUVQuadrant(uv);
+
+                            casing.setClosed(face, port, !casing.isClosed(face, port));
                         } else {
                             casing.lock(heldItem);
                         }
