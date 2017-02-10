@@ -13,7 +13,6 @@ import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.tileentity.TileEntityCasing;
 import li.cil.tis3d.common.tileentity.TileEntityController;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -137,8 +136,6 @@ public final class CasingImpl implements Casing {
             setKeyForStack(stack, key);
             lock = key;
         }
-        final IBlockState state = getCasingWorld().getBlockState(getPosition());
-        getCasingWorld().notifyBlockUpdate(getPosition(), state, state, 3);
     }
 
     /**
@@ -146,13 +143,12 @@ public final class CasingImpl implements Casing {
      *
      * @param stack the item containing the key.
      */
-    public void unlock(final ItemStack stack) {
+    public boolean unlock(final ItemStack stack) {
         if (Items.isKeyCreative(stack)) {
             lock = null;
-            final IBlockState state = getCasingWorld().getBlockState(getPosition());
-            getCasingWorld().notifyBlockUpdate(getPosition(), state, state, 3);
+            return true;
         } else {
-            getKeyFromStack(stack).ifPresent(this::unlock);
+            return getKeyFromStack(stack).map(this::unlock).orElse(false);
         }
     }
 
@@ -161,11 +157,12 @@ public final class CasingImpl implements Casing {
      *
      * @param key the key to use to unlock the casing.
      */
-    public void unlock(final UUID key) {
+    public boolean unlock(final UUID key) {
         if (key.equals(lock)) {
             lock = null;
-            final IBlockState state = getCasingWorld().getBlockState(getPosition());
-            getCasingWorld().notifyBlockUpdate(getPosition(), state, state, 3);
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -292,40 +289,6 @@ public final class CasingImpl implements Casing {
     }
 
     // --------------------------------------------------------------------- //
-
-    /**
-     * Read a stored key from the specified stack.
-     *
-     * @param stack the stack to get the key from.
-     * @return the key, if present.
-     */
-    private static Optional<UUID> getKeyFromStack(final ItemStack stack) {
-        final NBTTagCompound nbt = stack.getTagCompound();
-        if (nbt == null) {
-            return Optional.empty();
-        }
-        if (!nbt.hasKey(TAG_KEY_MS) || !nbt.hasKey(TAG_KEY_LS)) {
-            return Optional.empty();
-        }
-        return Optional.of(new UUID(nbt.getLong(TAG_KEY_MS), nbt.getLong(TAG_KEY_LS)));
-    }
-
-    /**
-     * Store the specified key on the specified item stack.
-     *
-     * @param stack the stack to store the key on.
-     * @param key   the key to store on the stack.
-     */
-    private static void setKeyForStack(final ItemStack stack, final UUID key) {
-        NBTTagCompound nbt = stack.getTagCompound();
-        if (nbt == null) {
-            stack.setTagCompound(nbt = new NBTTagCompound());
-        }
-        nbt.setLong(TAG_KEY_MS, key.getMostSignificantBits());
-        nbt.setLong(TAG_KEY_LS, key.getLeastSignificantBits());
-    }
-
-    // --------------------------------------------------------------------- //
     // Casing
 
     @Override
@@ -382,5 +345,39 @@ public final class CasingImpl implements Casing {
     @Override
     public void sendData(final Face face, final ByteBuf data) {
         sendData(face, data, (byte) -1);
+    }
+
+    // --------------------------------------------------------------------- //
+
+    /**
+     * Read a stored key from the specified stack.
+     *
+     * @param stack the stack to get the key from.
+     * @return the key, if present.
+     */
+    private static Optional<UUID> getKeyFromStack(final ItemStack stack) {
+        final NBTTagCompound nbt = stack.getTagCompound();
+        if (nbt == null) {
+            return Optional.empty();
+        }
+        if (!nbt.hasKey(TAG_KEY_MS) || !nbt.hasKey(TAG_KEY_LS)) {
+            return Optional.empty();
+        }
+        return Optional.of(new UUID(nbt.getLong(TAG_KEY_MS), nbt.getLong(TAG_KEY_LS)));
+    }
+
+    /**
+     * Store the specified key on the specified item stack.
+     *
+     * @param stack the stack to store the key on.
+     * @param key   the key to store on the stack.
+     */
+    private static void setKeyForStack(final ItemStack stack, final UUID key) {
+        NBTTagCompound nbt = stack.getTagCompound();
+        if (nbt == null) {
+            stack.setTagCompound(nbt = new NBTTagCompound());
+        }
+        nbt.setLong(TAG_KEY_MS, key.getMostSignificantBits());
+        nbt.setLong(TAG_KEY_LS, key.getLeastSignificantBits());
     }
 }

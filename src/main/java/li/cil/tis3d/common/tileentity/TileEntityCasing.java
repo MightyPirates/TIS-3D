@@ -161,10 +161,15 @@ public final class TileEntityCasing extends TileEntityComputer implements
 
     public void lock(final ItemStack stack) {
         casing.lock(stack);
+        final IBlockState state = getCasingWorld().getBlockState(getPosition());
+        getCasingWorld().notifyBlockUpdate(getPosition(), state, state, 1);
     }
 
     public void unlock(final ItemStack stack) {
-        casing.unlock(stack);
+        if (casing.unlock(stack)) {
+            final IBlockState state = getCasingWorld().getBlockState(getPosition());
+            getCasingWorld().notifyBlockUpdate(getPosition(), state, state, 1);
+        }
     }
 
     public void notifyModulesOfBlockChange(final BlockPos neighborPos) {
