@@ -120,53 +120,6 @@ public final class CasingImpl implements Casing {
     }
 
     /**
-     * Locks the casing and returns the key for unlocking it.
-     *
-     * @param stack the item to store the key for unlocking on.
-     * @throws IllegalStateException if the casing is already locked.
-     */
-    public void lock(final ItemStack stack) {
-        if (isLocked()) {
-            throw new IllegalStateException("Casing is already locked.");
-        }
-        if (Items.isKeyCreative(stack)) {
-            lock = UUID.randomUUID();
-        } else {
-            final UUID key = getKeyFromStack(stack).orElse(UUID.randomUUID());
-            setKeyForStack(stack, key);
-            lock = key;
-        }
-    }
-
-    /**
-     * Try to unlock the casing with the key stored on the specified item.
-     *
-     * @param stack the item containing the key.
-     */
-    public boolean unlock(final ItemStack stack) {
-        if (Items.isKeyCreative(stack)) {
-            lock = null;
-            return true;
-        } else {
-            return getKeyFromStack(stack).map(this::unlock).orElse(false);
-        }
-    }
-
-    /**
-     * Try to unlock the casing with the specified key.
-     *
-     * @param key the key to use to unlock the casing.
-     */
-    public boolean unlock(final UUID key) {
-        if (key.equals(lock)) {
-            lock = null;
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
      * Set the module for the specified face of the casing.
      * <p>
      * This is automatically called by the casing tile entity when items are
@@ -219,6 +172,53 @@ public final class CasingImpl implements Casing {
         }
 
         tileEntity.markDirty();
+    }
+
+    /**
+     * Locks the casing and returns the key for unlocking it.
+     *
+     * @param stack the item to store the key for unlocking on.
+     * @throws IllegalStateException if the casing is already locked.
+     */
+    public void lock(final ItemStack stack) {
+        if (isLocked()) {
+            throw new IllegalStateException("Casing is already locked.");
+        }
+        if (Items.isKeyCreative(stack)) {
+            lock = UUID.randomUUID();
+        } else {
+            final UUID key = getKeyFromStack(stack).orElse(UUID.randomUUID());
+            setKeyForStack(stack, key);
+            lock = key;
+        }
+    }
+
+    /**
+     * Try to unlock the casing with the key stored on the specified item.
+     *
+     * @param stack the item containing the key.
+     */
+    public boolean unlock(final ItemStack stack) {
+        if (Items.isKeyCreative(stack)) {
+            lock = null;
+            return true;
+        } else {
+            return getKeyFromStack(stack).map(this::unlock).orElse(false);
+        }
+    }
+
+    /**
+     * Try to unlock the casing with the specified key.
+     *
+     * @param key the key to use to unlock the casing.
+     */
+    public boolean unlock(final UUID key) {
+        if (key.equals(lock)) {
+            lock = null;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
