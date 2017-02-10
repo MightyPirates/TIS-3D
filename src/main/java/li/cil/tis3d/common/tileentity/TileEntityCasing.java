@@ -212,7 +212,10 @@ public final class TileEntityCasing extends TileEntityComputer implements
 
     @Override
     public boolean isUsableByPlayer(final EntityPlayer player) {
-        if (getWorld().getTileEntity(pos) != this) return false;
+        if (getWorld().getTileEntity(pos) != this) {
+            return false;
+        }
+
         final double maxDistance = 64;
         return player.getDistanceSqToCenter(pos) <= maxDistance;
     }
@@ -250,6 +253,7 @@ public final class TileEntityCasing extends TileEntityComputer implements
     @Override
     public void invalidate() {
         super.invalidate();
+
         if (!getWorld().isRemote) {
             onDisabled();
         }
@@ -259,46 +263,54 @@ public final class TileEntityCasing extends TileEntityComputer implements
     @Override
     public void onChunkUnload() {
         super.onChunkUnload();
+
         dispose();
     }
 
     @Override
-    public void readFromNBT(final NBTTagCompound nbt) {
-        super.readFromNBT(nbt);
-        load(nbt);
-    }
-
-    @Override
-    public NBTTagCompound writeToNBT(final NBTTagCompound nbtIn) {
-        final NBTTagCompound nbt = super.writeToNBT(nbtIn);
-        save(nbt);
-        return nbt;
-    }
-
-    @Override
     public void onDataPacket(final NetworkManager manager, final SPacketUpdateTileEntity packet) {
-        final NBTTagCompound nbt = packet.getNbtCompound();
-        load(nbt);
+        super.onDataPacket(manager, packet);
+
         final IBlockState state = getWorld().getBlockState(getPos());
-        getWorld().notifyBlockUpdate(getPos(), state, state, 3);
-    }
-
-    @Override
-    @Nullable
-    public SPacketUpdateTileEntity getUpdatePacket() {
-        return new SPacketUpdateTileEntity(getPos(), getBlockMetadata(), getUpdateTag());
-    }
-
-    @Override
-    public NBTTagCompound getUpdateTag() {
-        final NBTTagCompound nbt = super.getUpdateTag();
-        save(nbt);
-        return nbt;
+        getWorld().notifyBlockUpdate(getPos(), state, state, 2);
     }
 
     @Override
     public double getMaxRenderDistanceSquared() {
         return Network.RANGE_HIGH * Network.RANGE_HIGH;
+    }
+
+    // --------------------------------------------------------------------- //
+    // TileEntityComputer
+
+    @Override
+    protected void readFromNBTForServer(final NBTTagCompound nbt) {
+        super.readFromNBTForServer(nbt);
+
+        readFromNBTCommon(nbt);
+    }
+
+    @Override
+    protected void writeToNBTForServer(final NBTTagCompound nbt) {
+        super.writeToNBTForServer(nbt);
+
+        writeToNBTCommon(nbt);
+    }
+
+    @Override
+    protected void readFromNBTForClient(final NBTTagCompound nbt) {
+        super.readFromNBTForClient(nbt);
+
+        readFromNBTCommon(nbt);
+        isEnabled = nbt.getBoolean(TAG_ENABLED);
+    }
+
+    @Override
+    protected void writeToNBTForClient(final NBTTagCompound nbt) {
+        super.writeToNBTForClient(nbt);
+
+        writeToNBTCommon(nbt);
+        nbt.setBoolean(TAG_ENABLED, isEnabled());
     }
 
     // --------------------------------------------------------------------- //
@@ -366,25 +378,25 @@ public final class TileEntityCasing extends TileEntityComputer implements
         casing.onDisposed();
     }
 
-    private void load(final NBTTagCompound nbt) {
+    private void readFromNBTCommon(final NBTTagCompound nbt) {
         final NBTTagCompound inventoryNbt = nbt.getCompoundTag(TAG_INVENTORY);
         inventory.readFromNBT(inventoryNbt);
 
         final NBTTagCompound casingNbt = nbt.getCompoundTag(TAG_CASING);
         casing.readFromNBT(casingNbt);
-
-        isEnabled = nbt.getBoolean(TAG_ENABLED);
     }
 
-    private void save(final NBTTagCompound nbt) {
+    private void writeToNBTCommon(final NBTTagCompound nbt) {
+        // Needed on the client also, for picking and for actually instantiating
+        // the installed modules on the client side (to find the provider).
         final NBTTagCompound inventoryNbt = new NBTTagCompound();
         inventory.writeToNBT(inventoryNbt);
         nbt.setTag(TAG_INVENTORY, inventoryNbt);
 
+        // Needed on the client also, to allow initializing client side modules
+        // immediately after creation.
         final NBTTagCompound casingNbt = new NBTTagCompound();
         casing.writeToNBT(casingNbt);
         nbt.setTag(TAG_CASING, casingNbt);
-
-        nbt.setBoolean(TAG_ENABLED, isEnabled());
     }
 }
