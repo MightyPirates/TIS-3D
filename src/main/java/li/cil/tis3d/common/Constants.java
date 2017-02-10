@@ -72,6 +72,7 @@ public final class Constants {
 
     public static final String TOOLTIP_BOOK_CODE = "tis3d.tooltip.book_code";
     public static final String TOOLTIP_BOOK_MANUAL = "tis3d.tooltip.book_manual";
+    public static final String TOOLTIP_KEY = "tis3d.tooltip.key";
 
     // --------------------------------------------------------------------- //
 
