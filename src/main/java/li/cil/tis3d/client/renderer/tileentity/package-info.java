@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package li.cil.tis3d.client.render.tile;
+package li.cil.tis3d.client.renderer.tileentity;
 
 import mcp.MethodsReturnNonnullByDefault;
 

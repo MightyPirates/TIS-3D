@@ -4,7 +4,7 @@ import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.client.manual.Document;
 import li.cil.tis3d.client.manual.segment.InteractiveSegment;
 import li.cil.tis3d.client.manual.segment.Segment;
-import li.cil.tis3d.client.render.TextureLoader;
+import li.cil.tis3d.client.renderer.TextureLoader;
 import li.cil.tis3d.common.api.ManualAPIImpl;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
