@@ -103,9 +103,9 @@ public enum Port {
             }
         } else {
             if (v < 0) {
-                return Port.DOWN;
+                return Port.UP; // UV goes top to bottom!
             } else {
-                return Port.UP;
+                return Port.DOWN;
             }
         }
     }
