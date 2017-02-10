@@ -11,12 +11,14 @@ import li.cil.tis3d.client.manual.provider.OreDictImageProvider;
 import li.cil.tis3d.client.manual.provider.TextureImageProvider;
 import li.cil.tis3d.client.renderer.TextureLoader;
 import li.cil.tis3d.client.renderer.tileentity.TileEntitySpecialRendererCasing;
+import li.cil.tis3d.client.renderer.tileentity.TileEntitySpecialRendererController;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.ProxyCommon;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.init.Blocks;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.tileentity.TileEntityCasing;
+import li.cil.tis3d.common.tileentity.TileEntityController;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
@@ -49,6 +51,7 @@ public final class ProxyClient extends ProxyCommon {
 
         // Set up tile entity renderer for dynamic module content.
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCasing.class, new TileEntitySpecialRendererCasing());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityController.class, new TileEntitySpecialRendererController());
 
         // Register GUI handler for fancy GUIs in our almost GUI-less mod!
         NetworkRegistry.INSTANCE.registerGuiHandler(TIS3D.instance, new GuiHandlerClient());
