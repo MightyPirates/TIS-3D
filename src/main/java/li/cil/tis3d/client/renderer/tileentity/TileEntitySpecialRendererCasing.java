@@ -127,45 +127,47 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
         RenderUtil.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 
         final TextureMap textureMap = Minecraft.getMinecraft().getTextureMapBlocks();
-        final TextureAtlasSprite icon;
         if (isPlayerSneaking()) {
-            if (!isPlayerLookingAt(casing.getPos(), face)) {
-                return false;
-            }
+            final TextureAtlasSprite closedSprite = textureMap.getAtlasSprite(TextureLoader.LOCATION_CASING_PORT_CLOSED_OVERLAY.toString());
+            final TextureAtlasSprite openSprite = textureMap.getAtlasSprite(TextureLoader.LOCATION_CASING_PORT_OPEN_OVERLAY.toString());
 
-            final RayTraceResult hit = rendererDispatcher.cameraHitResult;
-            final BlockPos pos = hit.getBlockPos();
-            final Vec3d uv = TransformUtil.hitToUV(face, hit.hitVec.subtract(new Vec3d(pos)));
-            final Port port = Port.fromUVQuadrant(uv);
-
-            GlStateManager.translate(0.5f, 0.5f, 0.5f);
-            switch (port) {
-                case LEFT:
-                    GlStateManager.rotate(270, 0, 0, 1);
-                    break;
-                case RIGHT:
-                    GlStateManager.rotate(90, 0, 0, 1);
-                    break;
-                case DOWN:
-                    GlStateManager.rotate(180, 0, 0, 1);
-                    break;
-            }
-            GlStateManager.translate(-0.5f, -0.5f, -0.5f);
-
-            if (casing.isPortClosed(face, port)) {
-                icon = textureMap.getAtlasSprite(TextureLoader.LOCATION_CASING_PORT_CLOSED_OVERLAY.toString());
+            final Port lookingAtPort;
+            if (isPlayerLookingAt(casing.getPos(), face)) {
+                final RayTraceResult hit = rendererDispatcher.cameraHitResult;
+                final BlockPos pos = hit.getBlockPos();
+                final Vec3d uv = TransformUtil.hitToUV(face, hit.hitVec.subtract(new Vec3d(pos)));
+                lookingAtPort = Port.fromUVQuadrant(uv);
             } else {
-                icon = textureMap.getAtlasSprite(TextureLoader.LOCATION_CASING_PORT_OPEN_OVERLAY.toString());
+                lookingAtPort = null;
             }
+
+            GlStateManager.pushMatrix();
+            for (final Port port : Port.CLOCKWISE) {
+                final boolean isClosed = casing.isPortClosed(face, port);
+
+                RenderUtil.drawQuad(isClosed ? closedSprite : openSprite);
+
+                if (port == lookingAtPort) {
+                    final TextureAtlasSprite highlightSprite = textureMap.getAtlasSprite(TextureLoader.LOCATION_CASING_PORT_HIGHLIGHT_OVERLAY.toString());
+
+                    RenderUtil.drawQuad(highlightSprite);
+                }
+
+                GlStateManager.translate(0.5f, 0.5f, 0.5f);
+                GlStateManager.rotate(90, 0, 0, 1);
+                GlStateManager.translate(-0.5f, -0.5f, -0.5f);
+            }
+            GlStateManager.popMatrix();
         } else {
+            final TextureAtlasSprite icon;
             if (casing.isLocked()) {
                 icon = textureMap.getAtlasSprite(TextureLoader.LOCATION_CASING_LOCKED_OVERLAY.toString());
             } else {
                 icon = textureMap.getAtlasSprite(TextureLoader.LOCATION_CASING_UNLOCKED_OVERLAY.toString());
             }
-        }
 
-        RenderUtil.drawQuad(icon.getMinU(), icon.getMinV(), icon.getMaxU(), icon.getMaxV());
+            RenderUtil.drawQuad(icon);
+        }
 
         return true;
     }

@@ -63,6 +63,11 @@ public enum Port {
     public static final Port[] ROTATED = new Port[]{UP, DOWN, RIGHT, LEFT};
 
     /**
+     * List of ports in a clockwise fashion, starting at {@link #UP}.
+     */
+    public static final Port[] CLOCKWISE = new Port[]{UP, RIGHT, DOWN, LEFT};
+
+    /**
      * Mapping of port id to rotation relative to {@link #UP}.
      */
     public static final int[] ROTATION = new int[]{3, 1, 0, 2};
