@@ -128,24 +128,33 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
 
         final TextureMap textureMap = Minecraft.getMinecraft().getTextureMapBlocks();
         if (isPlayerSneaking()) {
-            final TextureAtlasSprite closedSprite = textureMap.getAtlasSprite(TextureLoader.LOCATION_CASING_PORT_CLOSED_OVERLAY.toString());
-            final TextureAtlasSprite openSprite = textureMap.getAtlasSprite(TextureLoader.LOCATION_CASING_PORT_OPEN_OVERLAY.toString());
+            final TextureAtlasSprite closedSprite;
+            final TextureAtlasSprite openSprite;
 
             final Port lookingAtPort;
-            if (isPlayerLookingAt(casing.getPos(), face)) {
+            final boolean isLookingAt = isPlayerLookingAt(casing.getPos(), face);
+            if (isLookingAt) {
+                closedSprite = textureMap.getAtlasSprite(TextureLoader.LOCATION_CASING_PORT_CLOSED_OVERLAY.toString());
+                openSprite = textureMap.getAtlasSprite(TextureLoader.LOCATION_CASING_PORT_OPEN_OVERLAY.toString());
+
                 final RayTraceResult hit = rendererDispatcher.cameraHitResult;
                 final BlockPos pos = hit.getBlockPos();
                 final Vec3d uv = TransformUtil.hitToUV(face, hit.hitVec.subtract(new Vec3d(pos)));
                 lookingAtPort = Port.fromUVQuadrant(uv);
             } else {
+                closedSprite = textureMap.getAtlasSprite(TextureLoader.LOCATION_CASING_PORT_CLOSED_SMALL_OVERLAY.toString());
+                openSprite = null;
+
                 lookingAtPort = null;
             }
 
             GlStateManager.pushMatrix();
             for (final Port port : Port.CLOCKWISE) {
                 final boolean isClosed = casing.isPortClosed(face, port);
-
-                RenderUtil.drawQuad(isClosed ? closedSprite : openSprite);
+                final TextureAtlasSprite sprite = isClosed ? closedSprite : openSprite;
+                if (sprite != null) {
+                    RenderUtil.drawQuad(sprite);
+                }
 
                 if (port == lookingAtPort) {
                     final TextureAtlasSprite highlightSprite = textureMap.getAtlasSprite(TextureLoader.LOCATION_CASING_PORT_HIGHLIGHT_OVERLAY.toString());
@@ -158,6 +167,8 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
                 GlStateManager.translate(-0.5f, -0.5f, -0.5f);
             }
             GlStateManager.popMatrix();
+
+            return isLookingAt;
         } else {
             final TextureAtlasSprite icon;
             if (casing.isLocked()) {
@@ -173,6 +184,23 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
     }
 
     private void drawModuleOverlay(final TileEntityCasing casing, final Face face, final float partialTicks) {
+        final TextureMap textureMap = Minecraft.getMinecraft().getTextureMapBlocks();
+        final TextureAtlasSprite closedSprite = textureMap.getAtlasSprite(TextureLoader.LOCATION_CASING_PORT_CLOSED_SMALL_OVERLAY.toString());
+
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(0, 0, -0.005);
+        for (final Port port : Port.CLOCKWISE) {
+            final boolean isClosed = casing.isPortClosed(face, port);
+            if (isClosed) {
+                RenderUtil.drawQuad(closedSprite);
+            }
+
+            GlStateManager.translate(0.5f, 0.5f, 0.5f);
+            GlStateManager.rotate(90, 0, 0, 1);
+            GlStateManager.translate(-0.5f, -0.5f, -0.5f);
+        }
+        GlStateManager.popMatrix();
+
         final Module module = casing.getModule(face);
         if (module == null) {
             return;

@@ -42,24 +42,13 @@ public final class ItemBookManual extends ItemBook {
     // Item
 
     @SideOnly(Side.CLIENT)
-    @Nullable
-    @Override
-    public FontRenderer getFontRenderer(final ItemStack stack) {
-        return Minecraft.getMinecraft().fontRendererObj;
-    }
-
-    @SideOnly(Side.CLIENT)
     @Override
     public void addInformation(final ItemStack stack, final EntityPlayer player, final List<String> tooltip, final boolean advanced) {
         super.addInformation(stack, player, tooltip, advanced);
         final String info = I18n.format(Constants.TOOLTIP_BOOK_MANUAL);
-        final FontRenderer fontRenderer = getFontRenderer(stack);
-        if (fontRenderer != null) {
-            tooltip.addAll(fontRenderer.listFormattedStringToWidth(info, Constants.MAX_TOOLTIP_WIDTH));
-        } else {
-            tooltip.add(info);
+        final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
+        tooltip.addAll(fontRenderer.listFormattedStringToWidth(info, li.cil.tis3d.common.Constants.MAX_TOOLTIP_WIDTH));
         }
-    }
 
     @Override
     public EnumActionResult onItemUse(final ItemStack stack, final EntityPlayer player, final World world, final BlockPos pos, final EnumHand hand, final EnumFacing facing, final float hitX, final float hitY, final float hitZ) {

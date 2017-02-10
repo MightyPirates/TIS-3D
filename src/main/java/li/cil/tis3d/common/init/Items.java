@@ -65,8 +65,8 @@ public final class Items {
         bookCode = proxy.registerItem(Constants.NAME_ITEM_BOOK_CODE, ItemBookCode::new);
         bookManual = proxy.registerItem(Constants.NAME_ITEM_BOOK_MANUAL, ItemBookManual::new);
 
-        key = proxy.registerItem(Constants.NAME_ITEM_KEY, ItemKey::new).setMaxStackSize(1);
-        keyCreative = proxy.registerItem(Constants.NAME_ITEM_KEY_CREATIVE, ItemKey::new).setMaxStackSize(1);
+        key = proxy.registerItem(Constants.NAME_ITEM_KEY, ItemKey::new);
+        keyCreative = proxy.registerItem(Constants.NAME_ITEM_KEY_CREATIVE, ItemKey::new);
         prism = proxy.registerItem(Constants.NAME_ITEM_PRISM, Item::new);
     }
 
@@ -105,6 +105,7 @@ public final class Items {
         }
 
         final Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(API.MOD_ID, name));
+        assert item != null;
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(item, 2),
                 "PPP",
                 "ISI",

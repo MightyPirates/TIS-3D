@@ -46,3 +46,4 @@ tis3d.manual.warning.missing.ore_dict=Ore dictionary entry unavailable.
 
 tis3d.tooltip.book_code=§7Use a book on an installed execution module to get a copy.
 tis3d.tooltip.book_manual=§7Use a book on a controller block to get a copy.
+tis3d.tooltip.key=§7Sneak while holding to toggle receiving ports on a casing's face.
