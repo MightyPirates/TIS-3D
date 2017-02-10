@@ -220,13 +220,14 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
 
     @Override
     public void onData(final ByteBuf data) {
-        getState().pc = data.readShort();
-        getState().acc = data.readShort();
-        getState().bak = data.readShort();
+        final MachineState machineState = getState();
+        machineState.pc = data.readShort();
+        machineState.acc = data.readShort();
+        machineState.bak = data.readShort();
         if (data.readBoolean()) {
-            getState().last = Optional.of(Port.values()[data.readByte()]);
+            machineState.last = Optional.of(Port.values()[data.readByte()]);
         } else {
-            getState().last = Optional.empty();
+            machineState.last = Optional.empty();
         }
         state = State.values()[data.readByte()];
     }
