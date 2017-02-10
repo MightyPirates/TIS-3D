@@ -1,6 +1,7 @@
 package li.cil.tis3d.api.machine;
 
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Vec3d;
 
 /**
  * The ports that can be available on a module.
@@ -81,5 +82,31 @@ public enum Port {
      */
     public static Port fromEnumFacing(final EnumFacing facing) {
         return HORIZONTAL[facing.ordinal()];
+    }
+
+    /**
+     * Convert a UV coordinate to the port on the side of the quadrant the UV
+     * coordinate falls into.
+     *
+     * @param uv the UV coordinate in <code>(0,0,0)</code> to <code>(1,1,0)</code>.
+     * @return the port of the quadrant the coordinate lies in.
+     */
+    public static Port fromUVQuadrant(final Vec3d uv) {
+        // Make coordinate relative to center of face.
+        final double u = uv.xCoord - 0.5;
+        final double v = uv.yCoord - 0.5;
+        if (Math.abs(u) > Math.abs(v)) {
+            if (u < 0) {
+                return Port.LEFT;
+            } else {
+                return Port.RIGHT;
+            }
+        } else {
+            if (v < 0) {
+                return Port.DOWN;
+            } else {
+                return Port.UP;
+            }
+        }
     }
 }
