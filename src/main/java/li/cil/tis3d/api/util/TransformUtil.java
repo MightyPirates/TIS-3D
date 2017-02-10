@@ -5,8 +5,6 @@ import li.cil.tis3d.api.machine.Port;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.Vec3d;
 
-import javax.annotation.Nullable;
-
 /**
  * Utility class for coordinate transformation related operations.
  */
@@ -18,7 +16,6 @@ public final class TransformUtil {
      * @param hitPos the hit position to project.
      * @return the projected UV coordinate, with the Z component being 0.
      */
-    @Nullable
     public static Vec3d hitToUV(final Face face, final Vec3d hitPos) {
         switch (face) {
             case Y_NEG:
@@ -34,7 +31,7 @@ public final class TransformUtil {
             case X_POS:
                 return new Vec3d(1 - hitPos.zCoord, 1 - hitPos.yCoord, 0);
         }
-        return null;
+        return Vec3d.ZERO;
     }
 
     /**
@@ -48,13 +45,8 @@ public final class TransformUtil {
      * @see Port#fromEnumFacing(EnumFacing)
      */
     @SuppressWarnings("SuspiciousNameCombination")
-    @Nullable
     public static Vec3d hitToUV(final Face face, final Port facing, final Vec3d hitPos) {
         final Vec3d uv = hitToUV(face, hitPos);
-        if (uv == null) {
-            return null;
-        }
-
         switch (face) {
             case Y_NEG:
                 switch (facing) {

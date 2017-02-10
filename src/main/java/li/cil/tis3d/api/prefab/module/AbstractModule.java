@@ -122,7 +122,6 @@ public abstract class AbstractModule implements Module {
      * @see #getPlayerLookAt()
      * @see Module#onActivate(EntityPlayer, EnumHand, ItemStack, float, float, float)
      */
-    @Nullable
     protected Vec3d hitToUV(final Vec3d hitPos) {
         return TransformUtil.hitToUV(getFace(), hitPos);
     }
