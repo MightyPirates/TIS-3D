@@ -21,6 +21,9 @@ public final class TextureLoader {
 
     public static final ResourceLocation LOCATION_CASING_LOCKED_OVERLAY = new ResourceLocation(API.MOD_ID, "blocks/overlay/casing_locked");
     public static final ResourceLocation LOCATION_CASING_UNLOCKED_OVERLAY = new ResourceLocation(API.MOD_ID, "blocks/overlay/casing_unlocked");
+    public static final ResourceLocation LOCATION_CASING_PORT_CLOSED_OVERLAY = new ResourceLocation(API.MOD_ID, "blocks/overlay/casing_port_closed");
+    public static final ResourceLocation LOCATION_CASING_PORT_OPEN_OVERLAY = new ResourceLocation(API.MOD_ID, "blocks/overlay/casing_port_open");
+    public static final ResourceLocation LOCATION_CASING_PORT_HIGHLIGHT_OVERLAY = new ResourceLocation(API.MOD_ID, "blocks/overlay/casing_port_highlight");
     public static final ResourceLocation LOCATION_MODULE_AUDIO_OVERLAY = new ResourceLocation(API.MOD_ID, "blocks/overlay/module_audio");
     public static final ResourceLocation LOCATION_MODULE_EXECUTION_OVERLAY_ERROR = new ResourceLocation(API.MOD_ID, "blocks/overlay/module_execution_error");
     public static final ResourceLocation LOCATION_MODULE_EXECUTION_OVERLAY_IDLE = new ResourceLocation(API.MOD_ID, "blocks/overlay/module_execution_idle");
@@ -36,6 +39,9 @@ public final class TextureLoader {
         final TextureMap map = event.getMap();
         map.registerSprite(LOCATION_CASING_LOCKED_OVERLAY);
         map.registerSprite(LOCATION_CASING_UNLOCKED_OVERLAY);
+        map.registerSprite(LOCATION_CASING_PORT_CLOSED_OVERLAY);
+        map.registerSprite(LOCATION_CASING_PORT_OPEN_OVERLAY);
+        map.registerSprite(LOCATION_CASING_PORT_HIGHLIGHT_OVERLAY);
         map.registerSprite(LOCATION_MODULE_AUDIO_OVERLAY);
         map.registerSprite(LOCATION_MODULE_EXECUTION_OVERLAY_ERROR);
         map.registerSprite(LOCATION_MODULE_EXECUTION_OVERLAY_IDLE);

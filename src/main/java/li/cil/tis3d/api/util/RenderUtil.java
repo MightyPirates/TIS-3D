@@ -3,6 +3,7 @@ package li.cil.tis3d.api.util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
@@ -10,7 +11,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 /**
- * Utility method for rendering related operations.
+ * Utility class for rendering related operations.
  */
 public final class RenderUtil {
     /**
@@ -78,6 +79,15 @@ public final class RenderUtil {
     @SideOnly(Side.CLIENT)
     public static void drawQuad(final float u0, final float v0, final float u1, final float v1) {
         drawQuad(0, 0, 1, 1, u0, v0, u1, v1);
+    }
+
+    /**
+     * Draw a full one-by-one quad with the specified sprite texture.
+     *
+     * @param sprite the sprite to render.
+     */
+    public static void drawQuad(final TextureAtlasSprite sprite) {
+        drawQuad(sprite.getMinU(), sprite.getMinV(), sprite.getMaxU(), sprite.getMaxV());
     }
 
     /**

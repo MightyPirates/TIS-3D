@@ -160,10 +160,15 @@ public final class TileEntityCasing extends TileEntityComputer implements
 
     public void lock(final ItemStack stack) {
         casing.lock(stack);
+        final IBlockState state = getCasingWorld().getBlockState(getPosition());
+        getCasingWorld().notifyBlockUpdate(getPosition(), state, state, 1);
     }
 
     public void unlock(final ItemStack stack) {
-        casing.unlock(stack);
+        if (casing.unlock(stack)) {
+            final IBlockState state = getCasingWorld().getBlockState(getPosition());
+            getCasingWorld().notifyBlockUpdate(getPosition(), state, state, 1);
+        }
     }
 
     public void notifyModulesOfBlockChange(final Block neighborBlock) {
@@ -284,24 +289,9 @@ public final class TileEntityCasing extends TileEntityComputer implements
     // TileEntityComputer
 
     @Override
-    protected void readFromNBTForServer(final NBTTagCompound nbt) {
-        super.readFromNBTForServer(nbt);
-
-        readFromNBTCommon(nbt);
-    }
-
-    @Override
-    protected void writeToNBTForServer(final NBTTagCompound nbt) {
-        super.writeToNBTForServer(nbt);
-
-        writeToNBTCommon(nbt);
-    }
-
-    @Override
     protected void readFromNBTForClient(final NBTTagCompound nbt) {
         super.readFromNBTForClient(nbt);
 
-        readFromNBTCommon(nbt);
         isEnabled = nbt.getBoolean(TAG_ENABLED);
     }
 
@@ -309,8 +299,35 @@ public final class TileEntityCasing extends TileEntityComputer implements
     protected void writeToNBTForClient(final NBTTagCompound nbt) {
         super.writeToNBTForClient(nbt);
 
-        writeToNBTCommon(nbt);
         nbt.setBoolean(TAG_ENABLED, isEnabled());
+    }
+
+    @Override
+    protected void readFromNBTCommon(final NBTTagCompound nbt) {
+        super.readFromNBTCommon(nbt);
+
+        final NBTTagCompound inventoryNbt = nbt.getCompoundTag(TAG_INVENTORY);
+        inventory.readFromNBT(inventoryNbt);
+
+        final NBTTagCompound casingNbt = nbt.getCompoundTag(TAG_CASING);
+        casing.readFromNBT(casingNbt);
+    }
+
+    @Override
+    protected void writeToNBTCommon(final NBTTagCompound nbt) {
+        super.writeToNBTCommon(nbt);
+
+        // Needed on the client also, for picking and for actually instantiating
+        // the installed modules on the client side (to find the provider).
+        final NBTTagCompound inventoryNbt = new NBTTagCompound();
+        inventory.writeToNBT(inventoryNbt);
+        nbt.setTag(TAG_INVENTORY, inventoryNbt);
+
+        // Needed on the client also, to allow initializing client side modules
+        // immediately after creation.
+        final NBTTagCompound casingNbt = new NBTTagCompound();
+        casing.writeToNBT(casingNbt);
+        nbt.setTag(TAG_CASING, casingNbt);
     }
 
     // --------------------------------------------------------------------- //
@@ -376,27 +393,5 @@ public final class TileEntityCasing extends TileEntityComputer implements
             getController().scheduleScan();
         }
         casing.onDisposed();
-    }
-
-    private void readFromNBTCommon(final NBTTagCompound nbt) {
-        final NBTTagCompound inventoryNbt = nbt.getCompoundTag(TAG_INVENTORY);
-        inventory.readFromNBT(inventoryNbt);
-
-        final NBTTagCompound casingNbt = nbt.getCompoundTag(TAG_CASING);
-        casing.readFromNBT(casingNbt);
-    }
-
-    private void writeToNBTCommon(final NBTTagCompound nbt) {
-        // Needed on the client also, for picking and for actually instantiating
-        // the installed modules on the client side (to find the provider).
-        final NBTTagCompound inventoryNbt = new NBTTagCompound();
-        inventory.writeToNBT(inventoryNbt);
-        nbt.setTag(TAG_INVENTORY, inventoryNbt);
-
-        // Needed on the client also, to allow initializing client side modules
-        // immediately after creation.
-        final NBTTagCompound casingNbt = new NBTTagCompound();
-        casing.writeToNBT(casingNbt);
-        nbt.setTag(TAG_CASING, casingNbt);
     }
 }

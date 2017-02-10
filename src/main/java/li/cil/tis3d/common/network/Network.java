@@ -430,8 +430,14 @@ public final class Network {
          */
         public ByteBuf collectData() {
             // Building the list backwards to easily use the last data of
-            // any type without having to remove from the queue.
+            // any type without having to remove from the queue. However,
+            // that could lead to sending different types in the reverse
+            // they were queued in, so we first collect all packets to
+            // actually send (by appending to the queue), and then sending
+            // those selected packets -- in reverse again, to restore the
+            // original order they were queued in.
             final ByteBuf data = Unpooled.buffer();
+            final int firstToWrite = sendQueue.size();
             for (int i = sendQueue.size() - 1; i >= 0; i--) {
                 final byte type = sendQueue.get(i).type;
                 if (type >= 0) {
@@ -441,6 +447,9 @@ public final class Network {
                     sentTypes.set(type);
                 }
 
+                sendQueue.add(sendQueue.get(i));
+            }
+            for (int i = sendQueue.size() - 1; i >= firstToWrite; i--) {
                 sendQueue.get(i).write(data);
             }
 

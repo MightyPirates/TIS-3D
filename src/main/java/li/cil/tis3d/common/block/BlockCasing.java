@@ -6,6 +6,7 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.traits.Redstone;
 import li.cil.tis3d.api.module.traits.Rotatable;
+import li.cil.tis3d.api.util.TransformUtil;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ItemBookManual;
 import li.cil.tis3d.common.tileentity.TileEntityCasing;
@@ -27,6 +28,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -131,14 +133,24 @@ public final class BlockCasing extends Block {
             if (tileEntity instanceof TileEntityCasing) {
                 final TileEntityCasing casing = (TileEntityCasing) tileEntity;
 
-                // Locking or unlocking the casing?
+                // Locking or unlocking the casing or a port?
                 if (Items.isKey(heldItem)) {
                     assert heldItem != null;
                     if (!world.isRemote) {
                         if (casing.isLocked()) {
-                            casing.unlock(heldItem);
+                            if (!player.isSneaking()) {
+                                casing.unlock(heldItem);
+                            }
                         } else {
-                            casing.lock(heldItem);
+                            if (!player.isSneaking()) {
+                                casing.lock(heldItem);
+                            } else {
+                                final Face face = Face.fromEnumFacing(side);
+                                final Vec3d uv = TransformUtil.hitToUV(face, new Vec3d(hitX, hitY, hitZ));
+                                final Port port = Port.fromUVQuadrant(uv);
+
+                                casing.setPortClosed(face, port, !casing.isPortClosed(face, port));
+                            }
                         }
                     }
                     return true;

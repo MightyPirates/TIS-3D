@@ -10,6 +10,7 @@ import li.cil.tis3d.api.module.traits.BlockChangeAware;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.renderer.TextureLoader;
+import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ItemBookCode;
 import li.cil.tis3d.common.module.execution.MachineImpl;
@@ -31,7 +32,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -220,13 +221,14 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
 
     @Override
     public void onData(final ByteBuf data) {
-        getState().pc = data.readShort();
-        getState().acc = data.readShort();
-        getState().bak = data.readShort();
+        final MachineState machineState = getState();
+        machineState.pc = data.readShort();
+        machineState.acc = data.readShort();
+        machineState.bak = data.readShort();
         if (data.readBoolean()) {
-            getState().last = Optional.of(Port.values()[data.readByte()]);
+            machineState.last = Optional.of(Port.values()[data.readByte()]);
         } else {
-            getState().last = Optional.empty();
+            machineState.last = Optional.empty();
         }
         state = State.values()[data.readByte()];
     }
@@ -247,7 +249,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         // Draw status texture.
         Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         final TextureAtlasSprite icon = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(STATE_LOCATIONS[state.ordinal()]);
-        RenderUtil.drawQuad(icon.getMinU(), icon.getMinV(), icon.getMaxU(), icon.getMaxV());
+        RenderUtil.drawQuad(icon);
 
         // Render detailed state when player is close.
         if (machineState.code != null && Minecraft.getMinecraft().player.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
@@ -318,7 +320,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
             Compiler.compile(code, getState());
         } catch (final ParseException e) {
             compileError = e;
-            player.sendMessage(new TextComponentString(String.format("Compile error @%s.", e)));
+            player.sendMessage(new TextComponentTranslation(Constants.MESSAGE_COMPILE_ERROR, e.getLineNumber(), e.getStart(), e.getEnd()).appendSibling(new TextComponentTranslation(e.getMessage())));
         }
     }
 

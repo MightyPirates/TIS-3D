@@ -6,6 +6,7 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
+import li.cil.tis3d.api.util.TransformUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -122,21 +123,7 @@ public abstract class AbstractModule implements Module {
      * @see Module#onActivate(EntityPlayer, EnumHand, ItemStack, float, float, float)
      */
     protected Vec3d hitToUV(final Vec3d hitPos) {
-        switch (getFace()) {
-            case Y_NEG:
-                return new Vec3d(1 - hitPos.xCoord, hitPos.zCoord, 0);
-            case Y_POS:
-                return new Vec3d(1 - hitPos.xCoord, 1 - hitPos.zCoord, 0);
-            case Z_NEG:
-                return new Vec3d(1 - hitPos.xCoord, 1 - hitPos.yCoord, 0);
-            case Z_POS:
-                return new Vec3d(hitPos.xCoord, 1 - hitPos.yCoord, 0);
-            case X_NEG:
-                return new Vec3d(hitPos.zCoord, 1 - hitPos.yCoord, 0);
-            case X_POS:
-                return new Vec3d(1 - hitPos.zCoord, 1 - hitPos.yCoord, 0);
-        }
-        return null;
+        return TransformUtil.hitToUV(getFace(), hitPos);
     }
 
     /**

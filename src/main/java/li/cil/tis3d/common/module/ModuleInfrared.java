@@ -102,7 +102,7 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
 
         Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         final TextureAtlasSprite icon = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(TextureLoader.LOCATION_MODULE_INFRARED_OVERLAY.toString());
-        RenderUtil.drawQuad(icon.getMinU(), icon.getMinV(), icon.getMaxU(), icon.getMaxV());
+        RenderUtil.drawQuad(icon);
 
         GlStateManager.disableBlend();
     }

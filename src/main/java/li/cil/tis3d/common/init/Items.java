@@ -6,6 +6,7 @@ import li.cil.tis3d.common.ProxyCommon;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.item.ItemBookCode;
 import li.cil.tis3d.common.item.ItemBookManual;
+import li.cil.tis3d.common.item.ItemKey;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -64,8 +65,8 @@ public final class Items {
         bookCode = proxy.registerItem(Constants.NAME_ITEM_BOOK_CODE, ItemBookCode::new);
         bookManual = proxy.registerItem(Constants.NAME_ITEM_BOOK_MANUAL, ItemBookManual::new);
 
-        key = proxy.registerItem(Constants.NAME_ITEM_KEY, Item::new).setMaxStackSize(1);
-        keyCreative = proxy.registerItem(Constants.NAME_ITEM_KEY_CREATIVE, Item::new).setMaxStackSize(1);
+        key = proxy.registerItem(Constants.NAME_ITEM_KEY, ItemKey::new).setMaxStackSize(1);
+        keyCreative = proxy.registerItem(Constants.NAME_ITEM_KEY_CREATIVE, ItemKey::new).setMaxStackSize(1);
         prism = proxy.registerItem(Constants.NAME_ITEM_PRISM, Item::new);
     }
 

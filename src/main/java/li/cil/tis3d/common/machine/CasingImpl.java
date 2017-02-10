@@ -13,7 +13,6 @@ import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.tileentity.TileEntityCasing;
 import li.cil.tis3d.common.tileentity.TileEntityController;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -121,55 +120,6 @@ public final class CasingImpl implements Casing {
     }
 
     /**
-     * Locks the casing and returns the key for unlocking it.
-     *
-     * @param stack the item to store the key for unlocking on.
-     * @throws IllegalStateException if the casing is already locked.
-     */
-    public void lock(final ItemStack stack) {
-        if (isLocked()) {
-            throw new IllegalStateException("Casing is already locked.");
-        }
-        if (Items.isKeyCreative(stack)) {
-            lock = UUID.randomUUID();
-        } else {
-            final UUID key = getKeyFromStack(stack).orElse(UUID.randomUUID());
-            setKeyForStack(stack, key);
-            lock = key;
-        }
-        final IBlockState state = getCasingWorld().getBlockState(getPosition());
-        getCasingWorld().notifyBlockUpdate(getPosition(), state, state, 3);
-    }
-
-    /**
-     * Try to unlock the casing with the key stored on the specified item.
-     *
-     * @param stack the item containing the key.
-     */
-    public void unlock(final ItemStack stack) {
-        if (Items.isKeyCreative(stack)) {
-            lock = null;
-            final IBlockState state = getCasingWorld().getBlockState(getPosition());
-            getCasingWorld().notifyBlockUpdate(getPosition(), state, state, 3);
-        } else {
-            getKeyFromStack(stack).ifPresent(this::unlock);
-        }
-    }
-
-    /**
-     * Try to unlock the casing with the specified key.
-     *
-     * @param key the key to use to unlock the casing.
-     */
-    public void unlock(final UUID key) {
-        if (key.equals(lock)) {
-            lock = null;
-            final IBlockState state = getCasingWorld().getBlockState(getPosition());
-            getCasingWorld().notifyBlockUpdate(getPosition(), state, state, 3);
-        }
-    }
-
-    /**
      * Set the module for the specified face of the casing.
      * <p>
      * This is automatically called by the casing tile entity when items are
@@ -222,6 +172,53 @@ public final class CasingImpl implements Casing {
         }
 
         tileEntity.markDirty();
+    }
+
+    /**
+     * Locks the casing and returns the key for unlocking it.
+     *
+     * @param stack the item to store the key for unlocking on.
+     * @throws IllegalStateException if the casing is already locked.
+     */
+    public void lock(final ItemStack stack) {
+        if (isLocked()) {
+            throw new IllegalStateException("Casing is already locked.");
+        }
+        if (Items.isKeyCreative(stack)) {
+            lock = UUID.randomUUID();
+        } else {
+            final UUID key = getKeyFromStack(stack).orElse(UUID.randomUUID());
+            setKeyForStack(stack, key);
+            lock = key;
+        }
+    }
+
+    /**
+     * Try to unlock the casing with the key stored on the specified item.
+     *
+     * @param stack the item containing the key.
+     */
+    public boolean unlock(final ItemStack stack) {
+        if (Items.isKeyCreative(stack)) {
+            lock = null;
+            return true;
+        } else {
+            return getKeyFromStack(stack).map(this::unlock).orElse(false);
+        }
+    }
+
+    /**
+     * Try to unlock the casing with the specified key.
+     *
+     * @param key the key to use to unlock the casing.
+     */
+    public boolean unlock(final UUID key) {
+        if (key.equals(lock)) {
+            lock = null;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -292,40 +289,6 @@ public final class CasingImpl implements Casing {
     }
 
     // --------------------------------------------------------------------- //
-
-    /**
-     * Read a stored key from the specified stack.
-     *
-     * @param stack the stack to get the key from.
-     * @return the key, if present.
-     */
-    private static Optional<UUID> getKeyFromStack(final ItemStack stack) {
-        final NBTTagCompound nbt = stack.getTagCompound();
-        if (nbt == null) {
-            return Optional.empty();
-        }
-        if (!nbt.hasKey(TAG_KEY_MS) || !nbt.hasKey(TAG_KEY_LS)) {
-            return Optional.empty();
-        }
-        return Optional.of(new UUID(nbt.getLong(TAG_KEY_MS), nbt.getLong(TAG_KEY_LS)));
-    }
-
-    /**
-     * Store the specified key on the specified item stack.
-     *
-     * @param stack the stack to store the key on.
-     * @param key   the key to store on the stack.
-     */
-    private static void setKeyForStack(final ItemStack stack, final UUID key) {
-        NBTTagCompound nbt = stack.getTagCompound();
-        if (nbt == null) {
-            stack.setTagCompound(nbt = new NBTTagCompound());
-        }
-        nbt.setLong(TAG_KEY_MS, key.getMostSignificantBits());
-        nbt.setLong(TAG_KEY_LS, key.getLeastSignificantBits());
-    }
-
-    // --------------------------------------------------------------------- //
     // Casing
 
     @Override
@@ -382,5 +345,39 @@ public final class CasingImpl implements Casing {
     @Override
     public void sendData(final Face face, final ByteBuf data) {
         sendData(face, data, (byte) -1);
+    }
+
+    // --------------------------------------------------------------------- //
+
+    /**
+     * Read a stored key from the specified stack.
+     *
+     * @param stack the stack to get the key from.
+     * @return the key, if present.
+     */
+    private static Optional<UUID> getKeyFromStack(final ItemStack stack) {
+        final NBTTagCompound nbt = stack.getTagCompound();
+        if (nbt == null) {
+            return Optional.empty();
+        }
+        if (!nbt.hasKey(TAG_KEY_MS) || !nbt.hasKey(TAG_KEY_LS)) {
+            return Optional.empty();
+        }
+        return Optional.of(new UUID(nbt.getLong(TAG_KEY_MS), nbt.getLong(TAG_KEY_LS)));
+    }
+
+    /**
+     * Store the specified key on the specified item stack.
+     *
+     * @param stack the stack to store the key on.
+     * @param key   the key to store on the stack.
+     */
+    private static void setKeyForStack(final ItemStack stack, final UUID key) {
+        NBTTagCompound nbt = stack.getTagCompound();
+        if (nbt == null) {
+            stack.setTagCompound(nbt = new NBTTagCompound());
+        }
+        nbt.setLong(TAG_KEY_MS, key.getMostSignificantBits());
+        nbt.setLong(TAG_KEY_LS, key.getLeastSignificantBits());
     }
 }
