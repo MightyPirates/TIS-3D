@@ -136,16 +136,19 @@ public final class BlockCasing extends Block {
                 if (Items.isKey(heldItem)) {
                     if (!world.isRemote) {
                         if (casing.isLocked()) {
-                            casing.unlock(heldItem);
-                        } else if (player.isSneaking()) {
-                            final Face face = Face.fromEnumFacing(side);
-                            final Vec3d uv = TransformUtil.hitToUV(face, new Vec3d(hitX, hitY, hitZ));
-                            assert uv != null;
-                            final Port port = Port.fromUVQuadrant(uv);
-
-                            casing.setClosed(face, port, !casing.isClosed(face, port));
+                            if (!player.isSneaking()) {
+                                casing.unlock(heldItem);
+                            }
                         } else {
-                            casing.lock(heldItem);
+                            if (!player.isSneaking()) {
+                                casing.lock(heldItem);
+                            } else {
+                                final Face face = Face.fromEnumFacing(side);
+                                final Vec3d uv = TransformUtil.hitToUV(face, new Vec3d(hitX, hitY, hitZ));
+                                final Port port = Port.fromUVQuadrant(uv);
+
+                                casing.setPortClosed(face, port, !casing.isPortClosed(face, port));
+                            }
                         }
                     }
                     return true;

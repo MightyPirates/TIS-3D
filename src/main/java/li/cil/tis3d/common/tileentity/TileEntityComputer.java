@@ -5,6 +5,7 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.common.machine.PipeHost;
 import li.cil.tis3d.common.machine.PipeImpl;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
@@ -117,7 +118,7 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
      * @see li.cil.tis3d.api.machine.Casing#getReceivingPipe(Face, Port)
      */
     public Pipe getReceivingPipe(final Face face, final Port port) {
-        return isClosed(face, port) ? ClosedPipe.INSTANCE : pipes[pack(face, port)];
+        return isPortClosed(face, port) ? ClosedPipe.INSTANCE : pipes[pack(face, port)];
     }
 
     /**
@@ -144,8 +145,13 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
      * @param port  the receiving port to set the closed state for.
      * @param value the closed state to set; <code>true</code> for closed, <code>false</code> for open (default).
      */
-    public void setClosed(final Face face, final Port port, final boolean value) {
-        closed[face.ordinal()][port.ordinal()] = value;
+    public void setPortClosed(final Face face, final Port port, final boolean value) {
+        if (isPortClosed(face, port) != value) {
+            closed[face.ordinal()][port.ordinal()] = value;
+
+            final IBlockState state = getWorld().getBlockState(getPos());
+            getWorld().notifyBlockUpdate(getPos(), state, state, 1);
+        }
     }
 
     /**
@@ -156,7 +162,7 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
      * @param port the receiving port to get the closed state for.
      * @return <code>true</code> if the port is closed; <code>false</code> otherwise.
      */
-    public boolean isClosed(final Face face, final Port port) {
+    public boolean isPortClosed(final Face face, final Port port) {
         return closed[face.ordinal()][port.ordinal()];
     }
 
