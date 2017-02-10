@@ -1,8 +1,10 @@
 package li.cil.tis3d.client.renderer.tileentity;
 
 import li.cil.tis3d.api.machine.Face;
+import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.util.RenderUtil;
+import li.cil.tis3d.api.util.TransformUtil;
 import li.cil.tis3d.client.renderer.TextureLoader;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.init.Items;
@@ -17,8 +19,12 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -55,9 +61,7 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
 
             ensureSanity(casing, face);
 
-            if (isPlayerHoldingKey()) {
-                drawLockOverlay(casing);
-            } else {
+            if (!isPlayerHoldingKey() || !drawConfigOverlay(casing, face)) {
                 drawModuleOverlay(casing, face, partialTicks);
             }
 
@@ -112,24 +116,58 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
         GlStateManager.color(1, 1, 1, 1);
     }
 
-    private void drawLockOverlay(final TileEntityCasing casing) {
+    private boolean drawConfigOverlay(final TileEntityCasing casing, final Face face) {
         // Only bother rendering the overlay if the player is nearby.
         if (!isPlayerKindaClose(casing)) {
-            return;
+            return false;
         }
 
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
 
         RenderUtil.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 
+        final TextureMap textureMap = Minecraft.getMinecraft().getTextureMapBlocks();
         final TextureAtlasSprite icon;
-        if (casing.isLocked()) {
-            icon = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(TextureLoader.LOCATION_CASING_LOCKED_OVERLAY.toString());
+        if (isPlayerSneaking()) {
+            if (!isPlayerLookingAt(casing.getPos(), face)) {
+                return false;
+            }
+
+            final RayTraceResult hit = rendererDispatcher.cameraHitResult;
+            final BlockPos pos = hit.getBlockPos();
+            final Vec3d uv = TransformUtil.hitToUV(face, hit.hitVec.subtract(new Vec3d(pos)));
+            final Port port = Port.fromUVQuadrant(uv);
+
+            GlStateManager.translate(0.5f, 0.5f, 0.5f);
+            switch (port) {
+                case LEFT:
+                    GlStateManager.rotate(270, 0, 0, 1);
+                    break;
+                case RIGHT:
+                    GlStateManager.rotate(90, 0, 0, 1);
+                    break;
+                case DOWN:
+                    GlStateManager.rotate(180, 0, 0, 1);
+                    break;
+            }
+            GlStateManager.translate(-0.5f, -0.5f, -0.5f);
+
+            if (casing.isPortClosed(face, port)) {
+                icon = textureMap.getAtlasSprite(TextureLoader.LOCATION_CASING_PORT_CLOSED_OVERLAY.toString());
+            } else {
+                icon = textureMap.getAtlasSprite(TextureLoader.LOCATION_CASING_PORT_OPEN_OVERLAY.toString());
+            }
         } else {
-            icon = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(TextureLoader.LOCATION_CASING_UNLOCKED_OVERLAY.toString());
+            if (casing.isLocked()) {
+                icon = textureMap.getAtlasSprite(TextureLoader.LOCATION_CASING_LOCKED_OVERLAY.toString());
+            } else {
+                icon = textureMap.getAtlasSprite(TextureLoader.LOCATION_CASING_UNLOCKED_OVERLAY.toString());
+            }
         }
 
         RenderUtil.drawQuad(icon.getMinU(), icon.getMinV(), icon.getMaxU(), icon.getMaxV());
+
+        return true;
     }
 
     private void drawModuleOverlay(final TileEntityCasing casing, final Face face, final float partialTicks) {
@@ -157,5 +195,15 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
     private boolean isPlayerHoldingKey() {
         final EntityPlayer player = Minecraft.getMinecraft().player;
         return Items.isKey(player.getHeldItem(EnumHand.MAIN_HAND)) || Items.isKey(player.getHeldItem(EnumHand.OFF_HAND));
+    }
+
+    private boolean isPlayerSneaking() {
+        final EntityPlayer player = Minecraft.getMinecraft().player;
+        return player.isSneaking();
+    }
+
+    private boolean isPlayerLookingAt(final BlockPos pos, final Face face) {
+        final RayTraceResult hit = rendererDispatcher.cameraHitResult;
+        return hit != null && Face.fromEnumFacing(hit.sideHit) == face && Objects.equals(hit.getBlockPos(), pos);
     }
 }
