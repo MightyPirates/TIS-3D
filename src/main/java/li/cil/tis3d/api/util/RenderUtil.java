@@ -10,7 +10,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 /**
- * Utility method for rendering related operations.
+ * Utility class for rendering related operations.
  */
 public final class RenderUtil {
     /**

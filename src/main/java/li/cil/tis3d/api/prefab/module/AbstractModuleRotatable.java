@@ -4,12 +4,15 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.traits.Rotatable;
+import li.cil.tis3d.api.util.TransformUtil;
 import li.cil.tis3d.util.EnumUtils;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import javax.annotation.Nullable;
 
 /**
  * This is a utility implementation of a rotatable module.
@@ -56,36 +59,10 @@ public abstract class AbstractModuleRotatable extends AbstractModule implements 
     // --------------------------------------------------------------------- //
     // General utility
 
+    @Nullable
     @Override
     protected Vec3d hitToUV(final Vec3d hitPos) {
-        final Vec3d uv = super.hitToUV(hitPos);
-        switch (getFace()) {
-            case Y_NEG:
-                switch (getFacing()) {
-                    case LEFT:
-                        return new Vec3d(uv.yCoord, 1 - uv.xCoord, 0);
-                    case RIGHT:
-                        return new Vec3d(1 - uv.yCoord, uv.xCoord, 0);
-                    case UP:
-                        return uv;
-                    case DOWN:
-                        return new Vec3d(1 - uv.xCoord, 1 - uv.yCoord, 0);
-                }
-                break;
-            case Y_POS:
-                switch (getFacing()) {
-                    case LEFT:
-                        return new Vec3d(1 - uv.yCoord, uv.xCoord, 0);
-                    case RIGHT:
-                        return new Vec3d(uv.yCoord, 1 - uv.xCoord, 0);
-                    case UP:
-                        return uv;
-                    case DOWN:
-                        return new Vec3d(1 - uv.xCoord, 1 - uv.yCoord, 0);
-                }
-                break;
-        }
-        return uv;
+        return TransformUtil.hitToUV(getFace(), getFacing(), hitPos);
     }
 
     // --------------------------------------------------------------------- //
