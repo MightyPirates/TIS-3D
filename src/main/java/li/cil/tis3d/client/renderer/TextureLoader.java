@@ -1,4 +1,4 @@
-package li.cil.tis3d.client.render;
+package li.cil.tis3d.client.renderer;
 
 import li.cil.tis3d.api.API;
 import net.minecraft.client.renderer.texture.TextureMap;

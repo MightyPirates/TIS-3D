@@ -1,5 +1,6 @@
 package li.cil.tis3d.common.tileentity;
 
+import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.HaltAndCatchFireException;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.network.Network;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Queue;
 import java.util.Set;
 
@@ -51,32 +53,51 @@ public final class TileEntityController extends TileEntityComputer implements IT
         /**
          * A scan has been scheduled and will be performed in the next tick.
          */
-        SCANNING,
+        SCANNING(false),
 
         /**
          * In the last scan another controller was found; only one is allowed per multi-block.
          */
-        MULTIPLE_CONTROLLERS,
+        MULTIPLE_CONTROLLERS(true),
 
         /**
          * In the last scan more than {@link Settings#maxCasingsPerController} casings were found.
          */
-        TOO_COMPLEX,
+        TOO_COMPLEX(true),
 
         /**
          * In the last scan the border of the loaded area was hit; incomplete multi-blocks to nothing.
          */
-        INCOMPLETE,
+        INCOMPLETE(true),
 
         /**
          * The controller is in operational state and can update connected casings each tick.
          */
-        READY,
+        READY(false),
 
         /**
          * The controller is in operational state and powered, updating connected casings each tick.
          */
-        RUNNING;
+        RUNNING(false);
+
+        // --------------------------------------------------------------------- //
+
+        /**
+         * Whether this states is an error state, i.e. whether it indicates the controller
+         * not operation normally due it being configured incorrectly, for example.
+         */
+        public final boolean isError;
+
+        /**
+         * The unlocalized message to display for this status, used to look up the actual
+         * translation from the currently set language on the client when rendering.
+         */
+        public final String translateKey;
+
+        ControllerState(final boolean isError) {
+            this.isError = isError;
+            this.translateKey = API.MOD_ID + ".controller.status." + name().toLowerCase(Locale.US);
+        }
 
         // --------------------------------------------------------------------- //
 

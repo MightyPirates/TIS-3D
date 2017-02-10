@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package li.cil.tis3d.client.render;
+package li.cil.tis3d.client.renderer;
 
 import mcp.MethodsReturnNonnullByDefault;
 

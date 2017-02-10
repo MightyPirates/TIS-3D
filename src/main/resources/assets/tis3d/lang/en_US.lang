@@ -30,6 +30,10 @@ tis3d.compiler.parameter_overflow=Too many operands
 tis3d.compiler.label_not_found=Undefined label
 tis3d.compiler.label_duplicate=Label is already defined
 
+tis3d.controller.status.multiple_controllers=Multiple controllers
+tis3d.controller.status.too_complex=Too complex
+tis3d.controller.status.incomplete=Scan failed to complete
+
 tis3d.manual.home=Home
 tis3d.manual.blocks=Blocks
 tis3d.manual.items=Items

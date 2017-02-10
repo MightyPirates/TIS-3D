@@ -1,4 +1,4 @@
-package li.cil.tis3d.client.render.font;
+package li.cil.tis3d.client.renderer.font;
 
 /**
  * Base interface for font renderers.
