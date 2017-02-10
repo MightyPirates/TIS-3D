@@ -18,7 +18,8 @@ public interface BlockChangeAware extends Module {
     /**
      * Called when a block adjacent to the hosting {@link Casing} changes.
      *
-     * @param neighborBlock the block that changed.
+     * @param neighborPos      the position of the block that changed.
+     * @param isModuleNeighbor whether the block that changed is the one in front of the module, for convenience.
      */
-    void onNeighborBlockChange(final Block neighborBlock);
+    void onNeighborBlockChange(final BlockPos neighborPos, final boolean isModuleNeighbor);
 }

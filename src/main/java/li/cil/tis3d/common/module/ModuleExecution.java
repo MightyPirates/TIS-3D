@@ -17,7 +17,6 @@ import li.cil.tis3d.common.module.execution.MachineState;
 import li.cil.tis3d.common.module.execution.compiler.Compiler;
 import li.cil.tis3d.common.module.execution.compiler.ParseException;
 import li.cil.tis3d.util.EnumUtils;
-import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -31,6 +30,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -294,8 +294,8 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
     // BlockChangeAware
 
     @Override
-    public void onNeighborBlockChange(final Block neighborBlock) {
-        if (isVisible()) {
+    public void onNeighborBlockChange(final BlockPos neighborPos, final boolean isModuleNeighbor) {
+        if (isModuleNeighbor && isVisible()) {
             sendPartialState();
         }
     }

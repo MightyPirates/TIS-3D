@@ -11,7 +11,6 @@ import li.cil.tis3d.api.serial.SerialInterface;
 import li.cil.tis3d.api.serial.SerialInterfaceProvider;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.renderer.TextureLoader;
-import net.minecraft.block.Block;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -56,8 +55,10 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
     // BlockChangeAware
 
     @Override
-    public void onNeighborBlockChange(final Block neighborBlock) {
-        isScanScheduled = true;
+    public void onNeighborBlockChange(final BlockPos neighborPos, final boolean isModuleNeighbor) {
+        if (isModuleNeighbor) {
+            isScanScheduled = true;
+        }
     }
 
     // --------------------------------------------------------------------- //

@@ -18,7 +18,6 @@ import li.cil.tis3d.common.machine.CasingProxy;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageCasingState;
 import li.cil.tis3d.util.InventoryUtils;
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ISidedInventory;
@@ -27,6 +26,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -34,6 +34,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nullable;
 import java.util.ArrayDeque;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 
@@ -166,11 +167,13 @@ public final class TileEntityCasing extends TileEntityComputer implements
         casing.unlock(stack);
     }
 
-    public void notifyModulesOfBlockChange(final Block neighborBlock) {
+    public void notifyModulesOfBlockChange(final BlockPos neighborPos) {
         for (final Face face : Face.VALUES) {
             final Module module = getModule(face);
             if (module instanceof BlockChangeAware) {
-                ((BlockChangeAware) module).onNeighborBlockChange(neighborBlock);
+                final BlockPos moduleNeighborPos = getPosition().offset(Face.toEnumFacing(face));
+                final boolean isModuleNeighbor = Objects.equals(neighborPos, moduleNeighborPos);
+                ((BlockChangeAware) module).onNeighborBlockChange(neighborPos, isModuleNeighbor);
             }
         }
     }
