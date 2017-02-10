@@ -10,6 +10,7 @@ import li.cil.tis3d.api.module.traits.BlockChangeAware;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.renderer.TextureLoader;
+import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ItemBookCode;
 import li.cil.tis3d.common.module.execution.MachineImpl;
@@ -31,7 +32,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -319,7 +320,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
             Compiler.compile(code, getState());
         } catch (final ParseException e) {
             compileError = e;
-            player.sendMessage(new TextComponentString(String.format("Compile error @%s.", e)));
+            player.sendMessage(new TextComponentTranslation(Constants.MESSAGE_COMPILE_ERROR, e.getLineNumber(), e.getStart(), e.getEnd()).appendSibling(new TextComponentTranslation(e.getMessage())));
         }
     }
 

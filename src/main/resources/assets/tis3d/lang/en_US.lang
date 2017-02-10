@@ -20,6 +20,7 @@ item.tis3d.prism.name=Prism
 tile.tis3d.casing.name=Casing
 tile.tis3d.controller.name=Controller
 
+tis3d.compiler.error=Compile error @%s:%s-%s: 
 tis3d.compiler.too_many_lines=Too many lines
 tis3d.compiler.too_many_columns=Line too long
 tis3d.compiler.invalid_format=Unexpected token

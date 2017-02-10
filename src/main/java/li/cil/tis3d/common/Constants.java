@@ -54,6 +54,7 @@ public final class Constants {
     // --------------------------------------------------------------------- //
     // Compiler errors
 
+    public static final String MESSAGE_COMPILE_ERROR = "tis3d.compiler.error";
     public static final String MESSAGE_TOO_MANY_LINES = "tis3d.compiler.too_many_lines";
     public static final String MESSAGE_LINE_TOO_LONG = "tis3d.compiler.too_many_columns";
     public static final String MESSAGE_UNEXPECTED_TOKEN = "tis3d.compiler.invalid_format";
