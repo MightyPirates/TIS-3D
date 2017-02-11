@@ -159,7 +159,7 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
 
         nbt.setIntArray(TAG_IMAGE, image);
         EnumUtils.writeToNBT(state, TAG_STATE, nbt);
-        nbt.setByteArray(TAG_DRAW_CALL, drawCall);
+        nbt.setByteArray(TAG_DRAW_CALL, drawCall.clone());
     }
 
     // --------------------------------------------------------------------- //

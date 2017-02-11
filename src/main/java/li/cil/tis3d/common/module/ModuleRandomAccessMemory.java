@@ -193,7 +193,7 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
     public void writeToNBT(final NBTTagCompound nbt) {
         super.writeToNBT(nbt);
 
-        nbt.setByteArray(TAG_MEMORY, memory);
+        nbt.setByteArray(TAG_MEMORY, memory.clone());
         nbt.setByte(TAG_ADDRESS, address);
         EnumUtils.writeToNBT(state, TAG_STATE, nbt);
     }
@@ -254,7 +254,7 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
         if (nbt == null) {
             stack.setTagCompound(nbt = new NBTTagCompound());
         }
-        nbt.setByteArray(TAG_MEMORY, memory.memory);
+        nbt.setByteArray(TAG_MEMORY, memory.memory.clone());
     }
 
     // --------------------------------------------------------------------- //
