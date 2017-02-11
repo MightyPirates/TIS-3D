@@ -19,18 +19,18 @@ import org.lwjgl.opengl.GL11;
 import java.util.Arrays;
 
 /**
- * The RAm module can be used to store up to 256 values by address. It runs
+ * The RAM module can be used to store up to 256 values by address. It runs
  * as a basic state machine with the following states:
  * <ul>
  * <li>ADDRESS: await address input, no ports writing, all ports reading.</li>
- * <li>READ_WRITE: await either read to retrieve value or write to set value, all ports writing, all ports reading.</li>
+ * <li>ACCESS: await either read to retrieve value or write to set value, all ports writing, all ports reading.</li>
  * </ul>
  */
 public final class ModuleRandomAccessMemory extends AbstractModuleRotatable {
     // --------------------------------------------------------------------- //
     // Persisted data
 
-    private byte[] memory = new byte[MEMORY_SIZE];
+    private final byte[] memory = new byte[MEMORY_SIZE];
     private byte address;
     private State state = State.ADDRESS;
 
@@ -44,7 +44,7 @@ public final class ModuleRandomAccessMemory extends AbstractModuleRotatable {
 
     private enum State {
         ADDRESS,
-        READ_WRITE
+        ACCESS
     }
 
     // NBT data names.
@@ -54,6 +54,10 @@ public final class ModuleRandomAccessMemory extends AbstractModuleRotatable {
 
     // Data packet types.
     private static final byte DATA_TYPE_CLEAR = 0;
+
+    // Message types.
+    private static final byte PACKET_CLEAR = 0;
+    private static final byte PACKET_SINGLE = 1;
 
     // Rendering info.
     public static final float QUADS_U0 = 5 / 32f;
@@ -84,11 +88,12 @@ public final class ModuleRandomAccessMemory extends AbstractModuleRotatable {
         assert (!getCasing().getCasingWorld().isRemote);
 
         // Wipe memory on shutdown.
-        Arrays.fill(memory, (byte) 0);
+        clear();
+        sendClear();
+
+        // Reset protocol state.
         address = 0;
         state = State.ADDRESS;
-
-        sendClear();
     }
 
     @Override
@@ -105,11 +110,14 @@ public final class ModuleRandomAccessMemory extends AbstractModuleRotatable {
 
     @Override
     public void onData(final ByteBuf data) {
-        if (data.readBoolean()) {
-            Arrays.fill(memory, (byte) 0);
-        } else {
-            address = data.readByte();
-            set(data.readByte());
+        switch (data.readByte()) {
+            case PACKET_CLEAR:
+                clear();
+                break;
+            case PACKET_SINGLE:
+                address = data.readByte();
+                set(data.readByte());
+                break;
         }
     }
 
@@ -126,11 +134,12 @@ public final class ModuleRandomAccessMemory extends AbstractModuleRotatable {
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
         GlStateManager.disableTexture2D();
 
-        final int step = 4;
-        for (int y = 0; y < step; y++) {
-            for (int x = 0; x < step; x++) {
-                final int offset = (y * step + x) * step;
-                final float brightness = 0.25f + sectorSum(offset) * 0.75f;
+        final int cells = 4;
+        final int cellSize = MEMORY_SIZE / (cells * cells);
+        for (int y = 0; y < cells; y++) {
+            for (int x = 0; x < cells; x++) {
+                final int offset = (y * cells + x) * cellSize;
+                final float brightness = 0.25f + sectorSum(offset, cellSize) * 0.75f;
                 GlStateManager.color(1, 1, 1, brightness);
 
                 final float u0 = QUADS_U0 + x * QUADS_STEP_U;
@@ -147,7 +156,9 @@ public final class ModuleRandomAccessMemory extends AbstractModuleRotatable {
     public void readFromNBT(final NBTTagCompound nbt) {
         super.readFromNBT(nbt);
 
-        memory = nbt.getByteArray(TAG_MEMORY);
+        clear();
+        final byte[] data = nbt.getByteArray(TAG_MEMORY);
+        System.arraycopy(data, 0, memory, 0, Math.min(data.length, memory.length));
         address = nbt.getByte(TAG_ADDRESS);
         state = EnumUtils.readFromNBT(State.class, TAG_STATE, nbt);
     }
@@ -169,6 +180,10 @@ public final class ModuleRandomAccessMemory extends AbstractModuleRotatable {
 
     private void set(final int value) {
         memory[address & 0xFF] = (byte) value;
+    }
+
+    private void clear() {
+        Arrays.fill(memory, (byte) 0);
     }
 
     /**
@@ -196,7 +211,7 @@ public final class ModuleRandomAccessMemory extends AbstractModuleRotatable {
             case ADDRESS:
                 beginReadWrite((byte) value);
                 break;
-            case READ_WRITE:
+            case ACCESS:
                 finishReading((byte) value);
                 break;
         }
@@ -212,7 +227,7 @@ public final class ModuleRandomAccessMemory extends AbstractModuleRotatable {
         this.address = address;
 
         // Change to the read/write state.
-        state = State.READ_WRITE;
+        state = State.ACCESS;
 
         // Begin writing the value at that address to all ports.
         final short value = (short) get();
@@ -237,25 +252,28 @@ public final class ModuleRandomAccessMemory extends AbstractModuleRotatable {
         cancelWrite();
 
         // Update client representation.
-        sendData();
+        sendSingle();
     }
 
     private void sendClear() {
         final ByteBuf data = Unpooled.buffer();
-        data.writeBoolean(true);
+        data.writeByte(PACKET_CLEAR);
         getCasing().sendData(getFace(), data, DATA_TYPE_CLEAR);
     }
 
-    private void sendData() {
+    private void sendSingle() {
         final ByteBuf data = Unpooled.buffer();
-        data.writeBoolean(false);
+        data.writeByte(PACKET_SINGLE);
         data.writeByte(address);
         data.writeByte(memory[address & 0xFF]);
         getCasing().sendData(getFace(), data);
     }
 
-    private float sectorSum(final int offset) {
-        final int sum = (memory[offset] & 0xFF) + (memory[offset + 1] & 0xFF) + (memory[offset + 2] & 0xFF) + (memory[offset + 3] & 0xFF);
-        return sum / (4f * 0xFF);
+    private float sectorSum(final int offset, final int count) {
+        int sum = 0;
+        for (int i = offset, end = offset + count; i < end; i++) {
+            sum += memory[i] & 0xFF;
+        }
+        return sum / (count * (float) 0xFF);
     }
 }
