@@ -8,7 +8,6 @@ import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.renderer.TextureLoader;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
@@ -19,7 +18,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.opengl.GL11;
 
 import java.util.Optional;
 
@@ -141,10 +139,8 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
         }
 
         rotateForRendering();
+        RenderUtil.ignoreLighting();
         GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
-        RenderUtil.bindTexture(TextureLoader.LOCATION_MODULE_KEYPAD_OVERLAY);
 
         // Draw base texture. Draw half transparent while writing current value,
         // i.e. while no input is possible.
@@ -152,7 +148,7 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
             GlStateManager.color(1, 1, 1, 0.5f);
         }
         GlStateManager.depthMask(false);
-        RenderUtil.drawQuad();
+        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_MODULE_KEYPAD_OVERLAY));
         GlStateManager.depthMask(true);
 
         // Draw overlay for hovered button if we can currently input a value.

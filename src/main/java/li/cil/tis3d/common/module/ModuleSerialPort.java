@@ -11,7 +11,7 @@ import li.cil.tis3d.api.serial.SerialInterface;
 import li.cil.tis3d.api.serial.SerialInterfaceProvider;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.renderer.TextureLoader;
-import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -103,12 +103,10 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
             return;
         }
 
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
+        RenderUtil.ignoreLighting();
 
-        RenderUtil.bindTexture(TextureLoader.LOCATION_MODULE_SERIAL_PORT_OVERLAY);
-
-        // Draw base overlay.
-        RenderUtil.drawQuad();
+        final TextureAtlasSprite sprite = RenderUtil.getSprite(TextureLoader.LOCATION_MODULE_SERIAL_PORT_OVERLAY);
+        RenderUtil.drawQuad(sprite);
     }
 
     @Override

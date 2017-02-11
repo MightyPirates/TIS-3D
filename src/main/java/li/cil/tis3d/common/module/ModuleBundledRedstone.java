@@ -14,7 +14,6 @@ import li.cil.tis3d.client.renderer.TextureLoader;
 import li.cil.tis3d.util.ColorUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -43,6 +42,9 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
     private static final byte DATA_TYPE_UPDATE = 0;
 
     // Rendering info.
+    private static final float LEFT_U0 = 8 / 32f;
+    private static final float RIGHT_U0 = 20 / 32f;
+    private static final float SHARED_V0 = 10 / 32f;
     private static final float V_STEP = 1 / 16f;
 
     /**
@@ -129,35 +131,20 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
         }
 
         rotateForRendering();
-
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
-
-        RenderUtil.bindTexture(TextureLoader.LOCATION_MODULE_BUNDLED_REDSTONE_OVERLAY);
+        RenderUtil.ignoreLighting();
 
         // Draw base overlay.
-        RenderUtil.drawQuad();
+        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_MODULE_BUNDLED_REDSTONE_OVERLAY));
 
         if (!enabled) {
             return;
         }
 
-        RenderUtil.bindTexture(TextureLoader.LOCATION_MODULE_BUNDLED_REDSTONE_COLORS_OVERLAY);
-
         // Draw output bar.
-        for (int channel = 0; channel < output.length; channel++) {
-            if (output[channel] > 0) {
-                final float v = channel * V_STEP;
-                RenderUtil.drawQuad(0, v, 0.5f, v + V_STEP);
-            }
-        }
+        renderBar(output, LEFT_U0);
 
         // Draw input bar.
-        for (int channel = 0; channel < input.length; channel++) {
-            if (input[channel] > 0) {
-                final float v = channel * V_STEP;
-                RenderUtil.drawQuad(0.5f, v, 1, v + V_STEP);
-            }
-        }
+        renderBar(input, RIGHT_U0);
 
         // Draw active channel indicator.
         GlStateManager.disableTexture2D();
@@ -353,5 +340,21 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
         }
         data.writeShort(channel);
         getCasing().sendData(getFace(), data, DATA_TYPE_UPDATE);
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void renderBar(final short[] values, final float u) {
+        GlStateManager.disableTexture2D();
+        for (int channel = 0; channel < values.length; channel++) {
+            if (values[channel] > 0) {
+                final int color = ColorUtils.getColorByIndex(channel);
+                GlStateManager.color(ColorUtils.getRed(color), ColorUtils.getGreen(color), ColorUtils.getBlue(color));
+
+                final float u0 = u + (channel & 1) * V_STEP;
+                final float v0 = SHARED_V0 + (channel >> 1) * V_STEP;
+                RenderUtil.drawUntexturedQuad(u0, v0, V_STEP, V_STEP);
+            }
+        }
+        GlStateManager.enableTexture2D();
     }
 }

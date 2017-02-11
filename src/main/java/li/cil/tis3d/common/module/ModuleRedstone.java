@@ -11,7 +11,7 @@ import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.renderer.TextureLoader;
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -39,8 +39,8 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
     private static final float LEFT_U1 = 12 / 32f;
     private static final float RIGHT_U0 = 20 / 32f;
     private static final float RIGHT_U1 = 23 / 32f;
-    private static final float SHARED_V0 = 42 / 64f;
-    private static final float SHARED_V1 = 57 / 64f;
+    private static final float SHARED_V0 = 10 / 32f;
+    private static final float SHARED_V1 = 25 / 32f;
     private static final float SHARED_W = 3 / 32f;
     private static final float SHARED_H = SHARED_V1 - SHARED_V0;
 
@@ -117,29 +117,28 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
     @Override
     public void render(final boolean enabled, final float partialTicks) {
         rotateForRendering();
-
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
-
-        RenderUtil.bindTexture(TextureLoader.LOCATION_MODULE_REDSTONE_OVERLAY);
+        RenderUtil.ignoreLighting();
 
         // Draw base overlay.
-        RenderUtil.drawQuad(0, 0, 1, 0.5f);
+        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_MODULE_REDSTONE_OVERLAY));
 
         if (!enabled) {
             return;
         }
 
+        final TextureAtlasSprite barsSprite = RenderUtil.getSprite(TextureLoader.LOCATION_MODULE_REDSTONE_BARS_OVERLAY);
+
         // Draw output bar.
         final float relativeOutput = output / 15f;
         final float heightOutput = relativeOutput * SHARED_H;
         final float v0Output = SHARED_V1 - heightOutput;
-        RenderUtil.drawQuad(LEFT_U0, (v0Output - 0.5f) * 2f, SHARED_W, heightOutput * 2, LEFT_U0, v0Output, LEFT_U1, SHARED_V1);
+        RenderUtil.drawQuad(barsSprite, LEFT_U0, v0Output, SHARED_W, heightOutput, LEFT_U0, v0Output, LEFT_U1, SHARED_V1);
 
         // Draw input bar.
         final float relativeInput = input / 15f;
         final float heightInput = relativeInput * SHARED_H;
         final float v0Input = SHARED_V1 - heightInput;
-        RenderUtil.drawQuad(RIGHT_U0, (v0Input - 0.5f) * 2f, SHARED_W, heightInput * 2, RIGHT_U0, v0Input, RIGHT_U1, SHARED_V1);
+        RenderUtil.drawQuad(barsSprite, RIGHT_U0, v0Input, SHARED_W, heightInput, RIGHT_U0, v0Input, RIGHT_U1, SHARED_V1);
     }
 
     @Override

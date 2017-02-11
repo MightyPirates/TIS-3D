@@ -20,17 +20,15 @@ import li.cil.tis3d.common.module.execution.compiler.ParseException;
 import li.cil.tis3d.util.EnumUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
@@ -66,11 +64,11 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         WAIT
     }
 
-    private static final String[] STATE_LOCATIONS = new String[]{
-            TextureLoader.LOCATION_MODULE_EXECUTION_OVERLAY_IDLE.toString(),
-            TextureLoader.LOCATION_MODULE_EXECUTION_OVERLAY_ERROR.toString(),
-            TextureLoader.LOCATION_MODULE_EXECUTION_OVERLAY_RUNNING.toString(),
-            TextureLoader.LOCATION_MODULE_EXECUTION_OVERLAY_WAITING.toString()
+    private static final ResourceLocation[] STATE_LOCATIONS = new ResourceLocation[]{
+            TextureLoader.LOCATION_MODULE_EXECUTION_OVERLAY_IDLE,
+            TextureLoader.LOCATION_MODULE_EXECUTION_OVERLAY_ERROR,
+            TextureLoader.LOCATION_MODULE_EXECUTION_OVERLAY_RUNNING,
+            TextureLoader.LOCATION_MODULE_EXECUTION_OVERLAY_WAITING
     };
 
     // NBT tag names.
@@ -241,17 +239,13 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         }
 
         rotateForRendering();
-
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
-
-        final MachineState machineState = getState();
+        RenderUtil.ignoreLighting();
 
         // Draw status texture.
-        Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-        final TextureAtlasSprite icon = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(STATE_LOCATIONS[state.ordinal()]);
-        RenderUtil.drawQuad(icon);
+        RenderUtil.drawQuad(RenderUtil.getSprite(STATE_LOCATIONS[state.ordinal()]));
 
         // Render detailed state when player is close.
+        final MachineState machineState = getState();
         if (machineState.code != null && Minecraft.getMinecraft().player.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
             renderState(machineState);
         }
