@@ -71,6 +71,12 @@ public final class TileEntityCasing extends TileEntityComputer implements
     private boolean redstoneDirty = true;
 
     // --------------------------------------------------------------------- //
+
+    public void markRedstoneDirty() {
+        redstoneDirty = true;
+    }
+
+    // --------------------------------------------------------------------- //
     // Networking
 
     @Nullable
@@ -160,14 +166,12 @@ public final class TileEntityCasing extends TileEntityComputer implements
 
     public void lock(final ItemStack stack) {
         casing.lock(stack);
-        final IBlockState state = getCasingWorld().getBlockState(getPosition());
-        getCasingWorld().notifyBlockUpdate(getPosition(), state, state, 1);
+        sendLockedStateChanged(isLocked());
     }
 
     public void unlock(final ItemStack stack) {
         if (casing.unlock(stack)) {
-            final IBlockState state = getCasingWorld().getBlockState(getPosition());
-            getCasingWorld().notifyBlockUpdate(getPosition(), state, state, 1);
+            sendLockedStateChanged(isLocked());
         }
     }
 
@@ -377,10 +381,6 @@ public final class TileEntityCasing extends TileEntityComputer implements
         // Could not find a controller, disable modules.
         onDisabled();
         return null;
-    }
-
-    public void markRedstoneDirty() {
-        redstoneDirty = true;
     }
 
     private void sendState() {

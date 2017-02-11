@@ -138,9 +138,7 @@ public final class BlockCasing extends Block {
                     assert heldItem != null;
                     if (!world.isRemote) {
                         if (casing.isLocked()) {
-                            if (!player.isSneaking()) {
-                                casing.unlock(heldItem);
-                            }
+                            casing.unlock(heldItem);
                         } else {
                             if (!player.isSneaking()) {
                                 casing.lock(heldItem);

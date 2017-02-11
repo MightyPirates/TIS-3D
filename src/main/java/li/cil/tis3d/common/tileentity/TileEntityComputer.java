@@ -6,12 +6,14 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.common.machine.PipeHost;
 import li.cil.tis3d.common.machine.PipeImpl;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
@@ -149,8 +151,7 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
         if (isPortClosed(face, port) != value) {
             closed[face.ordinal()][port.ordinal()] = value;
 
-            final IBlockState state = getWorld().getBlockState(getPos());
-            getWorld().notifyBlockUpdate(getPos(), state, state, 1);
+            sendLockedStateChanged(value);
         }
     }
 
@@ -164,6 +165,20 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
      */
     public boolean isPortClosed(final Face face, final Port port) {
         return closed[face.ordinal()][port.ordinal()];
+    }
+
+    // --------------------------------------------------------------------- //
+
+    /**
+     * Send a tile entity update packet to the clients and play a sound cue to
+     * indicate a locked state has changed.
+     *
+     * @param isLocked <code>true</code> if something got locked; <code>false</code> otherwise.
+     */
+    protected void sendLockedStateChanged(final boolean isLocked) {
+        final IBlockState state = getWorld().getBlockState(getPos());
+        getWorld().notifyBlockUpdate(getPos(), state, state, 1);
+        getWorld().playSound(null, getPos(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3f, isLocked ? 0.5f : 0.6f);
     }
 
     // --------------------------------------------------------------------- //

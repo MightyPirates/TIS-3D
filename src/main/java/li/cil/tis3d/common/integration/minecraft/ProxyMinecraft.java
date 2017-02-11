@@ -13,7 +13,7 @@ public final class ProxyMinecraft implements ModProxy {
 
     @Override
     public void init(final FMLInitializationEvent event) {
-        RedstoneIntegration.INSTANCE.addRedstoneInputProvider(RedstoneInputProviderMinecraft::getInput);
+        RedstoneIntegration.INSTANCE.addRedstoneInputProvider(CallbacksMinecraft::getInput);
 
         SerialAPI.addProvider(new SerialInterfaceProviderFurnace());
     }

@@ -9,7 +9,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public final class RedstoneInputProviderMinecraft {
+public final class CallbacksMinecraft {
     public static int getInput(final Redstone module) {
         final Face face = module.getFace();
         final EnumFacing facing = Face.toEnumFacing(face);
@@ -30,6 +30,6 @@ public final class RedstoneInputProviderMinecraft {
 
     // --------------------------------------------------------------------- //
 
-    private RedstoneInputProviderMinecraft() {
+    private CallbacksMinecraft() {
     }
 }

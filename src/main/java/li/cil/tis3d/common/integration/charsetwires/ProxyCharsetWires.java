@@ -14,6 +14,7 @@ public final class ProxyCharsetWires implements ModProxy {
 
     @Override
     public void init(final FMLInitializationEvent event) {
-        CharsetWiresCallbacks.register();
+        CallbacksCharsetWires.register();
+        CapabilitiesCharsetWires.register();
     }
 }

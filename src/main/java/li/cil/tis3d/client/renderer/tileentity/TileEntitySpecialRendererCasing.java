@@ -123,7 +123,7 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
         }
 
         final TextureMap textureMap = Minecraft.getMinecraft().getTextureMapBlocks();
-        if (isPlayerSneaking()) {
+        if (isPlayerSneaking() && !casing.isLocked()) {
             final TextureAtlasSprite closedSprite;
             final TextureAtlasSprite openSprite;
 
