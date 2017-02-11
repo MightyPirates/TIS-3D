@@ -4,6 +4,7 @@ import net.minecraftforge.common.config.Configuration;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -83,7 +84,7 @@ public final class Settings {
         // Strip module and first letter from internal name, lowercase first letter.
         final int prefixLength = "module*".length();
         for (final String module : Constants.MODULES) {
-            final String name = String.valueOf(module.charAt(prefixLength - 1)).toLowerCase() + module.substring(prefixLength);
+            final String name = String.valueOf(module.charAt(prefixLength - 1)).toLowerCase(Locale.US) + module.substring(prefixLength);
             checkModule(config, "module." + name, module);
         }
 

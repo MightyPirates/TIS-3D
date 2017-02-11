@@ -23,6 +23,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Stack;
 import java.util.regex.Pattern;
@@ -264,7 +265,7 @@ public final class ManualAPIImpl implements ManualAPI {
             final Iterator<String> iterator = lines.iterator();
             if (iterator.hasNext()) {
                 final String line = iterator.next();
-                if (line.toLowerCase().startsWith("#redirect ")) {
+                if (line.toLowerCase(Locale.US).startsWith("#redirect ")) {
                     final List<String> newSeen = new ArrayList<>(seen);
                     newSeen.add(path);
                     return contentForWithRedirects(makeRelative(line.substring("#redirect ".length()), path), newSeen);

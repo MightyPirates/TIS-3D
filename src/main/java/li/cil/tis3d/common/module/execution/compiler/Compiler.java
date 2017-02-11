@@ -70,7 +70,7 @@ public final class Compiler {
             throw new ParseException(Constants.MESSAGE_TOO_MANY_LINES, Settings.maxLinesPerProgram, 0, 0);
         }
         for (int lineNumber = 0; lineNumber < lines.length; lineNumber++) {
-            lines[lineNumber] = lines[lineNumber].toUpperCase(Locale.ENGLISH);
+            lines[lineNumber] = lines[lineNumber].toUpperCase(Locale.US);
         }
 
         state.code = lines;
