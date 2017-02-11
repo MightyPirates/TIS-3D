@@ -13,7 +13,8 @@ public final class TransformUtil {
      * Project a hit position on the surface of a block to a UV coordinate on
      * the that side.
      *
-     * @param hitPos the hit position to project.
+     * @param face   the face to project the hit onto.
+     * @param hitPos the hit position to project, in block local coordinates.
      * @return the projected UV coordinate, with the Z component being 0.
      */
     public static Vec3d hitToUV(final Face face, final Vec3d hitPos) {
@@ -39,7 +40,9 @@ public final class TransformUtil {
      * the that side, taking into account potential rotation of the block
      * around the Y axis (up being south).
      *
-     * @param hitPos the hit position to project.
+     * @param face   the face to project the hit onto.
+     * @param facing the rotation of the block.
+     * @param hitPos the hit position to project, in block local coordinates.
      * @return the projected UV coordinate, with the Z component being 0.
      * @see Face#fromEnumFacing(EnumFacing)
      * @see Port#fromEnumFacing(EnumFacing)

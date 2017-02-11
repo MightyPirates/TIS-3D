@@ -197,6 +197,7 @@ public final class CasingImpl implements Casing {
      * Try to unlock the casing with the key stored on the specified item.
      *
      * @param stack the item containing the key.
+     * @return <code>true</code> if the casing was successfully unlocked; <code>false</code> otherwise.
      */
     public boolean unlock(final ItemStack stack) {
         if (Items.isKeyCreative(stack)) {
@@ -211,6 +212,7 @@ public final class CasingImpl implements Casing {
      * Try to unlock the casing with the specified key.
      *
      * @param key the key to use to unlock the casing.
+     * @return <code>true</code> if the casing was successfully unlocked; <code>false</code> otherwise.
      */
     public boolean unlock(final UUID key) {
         if (key.equals(lock)) {
