@@ -11,6 +11,7 @@ This index lists all of the documented items in TIS-3D. If you're looking for a 
 - [Keypad Module](module_keypad.md)
 - [Random Module](module_random.md)
 - [RAM Module](module_random_access_memory.md)
+- [ROM Module](module_read_only_memory.md)
 - [Redstone Module](module_redstone.md)
 - [Serial Port Module](module_serial_port.md)
 - [Stack Module](module_stack.md)

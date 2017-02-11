@@ -27,6 +27,7 @@ import li.cil.tis3d.common.module.ModuleInfrared;
 import li.cil.tis3d.common.module.ModuleKeypad;
 import li.cil.tis3d.common.module.ModuleRandom;
 import li.cil.tis3d.common.module.ModuleRandomAccessMemory;
+import li.cil.tis3d.common.module.ModuleReadOnlyMemory;
 import li.cil.tis3d.common.module.ModuleRedstone;
 import li.cil.tis3d.common.module.ModuleSerialPort;
 import li.cil.tis3d.common.module.ModuleStack;
@@ -115,6 +116,7 @@ public class ProxyCommon {
         ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_STACK, ModuleStack::new));
         ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_RANDOM, ModuleRandom::new));
         ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY, ModuleRandomAccessMemory::new));
+        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY, ModuleReadOnlyMemory::new));
         ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_REDSTONE, ModuleRedstone::new));
 
         // Add default manual providers for server side stuff.

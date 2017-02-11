@@ -7,6 +7,7 @@ import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.item.ItemBookCode;
 import li.cil.tis3d.common.item.ItemBookManual;
 import li.cil.tis3d.common.item.ItemKey;
+import li.cil.tis3d.common.item.ItemModule;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -62,6 +63,13 @@ public final class Items {
             }
         }
 
+        // Prevent stacking of ROM modules to avoid inconsistencies between new
+        // and already programmed modules, and allow sneak clicking with it to
+        // program it to the clicked RAM/ROM module.
+        ((ItemModule) modules.get(Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY)).
+                setDoesSneakBypassUse(true).
+                setMaxStackSize(1);
+
         bookCode = proxy.registerItem(Constants.NAME_ITEM_BOOK_CODE, ItemBookCode::new);
         bookManual = proxy.registerItem(Constants.NAME_ITEM_BOOK_MANUAL, ItemBookManual::new);
 
@@ -79,6 +87,7 @@ public final class Items {
         addModuleRecipe(Constants.NAME_ITEM_MODULE_KEYPAD, net.minecraft.init.Blocks.STONE_BUTTON);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_RANDOM, net.minecraft.init.Items.ENDER_PEARL);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY, "gemEmerald");
+        addModuleRecipe(Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY, net.minecraft.init.Items.BOOK);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_REDSTONE, net.minecraft.init.Items.REPEATER);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_SERIAL_PORT, "blockQuartz");
         addModuleRecipe(Constants.NAME_ITEM_MODULE_STACK, Item.getItemFromBlock(net.minecraft.init.Blocks.CHEST));
