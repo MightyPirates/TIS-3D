@@ -12,8 +12,8 @@ import java.util.List;
 /**
  * Glue for notifying specific bundled redstone APIs of changes.
  */
-public final class RedstoneIntegration {
-    public static final RedstoneIntegration INSTANCE = new RedstoneIntegration();
+public enum RedstoneIntegration {
+    INSTANCE;
 
     // --------------------------------------------------------------------- //
 
@@ -75,10 +75,5 @@ public final class RedstoneIntegration {
         for (final BundledRedstoneOutputChangedCallback callback : callbacks) {
             callback.onBundledRedstoneOutputChanged(module, channel);
         }
-    }
-
-    // --------------------------------------------------------------------- //
-
-    private RedstoneIntegration() {
     }
 }

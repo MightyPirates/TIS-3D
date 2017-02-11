@@ -11,6 +11,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public final class SerialInterfaceProviderFurnace implements SerialInterfaceProvider {
+    // --------------------------------------------------------------------- //
+    // SerialInterfaceProvider
+
     @Override
     public boolean worksWith(final World world, final BlockPos position, final EnumFacing side) {
         return world.getTileEntity(position) instanceof TileEntityFurnace;

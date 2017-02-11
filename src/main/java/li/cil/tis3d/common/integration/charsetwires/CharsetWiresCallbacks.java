@@ -3,19 +3,33 @@ package li.cil.tis3d.common.integration.charsetwires;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.traits.BundledRedstone;
 import li.cil.tis3d.api.module.traits.Redstone;
+import li.cil.tis3d.common.integration.redstone.RedstoneIntegration;
 import li.cil.tis3d.common.tileentity.TileEntityCasing;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import pl.asie.charset.api.wires.IBundledEmitter;
 import pl.asie.charset.api.wires.IBundledReceiver;
 import pl.asie.charset.api.wires.IRedstoneEmitter;
 
-public final class CharsetWiresCallbacks {
-    public static final CharsetWiresCallbacks INSTANCE = new CharsetWiresCallbacks();
+public enum CharsetWiresCallbacks {
+    INSTANCE;
+
+    // --------------------------------------------------------------------- //
+
+    public static void register() {
+        MinecraftForge.EVENT_BUS.register(CharsetWiresCallbacks.INSTANCE);
+
+        RedstoneIntegration.INSTANCE.addCallback(CharsetWiresCallbacks::onBundledOutputChanged);
+        RedstoneIntegration.INSTANCE.addRedstoneInputProvider(CharsetWiresCallbacks::getInput);
+        RedstoneIntegration.INSTANCE.addBundledRedstoneInputProvider(CharsetWiresCallbacks::getBundledInput);
+    }
+
+    // --------------------------------------------------------------------- //
 
     @SubscribeEvent
     public void onAttachTileEntityCapabilities(final AttachCapabilitiesEvent<TileEntity> event) {
