@@ -158,7 +158,7 @@ public final class RenderUtil {
      */
     @SideOnly(Side.CLIENT)
     public static void ignoreLighting() {
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
     }
 
     // --------------------------------------------------------------------- //
