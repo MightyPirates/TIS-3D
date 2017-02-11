@@ -462,7 +462,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
 
             final List<String> code = new ArrayList<>();
             for (int page = 0; page < pages.tagCount(); page++) {
-                Collections.addAll(code, ItemBookCode.Data.PATTERN_LINES.split(pages.getStringTagAt(page)));
+                Collections.addAll(code, Constants.PATTERN_LINES.split(pages.getStringTagAt(page)));
             }
             return code;
         }

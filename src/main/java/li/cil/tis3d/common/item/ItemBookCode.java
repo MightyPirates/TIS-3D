@@ -28,7 +28,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 /**
  * The code book, utility book for coding ASM programs for execution modules.
@@ -82,8 +81,7 @@ public final class ItemBookCode extends ItemBook {
      * Wrapper for list of pages stored in the code book.
      */
     public static class Data {
-        public static final Pattern PATTERN_LINES = Pattern.compile("\r?\n");
-        public static final String CONTINUATION_MACRO = "#BWTM";
+        private static final String CONTINUATION_MACRO = "#BWTM";
         private static final String TAG_PAGES = "pages";
         private static final String TAG_SELECTED = "selected";
 
@@ -265,7 +263,7 @@ public final class ItemBookCode extends ItemBook {
 
             final NBTTagList pagesNbt = nbt.getTagList(TAG_PAGES, net.minecraftforge.common.util.Constants.NBT.TAG_STRING);
             for (int index = 0; index < pagesNbt.tagCount(); index++) {
-                pages.add(Arrays.asList(PATTERN_LINES.split(pagesNbt.getStringTagAt(index))));
+                pages.add(Arrays.asList(Constants.PATTERN_LINES.split(pagesNbt.getStringTagAt(index))));
             }
 
             selectedPage = nbt.getInteger(TAG_SELECTED);

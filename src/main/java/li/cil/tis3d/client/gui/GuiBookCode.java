@@ -11,6 +11,7 @@ import li.cil.tis3d.common.module.execution.compiler.ParseException;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageBookCodeData;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
@@ -135,7 +136,7 @@ public final class GuiBookCode extends GuiScreen {
 
         // Draw page number.
         final String pageInfo = String.format("%d/%d", data.getSelectedPage() + 1, data.getPageCount());
-        fontRendererObj.drawString(pageInfo, guiX + PAGE_NUMBER_X - fontRendererObj.getStringWidth(pageInfo) / 2, guiY + PAGE_NUMBER_Y, COLOR_CODE);
+        getFontRenderer().drawString(pageInfo, guiX + PAGE_NUMBER_X - getFontRenderer().getStringWidth(pageInfo) / 2, guiY + PAGE_NUMBER_Y, COLOR_CODE);
     }
 
     @Override
@@ -297,7 +298,7 @@ public final class GuiBookCode extends GuiScreen {
             } else if (keyCode == Keyboard.KEY_V) {
                 deleteSelection();
 
-                final String[] pastedLines = ItemBookCode.Data.PATTERN_LINES.split(getClipboardString());
+                final String[] pastedLines = Constants.PATTERN_LINES.split(getClipboardString());
                 if (!isValidPaste(pastedLines)) {
                     return;
                 }
@@ -347,6 +348,10 @@ public final class GuiBookCode extends GuiScreen {
 
     // --------------------------------------------------------------------- //
 
+    private FontRenderer getFontRenderer() {
+        return fontRendererObj;
+    }
+
     private int getSelectionStart() {
         return Math.min(selectionStart, selectionEnd);
     }
@@ -383,7 +388,7 @@ public final class GuiBookCode extends GuiScreen {
     }
 
     private int cursorToLine(final int y) {
-        return Math.max(0, Math.min(Math.min(lines.size() - 1, Constants.MAX_LINES_PER_PAGE), (y - guiY - CODE_POS_Y) / fontRendererObj.FONT_HEIGHT));
+        return Math.max(0, Math.min(Math.min(lines.size() - 1, Constants.MAX_LINES_PER_PAGE), (y - guiY - CODE_POS_Y) / getFontRenderer().FONT_HEIGHT));
     }
 
     private int cursorToColumn(final int x, final int y) {
@@ -392,11 +397,11 @@ public final class GuiBookCode extends GuiScreen {
 
     private int xToColumn(final int x, final int line) {
         final int relX = Math.max(0, x - guiX - CODE_POS_X);
-        return fontRendererObj.trimStringToWidth(lines.get(line).toString(), relX).length();
+        return getFontRenderer().trimStringToWidth(lines.get(line).toString(), relX).length();
     }
 
     private int columnToX(final int line, final int column) {
-        return guiX + CODE_POS_X + fontRendererObj.getStringWidth(lines.get(line).substring(0, Math.min(column, lines.get(line).length())));
+        return guiX + CODE_POS_X + getFontRenderer().getStringWidth(lines.get(line).substring(0, Math.min(column, lines.get(line).length())));
     }
 
     private int positionToIndex(final int line, final int column) {
@@ -432,7 +437,7 @@ public final class GuiBookCode extends GuiScreen {
 
     private boolean isInCodeArea(final int mouseX, final int mouseY) {
         return mouseX >= guiX + CODE_POS_X - CODE_MARGIN && mouseX <= guiX + CODE_POS_X + CODE_WIDTH + CODE_MARGIN &&
-                mouseY >= guiY + CODE_POS_Y - CODE_MARGIN && mouseY <= guiY + CODE_POS_Y + fontRendererObj.FONT_HEIGHT * Constants.MAX_LINES_PER_PAGE + CODE_MARGIN;
+                mouseY >= guiY + CODE_POS_Y - CODE_MARGIN && mouseY <= guiY + CODE_POS_Y + getFontRenderer().FONT_HEIGHT * Constants.MAX_LINES_PER_PAGE + CODE_MARGIN;
     }
 
     private boolean isCurrentProgramNonEmpty() {
@@ -542,7 +547,7 @@ public final class GuiBookCode extends GuiScreen {
         for (int lineNumber = 0; lineNumber < lines.size(); lineNumber++) {
             final StringBuilder line = lines.get(lineNumber);
             final int end = position + line.length();
-            final int offsetY = lineNumber * fontRendererObj.FONT_HEIGHT;
+            final int offsetY = lineNumber * getFontRenderer().FONT_HEIGHT;
             final int lineX = guiX + CODE_POS_X;
             final int lineY = guiY + CODE_POS_Y + offsetY;
             if (selectionStart != selectionEnd && intersectsSelection(position, end)) {
@@ -554,20 +559,20 @@ public final class GuiBookCode extends GuiScreen {
                 final int selected = Math.min(line.length() - prefix, getSelectionEnd() - (position + prefix));
 
                 final String prefixText = line.substring(0, prefix);
-                fontRendererObj.drawString(prefixText, currX, lineY, COLOR_CODE, false);
-                currX += fontRendererObj.getStringWidth(prefixText);
+                getFontRenderer().drawString(prefixText, currX, lineY, COLOR_CODE, false);
+                currX += getFontRenderer().getStringWidth(prefixText);
 
                 final String selectedText = line.substring(prefix, prefix + selected);
-                final int selectedWidth = fontRendererObj.getStringWidth(selectedText);
-                drawRect(currX - 1, lineY - 1, currX + selectedWidth, lineY + fontRendererObj.FONT_HEIGHT - 1, COLOR_SELECTION);
-                fontRendererObj.drawString(selectedText, currX, lineY, COLOR_CODE_SELECTED, false);
+                final int selectedWidth = getFontRenderer().getStringWidth(selectedText);
+                drawRect(currX - 1, lineY - 1, currX + selectedWidth, lineY + getFontRenderer().FONT_HEIGHT - 1, COLOR_SELECTION);
+                getFontRenderer().drawString(selectedText, currX, lineY, COLOR_CODE_SELECTED, false);
                 currX += selectedWidth;
 
                 final String postfixString = line.substring(prefix + selected);
-                fontRendererObj.drawString(postfixString, currX, lineY, COLOR_CODE, false);
+                getFontRenderer().drawString(postfixString, currX, lineY, COLOR_CODE, false);
             } else {
                 // No selection here, just draw the line. Get it? "draw the line"?
-                fontRendererObj.drawString(line.toString(), lineX, lineY, COLOR_CODE, false);
+                getFontRenderer().drawString(line.toString(), lineX, lineY, COLOR_CODE, false);
             }
 
             position += line.length() + 1;
@@ -576,31 +581,45 @@ public final class GuiBookCode extends GuiScreen {
         // Part one of error handling, draw red underline, *behind* the blinking cursor.
         if (compileError.isPresent()) {
             final ParseException exception = compileError.get();
-            if (exception.getLineNumber() >= 0 && exception.getLineNumber() < lines.size()) {
-                final int startY = guiY + CODE_POS_Y + exception.getLineNumber() * fontRendererObj.FONT_HEIGHT - 1;
-                final int startX = columnToX(exception.getLineNumber(), exception.getStart());
-                final int endX = Math.max(columnToX(exception.getLineNumber(), exception.getEnd()), startX + fontRendererObj.getCharWidth(' '));
-
-                drawRect(startX - 1, startY + fontRendererObj.FONT_HEIGHT - 1, endX, startY + fontRendererObj.FONT_HEIGHT, 0xFFFF3333);
+            final int localLineNumber, startX, rawEndX;
+            final boolean isErrorOnPreviousPage = exception.getLineNumber() < 0;
+            final boolean isErrorOnNextPage = exception.getLineNumber() >= lines.size();
+            if (isErrorOnPreviousPage) {
+                localLineNumber = 0;
+                startX = columnToX(localLineNumber, 0);
+                rawEndX = columnToX(localLineNumber, Settings.maxColumnsPerLine);
+            } else if (isErrorOnNextPage) {
+                localLineNumber = lines.size() - 1;
+                startX = columnToX(localLineNumber, 0);
+                rawEndX = columnToX(localLineNumber, Settings.maxColumnsPerLine);
+            } else {
+                localLineNumber = exception.getLineNumber();
+                startX = columnToX(localLineNumber, exception.getStart());
+                rawEndX = columnToX(localLineNumber, exception.getEnd());
             }
-        }
+            final int startY = guiY + CODE_POS_Y + localLineNumber * getFontRenderer().FONT_HEIGHT - 1;
+            final int endX = Math.max(rawEndX, startX + getFontRenderer().getCharWidth(' '));
 
-        // Draw selection position in text.
-        drawTextCursor();
+            drawRect(startX - 1, startY + getFontRenderer().FONT_HEIGHT - 1, endX, startY + getFontRenderer().FONT_HEIGHT, 0xFFFF3333);
 
-        // Part two of error handling, draw tooltip, *on top* of blinking cursor.
-        if (compileError.isPresent()) {
-            final ParseException exception = compileError.get();
-            if (exception.getLineNumber() >= 0 && exception.getLineNumber() < lines.size()) {
-                final int startY = guiY + CODE_POS_Y + exception.getLineNumber() * fontRendererObj.FONT_HEIGHT - 1;
-                final int startX = columnToX(exception.getLineNumber(), exception.getStart());
-                final int endX = Math.max(columnToX(exception.getLineNumber(), exception.getEnd()), startX + fontRendererObj.getCharWidth(' '));
+            // Draw selection position in text.
+            drawTextCursor();
 
-                if (mouseX >= startX && mouseX <= endX && mouseY >= startY && mouseY <= startY + fontRendererObj.FONT_HEIGHT) {
-                    drawHoveringText(Arrays.asList(ItemBookCode.Data.PATTERN_LINES.split(I18n.format(exception.getMessage()))), mouseX, mouseY);
-                    GlStateManager.disableLighting();
+            // Part two of error handling, draw tooltip, *on top* of blinking cursor.
+            if (mouseX >= startX && mouseX <= endX && mouseY >= startY && mouseY <= startY + getFontRenderer().FONT_HEIGHT) {
+                final List<String> tooltip = new ArrayList<>();
+                if (isErrorOnPreviousPage) {
+                    tooltip.add(I18n.format(Constants.MESSAGE_ERROR_ON_PREVIOUS_PAGE));
+                } else if (isErrorOnNextPage) {
+                    tooltip.add(I18n.format(Constants.MESSAGE_ERROR_ON_NEXT_PAGE));
                 }
+                tooltip.addAll(Arrays.asList(Constants.PATTERN_LINES.split(I18n.format(exception.getMessage()))));
+                drawHoveringText(tooltip, mouseX, mouseY);
+                GlStateManager.disableLighting();
             }
+        } else {
+            // Draw selection position in text.
+            drawTextCursor();
         }
     }
 
@@ -609,10 +628,10 @@ public final class GuiBookCode extends GuiScreen {
             final int line = indexToLine(selectionEnd);
             final int column = indexToColumn(selectionEnd);
             final StringBuilder sb = lines.get(line);
-            final int x = guiX + CODE_POS_X + fontRendererObj.getStringWidth(sb.substring(0, column)) - 1;
-            final int y = guiY + CODE_POS_Y + line * fontRendererObj.FONT_HEIGHT - 1;
-            drawRect(x + 1, y + 1, x + 2 + 1, y + fontRendererObj.FONT_HEIGHT + 1, 0xCC333333);
-            drawRect(x, y, x + 2, y + fontRendererObj.FONT_HEIGHT, COLOR_CODE_SELECTED);
+            final int x = guiX + CODE_POS_X + getFontRenderer().getStringWidth(sb.substring(0, column)) - 1;
+            final int y = guiY + CODE_POS_Y + line * getFontRenderer().FONT_HEIGHT - 1;
+            drawRect(x + 1, y + 1, x + 2 + 1, y + getFontRenderer().FONT_HEIGHT + 1, 0xCC333333);
+            drawRect(x, y, x + 2, y + getFontRenderer().FONT_HEIGHT, COLOR_CODE_SELECTED);
         }
     }
 

@@ -1,5 +1,7 @@
 package li.cil.tis3d.common;
 
+import java.util.regex.Pattern;
+
 /**
  * Collection of constants used throughout the mod.
  */
@@ -69,6 +71,9 @@ public final class Constants {
     // Code book
 
     public static final int MAX_LINES_PER_PAGE = 20;
+    public static final Pattern PATTERN_LINES = Pattern.compile("\r?\n");
+    public static final String MESSAGE_ERROR_ON_PREVIOUS_PAGE = "tis3d.book_code.error_on_previous_page";
+    public static final String MESSAGE_ERROR_ON_NEXT_PAGE = "tis3d.book_code.error_on_next_page";
 
     // --------------------------------------------------------------------- //
     // Tooltips
