@@ -151,9 +151,7 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
                 }
 
                 if (port == lookingAtPort) {
-                    final TextureAtlasSprite highlightSprite = RenderUtil.getSprite(TextureLoader.LOCATION_CASING_PORT_HIGHLIGHT_OVERLAY);
-
-                    RenderUtil.drawQuad(highlightSprite);
+                    RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_CASING_PORT_HIGHLIGHT_OVERLAY));
                 }
 
                 GlStateManager.translate(0.5f, 0.5f, 0.5f);
