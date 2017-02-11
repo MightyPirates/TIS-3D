@@ -8,10 +8,15 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
+import li.cil.tis3d.common.Constants;
+import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.util.EnumUtils;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumHand;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
@@ -26,13 +31,13 @@ import java.util.Arrays;
  * <li>ACCESS: await either read to retrieve value or write to set value, all ports writing, all ports reading.</li>
  * </ul>
  */
-public final class ModuleRandomAccessMemory extends AbstractModuleRotatable {
+public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
     // --------------------------------------------------------------------- //
     // Persisted data
 
-    private final byte[] memory = new byte[MEMORY_SIZE];
-    private byte address;
-    private State state = State.ADDRESS;
+    protected final byte[] memory = new byte[MEMORY_SIZE];
+    protected byte address;
+    protected State state = State.ADDRESS;
 
     // --------------------------------------------------------------------- //
     // Computed data
@@ -40,24 +45,25 @@ public final class ModuleRandomAccessMemory extends AbstractModuleRotatable {
     /**
      * The size of the memory, in bytes.
      */
-    private static final int MEMORY_SIZE = 256;
+    protected static final int MEMORY_SIZE = 256;
 
-    private enum State {
+    protected enum State {
         ADDRESS,
         ACCESS
     }
 
     // NBT data names.
-    private static final String TAG_MEMORY = "memory";
-    private static final String TAG_ADDRESS = "address";
-    private static final String TAG_STATE = "state";
+    protected static final String TAG_MEMORY = "memory";
+    protected static final String TAG_ADDRESS = "address";
+    protected static final String TAG_STATE = "state";
 
     // Data packet types.
-    private static final byte DATA_TYPE_CLEAR = 0;
+    protected static final byte DATA_TYPE_CLEAR = 0;
 
     // Message types.
-    private static final byte PACKET_CLEAR = 0;
-    private static final byte PACKET_SINGLE = 1;
+    protected static final byte PACKET_CLEAR = 0;
+    protected static final byte PACKET_SINGLE = 1;
+    protected static final byte PACKET_FULL = 2;
 
     // Rendering info.
     public static final float QUADS_U0 = 5 / 32f;
@@ -88,8 +94,7 @@ public final class ModuleRandomAccessMemory extends AbstractModuleRotatable {
         assert (!getCasing().getCasingWorld().isRemote);
 
         // Wipe memory on shutdown.
-        clear();
-        sendClear();
+        clearOnDisabled();
 
         // Reset protocol state.
         address = 0;
@@ -109,6 +114,29 @@ public final class ModuleRandomAccessMemory extends AbstractModuleRotatable {
     }
 
     @Override
+    public boolean onActivate(final EntityPlayer player, final EnumHand hand, final ItemStack heldItem, final float hitX, final float hitY, final float hitZ) {
+        if (!Items.isItem(heldItem, Items.modules.get(Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY))) {
+            return false;
+        }
+
+        final boolean isReading = player.isSneaking();
+        if (!isReading && getCasing().isLocked()) {
+            return false;
+        }
+
+        if (!getCasing().getCasingWorld().isRemote) {
+            if (isReading) {
+                ModuleRandomAccessMemory.writeDataToStack(this, heldItem);
+            } else {
+                ModuleRandomAccessMemory.readDataFromStack(this, heldItem);
+                sendFull();
+            }
+        }
+
+        return true;
+    }
+
+    @Override
     public void onData(final ByteBuf data) {
         switch (data.readByte()) {
             case PACKET_CLEAR:
@@ -117,6 +145,9 @@ public final class ModuleRandomAccessMemory extends AbstractModuleRotatable {
             case PACKET_SINGLE:
                 address = data.readByte();
                 set(data.readByte());
+                break;
+            case PACKET_FULL:
+                data.readBytes(memory);
                 break;
         }
     }
@@ -140,7 +171,7 @@ public final class ModuleRandomAccessMemory extends AbstractModuleRotatable {
             for (int x = 0; x < cells; x++) {
                 final int offset = (y * cells + x) * cellSize;
                 final float brightness = 0.25f + sectorSum(offset, cellSize) * 0.75f;
-                GlStateManager.color(1, 1, 1, brightness);
+                setCellColor(brightness);
 
                 final float u0 = QUADS_U0 + x * QUADS_STEP_U;
                 final float v0 = QUADS_V0 + y * QUADS_STEP_V;
@@ -156,9 +187,7 @@ public final class ModuleRandomAccessMemory extends AbstractModuleRotatable {
     public void readFromNBT(final NBTTagCompound nbt) {
         super.readFromNBT(nbt);
 
-        clear();
-        final byte[] data = nbt.getByteArray(TAG_MEMORY);
-        System.arraycopy(data, 0, memory, 0, Math.min(data.length, memory.length));
+        loadMemoryFromNBT(nbt);
         address = nbt.getByte(TAG_ADDRESS);
         state = EnumUtils.readFromNBT(State.class, TAG_STATE, nbt);
     }
@@ -170,6 +199,65 @@ public final class ModuleRandomAccessMemory extends AbstractModuleRotatable {
         nbt.setByteArray(TAG_MEMORY, memory);
         nbt.setByte(TAG_ADDRESS, address);
         EnumUtils.writeToNBT(state, TAG_STATE, nbt);
+    }
+
+    // --------------------------------------------------------------------- //
+
+    protected void clearOnDisabled() {
+        clear();
+        sendClear();
+    }
+
+    /**
+     * Called whenever the module tries to start reading.
+     *
+     * @param pipe the pipe to start reading on.
+     */
+    protected void beginRead(final Pipe pipe) {
+        pipe.beginRead();
+    }
+
+    /**
+     * Set the color of the memory cell currently being drawn in the {@link GlStateManager}.
+     *
+     * @param brightness the brightness the cell is rendered at (the alpha).
+     */
+    @SideOnly(Side.CLIENT)
+    protected void setCellColor(final float brightness) {
+        GlStateManager.color(0.4f, 1f, 1f, brightness);
+    }
+
+    /**
+     * Load memory stored on the specified item stack into the specified
+     * module's memory, clearing data that is after the end of the stored
+     * data and truncating memory from the stack that exceeds the module's
+     * capacity.
+     *
+     * @param memory the memory module to load the data into.
+     * @param stack  the stack holding the data to load.
+     */
+    protected static void readDataFromStack(final ModuleRandomAccessMemory memory, final ItemStack stack) {
+        final NBTTagCompound nbt = stack.getTagCompound();
+        if (nbt != null) {
+            memory.loadMemoryFromNBT(nbt);
+        } else {
+            memory.clear();
+        }
+    }
+
+    /**
+     * Stores memory from the specified memory module onto the specified
+     * item stack.
+     *
+     * @param memory the memory module to save the data of.
+     * @param stack  the stack to write the data into.
+     */
+    protected static void writeDataToStack(final ModuleRandomAccessMemory memory, final ItemStack stack) {
+        NBTTagCompound nbt = stack.getTagCompound();
+        if (nbt == null) {
+            stack.setTagCompound(nbt = new NBTTagCompound());
+        }
+        nbt.setByteArray(TAG_MEMORY, memory.memory);
     }
 
     // --------------------------------------------------------------------- //
@@ -194,14 +282,14 @@ public final class ModuleRandomAccessMemory extends AbstractModuleRotatable {
             // Continuously read from all ports.
             final Pipe receivingPipe = getCasing().getReceivingPipe(getFace(), port);
             if (!receivingPipe.isReading()) {
-                receivingPipe.beginRead();
+                beginRead(receivingPipe);
             }
             if (receivingPipe.canTransfer()) {
                 // Handle the input.
                 process(receivingPipe.read());
 
                 // Start reading again right away to read as fast as possible.
-                receivingPipe.beginRead();
+                beginRead(receivingPipe);
             }
         }
     }
@@ -269,11 +357,24 @@ public final class ModuleRandomAccessMemory extends AbstractModuleRotatable {
         getCasing().sendData(getFace(), data);
     }
 
+    private void sendFull() {
+        final ByteBuf data = Unpooled.buffer();
+        data.writeByte(PACKET_FULL);
+        data.writeBytes(memory);
+        getCasing().sendData(getFace(), data);
+    }
+
     private float sectorSum(final int offset, final int count) {
         int sum = 0;
         for (int i = offset, end = offset + count; i < end; i++) {
             sum += memory[i] & 0xFF;
         }
         return sum / (count * (float) 0xFF);
+    }
+
+    private void loadMemoryFromNBT(final NBTTagCompound nbt) {
+        clear();
+        final byte[] data = nbt.getByteArray(TAG_MEMORY);
+        System.arraycopy(data, 0, memory, 0, Math.min(data.length, memory.length));
     }
 }
