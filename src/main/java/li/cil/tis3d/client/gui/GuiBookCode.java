@@ -297,7 +297,7 @@ public final class GuiBookCode extends GuiScreen {
             } else if (keyCode == Keyboard.KEY_V) {
                 deleteSelection();
 
-                final String[] pastedLines = ItemBookCode.Data.PATTERN_LINES.split(getClipboardString());
+                final String[] pastedLines = Constants.PATTERN_LINES.split(getClipboardString());
                 if (!isValidPaste(pastedLines)) {
                     return;
                 }
@@ -576,31 +576,45 @@ public final class GuiBookCode extends GuiScreen {
         // Part one of error handling, draw red underline, *behind* the blinking cursor.
         if (compileError.isPresent()) {
             final ParseException exception = compileError.get();
-            if (exception.getLineNumber() >= 0 && exception.getLineNumber() < lines.size()) {
-                final int startY = guiY + CODE_POS_Y + exception.getLineNumber() * fontRenderer.FONT_HEIGHT - 1;
-                final int startX = columnToX(exception.getLineNumber(), exception.getStart());
-                final int endX = Math.max(columnToX(exception.getLineNumber(), exception.getEnd()), startX + fontRenderer.getCharWidth(' '));
-
-                drawRect(startX - 1, startY + fontRenderer.FONT_HEIGHT - 1, endX, startY + fontRenderer.FONT_HEIGHT, 0xFFFF3333);
+            final int localLineNumber, startX, rawEndX;
+            final boolean isErrorOnPreviousPage = exception.getLineNumber() < 0;
+            final boolean isErrorOnNextPage = exception.getLineNumber() >= lines.size();
+            if (isErrorOnPreviousPage) {
+                localLineNumber = 0;
+                startX = columnToX(localLineNumber, 0);
+                rawEndX = columnToX(localLineNumber, Settings.maxColumnsPerLine);
+            } else if (isErrorOnNextPage) {
+                localLineNumber = lines.size() - 1;
+                startX = columnToX(localLineNumber, 0);
+                rawEndX = columnToX(localLineNumber, Settings.maxColumnsPerLine);
+            } else {
+                localLineNumber = exception.getLineNumber();
+                startX = columnToX(localLineNumber, exception.getStart());
+                rawEndX = columnToX(localLineNumber, exception.getEnd());
             }
-        }
+            final int startY = guiY + CODE_POS_Y + localLineNumber * fontRenderer.FONT_HEIGHT - 1;
+            final int endX = Math.max(rawEndX, startX + fontRenderer.getCharWidth(' '));
 
-        // Draw selection position in text.
-        drawTextCursor();
+            drawRect(startX - 1, startY + fontRenderer.FONT_HEIGHT - 1, endX, startY + fontRenderer.FONT_HEIGHT, 0xFFFF3333);
 
-        // Part two of error handling, draw tooltip, *on top* of blinking cursor.
-        if (compileError.isPresent()) {
-            final ParseException exception = compileError.get();
-            if (exception.getLineNumber() >= 0 && exception.getLineNumber() < lines.size()) {
-                final int startY = guiY + CODE_POS_Y + exception.getLineNumber() * fontRenderer.FONT_HEIGHT - 1;
-                final int startX = columnToX(exception.getLineNumber(), exception.getStart());
-                final int endX = Math.max(columnToX(exception.getLineNumber(), exception.getEnd()), startX + fontRenderer.getCharWidth(' '));
+            // Draw selection position in text.
+            drawTextCursor();
 
-                if (mouseX >= startX && mouseX <= endX && mouseY >= startY && mouseY <= startY + fontRenderer.FONT_HEIGHT) {
-                    drawHoveringText(Arrays.asList(ItemBookCode.Data.PATTERN_LINES.split(I18n.format(exception.getMessage()))), mouseX, mouseY);
-                    GlStateManager.disableLighting();
+            // Part two of error handling, draw tooltip, *on top* of blinking cursor.
+            if (mouseX >= startX && mouseX <= endX && mouseY >= startY && mouseY <= startY + fontRenderer.FONT_HEIGHT) {
+                final List<String> tooltip = new ArrayList<>();
+                if (isErrorOnPreviousPage) {
+                    tooltip.add(I18n.format(Constants.MESSAGE_ERROR_ON_PREVIOUS_PAGE));
+                } else if (isErrorOnNextPage) {
+                    tooltip.add(I18n.format(Constants.MESSAGE_ERROR_ON_NEXT_PAGE));
                 }
+                tooltip.addAll(Arrays.asList(Constants.PATTERN_LINES.split(I18n.format(exception.getMessage()))));
+                drawHoveringText(tooltip, mouseX, mouseY);
+                GlStateManager.disableLighting();
             }
+        } else {
+            // Draw selection position in text.
+            drawTextCursor();
         }
     }
 
