@@ -28,6 +28,8 @@ public final class RedstoneInputProviderMinecraft {
         }
     }
 
+    // --------------------------------------------------------------------- //
+
     private RedstoneInputProviderMinecraft() {
     }
 }
