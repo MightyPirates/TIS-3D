@@ -4,43 +4,22 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.traits.BundledRedstone;
 import li.cil.tis3d.api.module.traits.Redstone;
 import li.cil.tis3d.common.integration.redstone.RedstoneIntegration;
-import li.cil.tis3d.common.tileentity.TileEntityCasing;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import pl.asie.charset.api.wires.IBundledEmitter;
 import pl.asie.charset.api.wires.IBundledReceiver;
 import pl.asie.charset.api.wires.IRedstoneEmitter;
 
-public enum CharsetWiresCallbacks {
-    INSTANCE;
-
-    // --------------------------------------------------------------------- //
-
+public final class CallbacksCharsetWires {
     public static void register() {
-        MinecraftForge.EVENT_BUS.register(CharsetWiresCallbacks.INSTANCE);
-
-        RedstoneIntegration.INSTANCE.addCallback(CharsetWiresCallbacks::onBundledOutputChanged);
-        RedstoneIntegration.INSTANCE.addRedstoneInputProvider(CharsetWiresCallbacks::getInput);
-        RedstoneIntegration.INSTANCE.addBundledRedstoneInputProvider(CharsetWiresCallbacks::getBundledInput);
+        RedstoneIntegration.INSTANCE.addCallback(CallbacksCharsetWires::onBundledOutputChanged);
+        RedstoneIntegration.INSTANCE.addRedstoneInputProvider(CallbacksCharsetWires::getInput);
+        RedstoneIntegration.INSTANCE.addBundledRedstoneInputProvider(CallbacksCharsetWires::getBundledInput);
     }
 
     // --------------------------------------------------------------------- //
-
-    @SubscribeEvent
-    public void onAttachTileEntityCapabilities(final AttachCapabilitiesEvent<TileEntity> event) {
-        if (event.getObject() instanceof TileEntityCasing) {
-            final TileEntityCasing tileEntity = (TileEntityCasing) event.getObject();
-            event.addCapability(CapabilityRedstoneEmitter.PROVIDER_REDSTONE_EMITTER, new CapabilityRedstoneEmitter.Provider(tileEntity));
-            event.addCapability(CapabilityRedstoneReceiver.PROVIDER_REDSTONE_RECEIVER, new CapabilityRedstoneReceiver.Provider(tileEntity));
-            event.addCapability(CapabilityBundledEmitter.PROVIDER_BUNDLED_EMITTER, new CapabilityBundledEmitter.Provider(tileEntity));
-            event.addCapability(CapabilityBundledReceiver.PROVIDER_BUNDLED_RECEIVER, new CapabilityBundledReceiver.Provider(tileEntity));
-        }
-    }
 
     public static void onBundledOutputChanged(final BundledRedstone module, final int channel) {
         final EnumFacing facing = Face.toEnumFacing(module.getFace());
@@ -89,5 +68,10 @@ public enum CharsetWiresCallbacks {
         }
 
         return 0;
+    }
+
+    // --------------------------------------------------------------------- //
+
+    private CallbacksCharsetWires() {
     }
 }
