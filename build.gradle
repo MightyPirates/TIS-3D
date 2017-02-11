@@ -57,10 +57,16 @@ minecraft {
 
 repositories {
     maven { url "http://dvs1.progwml6.com/files/maven" }
+    maven { url "http://maven.tterrag.com" }
 }
 
 dependencies {
     deobfCompile "mezz.jei:jei_${config.minecraft.version}:${config.jei.version}"
+    deobfCompile "com.enderio.core:EnderCore:${config.minecraft.version}-${config.endercore.version}"
+    deobfCompile("com.enderio:EnderIO:${config.minecraft.version}-${config.enderio.version}") {
+        exclude module: "appliedenergistics2"
+        exclude module: "Tesla"
+    }
 }
 
 processResources {

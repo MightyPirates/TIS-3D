@@ -1,6 +1,7 @@
 package li.cil.tis3d.common.integration;
 
 import li.cil.tis3d.common.integration.charsetwires.ProxyCharsetWires;
+import li.cil.tis3d.common.integration.enderio.ProxyEnderIO;
 import li.cil.tis3d.common.integration.minecraft.ProxyMinecraft;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -17,6 +18,7 @@ public final class Integration {
 
     static {
         proxies.add(new ProxyCharsetWires());
+        proxies.add(new ProxyEnderIO());
         proxies.add(new ProxyMinecraft());
     }
 
