@@ -11,7 +11,6 @@ import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.util.ColorUtils;
 import li.cil.tis3d.util.EnumUtils;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -135,11 +134,9 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
         }
 
         rotateForRendering();
-
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
+        RenderUtil.ignoreLighting();
 
         GlStateManager.bindTexture(getGlTextureId());
-
         RenderUtil.drawQuad();
     }
 
@@ -162,7 +159,7 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
 
         nbt.setIntArray(TAG_IMAGE, image);
         EnumUtils.writeToNBT(state, TAG_STATE, nbt);
-        nbt.setByteArray(TAG_DRAW_CALL, drawCall);
+        nbt.setByteArray(TAG_DRAW_CALL, drawCall.clone());
     }
 
     // --------------------------------------------------------------------- //

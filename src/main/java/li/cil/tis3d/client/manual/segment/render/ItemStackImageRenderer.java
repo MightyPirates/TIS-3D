@@ -1,12 +1,11 @@
 package li.cil.tis3d.client.manual.segment.render;
 
 import li.cil.tis3d.api.manual.ImageRenderer;
+import li.cil.tis3d.api.util.RenderUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
 public final class ItemStackImageRenderer implements ImageRenderer {
     /**
@@ -36,10 +35,10 @@ public final class ItemStackImageRenderer implements ImageRenderer {
         final int index = (int) (System.currentTimeMillis() % (CYCLE_SPEED * stacks.length)) / CYCLE_SPEED;
         final ItemStack stack = stacks[index];
 
-        GL11.glScalef(getWidth() / 16, getHeight() / 16, getWidth() / 16);
-        GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+        GlStateManager.scale(getWidth() / 16f, getHeight() / 16f, getWidth() / 16f);
+        GlStateManager.enableRescaleNormal();
+        RenderUtil.ignoreLighting();
         RenderHelper.enableGUIStandardItemLighting();
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
         mc.getRenderItem().renderItemAndEffectIntoGUI(stack, 0, 0);
         RenderHelper.disableStandardItemLighting();
     }

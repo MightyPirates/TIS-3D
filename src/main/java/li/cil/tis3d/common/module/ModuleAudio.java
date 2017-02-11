@@ -9,10 +9,7 @@ import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.renderer.TextureLoader;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageParticleEffect;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
@@ -73,9 +70,7 @@ public final class ModuleAudio extends AbstractModule {
 
         GlStateManager.enableBlend();
 
-        Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-        final TextureAtlasSprite icon = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(TextureLoader.LOCATION_MODULE_AUDIO_OVERLAY.toString());
-        RenderUtil.drawQuad(icon);
+        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_MODULE_AUDIO_OVERLAY));
 
         GlStateManager.disableBlend();
     }

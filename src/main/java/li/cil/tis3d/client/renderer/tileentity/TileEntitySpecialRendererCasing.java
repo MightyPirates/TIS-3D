@@ -22,6 +22,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import org.lwjgl.opengl.GL11;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -108,12 +109,10 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
 
     private void ensureSanity() {
         GlStateManager.enableTexture2D();
-
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
-
         RenderUtil.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-
         GlStateManager.color(1, 1, 1, 1);
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        RenderUtil.ignoreLighting();
     }
 
     private boolean drawConfigOverlay(final TileEntityCasing casing, final Face face) {
@@ -122,7 +121,6 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
             return false;
         }
 
-        final TextureMap textureMap = Minecraft.getMinecraft().getTextureMapBlocks();
         if (isPlayerSneaking() && !casing.isLocked()) {
             final TextureAtlasSprite closedSprite;
             final TextureAtlasSprite openSprite;
@@ -130,15 +128,15 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
             final Port lookingAtPort;
             final boolean isLookingAt = isPlayerLookingAt(casing.getPos(), face);
             if (isLookingAt) {
-                closedSprite = textureMap.getAtlasSprite(TextureLoader.LOCATION_CASING_PORT_CLOSED_OVERLAY.toString());
-                openSprite = textureMap.getAtlasSprite(TextureLoader.LOCATION_CASING_PORT_OPEN_OVERLAY.toString());
+                closedSprite = RenderUtil.getSprite(TextureLoader.LOCATION_CASING_PORT_CLOSED_OVERLAY);
+                openSprite = RenderUtil.getSprite(TextureLoader.LOCATION_CASING_PORT_OPEN_OVERLAY);
 
                 final RayTraceResult hit = rendererDispatcher.cameraHitResult;
                 final BlockPos pos = hit.getBlockPos();
                 final Vec3d uv = TransformUtil.hitToUV(face, hit.hitVec.subtract(new Vec3d(pos)));
                 lookingAtPort = Port.fromUVQuadrant(uv);
             } else {
-                closedSprite = textureMap.getAtlasSprite(TextureLoader.LOCATION_CASING_PORT_CLOSED_SMALL_OVERLAY.toString());
+                closedSprite = RenderUtil.getSprite(TextureLoader.LOCATION_CASING_PORT_CLOSED_SMALL_OVERLAY);
                 openSprite = null;
 
                 lookingAtPort = null;
@@ -153,7 +151,7 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
                 }
 
                 if (port == lookingAtPort) {
-                    final TextureAtlasSprite highlightSprite = textureMap.getAtlasSprite(TextureLoader.LOCATION_CASING_PORT_HIGHLIGHT_OVERLAY.toString());
+                    final TextureAtlasSprite highlightSprite = RenderUtil.getSprite(TextureLoader.LOCATION_CASING_PORT_HIGHLIGHT_OVERLAY);
 
                     RenderUtil.drawQuad(highlightSprite);
                 }
@@ -166,22 +164,21 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
 
             return isLookingAt;
         } else {
-            final TextureAtlasSprite icon;
+            final TextureAtlasSprite sprite;
             if (casing.isLocked()) {
-                icon = textureMap.getAtlasSprite(TextureLoader.LOCATION_CASING_LOCKED_OVERLAY.toString());
+                sprite = RenderUtil.getSprite(TextureLoader.LOCATION_CASING_LOCKED_OVERLAY);
             } else {
-                icon = textureMap.getAtlasSprite(TextureLoader.LOCATION_CASING_UNLOCKED_OVERLAY.toString());
+                sprite = RenderUtil.getSprite(TextureLoader.LOCATION_CASING_UNLOCKED_OVERLAY);
             }
 
-            RenderUtil.drawQuad(icon);
+            RenderUtil.drawQuad(sprite);
         }
 
         return true;
     }
 
     private void drawModuleOverlay(final TileEntityCasing casing, final Face face, final float partialTicks) {
-        final TextureMap textureMap = Minecraft.getMinecraft().getTextureMapBlocks();
-        final TextureAtlasSprite closedSprite = textureMap.getAtlasSprite(TextureLoader.LOCATION_CASING_PORT_CLOSED_SMALL_OVERLAY.toString());
+        final TextureAtlasSprite closedSprite = RenderUtil.getSprite(TextureLoader.LOCATION_CASING_PORT_CLOSED_SMALL_OVERLAY);
 
         GlStateManager.pushMatrix();
         GlStateManager.translate(0, 0, -0.005);

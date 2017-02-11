@@ -12,14 +12,12 @@ import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.util.EnumUtils;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.opengl.GL11;
 
 import java.util.Arrays;
 
@@ -160,9 +158,8 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
         }
 
         rotateForRendering();
+        RenderUtil.ignoreLighting();
         GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
         GlStateManager.disableTexture2D();
 
         final int cells = 4;
@@ -196,7 +193,7 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
     public void writeToNBT(final NBTTagCompound nbt) {
         super.writeToNBT(nbt);
 
-        nbt.setByteArray(TAG_MEMORY, memory);
+        nbt.setByteArray(TAG_MEMORY, memory.clone());
         nbt.setByte(TAG_ADDRESS, address);
         EnumUtils.writeToNBT(state, TAG_STATE, nbt);
     }
@@ -257,7 +254,7 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
         if (nbt == null) {
             stack.setTagCompound(nbt = new NBTTagCompound());
         }
-        nbt.setByteArray(TAG_MEMORY, memory.memory);
+        nbt.setByteArray(TAG_MEMORY, memory.memory.clone());
     }
 
     // --------------------------------------------------------------------- //

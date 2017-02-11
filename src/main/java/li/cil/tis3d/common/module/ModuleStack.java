@@ -12,7 +12,6 @@ import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.renderer.TextureLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -104,13 +103,9 @@ public final class ModuleStack extends AbstractModuleRotatable {
         }
 
         rotateForRendering();
+        RenderUtil.ignoreLighting();
 
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
-
-        RenderUtil.bindTexture(TextureLoader.LOCATION_MODULE_STACK_OVERLAY);
-
-        // Draw base overlay.
-        RenderUtil.drawQuad();
+        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_MODULE_STACK_OVERLAY));
 
         // Render detailed state when player is close.
         if (!isEmpty() && Minecraft.getMinecraft().player.getDistanceSqToCenter(getCasing().getPosition()) < 64) {

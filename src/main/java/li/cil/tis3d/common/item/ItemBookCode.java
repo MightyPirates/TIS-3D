@@ -214,6 +214,11 @@ public final class ItemBookCode extends ItemBook {
          * assumes <em>that the specified page does have the <code>#BWTM</code>
          * preprocessor macro</em>. I.e. the next page will <em>always</em> be added to
          * the <code>trailingPages</code>.
+         *
+         * @param page         the page to extend from.
+         * @param program      the code on the page to extend from.
+         * @param leadingCode  the list to place code from previous pages into.
+         * @param trailingCode the list to place code from next pages into.
          */
         public void getExtendedProgram(final int page, final List<String> program, final List<String> leadingCode, final List<String> trailingCode) {
             for (int leadingPage = page - 1; leadingPage >= 0; leadingPage--) {
