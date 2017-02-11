@@ -10,9 +10,11 @@ import li.cil.tis3d.client.renderer.TextureLoader;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -47,6 +49,11 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
     public static final float KEYS_SIZE_V_LAST = 4 / 32f;
     public static final float KEYS_STEP_U = 6 / 32f;
     public static final float KEYS_STEP_V = 6 / 32f;
+
+    // Pitch lookup for click feedback sound cue per value, 0-9.
+    // Roughly based on telephone keypad frequencies, except we have to mush
+    // both tones into one, so obviously some fidelity is lost, but eh.
+    private static final float[] VALUE_TO_PITCH = new float[]{0.9125f, 0.7f, 0.75f, 0.825f, 0.725f, 0.8f, 0.875f, 0.775f, 0.85f, 0.95f};
 
     // --------------------------------------------------------------------- //
 
@@ -119,8 +126,10 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
             }
         } else if (!value.isPresent() && nbt.hasKey(TAG_VALUE)) {
             // Got an input and don't have one yet.
-            value = Optional.of(nbt.getShort(TAG_VALUE));
+            final short newValue = nbt.getShort(TAG_VALUE);
+            value = Optional.of(newValue);
             getCasing().sendData(getFace(), nbt, DATA_TYPE_VALUE);
+            getCasing().getCasingWorld().playSound(null, getCasing().getPosition(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3f, VALUE_TO_PITCH[newValue]);
         }
     }
 
