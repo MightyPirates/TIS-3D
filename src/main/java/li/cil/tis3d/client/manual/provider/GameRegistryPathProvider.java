@@ -24,14 +24,12 @@ public final class GameRegistryPathProvider implements PathProvider {
                 return "%LANGUAGE%/block/" + block.getUnlocalizedName().replaceFirst("^tile\\.tis3d\\.", "") + ".md";
             }
         } else {
-            final ResourceLocation location = Item.REGISTRY.getNameForObject(item);
-            if (location == null) {
-                return null;
-            }
-
-            final String modId = location.getResourceDomain();
-            if (API.MOD_ID.equals(modId)) {
-                return "%LANGUAGE%/item/" + item.getUnlocalizedName().replaceFirst("^item\\.tis3d\\.", "") + ".md";
+            final ResourceLocation name = Item.REGISTRY.getNameForObject(item);
+            if (name != null) {
+                final String modId = name.getResourceDomain();
+                if (API.MOD_ID.equals(modId)) {
+                    return "%LANGUAGE%/item/" + item.getUnlocalizedName().replaceFirst("^item\\.tis3d\\.", "") + ".md";
+                }
             }
         }
         return null;
