@@ -14,6 +14,7 @@ import li.cil.tis3d.common.module.execution.target.TargetInterfaceLast;
 import li.cil.tis3d.common.module.execution.target.TargetInterfaceNil;
 import li.cil.tis3d.common.module.execution.target.TargetInterfaceSide;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 
 /**
@@ -88,6 +89,7 @@ public final class MachineImpl implements Machine {
      *
      * @return the currently active instruction, or <tt>null</tt>.
      */
+    @Nullable
     private Instruction getInstruction() {
         if (state.pc >= 0 && state.pc < state.instructions.size()) {
             return state.instructions.get(state.pc);

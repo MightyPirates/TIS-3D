@@ -145,9 +145,7 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
 
         // Draw base texture. Draw half transparent while writing current value,
         // i.e. while no input is possible.
-        if (value.isPresent()) {
-            GlStateManager.color(1, 1, 1, 0.5f);
-        }
+        value.ifPresent(unused -> GlStateManager.color(1, 1, 1, 0.5f));
         GlStateManager.depthMask(false);
         RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_MODULE_KEYPAD_OVERLAY));
         GlStateManager.depthMask(true);

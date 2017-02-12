@@ -29,19 +29,12 @@ public interface TargetInterface {
     boolean beginWrite(final short value);
 
     /**
-     * Cancel an active write operation.
-     * <p>
-     * If the target is not currently being written to this does nothing.
-     */
-    void cancelWrite();
-
-    /**
      * Whether the target is currently being written to.
      * <p>
      * This is <tt>true</tt> as soon as {@link #beginWrite(short)} was called and
-     * until {@link #read()} or {@link #cancelWrite()} was called to finish or
-     * cancel the operation, <em>unless</em> the operation was completed
-     * synchronously, in which case {@link #beginWrite(short)} returned <tt>true</tt>.
+     * until {@link #read()} was called to finish or cancel the operation,
+     * <em>unless</em> the operation was completed synchronously, in which case
+     * {@link #beginWrite(short)} returned <tt>true</tt>.
      *
      * @return whether the target is currently being written to.
      */

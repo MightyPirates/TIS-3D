@@ -22,10 +22,6 @@ public final class TargetInterfaceAcc extends AbstractTargetInterface {
     }
 
     @Override
-    public void cancelWrite() {
-    }
-
-    @Override
     public boolean isWriting() {
         return false;
     }

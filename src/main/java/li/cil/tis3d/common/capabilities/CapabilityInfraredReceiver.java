@@ -18,7 +18,6 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import javax.annotation.Nullable;
-import java.util.concurrent.Callable;
 
 public final class CapabilityInfraredReceiver {
     public static final ResourceLocation INFRARED_RECEIVER_LOCATION = new ResourceLocation(API.MOD_ID, "infrared_receiver");
@@ -41,12 +40,7 @@ public final class CapabilityInfraredReceiver {
             @Override
             public void readNBT(final Capability<InfraredReceiver> capability, final InfraredReceiver instance, final EnumFacing side, final NBTBase nbt) {
             }
-        }, new Callable<InfraredReceiver>() {
-            @Override
-            public InfraredReceiver call() throws Exception {
-                return DEFAULT_INFRARED_RECEIVER;
-            }
-        });
+        }, () -> DEFAULT_INFRARED_RECEIVER);
 
         MinecraftForge.EVENT_BUS.register(INSTANCE);
     }

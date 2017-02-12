@@ -33,13 +33,6 @@ public final class TargetInterfaceAny extends AbstractTargetInterfaceSide {
     }
 
     @Override
-    public void cancelWrite() {
-        for (final Port port : Port.VALUES) {
-            cancelWrite(port);
-        }
-    }
-
-    @Override
     public boolean isWriting() {
         return isWriting(Port.LEFT) && isWriting(Port.RIGHT) && isWriting(Port.UP) && isWriting(Port.DOWN);
     }
@@ -94,5 +87,13 @@ public final class TargetInterfaceAny extends AbstractTargetInterfaceSide {
     @Override
     public String toString() {
         return "ANY";
+    }
+
+    // --------------------------------------------------------------------- //
+
+    public void cancelWrite() {
+        for (final Port port : Port.VALUES) {
+            cancelWrite(port);
+        }
     }
 }

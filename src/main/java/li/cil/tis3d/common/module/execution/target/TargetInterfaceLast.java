@@ -29,11 +29,6 @@ public final class TargetInterfaceLast extends AbstractTargetInterfaceSide {
     }
 
     @Override
-    public void cancelWrite() {
-        getState().last.ifPresent(this::cancelWrite);
-    }
-
-    @Override
     public boolean isWriting() {
         return getState().last.map(this::isWriting).orElse(false);
     }
