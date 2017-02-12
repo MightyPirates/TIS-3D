@@ -10,7 +10,6 @@ import li.cil.tis3d.client.renderer.TextureLoader;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
@@ -81,7 +80,7 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
     }
 
     @Override
-    public boolean onActivate(final EntityPlayer player, final EnumHand hand, final ItemStack heldItem, final float hitX, final float hitY, final float hitZ) {
+    public boolean onActivate(final EntityPlayer player, final EnumHand hand, final float hitX, final float hitY, final float hitZ) {
         if (player.isSneaking()) {
             return false;
         }
@@ -144,9 +143,7 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
 
         // Draw base texture. Draw half transparent while writing current value,
         // i.e. while no input is possible.
-        if (value.isPresent()) {
-            GlStateManager.color(1, 1, 1, 0.5f);
-        }
+        value.ifPresent(unused -> GlStateManager.color(1, 1, 1, 0.5f));
         GlStateManager.depthMask(false);
         RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_MODULE_KEYPAD_OVERLAY));
         GlStateManager.depthMask(true);

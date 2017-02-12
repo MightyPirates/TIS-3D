@@ -20,7 +20,7 @@ public enum Target {
     ANY,
     LAST;
 
-    public static final Set<Target> VALID_TARGETS = Arrays.asList(Target.values()).stream().filter(t -> t != BAK).collect(Collectors.toSet());
+    public static final Set<Target> VALID_TARGETS = Arrays.stream(Target.values()).filter(t -> t != BAK).collect(Collectors.toSet());
 
     public static final Port[] TO_PORT = new Port[]{Port.UP, Port.UP, Port.UP, Port.LEFT, Port.RIGHT, Port.UP, Port.DOWN, Port.UP, Port.UP};
 

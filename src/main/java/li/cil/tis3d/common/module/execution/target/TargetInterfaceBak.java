@@ -24,11 +24,6 @@ public final class TargetInterfaceBak extends AbstractTargetInterface {
     }
 
     @Override
-    public void cancelWrite() {
-        throw throwOnWrite();
-    }
-
-    @Override
     public boolean isWriting() {
         throw throwOnWrite();
     }

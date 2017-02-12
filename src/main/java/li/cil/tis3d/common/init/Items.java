@@ -23,7 +23,7 @@ import java.util.Map;
  * Manages setup, registration and lookup of items.
  */
 public final class Items {
-    public static Map<String, Item> modules = new HashMap<>();
+    public static final Map<String, Item> modules = new HashMap<>();
     public static Item bookCode;
     public static Item bookManual;
     public static Item key;

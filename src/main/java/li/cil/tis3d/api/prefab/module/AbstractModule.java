@@ -120,7 +120,7 @@ public abstract class AbstractModule implements Module {
      * @param hitPos the hit position to project.
      * @return the projected UV coordinate, with the Z component being 0.
      * @see #getPlayerLookAt()
-     * @see Module#onActivate(EntityPlayer, EnumHand, ItemStack, float, float, float)
+     * @see Module#onActivate(EntityPlayer, EnumHand, float, float, float)
      */
     protected Vec3d hitToUV(final Vec3d hitPos) {
         return TransformUtil.hitToUV(getFace(), hitPos);
@@ -197,7 +197,7 @@ public abstract class AbstractModule implements Module {
     }
 
     @Override
-    public boolean onActivate(final EntityPlayer player, final EnumHand hand, final ItemStack heldItem, final float hitX, final float hitY, final float hitZ) {
+    public boolean onActivate(final EntityPlayer player, final EnumHand hand, final float hitX, final float hitY, final float hitZ) {
         return false;
     }
 

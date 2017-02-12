@@ -35,10 +35,4 @@ abstract class AbstractSegment implements Segment {
     public void setNext(@Nullable final Segment segment) {
         next = segment;
     }
-
-    @Override
-    public boolean isLast() {
-        final Segment next = next();
-        return next == null || root() != next.root();
-    }
 }

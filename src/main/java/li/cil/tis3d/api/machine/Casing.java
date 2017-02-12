@@ -3,7 +3,6 @@ package li.cil.tis3d.api.machine;
 import io.netty.buffer.ByteBuf;
 import li.cil.tis3d.api.module.Module;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
@@ -44,7 +43,7 @@ public interface Casing {
      * <p>
      * Casings can be locked, preventing players to remove modules from the
      * casing or add modules to the casing. Some modules may choose to also
-     * ignore {@link Module#onActivate(EntityPlayer, EnumHand, ItemStack, float, float, float)}
+     * ignore {@link Module#onActivate(EntityPlayer, EnumHand, float, float, float)}
      * calls while their casing is locks (such as the execution module to
      * prevent reprogramming).
      *

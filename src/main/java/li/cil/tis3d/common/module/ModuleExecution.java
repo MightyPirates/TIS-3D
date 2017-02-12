@@ -150,7 +150,9 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
     }
 
     @Override
-    public boolean onActivate(final EntityPlayer player, final EnumHand hand, final ItemStack heldItem, final float hitX, final float hitY, final float hitZ) {
+    public boolean onActivate(final EntityPlayer player, final EnumHand hand, final float hitX, final float hitY, final float hitZ) {
+        final ItemStack heldItem = player.getHeldItem(hand);
+
         // Vanilla book? If so, make that a code book.
         if (heldItem.getItem() == net.minecraft.init.Items.BOOK) {
             if (!player.getEntityWorld().isRemote) {

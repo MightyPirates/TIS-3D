@@ -4,6 +4,8 @@ import li.cil.tis3d.api.infrared.InfraredPacket;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
+
 /**
  * API entry point for spawning infrared packets and related tasks.
  * <p>
@@ -20,6 +22,7 @@ public final class InfraredAPI {
      * @param value     the value the packet carries.
      * @return the packet that was spawned.
      */
+    @Nullable
     public static InfraredPacket sendPacket(final World world, final Vec3d position, final Vec3d direction, final short value) {
         if (API.infraredAPI != null)
             return API.infraredAPI.sendPacket(world, position, direction, value);

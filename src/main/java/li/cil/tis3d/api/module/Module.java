@@ -130,13 +130,12 @@ public interface Module {
      *
      * @param player   the player that clicked the module.
      * @param hand     the hand the player used to activate the module.
-     * @param heldItem the item the player is holding in that hand.
      * @param hitX     the relative x position that was clicked.
      * @param hitY     the relative y position that was clicked.
      * @param hitZ     the relative z position that was clicked.
      * @return <tt>true</tt> if the click was handled, <tt>false</tt> otherwise.
      */
-    boolean onActivate(final EntityPlayer player, final EnumHand hand, final ItemStack heldItem, final float hitX, final float hitY, final float hitZ);
+    boolean onActivate(final EntityPlayer player, final EnumHand hand, final float hitX, final float hitY, final float hitZ);
 
     /**
      * Called with NBT data sent from the remote instance of the module.

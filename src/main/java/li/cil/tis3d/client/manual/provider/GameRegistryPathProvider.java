@@ -6,6 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -23,7 +24,12 @@ public final class GameRegistryPathProvider implements PathProvider {
                 return "%LANGUAGE%/block/" + block.getUnlocalizedName().replaceFirst("^tile\\.tis3d\\.", "") + ".md";
             }
         } else {
-            final String modId = Item.REGISTRY.getNameForObject(item).getResourceDomain();
+            final ResourceLocation location = Item.REGISTRY.getNameForObject(item);
+            if (location == null) {
+                return null;
+            }
+
+            final String modId = location.getResourceDomain();
             if (API.MOD_ID.equals(modId)) {
                 return "%LANGUAGE%/item/" + item.getUnlocalizedName().replaceFirst("^item\\.tis3d\\.", "") + ".md";
             }

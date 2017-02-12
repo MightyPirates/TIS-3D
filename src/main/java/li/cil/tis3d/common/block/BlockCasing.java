@@ -162,7 +162,7 @@ public final class BlockCasing extends Block {
 
                 // Let the module handle the activation.
                 final Module module = casing.getModule(Face.fromEnumFacing(side));
-                if (module != null && module.onActivate(player, hand, heldItem, hitX, hitY, hitZ)) {
+                if (module != null && module.onActivate(player, hand, hitX, hitY, hitZ)) {
                     return true;
                 }
 
