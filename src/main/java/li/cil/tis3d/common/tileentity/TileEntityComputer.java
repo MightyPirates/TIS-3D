@@ -444,16 +444,12 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
         }
 
         public void step() {
-            assert (!computer.getWorld().isRemote);
-
             for (final Port port : Port.VALUES) {
                 beginForwarding(port);
             }
         }
 
         public void onWriteComplete(final Port port) {
-            assert (!computer.getWorld().isRemote);
-
             beginForwarding(port);
         }
 
