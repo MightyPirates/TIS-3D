@@ -82,15 +82,11 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
 
     @Override
     public void step() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         stepInput();
     }
 
     @Override
     public void onDisabled() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         // Wipe memory on shutdown.
         clearOnDisabled();
 
@@ -101,8 +97,6 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
 
     @Override
     public void onWriteComplete(final Port port) {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         // Memory access was completed with a read operation.
         state = State.ADDRESS;
 

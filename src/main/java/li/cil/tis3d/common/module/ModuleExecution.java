@@ -100,23 +100,19 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
 
     @Override
     public void step() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         final State prevState = state;
 
         if (compileError != null) {
             state = State.ERR;
         } else if (getState().instructions.isEmpty()) {
             state = State.IDLE;
+        } else if (machine.step()) {
+            state = State.RUN;
+            getCasing().markDirty();
+            sendPartialState();
+            return; // Don't send data twice.
         } else {
-            if (machine.step()) {
-                state = State.RUN;
-                getCasing().markDirty();
-                sendPartialState();
-                return; // Don't send data twice.
-            } else {
-                state = State.WAIT;
-            }
+            state = State.WAIT;
         }
 
         if (prevState != state) {
@@ -127,15 +123,11 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
 
     @Override
     public void onEnabled() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         sendFullState();
     }
 
     @Override
     public void onDisabled() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         getState().reset();
         state = State.IDLE;
 

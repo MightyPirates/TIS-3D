@@ -90,8 +90,6 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
 
     @Override
     public void step() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         for (final Port port : Port.VALUES) {
             stepInput(port);
         }
@@ -99,8 +97,6 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
 
     @Override
     public void onDisabled() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         Arrays.fill(image, 0);
         state = State.COLOR;
 
