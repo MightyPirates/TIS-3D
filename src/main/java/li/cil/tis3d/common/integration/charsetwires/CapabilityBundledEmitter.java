@@ -46,8 +46,7 @@ public final class CapabilityBundledEmitter {
         @Override
         @Nullable
         public <T> T getCapability(final Capability<T> capability, @Nullable final EnumFacing facing) {
-            if (hasCapability(capability, facing)) {
-                assert facing != null;
+            if (hasCapability(capability, facing) && facing != null) {
                 return (T) emitters[facing.ordinal()];
             }
             return null;
