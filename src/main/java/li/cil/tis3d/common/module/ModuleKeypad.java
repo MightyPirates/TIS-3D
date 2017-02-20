@@ -181,11 +181,7 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
 
     // --------------------------------------------------------------------- //
 
-    /**
-     * Update our outputs, pushing random values to the specified port.
-     */
     private void stepOutput() {
-        // Don't try to write if we have no value.
         if (!value.isPresent()) {
             return;
         }
