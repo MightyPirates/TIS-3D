@@ -203,26 +203,14 @@ public final class TileEntityController extends TileEntityComputer implements IT
         // If we were in an active state, deactivate all modules in connected cases.
         // Safe to always call this because the casings track their own enabled
         // state and just won't do anything if they're already disabled.
+        // Also, this is guaranteed to be correct, because we were either the sole
+        // controller, thus there is no controller anymore, or there were multiple
+        // controllers, in which case they were disabled to start with.
         casings.forEach(TileEntityCasing::onDisabled);
         for (final TileEntityCasing casing : casings) {
             casing.setController(null);
         }
         casings.clear();
-
-        // Tell our neighbors about our untimely death.
-        for (final EnumFacing facing : EnumFacing.VALUES) {
-            final BlockPos neighborPos = getPos().offset(facing);
-            if (getWorld().isBlockLoaded(neighborPos)) {
-                final TileEntity tileEntity = getWorld().getTileEntity(neighborPos);
-                if (tileEntity instanceof TileEntityController) {
-                    final TileEntityController controller = (TileEntityController) tileEntity;
-                    controller.scheduleScan();
-                } else if (tileEntity instanceof TileEntityCasing) {
-                    final TileEntityCasing casing = (TileEntityCasing) tileEntity;
-                    casing.scheduleScan();
-                }
-            }
-        }
     }
 
     @Override
