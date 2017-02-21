@@ -2,7 +2,7 @@ package li.cil.tis3d.client.manual.segment;
 
 import li.cil.tis3d.client.manual.Document;
 import net.minecraft.client.gui.FontRenderer;
-import org.lwjgl.opengl.GL11;
+import net.minecraft.client.renderer.GlStateManager;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -53,12 +53,13 @@ public class TextSegment extends BasicTextSegment {
                 final int cy = currentY;
                 hovered = interactive.flatMap(segment -> segment.checkHovered(mouseX, mouseY, cx, cy, stringWidth(part, renderer), (int) (Document.lineHeight(renderer) * scale)));
             }
-            GL11.glPushMatrix();
-            GL11.glTranslatef(currentX, currentY, 0);
-            GL11.glScalef(scale, scale, scale);
-            GL11.glTranslatef(-currentX, -currentY, 0);
+            GlStateManager.color(0f, 0f, 0f, 1);
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(currentX, currentY, 0);
+            GlStateManager.scale(scale, scale, scale);
+            GlStateManager.translate(-currentX, -currentY, 0);
             renderer.drawString(format + part, currentX, currentY, color);
-            GL11.glPopMatrix();
+            GlStateManager.popMatrix();
             currentX = x + wrapIndent;
             currentY += lineHeight(renderer);
             chars = chars.substring(numChars);

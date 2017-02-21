@@ -101,10 +101,10 @@ public final class GuiManual extends GuiScreen {
         for (int i = 0; i < ManualAPIImpl.getTabs().size() && i < maxTabsPerSide; i++) {
             final ManualAPIImpl.Tab tab = ManualAPIImpl.getTabs().get(i);
             final ImageButton button = (ImageButton) buttonList.get(i);
-            GL11.glPushMatrix();
-            GL11.glTranslated(button.xPosition + 30, button.yPosition + 4 - tabOverlap / 2, zLevel);
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(button.xPosition + 30, button.yPosition + 4 - tabOverlap / 2, zLevel);
             tab.renderer.render();
-            GL11.glPopMatrix();
+            GlStateManager.popMatrix();
         }
 
         currentSegment = Document.render(document, guiLeft + 16, guiTop + 48, documentMaxWidth, documentMaxHeight, offset(), getFontRenderer(), mouseX, mouseY);

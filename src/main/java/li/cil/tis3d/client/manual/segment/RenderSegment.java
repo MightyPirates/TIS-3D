@@ -4,6 +4,7 @@ import li.cil.tis3d.api.manual.ImageRenderer;
 import li.cil.tis3d.api.manual.InteractiveImageRenderer;
 import li.cil.tis3d.client.manual.Document;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
 
@@ -70,34 +71,31 @@ public final class RenderSegment extends AbstractSegment implements InteractiveS
 
         final Optional<InteractiveSegment> hovered = checkHovered(mouseX, mouseY, x + xOffset, y + yOffset, width, height);
 
-        GL11.glPushMatrix();
-        GL11.glTranslatef(x + xOffset, y + yOffset, 0);
-        GL11.glScalef(s, s, s);
+        GlStateManager.color(1, 1, 1, 1);
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(x + xOffset, y + yOffset, 0);
+        GlStateManager.scale(s, s, s);
 
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glEnable(GL11.GL_ALPHA_TEST);
+        GlStateManager.enableBlend();
+        GlStateManager.enableAlpha();
 
         if (hovered.isPresent()) {
-            GL11.glColor4f(1, 1, 1, 0.15f);
-            GL11.glDisable(GL11.GL_TEXTURE_2D);
+            GlStateManager.color(1, 1, 1, 0.15f);
+            GlStateManager.disableTexture2D();
             GL11.glBegin(GL11.GL_QUADS);
             GL11.glVertex2f(0, 0);
             GL11.glVertex2f(0, imageRenderer.getHeight());
             GL11.glVertex2f(imageRenderer.getWidth(), imageRenderer.getHeight());
             GL11.glVertex2f(imageRenderer.getWidth(), 0);
             GL11.glEnd();
-            GL11.glEnable(GL11.GL_TEXTURE_2D);
+            GlStateManager.enableTexture2D();
         }
 
-        GL11.glColor4f(1, 1, 1, 1);
+        GlStateManager.color(1, 1, 1, 1);
 
         imageRenderer.render(mouseX - x, mouseY - y);
 
-        GL11.glDisable(GL11.GL_BLEND);
-        GL11.glDisable(GL11.GL_ALPHA_TEST);
-        GL11.glDisable(GL11.GL_LIGHTING);
-
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
 
         return hovered;
     }

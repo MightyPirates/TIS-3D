@@ -2,6 +2,7 @@ package li.cil.tis3d.client.manual.segment.render;
 
 import li.cil.tis3d.api.manual.ImageRenderer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.ITextureObject;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -49,7 +50,7 @@ public class TextureImageRenderer implements ImageRenderer {
     @Override
     public void render(final int mouseX, final int mouseY) {
         Minecraft.getMinecraft().getTextureManager().bindTexture(location);
-        GL11.glColor4f(1, 1, 1, 1);
+        GlStateManager.color(1, 1, 1, 1);
         GL11.glBegin(GL11.GL_QUADS);
         GL11.glTexCoord2f(0, 0);
         GL11.glVertex2f(0, 0);
