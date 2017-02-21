@@ -4,6 +4,7 @@ import li.cil.tis3d.api.infrared.InfraredPacket;
 import li.cil.tis3d.api.infrared.InfraredReceiver;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
+import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.traits.BlockChangeAware;
@@ -16,16 +17,20 @@ import li.cil.tis3d.common.inventory.SidedInventoryProxy;
 import li.cil.tis3d.common.machine.CasingImpl;
 import li.cil.tis3d.common.machine.CasingProxy;
 import li.cil.tis3d.common.network.Network;
-import li.cil.tis3d.common.network.message.MessageCasingState;
+import li.cil.tis3d.common.network.message.MessageCasingEnabledState;
+import li.cil.tis3d.common.network.message.MessageCasingLockedState;
+import li.cil.tis3d.common.network.message.MessagePortLockedState;
 import li.cil.tis3d.util.InventoryUtils;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.fml.relauncher.Side;
@@ -59,13 +64,19 @@ public final class TileEntityCasing extends TileEntityComputer implements
     private final InventoryCasing inventory = new InventoryCasing(this);
     private final CasingImpl casing = new CasingImpl(this);
 
+    /**
+     * Which receiving pipes of this casing are currently locked, per face.
+     */
+    private final boolean[][] locked = new boolean[6][4];
+
     // --------------------------------------------------------------------- //
     // Computed data
 
     // NBT tag names.
-    private static final String TAG_INVENTORY = "inventory";
     private static final String TAG_CASING = "casing";
     private static final String TAG_ENABLED = "enabled";
+    private static final String TAG_INVENTORY = "inventory";
+    private static final String TAG_LOCKED = "closed"; // backwards compat .-. muh ocd
 
     private TileEntityController controller;
     private boolean isEnabled;
@@ -75,6 +86,42 @@ public final class TileEntityCasing extends TileEntityComputer implements
 
     public void markRedstoneDirty() {
         redstoneDirty = true;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void setCasingLocked(final boolean locked) {
+        casing.setLocked(locked);
+    }
+
+    /**
+     * Set whether the specified <em>receiving</em> port on the specified face
+     * of the casing is locked. A locked port will not allow any reads or
+     * writes and cause blocking read/write operations to never finish.
+     * <p>
+     * Useful for forcing adjacent modules to not communicate when they are
+     * omnidirectional, such as the redstone module.
+     *
+     * @param face  the face to set the locked state for.
+     * @param port  the receiving port to set the locked state for.
+     * @param value the locked state to set; <code>true</code> for locked, <code>false</code> for open (default).
+     */
+    public void setPortLocked(final Face face, final Port port, final boolean value) {
+        if (isPortLocked(face, port) != value) {
+            locked[face.ordinal()][port.ordinal()] = value;
+            sendPortLockedState(face, port);
+        }
+    }
+
+    /**
+     * Get the current locked state of the specified <em>receiving</em> port
+     * on the specified face of the casing.
+     *
+     * @param face the face to get the locked state for.
+     * @param port the receiving port to get the locked state for.
+     * @return <code>true</code> if the port is locked; <code>false</code> otherwise.
+     */
+    public boolean isPortLocked(final Face face, final Port port) {
+        return locked[face.ordinal()][port.ordinal()];
     }
 
     // --------------------------------------------------------------------- //
@@ -167,12 +214,12 @@ public final class TileEntityCasing extends TileEntityComputer implements
 
     public void lock(final ItemStack stack) {
         casing.lock(stack);
-        sendLockedStateChanged(isLocked());
+        sendCasingLockedState();
     }
 
     public void unlock(final ItemStack stack) {
         if (casing.unlock(stack)) {
-            sendLockedStateChanged(isLocked());
+            sendCasingLockedState();
         }
     }
 
@@ -296,6 +343,11 @@ public final class TileEntityCasing extends TileEntityComputer implements
     // TileEntityComputer
 
     @Override
+    public Pipe getReceivingPipe(final Face face, final Port port) {
+        return isPortLocked(face, port) ? LockedPipe.INSTANCE : super.getReceivingPipe(face, port);
+    }
+
+    @Override
     protected void readFromNBTForClient(final NBTTagCompound nbt) {
         super.readFromNBTForClient(nbt);
 
@@ -313,6 +365,8 @@ public final class TileEntityCasing extends TileEntityComputer implements
     protected void readFromNBTCommon(final NBTTagCompound nbt) {
         super.readFromNBTCommon(nbt);
 
+        decompressClosed(nbt.getByteArray(TAG_LOCKED), locked);
+
         final NBTTagCompound inventoryNbt = nbt.getCompoundTag(TAG_INVENTORY);
         inventory.readFromNBT(inventoryNbt);
 
@@ -323,6 +377,8 @@ public final class TileEntityCasing extends TileEntityComputer implements
     @Override
     protected void writeToNBTCommon(final NBTTagCompound nbt) {
         super.writeToNBTCommon(nbt);
+
+        nbt.setByteArray(TAG_LOCKED, compressClosed(locked));
 
         // Needed on the client also, for picking and for actually instantiating
         // the installed modules on the client side (to find the provider).
@@ -387,7 +443,7 @@ public final class TileEntityCasing extends TileEntityComputer implements
     }
 
     private void sendState() {
-        final MessageCasingState message = new MessageCasingState(this, isEnabled);
+        final MessageCasingEnabledState message = new MessageCasingEnabledState(this, isEnabled);
         Network.INSTANCE.getWrapper().sendToDimension(message, getWorld().provider.getDimension());
     }
 
@@ -396,5 +452,100 @@ public final class TileEntityCasing extends TileEntityComputer implements
             getController().scheduleScan();
         }
         casing.onDisposed();
+    }
+
+    private void sendCasingLockedState() {
+        Network.INSTANCE.getWrapper().sendToAllAround(new MessageCasingLockedState(this, isLocked()), Network.getTargetPoint(this, Network.RANGE_HIGH));
+        getWorld().playSound(null, getPos(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3f, isLocked() ? 0.5f : 0.6f);
+    }
+
+    private void sendPortLockedState(final Face face, final Port port) {
+        Network.INSTANCE.getWrapper().sendToAllAround(new MessagePortLockedState(this, face, port, isPortLocked(face, port)), Network.getTargetPoint(this, Network.RANGE_HIGH));
+        getWorld().playSound(null, getPos(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3f, isPortLocked(face, port) ? 0.5f : 0.6f);
+    }
+
+    private void decompressClosed(final byte[] compressed, final boolean[][] decompressed) {
+        if (compressed.length != 3) {
+            return;
+        }
+
+        for (int i = 0; i < 6; i++) {
+            int c = compressed[i >> 1] & 0b11111111;
+            if ((i & 1) == 1) {
+                c >>>= 4;
+            }
+            final boolean[] ports = decompressed[i];
+            for (int j = 0; j < 4; j++) {
+                ports[j] = (c & (1 << j)) != 0;
+            }
+        }
+    }
+
+    private byte[] compressClosed(final boolean[][] decompressed) {
+        // Cram two faces into one byte (four ports use four bits).
+        final byte[] compressed = new byte[3];
+        for (int i = 0; i < 6; i++) {
+            final boolean[] ports = decompressed[i];
+            int c = 0;
+            for (int j = 0; j < 4; j++) {
+                if (ports[j]) {
+                    c |= 1 << j;
+                }
+            }
+            if ((i & 1) == 1) {
+                c <<= 4;
+            }
+            compressed[i >> 1] |= (byte) c;
+        }
+        return compressed;
+    }
+
+    // --------------------------------------------------------------------- //
+
+    /**
+     * A pipe that cannot be written to nor read from, effectively locking up
+     * blocking reads/writes. Used for locked ports. Since it is immutable, we
+     * can use one for all ports on all faces in all casings.
+     */
+    private static final class LockedPipe implements Pipe {
+        public static final Pipe INSTANCE = new LockedPipe();
+
+        @Override
+        public void beginWrite(final short value) throws IllegalStateException {
+            throw new IllegalStateException("Trying to write to a busy pipe. Check isWriting().");
+        }
+
+        @Override
+        public void cancelWrite() {
+        }
+
+        @Override
+        public boolean isWriting() {
+            return true;
+        }
+
+        @Override
+        public void beginRead() throws IllegalStateException {
+            throw new IllegalStateException("Trying to write to a busy pipe. Check isReading().");
+        }
+
+        @Override
+        public void cancelRead() {
+        }
+
+        @Override
+        public boolean isReading() {
+            return true;
+        }
+
+        @Override
+        public boolean canTransfer() {
+            return false;
+        }
+
+        @Override
+        public short read() throws IllegalStateException {
+            throw new IllegalStateException("No data to read. Check canTransfer().");
+        }
     }
 }

@@ -6,17 +6,21 @@ import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
-import li.cil.tis3d.client.network.handler.MessageHandlerCasingState;
+import li.cil.tis3d.client.network.handler.MessageHandlerCasingEnabledState;
+import li.cil.tis3d.client.network.handler.MessageHandlerCasingLockedState;
 import li.cil.tis3d.client.network.handler.MessageHandlerHaltAndCatchFire;
 import li.cil.tis3d.client.network.handler.MessageHandlerParticleEffects;
+import li.cil.tis3d.client.network.handler.MessageHandlerPortLockedState;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.network.handler.MessageHandlerBookCodeData;
 import li.cil.tis3d.common.network.handler.MessageHandlerCasingData;
 import li.cil.tis3d.common.network.message.MessageBookCodeData;
 import li.cil.tis3d.common.network.message.MessageCasingData;
-import li.cil.tis3d.common.network.message.MessageCasingState;
+import li.cil.tis3d.common.network.message.MessageCasingEnabledState;
+import li.cil.tis3d.common.network.message.MessageCasingLockedState;
 import li.cil.tis3d.common.network.message.MessageHaltAndCatchFire;
 import li.cil.tis3d.common.network.message.MessageParticleEffect;
+import li.cil.tis3d.common.network.message.MessagePortLockedState;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.CompressedStreamTools;
@@ -66,9 +70,11 @@ public final class Network {
         CasingDataClient,
         CasingDataServer,
         ParticleEffects,
-        CasingState,
+        CasingEnabledState,
         BookCodeData,
-        HaltAndCatchFire
+        HaltAndCatchFire,
+        CasingLockedState,
+        PortLockedState
     }
 
     // --------------------------------------------------------------------- //
@@ -76,12 +82,14 @@ public final class Network {
     public void init() {
         wrapper = NetworkRegistry.INSTANCE.newSimpleChannel(API.MOD_ID);
 
+        wrapper.registerMessage(MessageHandlerBookCodeData.class, MessageBookCodeData.class, Messages.BookCodeData.ordinal(), Side.SERVER);
         wrapper.registerMessage(MessageHandlerCasingData.class, MessageCasingData.class, Messages.CasingDataClient.ordinal(), Side.CLIENT);
         wrapper.registerMessage(MessageHandlerCasingData.class, MessageCasingData.class, Messages.CasingDataServer.ordinal(), Side.SERVER);
-        wrapper.registerMessage(MessageHandlerParticleEffects.class, MessageParticleEffect.class, Messages.ParticleEffects.ordinal(), Side.CLIENT);
-        wrapper.registerMessage(MessageHandlerCasingState.class, MessageCasingState.class, Messages.CasingState.ordinal(), Side.CLIENT);
-        wrapper.registerMessage(MessageHandlerBookCodeData.class, MessageBookCodeData.class, Messages.BookCodeData.ordinal(), Side.SERVER);
+        wrapper.registerMessage(MessageHandlerCasingEnabledState.class, MessageCasingEnabledState.class, Messages.CasingEnabledState.ordinal(), Side.CLIENT);
+        wrapper.registerMessage(MessageHandlerCasingLockedState.class, MessageCasingLockedState.class, Messages.CasingLockedState.ordinal(), Side.CLIENT);
         wrapper.registerMessage(MessageHandlerHaltAndCatchFire.class, MessageHaltAndCatchFire.class, Messages.HaltAndCatchFire.ordinal(), Side.CLIENT);
+        wrapper.registerMessage(MessageHandlerParticleEffects.class, MessageParticleEffect.class, Messages.ParticleEffects.ordinal(), Side.CLIENT);
+        wrapper.registerMessage(MessageHandlerPortLockedState.class, MessagePortLockedState.class, Messages.PortLockedState.ordinal(), Side.CLIENT);
     }
 
     public SimpleNetworkWrapper getWrapper() {

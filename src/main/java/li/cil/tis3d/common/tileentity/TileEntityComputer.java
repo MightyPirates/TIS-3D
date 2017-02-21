@@ -5,15 +5,12 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.common.machine.PipeHost;
 import li.cil.tis3d.common.machine.PipeImpl;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
@@ -30,11 +27,6 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
      * Indexed by face and port using {@link #pack(Face, Port)}.
      */
     private final PipeImpl[] pipes = new PipeImpl[Face.VALUES.length * Port.VALUES.length];
-
-    /**
-     * Which receiving pipes of this casing are currently closed, per face.
-     */
-    private final boolean[][] closed = new boolean[6][4];
 
     // --------------------------------------------------------------------- //
     // Computed data.
@@ -67,7 +59,6 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
 
     // NBT tag names.
     private static final String TAG_PIPES = "pipes";
-    private static final String TAG_CLOSED = "closed";
 
     protected final TileEntityComputer[] neighbors = new TileEntityComputer[Face.VALUES.length];
     protected final Forwarder[] forwarders = new Forwarder[Face.VALUES.length];
@@ -120,7 +111,7 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
      * @see li.cil.tis3d.api.machine.Casing#getReceivingPipe(Face, Port)
      */
     public Pipe getReceivingPipe(final Face face, final Port port) {
-        return isPortClosed(face, port) ? ClosedPipe.INSTANCE : pipes[pack(face, port)];
+        return pipes[pack(face, port)];
     }
 
     /**
@@ -133,52 +124,6 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
      */
     public Pipe getSendingPipe(final Face face, final Port port) {
         return pipes[packMapped(face, port)];
-    }
-
-    /**
-     * Set whether the specified <em>receiving</em> port on the specified face
-     * of the casing is closed. A closed port will not allow any reads or
-     * writes and cause blocking read/write operations to never finish.
-     * <p>
-     * Useful for forcing adjacent modules to not communicate when they are
-     * omnidirectional, such as the redstone module.
-     *
-     * @param face  the face to set the closed state for.
-     * @param port  the receiving port to set the closed state for.
-     * @param value the closed state to set; <code>true</code> for closed, <code>false</code> for open (default).
-     */
-    public void setPortClosed(final Face face, final Port port, final boolean value) {
-        if (isPortClosed(face, port) != value) {
-            closed[face.ordinal()][port.ordinal()] = value;
-
-            sendLockedStateChanged(value);
-        }
-    }
-
-    /**
-     * Get the current closed state of the specified <em>receiving</em> port
-     * on the specified face of the casing.
-     *
-     * @param face the face to get the closed state for.
-     * @param port the receiving port to get the closed state for.
-     * @return <code>true</code> if the port is closed; <code>false</code> otherwise.
-     */
-    public boolean isPortClosed(final Face face, final Port port) {
-        return closed[face.ordinal()][port.ordinal()];
-    }
-
-    // --------------------------------------------------------------------- //
-
-    /**
-     * Send a tile entity update packet to the clients and play a sound cue to
-     * indicate a locked state has changed.
-     *
-     * @param isLocked <code>true</code> if something got locked; <code>false</code> otherwise.
-     */
-    protected void sendLockedStateChanged(final boolean isLocked) {
-        final IBlockState state = getWorld().getBlockState(getPos());
-        getWorld().notifyBlockUpdate(getPos(), state, state, 1);
-        getWorld().playSound(null, getPos(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3f, isLocked ? 0.5f : 0.6f);
     }
 
     // --------------------------------------------------------------------- //
@@ -324,11 +269,9 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
     }
 
     protected void readFromNBTCommon(final NBTTagCompound nbt) {
-        decompressClosed(nbt.getByteArray(TAG_CLOSED), closed);
     }
 
     protected void writeToNBTCommon(final NBTTagCompound nbt) {
-        nbt.setByteArray(TAG_CLOSED, compressClosed(closed));
     }
 
     // --------------------------------------------------------------------- //
@@ -378,42 +321,6 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
      */
     private static int packMapped(final Face face, final Port port) {
         return mapFace(face, port).ordinal() * Port.VALUES.length + mapSide(face, port).ordinal();
-    }
-
-    private void decompressClosed(final byte[] compressed, final boolean[][] decompressed) {
-        if (compressed.length != 3) {
-            return;
-        }
-
-        for (int i = 0; i < 6; i++) {
-            int c = compressed[i >> 1] & 0b11111111;
-            if ((i & 1) == 1) {
-                c >>>= 4;
-            }
-            final boolean[] ports = decompressed[i];
-            for (int j = 0; j < 4; j++) {
-                ports[j] = (c & (1 << j)) != 0;
-            }
-        }
-    }
-
-    private byte[] compressClosed(final boolean[][] decompressed) {
-        // Cram two faces into one byte (four ports use four bits).
-        final byte[] compressed = new byte[3];
-        for (int i = 0; i < 6; i++) {
-            final boolean[] ports = decompressed[i];
-            int c = 0;
-            for (int j = 0; j < 4; j++) {
-                if (ports[j]) {
-                    c |= 1 << j;
-                }
-            }
-            if ((i & 1) == 1) {
-                c <<= 4;
-            }
-            compressed[i >> 1] |= (byte) c;
-        }
-        return compressed;
     }
 
     // --------------------------------------------------------------------- //
@@ -472,53 +379,6 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
 
         private static Port flipSide(final Port port) {
             return (port == Port.LEFT || port == Port.RIGHT) ? port.getOpposite() : port;
-        }
-    }
-
-    /**
-     * A pipe that cannot be written to nor read from, effectively locking up
-     * blocking reads/writes. Used for closed ports. Since it is immutable, we
-     * can use one for all ports on all faces in all casings.
-     */
-    private static final class ClosedPipe implements Pipe {
-        public static final Pipe INSTANCE = new ClosedPipe();
-
-        @Override
-        public void beginWrite(final short value) throws IllegalStateException {
-            throw new IllegalStateException("Trying to write to a busy pipe. Check isWriting().");
-        }
-
-        @Override
-        public void cancelWrite() {
-        }
-
-        @Override
-        public boolean isWriting() {
-            return true;
-        }
-
-        @Override
-        public void beginRead() throws IllegalStateException {
-            throw new IllegalStateException("Trying to write to a busy pipe. Check isReading().");
-        }
-
-        @Override
-        public void cancelRead() {
-        }
-
-        @Override
-        public boolean isReading() {
-            return true;
-        }
-
-        @Override
-        public boolean canTransfer() {
-            return false;
-        }
-
-        @Override
-        public short read() throws IllegalStateException {
-            throw new IllegalStateException("No data to read. Check canTransfer().");
         }
     }
 }

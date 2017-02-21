@@ -145,7 +145,7 @@ public final class BlockCasing extends Block {
                                 final Vec3d uv = TransformUtil.hitToUV(face, new Vec3d(hitX, hitY, hitZ));
                                 final Port port = Port.fromUVQuadrant(uv);
 
-                                casing.setPortClosed(face, port, !casing.isPortClosed(face, port));
+                                casing.setPortLocked(face, port, !casing.isPortLocked(face, port));
                             }
                         }
                     }
