@@ -28,12 +28,13 @@ public final class Constants {
     public static final String NAME_ITEM_MODULE_EXECUTION = "module_execution";
     public static final String NAME_ITEM_MODULE_INFRARED = "module_infrared";
     public static final String NAME_ITEM_MODULE_KEYPAD = "module_keypad";
-    public static final String NAME_ITEM_MODULE_REDSTONE = "module_redstone";
-    public static final String NAME_ITEM_MODULE_SERIAL_PORT = "module_serial_port";
-    public static final String NAME_ITEM_MODULE_STACK = "module_stack";
     public static final String NAME_ITEM_MODULE_RANDOM = "module_random";
     public static final String NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY = "module_random_access_memory";
     public static final String NAME_ITEM_MODULE_READ_ONLY_MEMORY = "module_read_only_memory";
+    public static final String NAME_ITEM_MODULE_REDSTONE = "module_redstone";
+    public static final String NAME_ITEM_MODULE_SERIAL_PORT = "module_serial_port";
+    public static final String NAME_ITEM_MODULE_STACK = "module_stack";
+    public static final String NAME_ITEM_MODULE_TERMINAL = "module_terminal";
     public static final String NAME_ITEM_PRISM = "prism";
 
     public static final String NAME_ENTITY_INFRARED_PACKET = "infrared_packet";
@@ -47,27 +48,28 @@ public final class Constants {
             NAME_ITEM_MODULE_EXECUTION,
             NAME_ITEM_MODULE_INFRARED,
             NAME_ITEM_MODULE_KEYPAD,
+            NAME_ITEM_MODULE_RANDOM,
+            NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY,
+            NAME_ITEM_MODULE_READ_ONLY_MEMORY,
             NAME_ITEM_MODULE_REDSTONE,
             NAME_ITEM_MODULE_SERIAL_PORT,
             NAME_ITEM_MODULE_STACK,
-            NAME_ITEM_MODULE_RANDOM,
-            NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY,
-            NAME_ITEM_MODULE_READ_ONLY_MEMORY
+            NAME_ITEM_MODULE_TERMINAL
     };
 
     // --------------------------------------------------------------------- //
     // Compiler errors
 
     public static final String MESSAGE_COMPILE_ERROR = "tis3d.compiler.error";
+    public static final String MESSAGE_INVALID_FORMAT = "tis3d.compiler.invalid_format";
+    public static final String MESSAGE_INVALID_INSTRUCTION = "tis3d.compiler.invalid_instruction";
+    public static final String MESSAGE_LABEL_DUPLICATE = "tis3d.compiler.label_duplicate";
+    public static final String MESSAGE_LABEL_NOT_FOUND = "tis3d.compiler.label_not_found";
+    public static final String MESSAGE_PARAMETER_INVALID = "tis3d.compiler.parameter_invalid";
+    public static final String MESSAGE_PARAMETER_OVERFLOW = "tis3d.compiler.parameter_overflow";
+    public static final String MESSAGE_PARAMETER_UNDERFLOW = "tis3d.compiler.parameter_underflow";
+    public static final String MESSAGE_TOO_MANY_COLUMNS = "tis3d.compiler.too_many_columns";
     public static final String MESSAGE_TOO_MANY_LINES = "tis3d.compiler.too_many_lines";
-    public static final String MESSAGE_LINE_TOO_LONG = "tis3d.compiler.too_many_columns";
-    public static final String MESSAGE_UNEXPECTED_TOKEN = "tis3d.compiler.invalid_format";
-    public static final String MESSAGE_UNKNOWN_INSTRUCTION = "tis3d.compiler.invalid_instruction";
-    public static final String MESSAGE_MISSING_PARAMETER = "tis3d.compiler.parameter_underflow";
-    public static final String MESSAGE_INVALID_TARGET = "tis3d.compiler.parameter_invalid";
-    public static final String MESSAGE_EXCESS_TOKENS = "tis3d.compiler.parameter_overflow";
-    public static final String MESSAGE_NO_SUCH_LABEL = "tis3d.compiler.label_not_found";
-    public static final String MESSAGE_DUPLICATE_LABEL = "tis3d.compiler.label_duplicate";
 
     // --------------------------------------------------------------------- //
     // Code book
