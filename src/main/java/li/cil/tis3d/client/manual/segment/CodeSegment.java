@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public final class CodeSegment extends BasicTextSegment {
     private static final float FONT_SCALE = 0.5f;
+    private static final int OFFSET_Y = 1;
 
     private final Segment parent;
     private final String text;
@@ -30,7 +31,7 @@ public final class CodeSegment extends BasicTextSegment {
     @Override
     public Optional<InteractiveSegment> render(final int x, final int y, final int indent, final int maxWidth, final FontRenderer renderer, final int mouseX, final int mouseY) {
         int currentX = x + indent;
-        int currentY = y;
+        int currentY = y + OFFSET_Y;
         String chars = text();
         final int wrapIndent = computeWrapIndent(renderer);
         int numChars = maxChars(chars, maxWidth - indent, maxWidth - wrapIndent, renderer);

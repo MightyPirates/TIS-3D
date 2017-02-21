@@ -24,11 +24,11 @@ public abstract class AbstractFontRenderer implements FontRenderer {
 
     // --------------------------------------------------------------------- //
 
-    public void drawString(final String value) {
+    public void drawString(final CharSequence value) {
         drawString(value, value.length());
     }
 
-    public void drawString(final String value, final int maxChars) {
+    public void drawString(final CharSequence value, final int maxChars) {
         GlStateManager.pushMatrix();
         GlStateManager.depthMask(false);
 
@@ -50,7 +50,6 @@ public abstract class AbstractFontRenderer implements FontRenderer {
 
         GlStateManager.depthMask(true);
         GlStateManager.popMatrix();
-        GlStateManager.color(1, 1, 1);
     }
 
     // --------------------------------------------------------------------- //
