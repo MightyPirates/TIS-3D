@@ -85,6 +85,10 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
         }
     }
 
+    /**
+     * Advances the virtual modules used to bridge edges between modules, calling
+     * {@link Forwarder#step()} on them.
+     */
     public void stepForwarders() {
         for (final Forwarder forwarder : forwarders) {
             if (forwarder != null) {

@@ -7,6 +7,7 @@ import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.client.network.handler.MessageHandlerCasingEnabledState;
+import li.cil.tis3d.client.network.handler.MessageHandlerCasingInventory;
 import li.cil.tis3d.client.network.handler.MessageHandlerCasingLockedState;
 import li.cil.tis3d.client.network.handler.MessageHandlerHaltAndCatchFire;
 import li.cil.tis3d.client.network.handler.MessageHandlerParticleEffects;
@@ -17,6 +18,7 @@ import li.cil.tis3d.common.network.handler.MessageHandlerCasingData;
 import li.cil.tis3d.common.network.message.MessageBookCodeData;
 import li.cil.tis3d.common.network.message.MessageCasingData;
 import li.cil.tis3d.common.network.message.MessageCasingEnabledState;
+import li.cil.tis3d.common.network.message.MessageCasingInventory;
 import li.cil.tis3d.common.network.message.MessageCasingLockedState;
 import li.cil.tis3d.common.network.message.MessageHaltAndCatchFire;
 import li.cil.tis3d.common.network.message.MessageParticleEffect;
@@ -74,7 +76,8 @@ public final class Network {
         BookCodeData,
         HaltAndCatchFire,
         CasingLockedState,
-        PortLockedState
+        PortLockedState,
+        CasingInventory
     }
 
     // --------------------------------------------------------------------- //
@@ -87,6 +90,7 @@ public final class Network {
         wrapper.registerMessage(MessageHandlerCasingData.class, MessageCasingData.class, Messages.CasingDataServer.ordinal(), Side.SERVER);
         wrapper.registerMessage(MessageHandlerCasingEnabledState.class, MessageCasingEnabledState.class, Messages.CasingEnabledState.ordinal(), Side.CLIENT);
         wrapper.registerMessage(MessageHandlerCasingLockedState.class, MessageCasingLockedState.class, Messages.CasingLockedState.ordinal(), Side.CLIENT);
+        wrapper.registerMessage(MessageHandlerCasingInventory.class, MessageCasingInventory.class, Messages.CasingInventory.ordinal(), Side.CLIENT);
         wrapper.registerMessage(MessageHandlerHaltAndCatchFire.class, MessageHaltAndCatchFire.class, Messages.HaltAndCatchFire.ordinal(), Side.CLIENT);
         wrapper.registerMessage(MessageHandlerParticleEffects.class, MessageParticleEffect.class, Messages.ParticleEffects.ordinal(), Side.CLIENT);
         wrapper.registerMessage(MessageHandlerPortLockedState.class, MessagePortLockedState.class, Messages.PortLockedState.ordinal(), Side.CLIENT);

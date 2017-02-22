@@ -84,13 +84,42 @@ public final class TileEntityCasing extends TileEntityComputer implements
 
     // --------------------------------------------------------------------- //
 
+    /**
+     * Used to notify the case that redstone inputs may have changed, which
+     * will in turn cause modules implementing {@link Redstone} and/or {@link BundledRedstone}
+     * to get notified.
+     */
     public void markRedstoneDirty() {
         redstoneDirty = true;
     }
 
+    /**
+     * Used for synchronizing state between server and client, letting the
+     * client know the new locked state of a case for overlay rendering.
+     *
+     * @param locked the new locked state of the case.
+     */
     @SideOnly(Side.CLIENT)
     public void setCasingLocked(final boolean locked) {
         casing.setLocked(locked);
+    }
+
+    /**
+     * Used for synchronizing state between server and client, letting the
+     * client know the new item stack installed in a slot, and, if present
+     * initialize its module with the original server state of the module.
+     *
+     * @param slot       the slot the item stack changed in.
+     * @param stack      the new item stack in that slot, if any.
+     * @param moduleData the original state of the module on the server, if present.
+     */
+    @SideOnly(Side.CLIENT)
+    public void setStackAndModule(final int slot, final ItemStack stack, final NBTTagCompound moduleData) {
+        inventory.setInventorySlotContents(slot, stack);
+        final Module module = casing.getModule(Face.VALUES[slot]);
+        if (module != null) {
+            module.readFromNBT(moduleData);
+        }
     }
 
     /**
