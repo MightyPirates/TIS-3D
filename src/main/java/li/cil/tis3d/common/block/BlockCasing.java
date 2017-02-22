@@ -11,6 +11,7 @@ import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ItemBookManual;
 import li.cil.tis3d.common.tileentity.TileEntityCasing;
 import li.cil.tis3d.util.InventoryUtils;
+import li.cil.tis3d.util.WorldUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
@@ -29,10 +30,8 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.ChunkCache;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
 
 /**
  * Block for the module casings.
@@ -67,7 +66,7 @@ public final class BlockCasing extends Block {
     @SuppressWarnings("deprecation")
     @Override
     public IBlockState getActualState(final IBlockState state, final IBlockAccess world, final BlockPos pos) {
-        final TileEntity tileEntity = world instanceof ChunkCache ? ((ChunkCache) world).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK) : world.getTileEntity(pos);
+        final TileEntity tileEntity = WorldUtils.getTileEntityThreadsafe(world, pos);
         if (!(tileEntity instanceof TileEntityCasing)) {
             return super.getActualState(state, world, pos);
         }
