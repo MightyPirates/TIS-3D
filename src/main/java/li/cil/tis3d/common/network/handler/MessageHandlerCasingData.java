@@ -16,7 +16,7 @@ import java.io.IOException;
 
 public final class MessageHandlerCasingData extends AbstractMessageHandlerWithLocation<MessageCasingData> {
     @Override
-    protected void process(final MessageCasingData message, final MessageContext context) {
+    protected void onMessageSynchronized(final MessageCasingData message, final MessageContext context) {
         final TileEntity tileEntity = getTileEntity(message, context);
         if (!(tileEntity instanceof TileEntityCasing)) {
             return;

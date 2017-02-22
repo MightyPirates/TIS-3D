@@ -8,7 +8,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public final class MessageHandlerHaltAndCatchFire extends AbstractMessageHandlerWithLocation<MessageHaltAndCatchFire> {
     @Override
-    protected void process(final MessageHaltAndCatchFire message, final MessageContext context) {
+    protected void onMessageSynchronized(final MessageHaltAndCatchFire message, final MessageContext context) {
         final TileEntity tileEntity = getTileEntity(message, context);
         if (!(tileEntity instanceof TileEntityController)) {
             return;

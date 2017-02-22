@@ -8,7 +8,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public final class MessageHandlerCasingLockedState extends AbstractMessageHandlerWithLocation<MessageCasingLockedState> {
     @Override
-    protected void process(final MessageCasingLockedState message, final MessageContext context) {
+    protected void onMessageSynchronized(final MessageCasingLockedState message, final MessageContext context) {
         final TileEntity tileEntity = getTileEntity(message, context);
         if (!(tileEntity instanceof TileEntityCasing)) {
             return;
