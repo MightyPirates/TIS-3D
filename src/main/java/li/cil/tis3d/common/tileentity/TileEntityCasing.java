@@ -94,35 +94,6 @@ public final class TileEntityCasing extends TileEntityComputer implements
     }
 
     /**
-     * Used for synchronizing state between server and client, letting the
-     * client know the new locked state of a case for overlay rendering.
-     *
-     * @param locked the new locked state of the case.
-     */
-    @SideOnly(Side.CLIENT)
-    public void setCasingLocked(final boolean locked) {
-        casing.setLocked(locked);
-    }
-
-    /**
-     * Used for synchronizing state between server and client, letting the
-     * client know the new item stack installed in a slot, and, if present
-     * initialize its module with the original server state of the module.
-     *
-     * @param slot       the slot the item stack changed in.
-     * @param stack      the new item stack in that slot, if any.
-     * @param moduleData the original state of the module on the server, if present.
-     */
-    @SideOnly(Side.CLIENT)
-    public void setStackAndModule(final int slot, final ItemStack stack, final NBTTagCompound moduleData) {
-        inventory.setInventorySlotContents(slot, stack);
-        final Module module = casing.getModule(Face.VALUES[slot]);
-        if (module != null) {
-            module.readFromNBT(moduleData);
-        }
-    }
-
-    /**
      * Set whether the specified <em>receiving</em> port on the specified face
      * of the casing is locked. A locked port will not allow any reads or
      * writes and cause blocking read/write operations to never finish.
@@ -167,11 +138,6 @@ public final class TileEntityCasing extends TileEntityComputer implements
 
     public boolean isEnabled() {
         return isEnabled;
-    }
-
-    @SideOnly(Side.CLIENT)
-    public void setEnabled(final boolean value) {
-        isEnabled = value;
     }
 
     public void scheduleScan() {
@@ -420,6 +386,60 @@ public final class TileEntityCasing extends TileEntityComputer implements
         final NBTTagCompound casingNbt = new NBTTagCompound();
         casing.writeToNBT(casingNbt);
         nbt.setTag(TAG_CASING, casingNbt);
+    }
+
+    // --------------------------------------------------------------------- //
+    // Synchronization
+
+    /**
+     * Used for synchronizing state between server and client, letting the
+     * client know the new locked state of a case for overlay rendering.
+     *
+     * @param locked the new locked state of the case.
+     */
+    @SideOnly(Side.CLIENT)
+    public void setCasingLockedClient(final boolean locked) {
+        casing.setLocked(locked);
+    }
+
+    /**
+     * Used for synchronizing state between server and client, letting the
+     * client know the new item stack installed in a slot, and, if present
+     * initialize its module with the original server state of the module.
+     *
+     * @param slot       the slot the item stack changed in.
+     * @param stack      the new item stack in that slot, if any.
+     * @param moduleData the original state of the module on the server, if present.
+     */
+    @SideOnly(Side.CLIENT)
+    public void setStackAndModuleClient(final int slot, final ItemStack stack, final NBTTagCompound moduleData) {
+        inventory.setInventorySlotContents(slot, stack);
+        final Module module = casing.getModule(Face.VALUES[slot]);
+        if (module != null) {
+            module.readFromNBT(moduleData);
+        }
+    }
+
+    /**
+     * Used for synchronizing state between server and client, letting the
+     * client know of the new enabled state of this casing, for rendering.
+     *
+     * @param value the new enabled state of this casing.
+     */
+    @SideOnly(Side.CLIENT)
+    public void setEnabledClient(final boolean value) {
+        isEnabled = value;
+    }
+
+    /**
+     * Used for synchronizing state between server and client, letting the
+     * client know of the new locked state of a port, for overlay rendering.
+     *
+     * @param value the new enabled state of this casing.
+     */
+    @SideOnly(Side.CLIENT)
+    public void setPortLockedClient(final Face face, final Port port, final boolean value) {
+        locked[face.ordinal()][port.ordinal()] = value;
     }
 
     // --------------------------------------------------------------------- //
