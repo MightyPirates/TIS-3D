@@ -85,6 +85,15 @@ public final class TileEntityCasing extends TileEntityComputer implements
     // --------------------------------------------------------------------- //
 
     /**
+     * Actual state tracking implementation of enabled state, used in {@link CasingImpl#isEnabled()}.
+     *
+     * @return whether the casing is currently enabled.
+     */
+    public boolean isCasingEnabled() {
+        return isEnabled;
+    }
+
+    /**
      * Used to notify the case that redstone inputs may have changed, which
      * will in turn cause modules implementing {@link Redstone} and/or {@link BundledRedstone}
      * to get notified.
@@ -134,10 +143,6 @@ public final class TileEntityCasing extends TileEntityComputer implements
 
     public void setController(@Nullable final TileEntityController controller) {
         this.controller = controller;
-    }
-
-    public boolean isEnabled() {
-        return isEnabled;
     }
 
     public void scheduleScan() {
@@ -353,7 +358,7 @@ public final class TileEntityCasing extends TileEntityComputer implements
     protected void writeToNBTForClient(final NBTTagCompound nbt) {
         super.writeToNBTForClient(nbt);
 
-        nbt.setBoolean(TAG_ENABLED, isEnabled());
+        nbt.setBoolean(TAG_ENABLED, isEnabled);
     }
 
     @Override

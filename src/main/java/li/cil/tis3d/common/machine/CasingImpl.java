@@ -320,6 +320,11 @@ public final class CasingImpl implements Casing {
     }
 
     @Override
+    public boolean isEnabled() {
+        return tileEntity.isCasingEnabled();
+    }
+
+    @Override
     public boolean isLocked() {
         return lock != null;
     }

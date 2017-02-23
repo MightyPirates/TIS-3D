@@ -128,11 +128,11 @@ public interface Module {
      * by a player sneaking, otherwise the module cannot be removed from the
      * casing by hand.
      *
-     * @param player   the player that clicked the module.
-     * @param hand     the hand the player used to activate the module.
-     * @param hitX     the relative x position that was clicked.
-     * @param hitY     the relative y position that was clicked.
-     * @param hitZ     the relative z position that was clicked.
+     * @param player the player that clicked the module.
+     * @param hand   the hand the player used to activate the module.
+     * @param hitX   the relative x position that was clicked.
+     * @param hitY   the relative y position that was clicked.
+     * @param hitZ   the relative z position that was clicked.
      * @return <tt>true</tt> if the click was handled, <tt>false</tt> otherwise.
      */
     boolean onActivate(final EntityPlayer player, final EnumHand hand, final float hitX, final float hitY, final float hitZ);
@@ -172,6 +172,10 @@ public interface Module {
      * The render state will be adjusted to take into account the face the
      * module is installed in, i.e. rendering from (0, 0, 0) to (1, 1, 0) will
      * render the full quad of face of the casing the module is installed in.
+     * <p>
+     * Note that the <code>enabled</code> is the same as {@link Casing#isEnabled()},
+     * it is merely passed along for backwards compatibility from before the
+     * time that getter existed.
      *
      * @param enabled      whether the module is currently enabled.
      * @param partialTicks the partial time elapsed in this tick.
