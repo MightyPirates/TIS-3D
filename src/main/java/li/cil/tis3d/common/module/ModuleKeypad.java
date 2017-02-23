@@ -67,6 +67,17 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
     }
 
     @Override
+    public void onDisabled() {
+        if (value.isPresent()) {
+            // Clear the value (that was being written).
+            value = Optional.empty();
+
+            // Tell clients we can input again.
+            getCasing().sendData(getFace(), new NBTTagCompound(), DATA_TYPE_VALUE);
+        }
+    }
+
+    @Override
     public void onWriteComplete(final Port port) {
         // Pop the value (that was being written).
         value = Optional.empty();
@@ -83,6 +94,12 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
     public boolean onActivate(final EntityPlayer player, final EnumHand hand, final float hitX, final float hitY, final float hitZ) {
         if (player.isSneaking()) {
             return false;
+        }
+
+        // Reasoning: don't remove module from casing while activating the
+        // module while the casing is disabled. Could be frustrating.
+        if (!getCasing().isEnabled()) {
+            return true;
         }
 
         // Only allow inputting one value.
