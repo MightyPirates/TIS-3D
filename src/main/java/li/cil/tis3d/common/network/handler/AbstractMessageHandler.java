@@ -28,8 +28,7 @@ public abstract class AbstractMessageHandler<T extends IMessage> implements IMes
 
     // --------------------------------------------------------------------- //
 
-    protected void onMessageSynchronized(final T message, final MessageContext context) {
-    }
+    protected abstract void onMessageSynchronized(final T message, final MessageContext context);
 
     // --------------------------------------------------------------------- //
 

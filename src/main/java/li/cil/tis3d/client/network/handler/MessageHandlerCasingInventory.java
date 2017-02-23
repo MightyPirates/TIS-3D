@@ -15,6 +15,6 @@ public final class MessageHandlerCasingInventory extends AbstractMessageHandlerW
         }
 
         final TileEntityCasing casing = (TileEntityCasing) tileEntity;
-        casing.setStackAndModuleClient(message.getSlot(), message.getStack(), message.getModuleData());
+        casing.setStackAndModule(message.getSlot(), message.getStack(), message.getModuleData());
     }
 }
