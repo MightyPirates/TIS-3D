@@ -93,6 +93,17 @@ public final class Items {
         addModuleRecipe(Constants.NAME_ITEM_MODULE_SERIAL_PORT, "blockQuartz");
         addModuleRecipe(Constants.NAME_ITEM_MODULE_STACK, Item.getItemFromBlock(net.minecraft.init.Blocks.CHEST));
 
+        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(modules.get(Constants.NAME_ITEM_MODULE_TERMINAL), 2),
+                "KDS",
+                "IQI",
+                " R ",
+                'K', modules.get(Constants.NAME_ITEM_MODULE_KEYPAD),
+                'D', modules.get(Constants.NAME_ITEM_MODULE_DISPLAY),
+                'S', modules.get(Constants.NAME_ITEM_MODULE_STACK),
+                'I', "ingotIron",
+                'R', "dustRedstone",
+                'Q', "gemQuartz"));
+
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(key, 1),
                 "GI ",
                 "GI ",

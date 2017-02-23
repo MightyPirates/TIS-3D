@@ -26,6 +26,11 @@ public final class ItemKey extends Item {
     // --------------------------------------------------------------------- //
     // Item
 
+    @Override
+    public boolean getShareTag() {
+        return false;
+    }
+
     @SideOnly(Side.CLIENT)
     @Override
     public void addInformation(final ItemStack stack, final EntityPlayer playerIn, final List<String> tooltip, final boolean advanced) {
