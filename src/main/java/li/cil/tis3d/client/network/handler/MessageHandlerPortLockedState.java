@@ -15,6 +15,6 @@ public final class MessageHandlerPortLockedState extends AbstractMessageHandlerW
         }
 
         final TileEntityCasing casing = (TileEntityCasing) tileEntity;
-        casing.setPortLocked(message.getFace(), message.getPort(), message.isLocked());
+        casing.setPortLockedClient(message.getFace(), message.getPort(), message.isLocked());
     }
 }

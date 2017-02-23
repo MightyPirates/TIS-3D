@@ -437,6 +437,8 @@ public final class TileEntityCasing extends TileEntityComputer implements
      * Used for synchronizing state between server and client, letting the
      * client know of the new locked state of a port, for overlay rendering.
      *
+     * @param face  the face the port belongs to.
+     * @param port  the port to set the locked state of.
      * @param value the new enabled state of this casing.
      */
     @SideOnly(Side.CLIENT)
