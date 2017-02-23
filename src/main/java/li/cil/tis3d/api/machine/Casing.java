@@ -48,7 +48,7 @@ public interface Casing {
      * at a signal strength one.
      * <p>
      * This is useful for contextual behavior in modules while rendering or in
-     * the activation callback {@link Module#onActivate(EntityPlayer, EnumHand, float, float, float)}.
+     * the activation callback {@link Module#onActivate(EntityPlayer, EnumHand, ItemStack, float, float, float)}.
      *
      * @return whether the casing is currently enabled.
      */
