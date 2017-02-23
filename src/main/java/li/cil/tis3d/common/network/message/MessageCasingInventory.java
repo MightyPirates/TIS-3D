@@ -15,7 +15,7 @@ public class MessageCasingInventory extends AbstractMessageWithLocation {
     private ItemStack stack;
     private NBTTagCompound moduleData;
 
-    public MessageCasingInventory(final Casing casing, final int slot, final ItemStack stack, final @Nullable NBTTagCompound moduleData) {
+    public MessageCasingInventory(final Casing casing, final int slot, final ItemStack stack, @Nullable final NBTTagCompound moduleData) {
         super(casing.getCasingWorld(), casing.getPosition());
         this.slot = slot;
         this.stack = stack;
