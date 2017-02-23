@@ -61,8 +61,9 @@ public class GuiModuleTerminal extends GuiScreen {
 
     @Override
     protected void keyTyped(final char typedChar, final int keyCode) throws IOException {
+        super.keyTyped(typedChar, keyCode);
+
         if (keyCode == Keyboard.KEY_ESCAPE) {
-            super.keyTyped(typedChar, keyCode);
             return;
         }
 
@@ -95,5 +96,6 @@ public class GuiModuleTerminal extends GuiScreen {
     @SubscribeEvent
     public void handleRenderGameOverlay(final RenderGameOverlayEvent.Pre event) {
         event.setCanceled(true);
+        mc.entityRenderer.setupOverlayRendering();
     }
 }
