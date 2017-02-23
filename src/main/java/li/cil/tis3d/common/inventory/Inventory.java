@@ -95,9 +95,7 @@ public class Inventory implements IInventory {
             return removeStackFromSlot(index);
         } else {
             final ItemStack stack = items[index].splitStack(count);
-            if (items[index].stackSize < 1) {
-                items[index] = null;
-            }
+            assert items[index].stackSize > 0;
             markDirty();
             return stack;
         }

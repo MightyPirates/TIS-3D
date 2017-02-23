@@ -19,6 +19,8 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 
 import java.io.IOException;
@@ -33,6 +35,7 @@ import java.util.stream.Collectors;
  * GUI for the code book, used to write and manage ASM programs.
  */
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+@SideOnly(Side.CLIENT)
 public final class GuiBookCode extends GuiScreen {
     private static final int GUI_WIDTH = 148;
     private static final int GUI_HEIGHT = 230;

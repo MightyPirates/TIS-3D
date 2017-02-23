@@ -90,8 +90,6 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
 
     @Override
     public void step() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         for (final Port port : Port.VALUES) {
             stepInput(port);
         }
@@ -99,8 +97,6 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
 
     @Override
     public void onDisabled() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         Arrays.fill(image, 0);
         state = State.COLOR;
 
@@ -186,7 +182,7 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
      *
      * @param value the value that was read.
      */
-    private void process(final int value) {
+    private void process(final short value) {
         drawCall[state.ordinal()] = (byte) value;
         state = state.getNext();
         if (state == State.COLOR) {

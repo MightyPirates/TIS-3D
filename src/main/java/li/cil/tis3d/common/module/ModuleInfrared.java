@@ -55,7 +55,6 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
     @Override
     public void step() {
         final World world = getCasing().getCasingWorld();
-        assert (!world.isRemote);
 
         stepOutput();
         stepInput();
@@ -65,15 +64,11 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
 
     @Override
     public void onDisabled() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         receiveQueue.clear();
     }
 
     @Override
     public void onWriteComplete(final Port port) {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         // Pop the top value (the one that was being written).
         receiveQueue.removeFirst();
 

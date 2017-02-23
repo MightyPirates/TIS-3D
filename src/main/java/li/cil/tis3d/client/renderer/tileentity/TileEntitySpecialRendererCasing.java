@@ -144,7 +144,7 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
 
             GlStateManager.pushMatrix();
             for (final Port port : Port.CLOCKWISE) {
-                final boolean isClosed = casing.isPortClosed(face, port);
+                final boolean isClosed = casing.isPortLocked(face, port);
                 final TextureAtlasSprite sprite = isClosed ? closedSprite : openSprite;
                 if (sprite != null) {
                     RenderUtil.drawQuad(sprite);
@@ -181,7 +181,7 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
         GlStateManager.pushMatrix();
         GlStateManager.translate(0, 0, -0.005);
         for (final Port port : Port.CLOCKWISE) {
-            final boolean isClosed = casing.isPortClosed(face, port);
+            final boolean isClosed = casing.isPortLocked(face, port);
             if (isClosed) {
                 RenderUtil.drawQuad(closedSprite);
             }

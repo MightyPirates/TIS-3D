@@ -32,6 +32,7 @@ public final class TextureLoader {
     public static final ResourceLocation LOCATION_MODULE_REDSTONE_BARS_OVERLAY = new ResourceLocation(API.MOD_ID, "blocks/overlay/module_redstone_bars");
     public static final ResourceLocation LOCATION_MODULE_SERIAL_PORT_OVERLAY = new ResourceLocation(API.MOD_ID, "blocks/overlay/module_serial_port");
     public static final ResourceLocation LOCATION_MODULE_STACK_OVERLAY = new ResourceLocation(API.MOD_ID, "blocks/overlay/module_stack");
+    public static final ResourceLocation LOCATION_MODULE_TERMINAL_OVERLAY = new ResourceLocation(API.MOD_ID, "blocks/overlay/module_terminal");
 
     public static final TextureLoader INSTANCE = new TextureLoader();
 
@@ -57,6 +58,7 @@ public final class TextureLoader {
         map.registerSprite(LOCATION_MODULE_REDSTONE_BARS_OVERLAY);
         map.registerSprite(LOCATION_MODULE_SERIAL_PORT_OVERLAY);
         map.registerSprite(LOCATION_MODULE_STACK_OVERLAY);
+        map.registerSprite(LOCATION_MODULE_TERMINAL_OVERLAY);
     }
 
     // --------------------------------------------------------------------- //

@@ -24,8 +24,6 @@ public final class ModuleRandom extends AbstractModule {
 
     @Override
     public void step() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         for (final Port port : Port.VALUES) {
             stepOutput(port);
         }
@@ -33,8 +31,6 @@ public final class ModuleRandom extends AbstractModule {
 
     @Override
     public void onWriteComplete(final Port port) {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         // No need to clear other writing pipes because we're outputting random
         // values anyway, so yey.
 

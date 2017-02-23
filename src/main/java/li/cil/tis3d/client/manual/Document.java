@@ -129,18 +129,18 @@ public final class Document {
         // depth buffer correctly if alpha test is enabled. Guess how we found out?
         // By noticing that on those systems it only worked while chat messages
         // were visible. Yeah. I know.
-        GL11.glDisable(GL11.GL_ALPHA_TEST);
+        GlStateManager.disableAlpha();
 
         // Clear depth mask, then create masks in foreground above and below scroll area.
         GlStateManager.color(1, 1, 1, 1);
-        GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT);
         GlStateManager.enableDepth();
         GlStateManager.depthFunc(GL11.GL_LEQUAL);
         GlStateManager.depthMask(true);
         GlStateManager.colorMask(false, false, false, false);
 
         GlStateManager.pushMatrix();
-        GL11.glTranslatef(0, 0, 500);
+        GlStateManager.translate(0, 0, 500);
         GL11.glBegin(GL11.GL_QUADS);
         GL11.glVertex2f(0, y);
         GL11.glVertex2f(mc.displayWidth, y);

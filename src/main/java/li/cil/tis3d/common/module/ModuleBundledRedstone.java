@@ -71,7 +71,6 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
     @Override
     public void step() {
         final World world = getCasing().getCasingWorld();
-        assert (!world.isRemote);
 
         for (final Port port : Port.VALUES) {
             stepOutput(port);
@@ -87,8 +86,6 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
 
     @Override
     public void onDisabled() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         Arrays.fill(input, (short) 0);
         Arrays.fill(output, (short) 0);
         channel = 0;
@@ -101,8 +98,6 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
 
     @Override
     public void onEnabled() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         sendData();
     }
 

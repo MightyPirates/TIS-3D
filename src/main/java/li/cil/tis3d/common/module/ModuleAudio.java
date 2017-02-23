@@ -54,7 +54,6 @@ public final class ModuleAudio extends AbstractModule {
     @Override
     public void step() {
         final World world = getCasing().getCasingWorld();
-        assert (!world.isRemote);
 
         stepInput();
 

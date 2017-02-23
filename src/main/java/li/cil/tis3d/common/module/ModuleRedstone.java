@@ -68,7 +68,6 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
     @Override
     public void step() {
         final World world = getCasing().getCasingWorld();
-        assert (!world.isRemote);
 
         for (final Port port : Port.VALUES) {
             stepOutput(port);
@@ -84,8 +83,6 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
 
     @Override
     public void onDisabled() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         input = 0;
         output = 0;
 
@@ -96,8 +93,6 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
 
     @Override
     public void onEnabled() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         sendData();
     }
 

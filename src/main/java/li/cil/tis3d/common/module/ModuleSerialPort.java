@@ -12,7 +12,6 @@ import li.cil.tis3d.api.serial.SerialInterfaceProvider;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.renderer.TextureLoader;
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -65,8 +64,6 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
 
     @Override
     public void step() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         scan();
         stepOutput();
         stepInput();
@@ -74,16 +71,12 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
 
     @Override
     public void onDisabled() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         // Reset serial interface on shutdown.
         serialInterface.ifPresent(SerialInterface::reset);
     }
 
     @Override
     public void onWriteComplete(final Port port) {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         // Consume the read value (the one that was being written).
         serialInterface.ifPresent(SerialInterface::skip);
 

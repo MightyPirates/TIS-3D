@@ -10,7 +10,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public final class MessageHandlerBookCodeData extends AbstractMessageHandler<MessageBookCodeData> {
     @Override
-    protected void process(final MessageBookCodeData message, final MessageContext context) {
+    protected void onMessageSynchronized(final MessageBookCodeData message, final MessageContext context) {
         final EntityPlayer player = context.getServerHandler().playerEntity;
         if (player != null) {
             final ItemStack stack = player.getHeldItem(EnumHand.MAIN_HAND);

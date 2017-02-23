@@ -18,6 +18,8 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -26,6 +28,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+@SideOnly(Side.CLIENT)
 public final class GuiManual extends GuiScreen {
     private static final int documentMaxWidth = 220;
     private static final int documentMaxHeight = 176;
@@ -101,10 +104,10 @@ public final class GuiManual extends GuiScreen {
         for (int i = 0; i < ManualAPIImpl.getTabs().size() && i < maxTabsPerSide; i++) {
             final ManualAPIImpl.Tab tab = ManualAPIImpl.getTabs().get(i);
             final ImageButton button = (ImageButton) buttonList.get(i);
-            GL11.glPushMatrix();
-            GL11.glTranslated(button.xPosition + 30, button.yPosition + 4 - tabOverlap / 2, zLevel);
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(button.xPosition + 30, button.yPosition + 4 - tabOverlap / 2, zLevel);
             tab.renderer.render();
-            GL11.glPopMatrix();
+            GlStateManager.popMatrix();
         }
 
         currentSegment = Document.render(document, guiLeft + 16, guiTop + 48, documentMaxWidth, documentMaxHeight, offset(), getFontRenderer(), mouseX, mouseY);

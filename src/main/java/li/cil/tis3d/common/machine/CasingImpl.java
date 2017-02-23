@@ -19,6 +19,8 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -174,6 +176,15 @@ public final class CasingImpl implements Casing {
         tileEntity.markDirty();
     }
 
+    @SideOnly(Side.CLIENT)
+    public void setLocked(final boolean locked) {
+        if (locked) {
+            lock = UUID.randomUUID();
+        } else {
+            lock = null;
+        }
+    }
+
     /**
      * Locks the casing and returns the key for unlocking it.
      *
@@ -306,6 +317,11 @@ public final class CasingImpl implements Casing {
     @Override
     public void markDirty() {
         tileEntity.markDirty();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return tileEntity.isCasingEnabled();
     }
 
     @Override

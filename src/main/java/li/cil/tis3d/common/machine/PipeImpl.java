@@ -173,6 +173,18 @@ public final class PipeImpl implements Pipe {
             throw new IllegalStateException("No data to read. Check canTransfer().");
         }
 
+        sendEffect();
+
+        final short result = value;
+
+        cancelWrite();
+        cancelRead();
+
+        host.onWriteComplete(sendingFace, sendingPort);
+        return result;
+    }
+
+    private void sendEffect() {
         final BlockPos position = host.getPipeHostPosition();
         final double ox = Face.toEnumFacing(receivingFace).getFrontOffsetX() + Face.toEnumFacing(sendingFace).getFrontOffsetX();
         final double oy = Face.toEnumFacing(receivingFace).getFrontOffsetY() + Face.toEnumFacing(sendingFace).getFrontOffsetY();
@@ -183,14 +195,6 @@ public final class PipeImpl implements Pipe {
         final double extraOffsetY = oy < 0 ? -0.2 : (oy > 0) ? 0.1 : 0;
 
         Network.sendPipeEffect(host.getPipeHostWorld(), x, y + extraOffsetY, z);
-
-        final short result = value;
-
-        cancelWrite();
-        cancelRead();
-
-        host.onWriteComplete(sendingFace, sendingPort);
-        return result;
     }
 
     // --------------------------------------------------------------------- //

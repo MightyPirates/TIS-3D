@@ -31,6 +31,11 @@ public interface CasingProxy extends Casing {
     }
 
     @Override
+    default boolean isEnabled() {
+        return getCasing().isEnabled();
+    }
+
+    @Override
     default boolean isLocked() {
         return getCasing().isLocked();
     }

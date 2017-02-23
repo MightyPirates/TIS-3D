@@ -40,6 +40,21 @@ public interface Casing {
     // --------------------------------------------------------------------- //
 
     /**
+     * Get whether the casing is currently enabled, i.e. whether it is
+     * connected to a currently enabled controller.
+     * <p>
+     * A controller is considered active when a positive non-zero redstone
+     * signal is applied to it. This in particular includes the paused state
+     * at a signal strength one.
+     * <p>
+     * This is useful for contextual behavior in modules while rendering or in
+     * the activation callback {@link Module#onActivate(EntityPlayer, EnumHand, float, float, float)}.
+     *
+     * @return whether the casing is currently enabled.
+     */
+    boolean isEnabled();
+
+    /**
      * Get whether the casing is locked.
      * <p>
      * Casings can be locked, preventing players to remove modules from the
@@ -59,7 +74,7 @@ public interface Casing {
      * @return the module installed on that face, or <tt>null</tt>.
      */
     @Nullable
-    Module getModule(Face face);
+    Module getModule(final Face face);
 
     /**
      * Get the receiving pipe on the specified port of a module in this casing.
@@ -73,7 +88,7 @@ public interface Casing {
      * @param port the port for which to get the port.
      * @return the input port on that port.
      */
-    Pipe getReceivingPipe(Face face, Port port);
+    Pipe getReceivingPipe(final Face face, final Port port);
 
     /**
      * Get the sending pipe on the specified port of a module in this casing.
@@ -87,7 +102,7 @@ public interface Casing {
      * @param port the port for which to get the port.
      * @return the output port on that port.
      */
-    Pipe getSendingPipe(Face face, Port port);
+    Pipe getSendingPipe(final Face face, final Port port);
 
     // --------------------------------------------------------------------- //
 
@@ -108,12 +123,16 @@ public interface Casing {
      * that is meant to be used for <em>non-frequent</em> data, i.e. data
      * that's only sent every so often. For data you expect may be sent
      * each tick, prefer using the more light-weight {@link ByteBuf}.
+     * <p>
+     * <em>Important</em>: the passed NBT tag is <em>not</em> copied, it is
+     * stored by reference. If you intend to modify the tag after passing
+     * it to this method, pass a copy of it instead.
      *
      * @param face the face the module is installed in.
      * @param data the data to send to the client.
      * @param type the type of the data being sent.
      */
-    void sendData(Face face, NBTTagCompound data, final byte type);
+    void sendData(final Face face, final NBTTagCompound data, final byte type);
 
     /**
      * Call this to send some data from a module to it's other representation.
@@ -127,11 +146,15 @@ public interface Casing {
      * that is meant to be used for <em>non-frequent</em> data, i.e. data
      * that's only sent every so often. For data you expect may be sent
      * each tick, prefer using the more light-weight {@link ByteBuf}.
+     * <p>
+     * <em>Important</em>: the passed NBT tag is <em>not</em> copied, it is
+     * stored by reference. If you intend to modify the tag after passing
+     * it to this method, pass a copy of it instead.
      *
      * @param face the face the module is installed in.
      * @param data the data to send to the client.
      */
-    void sendData(Face face, NBTTagCompound data);
+    void sendData(final Face face, final NBTTagCompound data);
 
     /**
      * Call this to send some data from a module to it's other representation.
@@ -145,12 +168,16 @@ public interface Casing {
      * will replace the previously queued data. A negative value indicates
      * that no specific type is set and data should not be replaced in the
      * send queue.
+     * <p>
+     * <em>Important</em>: the passed buffer is <em>not</em> copied, it is
+     * stored by reference. If you intend to modify the buffer after passing
+     * it to this method, pass a copy of it instead.
      *
      * @param face the face the module is installed in.
      * @param data the data to send to the client.
      * @param type the type of the data being sent.
      */
-    void sendData(Face face, ByteBuf data, final byte type);
+    void sendData(final Face face, final ByteBuf data, final byte type);
 
     /**
      * Call this to send some data from a module to it's other representation.
@@ -159,9 +186,13 @@ public interface Casing {
      * with no specific type associated, so new data will never replace old
      * data. Where at all possible, providing a type is strongly recommended,
      * to reduce generated network traffic.
+     * <p>
+     * <em>Important</em>: the passed buffer is <em>not</em> copied, it is
+     * stored by reference. If you intend to modify the buffer after passing
+     * it to this method, pass a copy of it instead.
      *
      * @param face the face the module is installed in.
      * @param data the data to send to the client.
      */
-    void sendData(Face face, ByteBuf data);
+    void sendData(final Face face, final ByteBuf data);
 }

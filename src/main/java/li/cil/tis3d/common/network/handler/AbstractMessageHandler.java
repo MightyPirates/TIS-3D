@@ -19,16 +19,16 @@ public abstract class AbstractMessageHandler<T extends IMessage> implements IMes
     public IMessage onMessage(final T message, final MessageContext context) {
         final IThreadListener thread = FMLCommonHandler.instance().getWorldThread(context.netHandler);
         if (thread.isCallingFromMinecraftThread()) {
-            process(message, context);
+            onMessageSynchronized(message, context);
         } else {
-            thread.addScheduledTask(() -> process(message, context));
+            thread.addScheduledTask(() -> onMessageSynchronized(message, context));
         }
         return null;
     }
 
     // --------------------------------------------------------------------- //
 
-    protected abstract void process(final T message, final MessageContext context);
+    protected abstract void onMessageSynchronized(final T message, final MessageContext context);
 
     // --------------------------------------------------------------------- //
 
