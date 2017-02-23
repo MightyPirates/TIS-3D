@@ -15,6 +15,6 @@ public final class MessageHandlerCasingEnabledState extends AbstractMessageHandl
         }
 
         final TileEntityCasing casing = (TileEntityCasing) tileEntity;
-        casing.setEnabled(message.isEnabled());
+        casing.setEnabledClient(message.isEnabled());
     }
 }

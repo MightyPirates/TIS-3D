@@ -15,6 +15,6 @@ public final class MessageHandlerCasingLockedState extends AbstractMessageHandle
         }
 
         final TileEntityCasing casing = (TileEntityCasing) tileEntity;
-        casing.setCasingLocked(message.isLocked());
+        casing.setCasingLockedClient(message.isLocked());
     }
 }
