@@ -34,7 +34,7 @@ public final class Settings {
     public static int maxLinesPerProgram = 40;
 
     /**
-     * The maximum number of characters a single line may have.
+     * The maximum number of characters a single line in a program may have.
      */
     public static int maxColumnsPerLine = 18;
 
@@ -44,6 +44,11 @@ public final class Settings {
      * If the queue runs full, additionally received packets will be dropped.
      */
     public static int maxInfraredQueueLength = 16;
+
+    /**
+     * Whether to swing the player's arm while typing in a terminal module.
+     */
+    public static boolean animateTypingHand = true;
 
     /**
      * The list of <em>disabled</em> modules. Disabled modules will not be
@@ -60,7 +65,9 @@ public final class Settings {
     private static final String CATEGORY_MODULE = "module";
     private static final String CATEGORY_MODULE_EXECUTION = "module.execution";
     private static final String CATEGORY_MODULE_INFRARED = "module.infrared";
+    private static final String CATEGORY_MODULE_TERMINAL = "module.terminal";
 
+    private static final String NAME_ANIMATE_TYPING = "animateTyping";
     private static final String NAME_MAX_PACKETS_PER_TICK = "maxPacketsPerTick";
     private static final String NAME_MAX_PARTICLES_PER_TICK = "maxParticlesPerTick";
     private static final String NAME_MAX_CASINGS_PER_CONTROLLER = "maxCasings";
@@ -69,6 +76,7 @@ public final class Settings {
     private static final String NAME_MAX_QUEUE_LENGTH = "maxQueueLength";
     private static final String NAME_MODULE_ENABLED = "enabled";
 
+    private static final String COMMENT_ANIMATE_TYPING = "Whether to swing the player's arm while typing on a terminal module.";
     private static final String COMMENT_MAX_PACKETS_PER_TICK = "The maximum number of status packets modules may send per tick. When this is exceeded, throttling kicks in.";
     private static final String COMMENT_MAX_PARTICLES_PER_TICK = "The maximum number of particle effects data transfer may trigger per tick. When this is exceeded, throttling kicks in.";
     private static final String COMMENT_MAX_CASINGS_PER_CONTROLLER = "The maximum number of casings a single controller supports.";
@@ -100,6 +108,8 @@ public final class Settings {
                 maxColumnsPerLine, 1, 80, COMMENT_MAX_COLUMNS_PER_LINE);
         maxInfraredQueueLength = config.getInt(NAME_MAX_QUEUE_LENGTH, CATEGORY_MODULE_INFRARED,
                 maxInfraredQueueLength, 1, 64, COMMENT_MAX_QUEUE_LENGTH);
+        animateTypingHand = config.getBoolean(NAME_ANIMATE_TYPING, CATEGORY_MODULE_TERMINAL,
+                animateTypingHand, COMMENT_ANIMATE_TYPING);
 
         // Rebuild list of disabled modules.
         disabledModules.clear();

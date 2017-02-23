@@ -15,6 +15,7 @@ This index lists all of the documented items in TIS-3D. If you're looking for a 
 - [Redstone Module](module_redstone.md)
 - [Serial Port Module](module_serial_port.md)
 - [Stack Module](module_stack.md)
+- [Terminal Module](module_terminal.md)
 
 ## Utility
 - [Key](key.md)

@@ -31,6 +31,7 @@ import li.cil.tis3d.common.module.ModuleReadOnlyMemory;
 import li.cil.tis3d.common.module.ModuleRedstone;
 import li.cil.tis3d.common.module.ModuleSerialPort;
 import li.cil.tis3d.common.module.ModuleStack;
+import li.cil.tis3d.common.module.ModuleTerminal;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.provider.SimpleModuleProvider;
 import net.minecraft.block.Block;
@@ -114,6 +115,7 @@ public class ProxyCommon {
         ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_REDSTONE, ModuleRedstone::new));
         ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_SERIAL_PORT, ModuleSerialPort::new));
         ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_STACK, ModuleStack::new));
+        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_TERMINAL, ModuleTerminal::new));
 
         // Add default manual providers for server side stuff.
         ManualAPI.addProvider(new GameRegistryPathProvider());
