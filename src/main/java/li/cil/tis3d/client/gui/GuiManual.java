@@ -18,6 +18,8 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -26,6 +28,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+@SideOnly(Side.CLIENT)
 public final class GuiManual extends GuiScreen {
     private static final int documentMaxWidth = 220;
     private static final int documentMaxHeight = 176;
