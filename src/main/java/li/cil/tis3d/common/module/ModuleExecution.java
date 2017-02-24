@@ -165,7 +165,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         if (Items.isBookCode(heldItem) && player.isSneaking()) {
             final ItemBookCode.Data data = ItemBookCode.Data.loadFromStack(heldItem);
             if (getState().code != null && getState().code.length > 0) {
-                data.addProgram(Arrays.asList(getState().code));
+                data.addOrSelectProgram(Arrays.asList(getState().code));
                 ItemBookCode.Data.saveToStack(heldItem, data);
             }
 
