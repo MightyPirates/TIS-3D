@@ -19,7 +19,7 @@ import li.cil.tis3d.common.machine.CasingProxy;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageCasingEnabledState;
 import li.cil.tis3d.common.network.message.MessageCasingLockedState;
-import li.cil.tis3d.common.network.message.MessagePortLockedState;
+import li.cil.tis3d.common.network.message.MessageReceivingPipeLockedState;
 import li.cil.tis3d.util.InventoryUtils;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -103,33 +103,34 @@ public final class TileEntityCasing extends TileEntityComputer implements
     }
 
     /**
-     * Set whether the specified <em>receiving</em> port on the specified face
-     * of the casing is locked. A locked port will not allow any reads or
+     * Set whether the specified <em>receiving</em> pipe on the specified face
+     * of the casing is locked. A locked pipe will not allow any reads or
      * writes and cause blocking read/write operations to never finish.
      * <p>
      * Useful for forcing adjacent modules to not communicate when they are
      * omnidirectional, such as the redstone module.
      *
      * @param face  the face to set the locked state for.
-     * @param port  the receiving port to set the locked state for.
+     * @param port  the port of the receiving pipe to set the locked state for.
      * @param value the locked state to set; <code>true</code> for locked, <code>false</code> for open (default).
      */
-    public void setPortLocked(final Face face, final Port port, final boolean value) {
-        if (isPortLocked(face, port) != value) {
+    public void setReceivingPipeLocked(final Face face, final Port port, final boolean value) {
+        if (isReceivingPipeLocked(face, port) != value) {
+            getReceivingPipe(face, port).cancelRead();
             locked[face.ordinal()][port.ordinal()] = value;
-            sendPortLockedState(face, port);
+            sendReceivingPipeLockedState(face, port);
         }
     }
 
     /**
-     * Get the current locked state of the specified <em>receiving</em> port
+     * Get the current locked state of the specified <em>receiving</em> pipe
      * on the specified face of the casing.
      *
      * @param face the face to get the locked state for.
-     * @param port the receiving port to get the locked state for.
+     * @param port the port of the receiving pipe to get the locked state for.
      * @return <code>true</code> if the port is locked; <code>false</code> otherwise.
      */
-    public boolean isPortLocked(final Face face, final Port port) {
+    public boolean isReceivingPipeLocked(final Face face, final Port port) {
         return locked[face.ordinal()][port.ordinal()];
     }
 
@@ -344,7 +345,7 @@ public final class TileEntityCasing extends TileEntityComputer implements
 
     @Override
     public Pipe getReceivingPipe(final Face face, final Port port) {
-        return isPortLocked(face, port) ? LockedPipe.INSTANCE : super.getReceivingPipe(face, port);
+        return isReceivingPipeLocked(face, port) ? LockedPipe.INSTANCE : super.getReceivingPipe(face, port);
     }
 
     @Override
@@ -445,7 +446,7 @@ public final class TileEntityCasing extends TileEntityComputer implements
      * @param value the new enabled state of this casing.
      */
     @SideOnly(Side.CLIENT)
-    public void setPortLockedClient(final Face face, final Port port, final boolean value) {
+    public void setReceivingPipeLockedClient(final Face face, final Port port, final boolean value) {
         locked[face.ordinal()][port.ordinal()] = value;
     }
 
@@ -515,9 +516,9 @@ public final class TileEntityCasing extends TileEntityComputer implements
         getWorld().playSound(null, getPos(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3f, isLocked() ? 0.5f : 0.6f);
     }
 
-    private void sendPortLockedState(final Face face, final Port port) {
-        Network.INSTANCE.getWrapper().sendToAllAround(new MessagePortLockedState(this, face, port, isPortLocked(face, port)), Network.getTargetPoint(this, Network.RANGE_HIGH));
-        getWorld().playSound(null, getPos(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3f, isPortLocked(face, port) ? 0.5f : 0.6f);
+    private void sendReceivingPipeLockedState(final Face face, final Port port) {
+        Network.INSTANCE.getWrapper().sendToAllAround(new MessageReceivingPipeLockedState(this, face, port, isReceivingPipeLocked(face, port)), Network.getTargetPoint(this, Network.RANGE_HIGH));
+        getWorld().playSound(null, getPos(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3f, isReceivingPipeLocked(face, port) ? 0.5f : 0.6f);
     }
 
     private void decompressClosed(final byte[] compressed, final boolean[][] decompressed) {

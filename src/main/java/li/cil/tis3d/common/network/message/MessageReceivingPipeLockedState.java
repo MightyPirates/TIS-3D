@@ -5,12 +5,12 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.common.tileentity.TileEntityCasing;
 
-public final class MessagePortLockedState extends AbstractMessageWithLocation {
+public final class MessageReceivingPipeLockedState extends AbstractMessageWithLocation {
     private Face face;
     private Port port;
     private boolean isLocked;
 
-    public MessagePortLockedState(final TileEntityCasing casing, final Face face, final Port port, final boolean isLocked) {
+    public MessageReceivingPipeLockedState(final TileEntityCasing casing, final Face face, final Port port, final boolean isLocked) {
         super(casing.getWorld(), casing.getPos());
         this.face = face;
         this.port = port;
@@ -18,7 +18,7 @@ public final class MessagePortLockedState extends AbstractMessageWithLocation {
     }
 
     @SuppressWarnings("unused") // For deserialization.
-    public MessagePortLockedState() {
+    public MessageReceivingPipeLockedState() {
     }
 
     // --------------------------------------------------------------------- //

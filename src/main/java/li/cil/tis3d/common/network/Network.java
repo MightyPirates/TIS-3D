@@ -11,7 +11,7 @@ import li.cil.tis3d.client.network.handler.MessageHandlerCasingInventory;
 import li.cil.tis3d.client.network.handler.MessageHandlerCasingLockedState;
 import li.cil.tis3d.client.network.handler.MessageHandlerHaltAndCatchFire;
 import li.cil.tis3d.client.network.handler.MessageHandlerParticleEffects;
-import li.cil.tis3d.client.network.handler.MessageHandlerPortLockedState;
+import li.cil.tis3d.client.network.handler.MessageHandlerReceivingPipeLockedState;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.network.handler.MessageHandlerBookCodeData;
 import li.cil.tis3d.common.network.handler.MessageHandlerCasingData;
@@ -22,7 +22,7 @@ import li.cil.tis3d.common.network.message.MessageCasingInventory;
 import li.cil.tis3d.common.network.message.MessageCasingLockedState;
 import li.cil.tis3d.common.network.message.MessageHaltAndCatchFire;
 import li.cil.tis3d.common.network.message.MessageParticleEffect;
-import li.cil.tis3d.common.network.message.MessagePortLockedState;
+import li.cil.tis3d.common.network.message.MessageReceivingPipeLockedState;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.CompressedStreamTools;
@@ -76,7 +76,7 @@ public final class Network {
         BookCodeData,
         HaltAndCatchFire,
         CasingLockedState,
-        PortLockedState,
+        ReceivingPipeLockedState,
         CasingInventory
     }
 
@@ -93,7 +93,7 @@ public final class Network {
         wrapper.registerMessage(MessageHandlerCasingInventory.class, MessageCasingInventory.class, Messages.CasingInventory.ordinal(), Side.CLIENT);
         wrapper.registerMessage(MessageHandlerHaltAndCatchFire.class, MessageHaltAndCatchFire.class, Messages.HaltAndCatchFire.ordinal(), Side.CLIENT);
         wrapper.registerMessage(MessageHandlerParticleEffects.class, MessageParticleEffect.class, Messages.ParticleEffects.ordinal(), Side.CLIENT);
-        wrapper.registerMessage(MessageHandlerPortLockedState.class, MessagePortLockedState.class, Messages.PortLockedState.ordinal(), Side.CLIENT);
+        wrapper.registerMessage(MessageHandlerReceivingPipeLockedState.class, MessageReceivingPipeLockedState.class, Messages.ReceivingPipeLockedState.ordinal(), Side.CLIENT);
     }
 
     public SimpleNetworkWrapper getWrapper() {
