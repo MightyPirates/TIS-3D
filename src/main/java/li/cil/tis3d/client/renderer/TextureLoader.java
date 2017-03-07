@@ -27,6 +27,7 @@ public final class TextureLoader {
     public static final ResourceLocation LOCATION_MODULE_EXECUTION_OVERLAY_WAITING = new ResourceLocation(API.MOD_ID, "blocks/overlay/module_execution_waiting");
     public static final ResourceLocation LOCATION_MODULE_INFRARED_OVERLAY = new ResourceLocation(API.MOD_ID, "blocks/overlay/module_infrared");
     public static final ResourceLocation LOCATION_MODULE_KEYPAD_OVERLAY = new ResourceLocation(API.MOD_ID, "blocks/overlay/module_keypad");
+    public static final ResourceLocation LOCATION_MODULE_QUEUE_OVERLAY = new ResourceLocation(API.MOD_ID, "blocks/overlay/module_queue");
     public static final ResourceLocation LOCATION_MODULE_RANDOM_OVERLAY = new ResourceLocation(API.MOD_ID, "blocks/overlay/module_random");
     public static final ResourceLocation LOCATION_MODULE_REDSTONE_OVERLAY = new ResourceLocation(API.MOD_ID, "blocks/overlay/module_redstone");
     public static final ResourceLocation LOCATION_MODULE_REDSTONE_BARS_OVERLAY = new ResourceLocation(API.MOD_ID, "blocks/overlay/module_redstone_bars");
@@ -53,6 +54,7 @@ public final class TextureLoader {
         map.registerSprite(LOCATION_MODULE_EXECUTION_OVERLAY_WAITING);
         map.registerSprite(LOCATION_MODULE_INFRARED_OVERLAY);
         map.registerSprite(LOCATION_MODULE_KEYPAD_OVERLAY);
+        map.registerSprite(LOCATION_MODULE_QUEUE_OVERLAY);
         map.registerSprite(LOCATION_MODULE_RANDOM_OVERLAY);
         map.registerSprite(LOCATION_MODULE_REDSTONE_OVERLAY);
         map.registerSprite(LOCATION_MODULE_REDSTONE_BARS_OVERLAY);
