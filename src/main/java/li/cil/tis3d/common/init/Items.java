@@ -90,7 +90,10 @@ public final class Items {
         addModuleRecipe(Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY, net.minecraft.init.Items.BOOK);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_REDSTONE, net.minecraft.init.Items.REPEATER);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_SERIAL_PORT, "blockQuartz");
-        addModuleRecipe(Constants.NAME_ITEM_MODULE_STACK, Item.getItemFromBlock(net.minecraft.init.Blocks.CHEST));
+
+        addModuleRecipe(Constants.NAME_ITEM_MODULE_STACK, Item.getItemFromBlock(net.minecraft.init.Blocks.CHEST), false);
+        addModuleRecipe(Constants.NAME_ITEM_MODULE_QUEUE, Item.getItemFromBlock(net.minecraft.init.Blocks.CHEST), true);
+        addInversionRecipes(Constants.NAME_ITEM_MODULE_STACK, Constants.NAME_ITEM_MODULE_QUEUE);
 
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(modules.get(Constants.NAME_ITEM_MODULE_TERMINAL), 2),
                 "KDS",
@@ -120,6 +123,10 @@ public final class Items {
     }
 
     private static void addModuleRecipe(final String name, final Object specialIngredient) {
+        addModuleRecipe(name, specialIngredient, false);
+    }
+
+    private static void addModuleRecipe(final String name, final Object specialIngredient, final boolean invert) {
         if (Settings.disabledModules.contains(name)) {
             return;
         }
@@ -132,8 +139,21 @@ public final class Items {
                 " R ",
                 'P', "paneGlassColorless",
                 'I', "ingotIron",
-                'R', "dustRedstone",
+                'R', invert ? net.minecraft.init.Blocks.REDSTONE_TORCH : "dustRedstone",
                 'S', specialIngredient));
+    }
+
+    public static void addInversionRecipes(final String normal, final String inverted) {
+        if (Settings.disabledModules.contains(normal) || Settings.disabledModules.contains(inverted)) {
+            return;
+        }
+
+        final Item normalItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(API.MOD_ID, normal));
+        final Item invertedItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(API.MOD_ID, inverted));
+        assert normalItem != null && invertedItem != null;
+
+        GameRegistry.addShapelessRecipe(new ItemStack(invertedItem), normalItem, net.minecraft.init.Blocks.REDSTONE_TORCH);
+        GameRegistry.addShapelessRecipe(new ItemStack(normalItem), invertedItem, net.minecraft.init.Blocks.REDSTONE_TORCH);
     }
 
     // --------------------------------------------------------------------- //
