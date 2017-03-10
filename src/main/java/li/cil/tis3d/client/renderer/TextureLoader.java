@@ -4,14 +4,25 @@ import li.cil.tis3d.api.API;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.client.model.animation.Animation;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public final class TextureLoader {
+    public static int getTextureAnimationTicks() {
+        return inGameTicks;
+    }
+
+    public static float getTextureAnimationPartialTicks() {
+        return Animation.getPartialTickTime();
+    }
+
     public static final ResourceLocation LOCATION_BOOK_CODE_BACKGROUND = new ResourceLocation(API.MOD_ID, "textures/gui/book_code.png");
     public static final ResourceLocation LOCATION_MANUAL_BACKGROUND = new ResourceLocation(API.MOD_ID, "textures/gui/manual.png");
     public static final ResourceLocation LOCATION_MANUAL_TAB = new ResourceLocation(API.MOD_ID, "textures/gui/manual_tab.png");
     public static final ResourceLocation LOCATION_MANUAL_SCROLL = new ResourceLocation(API.MOD_ID, "textures/gui/manual_scroll.png");
     public static final ResourceLocation LOCATION_MANUAL_MISSING = new ResourceLocation(API.MOD_ID, "textures/gui/manual_missing.png");
+    public static final ResourceLocation LOCATION_MODULEGUI_MEMORY = new ResourceLocation(API.MOD_ID, "textures/gui/module_memory.png");
 
     public static final ResourceLocation LOCATION_CASING_LOCKED_OVERLAY = new ResourceLocation(API.MOD_ID, "blocks/overlay/casing_locked");
     public static final ResourceLocation LOCATION_CASING_UNLOCKED_OVERLAY = new ResourceLocation(API.MOD_ID, "blocks/overlay/casing_unlocked");
@@ -59,6 +70,17 @@ public final class TextureLoader {
         map.registerSprite(LOCATION_MODULE_SERIAL_PORT_OVERLAY);
         map.registerSprite(LOCATION_MODULE_STACK_OVERLAY);
         map.registerSprite(LOCATION_MODULE_TERMINAL_OVERLAY);
+    }
+
+    // --------------------------------------------------------------------- //
+
+    private static int inGameTicks = 0;
+
+    @SubscribeEvent
+    public void clientTickEnd(TickEvent.ClientTickEvent event) {
+        if(event.phase == TickEvent.Phase.END) {
+            inGameTicks++;
+        }
     }
 
     // --------------------------------------------------------------------- //
