@@ -68,6 +68,7 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
     protected static final byte PACKET_CLEAR = 0;
     protected static final byte PACKET_SINGLE = 1;
     protected static final byte PACKET_FULL = 2;
+    protected static final byte PACKET_ADDRESS = 3;
 
     // Rendering info.
     public static final float QUADS_U0 = 5 / 32f;
@@ -148,9 +149,11 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
             case PACKET_CLEAR:
                 clear();
                 break;
-            case PACKET_SINGLE:
+            case PACKET_ADDRESS:
                 address = data.readByte();
-                set(data.readByte());
+                break;
+            case PACKET_SINGLE:
+                set(data.readByte(), data.readByte());
                 break;
             case PACKET_FULL:
                 data.readBytes(memory);
@@ -395,6 +398,7 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
         cancelWrite();
 
         // Update client representation.
+        sendAddress();
         sendSingle();
     }
 
@@ -402,6 +406,13 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
         final ByteBuf data = Unpooled.buffer();
         data.writeByte(PACKET_CLEAR);
         getCasing().sendData(getFace(), data, DATA_TYPE_CLEAR);
+    }
+
+    private void sendAddress() {
+        final ByteBuf data = Unpooled.buffer();
+        data.writeByte(PACKET_ADDRESS);
+        data.writeByte(this.address);
+        getCasing().sendData(getFace(), data);
     }
 
     private void sendSingle() {

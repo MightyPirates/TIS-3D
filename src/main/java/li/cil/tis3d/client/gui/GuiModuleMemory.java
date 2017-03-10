@@ -76,17 +76,21 @@ public class GuiModuleMemory extends GuiScreen {
                 if(highBit) {
                     int value = module.get((byte)selectedCell);
                     value &= 0x0F;
-                    value |= digit << 4;
+                    value |= (digit & 0x0F) << 4;
                     module.set((byte)selectedCell, value);
                     module.sendSingle((byte)selectedCell);
                 } else {
                     int value = module.get((byte)selectedCell);
                     value &= 0xF0;
-                    value |= digit;
+                    value |= digit & 0x0F;
                     module.set((byte)selectedCell, value);
                     module.sendSingle((byte)selectedCell);
                 }
                 highBit = !highBit;
+            } else if(keyCode == Keyboard.KEY_DELETE || keyCode == Keyboard.KEY_BACK) {
+                module.set((byte)selectedCell, 0);
+                module.sendSingle((byte)selectedCell);
+                highBit = true;
             } else {
                 int col = selectedCell & 0x0F;
                 int row = (selectedCell & 0xF0) >> 4;
