@@ -8,6 +8,7 @@ import li.cil.tis3d.common.item.ItemBookCode;
 import li.cil.tis3d.common.item.ItemBookManual;
 import li.cil.tis3d.common.item.ItemKey;
 import li.cil.tis3d.common.item.ItemModule;
+import net.minecraft.init.*;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapelessRecipes;
@@ -93,6 +94,7 @@ public final class Items {
         addModuleRecipe(Constants.NAME_ITEM_MODULE_REDSTONE, net.minecraft.init.Items.REPEATER);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_SERIAL_PORT, "blockQuartz");
         addModuleRecipe(Constants.NAME_ITEM_MODULE_STACK, Item.getItemFromBlock(net.minecraft.init.Blocks.CHEST));
+        addModuleRecipe(Constants.NAME_ITEM_MODULE_TIMER, net.minecraft.init.Blocks.SAND);
 
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(modules.get(Constants.NAME_ITEM_MODULE_TERMINAL), 2),
                 "KDS",

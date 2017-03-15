@@ -36,6 +36,7 @@ public final class Constants {
     public static final String NAME_ITEM_MODULE_SERIAL_PORT = "module_serial_port";
     public static final String NAME_ITEM_MODULE_STACK = "module_stack";
     public static final String NAME_ITEM_MODULE_TERMINAL = "module_terminal";
+    public static final String NAME_ITEM_MODULE_TIMER = "module_timer";
     public static final String NAME_ITEM_PRISM = "prism";
 
     public static final String NAME_ENTITY_INFRARED_PACKET = "infrared_packet";
@@ -56,7 +57,8 @@ public final class Constants {
             NAME_ITEM_MODULE_REDSTONE,
             NAME_ITEM_MODULE_SERIAL_PORT,
             NAME_ITEM_MODULE_STACK,
-            NAME_ITEM_MODULE_TERMINAL
+            NAME_ITEM_MODULE_TERMINAL,
+            NAME_ITEM_MODULE_TIMER
     };
 
     // --------------------------------------------------------------------- //

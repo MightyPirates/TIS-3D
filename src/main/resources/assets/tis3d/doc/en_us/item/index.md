@@ -17,6 +17,7 @@ This index lists all of the documented items in TIS-3D. If you're looking for a 
 - [Serial Port Module](module_serial_port.md)
 - [Stack Module](module_stack.md)
 - [Terminal Module](module_terminal.md)
+- [Timer Module](module_timer.md)
 
 ## Utility
 - [Key](key.md)

@@ -18,6 +18,7 @@ item.tis3d.module_redstone.name=Redstone Module
 item.tis3d.module_serial_port.name=Serial Port Module
 item.tis3d.module_stack.name=Stack Module
 item.tis3d.module_terminal.name=Terminal Module
+item.tis3d.module_timer.name=Timer Module
 item.tis3d.prism.name=Prism
 
 tile.tis3d.casing.name=Casing
