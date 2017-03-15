@@ -39,12 +39,12 @@ import javax.annotation.Nullable;
  * Block for the module casings.
  */
 public final class BlockCasing extends Block {
-    public static final PropertyBool MODULE_X_NEG = PropertyBool.create("xneg");
-    public static final PropertyBool MODULE_X_POS = PropertyBool.create("xpos");
-    public static final PropertyBool MODULE_Y_NEG = PropertyBool.create("yneg");
-    public static final PropertyBool MODULE_Y_POS = PropertyBool.create("ypos");
-    public static final PropertyBool MODULE_Z_NEG = PropertyBool.create("zneg");
-    public static final PropertyBool MODULE_Z_POS = PropertyBool.create("zpos");
+    private static final PropertyBool MODULE_X_NEG = PropertyBool.create("xneg");
+    private static final PropertyBool MODULE_X_POS = PropertyBool.create("xpos");
+    private static final PropertyBool MODULE_Y_NEG = PropertyBool.create("yneg");
+    private static final PropertyBool MODULE_Y_POS = PropertyBool.create("ypos");
+    private static final PropertyBool MODULE_Z_NEG = PropertyBool.create("zneg");
+    private static final PropertyBool MODULE_Z_POS = PropertyBool.create("zpos");
 
     // --------------------------------------------------------------------- //
 

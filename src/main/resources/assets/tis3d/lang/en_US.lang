@@ -10,6 +10,7 @@ item.tis3d.module_display.name=Display Module
 item.tis3d.module_execution.name=Execution Module
 item.tis3d.module_infrared.name=Infrared Module
 item.tis3d.module_keypad.name=Keypad Module
+item.tis3d.module_queue.name=Queue Module
 item.tis3d.module_random.name=Random Module
 item.tis3d.module_random_access_memory.name=RAM Module
 item.tis3d.module_read_only_memory.name=ROM Module
@@ -17,6 +18,7 @@ item.tis3d.module_redstone.name=Redstone Module
 item.tis3d.module_serial_port.name=Serial Port Module
 item.tis3d.module_stack.name=Stack Module
 item.tis3d.module_terminal.name=Terminal Module
+item.tis3d.module_timer.name=Timer Module
 item.tis3d.prism.name=Prism
 
 tile.tis3d.casing.name=Casing

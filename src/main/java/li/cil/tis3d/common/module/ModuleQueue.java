@@ -18,37 +18,40 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
- * The stack module can be used to store a number of values to be retrieved
- * later on. It operates as LIFO queue, providing the top element to all ports
- * but a single value can only be read from one port.
+ * The queue module can be used to store a number of values to be retrieved
+ * later on. It operates as FIFO queue, providing the bottom element to all
+ * ports but a single value can only be read from one port.
  * <p>
  * While it is not full, it will receive data on all ports and push them back.
  */
-public final class ModuleStack extends AbstractModuleRotatable {
+public final class ModuleQueue extends AbstractModuleRotatable {
     // --------------------------------------------------------------------- //
     // Persisted data
 
-    private final short[] stack = new short[STACK_SIZE];
-    private int top = -1;
+    private final short[] queue = new short[QUEUE_SIZE];
+    private int head = 0; // Highest element index, exclusive.
+    private int tail = 0; // Lowest element index, inclusive.
 
     // --------------------------------------------------------------------- //
     // Computed data
 
     // NBT data names.
-    private static final String TAG_STACK = "stack";
-    private static final String TAG_TOP = "top";
+    private static final String TAG_QUEUE = "queue";
+    private static final String TAG_HEAD = "head";
+    private static final String TAG_TAIL = "tail";
 
     // Data packet types.
     private static final byte DATA_TYPE_UPDATE = 0;
 
     /**
-     * The number of elements the stack may store.
+     * The number of elements the queue may store, plus one never used slot
+     * to allow easily differentiating empty and full queue states.
      */
-    private static final int STACK_SIZE = 16;
+    private static final int QUEUE_SIZE = 17;
 
     // --------------------------------------------------------------------- //
 
-    public ModuleStack(final Casing casing, final Face face) {
+    public ModuleQueue(final Casing casing, final Face face) {
         super(casing, face);
     }
 
@@ -63,15 +66,15 @@ public final class ModuleStack extends AbstractModuleRotatable {
 
     @Override
     public void onDisabled() {
-        // Clear stack on shutdown.
-        top = -1;
+        // Clear queue on shutdown.
+        head = tail = 0;
 
         sendData();
     }
 
     @Override
     public void onWriteComplete(final Port port) {
-        // Pop the top value (the one that was being written).
+        // Pop the bottom value (the one that was being written).
         pop();
 
         // If one completes, cancel all other writes to ensure a value is only
@@ -84,9 +87,10 @@ public final class ModuleStack extends AbstractModuleRotatable {
 
     @Override
     public void onData(final ByteBuf data) {
-        top = data.readByte();
-        for (int i = 0; i < stack.length; i++) {
-            stack[i] = data.readShort();
+        head = data.readByte();
+        tail = data.readByte();
+        for (int i = 0; i < queue.length; i++) {
+            queue[i] = data.readShort();
         }
     }
 
@@ -100,7 +104,7 @@ public final class ModuleStack extends AbstractModuleRotatable {
         rotateForRendering();
         RenderUtil.ignoreLighting();
 
-        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_MODULE_STACK_OVERLAY));
+        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_MODULE_QUEUE_OVERLAY));
 
         // Render detailed state when player is close.
         if (!isEmpty() && Minecraft.getMinecraft().player.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
@@ -112,85 +116,88 @@ public final class ModuleStack extends AbstractModuleRotatable {
     public void readFromNBT(final NBTTagCompound nbt) {
         super.readFromNBT(nbt);
 
-        final int[] stackNbt = nbt.getIntArray(TAG_STACK);
-        final int count = Math.min(stackNbt.length, stack.length);
+        final int[] queueNbt = nbt.getIntArray(TAG_QUEUE);
+        final int count = Math.min(queueNbt.length, queue.length);
         for (int i = 0; i < count; i++) {
-            stack[i] = (short) stackNbt[i];
+            queue[i] = (short) queueNbt[i];
         }
 
-        top = MathHelper.clamp(nbt.getInteger(TAG_TOP), -1, STACK_SIZE - 1);
+        head = MathHelper.clamp(nbt.getInteger(TAG_HEAD), 0, QUEUE_SIZE - 1);
+        tail = MathHelper.clamp(nbt.getInteger(TAG_TAIL), 0, QUEUE_SIZE - 1);
     }
 
     @Override
     public void writeToNBT(final NBTTagCompound nbt) {
         super.writeToNBT(nbt);
 
-        final int[] stackNbt = new int[stack.length];
-        for (int i = 0; i < stack.length; i++) {
-            stackNbt[i] = stack[i];
+        final int[] queueNbt = new int[queue.length];
+        for (int i = 0; i < queue.length; i++) {
+            queueNbt[i] = queue[i];
         }
-        nbt.setIntArray(TAG_STACK, stackNbt);
+        nbt.setIntArray(TAG_QUEUE, queueNbt);
 
-        nbt.setInteger(TAG_TOP, top);
+        nbt.setInteger(TAG_HEAD, head);
+        nbt.setInteger(TAG_TAIL, tail);
     }
 
     // --------------------------------------------------------------------- //
 
     /**
-     * Check whether the stack is currently empty, i.e. no more items can be retrieved.
+     * Check whether the queue is currently empty, i.e. no more items can be retrieved.
      *
-     * @return <tt>true</tt> if the stack is empty, <tt>false</tt> otherwise.
+     * @return <tt>true</tt> if the queue is empty, <tt>false</tt> otherwise.
      */
     private boolean isEmpty() {
-        return top < 0;
+        return head == tail;
     }
 
     /**
-     * Check whether the stack is currently full, i.e. no more items can be stored.
+     * Check whether the queue is currently full, i.e. no more items can be stored.
      *
-     * @return <tt>true</tt> if the stack is full, <tt>false</tt> otherwise.
+     * @return <tt>true</tt> if the queue is full, <tt>false</tt> otherwise.
      */
     private boolean isFull() {
-        return top >= STACK_SIZE - 1;
+        return (head + 1) % QUEUE_SIZE == tail;
     }
 
     /**
-     * Store the specified item on the stack.
+     * Store the specified item on the queue.
      *
-     * @param value the value to store on the stack.
-     * @throws ArrayIndexOutOfBoundsException if the stack is full.
+     * @param value the value to store on the queue.
+     * @throws ArrayIndexOutOfBoundsException if the queue is full.
      */
     private void push(final short value) {
-        stack[++top] = value;
+        queue[head] = value;
+        head = (head + 1) % QUEUE_SIZE;
 
         sendData();
     }
 
     /**
-     * Retrieve the value that's currently on top of the stack, i.e. the value
-     * that was last pushed to the stack.
+     * Retrieve the value that's currently on top of the queue, i.e. the value
+     * that was last pushed to the queue.
      *
-     * @return the value on top of the stack.
-     * @throws ArrayIndexOutOfBoundsException if the stack is empty.
+     * @return the value on top of the queue.
+     * @throws ArrayIndexOutOfBoundsException if the queue is empty.
      */
     private short peek() {
-        return stack[top];
+        return queue[tail];
     }
 
     /**
-     * Reduces the stack size by one.
+     * Reduces the queue size by one.
      */
     private void pop() {
-        top = Math.max(-1, top - 1);
+        tail = (tail + 1) % QUEUE_SIZE;
 
         sendData();
     }
 
     /**
-     * Update the outputs of the stack, pushing the top value.
+     * Update the outputs of the queue, pushing the top value.
      */
     private void stepOutput() {
-        // Don't try to write if the stack is empty.
+        // Don't try to write if the queue is empty.
         if (isEmpty()) {
             return;
         }
@@ -204,11 +211,11 @@ public final class ModuleStack extends AbstractModuleRotatable {
     }
 
     /**
-     * Update the inputs of the stack, pulling values onto the stack.
+     * Update the inputs of the queue, pulling values onto the queue.
      */
     private void stepInput() {
         for (final Port port : Port.VALUES) {
-            // Stop reading if the stack is full.
+            // Stop reading if the queue is full.
             if (isFull()) {
                 return;
             }
@@ -222,9 +229,6 @@ public final class ModuleStack extends AbstractModuleRotatable {
                 // Store the value.
                 push(receivingPipe.read());
 
-                // Restart all writes to ensure we're outputting the top-most value.
-                cancelWrite();
-
                 // Start reading again right away to read as fast as possible.
                 if (!isFull()) {
                     receivingPipe.beginRead();
@@ -235,8 +239,9 @@ public final class ModuleStack extends AbstractModuleRotatable {
 
     private void sendData() {
         final ByteBuf data = Unpooled.buffer();
-        data.writeByte(top);
-        for (final short value : stack) {
+        data.writeByte(head);
+        data.writeByte(tail);
+        for (final short value : queue) {
             data.writeShort(value);
         }
         getCasing().sendData(getFace(), data, DATA_TYPE_UPDATE);
@@ -250,10 +255,10 @@ public final class ModuleStack extends AbstractModuleRotatable {
         GlStateManager.translate(4.5f, 14.5f, 0);
         GlStateManager.color(1f, 1f, 1f, 1f);
 
-        for (int i = 0; i <= top; i++) {
-            FontRendererAPI.drawString(String.format("%4X", stack[i]));
+        for (int i = tail, j = 0; i != head; i = (i + 1) % QUEUE_SIZE, j++) {
+            FontRendererAPI.drawString(String.format("%4X", queue[i]));
             GlStateManager.translate(0, FontRendererAPI.getCharHeight() + 1, 0);
-            if ((i + 1) % 4 == 0) {
+            if ((j + 1) % 4 == 0) {
                 GlStateManager.translate((FontRendererAPI.getCharWidth() + 1) * 5, (FontRendererAPI.getCharHeight() + 1) * -4, 0);
             }
         }

@@ -8,8 +8,8 @@ public final class SerialProtocolDocumentationReference {
     /**
      * The name of the reference, i.e. the text of the link in the manual.
      * <p>
-     * Note that this is run through the {@link net.minecraft.util.text.translation.I18n},
-     * so it is generally a good idea to use localized values here.
+     * Note that this is run through {@link net.minecraft.client.resources.I18n},
+     * so it is generally a good idea to use localizable values here.
      */
     public final String name;
 
