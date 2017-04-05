@@ -16,3 +16,5 @@
 # APIs and dependencies
 !/libs
 /libs/*
+
+.DS_Store
