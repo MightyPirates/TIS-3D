@@ -37,8 +37,12 @@ public final class SerialProtocolDocumentationReference {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         final SerialProtocolDocumentationReference that = (SerialProtocolDocumentationReference) o;
         return name.equals(that.name) && link.equals(that.link);

@@ -8,7 +8,6 @@ import li.cil.tis3d.common.item.ItemBookCode;
 import li.cil.tis3d.common.item.ItemBookManual;
 import li.cil.tis3d.common.item.ItemKey;
 import li.cil.tis3d.common.item.ItemModule;
-import net.minecraft.init.*;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapelessRecipes;
@@ -96,7 +95,8 @@ public final class Items {
         addModuleRecipe(Constants.NAME_ITEM_MODULE_STACK, Item.getItemFromBlock(net.minecraft.init.Blocks.CHEST));
         addModuleRecipe(Constants.NAME_ITEM_MODULE_TIMER, net.minecraft.init.Blocks.SAND);
 
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(modules.get(Constants.NAME_ITEM_MODULE_TERMINAL), 2),
+        GameRegistry.addRecipe(new ShapedOreRecipe(
+                new ItemStack(modules.get(Constants.NAME_ITEM_MODULE_TERMINAL), 2),
                 "KDS",
                 "IQI",
                 " R ",
@@ -107,12 +107,15 @@ public final class Items {
                 'R', "dustRedstone",
                 'Q', "gemQuartz"));
 
-        GameRegistry.addRecipe(new ShapelessRecipes(new ItemStack(modules.get(Constants.NAME_ITEM_MODULE_QUEUE)),
+        GameRegistry.addRecipe(new ShapelessRecipes(
+                new ItemStack(modules.get(Constants.NAME_ITEM_MODULE_QUEUE)),
                 Collections.singletonList(new ItemStack(modules.get(Constants.NAME_ITEM_MODULE_STACK)))));
-        GameRegistry.addRecipe(new ShapelessRecipes(new ItemStack(modules.get(Constants.NAME_ITEM_MODULE_STACK)),
+        GameRegistry.addRecipe(new ShapelessRecipes(
+                new ItemStack(modules.get(Constants.NAME_ITEM_MODULE_STACK)),
                 Collections.singletonList(new ItemStack(modules.get(Constants.NAME_ITEM_MODULE_QUEUE)))));
 
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(key, 1),
+        GameRegistry.addRecipe(new ShapedOreRecipe(
+                new ItemStack(key),
                 "GI ",
                 "GI ",
                 "LRQ",
@@ -121,7 +124,8 @@ public final class Items {
                 'L', "gemLapis",
                 'R', "dustRedstone",
                 'Q', "gemQuartz"));
-        GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(prism, 1),
+        GameRegistry.addRecipe(new ShapelessOreRecipe(
+                new ItemStack(prism),
                 "gemQuartz",
                 "dustRedstone",
                 "gemLapis",
@@ -135,7 +139,8 @@ public final class Items {
 
         final Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(API.MOD_ID, name));
         assert item != null;
-        GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(item, 2),
+        GameRegistry.addRecipe(new ShapedOreRecipe(
+                new ItemStack(item, 2),
                 "PPP",
                 "ISI",
                 " R ",
