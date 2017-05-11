@@ -55,8 +55,7 @@ import java.util.Set;
  * Casings do not tick. The modules installed in them are driven by a
  * controller (transitively) connected to their casing.
  */
-public final class TileEntityCasing extends TileEntityComputer implements
-        SidedInventoryProxy, CasingProxy, InfraredReceiver {
+public final class TileEntityCasing extends TileEntityComputer implements SidedInventoryProxy, CasingProxy, InfraredReceiver {
     // --------------------------------------------------------------------- //
     // Persisted data
 

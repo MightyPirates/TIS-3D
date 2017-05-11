@@ -24,8 +24,9 @@ public final class ModuleAPI {
      * @param provider the provider to register.
      */
     public static void addProvider(final ModuleProvider provider) {
-        if (API.moduleAPI != null)
+        if (API.moduleAPI != null) {
             API.moduleAPI.addProvider(provider);
+        }
     }
 
     /**
@@ -38,8 +39,9 @@ public final class ModuleAPI {
      */
     @Nullable
     public static ModuleProvider getProviderFor(final ItemStack stack, final Casing casing, final Face face) {
-        if (API.moduleAPI != null)
+        if (API.moduleAPI != null) {
             return API.moduleAPI.getProviderFor(stack, casing, face);
+        }
         return null;
     }
 

@@ -113,7 +113,9 @@ public final class SerialAPIImpl implements SerialAPI {
 
         @Nullable
         private Iterable<String> populateTemplate(@Nullable final Iterable<String> template) {
-            if (template == null) return null;
+            if (template == null) {
+                return null;
+            }
             return StreamSupport.
                     stream(template.spliterator(), false).
                     flatMap(line -> Arrays.stream(PATTERN_LINE_END.split(PATTERN_LIST.matcher(line).replaceAll(compileLinkList())))).

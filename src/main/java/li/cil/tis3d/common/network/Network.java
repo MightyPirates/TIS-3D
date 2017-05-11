@@ -217,14 +217,18 @@ public final class Network {
 
         @Override
         public boolean equals(final Object obj) {
-            if (this == obj) return true;
-            if (obj == null || getClass() != obj.getClass()) return false;
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null || getClass() != obj.getClass()) {
+                return false;
+            }
 
             final Position that = (Position) obj;
             return world.provider.getDimension() == that.world.provider.getDimension() &&
-                    Float.compare(that.x, x) == 0 &&
-                    Float.compare(that.y, y) == 0 &&
-                    Float.compare(that.z, z) == 0;
+                   Float.compare(that.x, x) == 0 &&
+                   Float.compare(that.y, y) == 0 &&
+                   Float.compare(that.z, z) == 0;
 
         }
 
@@ -559,7 +563,9 @@ public final class Network {
 
                 if (dx * dx + dy * dy + dz * dz < target.range * target.range) {
                     final NetworkDispatcher dispatcher = player.connection.netManager.channel().attr(NetworkDispatcher.FML_DISPATCHER).get();
-                    if (dispatcher != null) return true;
+                    if (dispatcher != null) {
+                        return true;
+                    }
                 }
             }
         }

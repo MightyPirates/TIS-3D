@@ -485,7 +485,7 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
                 line.append(' ');
             }
             while (line.length() % TAB_WIDTH != 0 &&
-                    line.length() < MAX_COLUMNS);
+                   line.length() < MAX_COLUMNS);
         }
     }
 

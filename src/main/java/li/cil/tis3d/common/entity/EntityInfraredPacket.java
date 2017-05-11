@@ -332,7 +332,7 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
 
         // If we have both, pick the closer one.
         if (blockHit != null && blockHit.typeOfHit != RayTraceResult.Type.MISS &&
-                entityHit != null && entityHit.typeOfHit != RayTraceResult.Type.MISS) {
+            entityHit != null && entityHit.typeOfHit != RayTraceResult.Type.MISS) {
             if (blockHit.hitVec.squareDistanceTo(start) < entityHit.hitVec.squareDistanceTo(start)) {
                 return blockHit;
             } else {

@@ -255,7 +255,7 @@ public final class GuiManual extends GuiScreen {
 
     private boolean isCoordinateOverScrollBar(final int x, final int y) {
         return x > scrollPosX && x < scrollPosX + scrollWidth &&
-                y >= scrollPosY && y < scrollPosY + scrollHeight;
+               y >= scrollPosY && y < scrollPosY + scrollHeight;
     }
 
     private static class ImageButton extends GuiButton {

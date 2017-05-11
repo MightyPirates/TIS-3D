@@ -95,21 +95,21 @@ public final class Settings {
         upgradeConfig(config);
 
         maxPacketsPerTick = config.getInt(NAME_MAX_PACKETS_PER_TICK, CATEGORY_NETWORK,
-                maxPacketsPerTick, 1, 500, COMMENT_MAX_PACKETS_PER_TICK);
+                                          maxPacketsPerTick, 1, 500, COMMENT_MAX_PACKETS_PER_TICK);
         maxParticlesPerTick = config.getInt(NAME_MAX_PARTICLES_PER_TICK, CATEGORY_NETWORK,
-                maxParticlesPerTick, 1, 500, COMMENT_MAX_PARTICLES_PER_TICK);
+                                            maxParticlesPerTick, 1, 500, COMMENT_MAX_PARTICLES_PER_TICK);
 
         maxCasingsPerController = config.getInt(NAME_MAX_CASINGS_PER_CONTROLLER, CATEGORY_CONTROLLER,
-                maxCasingsPerController, 1, 512, COMMENT_MAX_CASINGS_PER_CONTROLLER);
+                                                maxCasingsPerController, 1, 512, COMMENT_MAX_CASINGS_PER_CONTROLLER);
 
         maxLinesPerProgram = config.getInt(NAME_MAX_LINES_PER_PROGRAM, CATEGORY_MODULE_EXECUTION,
-                maxLinesPerProgram, 1, 200, COMMENT_MAX_LINES_PER_PROGRAM);
+                                           maxLinesPerProgram, 1, 200, COMMENT_MAX_LINES_PER_PROGRAM);
         maxColumnsPerLine = config.getInt(NAME_MAX_COLUMNS_PER_LINE, CATEGORY_MODULE_EXECUTION,
-                maxColumnsPerLine, 1, 80, COMMENT_MAX_COLUMNS_PER_LINE);
+                                          maxColumnsPerLine, 1, 80, COMMENT_MAX_COLUMNS_PER_LINE);
         maxInfraredQueueLength = config.getInt(NAME_MAX_QUEUE_LENGTH, CATEGORY_MODULE_INFRARED,
-                maxInfraredQueueLength, 1, 64, COMMENT_MAX_QUEUE_LENGTH);
+                                               maxInfraredQueueLength, 1, 64, COMMENT_MAX_QUEUE_LENGTH);
         animateTypingHand = config.getBoolean(NAME_ANIMATE_TYPING, CATEGORY_MODULE_TERMINAL,
-                animateTypingHand, COMMENT_ANIMATE_TYPING);
+                                              animateTypingHand, COMMENT_ANIMATE_TYPING);
 
         // Rebuild list of disabled modules.
         disabledModules.clear();
@@ -138,7 +138,7 @@ public final class Settings {
         switch (loadedVersionInt) {
             case 0:
                 config.get(CATEGORY_MODULE_EXECUTION, NAME_MAX_LINES_PER_PROGRAM, maxLinesPerProgram,
-                        COMMENT_MAX_LINES_PER_PROGRAM, 1, 200).set(40);
+                           COMMENT_MAX_LINES_PER_PROGRAM, 1, 200).set(40);
 
                 for (final String module : Constants.MODULES) {
                     final String moduleName = module.substring("module_".length());

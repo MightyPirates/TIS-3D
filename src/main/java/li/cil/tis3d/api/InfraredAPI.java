@@ -24,8 +24,9 @@ public final class InfraredAPI {
      */
     @Nullable
     public static InfraredPacket sendPacket(final World world, final Vec3d position, final Vec3d direction, final short value) {
-        if (API.infraredAPI != null)
+        if (API.infraredAPI != null) {
             return API.infraredAPI.sendPacket(world, position, direction, value);
+        }
         return null;
     }
 

@@ -38,7 +38,7 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
 
     static {
         FACE_MAPPING = new Face[][]{
-                {Face.X_NEG, Face.X_POS, Face.Z_POS, Face.Z_NEG}, // Y_NEG
+                {Face.X_POS, Face.X_NEG, Face.Z_NEG, Face.Z_POS}, // Y_NEG
                 {Face.X_POS, Face.X_NEG, Face.Z_POS, Face.Z_NEG}, // Y_POS
                 {Face.X_POS, Face.X_NEG, Face.Y_POS, Face.Y_NEG}, // Z_NEG
                 {Face.X_NEG, Face.X_POS, Face.Y_POS, Face.Y_NEG}, // Z_POS
@@ -47,12 +47,12 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
                 //    LEFT        RIGHT       UP          DOWN
         };
         PORT_MAPPING = new Port[][]{
-                {Port.DOWN, Port.DOWN, Port.DOWN, Port.DOWN},   // Y_NEG
-                {Port.UP, Port.UP, Port.UP, Port.UP},     // Y_POS
-                {Port.RIGHT, Port.LEFT, Port.DOWN, Port.DOWN},   // Z_NEG
-                {Port.RIGHT, Port.LEFT, Port.UP, Port.UP},     // Z_POS
-                {Port.RIGHT, Port.LEFT, Port.RIGHT, Port.LEFT},   // X_NEG
-                {Port.RIGHT, Port.LEFT, Port.LEFT, Port.RIGHT}   // X_POS
+                {Port.DOWN,  Port.DOWN, Port.DOWN,  Port.DOWN},   // Y_NEG
+                {Port.UP,    Port.UP,   Port.UP,    Port.UP},     // Y_POS
+                {Port.RIGHT, Port.LEFT, Port.DOWN,  Port.UP},     // Z_NEG
+                {Port.RIGHT, Port.LEFT, Port.UP,    Port.DOWN},   // Z_POS
+                {Port.RIGHT, Port.LEFT, Port.RIGHT, Port.RIGHT},  // X_NEG
+                {Port.RIGHT, Port.LEFT, Port.LEFT,  Port.LEFT}    // X_POS
                 //    LEFT        RIGHT       UP          DOWN
         };
     }
@@ -177,7 +177,7 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
     public SPacketUpdateTileEntity getUpdatePacket() {
         final NBTTagCompound nbt = new NBTTagCompound();
         writeToNBTForClient(nbt);
-        return new SPacketUpdateTileEntity(getPipeHostPosition(), 0, nbt);
+        return new SPacketUpdateTileEntity(getPos(), 0, nbt);
     }
 
     @Override
@@ -368,7 +368,8 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
 
         private void beginForwarding(final Port port) {
             final Pipe receivingPipe = computer.getReceivingPipe(face, port);
-            final Pipe sendingPipe = other.computer.getSendingPipe(other.face, flipSide(port));
+
+            final Pipe sendingPipe = other.computer.getSendingPipe(other.face, flipSide(face, port));
             if (sendingPipe.isReading() && !sendingPipe.isWriting()) {
                 if (!receivingPipe.isReading()) {
                     receivingPipe.beginRead();
@@ -381,8 +382,12 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
             }
         }
 
-        private static Port flipSide(final Port port) {
-            return (port == Port.LEFT || port == Port.RIGHT) ? port.getOpposite() : port;
+        private static Port flipSide(final Face face, final Port port) {
+            if (face == Face.Y_NEG || face == Face.Y_POS) {
+                return (port == Port.UP || port == Port.DOWN) ? port.getOpposite() : port;
+            } else {
+                return (port == Port.LEFT || port == Port.RIGHT) ? port.getOpposite() : port;
+            }
         }
     }
 }
