@@ -1,9 +1,9 @@
 package li.cil.tis3d.api.util;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
@@ -51,7 +51,7 @@ public final class RenderUtil {
     @SideOnly(Side.CLIENT)
     public static void drawUntexturedQuad(final float x, final float y, final float w, final float h) {
         final Tessellator tessellator = Tessellator.getInstance();
-        final VertexBuffer buffer = tessellator.getBuffer();
+        final BufferBuilder buffer = tessellator.getBuffer();
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
         buffer.pos(x, y + h, 0).endVertex();
         buffer.pos(x + w, y + h, 0).endVertex();
@@ -75,7 +75,7 @@ public final class RenderUtil {
     @SideOnly(Side.CLIENT)
     public static void drawQuad(final float x, final float y, final float w, final float h, final float u0, final float v0, final float u1, final float v1) {
         final Tessellator tessellator = Tessellator.getInstance();
-        final VertexBuffer buffer = tessellator.getBuffer();
+        final BufferBuilder buffer = tessellator.getBuffer();
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
         buffer.pos(x, y + h, 0).tex(u0, v1).endVertex();
         buffer.pos(x + w, y + h, 0).tex(u1, v1).endVertex();

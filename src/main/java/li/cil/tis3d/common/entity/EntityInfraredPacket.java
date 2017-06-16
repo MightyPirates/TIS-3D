@@ -88,10 +88,10 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
      * @param value     the value the packet carries.
      */
     public void configure(final Vec3d start, final Vec3d direction, final short value) {
-        setPosition(start.xCoord, start.yCoord, start.zCoord);
-        motionX = direction.xCoord * TRAVEL_SPEED;
-        motionY = direction.yCoord * TRAVEL_SPEED;
-        motionZ = direction.zCoord * TRAVEL_SPEED;
+        setPosition(start.x, start.y, start.z);
+        motionX = direction.x * TRAVEL_SPEED;
+        motionY = direction.y * TRAVEL_SPEED;
+        motionZ = direction.z * TRAVEL_SPEED;
         lifetime = DEFAULT_LIFETIME;
         this.value = value;
         getDataManager().set(DATA_VALUE, value & 0xFFFF);
@@ -237,20 +237,20 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
                 // the later adjustment of the position to compensate for
                 // manual movement (see `checkCollisions`).
                 final double normalizer = TRAVEL_SPEED * TRAVEL_SPEED / sqrDelta;
-                posX = position.xCoord * normalizer;
-                posY = position.yCoord * normalizer;
-                posZ = position.zCoord * normalizer;
+                posX = position.x * normalizer;
+                posY = position.y * normalizer;
+                posZ = position.z * normalizer;
             } else {
-                posX = position.xCoord;
-                posY = position.yCoord;
-                posZ = position.zCoord;
+                posX = position.x;
+                posY = position.y;
+                posZ = position.z;
             }
 
             // Apply new direction.
             final Vec3d motionVec = direction.normalize();
-            motionX = motionVec.xCoord * TRAVEL_SPEED;
-            motionY = motionVec.yCoord * TRAVEL_SPEED;
-            motionZ = motionVec.zCoord * TRAVEL_SPEED;
+            motionX = motionVec.x * TRAVEL_SPEED;
+            motionY = motionVec.y * TRAVEL_SPEED;
+            motionZ = motionVec.z * TRAVEL_SPEED;
         }
     }
 
@@ -273,9 +273,9 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
             dy = motionY;
             dz = motionZ;
         } else {
-            dx = hit.hitVec.xCoord - posX;
-            dy = hit.hitVec.yCoord - posY;
-            dz = hit.hitVec.zCoord - posZ;
+            dx = hit.hitVec.x - posX;
+            dy = hit.hitVec.y - posY;
+            dz = hit.hitVec.z - posZ;
         }
 
         final double x = posX + dx * t;
@@ -351,7 +351,7 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
         RayTraceResult entityHit = null;
         double bestSqrDistance = Double.POSITIVE_INFINITY;
 
-        final List<Entity> collisions = world.getEntitiesWithinAABBExcludingEntity(this, getEntityBoundingBox().addCoord(motionX, motionY, motionZ));
+        final List<Entity> collisions = world.getEntitiesWithinAABBExcludingEntity(this, getEntityBoundingBox().expand(motionX, motionY, motionZ));
         for (final Entity entity : collisions) {
             if (entity.canBeCollidedWith()) {
                 final AxisAlignedBB entityBounds = entity.getEntityBoundingBox();

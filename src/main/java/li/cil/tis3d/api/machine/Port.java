@@ -98,8 +98,8 @@ public enum Port {
      */
     public static Port fromUVQuadrant(final Vec3d uv) {
         // Make coordinate relative to center of face.
-        final double u = uv.xCoord - 0.5;
-        final double v = uv.yCoord - 0.5;
+        final double u = uv.x - 0.5;
+        final double v = uv.y - 0.5;
         if (Math.abs(u) > Math.abs(v)) {
             if (u < 0) {
                 return Port.LEFT;

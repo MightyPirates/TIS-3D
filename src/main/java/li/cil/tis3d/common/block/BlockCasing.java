@@ -15,6 +15,7 @@ import li.cil.tis3d.util.WorldUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
+import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
@@ -100,17 +101,10 @@ public final class BlockCasing extends Block {
     // --------------------------------------------------------------------- //
     // Common
 
-    @Override
-    public boolean isSideSolid(final IBlockState state, final IBlockAccess world, final BlockPos pos, final EnumFacing side) {
-        // Prevent from torches and the like to be placed on us.
-        return false;
-    }
-
     @SuppressWarnings("deprecation")
     @Override
-    public boolean isFullCube(final IBlockState state) {
-        // Prevent fences from visually connecting.
-        return false;
+    public BlockFaceShape getBlockFaceShape(final IBlockAccess world, final IBlockState state, final BlockPos pos, final EnumFacing side) {
+        return BlockFaceShape.UNDEFINED;
     }
 
     @Override

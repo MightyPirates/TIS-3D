@@ -1,0 +1,25 @@
+{
+  "type": "forge:ore_shapeless",
+  "group": "crafting",
+  "ingredients": [
+    {
+      "type": "forge:ore_dict",
+      "ore": "gemQuartz"
+    },
+    {
+      "type": "forge:ore_dict",
+      "ore": "dustRedstone"
+    },
+    {
+      "type": "forge:ore_dict",
+      "ore": "gemLapis"
+    },
+    {
+      "type": "forge:ore_dict",
+      "ore": "gemEmerald"
+    }
+  ],
+  "result": {
+    "item": "tis3d:prism"
+  }
+}

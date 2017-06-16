@@ -93,13 +93,13 @@ public final class Raytracing {
     public static RayTraceResult raytrace(final World world, final Vec3d start, final Vec3d end, final CollisionDetector callback) {
         // Adapted from http://jsfiddle.net/wivlaro/mkaWf/6/
 
-        final int startPosX = MathHelper.floor(start.xCoord);
-        final int startPosY = MathHelper.floor(start.yCoord);
-        final int startPosZ = MathHelper.floor(start.zCoord);
+        final int startPosX = MathHelper.floor(start.x);
+        final int startPosY = MathHelper.floor(start.y);
+        final int startPosZ = MathHelper.floor(start.z);
 
-        final int endPosX = MathHelper.floor(end.xCoord);
-        final int endPosY = MathHelper.floor(end.yCoord);
-        final int endPosZ = MathHelper.floor(end.zCoord);
+        final int endPosX = MathHelper.floor(end.x);
+        final int endPosY = MathHelper.floor(end.y);
+        final int endPosZ = MathHelper.floor(end.z);
 
         final int stepX = endPosX > startPosX ? 1 : endPosX < startPosX ? -1 : 0;
         final int stepY = endPosY > startPosY ? 1 : endPosY < startPosY ? -1 : 0;
@@ -111,9 +111,9 @@ public final class Raytracing {
         final int gzp = startPosZ + (endPosZ > startPosZ ? 1 : 0);
 
         // Only used for multiplying up the error margins.
-        final double vx = end.xCoord == start.xCoord ? 1 : end.xCoord - start.xCoord;
-        final double vy = end.yCoord == start.yCoord ? 1 : end.yCoord - start.yCoord;
-        final double vz = end.zCoord == start.zCoord ? 1 : end.zCoord - start.zCoord;
+        final double vx = end.x == start.x ? 1 : end.x - start.x;
+        final double vy = end.y == start.y ? 1 : end.y - start.y;
+        final double vz = end.z == start.z ? 1 : end.z - start.z;
 
         // Error is normalized to vx * vy * vz so we only have to multiply up.
         final double vxvy = vx * vy;
@@ -125,9 +125,9 @@ public final class Raytracing {
         final double scaledErrorY = stepY * vxvz;
         final double scaledErrorZ = stepZ * vxvy;
 
-        double errorX = (gxp - start.xCoord) * vyvz;
-        double errorY = (gyp - start.yCoord) * vxvz;
-        double errorZ = (gzp - start.zCoord) * vxvy;
+        double errorX = (gxp - start.x) * vyvz;
+        double errorY = (gyp - start.y) * vxvz;
+        double errorZ = (gzp - start.z) * vxvy;
 
         int currentPosX = startPosX;
         int currentPosY = startPosY;

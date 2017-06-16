@@ -1,0 +1,30 @@
+{
+  "type": "forge:ore_shaped",
+  "group": "modules",
+  "pattern": [
+    "PPP",
+    "ISI",
+    " R "
+  ],
+  "key": {
+    "P": {
+      "type": "forge:ore_dict",
+      "ore": "paneGlassColorless"
+    },
+    "I": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIron"
+    },
+    "R": {
+      "type": "forge:ore_dict",
+      "ore": "dustRedstone"
+    },
+    "S": {
+      "item": "minecraft:repeater"
+    }
+  },
+  "result": {
+    "item": "tis3d:module_redstone",
+    "count": 2
+  }
+}

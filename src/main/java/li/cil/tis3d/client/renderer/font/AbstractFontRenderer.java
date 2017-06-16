@@ -3,9 +3,9 @@ package li.cil.tis3d.client.renderer.font;
 import gnu.trove.map.TCharIntMap;
 import gnu.trove.map.hash.TCharIntHashMap;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
@@ -43,7 +43,7 @@ public abstract class AbstractFontRenderer implements FontRenderer {
         Minecraft.getMinecraft().getTextureManager().bindTexture(getTextureLocation());
 
         final Tessellator tessellator = Tessellator.getInstance();
-        final VertexBuffer buffer = tessellator.getBuffer();
+        final BufferBuilder buffer = tessellator.getBuffer();
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 
         float tx = 0f;
@@ -74,7 +74,7 @@ public abstract class AbstractFontRenderer implements FontRenderer {
 
     // --------------------------------------------------------------------- //
 
-    private void drawChar(final float x, final char ch, final VertexBuffer buffer) {
+    private void drawChar(final float x, final char ch, final BufferBuilder buffer) {
         if (Character.isWhitespace(ch) || Character.isISOControl(ch)) {
             return;
         }

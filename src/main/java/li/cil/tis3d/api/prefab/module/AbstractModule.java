@@ -99,9 +99,9 @@ public abstract class AbstractModule implements Module {
             hit.typeOfHit == RayTraceResult.Type.BLOCK &&
             getCasing().getPosition().equals(hit.getBlockPos()) &&
             hit.sideHit == Face.toEnumFacing(getFace())) {
-            return new Vec3d(hit.hitVec.xCoord - hit.getBlockPos().getX(),
-                             hit.hitVec.yCoord - hit.getBlockPos().getY(),
-                             hit.hitVec.zCoord - hit.getBlockPos().getZ());
+            return new Vec3d(hit.hitVec.x - hit.getBlockPos().getX(),
+                             hit.hitVec.y - hit.getBlockPos().getY(),
+                             hit.hitVec.z - hit.getBlockPos().getZ());
         } else {
             return null;
         }

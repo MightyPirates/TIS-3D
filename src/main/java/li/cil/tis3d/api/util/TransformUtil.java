@@ -20,17 +20,17 @@ public final class TransformUtil {
     public static Vec3d hitToUV(final Face face, final Vec3d hitPos) {
         switch (face) {
             case Y_NEG:
-                return new Vec3d(1 - hitPos.xCoord, hitPos.zCoord, 0);
+                return new Vec3d(1 - hitPos.x, hitPos.z, 0);
             case Y_POS:
-                return new Vec3d(1 - hitPos.xCoord, 1 - hitPos.zCoord, 0);
+                return new Vec3d(1 - hitPos.x, 1 - hitPos.z, 0);
             case Z_NEG:
-                return new Vec3d(1 - hitPos.xCoord, 1 - hitPos.yCoord, 0);
+                return new Vec3d(1 - hitPos.x, 1 - hitPos.y, 0);
             case Z_POS:
-                return new Vec3d(hitPos.xCoord, 1 - hitPos.yCoord, 0);
+                return new Vec3d(hitPos.x, 1 - hitPos.y, 0);
             case X_NEG:
-                return new Vec3d(hitPos.zCoord, 1 - hitPos.yCoord, 0);
+                return new Vec3d(hitPos.z, 1 - hitPos.y, 0);
             case X_POS:
-                return new Vec3d(1 - hitPos.zCoord, 1 - hitPos.yCoord, 0);
+                return new Vec3d(1 - hitPos.z, 1 - hitPos.y, 0);
         }
         return Vec3d.ZERO;
     }
@@ -54,25 +54,25 @@ public final class TransformUtil {
             case Y_NEG:
                 switch (facing) {
                     case LEFT:
-                        return new Vec3d(uv.yCoord, 1 - uv.xCoord, 0);
+                        return new Vec3d(uv.y, 1 - uv.x, 0);
                     case RIGHT:
-                        return new Vec3d(1 - uv.yCoord, uv.xCoord, 0);
+                        return new Vec3d(1 - uv.y, uv.x, 0);
                     case UP:
                         return uv;
                     case DOWN:
-                        return new Vec3d(1 - uv.xCoord, 1 - uv.yCoord, 0);
+                        return new Vec3d(1 - uv.x, 1 - uv.y, 0);
                 }
                 break;
             case Y_POS:
                 switch (facing) {
                     case LEFT:
-                        return new Vec3d(1 - uv.yCoord, uv.xCoord, 0);
+                        return new Vec3d(1 - uv.y, uv.x, 0);
                     case RIGHT:
-                        return new Vec3d(uv.yCoord, 1 - uv.xCoord, 0);
+                        return new Vec3d(uv.y, 1 - uv.x, 0);
                     case UP:
                         return uv;
                     case DOWN:
-                        return new Vec3d(1 - uv.xCoord, 1 - uv.yCoord, 0);
+                        return new Vec3d(1 - uv.x, 1 - uv.y, 0);
                 }
                 break;
         }

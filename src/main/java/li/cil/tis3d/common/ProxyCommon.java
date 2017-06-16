@@ -89,10 +89,6 @@ public class ProxyCommon {
             registerModuleOre(module);
         }
 
-        // Hardcoded recipes!
-        Blocks.addRecipes();
-        Items.addRecipes();
-
         // Register entities.
         EntityRegistry.registerModEntity(new ResourceLocation(API.MOD_ID, Constants.NAME_ENTITY_INFRARED_PACKET), EntityInfraredPacket.class, Constants.NAME_ENTITY_INFRARED_PACKET, 1, TIS3D.instance, 16, 1, true);
 

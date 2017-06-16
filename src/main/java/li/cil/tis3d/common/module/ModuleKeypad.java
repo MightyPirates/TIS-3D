@@ -113,7 +113,7 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
         final World world = getCasing().getCasingWorld();
         if (world.isRemote) {
             final Vec3d uv = hitToUV(new Vec3d(hitX, hitY, hitZ));
-            final int button = uvToButton((float) uv.xCoord, (float) uv.yCoord);
+            final int button = uvToButton((float) uv.x, (float) uv.y);
             if (button == -1) {
                 // No button here.
                 return true;
@@ -170,7 +170,7 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
             final Vec3d hitPos = getPlayerLookAt();
             if (hitPos != null) {
                 final Vec3d uv = hitToUV(hitPos);
-                final int button = uvToButton((float) uv.xCoord, (float) uv.yCoord);
+                final int button = uvToButton((float) uv.x, (float) uv.y);
                 if (button >= 0) {
                     drawButtonOverlay(button);
                 }

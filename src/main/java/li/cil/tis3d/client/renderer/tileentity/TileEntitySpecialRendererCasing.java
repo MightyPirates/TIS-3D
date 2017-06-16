@@ -38,7 +38,7 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
     private final static Set<Class<?>> BLACKLIST = new HashSet<>();
 
     @Override
-    public void renderTileEntityAt(final TileEntityCasing casing, final double x, final double y, final double z, final float partialTicks, final int destroyStage) {
+    public void renderTileEntityAt(final TileEntityCasing casing, final double x, final double y, final double z, final float partialTicks, final int destroyStage, final float partial) {
         final double dx = x + 0.5;
         final double dy = y + 0.5;
         final double dz = z + 0.5;

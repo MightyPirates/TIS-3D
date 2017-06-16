@@ -6,7 +6,7 @@ import net.minecraft.client.resources.I18n;
 
 public class TileEntitySpecialRendererController extends TileEntitySpecialRenderer<TileEntityController> {
     @Override
-    public void renderTileEntityAt(final TileEntityController controller, final double x, final double y, final double z, final float partialTicks, final int destroyStage) {
+    public void renderTileEntityAt(final TileEntityController controller, final double x, final double y, final double z, final float partialTicks, final int destroyStage, final float partial) {
         final TileEntityController.ControllerState state = controller.getState();
         if (!state.isError) {
             return;

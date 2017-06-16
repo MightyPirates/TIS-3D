@@ -5,6 +5,7 @@ import li.cil.tis3d.common.Constants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBook;
 import net.minecraft.item.ItemStack;
@@ -43,8 +44,8 @@ public final class ItemBookManual extends ItemBook {
 
     @SideOnly(Side.CLIENT)
     @Override
-    public void addInformation(final ItemStack stack, final EntityPlayer player, final List<String> tooltip, final boolean advanced) {
-        super.addInformation(stack, player, tooltip, advanced);
+    public void addInformation(final ItemStack stack, @Nullable final World world, final List<String> tooltip, final ITooltipFlag flag) {
+        super.addInformation(stack, world, tooltip, flag);
         final String info = I18n.format(Constants.TOOLTIP_BOOK_MANUAL);
         final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
         tooltip.addAll(fontRenderer.listFormattedStringToWidth(info, li.cil.tis3d.common.Constants.MAX_TOOLTIP_WIDTH));

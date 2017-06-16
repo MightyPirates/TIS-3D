@@ -659,17 +659,17 @@ public final class GuiBookCode extends GuiScreen {
         }
 
         @Override
-        public void drawButton(final Minecraft minecraft, final int mouseX, final int mouseY) {
+        public void drawButton(final Minecraft minecraft, final int mouseX, final int mouseY, final float partialTicks) {
             if (!visible) {
                 return;
             }
 
-            final boolean isHovered = mouseX >= xPosition && mouseY >= yPosition && mouseX < xPosition + width && mouseY < yPosition + height;
+            final boolean isHovered = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             mc.getTextureManager().bindTexture(TextureLoader.LOCATION_BOOK_CODE_BACKGROUND);
             final int offsetX = isHovered ? BUTTON_WIDTH : 0;
             final int offsetY = type == PageChangeType.Previous ? BUTTON_HEIGHT : 0;
-            drawTexturedModalRect(xPosition, yPosition, TEXTURE_X + offsetX, TEXTURE_Y + offsetY, BUTTON_WIDTH, BUTTON_HEIGHT);
+            drawTexturedModalRect(x, y, TEXTURE_X + offsetX, TEXTURE_Y + offsetY, BUTTON_WIDTH, BUTTON_HEIGHT);
         }
     }
 
@@ -684,16 +684,16 @@ public final class GuiBookCode extends GuiScreen {
         }
 
         @Override
-        public void drawButton(final Minecraft minecraft, final int mouseX, final int mouseY) {
+        public void drawButton(final Minecraft minecraft, final int mouseX, final int mouseY, final float partialTicks) {
             if (!visible) {
                 return;
             }
 
-            final boolean isHovered = mouseX >= xPosition && mouseY >= yPosition && mouseX < xPosition + width && mouseY < yPosition + height;
+            final boolean isHovered = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             mc.getTextureManager().bindTexture(TextureLoader.LOCATION_BOOK_CODE_BACKGROUND);
             final int offsetX = isHovered ? BUTTON_WIDTH : 0;
-            drawTexturedModalRect(xPosition, yPosition, TEXTURE_X + offsetX, TEXTURE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+            drawTexturedModalRect(x, y, TEXTURE_X + offsetX, TEXTURE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
         }
     }
 }
