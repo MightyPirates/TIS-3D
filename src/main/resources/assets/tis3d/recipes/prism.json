@@ -1,6 +1,5 @@
 {
   "type": "forge:ore_shapeless",
-  "group": "crafting",
   "ingredients": [
     {
       "type": "forge:ore_dict",

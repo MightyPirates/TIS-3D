@@ -1,6 +1,5 @@
 {
   "type": "minecraft:crafting_shapeless",
-  "group": "modules",
   "ingredients": [
     {
       "item": "tis3d:module_queue"
