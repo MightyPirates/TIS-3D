@@ -37,6 +37,7 @@ import li.cil.tis3d.common.provider.ModuleProviderRandomAccessMemory;
 import li.cil.tis3d.common.provider.ModuleProviderRedstone;
 import li.cil.tis3d.common.provider.ModuleProviderSerialPort;
 import li.cil.tis3d.common.provider.ModuleProviderStack;
+import li.cil.tis3d.common.provider.ModuleProviderTimer;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
@@ -123,11 +124,12 @@ public class ProxyCommon {
         ModuleAPI.addProvider(new ModuleProviderInfrared());
         ModuleAPI.addProvider(new ModuleProviderKeypad());
 	ModuleAPI.addProvider(new ModuleProviderQueue());
-        ModuleAPI.addProvider(new ModuleProviderSerialPort());
-        ModuleAPI.addProvider(new ModuleProviderStack());
         ModuleAPI.addProvider(new ModuleProviderRandom());
         ModuleAPI.addProvider(new ModuleProviderRandomAccessMemory());
         ModuleAPI.addProvider(new ModuleProviderRedstone());
+        ModuleAPI.addProvider(new ModuleProviderSerialPort());
+        ModuleAPI.addProvider(new ModuleProviderStack());
+        ModuleAPI.addProvider(new ModuleProviderTimer());
 
         // Add default manual providers for server side stuff.
         ManualAPI.addProvider(new GameRegistryPathProvider());

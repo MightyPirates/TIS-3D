@@ -32,6 +32,7 @@ public final class Constants {
     public static final String NAME_ITEM_MODULE_REDSTONE = "moduleRedstone";
     public static final String NAME_ITEM_MODULE_SERIAL_PORT = "moduleSerialPort";
     public static final String NAME_ITEM_MODULE_STACK = "moduleStack";
+    public static final String NAME_ITEM_MODULE_TIMER = "moduleTimer";
     public static final String NAME_ITEM_MODULE_RANDOM = "moduleRandom";
     public static final String NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY = "moduleRandomAccessMemory";
     public static final String NAME_ITEM_PRISM = "prism";
@@ -50,6 +51,7 @@ public final class Constants {
             NAME_ITEM_MODULE_REDSTONE,
             NAME_ITEM_MODULE_SERIAL_PORT,
             NAME_ITEM_MODULE_STACK,
+	    NAME_ITEM_MODULE_TIMER,
 	    NAME_ITEM_MODULE_QUEUE,
             NAME_ITEM_MODULE_RANDOM,
             NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY

@@ -77,6 +77,7 @@ public final class Items {
         addModuleRecipe(Constants.NAME_ITEM_MODULE_REDSTONE, net.minecraft.init.Items.repeater);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_SERIAL_PORT, "blockQuartz");
         addModuleRecipe(Constants.NAME_ITEM_MODULE_STACK, Item.getItemFromBlock(net.minecraft.init.Blocks.chest));
+        addModuleRecipe(Constants.NAME_ITEM_MODULE_TIMER, Item.getItemFromBlock(net.minecraft.init.Blocks.sand));
 	
 	GameRegistry.addRecipe(new ShapelessRecipes(new ItemStack(modules.get(Constants.NAME_ITEM_MODULE_QUEUE)),
 	        Collections.singletonList(new ItemStack(modules.get(Constants.NAME_ITEM_MODULE_STACK)))));
