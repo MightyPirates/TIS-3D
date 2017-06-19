@@ -25,6 +25,8 @@ import li.cil.tis3d.common.module.execution.instruction.InstructionBitwiseShiftR
 import li.cil.tis3d.common.module.execution.instruction.InstructionBitwiseShiftRightImmediate;
 import li.cil.tis3d.common.module.execution.instruction.InstructionBitwiseXor;
 import li.cil.tis3d.common.module.execution.instruction.InstructionBitwiseXorImmediate;
+import li.cil.tis3d.common.module.execution.instruction.InstructionDiv;
+import li.cil.tis3d.common.module.execution.instruction.InstructionDivImmediate;
 import li.cil.tis3d.common.module.execution.instruction.InstructionHaltAndCatchFire;
 import li.cil.tis3d.common.module.execution.instruction.InstructionJump;
 import li.cil.tis3d.common.module.execution.instruction.InstructionJumpEqualZero;
@@ -33,6 +35,8 @@ import li.cil.tis3d.common.module.execution.instruction.InstructionJumpLessThanZ
 import li.cil.tis3d.common.module.execution.instruction.InstructionJumpNotZero;
 import li.cil.tis3d.common.module.execution.instruction.InstructionJumpRelative;
 import li.cil.tis3d.common.module.execution.instruction.InstructionJumpRelativeImmediate;
+import li.cil.tis3d.common.module.execution.instruction.InstructionMul;
+import li.cil.tis3d.common.module.execution.instruction.InstructionMulImmediate;
 import li.cil.tis3d.common.module.execution.instruction.InstructionNegate;
 import li.cil.tis3d.common.module.execution.instruction.InstructionSave;
 import li.cil.tis3d.common.module.execution.instruction.InstructionSubtract;
@@ -192,6 +196,8 @@ public final class Compiler {
         addInstructionEmitter(builder, new InstructionEmitterUnary("NEG", () -> InstructionNegate.INSTANCE));
         addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate("ADD", InstructionAdd::new, InstructionAddImmediate::new));
         addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate("SUB", InstructionSubtract::new, InstructionSubtractImmediate::new));
+	addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate("MUL", InstructionAdd::new, InstructionMulImmediate::new));
+	addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate("DIV", InstructionAdd::new, InstructionDivImmediate::new));
 
         // Bitwise operations.
         addInstructionEmitter(builder, new InstructionEmitterUnary("NOT", () -> InstructionBitwiseNot.INSTANCE));
