@@ -15,6 +15,7 @@ public final class TextureLoader {
     public static final ResourceLocation LOCATION_MODULE_EXECUTION_OVERLAY_RUNNING = new ResourceLocation(API.MOD_ID, "overlay/moduleExecutionRunning");
     public static final ResourceLocation LOCATION_MODULE_EXECUTION_OVERLAY_WAITING = new ResourceLocation(API.MOD_ID, "overlay/moduleExecutionWaiting");
     public static final ResourceLocation LOCATION_MODULE_INFRARED_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/moduleInfrared");
+    public static final ResourceLocation LOCATION_MODULE_QUEUE_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/moduleQueue");
     public static final ResourceLocation LOCATION_MODULE_RANDOM_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/moduleRandom");
 
     public static final TextureLoader INSTANCE = new TextureLoader();

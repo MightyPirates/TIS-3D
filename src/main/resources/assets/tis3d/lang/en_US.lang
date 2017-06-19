@@ -10,6 +10,7 @@ item.tis3d.moduleDisplay.name=Display Module
 item.tis3d.moduleExecution.name=Execution Module
 item.tis3d.moduleInfrared.name=Infrared Module
 item.tis3d.moduleKeypad.name=Keypad Module
+item.tis3d.moduleQueue.name=Queue Module
 item.tis3d.moduleRandom.name=Random Module
 item.tis3d.moduleRandomAccessMemory.name=RAM Module
 item.tis3d.moduleRedstone.name=Redstone Module

@@ -31,6 +31,7 @@ import li.cil.tis3d.common.provider.ModuleProviderDisplay;
 import li.cil.tis3d.common.provider.ModuleProviderExecution;
 import li.cil.tis3d.common.provider.ModuleProviderInfrared;
 import li.cil.tis3d.common.provider.ModuleProviderKeypad;
+import li.cil.tis3d.common.provider.ModuleProviderQueue;
 import li.cil.tis3d.common.provider.ModuleProviderRandom;
 import li.cil.tis3d.common.provider.ModuleProviderRandomAccessMemory;
 import li.cil.tis3d.common.provider.ModuleProviderRedstone;
@@ -121,6 +122,7 @@ public class ProxyCommon {
         ModuleAPI.addProvider(new ModuleProviderExecution());
         ModuleAPI.addProvider(new ModuleProviderInfrared());
         ModuleAPI.addProvider(new ModuleProviderKeypad());
+	ModuleAPI.addProvider(new ModuleProviderQueue());
         ModuleAPI.addProvider(new ModuleProviderSerialPort());
         ModuleAPI.addProvider(new ModuleProviderStack());
         ModuleAPI.addProvider(new ModuleProviderRandom());

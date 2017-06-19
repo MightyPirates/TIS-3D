@@ -9,9 +9,11 @@ import li.cil.tis3d.common.item.ItemBookCode;
 import li.cil.tis3d.common.item.ItemBookManual;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -75,6 +77,11 @@ public final class Items {
         addModuleRecipe(Constants.NAME_ITEM_MODULE_REDSTONE, net.minecraft.init.Items.repeater);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_SERIAL_PORT, "blockQuartz");
         addModuleRecipe(Constants.NAME_ITEM_MODULE_STACK, Item.getItemFromBlock(net.minecraft.init.Blocks.chest));
+	
+	GameRegistry.addRecipe(new ShapelessRecipes(new ItemStack(modules.get(Constants.NAME_ITEM_MODULE_QUEUE)),
+	        Collections.singletonList(new ItemStack(modules.get(Constants.NAME_ITEM_MODULE_STACK)))));
+	GameRegistry.addRecipe(new ShapelessRecipes(new ItemStack(modules.get(Constants.NAME_ITEM_MODULE_STACK)),
+	        Collections.singletonList(new ItemStack(modules.get(Constants.NAME_ITEM_MODULE_QUEUE)))));
 
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(key, 1),
                 "GI ",
