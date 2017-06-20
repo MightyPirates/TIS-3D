@@ -37,10 +37,10 @@ public final class TextureLoader {
         event.map.registerIcon(LOCATION_MODULE_EXECUTION_OVERLAY_RUNNING.toString());
         event.map.registerIcon(LOCATION_MODULE_EXECUTION_OVERLAY_WAITING.toString());
         event.map.registerIcon(LOCATION_MODULE_INFRARED_OVERLAY.toString());
-	event.map.registerIcon(LOCATION_MODULE_QUEUE_OVERLAY.toString());
+        event.map.registerIcon(LOCATION_MODULE_QUEUE_OVERLAY.toString());
         event.map.registerIcon(LOCATION_MODULE_RANDOM_OVERLAY.toString());
-	event.map.registerIcon(LOCATION_MODULE_STACK_OVERLAY.toString());
-	event.map.registerIcon(LOCATION_MODULE_TIMER_OVERLAY.toString());
+        event.map.registerIcon(LOCATION_MODULE_STACK_OVERLAY.toString());
+        event.map.registerIcon(LOCATION_MODULE_TIMER_OVERLAY.toString());
     }
 
     // --------------------------------------------------------------------- //

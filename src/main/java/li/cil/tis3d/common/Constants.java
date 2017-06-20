@@ -35,6 +35,7 @@ public final class Constants {
     public static final String NAME_ITEM_MODULE_TIMER = "moduleTimer";
     public static final String NAME_ITEM_MODULE_RANDOM = "moduleRandom";
     public static final String NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY = "moduleRandomAccessMemory";
+    public static final String NAME_ITEM_MODULE_READ_ONLY_MEMORY = "moduleReadOnlyMemory";
     public static final String NAME_ITEM_PRISM = "prism";
 
     public static final String NAME_ENTITY_INFRARED_PACKET = API.MOD_ID + ":infraredPacket";
@@ -51,10 +52,11 @@ public final class Constants {
             NAME_ITEM_MODULE_REDSTONE,
             NAME_ITEM_MODULE_SERIAL_PORT,
             NAME_ITEM_MODULE_STACK,
-	    NAME_ITEM_MODULE_TIMER,
-	    NAME_ITEM_MODULE_QUEUE,
+            NAME_ITEM_MODULE_TIMER,
+            NAME_ITEM_MODULE_QUEUE,
             NAME_ITEM_MODULE_RANDOM,
-            NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY
+            NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY,
+            NAME_ITEM_MODULE_READ_ONLY_MEMORY
     };
 
     // --------------------------------------------------------------------- //

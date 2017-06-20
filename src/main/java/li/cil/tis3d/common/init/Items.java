@@ -7,6 +7,7 @@ import li.cil.tis3d.common.ProxyCommon;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.item.ItemBookCode;
 import li.cil.tis3d.common.item.ItemBookManual;
+import li.cil.tis3d.common.item.ItemModule;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapelessRecipes;
@@ -57,6 +58,13 @@ public final class Items {
             modules.put(module, proxy.registerModule(module));
         }
 
+        // Prevent stacking of ROM modules to avoid inconsistencies between new
+        // and already programmed modules, and allow sneak clicking with it to
+        // program it to the clicked RAM/ROM module.
+        ((ItemModule) modules.get(Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY)).
+                setDoesSneakBypassUse(true).
+                setMaxStackSize(1);
+
         bookCode = proxy.registerItem(Constants.NAME_ITEM_BOOK_CODE, ItemBookCode::new);
         bookManual = proxy.registerItem(Constants.NAME_ITEM_BOOK_MANUAL, ItemBookManual::new);
 
@@ -74,15 +82,16 @@ public final class Items {
         addModuleRecipe(Constants.NAME_ITEM_MODULE_KEYPAD, net.minecraft.init.Blocks.stone_button);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_RANDOM, net.minecraft.init.Items.ender_pearl);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY, "gemEmerald");
+        addModuleRecipe(Constants.NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY, net.minecraft.init.Items.book);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_REDSTONE, net.minecraft.init.Items.repeater);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_SERIAL_PORT, "blockQuartz");
         addModuleRecipe(Constants.NAME_ITEM_MODULE_STACK, Item.getItemFromBlock(net.minecraft.init.Blocks.chest));
         addModuleRecipe(Constants.NAME_ITEM_MODULE_TIMER, Item.getItemFromBlock(net.minecraft.init.Blocks.sand));
-	
-	GameRegistry.addRecipe(new ShapelessRecipes(new ItemStack(modules.get(Constants.NAME_ITEM_MODULE_QUEUE)),
-	        Collections.singletonList(new ItemStack(modules.get(Constants.NAME_ITEM_MODULE_STACK)))));
-	GameRegistry.addRecipe(new ShapelessRecipes(new ItemStack(modules.get(Constants.NAME_ITEM_MODULE_STACK)),
-	        Collections.singletonList(new ItemStack(modules.get(Constants.NAME_ITEM_MODULE_QUEUE)))));
+
+        GameRegistry.addRecipe(new ShapelessRecipes(new ItemStack(modules.get(Constants.NAME_ITEM_MODULE_QUEUE)),
+                Collections.singletonList(new ItemStack(modules.get(Constants.NAME_ITEM_MODULE_STACK)))));
+        GameRegistry.addRecipe(new ShapelessRecipes(new ItemStack(modules.get(Constants.NAME_ITEM_MODULE_STACK)),
+                Collections.singletonList(new ItemStack(modules.get(Constants.NAME_ITEM_MODULE_QUEUE)))));
 
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(key, 1),
                 "GI ",
