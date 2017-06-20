@@ -118,6 +118,9 @@ public final class ModuleQueue extends AbstractModuleRotatable {
 
         RenderUtil.bindTexture(LOCATION_OVERLAY);
 
+        // Draw base overlay.
+        RenderUtil.drawQuad();
+
         // Render detailed state when player is close.
         if (!isEmpty() && OneEightCompat.getDistanceSqToCenter(Minecraft.getMinecraft().thePlayer, getCasing().getPositionX(), getCasing().getPositionY(), getCasing().getPositionZ()) < 64) {
             drawState();
