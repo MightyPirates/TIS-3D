@@ -1,23 +1,31 @@
 package li.cil.tis3d.client.render.font;
 
+import gnu.trove.map.TCharIntMap;
+import gnu.trove.map.hash.TCharIntHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
-import java.util.stream.IntStream;
-
 /**
  * Base implementation for texture based font rendering.
  */
 public abstract class AbstractFontRenderer implements FontRenderer {
-    private final int[] CHAR_MAP = IntStream.range(0, 256).map(getCharacters()::indexOf).toArray();
+    private final TCharIntMap CHAR_MAP;
 
     private final int COLUMNS = getResolution() / (getCharWidth() + getGapU());
     private final float U_SIZE = getCharWidth() / (float) getResolution();
     private final float V_SIZE = getCharHeight() / (float) getResolution();
     private final float U_STEP = (getCharWidth() + getGapU()) / (float) getResolution();
     private final float V_STEP = (getCharHeight() + getGapV()) / (float) getResolution();
+
+    protected AbstractFontRenderer() {
+        CHAR_MAP = new TCharIntHashMap();
+        final CharSequence chars = getCharacters();
+        for (int index = 0; index < chars.length(); index++) {
+            CHAR_MAP.put(chars.charAt(index), index);
+        }
+    }
 
     // --------------------------------------------------------------------- //
 
@@ -50,7 +58,7 @@ public abstract class AbstractFontRenderer implements FontRenderer {
 
     // --------------------------------------------------------------------- //
 
-    abstract protected String getCharacters();
+    abstract protected CharSequence getCharacters();
 
     abstract protected ResourceLocation getTextureLocation();
 
@@ -80,13 +88,9 @@ public abstract class AbstractFontRenderer implements FontRenderer {
     }
 
     private int getCharIndex(final char ch) {
-        if (ch >= CHAR_MAP.length) {
-            return CHAR_MAP['?'];
+        if (!CHAR_MAP.containsKey(ch)) {
+            return CHAR_MAP.get('?');
         }
-        final int index = CHAR_MAP[ch];
-        if (index < 0) {
-            return CHAR_MAP['?'];
-        }
-        return index;
+        return CHAR_MAP.get(ch);
     }
 }

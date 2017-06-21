@@ -26,7 +26,7 @@ public final class FontRendererSmall extends AbstractFontRenderer {
     // AbstractFontRenderer
 
     @Override
-    protected String getCharacters() {
+    protected CharSequence getCharacters() {
         return CHARS;
     }
 
