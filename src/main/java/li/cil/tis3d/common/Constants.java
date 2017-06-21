@@ -73,7 +73,12 @@ public final class Constants {
     public static final String MESSAGE_DUPLICATE_LABEL = "tis3d.compiler.labelDuplicate";
 
     // --------------------------------------------------------------------- //
+    // Code book
 
+    public static final int MAX_LINES_PER_PAGE = 20;
+
+    // --------------------------------------------------------------------- //
+    // Tooltips
     public static final int MAX_TOOLTIP_WIDTH = 200;
 
     // --------------------------------------------------------------------- //

@@ -4,6 +4,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.client.gui.GuiHandlerClient;
+import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.TIS3D;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -15,11 +16,14 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
+//import net.minecraftforge.common.util.Constants;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
@@ -46,7 +50,7 @@ public final class ItemBookCode extends ItemBook {
     public void addInformation(final ItemStack stack, final EntityPlayer player, final List tooltip, final boolean advanced) {
         super.addInformation(stack, player, tooltip, advanced);
         final String info = StatCollector.translateToLocal(TOOLTIP_BOOK_CODE);
-        tooltip.addAll(getFontRenderer(stack).listFormattedStringToWidth(info, li.cil.tis3d.common.Constants.MAX_TOOLTIP_WIDTH));
+        tooltip.addAll(getFontRenderer(stack).listFormattedStringToWidth(info, Constants.MAX_TOOLTIP_WIDTH));
     }
 
     @Override
@@ -78,83 +82,180 @@ public final class ItemBookCode extends ItemBook {
     // --------------------------------------------------------------------- //
 
     /**
-     * Wrapper for list of programs stored in the code book.
+     * Wrapper for list of pages stored in the code book.
      */
     public static class Data {
         public static final Pattern PATTERN_LINES = Pattern.compile("\r?\n");
+        public static final String CONTINUATION_MACRO = "#BWTM";
         private static final String TAG_PAGES = "pages";
         private static final String TAG_SELECTED = "selected";
 
-        private final List<List<String>> programs = new ArrayList<>();
-        private int selectedProgram = 0;
+        private final List<List<String>> pages = new ArrayList<>();
+        private int selectedPage = 0;
 
         // --------------------------------------------------------------------- //
 
         /**
-         * Get the program currently selected in the book.
+         * Get the page currently selected in the book.
          *
-         * @return the index of the selected program.
+         * @return the index of the selected page.
          */
-        public int getSelectedProgram() {
-            return selectedProgram;
+        public int getSelectedPage() {
+            return selectedPage;
         }
 
         /**
-         * Set which program is currently selected.
+         * Set which page is currently selected.
          *
          * @param index the new selected index.
          */
-        public void setSelectedProgram(final int index) {
-            this.selectedProgram = index;
+        public void setSelectedPage(final int index) {
+            this.selectedPage = index;
             validateSelectedPage();
         }
 
         /**
-         * Get the number of programs stored in the book.
+         * Get the number of pages stored in the book.
          *
-         * @return the number of programs stored in the book.
+         * @return the number of pages stored in the book.
          */
-        public int getProgramCount() {
-            return programs.size();
+        public int getPageCount() {
+            return pages.size();
         }
 
         /**
-         * Get the code of the program with the specified index.
+         * Get the code on the specified page.
          *
-         * @param index the index of the program to get.
-         * @return the code of the program.
+         * @param index the index of the page to get the code of.
+         * @return the code on the page..
          */
-        public List<String> getProgram(final int index) {
-            return programs.get(index);
+        public List<String> getPage(final int index) {
+            return Collections.unmodifiableList(pages.get(index));
+        }
+
+        /**
+         * Add a new, blank page to the book.
+         */
+        public void addPage() {
+            addProgram(Collections.singletonList(""));
         }
 
         /**
          * Add a new program to the book.
+         * <p>
+         * Depending on the size of the program, this will generate multiple pages
+         * and automaticall insert <code>#BWTM</code> preprocessor macros as
+         * necessary (when they're not already there).
          *
-         * @param code the code of the program to add.
+         * @param code the code on the page to add.
          */
         public void addProgram(final List<String> code) {
-            programs.add(code);
+            if (code.size() < Constants.MAX_LINES_PER_PAGE) {
+                pages.add(new ArrayList<>(code));
+            } else {
+                final List<String> page = new ArrayList<>();
+                for (int i = 0; i < code.size(); i++) {
+                    final String line = code.get(i);
+                    page.add(line);
+
+                    if (page.size() == Constants.MAX_LINES_PER_PAGE) {
+                        final boolean isLastPage = i + 1 == code.size();
+                        if (!isLastPage && !isPartialProgram(page)) {
+                            page.set(page.size() - 1, CONTINUATION_MACRO);
+                            pages.add(new ArrayList<>(page));
+                            page.clear();
+                            page.add(line);
+                        } else {
+                            pages.add(new ArrayList<>(page));
+                            page.clear();
+                        }
+                    }
+                }
+                if (page.size() > 0) {
+                    pages.add(page);
+                }
+            }
         }
 
         /**
-         * Overwrite a program at the specified index.
+         * Overwrite a page at the specified index.
          *
-         * @param page the index of the program to overwrite.
-         * @param code the code of the program.
+         * @param page the index of the page to overwrite.
+         * @param code the code of the page.
          */
-        public void setProgram(final int page, final List<String> code) {
-            programs.set(page, code);
+        public void setPage(final int page, final List<String> code) {
+            pages.set(page, new ArrayList<>(code));
         }
 
         /**
-         * Remove a program from the book.
+         * Remove a page from the book.
          *
-         * @param index the index of the program to remove.
+         * @param index the index of the page to remove.
          */
-        public void removeProgram(final int index) {
-            programs.remove(index);
+        public void removePage(final int index) {
+            pages.remove(index);
             validateSelectedPage();
+        }
+
+        /**
+         * Get the complete program of the selected page, taking into account the
+         * <code>#BWTM</code> preprocessor macro allowing programs to span multiple pages.
+         *
+         * @return the full program starting on the current page.
+         */
+        public List<String> getProgram() {
+            final List<String> program = new ArrayList<>(getPage(getSelectedPage()));
+            final List<String> leadingCode = new ArrayList<>();
+            final List<String> trailingCode = new ArrayList<>();
+            getExtendedProgram(getSelectedPage(), program, leadingCode, trailingCode);
+            program.addAll(0, leadingCode);
+            program.addAll(trailingCode);
+            return program;
+        }
+
+        /**
+         * Get the leading and trailing code lines of a program spanning the specified
+         * page, taking into account the <code>#BWTM</code> preprocessor marco. This
+         * assumes <em>that the specified page does have the <code>#BWTM</code>
+         * preprocessor macro</em>. I.e. the next page will <em>always</em> be added to
+         * the <code>trailingPages</code>.
+         */
+        public void getExtendedProgram(final int page, final List<String> program, final List<String> leadingCode, final List<String> trailingCode) {
+            for (int leadingPage = page - 1; leadingPage >= 0; leadingPage--) {
+                final List<String> pageCode = getPage(leadingPage);
+                if (isPartialProgram(pageCode)) {
+                    leadingCode.addAll(0, pageCode);
+                } else {
+                    break;
+                }
+            }
+            if (isPartialProgram(program)) {
+                for (int trailingPage = page + 1; trailingPage < getPageCount(); trailingPage++) {
+                    final List<String> pageCode = getPage(trailingPage);
+                    trailingCode.addAll(pageCode);
+                    if (!isPartialProgram(pageCode)) {
+                        break;
+                    }
+                }
+            }
+        }
+
+        /**
+         * Check if this program continues on the next page, i.e. if the last
+         * non-whitespace line has the <code>#BWTM</code> preprocessor macro.
+         *
+         * @param program the program to check for.
+         * @return <code>true</code> if the program continues; <code>false</code> otherwise.
+         */
+        public static boolean isPartialProgram(final List<String> program) {
+            boolean continues = false;
+            for (final String line : program) {
+                if (line.trim().isEmpty()) {
+                    continue;
+                }
+                continues = Objects.equals(line.trim().toUpperCase(Locale.US), CONTINUATION_MACRO);
+            }
+            return continues;
         }
 
         /**
@@ -163,14 +264,14 @@ public final class ItemBookCode extends ItemBook {
          * @param nbt the tag to load the data from.
          */
         public void readFromNBT(final NBTTagCompound nbt) {
-            programs.clear();
+            pages.clear();
 
-            final NBTTagList pagesNbt = nbt.getTagList(TAG_PAGES, Constants.NBT.TAG_STRING);
+            final NBTTagList pagesNbt = nbt.getTagList(TAG_PAGES, net.minecraftforge.common.util.Constants.NBT.TAG_STRING);
             for (int index = 0; index < pagesNbt.tagCount(); index++) {
-                programs.add(Arrays.asList(PATTERN_LINES.split(pagesNbt.getStringTagAt(index))));
+                pages.add(Arrays.asList(PATTERN_LINES.split(pagesNbt.getStringTagAt(index))));
             }
 
-            selectedProgram = nbt.getInteger(TAG_SELECTED);
+            selectedPage = nbt.getInteger(TAG_SELECTED);
             validateSelectedPage();
         }
 
@@ -182,23 +283,23 @@ public final class ItemBookCode extends ItemBook {
         public void writeToNBT(final NBTTagCompound nbt) {
             final NBTTagList pagesNbt = new NBTTagList();
             int removed = 0;
-            for (int index = 0; index < programs.size(); index++) {
-                final List<String> program = programs.get(index);
+            for (int index = 0; index < pages.size(); index++) {
+                final List<String> program = pages.get(index);
                 if (program.size() > 1 || program.get(0).length() > 0) {
                     pagesNbt.appendTag(new NBTTagString(String.join("\n", program)));
-                } else if (index < selectedProgram) {
+                } else if (index < selectedPage) {
                     removed++;
                 }
             }
             nbt.setTag(TAG_PAGES, pagesNbt);
 
-            nbt.setInteger(TAG_SELECTED, selectedProgram - removed);
+            nbt.setInteger(TAG_SELECTED, selectedPage - removed);
         }
 
         // --------------------------------------------------------------------- //
 
         private void validateSelectedPage() {
-            selectedProgram = Math.max(0, Math.min(programs.size() - 1, selectedProgram));
+            selectedPage = Math.max(0, Math.min(pages.size() - 1, selectedPage));
         }
 
         // --------------------------------------------------------------------- //

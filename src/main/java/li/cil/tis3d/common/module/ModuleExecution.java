@@ -475,10 +475,10 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         @Override
         public Iterable<String> codeFor(final ItemStack stack) {
             final ItemBookCode.Data data = ItemBookCode.Data.loadFromStack(stack);
-            if (data.getProgramCount() < 1) {
+            if (data.getPageCount() < 1) {
                 return null;
             }
-            return data.getProgram(data.getSelectedProgram());
+            return data.getProgram();
         }
     }
 

@@ -1,6 +1,7 @@
 package li.cil.tis3d.client.gui;
 
 import li.cil.tis3d.api.API;
+import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ItemBookCode;
@@ -21,8 +22,8 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -122,10 +123,10 @@ public final class GuiBookCode extends GuiScreen {
         drawTexturedModalRect(guiX, guiY, 0, 0, GUI_WIDTH, GUI_HEIGHT);
 
         // Check page change button availability.
-        buttonPreviousPage.visible = data.getSelectedProgram() > 0 && data.getProgramCount() > 0;
-        buttonNextPage.visible = (data.getSelectedProgram() < data.getProgramCount() - 1) ||
-                (data.getSelectedProgram() == data.getProgramCount() - 1 && isCurrentProgramNonEmpty());
-        buttonDeletePage.visible = data.getProgramCount() > 1 || isCurrentProgramNonEmpty();
+        buttonPreviousPage.visible = data.getSelectedPage() > 0 && data.getPageCount() > 0;
+        buttonNextPage.visible = (data.getSelectedPage() < data.getPageCount() - 1) ||
+                (data.getSelectedPage() == data.getPageCount() - 1 && isCurrentProgramNonEmpty());
+        buttonDeletePage.visible = data.getPageCount() > 1 || isCurrentProgramNonEmpty();
 
         super.drawScreen(mouseX, mouseY, partialTicks);
 
@@ -133,7 +134,7 @@ public final class GuiBookCode extends GuiScreen {
         drawProgram(mouseX, mouseY);
 
         // Draw page number.
-        final String pageInfo = String.format("%d/%d", data.getSelectedProgram() + 1, data.getProgramCount());
+        final String pageInfo = String.format("%d/%d", data.getSelectedPage() + 1, data.getPageCount());
         fontRendererObj.drawString(pageInfo, guiX + PAGE_NUMBER_X - fontRendererObj.getStringWidth(pageInfo) / 2, guiY + PAGE_NUMBER_Y, COLOR_CODE);
     }
 
@@ -269,7 +270,7 @@ public final class GuiBookCode extends GuiScreen {
             recompile();
         } else if (keyCode == Keyboard.KEY_RETURN) {
             deleteSelection();
-            if (lines.size() < Settings.maxLinesPerProgram) {
+            if (lines.size() < Constants.MAX_LINES_PER_PAGE) {
                 final StringBuilder oldLine = lines.get(line);
                 final StringBuilder newLine = new StringBuilder();
                 if (column < oldLine.length()) {
@@ -304,7 +305,7 @@ public final class GuiBookCode extends GuiScreen {
                 lines.get(line).insert(indexToColumn(column), pastedLines[0].toUpperCase());
                 lines.addAll(line + 1, Arrays.stream(pastedLines).
                         skip(1).
-                        map(String::toUpperCase).
+                        map(l -> l.toUpperCase(Locale.US)).
                         map(StringBuilder::new).
                         collect(Collectors.toList()));
 
@@ -319,7 +320,7 @@ public final class GuiBookCode extends GuiScreen {
             deleteSelection();
 
             if (lines.get(line).length() < Settings.maxColumnsPerLine) {
-                lines.get(line).insert(column, String.valueOf(typedChar).toUpperCase());
+                lines.get(line).insert(column, String.valueOf(typedChar).toUpperCase(Locale.US));
                 selectionStart = selectionEnd = selectionEnd + 1;
             }
 
@@ -334,7 +335,7 @@ public final class GuiBookCode extends GuiScreen {
         } else if (button == buttonPreviousPage) {
             changePage(-1);
         } else if (button == buttonDeletePage) {
-            data.removeProgram(data.getSelectedProgram());
+            data.removePage(data.getSelectedPage());
             rebuildLines();
         }
     }
@@ -382,7 +383,7 @@ public final class GuiBookCode extends GuiScreen {
     }
 
     private int cursorToLine(final int y) {
-        return Math.max(0, Math.min(Math.min(lines.size() - 1, Settings.maxLinesPerProgram), (y - guiY - CODE_POS_Y) / fontRendererObj.FONT_HEIGHT));
+        return Math.max(0, Math.min(Math.min(lines.size() - 1, Constants.MAX_LINES_PER_PAGE), (y - guiY - CODE_POS_Y) / fontRendererObj.FONT_HEIGHT));
     }
 
     private int cursorToColumn(final int x, final int y) {
@@ -431,7 +432,7 @@ public final class GuiBookCode extends GuiScreen {
 
     private boolean isInCodeArea(final int mouseX, final int mouseY) {
         return mouseX >= guiX + CODE_POS_X - CODE_MARGIN && mouseX <= guiX + CODE_POS_X + CODE_WIDTH + CODE_MARGIN &&
-                mouseY >= guiY + CODE_POS_Y - CODE_MARGIN && mouseY <= guiY + CODE_POS_Y + fontRendererObj.FONT_HEIGHT * Settings.maxLinesPerProgram + CODE_MARGIN;
+                mouseY >= guiY + CODE_POS_Y - CODE_MARGIN && mouseY <= guiY + CODE_POS_Y + fontRendererObj.FONT_HEIGHT * Constants.MAX_LINES_PER_PAGE + CODE_MARGIN;
     }
 
     private boolean isCurrentProgramNonEmpty() {
@@ -439,11 +440,22 @@ public final class GuiBookCode extends GuiScreen {
     }
 
     private void recompile() {
+        compileError = Optional.empty();
+
+        final List<String> program = lines.stream().map(StringBuilder::toString).collect(Collectors.toList());
+
+        final List<String> leadingCode = new ArrayList<>();
+        final List<String> trailingCode = new ArrayList<>();
+        data.getExtendedProgram(data.getSelectedPage(), program, leadingCode, trailingCode);
+        program.addAll(0, leadingCode);
+        program.addAll(trailingCode);
+
         try {
-            compileError = Optional.empty();
-            Compiler.compile(lines.stream().map(StringBuilder::toString).collect(Collectors.toList()), new MachineState());
+                Compiler.compile(program, new MachineState());
         } catch (final ParseException e) {
-            compileError = Optional.of(e);
+                // Adjust line number for current page.
+                final int lineNumber = e.getLineNumber() - leadingCode.size();
+                compileError = Optional.of(new ParseException(e.getMessage(), lineNumber, e.getStart(), e.getEnd()));
         }
     }
 
@@ -481,7 +493,7 @@ public final class GuiBookCode extends GuiScreen {
         if (pastedLines.length == 0) {
             return false; // Invalid paste, nothing to paste (this shouldn't even be possible).
         }
-        if (pastedLines.length - 1 + lines.size() > Settings.maxLinesPerProgram) {
+        if (pastedLines.length - 1 + lines.size() > Constants.MAX_LINES_PER_PAGE) {
             return false; // Invalid paste, too many resulting lines.
         }
         if (pastedLines[0].length() + lines.get(selectedLine).length() > Settings.maxColumnsPerLine) {
@@ -500,27 +512,27 @@ public final class GuiBookCode extends GuiScreen {
     private void changePage(final int delta) {
         saveProgram();
 
-        if (data.getSelectedProgram() + delta == data.getProgramCount()) {
-            data.addProgram(Collections.singletonList(""));
+        if (data.getSelectedPage() + delta == data.getPageCount()) {
+            data.addPage();
         }
-        data.setSelectedProgram(data.getSelectedProgram() + delta);
+        data.setSelectedPage(data.getSelectedPage() + delta);
         selectionStart = selectionEnd = 0;
 
         rebuildLines();
     }
 
     private void saveProgram() {
-        data.setProgram(data.getSelectedProgram(), lines.stream().map(StringBuilder::toString).collect(Collectors.toList()));
+        data.setPage(data.getSelectedPage(), lines.stream().map(StringBuilder::toString).collect(Collectors.toList()));
     }
 
     private void rebuildLines() {
-        if (data.getProgramCount() < 1) {
-            data.addProgram(Collections.singletonList(""));
+        if (data.getPageCount() < 1) {
+            data.addPage();
         }
 
-        final List<String> program = data.getProgram(data.getSelectedProgram());
+        final List<String> program = data.getPage(data.getSelectedPage());
         lines.clear();
-        program.forEach(line -> lines.add(new StringBuilder(line)));
+        program.forEach(line -> lines.add(new StringBuilder(line.toUpperCase(Locale.US))));
 
         recompile();
     }
@@ -564,11 +576,13 @@ public final class GuiBookCode extends GuiScreen {
         // Part one of error handling, draw red underline, *behind* the blinking cursor.
         if (compileError.isPresent()) {
             final ParseException exception = compileError.get();
-            final int startY = guiY + CODE_POS_Y + exception.getLineNumber() * fontRendererObj.FONT_HEIGHT - 1;
-            final int startX = columnToX(exception.getLineNumber(), exception.getStart());
-            final int endX = Math.max(columnToX(exception.getLineNumber(), exception.getEnd()), startX + fontRendererObj.getCharWidth(' '));
+            if (exception.getLineNumber() >= 0 && exception.getLineNumber() < lines.size()) {
+                final int startY = guiY + CODE_POS_Y + exception.getLineNumber() * fontRendererObj.FONT_HEIGHT - 1;
+                final int startX = columnToX(exception.getLineNumber(), exception.getStart());
+                final int endX = Math.max(columnToX(exception.getLineNumber(), exception.getEnd()), startX + fontRendererObj.getCharWidth(' '));
 
-            drawRect(startX - 1, startY + fontRendererObj.FONT_HEIGHT - 1, endX, startY + fontRendererObj.FONT_HEIGHT, 0xFFFF3333);
+                drawRect(startX - 1, startY + fontRendererObj.FONT_HEIGHT - 1, endX, startY + fontRendererObj.FONT_HEIGHT, 0xFFFF3333);
+            }
         }
 
         // Draw selection position in text.
@@ -577,13 +591,15 @@ public final class GuiBookCode extends GuiScreen {
         // Part two of error handling, draw tooltip, *on top* of blinking cursor.
         if (compileError.isPresent()) {
             final ParseException exception = compileError.get();
-            final int startY = guiY + CODE_POS_Y + exception.getLineNumber() * fontRendererObj.FONT_HEIGHT - 1;
-            final int startX = columnToX(exception.getLineNumber(), exception.getStart());
-            final int endX = Math.max(columnToX(exception.getLineNumber(), exception.getEnd()), startX + fontRendererObj.getCharWidth(' '));
+            if (exception.getLineNumber() >= 0 && exception.getLineNumber() < lines.size()) {
+                final int startY = guiY + CODE_POS_Y + exception.getLineNumber() * fontRendererObj.FONT_HEIGHT - 1;
+                final int startX = columnToX(exception.getLineNumber(), exception.getStart());
+                final int endX = Math.max(columnToX(exception.getLineNumber(), exception.getEnd()), startX + fontRendererObj.getCharWidth(' '));
 
-            if (mouseX >= startX && mouseX <= endX && mouseY >= startY && mouseY <= startY + fontRendererObj.FONT_HEIGHT) {
-                func_146283_a(Arrays.asList(ItemBookCode.Data.PATTERN_LINES.split(StatCollector.translateToLocal(exception.getMessage()))), mouseX, mouseY);
-                GL11.glDisable(GL11.GL_LIGHTING);
+                if (mouseX >= startX && mouseX <= endX && mouseY >= startY && mouseY <= startY + fontRendererObj.FONT_HEIGHT) {
+                    func_146283_a(Arrays.asList(ItemBookCode.Data.PATTERN_LINES.split(StatCollector.translateToLocal(exception.getMessage()))), mouseX, mouseY);
+                    GL11.glDisable(GL11.GL_LIGHTING);
+                }
             }
         }
     }
