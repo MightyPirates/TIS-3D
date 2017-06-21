@@ -21,11 +21,11 @@ public abstract class AbstractFontRenderer implements FontRenderer {
 
     // --------------------------------------------------------------------- //
 
-    public void drawString(final String value) {
+    public void drawString(final CharSequence value) {
         drawString(value, value.length());
     }
 
-    public void drawString(final String value, final int maxChars) {
+    public void drawString(final CharSequence value, final int maxChars) {
         GL11.glPushMatrix();
         GL11.glDepthMask(false);
 
@@ -46,7 +46,6 @@ public abstract class AbstractFontRenderer implements FontRenderer {
 
         GL11.glDepthMask(true);
         GL11.glPopMatrix();
-        GL11.glColor3f(1, 1, 1);
     }
 
     // --------------------------------------------------------------------- //
