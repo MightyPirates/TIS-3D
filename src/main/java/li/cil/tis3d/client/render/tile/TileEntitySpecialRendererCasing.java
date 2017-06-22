@@ -114,8 +114,10 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
         final int neighborZ = casing.getPositionZ() + facing.getFrontOffsetZ();
         final int brightness = casing.getWorldObj().getLightBrightnessForSkyBlocks(neighborX, neighborY, neighborZ, 0);
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, brightness % 65536, brightness / 65536);
-
+        RenderUtil.bindTexture(TextureMap.locationBlocksTexture);
         GL11.glColor4f(1, 1, 1, 1);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        RenderUtil.ignoreLighting();
     }
 
     private void drawLockOverlay(final TileEntityCasing casing) {
@@ -130,9 +132,9 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
 
         final TextureAtlasSprite icon;
         if (casing.isLocked()) {
-            icon = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(TextureLoader.LOCATION_CASING_LOCKED_OVERLAY.toString());
+            icon = RenderUtil.getSprite(TextureLoader.LOCATION_CASING_LOCKED_OVERLAY);
         } else {
-            icon = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(TextureLoader.LOCATION_CASING_UNLOCKED_OVERLAY.toString());
+            icon = RenderUtil.getSprite(TextureLoader.LOCATION_CASING_UNLOCKED_OVERLAY);
         }
 
         RenderUtil.drawQuad(icon.getMinU(), icon.getMinV(), icon.getMaxU(), icon.getMaxV());

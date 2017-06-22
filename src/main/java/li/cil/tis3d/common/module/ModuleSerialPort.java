@@ -13,8 +13,9 @@ import li.cil.tis3d.api.prefab.module.AbstractModule;
 import li.cil.tis3d.api.serial.SerialInterface;
 import li.cil.tis3d.api.serial.SerialInterfaceProvider;
 import li.cil.tis3d.api.util.RenderUtil;
+import li.cil.tis3d.client.render.TextureLoader;
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
@@ -41,8 +42,6 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
     // NBT data names.
     private static final String TAG_VALUE = "value";
     private static final String TAG_SERIAL_INTERFACE = "serialInterface";
-
-    private static final ResourceLocation LOCATION_OVERLAY = new ResourceLocation(API.MOD_ID, "textures/blocks/overlay/moduleSerialPort.png");
 
     private Optional<SerialInterface> serialInterface = Optional.empty();
     private Optional<NBTTagCompound> serialInterfaceNbt = Optional.empty();
@@ -104,12 +103,10 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
             return;
         }
 
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
+        RenderUtil.ignoreLighting();
 
-        RenderUtil.bindTexture(LOCATION_OVERLAY);
-
-        // Draw base overlay.
-        RenderUtil.drawQuad();
+        final TextureAtlasSprite sprite = RenderUtil.getSprite(TextureLoader.LOCATION_MODULE_SERIAL_PORT_OVERLAY);
+        RenderUtil.drawQuad(sprite);
     }
 
     @Override

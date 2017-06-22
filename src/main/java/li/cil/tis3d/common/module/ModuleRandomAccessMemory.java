@@ -10,10 +10,10 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
+import li.cil.tis3d.client.render.TextureLoader;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.util.EnumUtils;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -160,9 +160,8 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
         }
 
         rotateForRendering();
+        RenderUtil.ignoreLighting();
         GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
 
         final int cells = 4;

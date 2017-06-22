@@ -12,7 +12,6 @@ import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.util.ColorUtils;
 import li.cil.tis3d.util.EnumUtils;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.nbt.NBTTagCompound;
 import org.lwjgl.opengl.GL11;
@@ -133,8 +132,7 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
         }
 
         rotateForRendering();
-
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
+        RenderUtil.ignoreLighting();
 
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, getGlTextureId());
 

@@ -9,7 +9,7 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
-import net.minecraft.client.renderer.OpenGlHelper;
+import li.cil.tis3d.client.render.TextureLoader;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
@@ -37,7 +37,6 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
     private static final byte DATA_TYPE_VALUE = 0;
 
     // Rendering info.
-    private static final ResourceLocation LOCATION_OVERLAY = new ResourceLocation(API.MOD_ID, "textures/blocks/overlay/moduleKeypad.png");
     public static final float KEYS_U0 = 5 / 32f;
     public static final float KEYS_V0 = 5 / 32f;
     public static final float KEYS_SIZE_U = 5 / 32f;
@@ -128,10 +127,8 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
         }
 
         rotateForRendering();
+        RenderUtil.ignoreLighting();
         GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
-        RenderUtil.bindTexture(LOCATION_OVERLAY);
 
         // Draw base texture. Draw half transparent while writing current value,
         // i.e. while no input is possible.
@@ -139,7 +136,7 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
             GL11.glColor4f(1, 1, 1, 0.5f);
         }
         GL11.glDepthMask(false);
-        RenderUtil.drawQuad();
+        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_MODULE_KEYPAD_OVERLAY));
         GL11.glDepthMask(true);
 
         // Draw overlay for hovered button if we can currently input a value.

@@ -12,9 +12,9 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
+import li.cil.tis3d.client.render.TextureLoader;
 import li.cil.tis3d.util.OneEightCompat;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
@@ -49,8 +49,6 @@ public final class ModuleTimer extends AbstractModuleRotatable {
 
     // Cached elapsed state.
     private boolean hasElapsed;
-	
-    private static final ResourceLocation LOCATION_OVERLAY = new ResourceLocation(API.MOD_ID, "textures/blocks/overlay/moduleTimer.png");
 
     // --------------------------------------------------------------------- //
 
@@ -103,11 +101,9 @@ public final class ModuleTimer extends AbstractModuleRotatable {
         }
 
         rotateForRendering();
+        RenderUtil.ignoreLighting();
 
-
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
-
-        RenderUtil.bindTexture(LOCATION_OVERLAY);
+        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_MODULE_TIMER_OVERLAY));
 
         // Render detailed state when player is close.
         if (!hasElapsed && OneEightCompat.getDistanceSqToCenter(Minecraft.getMinecraft().thePlayer, getCasing().getPositionX(), getCasing().getPositionY(), getCasing().getPositionZ()) < 64) {
