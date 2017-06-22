@@ -135,44 +135,63 @@ public final class ItemBookCode extends ItemBook {
          * Add a new, blank page to the book.
          */
         public void addPage() {
-            addProgram(Collections.singletonList(""));
+            addOrSelectProgram(Collections.singletonList(""));
         }
 
         /**
          * Add a new program to the book.
          * <p>
          * Depending on the size of the program, this will generate multiple pages
-         * and automaticall insert <code>#BWTM</code> preprocessor macros as
+         * and automatically insert <code>#BWTM</code> preprocessor macros as
          * necessary (when they're not already there).
+         * <p>
+         * If the provided program is already present in the code book letter by
+         * letter, then instead of adding the provided code, the already present
+         * program will be selected instead.
          *
-         * @param code the code on the page to add.
+         * @param code the code to add or select.
          */
-        public void addProgram(final List<String> code) {
-            if (code.size() < Constants.MAX_LINES_PER_PAGE) {
-                pages.add(new ArrayList<>(code));
-            } else {
-                final List<String> page = new ArrayList<>();
-                for (int i = 0; i < code.size(); i++) {
-                    final String line = code.get(i);
-                    page.add(line);
+        public void addOrSelectProgram(final List<String> code) {
+            if (code.isEmpty()) {
+                return;
+            }
 
-                    if (page.size() == Constants.MAX_LINES_PER_PAGE) {
-                        final boolean isLastPage = i + 1 == code.size();
-                        if (!isLastPage && !isPartialProgram(page)) {
-                            page.set(page.size() - 1, CONTINUATION_MACRO);
-                            pages.add(new ArrayList<>(page));
-                            page.clear();
-                            page.add(line);
-                        } else {
-                            pages.add(new ArrayList<>(page));
-                            page.clear();
-                        }
+            final List<List<String>> newPages = new ArrayList<>();
+
+            final List<String> page = new ArrayList<>();
+            for (int i = 0; i < code.size(); i++) {
+                final String line = code.get(i);
+                page.add(line);
+
+                if (Objects.equals(line, CONTINUATION_MACRO)) {
+                    newPages.add(new ArrayList<>(page));
+                    page.clear();
+                } else if (page.size() == Constants.MAX_LINES_PER_PAGE) {
+                    final boolean isLastPage = i + 1 == code.size();
+                    if (!isLastPage && !isPartialProgram(page)) {
+                        page.set(page.size() - 1, CONTINUATION_MACRO);
+                        newPages.add(new ArrayList<>(page));
+                        page.clear();
+                        page.add(line);
+                    } else {
+                        newPages.add(new ArrayList<>(page));
+                        page.clear();
                     }
                 }
-                if (page.size() > 0) {
-                    pages.add(page);
+            }
+            if (page.size() > 0) {
+                newPages.add(page);
+            }
+
+            for (int startPage = 0; startPage < pages.size(); startPage++) {
+                if (areAllPagesEqual(newPages, startPage)) {
+                    setSelectedPage(startPage);
+                    return;
                 }
             }
+
+            pages.addAll(newPages);
+            setSelectedPage(pages.size() - newPages.size());
         }
 
         /**
@@ -304,6 +323,18 @@ public final class ItemBookCode extends ItemBook {
         private void validateSelectedPage() {
             selectedPage = Math.max(0, Math.min(pages.size() - 1, selectedPage));
         }
+
+        private boolean areAllPagesEqual(final List<List<String>> newPages, final int startPage) {
+            for (int offset = 0; offset < newPages.size(); offset++) {
+                final List<String> have = pages.get(startPage + offset);
+                final List<String> want = newPages.get(offset);
+                if (!Objects.equals(have, want)) {
+                    return false;
+                }
+            }
+
+            return true;
+}
 
         // --------------------------------------------------------------------- //
 
