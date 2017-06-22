@@ -1,8 +1,8 @@
 package li.cil.tis3d.common.module.execution;
 
 import li.cil.tis3d.api.machine.Port;
+import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.Settings;
-import li.cil.tis3d.common.item.ItemBookCode;
 import li.cil.tis3d.common.module.execution.compiler.Compiler;
 import li.cil.tis3d.common.module.execution.compiler.ParseException;
 import li.cil.tis3d.common.module.execution.instruction.Instruction;
@@ -113,7 +113,7 @@ public final class MachineState {
     public void readFromNBT(final NBTTagCompound nbt) {
         if (nbt.hasKey(TAG_CODE)) {
             try {
-                Compiler.compile(Arrays.asList(ItemBookCode.Data.PATTERN_LINES.split(nbt.getString(TAG_CODE))), this);
+                Compiler.compile(Arrays.asList(Constants.PATTERN_LINES.split(nbt.getString(TAG_CODE))), this);
             } catch (final ParseException ignored) {
                 // Silent because this is also used to send code to the
                 // clients to visualize errors, and code is also saved

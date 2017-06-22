@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 /**
  * The code book, utility book for coding ASM programs for execution modules.
@@ -85,8 +84,7 @@ public final class ItemBookCode extends ItemBook {
      * Wrapper for list of pages stored in the code book.
      */
     public static class Data {
-        public static final Pattern PATTERN_LINES = Pattern.compile("\r?\n");
-        public static final String CONTINUATION_MACRO = "#BWTM";
+        private static final String CONTINUATION_MACRO = "#BWTM";
         private static final String TAG_PAGES = "pages";
         private static final String TAG_SELECTED = "selected";
 
@@ -219,6 +217,11 @@ public final class ItemBookCode extends ItemBook {
          * assumes <em>that the specified page does have the <code>#BWTM</code>
          * preprocessor macro</em>. I.e. the next page will <em>always</em> be added to
          * the <code>trailingPages</code>.
+         *
+         * @param page         the page to extend from.
+         * @param program      the code on the page to extend from.
+         * @param leadingCode  the list to place code from previous pages into.
+         * @param trailingCode the list to place code from next pages into.
          */
         public void getExtendedProgram(final int page, final List<String> program, final List<String> leadingCode, final List<String> trailingCode) {
             for (int leadingPage = page - 1; leadingPage >= 0; leadingPage--) {
@@ -268,7 +271,7 @@ public final class ItemBookCode extends ItemBook {
 
             final NBTTagList pagesNbt = nbt.getTagList(TAG_PAGES, net.minecraftforge.common.util.Constants.NBT.TAG_STRING);
             for (int index = 0; index < pagesNbt.tagCount(); index++) {
-                pages.add(Arrays.asList(PATTERN_LINES.split(pagesNbt.getStringTagAt(index))));
+                pages.add(Arrays.asList(Constants.PATTERN_LINES.split(pagesNbt.getStringTagAt(index))));
             }
 
             selectedPage = nbt.getInteger(TAG_SELECTED);

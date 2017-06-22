@@ -12,6 +12,7 @@ import li.cil.tis3d.api.module.traits.BlockChangeAware;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.render.TextureLoader;
+import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ItemBookCode;
 import li.cil.tis3d.common.module.execution.MachineImpl;
@@ -460,7 +461,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
 
             final List<String> code = new ArrayList<>();
             for (int page = 0; page < pages.tagCount(); page++) {
-                Collections.addAll(code, ItemBookCode.Data.PATTERN_LINES.split(pages.getStringTagAt(page)));
+                Collections.addAll(code, Constants.PATTERN_LINES.split(pages.getStringTagAt(page)));
             }
             return code;
         }
