@@ -1,24 +1,57 @@
 package li.cil.tis3d.common.init;
 
+import li.cil.tis3d.api.API;
 import li.cil.tis3d.common.Constants;
-import li.cil.tis3d.common.ProxyCommon;
 import li.cil.tis3d.common.block.BlockCasing;
 import li.cil.tis3d.common.block.BlockController;
 import li.cil.tis3d.common.tileentity.TileEntityCasing;
 import li.cil.tis3d.common.tileentity.TileEntityController;
 import net.minecraft.block.Block;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.registries.IForgeRegistry;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Manages setup, registration and lookup of blocks.
  */
+@GameRegistry.ObjectHolder(API.MOD_ID)
 public final class Blocks {
-    public static Block casing;
-    public static Block controller;
+    @GameRegistry.ObjectHolder(Constants.NAME_BLOCK_CASING)
+    public static final Block casing = null;
+    @GameRegistry.ObjectHolder(Constants.NAME_BLOCK_CONTROLLER)
+    public static final Block controller = null;
 
-    public static void registerBlocks(final ProxyCommon proxy) {
-        casing = proxy.registerBlock(Constants.NAME_BLOCK_CASING, BlockCasing::new, TileEntityCasing.class);
-        controller = proxy.registerBlock(Constants.NAME_BLOCK_CONTROLLER, BlockController::new, TileEntityController.class);
+    public static List<Block> getAllBlocks() {
+        return Arrays.asList(
+                casing,
+                controller
+        );
     }
+
+    // --------------------------------------------------------------------- //
+
+    public static void register(final IForgeRegistry<Block> registry) {
+        registerBlock(registry, new BlockCasing(), Constants.NAME_BLOCK_CASING, TileEntityCasing.class);
+        registerBlock(registry, new BlockController(), Constants.NAME_BLOCK_CONTROLLER, TileEntityController.class);
+    }
+
+    // --------------------------------------------------------------------- //
+
+    private static void registerBlock(final IForgeRegistry<Block> registry, final Block block, final String name, final Class<? extends TileEntity> tileEntity) {
+        registry.register(block.
+                setHardness(5).
+                setResistance(10).
+                setUnlocalizedName(API.MOD_ID + "." + name).
+                setCreativeTab(API.creativeTab).
+                setRegistryName(name));
+
+        GameRegistry.registerTileEntity(tileEntity, API.MOD_ID + ": " + name);
+    }
+
+    // --------------------------------------------------------------------- //
 
     private Blocks() {
     }

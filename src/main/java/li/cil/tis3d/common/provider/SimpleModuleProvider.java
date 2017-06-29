@@ -20,7 +20,7 @@ public final class SimpleModuleProvider<T extends Module> implements ModuleProvi
     }
 
     public boolean worksWith(final ItemStack stack, final Casing casing, final Face face) {
-        return stack.getItem() == Items.modules.get(moduleName);
+        return stack.getItem() == Items.getModules().get(moduleName);
     }
 
     @Nullable

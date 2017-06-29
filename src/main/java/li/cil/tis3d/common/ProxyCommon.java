@@ -18,7 +18,6 @@ import li.cil.tis3d.common.init.Blocks;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.integration.Integration;
 import li.cil.tis3d.common.integration.redstone.RedstoneIntegration;
-import li.cil.tis3d.common.item.ItemModule;
 import li.cil.tis3d.common.module.ModuleAudio;
 import li.cil.tis3d.common.module.ModuleBundledRedstone;
 import li.cil.tis3d.common.module.ModuleDisplay;
@@ -38,23 +37,21 @@ import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.provider.SimpleModuleProvider;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
-
-import javax.annotation.Nullable;
-import java.util.function.Supplier;
 
 /**
  * Takes care of common setup.
  */
+@Mod.EventBusSubscriber
 public class ProxyCommon {
     public void onPreInit(final FMLPreInitializationEvent event) {
         // Load our settings first to have all we need for remaining init.
@@ -71,10 +68,6 @@ public class ProxyCommon {
 
         // Initialize capabilities.
         CapabilityInfraredReceiver.register();
-
-        // Register blocks and items.
-        Blocks.registerBlocks(this);
-        Items.register(this);
 
         // Mod integration.
         Integration.preInit(event);
@@ -133,39 +126,14 @@ public class ProxyCommon {
 
     // --------------------------------------------------------------------- //
 
-    public Block registerBlock(final String name, final Supplier<Block> constructor, final Class<? extends TileEntity> tileEntity) {
-        final Block block = constructor.get().
-                setHardness(5).
-                setResistance(10).
-                setUnlocalizedName(API.MOD_ID + "." + name).
-                setCreativeTab(API.creativeTab).
-                setRegistryName(name);
-        GameRegistry.register(block);
-        GameRegistry.registerTileEntityWithAlternatives(tileEntity, API.MOD_ID + ": " + name, name);
-
-        final Item itemBlock = new ItemBlock(block).
-                setRegistryName(name);
-        GameRegistry.register(itemBlock);
-
-        return block;
+    @SubscribeEvent
+    public static void handleRegisterBlocksEvent(final RegistryEvent.Register<Block> event) {
+        Blocks.register(event.getRegistry());
     }
 
-    public Item registerItem(final String name, final Supplier<Item> constructor) {
-        final Item item = constructor.get().
-                setUnlocalizedName(API.MOD_ID + "." + name).
-                setCreativeTab(API.creativeTab).
-                setRegistryName(name);
-        GameRegistry.register(item);
-        return item;
-    }
-
-    @Nullable
-    public Item registerModule(final String name) {
-        if (Settings.disabledModules.contains(name)) {
-            return null;
-        }
-
-        return registerItem(name, ItemModule::new);
+    @SubscribeEvent
+    public static void handleRegisterItemsEvent(final RegistryEvent.Register<Item> event) {
+        Items.register(event.getRegistry());
     }
 
     // --------------------------------------------------------------------- //

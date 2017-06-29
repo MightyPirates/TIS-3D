@@ -19,24 +19,27 @@ import li.cil.tis3d.common.init.Blocks;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.tileentity.TileEntityCasing;
 import li.cil.tis3d.common.tileentity.TileEntityController;
-import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 
-import java.util.function.Supplier;
+import java.util.Collection;
 
 /**
  * Takes care of client-side only setup.
  */
+@Mod.EventBusSubscriber(Side.CLIENT)
 public final class ProxyClient extends ProxyCommon {
     @Override
     public void onPreInit(final FMLPreInitializationEvent event) {
@@ -64,32 +67,30 @@ public final class ProxyClient extends ProxyCommon {
 
         ManualAPI.addTab(new TextureTabIconRenderer(new ResourceLocation(API.MOD_ID, "textures/gui/manual_home.png")), "tis3d.manual.home", "%LANGUAGE%/index.md");
         ManualAPI.addTab(new ItemStackTabIconRenderer(new ItemStack(Blocks.controller)), "tis3d.manual.blocks", "%LANGUAGE%/block/index.md");
-        ManualAPI.addTab(new ItemStackTabIconRenderer(new ItemStack(Items.modules.get(Constants.NAME_ITEM_MODULE_EXECUTION))), "tis3d.manual.items", "%LANGUAGE%/item/index.md");
+        final Item module;
+        if (Items.getModules().containsKey(Constants.NAME_ITEM_MODULE_EXECUTION)) {
+            module = Items.getModules().get(Constants.NAME_ITEM_MODULE_EXECUTION);
+        } else {
+            final Collection<Item> allModules = Items.getModules().values();
+            if (allModules.isEmpty()) {
+                module = net.minecraft.init.Items.REDSTONE;
+            } else {
+                module = allModules.iterator().next();
+            }
+        }
+        ManualAPI.addTab(new ItemStackTabIconRenderer(new ItemStack(module)), "tis3d.manual.items", "%LANGUAGE%/item/index.md");
         ManualAPI.addTab(new TextureTabIconRenderer(new ResourceLocation(API.MOD_ID, "textures/gui/manual_serial_protocols.png")), "tis3d.manual.serialProtocols", "%LANGUAGE%/serial_protocols.md");
     }
 
     // --------------------------------------------------------------------- //
 
-    @Override
-    public Block registerBlock(final String name, final Supplier<Block> constructor, final Class<? extends TileEntity> tileEntity) {
-        final Block block = super.registerBlock(name, constructor, tileEntity);
-        setCustomItemModelResourceLocation(Item.getItemFromBlock(block));
-        return block;
-    }
-
-    @Override
-    public Item registerItem(final String name, final Supplier<Item> constructor) {
-        final Item item = super.registerItem(name, constructor);
-        setCustomItemModelResourceLocation(item);
-        return item;
-    }
-
-    // --------------------------------------------------------------------- //
-
-    private static void setCustomItemModelResourceLocation(final Item item) {
-        final ResourceLocation registryName = item.getRegistryName();
-        assert registryName != null;
-        final ModelResourceLocation location = new ModelResourceLocation(registryName, "inventory");
-        ModelLoader.setCustomModelResourceLocation(item, 0, location);
+    @SubscribeEvent
+    public static void handleModelRegistryEvent(final ModelRegistryEvent event) {
+        for (final Item item : Items.getAllItems()) {
+            final ResourceLocation registryName = item.getRegistryName();
+            assert registryName != null;
+            final ModelResourceLocation location = new ModelResourceLocation(registryName, "inventory");
+            ModelLoader.setCustomModelResourceLocation(item, 0, location);
+        }
     }
 }
