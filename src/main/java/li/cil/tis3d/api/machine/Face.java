@@ -83,4 +83,14 @@ public enum Face {
     public static ForgeDirection toForgeDirection(final Face face) {
         return ForgeDirection.VALID_DIRECTIONS[face.ordinal()];
     }
+
+    /**
+    * Convert a facing from sideHit int to our internal format.
+    *
+    * @param facing the facing to convert
+    * @return the {@link Face} representing that facing.
+    */
+    public static Face fromIntFacing(final int facing) {
+        return VALUES[facing];
+    }
 }

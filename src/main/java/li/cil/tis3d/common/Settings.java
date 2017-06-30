@@ -33,7 +33,7 @@ public final class Settings {
     public static int maxLinesPerProgram = 20;
 
     /**
-     * The maximum number of characters a single line may have.
+     * The maximum number of characters a single line in a program may have.
      */
     public static int maxColumnsPerLine = 18;
 
@@ -43,6 +43,11 @@ public final class Settings {
      * If the queue runs full, additionally received packets will be dropped.
      */
     public static int maxInfraredQueueLength = 16;
+
+    /**
+     * Whether to swing the player's arm while typing in a terminal module.
+     */
+    public static boolean animateTypingHand = true;
 
     /**
      * The list of <em>disabled</em> modules. Disabled modules will not be
@@ -77,6 +82,9 @@ public final class Settings {
         maxInfraredQueueLength = config.getInt("maxQueueLength", "module.infrared",
                 maxInfraredQueueLength, 1, 64,
                 "The maximum number of infrared packets that can be stored in the receiver's buffer.");
+        animateTypingHand = config.getBoolean("animateTypingHand", "module.terminal",
+                true,
+                "Whether to swing the plater's arm while typing on a terminal module.");
 
         // Rebuild list of disabled modules.
         disabledModules.clear();

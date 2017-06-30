@@ -55,7 +55,7 @@ public final class ItemBookCode extends ItemBook {
     @Override
     public ItemStack onItemRightClick(final ItemStack stack, final World world, final EntityPlayer player) {
         if (world.isRemote) {
-            player.openGui(TIS3D.instance, GuiHandlerClient.ID_GUI_BOOK_CODE, world, 0, 0, 0);
+            player.openGui(TIS3D.instance, GuiHandlerClient.GuiId.BOOK_CODE.ordinal(), world, 0, 0, 0);
         }
         return super.onItemRightClick(stack, world, player);
     }

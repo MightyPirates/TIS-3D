@@ -24,6 +24,7 @@ public final class TextureLoader {
     public static final ResourceLocation LOCATION_MODULE_REDSTONE_BARS_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/moduleRedstoneBars");
     public static final ResourceLocation LOCATION_MODULE_SERIAL_PORT_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/moduleSerialPort");
     public static final ResourceLocation LOCATION_MODULE_STACK_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/moduleStack");
+    public static final ResourceLocation LOCATION_MODULE_TERMINAL_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/moduleTerminal");
     public static final ResourceLocation LOCATION_MODULE_TIMER_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/moduleTimer");
 
     public static final TextureLoader INSTANCE = new TextureLoader();

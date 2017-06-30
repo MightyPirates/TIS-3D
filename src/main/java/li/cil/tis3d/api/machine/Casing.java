@@ -49,6 +49,21 @@ public interface Casing {
     // --------------------------------------------------------------------- //
 
     /**
+     * Get whether the casing is currently enabled, i.e. whether it is
+     * connected to a currently enabled controller.
+     * <p>
+     * A controller is considered active when a positive non-zero redstone
+     * signal is applied to it. This in particular includes the paused state
+     * at a signal strength one.
+     * <p>
+     * This is useful for contextual behavior in modules while rendering or in
+     * the activation callback {@link Module#onActivate(EntityPlayer, float, float, float)}.
+     *
+     * @return whether the casing is currently enabled.
+     */
+    boolean isEnabled();
+
+    /**
      * Get whether the casing is locked.
      * <p>
      * Casings can be locked, preventing players to remove modules from the

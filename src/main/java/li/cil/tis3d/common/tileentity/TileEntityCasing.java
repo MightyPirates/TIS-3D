@@ -85,16 +85,16 @@ public final class TileEntityCasing extends TileEntityComputer implements
     // --------------------------------------------------------------------- //
     // Networking
 
+    public boolean isCasingEnabled() {
+        return isEnabled;
+    }
+
     public TileEntityController getController() {
         return controller;
     }
 
     public void setController(final TileEntityController controller) {
         this.controller = controller;
-    }
-
-    public boolean isEnabled() {
-        return isEnabled;
     }
 
     @SideOnly(Side.CLIENT)
@@ -400,6 +400,6 @@ public final class TileEntityCasing extends TileEntityComputer implements
         casing.writeToNBT(casingNbt);
         nbt.setTag(TAG_CASING, casingNbt);
 
-        nbt.setBoolean(TAG_ENABLED, isEnabled());
+        nbt.setBoolean(TAG_ENABLED, isEnabled);
     }
 }

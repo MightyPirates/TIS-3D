@@ -17,6 +17,7 @@ item.tis3d.moduleReadOnlyMemory.name=ROM Module
 item.tis3d.moduleRedstone.name=Redstone Module
 item.tis3d.moduleSerialPort.name=Serial Port Module
 item.tis3d.moduleStack.name=Stack Module
+item.tis3d.moduleTerminal.name=Terminal Module
 item.tis3d.moduleTimer.name=Timer Module
 item.tis3d.prism.name=Prism
 
