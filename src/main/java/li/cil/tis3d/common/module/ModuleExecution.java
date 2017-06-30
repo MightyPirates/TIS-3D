@@ -237,8 +237,6 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         RenderUtil.ignoreLighting();
 
         // Draw status texture.
-        //RenderUtil.bindTexture(STATE_LOCATIONS[state.ordinal()]);
-        //RenderUtil.drawQuad();
         RenderUtil.drawQuad(RenderUtil.getSprite(STATE_LOCATIONS[state.ordinal()]));
 
         // Render detailed state when player is close.

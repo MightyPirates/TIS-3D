@@ -225,7 +225,7 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
 
         rotateForRendering();
         RenderUtil.ignoreLighting();
-        //GlStateManager.enableBlend();
+        GL11.glEnable(GL11.GL_BLEND);
 
         if (OneEightCompat.getDistanceSqToCenter(Minecraft.getMinecraft().thePlayer, getCasing().getPositionX(), getCasing().getPositionY(), getCasing().getPositionZ()) < 64) {
             // Player is close, render actual terminal text.
@@ -235,7 +235,7 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
             RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_MODULE_TERMINAL_OVERLAY));
         }
 
-        //GlStateManager.disableBlend();
+        GL11.glDisable(GL11.GL_BLEND);
     }
 
     @Override
@@ -325,7 +325,6 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
             GL11.glColor4f(0.5f, 0.5f, 0.5f, 1f);
         }
 
-        //GlStateManager.disableTexture2D();
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glDepthMask(false);
 
@@ -338,7 +337,6 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
             GL11.glColor4f(1f, 1f, 1f, 1f);
         }
 
-        //GlStateManager.enableTexture2D();
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glTranslatef(0, 4, 0);
 
@@ -346,10 +344,8 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
 
         if (isInputEnabled && input.length() < MAX_COLUMNS && System.currentTimeMillis() % 800 > 400) {
             GL11.glColor4f(1f, 1f, 1f, 1f);
-            //GlStateManager.disableTexture2D();
             GL11.glDisable(GL11.GL_TEXTURE_2D);
             RenderUtil.drawUntexturedQuad(input.length() * fontRenderer.getCharWidth(), 0, fontRenderer.getCharWidth(), fontRenderer.getCharHeight());
-            //GlStateManager.enableTexture2D();
             GL11.glEnable(GL11.GL_TEXTURE_2D);
         }
     }
@@ -473,6 +469,7 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
         final World world = getCasing().getCasingWorld();
         if (!world.isRemote) {
             //world.playSound(null, getCasing().getPosition(), SoundEvents.BLOCK_NOTE_PLING, SoundCategory.BLOCKS, 0.3f, 2f);
+            world.playSoundEffect(getCasing().getPositionX(), getCasing().getPositionY(), getCasing().getPositionZ(), "note.pling", .3f, .2f);
         }
     }
 

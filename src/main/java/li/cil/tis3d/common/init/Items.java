@@ -62,6 +62,7 @@ public final class Items {
         // and already programmed modules, and allow sneak clicking with it to
         // program it to the clicked RAM/ROM module.
         ((ItemModule) modules.get(Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY)).
+                setShareTag(false).
                 setDoesSneakBypassUse(true).
                 setMaxStackSize(1);
 

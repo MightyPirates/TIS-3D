@@ -108,8 +108,6 @@ public final class ModuleStack extends AbstractModuleRotatable {
         rotateForRendering();
         RenderUtil.ignoreLighting();
 
-        //RenderUtil.bindTexture(LOCATION_OVERLAY);
-        //RenderUtil.drawQuad();
         RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_MODULE_STACK_OVERLAY));
 
         // Render detailed state when player is close.

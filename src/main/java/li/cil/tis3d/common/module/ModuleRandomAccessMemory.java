@@ -113,7 +113,6 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
 
     @Override
     public boolean onActivate(final EntityPlayer player, final float hitX, final float hitY, final float hitZ) {
-        //final ItemStack heldItem, 
         final ItemStack heldItem = player.getHeldItem();
         if (!Items.isItem(heldItem, Items.modules.get(Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY))) {
             return false;

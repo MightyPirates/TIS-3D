@@ -34,7 +34,7 @@ public class GuiModuleTerminal extends GuiScreen {
 
     @Override
     public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
-        //GlStateManager.disableTexture2D();
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
 
         // To be on the safe side (see manual.Document#render).
         //GL11.glDisableAlpha();
@@ -56,7 +56,7 @@ public class GuiModuleTerminal extends GuiScreen {
 
         RenderUtil.drawUntexturedQuad(4, 4, width - 8, height - 8);
 
-        //GlStateManager.enableTexture2D();
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
     }
 
     @Override
