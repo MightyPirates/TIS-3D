@@ -136,11 +136,13 @@ public final class InventoryCasing extends Inventory implements ISidedInventory 
         final Face face = Face.VALUES[index];
         final Module module = tileEntity.getModule(face);
         tileEntity.setModule(face, null);
-        if (module != null && !tileEntity.getCasingWorld().isRemote) {
-            module.onUninstalled(getStackInSlot(index));
-            module.onDisposed();
-        }
+        if (!tileEntity.getCasingWorld().isRemote) {
+            if (module != null) {
+                module.onUninstalled(getStackInSlot(index));
+                module.onDisposed();
+            }
 
-        Network.INSTANCE.getWrapper().sendToAllAround(new MessageCasingInventory(tileEntity, index, null, null), Network.getTargetPoint(tileEntity, Network.RANGE_HIGH));
+            Network.INSTANCE.getWrapper().sendToAllAround(new MessageCasingInventory(tileEntity, index, null, null), Network.getTargetPoint(tileEntity, Network.RANGE_HIGH));
+        }
     }
 }
