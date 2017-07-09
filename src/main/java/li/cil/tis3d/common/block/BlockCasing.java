@@ -152,9 +152,9 @@ public final class BlockCasing extends Block {
                             }
                             if (facing == EnumFacing.DOWN || facing == EnumFacing.UP) {
                                 final Port orientation = Port.fromEnumFacing(OneEightCompat.getHorizontalFacing(player));
-                                casing.setInventorySlotContents(side.ordinal(), insertedStack, orientation);
+                                casing.setInventorySlotContents(side, insertedStack, orientation);
                             } else {
-                                casing.setInventorySlotContents(side.ordinal(), insertedStack);
+                                casing.setInventorySlotContents(side, insertedStack);
                             }
                             world.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, "tile.piston.out", 0.2f, 0.8f + world.rand.nextFloat() * 0.1f);
                         }

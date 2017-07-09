@@ -32,13 +32,13 @@ public final class InventoryCasing extends Inventory implements ISidedInventory 
             return;
         }
 
-        if (!items[index].isEmpty()) {
+        if (items[index] != null) {
             onItemRemoved(index);
         }
 
         items[index] = stack;
 
-        if (!items[index].isEmpty()) {
+        if (items[index] != null) {
             onItemAdded(index, facing);
         }
 
