@@ -5,7 +5,6 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.traits.Redstone;
-import li.cil.tis3d.api.module.traits.Rotatable;
 import li.cil.tis3d.api.util.TransformUtil;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.init.Items;
@@ -145,18 +144,17 @@ public final class BlockCasing extends Block {
                     // Installing a new module in the casing.
                     if (casing.canInsertItem(side, heldItem, side)) {
                         if (!world.isRemote) {
+                            final ItemStack insertedStack;
                             if (player.capabilities.isCreativeMode) {
-                                casing.setInventorySlotContents(side, heldItem.copy().splitStack(1));
+                                insertedStack = heldItem.copy().splitStack(1);
                             } else {
-                                casing.setInventorySlotContents(side, heldItem.splitStack(1));
+                                insertedStack = heldItem.splitStack(1);
                             }
                             if (facing == EnumFacing.DOWN || facing == EnumFacing.UP) {
-                                final Face face = Face.fromEnumFacing(facing);
-                                final Module newModule = casing.getModule(face);
-                                if (newModule instanceof Rotatable) {
-                                    final Port orientation = Port.fromEnumFacing(OneEightCompat.getHorizontalFacing(player));
-                                    ((Rotatable) newModule).setFacing(orientation);
-                                }
+                                final Port orientation = Port.fromEnumFacing(OneEightCompat.getHorizontalFacing(player));
+                                casing.setInventorySlotContents(side.ordinal(), insertedStack, orientation);
+                            } else {
+                                casing.setInventorySlotContents(side.ordinal(), insertedStack);
                             }
                             world.playSoundEffect(x + 0.5, y + 0.5, z + 0.5, "tile.piston.out", 0.2f, 0.8f + world.rand.nextFloat() * 0.1f);
                         }

@@ -14,7 +14,7 @@ public class Inventory implements IInventory {
     private static final String TAG_ITEMS = "inventory";
 
     private final String name;
-    private final ItemStack[] items;
+    protected final ItemStack[] items;
 
     public Inventory(final String name, final int size) {
         this.name = name;
