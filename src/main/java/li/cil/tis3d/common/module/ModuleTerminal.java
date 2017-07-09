@@ -1,5 +1,7 @@
 package li.cil.tis3d.common.module;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.machine.Casing;
@@ -13,21 +15,16 @@ import li.cil.tis3d.client.gui.GuiModuleTerminal;
 import li.cil.tis3d.client.render.TextureLoader;
 import li.cil.tis3d.client.render.font.FontRenderer;
 import li.cil.tis3d.client.render.font.FontRendererNormal;
-import li.cil.tis3d.api.FontRendererAPI;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.util.OneEightCompat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
-//import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
-//import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 import java.nio.ByteBuffer;
@@ -468,8 +465,7 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
     private void bell() {
         final World world = getCasing().getCasingWorld();
         if (!world.isRemote) {
-            //world.playSound(null, getCasing().getPosition(), SoundEvents.BLOCK_NOTE_PLING, SoundCategory.BLOCKS, 0.3f, 2f);
-            world.playSoundEffect(getCasing().getPositionX(), getCasing().getPositionY(), getCasing().getPositionZ(), "note.pling", .3f, .2f);
+            world.playSoundEffect(getCasing().getPositionX(), getCasing().getPositionY(), getCasing().getPositionZ(), "note.pling", 0.3f, 0.2f);
         }
     }
 
@@ -485,7 +481,7 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
                 line.append(' ');
             }
             while (line.length() % TAB_WIDTH != 0 &&
-                    line.length() < MAX_COLUMNS);
+                   line.length() < MAX_COLUMNS);
         }
     }
 

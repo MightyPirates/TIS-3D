@@ -23,7 +23,6 @@ public class TextureTabIconRenderer implements TabIconRenderer {
     @SideOnly(Side.CLIENT)
     public void render() {
         Minecraft.getMinecraft().getTextureManager().bindTexture(location);
-        //GL11.glBindTexture(GL11.GL_TEXTURE_2D, Minecraft.getMinecraft().getTextureManager().getTexture(location).getGlTextureId());
         final Tessellator t = Tessellator.instance;
         t.startDrawing(GL11.GL_QUADS);
         t.addVertexWithUV(0, 16, 0, 0, 1);
