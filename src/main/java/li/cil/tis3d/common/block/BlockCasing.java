@@ -5,7 +5,6 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.traits.Redstone;
-import li.cil.tis3d.api.module.traits.Rotatable;
 import li.cil.tis3d.api.util.TransformUtil;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ItemBookManual;
@@ -187,18 +186,17 @@ public final class BlockCasing extends Block {
                     // Installing a new module in the casing.
                     if (casing.canInsertItem(side.ordinal(), heldItem, side)) {
                         if (!world.isRemote) {
+                            final ItemStack insertedStack;
                             if (player.capabilities.isCreativeMode) {
-                                casing.setInventorySlotContents(side.ordinal(), heldItem.copy().splitStack(1));
+                                insertedStack = heldItem.copy().splitStack(1);
                             } else {
-                                casing.setInventorySlotContents(side.ordinal(), heldItem.splitStack(1));
+                                insertedStack = heldItem.splitStack(1);
                             }
                             if (side.getAxis() == EnumFacing.Axis.Y) {
-                                final Face face = Face.fromEnumFacing(side);
-                                final Module newModule = casing.getModule(face);
-                                if (newModule instanceof Rotatable) {
-                                    final Port orientation = Port.fromEnumFacing(player.getHorizontalFacing());
-                                    ((Rotatable) newModule).setFacing(orientation);
-                                }
+                                final Port orientation = Port.fromEnumFacing(player.getHorizontalFacing());
+                                casing.setInventorySlotContents(side.ordinal(), insertedStack, orientation);
+                            } else {
+                                casing.setInventorySlotContents(side.ordinal(), insertedStack);
                             }
                             world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.BLOCK_PISTON_EXTEND, SoundCategory.BLOCKS, 0.2f, 0.8f + world.rand.nextFloat() * 0.1f);
                         }

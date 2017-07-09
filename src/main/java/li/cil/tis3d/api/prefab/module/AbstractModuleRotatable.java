@@ -67,11 +67,13 @@ public abstract class AbstractModuleRotatable extends AbstractModule implements 
 
     @Override
     public void readFromNBT(final NBTTagCompound nbt) {
+        super.readFromNBT(nbt);
         facing = EnumUtils.readFromNBT(Port.class, TAG_FACING, nbt);
     }
 
     @Override
     public void writeToNBT(final NBTTagCompound nbt) {
+        super.writeToNBT(nbt);
         EnumUtils.writeToNBT(facing, TAG_FACING, nbt);
     }
 
