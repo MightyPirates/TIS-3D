@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
+import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.network.message.MessageCasingData;
 import li.cil.tis3d.common.tileentity.TileEntityCasing;
 import net.minecraft.nbt.CompressedStreamTools;
@@ -37,7 +38,7 @@ public final class MessageHandlerCasingData extends AbstractMessageHandlerWithLo
                             final NBTTagCompound nbt = CompressedStreamTools.readCompressed(bis);
                             module.onData(nbt);
                         } catch (final IOException e) {
-                            e.printStackTrace();
+                            TIS3D.getLog().warn("Invalid packet received.", e);
                         }
                     } else {
                         module.onData(packet);

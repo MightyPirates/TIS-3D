@@ -1,6 +1,7 @@
 package li.cil.tis3d.common.network.message;
 
 import io.netty.buffer.ByteBuf;
+import li.cil.tis3d.common.TIS3D;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -33,7 +34,7 @@ public final class MessageBookCodeData implements IMessage {
         try {
             nbt = buffer.readCompoundTag();
         } catch (final IOException e) {
-            e.printStackTrace();
+            TIS3D.getLog().warn("Invalid packet received.", e);
         }
     }
 

@@ -133,6 +133,19 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
         return locked[face.ordinal()][port.ordinal()];
     }
 
+    /**
+     * Place a module stack into the specified slot, immediately setting the
+     * module's rotation to the specified facing if it is a {@link li.cil.tis3d.api.module.traits.Rotatable}
+     * module.
+     *
+     * @param index  the slot to place the module into.
+     * @param stack  the stack representing the module.
+     * @param facing the rotation of the module.
+     */
+    public void setInventorySlotContents(final int index, final ItemStack stack, final Port facing) {
+        inventory.setInventorySlotContents(index, stack, facing);
+    }
+
     // --------------------------------------------------------------------- //
     // Networking
 

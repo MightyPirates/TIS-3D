@@ -13,6 +13,7 @@ import li.cil.tis3d.client.network.handler.MessageHandlerHaltAndCatchFire;
 import li.cil.tis3d.client.network.handler.MessageHandlerParticleEffects;
 import li.cil.tis3d.client.network.handler.MessageHandlerReceivingPipeLockedState;
 import li.cil.tis3d.common.Settings;
+import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.network.handler.MessageHandlerBookCodeData;
 import li.cil.tis3d.common.network.handler.MessageHandlerCasingData;
 import li.cil.tis3d.common.network.message.MessageBookCodeData;
@@ -516,7 +517,7 @@ public final class Network {
                         buffer.writeBytes(data);
                     }
                 } catch (final IOException e) {
-                    e.printStackTrace();
+                    TIS3D.getLog().warn("Failed sending packet.", e);
                 }
             }
         }
