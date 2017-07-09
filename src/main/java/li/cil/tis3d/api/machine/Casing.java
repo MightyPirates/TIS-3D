@@ -131,6 +131,10 @@ public interface Casing {
      * that is meant to be used for <em>non-frequent</em> data, i.e. data
      * that's only sent every so often. For data you expect may be sent
      * each tick, prefer using the more light-weight {@link ByteBuf}.
+     * <p>
+     * <em>Important</em>: the passed NBT tag is <em>not</em> copied, it is
+     * stored by reference. If you intend to modify the tag after passing
+     * it to this method, pass a copy of it instead.
      *
      * @param face the face the module is installed in.
      * @param data the data to send to the client.
@@ -150,6 +154,10 @@ public interface Casing {
      * that is meant to be used for <em>non-frequent</em> data, i.e. data
      * that's only sent every so often. For data you expect may be sent
      * each tick, prefer using the more light-weight {@link ByteBuf}.
+     * <p>
+     * <em>Important</em>: the passed NBT tag is <em>not</em> copied, it is
+     * stored by reference. If you intend to modify the tag after passing
+     * it to this method, pass a copy of it instead.
      *
      * @param face the face the module is installed in.
      * @param data the data to send to the client.
@@ -168,6 +176,10 @@ public interface Casing {
      * will replace the previously queued data. A negative value indicates
      * that no specific type is set and data should not be replaced in the
      * send queue.
+     * <p>
+     * <em>Important</em>: the passed buffer is <em>not</em> copied, it is
+     * stored by reference. If you intend to modify the buffer after passing
+     * it to this method, pass a copy of it instead.
      *
      * @param face the face the module is installed in.
      * @param data the data to send to the client.
@@ -182,6 +194,10 @@ public interface Casing {
      * with no specific type associated, so new data will never replace old
      * data. Where at all possible, providing a type is strongly recommended,
      * to reduce generated network traffic.
+     * <p>
+     * <em>Important</em>: the passed buffer is <em>not</em> copied, it is
+     * stored by reference. If you intend to modify the buffer after passing
+     * it to this method, pass a copy of it instead.
      *
      * @param face the face the module is installed in.
      * @param data the data to send to the client.

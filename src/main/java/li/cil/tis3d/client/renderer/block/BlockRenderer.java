@@ -1,4 +1,4 @@
-package li.cil.tis3d.client.render.block;
+package li.cil.tis3d.client.renderer.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;

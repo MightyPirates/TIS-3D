@@ -23,8 +23,9 @@ public final class SerialAPI {
      * @param provider the provider to register.
      */
     public static void addProvider(final SerialInterfaceProvider provider) {
-        if (API.serialAPI != null)
+        if (API.serialAPI != null) {
             API.serialAPI.addProvider(provider);
+        }
     }
 
     /**
@@ -38,8 +39,9 @@ public final class SerialAPI {
      * @return the first provider supporting the item stack, or <tt>null</tt>.
      */
     public static SerialInterfaceProvider getProviderFor(final World world, final int x, final int y, final int z, final EnumFacing side) {
-        if (API.serialAPI != null)
+        if (API.serialAPI != null) {
             return API.serialAPI.getProviderFor(world, x, y, z, side);
+        }
         return null;
     }
 

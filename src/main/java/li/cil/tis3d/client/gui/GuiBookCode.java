@@ -1,6 +1,8 @@
 package li.cil.tis3d.client.gui;
 
-import li.cil.tis3d.api.API;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import li.cil.tis3d.client.renderer.TextureLoader;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.init.Items;
@@ -16,8 +18,6 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StatCollector;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
@@ -31,8 +31,9 @@ import java.util.stream.Collectors;
 /**
  * GUI for the code book, used to write and manage ASM programs.
  */
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+@SideOnly(Side.CLIENT)
 public final class GuiBookCode extends GuiScreen {
-    private static final ResourceLocation LOCATION_BACKGROUND = new ResourceLocation(API.MOD_ID, "textures/gui/bookCode.png");
     private static final int GUI_WIDTH = 148;
     private static final int GUI_HEIGHT = 230;
     private static final int BUTTON_PAGE_CHANGE_PREV_X = 8;
@@ -81,7 +82,6 @@ public final class GuiBookCode extends GuiScreen {
     // --------------------------------------------------------------------- //
 
     @Override
-    @SuppressWarnings("unchecked")
     public void initGui() {
         super.initGui();
 
@@ -120,13 +120,13 @@ public final class GuiBookCode extends GuiScreen {
 
         // Background.
         GL11.glColor4f(1, 1, 1, 1);
-        Minecraft.getMinecraft().getTextureManager().bindTexture(LOCATION_BACKGROUND);
+        Minecraft.getMinecraft().getTextureManager().bindTexture(TextureLoader.LOCATION_BOOK_CODE_BACKGROUND);
         drawTexturedModalRect(guiX, guiY, 0, 0, GUI_WIDTH, GUI_HEIGHT);
 
         // Check page change button availability.
         buttonPreviousPage.visible = data.getSelectedPage() > 0 && data.getPageCount() > 0;
         buttonNextPage.visible = (data.getSelectedPage() < data.getPageCount() - 1) ||
-                (data.getSelectedPage() == data.getPageCount() - 1 && isCurrentProgramNonEmpty());
+                                 (data.getSelectedPage() == data.getPageCount() - 1 && isCurrentProgramNonEmpty());
         buttonDeletePage.visible = data.getPageCount() > 1 || isCurrentProgramNonEmpty();
 
         super.drawScreen(mouseX, mouseY, partialTicks);
@@ -303,7 +303,7 @@ public final class GuiBookCode extends GuiScreen {
                     return;
                 }
 
-                lines.get(line).insert(indexToColumn(column), pastedLines[0].toUpperCase());
+                lines.get(line).insert(indexToColumn(column), pastedLines[0].toUpperCase(Locale.US));
                 lines.addAll(line + 1, Arrays.stream(pastedLines).
                         skip(1).
                         map(l -> l.toUpperCase(Locale.US)).
@@ -433,7 +433,7 @@ public final class GuiBookCode extends GuiScreen {
 
     private boolean isInCodeArea(final int mouseX, final int mouseY) {
         return mouseX >= guiX + CODE_POS_X - CODE_MARGIN && mouseX <= guiX + CODE_POS_X + CODE_WIDTH + CODE_MARGIN &&
-                mouseY >= guiY + CODE_POS_Y - CODE_MARGIN && mouseY <= guiY + CODE_POS_Y + fontRendererObj.FONT_HEIGHT * Constants.MAX_LINES_PER_PAGE + CODE_MARGIN;
+               mouseY >= guiY + CODE_POS_Y - CODE_MARGIN && mouseY <= guiY + CODE_POS_Y + fontRendererObj.FONT_HEIGHT * Constants.MAX_LINES_PER_PAGE + CODE_MARGIN;
     }
 
     private boolean isCurrentProgramNonEmpty() {
@@ -452,11 +452,11 @@ public final class GuiBookCode extends GuiScreen {
         program.addAll(trailingCode);
 
         try {
-                Compiler.compile(program, new MachineState());
+            Compiler.compile(program, new MachineState());
         } catch (final ParseException e) {
-                // Adjust line number for current page.
-                final int lineNumber = e.getLineNumber() - leadingCode.size();
-                compileError = Optional.of(new ParseException(e.getMessage(), lineNumber, e.getStart(), e.getEnd()));
+            // Adjust line number for current page.
+            final int lineNumber = e.getLineNumber() - leadingCode.size();
+            compileError = Optional.of(new ParseException(e.getMessage(), lineNumber, e.getStart(), e.getEnd()));
         }
     }
 
@@ -659,7 +659,7 @@ public final class GuiBookCode extends GuiScreen {
 
             final boolean isHovered = mouseX >= xPosition && mouseY >= yPosition && mouseX < xPosition + width && mouseY < yPosition + height;
             GL11.glColor4f(1, 1, 1, 1);
-            mc.getTextureManager().bindTexture(LOCATION_BACKGROUND);
+            mc.getTextureManager().bindTexture(TextureLoader.LOCATION_BOOK_CODE_BACKGROUND);
             final int offsetX = isHovered ? BUTTON_WIDTH : 0;
             final int offsetY = type == PageChangeType.Previous ? BUTTON_HEIGHT : 0;
             drawTexturedModalRect(xPosition, yPosition, TEXTURE_X + offsetX, TEXTURE_Y + offsetY, BUTTON_WIDTH, BUTTON_HEIGHT);
@@ -684,7 +684,7 @@ public final class GuiBookCode extends GuiScreen {
 
             final boolean isHovered = mouseX >= xPosition && mouseY >= yPosition && mouseX < xPosition + width && mouseY < yPosition + height;
             GL11.glColor4f(1, 1, 1, 1);
-            mc.getTextureManager().bindTexture(LOCATION_BACKGROUND);
+            mc.getTextureManager().bindTexture(TextureLoader.LOCATION_BOOK_CODE_BACKGROUND);
             final int offsetX = isHovered ? BUTTON_WIDTH : 0;
             drawTexturedModalRect(xPosition, yPosition, TEXTURE_X + offsetX, TEXTURE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
         }

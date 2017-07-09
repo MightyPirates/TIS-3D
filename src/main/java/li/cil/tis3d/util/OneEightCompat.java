@@ -24,9 +24,9 @@ public final class OneEightCompat {
      */
     public static final EnumFacing[] HORIZONTALS = new EnumFacing[]{
             EnumFacing.SOUTH,
-            EnumFacing.WEST,
+            EnumFacing.EAST, // Actually WEST, incorrectly named in enum.
             EnumFacing.NORTH,
-            EnumFacing.EAST
+            EnumFacing.WEST // Actually EAST, incorrectly named in enum.
     };
 
     // Container.calcRedstone

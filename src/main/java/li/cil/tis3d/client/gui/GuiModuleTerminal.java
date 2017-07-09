@@ -57,8 +57,9 @@ public class GuiModuleTerminal extends GuiScreen {
 
     @Override
     protected void keyTyped(final char typedChar, final int keyCode) {
+        super.keyTyped(typedChar, keyCode);
+
         if (keyCode == Keyboard.KEY_ESCAPE) {
-            super.keyTyped(typedChar, keyCode);
             return;
         }
 

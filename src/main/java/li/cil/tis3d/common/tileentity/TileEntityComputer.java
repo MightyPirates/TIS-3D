@@ -7,6 +7,9 @@ import li.cil.tis3d.common.machine.PipeHost;
 import li.cil.tis3d.common.machine.PipeImpl;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
@@ -33,7 +36,7 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
 
     static {
         FACE_MAPPING = new Face[][]{
-                {Face.X_NEG, Face.X_POS, Face.Z_POS, Face.Z_NEG}, // Y_NEG
+                {Face.X_POS, Face.X_NEG, Face.Z_NEG, Face.Z_POS}, // Y_NEG
                 {Face.X_POS, Face.X_NEG, Face.Z_POS, Face.Z_NEG}, // Y_POS
                 {Face.X_POS, Face.X_NEG, Face.Y_POS, Face.Y_NEG}, // Z_NEG
                 {Face.X_NEG, Face.X_POS, Face.Y_POS, Face.Y_NEG}, // Z_POS
@@ -42,12 +45,12 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
                 //    LEFT        RIGHT       UP          DOWN
         };
         PORT_MAPPING = new Port[][]{
-                {Port.DOWN,  Port.DOWN,  Port.DOWN,  Port.DOWN},   // Y_NEG
-                {Port.UP,    Port.UP,    Port.UP,    Port.UP},     // Y_POS
-                {Port.RIGHT, Port.LEFT,  Port.DOWN,  Port.DOWN},   // Z_NEG
-                {Port.RIGHT, Port.LEFT,  Port.UP,    Port.UP},     // Z_POS
-                {Port.RIGHT, Port.LEFT,  Port.RIGHT, Port.LEFT},   // X_NEG
-                {Port.RIGHT, Port.LEFT,  Port.LEFT,  Port.RIGHT}   // X_POS
+                {Port.DOWN,  Port.DOWN, Port.DOWN,  Port.DOWN},   // Y_NEG
+                {Port.UP,    Port.UP,   Port.UP,    Port.UP},     // Y_POS
+                {Port.RIGHT, Port.LEFT, Port.DOWN,  Port.UP},     // Z_NEG
+                {Port.RIGHT, Port.LEFT, Port.UP,    Port.DOWN},   // Z_POS
+                {Port.RIGHT, Port.LEFT, Port.RIGHT, Port.RIGHT},  // X_NEG
+                {Port.RIGHT, Port.LEFT, Port.LEFT,  Port.LEFT}    // X_POS
                 //    LEFT        RIGHT       UP          DOWN
         };
     }
@@ -80,6 +83,10 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
         }
     }
 
+    /**
+     * Advances the virtual modules used to bridge edges between modules, calling
+     * {@link Forwarder#step()} on them.
+     */
     public void stepForwarders() {
         for (final Forwarder forwarder : forwarders) {
             if (forwarder != null) {
@@ -158,30 +165,28 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
     @Override
     public void readFromNBT(final NBTTagCompound nbt) {
         super.readFromNBT(nbt);
-
-        final NBTTagList pipesNbt = nbt.getTagList(TAG_PIPES, Constants.NBT.TAG_COMPOUND);
-        final int pipeCount = Math.min(pipesNbt.tagCount(), pipes.length);
-        for (int i = 0; i < pipeCount; i++) {
-            pipes[i].readFromNBT(pipesNbt.getCompoundTagAt(i));
-        }
+        readFromNBTForServer(nbt);
     }
 
     @Override
     public void writeToNBT(final NBTTagCompound nbt) {
         super.writeToNBT(nbt);
+        writeToNBTForServer(nbt);
+    }
 
-        final NBTTagList pipesNbt = new NBTTagList();
-        for (final PipeImpl pipe : pipes) {
-            final NBTTagCompound portNbt = new NBTTagCompound();
-            pipe.writeToNBT(portNbt);
-            pipesNbt.appendTag(portNbt);
-        }
-        nbt.setTag(TAG_PIPES, pipesNbt);
+    @Override
+    public void onDataPacket(final NetworkManager manager, final S35PacketUpdateTileEntity packet) {
+        readFromNBTForClient(packet.func_148857_g());
+    }
+
+    @Override
+    public Packet getDescriptionPacket() {
+        final NBTTagCompound nbt = new NBTTagCompound();
+        writeToNBTForClient(nbt);
+        return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 0, nbt);
     }
 
     // --------------------------------------------------------------------- //
-
-    protected abstract void scheduleScan();
 
     public void checkNeighbors() {
         // When a neighbor changed, check all neighbors and register them in
@@ -204,6 +209,8 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
             }
         }
     }
+
+    protected abstract void scheduleScan();
 
     protected void setNeighbor(final Face face, final TileEntityComputer neighbor) {
         // If a neighbor changed, do a rescan in the controller.
@@ -228,6 +235,42 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
             forwarders[face.ordinal()] = forwarder;
             neighbor.forwarders[face.getOpposite().ordinal()] = neighborForwarder;
         }
+    }
+
+    protected void readFromNBTForServer(final NBTTagCompound nbt) {
+        final NBTTagList pipesNbt = nbt.getTagList(TAG_PIPES, Constants.NBT.TAG_COMPOUND);
+        final int pipeCount = Math.min(pipesNbt.tagCount(), pipes.length);
+        for (int i = 0; i < pipeCount; i++) {
+            pipes[i].readFromNBT(pipesNbt.getCompoundTagAt(i));
+        }
+
+        readFromNBTCommon(nbt);
+    }
+
+    protected void writeToNBTForServer(final NBTTagCompound nbt) {
+        final NBTTagList pipesNbt = new NBTTagList();
+        for (final PipeImpl pipe : pipes) {
+            final NBTTagCompound portNbt = new NBTTagCompound();
+            pipe.writeToNBT(portNbt);
+            pipesNbt.appendTag(portNbt);
+        }
+        nbt.setTag(TAG_PIPES, pipesNbt);
+
+        writeToNBTCommon(nbt);
+    }
+
+    protected void readFromNBTForClient(final NBTTagCompound nbt) {
+        readFromNBTCommon(nbt);
+    }
+
+    protected void writeToNBTForClient(final NBTTagCompound nbt) {
+        writeToNBTCommon(nbt);
+    }
+
+    protected void readFromNBTCommon(final NBTTagCompound nbt) {
+    }
+
+    protected void writeToNBTCommon(final NBTTagCompound nbt) {
     }
 
     // --------------------------------------------------------------------- //
@@ -279,6 +322,8 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
         return mapFace(face, port).ordinal() * Port.VALUES.length + mapSide(face, port).ordinal();
     }
 
+    // --------------------------------------------------------------------- //
+
     /**
      * This is a "virtual module" for internal use, forwarding data on all incoming
      * ports to the linked sink forwarder. This is used to transfer data between
@@ -305,16 +350,12 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
         }
 
         public void step() {
-            assert (!computer.getWorldObj().isRemote);
-
             for (final Port port : Port.VALUES) {
                 beginForwarding(port);
             }
         }
 
         public void onWriteComplete(final Port port) {
-            assert (!computer.getWorldObj().isRemote);
-
             beginForwarding(port);
         }
 
@@ -322,7 +363,8 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
 
         private void beginForwarding(final Port port) {
             final Pipe receivingPipe = computer.getReceivingPipe(face, port);
-            final Pipe sendingPipe = other.computer.getSendingPipe(other.face, flipSide(port));
+
+            final Pipe sendingPipe = other.computer.getSendingPipe(other.face, flipSide(face, port));
             if (sendingPipe.isReading() && !sendingPipe.isWriting()) {
                 if (!receivingPipe.isReading()) {
                     receivingPipe.beginRead();
@@ -335,8 +377,12 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
             }
         }
 
-        private static Port flipSide(final Port port) {
-            return (port == Port.LEFT || port == Port.RIGHT) ? port.getOpposite() : port;
+        private static Port flipSide(final Face face, final Port port) {
+            if (face == Face.Y_NEG || face == Face.Y_POS) {
+                return (port == Port.UP || port == Port.DOWN) ? port.getOpposite() : port;
+            } else {
+                return (port == Port.LEFT || port == Port.RIGHT) ? port.getOpposite() : port;
+            }
         }
     }
 }

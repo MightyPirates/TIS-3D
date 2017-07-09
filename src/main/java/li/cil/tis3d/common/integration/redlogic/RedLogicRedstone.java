@@ -8,10 +8,8 @@ import li.cil.tis3d.common.tileentity.TileEntityCasing;
 import mods.immibis.redlogic.api.wiring.IRedstoneEmitter;
 import mods.immibis.redlogic.api.wiring.IRedstoneUpdatable;
 
-@Optional.InterfaceList({
-        @Optional.Interface(iface = "mods.immibis.redlogic.api.wiring.IRedstoneEmitter", modid = ProxyRedLogic.MOD_ID),
-        @Optional.Interface(iface = "mods.immibis.redlogic.api.wiring.IRedstoneUpdatable", modid = ProxyRedLogic.MOD_ID)
-})
+@Optional.InterfaceList({@Optional.Interface(iface = "mods.immibis.redlogic.api.wiring.IRedstoneEmitter", modid = ProxyRedLogic.MOD_ID),
+                         @Optional.Interface(iface = "mods.immibis.redlogic.api.wiring.IRedstoneUpdatable", modid = ProxyRedLogic.MOD_ID)})
 public interface RedLogicRedstone extends IRedstoneEmitter, IRedstoneUpdatable {
     TileEntityCasing getTileEntity();
 

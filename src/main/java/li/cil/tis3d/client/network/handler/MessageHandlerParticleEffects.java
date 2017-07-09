@@ -7,7 +7,7 @@ import net.minecraft.world.World;
 
 public final class MessageHandlerParticleEffects extends AbstractMessageHandler<MessageParticleEffect> {
     @Override
-    protected void process(final MessageParticleEffect message, final MessageContext context) {
+    protected void onMessageSynchronized(final MessageParticleEffect message, final MessageContext context) {
         final World world = getWorld(message.getDimension(), context);
         if (world != null) {
             world.spawnParticle(message.getParticleType(), message.getX(), message.getY(), message.getZ(), 0, 0, 0);

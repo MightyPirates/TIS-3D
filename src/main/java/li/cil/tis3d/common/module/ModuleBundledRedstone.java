@@ -4,7 +4,6 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
@@ -13,12 +12,11 @@ import li.cil.tis3d.api.module.traits.BundledRedstone;
 import li.cil.tis3d.api.module.traits.BundledRedstoneOutputChangedEvent;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.render.TextureLoader;
+import li.cil.tis3d.client.renderer.TextureLoader;
 import li.cil.tis3d.util.ColorUtils;
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.OpenGlHelper; 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.opengl.GL11;
 
@@ -44,7 +42,7 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
     private static final byte DATA_TYPE_UPDATE = 0;
 
     // Rendering info.
-    private static final float LEFT_U0 = 8 / 32;
+    private static final float LEFT_U0 = 8 / 32f;
     private static final float RIGHT_U0 = 20 / 32f;
     private static final float SHARED_V0 = 10 / 32f;
     private static final float V_STEP = 1 / 16f;
@@ -72,24 +70,22 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
 
     @Override
     public void step() {
-        assert (!getCasing().getCasingWorld().isRemote);
+        final World world = getCasing().getCasingWorld();
 
         for (final Port port : Port.VALUES) {
             stepOutput(port);
             stepInput(port);
         }
 
-        if (scheduledNeighborUpdate && getCasing().getCasingWorld().getTotalWorldTime() > lastStep) {
+        if (scheduledNeighborUpdate && world.getTotalWorldTime() > lastStep) {
             notifyNeighbors();
         }
 
-        lastStep = getCasing().getCasingWorld().getTotalWorldTime();
+        lastStep = world.getTotalWorldTime();
     }
 
     @Override
     public void onDisabled() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         Arrays.fill(input, (short) 0);
         Arrays.fill(output, (short) 0);
         channel = 0;
@@ -102,8 +98,6 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
 
     @Override
     public void onEnabled() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         sendData();
     }
 
@@ -142,7 +136,7 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
         }
 
         // Draw output bar.
-        renderBar(input, RIGHT_U0);
+        renderBar(output, LEFT_U0);
 
         // Draw input bar.
         renderBar(input, RIGHT_U0);
@@ -202,7 +196,8 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
     @Override
     public void setBundledRedstoneInput(final int channel, final short value) {
         // We never call this on the client side, but other might...
-        if (getCasing().getCasingWorld().isRemote) {
+        final World world = getCasing().getCasingWorld();
+        if (world.isRemote) {
             return;
         }
 
@@ -320,9 +315,11 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
      * Notify all neighbors of a block update, to let them realize our output changed.
      */
     private void notifyNeighbors() {
+        final World world = getCasing().getCasingWorld();
+
         scheduledNeighborUpdate = false;
-        final Block blockType = getCasing().getCasingWorld().getBlock(getCasing().getPositionX(), getCasing().getPositionY(), getCasing().getPositionZ());
-        getCasing().getCasingWorld().notifyBlocksOfNeighborChange(getCasing().getPositionX(), getCasing().getPositionY(), getCasing().getPositionZ(), blockType);
+        final Block blockType = world.getBlock(getCasing().getPositionX(), getCasing().getPositionY(), getCasing().getPositionZ());
+        world.notifyBlocksOfNeighborChange(getCasing().getPositionX(), getCasing().getPositionY(), getCasing().getPositionZ(), blockType);
     }
 
     /**

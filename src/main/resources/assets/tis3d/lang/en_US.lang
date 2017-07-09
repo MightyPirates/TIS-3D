@@ -24,15 +24,20 @@ item.tis3d.prism.name=Prism
 tile.tis3d.casing.name=Casing
 tile.tis3d.controller.name=Controller
 
-tis3d.compiler.tooManyLines=Too many lines
-tis3d.compiler.tooManyColumns=Line too long
+tis3d.compiler.error=Compile error @%s:%s-%s: 
 tis3d.compiler.invalidFormat=Unexpected token
 tis3d.compiler.invalidInstruction=Invalid opcode
-tis3d.compiler.parameterUnderflow=Missing operand
-tis3d.compiler.parameterInvalid=Invalid register
-tis3d.compiler.parameterOverflow=Too many operands
 tis3d.compiler.labelNotFound=Undefined label
 tis3d.compiler.labelDuplicate=Label is already defined
+tis3d.compiler.parameterInvalid=Invalid register
+tis3d.compiler.parameterOverflow=Too many operands
+tis3d.compiler.parameterUnderflow=Missing operand
+tis3d.compiler.tooManyColumns=Line too long
+tis3d.compiler.tooManyLines=Too many lines
+
+tis3d.controller.status.incomplete=Scan failed to complete
+tis3d.controller.status.multiple_controllers=Multiple controllers
+tis3d.controller.status.too_complex=Too complex
 
 tis3d.manual.home=Home
 tis3d.manual.blocks=Blocks
@@ -43,8 +48,9 @@ tis3d.manual.warning.missing.image=Image not found.
 tis3d.manual.warning.missing.item=Item unavailable.
 tis3d.manual.warning.missing.oreDict=Ore dictionary entry unavailable.
 
-tis3d.book_code.error_on_previous_page=Error on previous page:
 tis3d.book_code.error_on_next_page=Error on next page:
+tis3d.book_code.error_on_previous_page=Error on previous page:
 
 tis3d.tooltip.bookCode=§7Use a book on an installed execution module to get a copy.
 tis3d.tooltip.bookManual=§7Use a book on a controller block to get a copy.
+tis3d.tooltip.key=§7Sneak while holding to toggle receiving ports on a casing's face.

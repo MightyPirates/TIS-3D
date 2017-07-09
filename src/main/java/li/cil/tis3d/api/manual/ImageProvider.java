@@ -22,7 +22,7 @@ public interface ImageProvider {
      * return <tt>null</tt>, it should <em>never</em> throw an exception.
      *
      * @param data the data part of the image definition.
-     * @return the image renderer for the data.
+     * @return the image renderer for the data, or <tt>null</tt> if none exists.
      */
     ImageRenderer getImage(String data);
 }

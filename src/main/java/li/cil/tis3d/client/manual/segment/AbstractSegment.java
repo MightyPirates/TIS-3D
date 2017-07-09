@@ -11,7 +11,8 @@ abstract class AbstractSegment implements Segment {
 
     @Override
     public Segment root() {
-        return (parent() == null) ? this : parent().root();
+        final Segment parent = parent();
+        return parent == null ? this : parent.root();
     }
 
     @Override
@@ -32,10 +33,5 @@ abstract class AbstractSegment implements Segment {
     @Override
     public void setNext(final Segment segment) {
         next = segment;
-    }
-
-    @Override
-    public boolean isLast() {
-        return next() == null || root() != next().root();
     }
 }

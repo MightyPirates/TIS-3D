@@ -128,8 +128,7 @@ public final class MachineImpl implements Machine {
                 final int rotation = Port.ROTATION[module.getFacing().ordinal()];
                 final Port port = Target.toPort(target);
                 final Port rotatedPort = port.rotated(rotation);
-                final boolean needsFlipping = module.getFace() == Face.Y_NEG && (port == rotatedPort || port == rotatedPort.getOpposite());
-                return needsFlipping ? Target.fromPort(rotatedPort.getOpposite()) : Target.fromPort(rotatedPort);
+                return Target.fromPort(rotatedPort);
         }
         return target;
     }

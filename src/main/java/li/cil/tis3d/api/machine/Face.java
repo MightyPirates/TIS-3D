@@ -85,11 +85,11 @@ public enum Face {
     }
 
     /**
-    * Convert a facing from sideHit int to our internal format.
-    *
-    * @param facing the facing to convert
-    * @return the {@link Face} representing that facing.
-    */
+     * Convert a facing from sideHit int to our internal format.
+     *
+     * @param facing the facing to convert
+     * @return the {@link Face} representing that facing.
+     */
     public static Face fromIntFacing(final int facing) {
         return VALUES[facing];
     }

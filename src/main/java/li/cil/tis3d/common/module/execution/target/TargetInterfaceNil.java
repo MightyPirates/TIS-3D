@@ -23,10 +23,6 @@ public final class TargetInterfaceNil extends AbstractTargetInterface {
     }
 
     @Override
-    public void cancelWrite() {
-    }
-
-    @Override
     public boolean isWriting() {
         return false;
     }

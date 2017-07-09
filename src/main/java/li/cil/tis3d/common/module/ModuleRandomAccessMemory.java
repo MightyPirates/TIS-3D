@@ -10,7 +10,6 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.render.TextureLoader;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.util.EnumUtils;
@@ -82,15 +81,11 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
 
     @Override
     public void step() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         stepInput();
     }
 
     @Override
     public void onDisabled() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         // Wipe memory on shutdown.
         clearOnDisabled();
 
@@ -101,8 +96,6 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
 
     @Override
     public void onWriteComplete(final Port port) {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         // Memory access was completed with a read operation.
         state = State.ADDRESS;
 
@@ -114,7 +107,7 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
     @Override
     public boolean onActivate(final EntityPlayer player, final float hitX, final float hitY, final float hitZ) {
         final ItemStack heldItem = player.getHeldItem();
-        if (!Items.isItem(heldItem, Items.modules.get(Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY))) {
+        if (!Items.isItem(heldItem, Items.getModules().get(Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY))) {
             return false;
         }
 
@@ -194,7 +187,7 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
     public void writeToNBT(final NBTTagCompound nbt) {
         super.writeToNBT(nbt);
 
-        nbt.setByteArray(TAG_MEMORY, memory);
+        nbt.setByteArray(TAG_MEMORY, memory.clone());
         nbt.setByte(TAG_ADDRESS, address);
         EnumUtils.writeToNBT(state, TAG_STATE, nbt);
     }
@@ -216,7 +209,7 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
     }
 
     /**
-     * Set the color of the memory cell currently being drawn in the {@link GL11}.
+     * Set the color of the memory cell currently being drawn.
      *
      * @param brightness the brightness the cell is rendered at (the alpha).
      */
@@ -255,7 +248,7 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
         if (nbt == null) {
             stack.setTagCompound(nbt = new NBTTagCompound());
         }
-        nbt.setByteArray(TAG_MEMORY, memory.memory);
+        nbt.setByteArray(TAG_MEMORY, memory.memory.clone());
     }
 
     // --------------------------------------------------------------------- //

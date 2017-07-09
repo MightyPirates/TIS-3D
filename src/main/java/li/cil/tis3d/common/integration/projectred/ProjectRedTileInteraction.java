@@ -1,8 +1,8 @@
 package li.cil.tis3d.common.integration.projectred;
 
 import li.cil.tis3d.api.machine.Face;
-import li.cil.tis3d.api.module.traits.BundledRedstone;
 import li.cil.tis3d.api.module.Module;
+import li.cil.tis3d.api.module.traits.BundledRedstone;
 import li.cil.tis3d.common.tileentity.TileEntityCasing;
 import mrtjp.projectred.api.IBundledTileInteraction;
 import mrtjp.projectred.api.ProjectRedAPI;

@@ -2,7 +2,6 @@ package li.cil.tis3d.common.module;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.SerialAPI;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
@@ -13,12 +12,10 @@ import li.cil.tis3d.api.prefab.module.AbstractModule;
 import li.cil.tis3d.api.serial.SerialInterface;
 import li.cil.tis3d.api.serial.SerialInterfaceProvider;
 import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.render.TextureLoader;
+import li.cil.tis3d.client.renderer.TextureLoader;
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 import java.util.Optional;
@@ -66,8 +63,6 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
 
     @Override
     public void step() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         scan();
         stepOutput();
         stepInput();
@@ -75,16 +70,12 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
 
     @Override
     public void onDisabled() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         // Reset serial interface on shutdown.
         serialInterface.ifPresent(SerialInterface::reset);
     }
 
     @Override
     public void onWriteComplete(final Port port) {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         // Consume the read value (the one that was being written).
         serialInterface.ifPresent(SerialInterface::skip);
 
@@ -105,8 +96,7 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
 
         RenderUtil.ignoreLighting();
 
-        final TextureAtlasSprite sprite = RenderUtil.getSprite(TextureLoader.LOCATION_MODULE_SERIAL_PORT_OVERLAY);
-        RenderUtil.drawQuad(sprite);
+        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_MODULE_SERIAL_PORT_OVERLAY));
     }
 
     @Override

@@ -36,7 +36,7 @@ public final class InstructionEmitterLabel extends AbstractInstructionEmitter {
 
     private static void validateLabel(final MachineState state, final String label, final Matcher matcher, final int lineNumber) throws ParseException {
         if (!state.labels.containsKey(label)) {
-            throw new ParseException(Constants.MESSAGE_NO_SUCH_LABEL, lineNumber, matcher.start("arg1"), matcher.end("arg1"));
+            throw new ParseException(Constants.MESSAGE_LABEL_NOT_FOUND, lineNumber, matcher.start("arg1"), matcher.end("arg1"));
         }
     }
 }

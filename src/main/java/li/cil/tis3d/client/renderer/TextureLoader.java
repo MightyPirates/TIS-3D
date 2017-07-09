@@ -1,14 +1,23 @@
-package li.cil.tis3d.client.render;
+package li.cil.tis3d.client.renderer;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import li.cil.tis3d.api.API;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.TextureStitchEvent;
 
 public final class TextureLoader {
+    public static final ResourceLocation LOCATION_BOOK_CODE_BACKGROUND = new ResourceLocation(API.MOD_ID, "textures/gui/bookCode.png");
+    public static final ResourceLocation LOCATION_MANUAL_BACKGROUND = new ResourceLocation(API.MOD_ID, "textures/gui/manual.png");
+    public static final ResourceLocation LOCATION_MANUAL_TAB = new ResourceLocation(API.MOD_ID, "textures/gui/manualTab.png");
+    public static final ResourceLocation LOCATION_MANUAL_SCROLL = new ResourceLocation(API.MOD_ID, "textures/gui/manualScroll.png");
+    public static final ResourceLocation LOCATION_MANUAL_MISSING = new ResourceLocation(API.MOD_ID, "textures/gui/manualMissing.png");
+
     public static final ResourceLocation LOCATION_CASING_LOCKED_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/casingLocked");
     public static final ResourceLocation LOCATION_CASING_UNLOCKED_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/casingUnlocked");
+    public static final ResourceLocation LOCATION_CASING_PORT_CLOSED_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/casing_port_closed");
+    public static final ResourceLocation LOCATION_CASING_PORT_OPEN_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/casing_port_open");
+    public static final ResourceLocation LOCATION_CASING_PORT_HIGHLIGHT_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/casing_port_highlight");
+    public static final ResourceLocation LOCATION_CASING_PORT_CLOSED_SMALL_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/casing_port_closed_small");
     public static final ResourceLocation LOCATION_CASING_MODULE = new ResourceLocation(API.MOD_ID, "casingModule");
     public static final ResourceLocation LOCATION_MODULE_AUDIO_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/moduleAudio");
     public static final ResourceLocation LOCATION_MODULE_BUNDLED_REDSTONE_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/moduleBundledRedstone");
@@ -36,6 +45,10 @@ public final class TextureLoader {
         }
         event.map.registerIcon(LOCATION_CASING_LOCKED_OVERLAY.toString());
         event.map.registerIcon(LOCATION_CASING_UNLOCKED_OVERLAY.toString());
+        event.map.registerIcon(LOCATION_CASING_PORT_CLOSED_OVERLAY.toString());
+        event.map.registerIcon(LOCATION_CASING_PORT_OPEN_OVERLAY.toString());
+        event.map.registerIcon(LOCATION_CASING_PORT_HIGHLIGHT_OVERLAY.toString());
+        event.map.registerIcon(LOCATION_CASING_PORT_CLOSED_SMALL_OVERLAY.toString());
         event.map.registerIcon(LOCATION_CASING_MODULE.toString());
         event.map.registerIcon(LOCATION_MODULE_AUDIO_OVERLAY.toString());
         event.map.registerIcon(LOCATION_MODULE_BUNDLED_REDSTONE_OVERLAY.toString());
@@ -51,6 +64,7 @@ public final class TextureLoader {
         event.map.registerIcon(LOCATION_MODULE_REDSTONE_BARS_OVERLAY.toString());
         event.map.registerIcon(LOCATION_MODULE_SERIAL_PORT_OVERLAY.toString());
         event.map.registerIcon(LOCATION_MODULE_STACK_OVERLAY.toString());
+        event.map.registerIcon(LOCATION_MODULE_TERMINAL_OVERLAY.toString());
         event.map.registerIcon(LOCATION_MODULE_TIMER_OVERLAY.toString());
     }
 

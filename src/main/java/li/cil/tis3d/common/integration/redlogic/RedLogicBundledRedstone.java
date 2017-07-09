@@ -8,10 +8,8 @@ import li.cil.tis3d.common.tileentity.TileEntityCasing;
 import mods.immibis.redlogic.api.wiring.IBundledEmitter;
 import mods.immibis.redlogic.api.wiring.IBundledUpdatable;
 
-@Optional.InterfaceList({
-        @Optional.Interface(iface = "mods.immibis.redlogic.api.wiring.IBundledEmitter", modid = ProxyRedLogic.MOD_ID),
-        @Optional.Interface(iface = "mods.immibis.redlogic.api.wiring.IBundledUpdatable", modid = ProxyRedLogic.MOD_ID)
-})
+@Optional.InterfaceList({@Optional.Interface(iface = "mods.immibis.redlogic.api.wiring.IBundledEmitter", modid = ProxyRedLogic.MOD_ID),
+                         @Optional.Interface(iface = "mods.immibis.redlogic.api.wiring.IBundledUpdatable", modid = ProxyRedLogic.MOD_ID)})
 public interface RedLogicBundledRedstone extends IBundledEmitter, IBundledUpdatable {
     TileEntityCasing getTileEntity();
 

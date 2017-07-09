@@ -5,8 +5,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
-import org.lwjgl.opengl.GL11;
 import net.minecraft.item.ItemStack;
+import org.lwjgl.opengl.GL11;
 
 /**
  * The RAM module can be used to store up to 256 values by address. It runs

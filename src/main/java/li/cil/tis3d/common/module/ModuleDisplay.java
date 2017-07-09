@@ -14,6 +14,7 @@ import li.cil.tis3d.util.ColorUtils;
 import li.cil.tis3d.util.EnumUtils;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Arrays;
@@ -89,8 +90,6 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
 
     @Override
     public void step() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         for (final Port port : Port.VALUES) {
             stepInput(port);
         }
@@ -98,8 +97,6 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
 
     @Override
     public void onDisabled() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         Arrays.fill(image, 0);
         state = State.COLOR;
 
@@ -108,7 +105,8 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
 
     @Override
     public void onDisposed() {
-        if (getCasing().getCasingWorld().isRemote) {
+        final World world = getCasing().getCasingWorld();
+        if (world.isRemote) {
             deleteTexture();
         }
     }
@@ -158,7 +156,7 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
 
         nbt.setIntArray(TAG_IMAGE, image);
         EnumUtils.writeToNBT(state, TAG_STATE, nbt);
-        nbt.setByteArray(TAG_DRAW_CALL, drawCall);
+        nbt.setByteArray(TAG_DRAW_CALL, drawCall.clone());
     }
 
     // --------------------------------------------------------------------- //
@@ -185,7 +183,7 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
      *
      * @param value the value that was read.
      */
-    private void process(final int value) {
+    private void process(final short value) {
         drawCall[state.ordinal()] = (byte) value;
         state = state.getNext();
         if (state == State.COLOR) {

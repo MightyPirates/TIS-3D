@@ -158,10 +158,13 @@ public class TextSegment extends BasicTextSegment {
     private Optional<InteractiveSegment> resolvedInteractive() {
         if (this instanceof InteractiveSegment) {
             return Optional.of((InteractiveSegment) this);
-        } else if (parent() instanceof TextSegment) {
-            return ((TextSegment) parent()).resolvedInteractive();
         } else {
-            return Optional.empty();
+            final Segment parent = parent();
+            if (parent instanceof TextSegment) {
+                return ((TextSegment) parent).resolvedInteractive();
+            } else {
+                return Optional.empty();
+            }
         }
     }
 }

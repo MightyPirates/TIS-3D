@@ -26,11 +26,9 @@ public final class ModuleAPIImpl implements ModuleAPI {
 
     @Override
     public ModuleProvider getProviderFor(final ItemStack stack, final Casing casing, final Face face) {
-        if (stack != null) {
-            for (final ModuleProvider provider : providers) {
-                if (provider.worksWith(stack, casing, face)) {
-                    return provider;
-                }
+        for (final ModuleProvider provider : providers) {
+            if (provider.worksWith(stack, casing, face)) {
+                return provider;
             }
         }
         return null;

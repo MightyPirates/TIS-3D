@@ -1,7 +1,7 @@
-package li.cil.tis3d.client.render.block;
+package li.cil.tis3d.client.renderer.block;
 
 import li.cil.tis3d.api.machine.Face;
-import li.cil.tis3d.client.render.TextureLoader;
+import li.cil.tis3d.client.renderer.TextureLoader;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.tileentity.TileEntityCasing;
 import net.minecraft.block.Block;

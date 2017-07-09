@@ -89,11 +89,4 @@ public interface Segment {
     Segment next();
 
     void setNext(Segment segment);
-
-    /**
-     * Utility method to check if the segment is the last on a line.
-     *
-     * @return whether this is the last segment in the linked list.
-     */
-    boolean isLast();
 }

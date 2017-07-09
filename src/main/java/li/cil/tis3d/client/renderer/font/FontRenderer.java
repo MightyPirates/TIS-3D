@@ -1,4 +1,4 @@
-package li.cil.tis3d.client.render.font;
+package li.cil.tis3d.client.renderer.font;
 
 /**
  * Base interface for font renderers.
@@ -17,7 +17,7 @@ public interface FontRenderer {
      * This is intended as a convenience method for clamped-width rendering,
      * avoiding additional string operations such as <tt>substring</tt>.
      *
-     * @param value   the string to render.
+     * @param value    the string to render.
      * @param maxChars the maximum number of characters to render.
      */
     void drawString(final CharSequence value, final int maxChars);

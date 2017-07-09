@@ -45,7 +45,7 @@ public class ResourceContentProvider implements ContentProvider {
         try {
             is = Minecraft.getMinecraft().getResourceManager().getResource(location).getInputStream();
             final BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charsets.UTF_8));
-            final ArrayList<String> lines = new ArrayList<String>();
+            final ArrayList<String> lines = new ArrayList<>();
             String line;
             while ((line = reader.readLine()) != null) {
                 lines.add(line);

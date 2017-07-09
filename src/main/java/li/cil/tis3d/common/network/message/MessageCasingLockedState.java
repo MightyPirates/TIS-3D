@@ -3,21 +3,22 @@ package li.cil.tis3d.common.network.message;
 import io.netty.buffer.ByteBuf;
 import li.cil.tis3d.api.machine.Casing;
 
-public final class MessageCasingState extends AbstractMessageWithLocation {
-    private boolean isEnabled;
+public final class MessageCasingLockedState extends AbstractMessageWithLocation {
+    private boolean isLocked;
 
-    public MessageCasingState(final Casing casing, final boolean isEnabled) {
+    public MessageCasingLockedState(final Casing casing, final boolean isLocked) {
         super(casing.getCasingWorld(), casing.getPositionX(), casing.getPositionY(), casing.getPositionZ());
-        this.isEnabled = isEnabled;
+        this.isLocked = isLocked;
     }
 
-    public MessageCasingState() {
+    @SuppressWarnings("unused") // For deserialization.
+    public MessageCasingLockedState() {
     }
 
     // --------------------------------------------------------------------- //
 
-    public boolean isEnabled() {
-        return isEnabled;
+    public boolean isLocked() {
+        return isLocked;
     }
 
     // --------------------------------------------------------------------- //
@@ -27,13 +28,13 @@ public final class MessageCasingState extends AbstractMessageWithLocation {
     public void fromBytes(final ByteBuf buf) {
         super.fromBytes(buf);
 
-        isEnabled = buf.readBoolean();
+        isLocked = buf.readBoolean();
     }
 
     @Override
     public void toBytes(final ByteBuf buf) {
         super.toBytes(buf);
 
-        buf.writeBoolean(isEnabled);
+        buf.writeBoolean(isLocked);
     }
 }

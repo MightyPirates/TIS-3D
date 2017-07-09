@@ -29,11 +29,6 @@ public final class TargetInterfaceSide extends AbstractTargetInterfaceSide {
     }
 
     @Override
-    public void cancelWrite() {
-        cancelWrite(port);
-    }
-
-    @Override
     public boolean isWriting() {
         return isWriting(port);
     }

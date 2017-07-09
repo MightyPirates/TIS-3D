@@ -1,9 +1,11 @@
-package li.cil.tis3d.client.render.tile;
+package li.cil.tis3d.client.renderer.tileentity;
 
 import li.cil.tis3d.api.machine.Face;
+import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.render.TextureLoader;
+import li.cil.tis3d.api.util.TransformUtil;
+import li.cil.tis3d.client.renderer.TextureLoader;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.tileentity.TileEntityCasing;
@@ -17,6 +19,8 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
 import org.lwjgl.opengl.GL11;
 
 import java.util.HashSet;
@@ -40,7 +44,7 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
 
 
         GL11.glPushMatrix();
-        GL11.glTranslated(x + 0.5, y + 0.5, z + 0.5);
+        GL11.glTranslated(dx, dy, dz);
 
         RenderHelper.disableStandardItemLighting();
 
@@ -56,11 +60,9 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
 
             setupMatrix(face);
 
-            ensureSanity(casing, face);
+            ensureSanity();
 
-            if (isPlayerHoldingKey()) {
-                drawLockOverlay(casing);
-            } else {
+            if (!isPlayerHoldingKey() || !drawConfigOverlay(casing, face)) {
                 drawModuleOverlay(casing, face, partialTicks);
             }
 
@@ -105,42 +107,90 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
         GL11.glScalef(-1, -1, 1);
     }
 
-    private void ensureSanity(final TileEntityCasing casing, final Face face) {
+    private void ensureSanity() {
         GL11.glEnable(GL11.GL_TEXTURE_2D);
-
-        final EnumFacing facing = Face.toEnumFacing(face);
-        final int neighborX = casing.getPositionX() + facing.getFrontOffsetX();
-        final int neighborY = casing.getPositionY() + facing.getFrontOffsetY();
-        final int neighborZ = casing.getPositionZ() + facing.getFrontOffsetZ();
-        final int brightness = casing.getWorldObj().getLightBrightnessForSkyBlocks(neighborX, neighborY, neighborZ, 0);
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, brightness % 65536, brightness / 65536);
         RenderUtil.bindTexture(TextureMap.locationBlocksTexture);
         GL11.glColor4f(1, 1, 1, 1);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         RenderUtil.ignoreLighting();
     }
 
-    private void drawLockOverlay(final TileEntityCasing casing) {
+    private boolean drawConfigOverlay(final TileEntityCasing casing, final Face face) {
         // Only bother rendering the overlay if the player is nearby.
         if (!isPlayerKindaClose(casing)) {
-            return;
+            return false;
         }
 
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
+        if (isPlayerSneaking() && !casing.isLocked()) {
+            final TextureAtlasSprite closedSprite;
+            final TextureAtlasSprite openSprite;
 
-        RenderUtil.bindTexture(TextureMap.locationBlocksTexture);
+            final Port lookingAtPort;
+            final boolean isLookingAt = isPlayerLookingAt(casing.getPositionX(), casing.getPositionY(), casing.getPositionZ(), face);
+            if (isLookingAt) {
+                closedSprite = RenderUtil.getSprite(TextureLoader.LOCATION_CASING_PORT_CLOSED_OVERLAY);
+                openSprite = RenderUtil.getSprite(TextureLoader.LOCATION_CASING_PORT_OPEN_OVERLAY);
 
-        final TextureAtlasSprite icon;
-        if (casing.isLocked()) {
-            icon = RenderUtil.getSprite(TextureLoader.LOCATION_CASING_LOCKED_OVERLAY);
+                final MovingObjectPosition hit = Minecraft.getMinecraft().objectMouseOver;
+                final Vec3 uv = TransformUtil.hitToUV(face, Vec3.createVectorHelper(hit.blockX, hit.blockY, hit.blockZ).subtract(hit.hitVec));
+                lookingAtPort = Port.fromUVQuadrant(uv);
+            } else {
+                closedSprite = RenderUtil.getSprite(TextureLoader.LOCATION_CASING_PORT_CLOSED_SMALL_OVERLAY);
+                openSprite = null;
+
+                lookingAtPort = null;
+            }
+
+            GL11.glPushMatrix();
+            for (final Port port : Port.CLOCKWISE) {
+                final boolean isClosed = casing.isReceivingPipeLocked(face, port);
+                final TextureAtlasSprite sprite = isClosed ? closedSprite : openSprite;
+                if (sprite != null) {
+                    RenderUtil.drawQuad(sprite);
+                }
+
+                if (port == lookingAtPort) {
+                    RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_CASING_PORT_HIGHLIGHT_OVERLAY));
+                }
+
+                GL11.glTranslatef(0.5f, 0.5f, 0.5f);
+                GL11.glRotatef(90, 0, 0, 1);
+                GL11.glTranslatef(-0.5f, -0.5f, -0.5f);
+            }
+            GL11.glPopMatrix();
+
+            return isLookingAt;
         } else {
-            icon = RenderUtil.getSprite(TextureLoader.LOCATION_CASING_UNLOCKED_OVERLAY);
+            final TextureAtlasSprite sprite;
+            if (casing.isLocked()) {
+                sprite = RenderUtil.getSprite(TextureLoader.LOCATION_CASING_LOCKED_OVERLAY);
+            } else {
+                sprite = RenderUtil.getSprite(TextureLoader.LOCATION_CASING_UNLOCKED_OVERLAY);
+            }
+
+            RenderUtil.drawQuad(sprite);
         }
 
-        RenderUtil.drawQuad(icon.getMinU(), icon.getMinV(), icon.getMaxU(), icon.getMaxV());
+        return true;
     }
 
     private void drawModuleOverlay(final TileEntityCasing casing, final Face face, final float partialTicks) {
+        final TextureAtlasSprite closedSprite = RenderUtil.getSprite(TextureLoader.LOCATION_CASING_PORT_CLOSED_SMALL_OVERLAY);
+
+        GL11.glPushMatrix();
+        GL11.glTranslated(0, 0, -0.005);
+        for (final Port port : Port.CLOCKWISE) {
+            final boolean isClosed = casing.isReceivingPipeLocked(face, port);
+            if (isClosed) {
+                RenderUtil.drawQuad(closedSprite);
+            }
+
+            GL11.glTranslatef(0.5f, 0.5f, 0.5f);
+            GL11.glRotatef(90, 0, 0, 1);
+            GL11.glTranslatef(-0.5f, -0.5f, -0.5f);
+        }
+        GL11.glPopMatrix();
+
         final Module module = casing.getModule(face);
         if (module == null) {
             return;
@@ -148,6 +198,13 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
         if (BLACKLIST.contains(module.getClass())) {
             return;
         }
+
+        final EnumFacing facing = Face.toEnumFacing(face);
+        final int neighborX = casing.getPositionX() + facing.getFrontOffsetX();
+        final int neighborY = casing.getPositionY() + facing.getFrontOffsetY();
+        final int neighborZ = casing.getPositionZ() + facing.getFrontOffsetZ();
+        final int brightness = casing.getWorldObj().getLightBrightnessForSkyBlocks(neighborX, neighborY, neighborZ, 0);
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, brightness % 65536, brightness / 65536);
 
         try {
             module.render(casing.isEnabled(), partialTicks);
@@ -165,5 +222,16 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
     private boolean isPlayerHoldingKey() {
         final EntityPlayer player = Minecraft.getMinecraft().thePlayer;
         return Items.isKey(player.getHeldItem());
+    }
+
+    private boolean isPlayerSneaking() {
+        final EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+        return player.isSneaking();
+    }
+
+    private boolean isPlayerLookingAt(final int x, final int y, final int z, final Face face) {
+        final MovingObjectPosition hit = Minecraft.getMinecraft().objectMouseOver;
+        return hit != null && Face.fromIntFacing(hit.sideHit) == face &&
+               hit.blockX == x && hit.blockY == y && hit.blockZ == z;
     }
 }

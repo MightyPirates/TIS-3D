@@ -8,6 +8,7 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
+import li.cil.tis3d.api.util.TransformUtil;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -68,11 +69,11 @@ public abstract class AbstractModule implements Module {
     protected boolean isPlayerLookingAt() {
         final MovingObjectPosition hit = Minecraft.getMinecraft().objectMouseOver;
         return hit != null &&
-                hit.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK &&
-                getCasing().getPositionX() == hit.blockX &&
-                getCasing().getPositionY() == hit.blockY &&
-                getCasing().getPositionZ() == hit.blockZ &&
-                hit.sideHit == Face.toEnumFacing(getFace()).ordinal();
+               hit.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK &&
+               getCasing().getPositionX() == hit.blockX &&
+               getCasing().getPositionY() == hit.blockY &&
+               getCasing().getPositionZ() == hit.blockZ &&
+               hit.sideHit == Face.toEnumFacing(getFace()).ordinal();
     }
 
     /**
@@ -91,14 +92,14 @@ public abstract class AbstractModule implements Module {
     protected Vec3 getPlayerLookAt() {
         final MovingObjectPosition hit = Minecraft.getMinecraft().objectMouseOver;
         if (hit != null &&
-                hit.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK &&
-                getCasing().getPositionX() == hit.blockX &&
-                getCasing().getPositionY() == hit.blockY &&
-                getCasing().getPositionZ() == hit.blockZ &&
-                hit.sideHit == Face.toEnumFacing(getFace()).ordinal()) {
+            hit.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK &&
+            getCasing().getPositionX() == hit.blockX &&
+            getCasing().getPositionY() == hit.blockY &&
+            getCasing().getPositionZ() == hit.blockZ &&
+            hit.sideHit == Face.toEnumFacing(getFace()).ordinal()) {
             return Vec3.createVectorHelper(hit.hitVec.xCoord - hit.blockX,
-                    hit.hitVec.yCoord - hit.blockY,
-                    hit.hitVec.zCoord - hit.blockZ);
+                                           hit.hitVec.yCoord - hit.blockY,
+                                           hit.hitVec.zCoord - hit.blockZ);
         } else {
             return null;
         }
@@ -120,21 +121,7 @@ public abstract class AbstractModule implements Module {
      * @see #onActivate(EntityPlayer, float, float, float)
      */
     protected Vec3 hitToUV(final Vec3 hitPos) {
-        switch (getFace()) {
-            case Y_NEG:
-                return Vec3.createVectorHelper(1 - hitPos.xCoord, hitPos.zCoord, 0);
-            case Y_POS:
-                return Vec3.createVectorHelper(1 - hitPos.xCoord, 1 - hitPos.zCoord, 0);
-            case Z_NEG:
-                return Vec3.createVectorHelper(1 - hitPos.xCoord, 1 - hitPos.yCoord, 0);
-            case Z_POS:
-                return Vec3.createVectorHelper(hitPos.xCoord, 1 - hitPos.yCoord, 0);
-            case X_NEG:
-                return Vec3.createVectorHelper(hitPos.zCoord, 1 - hitPos.yCoord, 0);
-            case X_POS:
-                return Vec3.createVectorHelper(1 - hitPos.zCoord, 1 - hitPos.yCoord, 0);
-        }
-        return null;
+        return TransformUtil.hitToUV(getFace(), hitPos);
     }
 
     /**

@@ -4,7 +4,6 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.FontRendererAPI;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
@@ -12,11 +11,12 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.render.TextureLoader;
+import li.cil.tis3d.client.renderer.TextureLoader;
+import li.cil.tis3d.client.renderer.font.FontRenderer;
+import li.cil.tis3d.client.renderer.font.FontRendererNormal;
 import li.cil.tis3d.util.OneEightCompat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -205,8 +205,9 @@ public final class ModuleTimer extends AbstractModuleRotatable {
         } else {
             time = String.format("%.2f", seconds);
         }
-        final int width = time.length() * FontRendererAPI.getCharWidth();
-        final int height = FontRendererAPI.getCharHeight();
+        final FontRenderer fontRenderer = FontRendererNormal.INSTANCE;
+        final int width = time.length() * fontRenderer.getCharWidth();
+        final int height = fontRenderer.getCharHeight();
 
         GL11.glTranslatef(0.5f, 0.5f, 0);
         GL11.glScalef(1 / 80f, 1 / 80f, 1);

@@ -6,6 +6,7 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.traits.Rotatable;
+import li.cil.tis3d.api.util.TransformUtil;
 import li.cil.tis3d.util.EnumUtils;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Vec3;
@@ -58,34 +59,7 @@ public abstract class AbstractModuleRotatable extends AbstractModule implements 
 
     @Override
     protected Vec3 hitToUV(final Vec3 hitPos) {
-        final Vec3 uv = super.hitToUV(hitPos);
-        switch (getFace()) {
-            case Y_NEG:
-                switch (getFacing()) {
-                    case LEFT:
-                        return Vec3.createVectorHelper(uv.yCoord, 1 - uv.xCoord, 0);
-                    case RIGHT:
-                        return Vec3.createVectorHelper(1 - uv.yCoord, uv.xCoord, 0);
-                    case UP:
-                        return uv;
-                    case DOWN:
-                        return Vec3.createVectorHelper(1 - uv.xCoord, 1 - uv.yCoord, 0);
-                }
-                break;
-            case Y_POS:
-                switch (getFacing()) {
-                    case LEFT:
-                        return Vec3.createVectorHelper(1 - uv.yCoord, uv.xCoord, 0);
-                    case RIGHT:
-                        return Vec3.createVectorHelper(uv.yCoord, 1 - uv.xCoord, 0);
-                    case UP:
-                        return uv;
-                    case DOWN:
-                        return Vec3.createVectorHelper(1 - uv.xCoord, 1 - uv.yCoord, 0);
-                }
-                break;
-        }
-        return uv;
+        return TransformUtil.hitToUV(getFace(), getFacing(), hitPos);
     }
 
     // --------------------------------------------------------------------- //

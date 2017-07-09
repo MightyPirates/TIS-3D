@@ -1,6 +1,6 @@
 package li.cil.tis3d.client.manual.segment;
 
-import li.cil.tis3d.client.render.font.FontRendererNormal;
+import li.cil.tis3d.client.renderer.font.FontRendererNormal;
 import net.minecraft.client.gui.FontRenderer;
 import org.lwjgl.opengl.GL11;
 

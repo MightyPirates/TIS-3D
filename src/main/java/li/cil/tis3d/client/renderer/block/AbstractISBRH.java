@@ -1,4 +1,4 @@
-package li.cil.tis3d.client.render.block;
+package li.cil.tis3d.client.renderer.block;
 
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 import cpw.mods.fml.client.registry.RenderingRegistry;

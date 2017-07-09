@@ -49,11 +49,9 @@ public final class SerialAPIImpl implements SerialAPI {
 
     @Override
     public SerialInterfaceProvider getProviderFor(final World world, final int x, final int y, final int z, final EnumFacing side) {
-        if (world != null) {
-            for (final SerialInterfaceProvider provider : providers) {
-                if (provider.worksWith(world, x, y, z, side)) {
-                    return provider;
-                }
+        for (final SerialInterfaceProvider provider : providers) {
+            if (provider.worksWith(world, x, y, z, side)) {
+                return provider;
             }
         }
         return null;
@@ -110,6 +108,9 @@ public final class SerialAPIImpl implements SerialAPI {
         // --------------------------------------------------------------------- //
 
         private Iterable<String> populateTemplate(final Iterable<String> template) {
+            if (template == null) {
+                return null;
+            }
             return StreamSupport.
                     stream(template.spliterator(), false).
                     flatMap(line -> Arrays.stream(PATTERN_LINE_END.split(PATTERN_LIST.matcher(line).replaceAll(compileLinkList())))).
@@ -125,6 +126,7 @@ public final class SerialAPIImpl implements SerialAPI {
                 }
                 cachedList = Optional.of(sb.toString());
             }
+            assert cachedList.isPresent();
             return cachedList.get();
         }
     }

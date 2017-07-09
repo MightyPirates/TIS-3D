@@ -1,4 +1,4 @@
-package li.cil.tis3d.client.render.font;
+package li.cil.tis3d.client.renderer.font;
 
 import gnu.trove.map.TCharIntMap;
 import gnu.trove.map.hash.TCharIntHashMap;

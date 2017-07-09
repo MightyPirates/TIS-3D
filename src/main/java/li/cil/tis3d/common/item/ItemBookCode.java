@@ -28,8 +28,6 @@ import java.util.Objects;
  * The code book, utility book for coding ASM programs for execution modules.
  */
 public final class ItemBookCode extends ItemBook {
-    private static final String TOOLTIP_BOOK_CODE = "tis3d.tooltip.bookCode";
-
     public ItemBookCode() {
         setMaxStackSize(1);
     }
@@ -47,7 +45,7 @@ public final class ItemBookCode extends ItemBook {
     @Override
     public void addInformation(final ItemStack stack, final EntityPlayer player, final List tooltip, final boolean advanced) {
         super.addInformation(stack, player, tooltip, advanced);
-        final String info = StatCollector.translateToLocal(TOOLTIP_BOOK_CODE);
+        final String info = StatCollector.translateToLocal(Constants.TOOLTIP_BOOK_CODE);
         tooltip.addAll(getFontRenderer(stack).listFormattedStringToWidth(info, Constants.MAX_TOOLTIP_WIDTH));
     }
 
@@ -61,7 +59,7 @@ public final class ItemBookCode extends ItemBook {
 
     @Override
     public boolean doesSneakBypassUse(final World world, final int x, final int y, final int z, final EntityPlayer player) {
-        return world.blockExists(x, y, z) && world.getTileEntity(x, y, z) instanceof Casing;
+        return world.getTileEntity(x, y, z) instanceof Casing;
     }
 
     // --------------------------------------------------------------------- //
@@ -124,7 +122,7 @@ public final class ItemBookCode extends ItemBook {
          * Get the code on the specified page.
          *
          * @param index the index of the page to get the code of.
-         * @return the code on the page..
+         * @return the code on the page.
          */
         public List<String> getPage(final int index) {
             return Collections.unmodifiableList(pages.get(index));
@@ -333,7 +331,7 @@ public final class ItemBookCode extends ItemBook {
             }
 
             return true;
-}
+        }
 
         // --------------------------------------------------------------------- //
 
@@ -368,10 +366,11 @@ public final class ItemBookCode extends ItemBook {
          * @param data  the data to save to the item stack.
          */
         public static void saveToStack(final ItemStack stack, final Data data) {
-            if (!stack.hasTagCompound()) {
-                stack.setTagCompound(new NBTTagCompound());
+            NBTTagCompound nbt = stack.getTagCompound();
+            if (nbt == null) {
+                stack.setTagCompound(nbt = new NBTTagCompound());
             }
-            data.writeToNBT(stack.getTagCompound());
+            data.writeToNBT(nbt);
         }
     }
 }

@@ -53,8 +53,8 @@ public final class MessageParticleEffect implements IMessage {
 
     @Override
     public void fromBytes(final ByteBuf buf) {
+        final PacketBuffer buffer = new PacketBuffer(buf);
         try {
-            final PacketBuffer buffer = new PacketBuffer(buf);
             dimension = buffer.readInt();
             particleType = buffer.readStringFromBuffer(32);
             x = buffer.readDouble();
@@ -67,8 +67,8 @@ public final class MessageParticleEffect implements IMessage {
 
     @Override
     public void toBytes(final ByteBuf buf) {
+        final PacketBuffer buffer = new PacketBuffer(buf);
         try {
-            final PacketBuffer buffer = new PacketBuffer(buf);
             buffer.writeInt(dimension);
             buffer.writeStringToBuffer(particleType);
             buffer.writeDouble(x);

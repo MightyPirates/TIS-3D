@@ -5,9 +5,12 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.ModuleProvider;
 import li.cil.tis3d.common.Constants;
+import li.cil.tis3d.common.network.Network;
+import li.cil.tis3d.common.network.message.MessageCasingInventory;
 import li.cil.tis3d.common.tileentity.TileEntityCasing;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 
 /**
@@ -48,9 +51,9 @@ public final class InventoryCasing extends Inventory implements ISidedInventory 
     @Override
     public boolean canInsertItem(final int index, final ItemStack stack, final int side) {
         return side == index &&
-                getStackInSlot(index) == null &&
-                tileEntity.getModule(Face.fromEnumFacing(EnumFacing.getFront(side))) == null && // Handles virtual modules.
-                canInstall(stack, Face.fromEnumFacing(EnumFacing.getFront(side)));
+               getStackInSlot(index) == null &&
+               tileEntity.getModule(Face.fromEnumFacing(EnumFacing.getFront(side))) == null && // Handles virtual modules.
+               canInstall(stack, Face.fromEnumFacing(EnumFacing.getFront(side)));
     }
 
     @Override
@@ -79,9 +82,22 @@ public final class InventoryCasing extends Inventory implements ISidedInventory 
         }
 
         final Module module = provider.createModule(stack, tileEntity, face);
-        if (module != null && !tileEntity.getCasingWorld().isRemote) {
-            module.onInstalled(stack);
+        if (!tileEntity.getCasingWorld().isRemote) {
+            // Grab module data from newly created module, if any, don't rely on stack.
+            // Rationale: module may initialize data from stack while contents of stack
+            // are not synchronized to client, or do some fancy server-side only setup
+            // based on the stack. The possibilities are endless. This is robust.
+            final NBTTagCompound moduleData;
+            if (module != null) {
+                module.onInstalled(stack);
+                module.writeToNBT(moduleData = new NBTTagCompound());
+            } else {
+                moduleData = null;
+            }
+
+            Network.INSTANCE.getWrapper().sendToAllAround(new MessageCasingInventory(tileEntity, index, stack, moduleData), Network.getTargetPoint(tileEntity, Network.RANGE_HIGH));
         }
+
         tileEntity.setModule(Face.VALUES[index], module);
     }
 
@@ -94,5 +110,7 @@ public final class InventoryCasing extends Inventory implements ISidedInventory 
             module.onUninstalled(getStackInSlot(index));
             module.onDisposed();
         }
+
+        Network.INSTANCE.getWrapper().sendToAllAround(new MessageCasingInventory(tileEntity, index, null, null), Network.getTargetPoint(tileEntity, Network.RANGE_HIGH));
     }
 }

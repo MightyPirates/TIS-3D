@@ -7,6 +7,7 @@ public final class MessageHaltAndCatchFire extends AbstractMessageWithLocation {
         super(world, x, y, z);
     }
 
+    @SuppressWarnings("unused") // For deserialization.
     public MessageHaltAndCatchFire() {
     }
 }

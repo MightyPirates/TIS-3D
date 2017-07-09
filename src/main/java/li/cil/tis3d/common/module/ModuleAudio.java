@@ -9,7 +9,7 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModule;
 import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.render.TextureLoader;
+import li.cil.tis3d.client.renderer.TextureLoader;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageParticleEffect;
 import net.minecraft.util.EnumFacing;
@@ -48,9 +48,11 @@ public final class ModuleAudio extends AbstractModule {
 
     @Override
     public void step() {
+        final World world = getCasing().getCasingWorld();
+
         stepInput();
 
-        lastStep = getCasing().getCasingWorld().getTotalWorldTime();
+        lastStep = world.getTotalWorldTime();
     }
 
     @SideOnly(Side.CLIENT)
@@ -81,7 +83,8 @@ public final class ModuleAudio extends AbstractModule {
             }
             if (receivingPipe.canTransfer()) {
                 // Don't actually read more values if we already sent a packet this tick.
-                if (getCasing().getCasingWorld().getTotalWorldTime() > lastStep) {
+                final World world = getCasing().getCasingWorld();
+                if (world.getTotalWorldTime() > lastStep) {
                     playNote(receivingPipe.read());
 
                     // Start reading again right away to read as fast as possible.

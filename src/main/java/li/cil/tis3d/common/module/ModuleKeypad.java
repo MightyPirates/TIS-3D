@@ -2,18 +2,17 @@ package li.cil.tis3d.common.module;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.render.TextureLoader;
+import li.cil.tis3d.client.renderer.TextureLoader;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
+import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Optional;
@@ -45,6 +44,11 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
     public static final float KEYS_STEP_U = 6 / 32f;
     public static final float KEYS_STEP_V = 6 / 32f;
 
+    // Pitch lookup for click feedback sound cue per value, 0-9.
+    // Roughly based on telephone keypad frequencies, except we have to mush
+    // both tones into one, so obviously some fidelity is lost, but eh.
+    private static final float[] VALUE_TO_PITCH = new float[]{0.9125f, 0.7f, 0.75f, 0.825f, 0.725f, 0.8f, 0.875f, 0.775f, 0.85f, 0.95f};
+
     // --------------------------------------------------------------------- //
 
     public ModuleKeypad(final Casing casing, final Face face) {
@@ -57,6 +61,17 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
     @Override
     public void step() {
         stepOutput();
+    }
+
+    @Override
+    public void onDisabled() {
+        if (value.isPresent()) {
+            // Clear the value (that was being written).
+            value = Optional.empty();
+
+            // Tell clients we can input again.
+            getCasing().sendData(getFace(), new NBTTagCompound(), DATA_TYPE_VALUE);
+        }
     }
 
     @Override
@@ -78,6 +93,12 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
             return false;
         }
 
+        // Reasoning: don't remove module from casing while activating the
+        // module while the casing is disabled. Could be frustrating.
+        if (!getCasing().isEnabled()) {
+            return true;
+        }
+
         // Only allow inputting one value.
         if (value.isPresent()) {
             return true;
@@ -86,7 +107,8 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
         // Handle input on the client and send it to the server for higher
         // hit position resolution (MC sends this to the server at a super
         // low resolution for some reason).
-        if (getCasing().getCasingWorld().isRemote) {
+        final World world = getCasing().getCasingWorld();
+        if (world.isRemote) {
             final Vec3 uv = hitToUV(Vec3.createVectorHelper(hitX, hitY, hitZ));
             final int button = uvToButton((float) uv.xCoord, (float) uv.yCoord);
             if (button == -1) {
@@ -105,7 +127,8 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
 
     @Override
     public void onData(final NBTTagCompound nbt) {
-        if (getCasing().getCasingWorld().isRemote) {
+        final World world = getCasing().getCasingWorld();
+        if (world.isRemote) {
             // Got state on which key is currently 'pressed'.
             if (nbt.hasKey(TAG_VALUE)) {
                 value = Optional.of(nbt.getShort(TAG_VALUE));
@@ -114,8 +137,10 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
             }
         } else if (!value.isPresent() && nbt.hasKey(TAG_VALUE)) {
             // Got an input and don't have one yet.
-            value = Optional.of(nbt.getShort(TAG_VALUE));
+            final short newValue = nbt.getShort(TAG_VALUE);
+            value = Optional.of(newValue);
             getCasing().sendData(getFace(), nbt, DATA_TYPE_VALUE);
+            getCasing().getCasingWorld().playSoundEffect(getCasing().getPositionX() + 0.5, getCasing().getPositionY() + 0.5, getCasing().getPositionZ() + 0.5, "random.click", 0.3f, VALUE_TO_PITCH[newValue]);
         }
     }
 
@@ -132,9 +157,7 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
 
         // Draw base texture. Draw half transparent while writing current value,
         // i.e. while no input is possible.
-        if (value.isPresent()) {
-            GL11.glColor4f(1, 1, 1, 0.5f);
-        }
+        value.ifPresent(unused -> GL11.glColor4f(1, 1, 1, 0.5f));
         GL11.glDepthMask(false);
         RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_MODULE_KEYPAD_OVERLAY));
         GL11.glDepthMask(true);
@@ -172,11 +195,7 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
 
     // --------------------------------------------------------------------- //
 
-    /**
-     * Update our outputs, pushing random values to the specified port.
-     */
     private void stepOutput() {
-        // Don't try to write if we have no value.
         if (!value.isPresent()) {
             return;
         }

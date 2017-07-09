@@ -4,7 +4,6 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.FontRendererAPI;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
@@ -12,11 +11,11 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.render.TextureLoader;
+import li.cil.tis3d.client.renderer.TextureLoader;
 import li.cil.tis3d.util.OneEightCompat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -59,16 +58,12 @@ public final class ModuleStack extends AbstractModuleRotatable {
 
     @Override
     public void step() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         stepOutput();
         stepInput();
     }
 
     @Override
     public void onDisabled() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         // Clear stack on shutdown.
         top = -1;
 
@@ -77,8 +72,6 @@ public final class ModuleStack extends AbstractModuleRotatable {
 
     @Override
     public void onWriteComplete(final Port port) {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         // Pop the top value (the one that was being written).
         pop();
 
@@ -126,7 +119,7 @@ public final class ModuleStack extends AbstractModuleRotatable {
             stack[i] = (short) stackNbt[i];
         }
 
-        top = Math.max(-1, Math.min(STACK_SIZE - 1, nbt.getInteger(TAG_TOP)));
+        top = MathHelper.clamp_int(nbt.getInteger(TAG_TOP), -1, STACK_SIZE - 1);
     }
 
     @Override

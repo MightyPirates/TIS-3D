@@ -1,16 +1,13 @@
 package li.cil.tis3d.client.manual.segment.render;
 
-import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.manual.InteractiveImageRenderer;
-import net.minecraft.util.ResourceLocation;
+import li.cil.tis3d.client.renderer.TextureLoader;
 
 public final class MissingItemRenderer extends TextureImageRenderer implements InteractiveImageRenderer {
-    private static final ResourceLocation LOCATION_MANUAL_MISSING = new ResourceLocation(API.MOD_ID, "textures/gui/manualMissing.png");
-
     private final String tooltip;
 
     public MissingItemRenderer(final String tooltip) {
-        super(LOCATION_MANUAL_MISSING);
+        super(TextureLoader.LOCATION_MANUAL_MISSING);
         this.tooltip = tooltip;
     }
 

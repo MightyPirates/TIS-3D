@@ -31,12 +31,12 @@ public final class Blocks {
 
     private static void addBlockRecipe(final String name, final Object specialIngredient, final int count) {
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(GameRegistry.findBlock(API.MOD_ID, name), count),
-                "IRI",
-                "RSR",
-                "IRI",
-                'I', "ingotIron",
-                'R', "dustRedstone",
-                'S', specialIngredient));
+                                                   "IRI",
+                                                   "RSR",
+                                                   "IRI",
+                                                   'I', "ingotIron",
+                                                   'R', "dustRedstone",
+                                                   'S', specialIngredient));
     }
 
     private Blocks() {

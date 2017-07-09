@@ -1,7 +1,7 @@
 package li.cil.tis3d.common.api;
 
 import li.cil.tis3d.api.detail.FontRendererAPI;
-import li.cil.tis3d.client.render.font.FontRendererSmall;
+import li.cil.tis3d.client.renderer.font.FontRendererSmall;
 
 /**
  * Provide access to our tiny mono-space font.

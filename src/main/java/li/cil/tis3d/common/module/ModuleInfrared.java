@@ -11,7 +11,7 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModule;
 import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.render.TextureLoader;
+import li.cil.tis3d.client.renderer.TextureLoader;
 import li.cil.tis3d.common.Settings;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
@@ -53,25 +53,21 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
 
     @Override
     public void step() {
-        assert (!getCasing().getCasingWorld().isRemote);
+        final World world = getCasing().getCasingWorld();
 
         stepOutput();
         stepInput();
 
-        lastStep = getCasing().getCasingWorld().getTotalWorldTime();
+        lastStep = world.getTotalWorldTime();
     }
 
     @Override
     public void onDisabled() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         receiveQueue.clear();
     }
 
     @Override
     public void onWriteComplete(final Port port) {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         // Pop the top value (the one that was being written).
         receiveQueue.removeFirst();
 
@@ -124,7 +120,8 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
 
     @Override
     public void onInfraredPacket(final InfraredPacket packet, final MovingObjectPosition hit) {
-        if (getCasing().getCasingWorld().isRemote) {
+        final World world = getCasing().getCasingWorld();
+        if (world.isRemote) {
             return;
         }
 
@@ -165,7 +162,8 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
             }
             if (receivingPipe.canTransfer()) {
                 // Don't actually read more values if we already sent a packet this tick.
-                if (getCasing().getCasingWorld().getTotalWorldTime() > lastStep) {
+                final World world = getCasing().getCasingWorld();
+                if (world.getTotalWorldTime() > lastStep) {
                     emitInfraredPacket(receivingPipe.read());
 
                     // Start reading again right away to read as fast as possible.

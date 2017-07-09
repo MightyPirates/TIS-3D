@@ -11,7 +11,7 @@ import net.minecraft.util.ResourceLocation;
 import javax.annotation.Nullable;
 
 /**
- * Utility method for rendering related operations.
+ * Utility class for rendering related operations.
  */
 public final class RenderUtil {
     /**
@@ -153,7 +153,7 @@ public final class RenderUtil {
      */
     @SideOnly(Side.CLIENT)
     public static void ignoreLighting() {
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 0);
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
     }
 
     // --------------------------------------------------------------------- //

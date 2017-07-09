@@ -6,6 +6,7 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.traits.Redstone;
 import li.cil.tis3d.api.module.traits.Rotatable;
+import li.cil.tis3d.api.util.TransformUtil;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ItemBookManual;
@@ -20,6 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -85,24 +87,30 @@ public final class BlockCasing extends Block {
             final TileEntity tileEntity = world.getTileEntity(x, y, z);
             if (tileEntity instanceof TileEntityCasing) {
                 final TileEntityCasing casing = (TileEntityCasing) tileEntity;
+                final ItemStack heldItem = player.getHeldItem();
 
-                // Watcha holding there?
-                final ItemStack stack = player.getHeldItem();
-
-                // Locking or unlocking the casing?
-                if (Items.isKey(stack)) {
+                // Locking or unlocking the casing or a port?
+                if (Items.isKey(heldItem)) {
                     if (!world.isRemote) {
                         if (casing.isLocked()) {
-                            casing.unlock(stack);
+                            casing.unlock(heldItem);
                         } else {
-                            casing.lock(stack);
+                            if (!player.isSneaking()) {
+                                casing.lock(heldItem);
+                            } else {
+                                final Face face = Face.fromIntFacing(side);
+                                final Vec3 uv = TransformUtil.hitToUV(face, Vec3.createVectorHelper(hitX, hitY, hitZ));
+                                final Port port = Port.fromUVQuadrant(uv);
+
+                                casing.setReceivingPipeLocked(face, port, !casing.isReceivingPipeLocked(face, port));
+                            }
                         }
                     }
                     return true;
                 }
 
                 // Trying to look something up in the manual?
-                if (Items.isBookManual(stack)) {
+                if (Items.isBookManual(heldItem)) {
                     final ItemStack moduleStack = casing.getStackInSlot(side);
                     if (ItemBookManual.tryOpenManual(world, player, ManualAPI.pathFor(moduleStack))) {
                         return true;
@@ -117,7 +125,7 @@ public final class BlockCasing extends Block {
 
                 // Don't allow changing modules while casing is locked.
                 if (casing.isLocked()) {
-                    return true;
+                    return super.onBlockActivated(world, x, y, z, player, side, hitX, hitY, hitZ);
                 }
 
                 // Remove old module or install new one.
@@ -133,14 +141,14 @@ public final class BlockCasing extends Block {
                         }
                     }
                     return true;
-                } else {
+                } else if (heldItem != null) {
                     // Installing a new module in the casing.
-                    if (casing.canInsertItem(side, stack, side)) {
+                    if (casing.canInsertItem(side, heldItem, side)) {
                         if (!world.isRemote) {
                             if (player.capabilities.isCreativeMode) {
-                                casing.setInventorySlotContents(side, stack.copy().splitStack(1));
+                                casing.setInventorySlotContents(side, heldItem.copy().splitStack(1));
                             } else {
-                                casing.setInventorySlotContents(side, stack.splitStack(1));
+                                casing.setInventorySlotContents(side, heldItem.splitStack(1));
                             }
                             if (facing == EnumFacing.DOWN || facing == EnumFacing.UP) {
                                 final Face face = Face.fromEnumFacing(facing);

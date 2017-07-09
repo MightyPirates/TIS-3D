@@ -21,8 +21,9 @@ public final class InfraredAPI {
      * @return the packet that was spawned.
      */
     public static InfraredPacket sendPacket(final World world, final Vec3 position, final Vec3 direction, final short value) {
-        if (API.infraredAPI != null)
+        if (API.infraredAPI != null) {
             return API.infraredAPI.sendPacket(world, position, direction, value);
+        }
         return null;
     }
 

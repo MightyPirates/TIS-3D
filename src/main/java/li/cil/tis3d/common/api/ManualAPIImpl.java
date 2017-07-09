@@ -21,6 +21,7 @@ import net.minecraft.world.World;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Stack;
 import java.util.regex.Pattern;
@@ -106,7 +107,7 @@ public final class ManualAPIImpl implements ManualAPI {
 
     @Override
     public void addTab(final TabIconRenderer renderer, final String tooltip, final String path) {
-        tabs.add(new Tab(renderer, Optional.of(tooltip), path));
+        tabs.add(new Tab(renderer, tooltip, path));
         if (tabs.size() > 7) {
             TIS3D.getLog().warn("Gosh I'm popular! Too many tabs were added to the in-game manual, so some won't be shown. In case this actually happens, let me know and I'll look into making them scrollable or something...");
         }
@@ -257,7 +258,7 @@ public final class ManualAPIImpl implements ManualAPI {
             final Iterator<String> iterator = lines.iterator();
             if (iterator.hasNext()) {
                 final String line = iterator.next();
-                if (line.toLowerCase().startsWith("#redirect ")) {
+                if (line.toLowerCase(Locale.US).startsWith("#redirect ")) {
                     final List<String> newSeen = new ArrayList<>(seen);
                     newSeen.add(path);
                     return contentForWithRedirects(makeRelative(line.substring("#redirect ".length()), path), newSeen);
@@ -294,10 +295,10 @@ public final class ManualAPIImpl implements ManualAPI {
 
     public static final class Tab {
         public final TabIconRenderer renderer;
-        public final Optional<String> tooltip;
+        public final String tooltip;
         public final String path;
 
-        public Tab(final TabIconRenderer renderer, final Optional<String> tooltip, final String path) {
+        public Tab(final TabIconRenderer renderer, final String tooltip, final String path) {
             this.renderer = renderer;
             this.tooltip = tooltip;
             this.path = path;

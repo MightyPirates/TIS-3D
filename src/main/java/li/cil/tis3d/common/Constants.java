@@ -31,14 +31,14 @@ public final class Constants {
     public static final String NAME_ITEM_MODULE_INFRARED = "moduleInfrared";
     public static final String NAME_ITEM_MODULE_KEYPAD = "moduleKeypad";
     public static final String NAME_ITEM_MODULE_QUEUE = "moduleQueue";
+    public static final String NAME_ITEM_MODULE_RANDOM = "moduleRandom";
+    public static final String NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY = "moduleRandomAccessMemory";
+    public static final String NAME_ITEM_MODULE_READ_ONLY_MEMORY = "moduleReadOnlyMemory";
     public static final String NAME_ITEM_MODULE_REDSTONE = "moduleRedstone";
     public static final String NAME_ITEM_MODULE_SERIAL_PORT = "moduleSerialPort";
     public static final String NAME_ITEM_MODULE_STACK = "moduleStack";
     public static final String NAME_ITEM_MODULE_TERMINAL = "moduleTerminal";
     public static final String NAME_ITEM_MODULE_TIMER = "moduleTimer";
-    public static final String NAME_ITEM_MODULE_RANDOM = "moduleRandom";
-    public static final String NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY = "moduleRandomAccessMemory";
-    public static final String NAME_ITEM_MODULE_READ_ONLY_MEMORY = "moduleReadOnlyMemory";
     public static final String NAME_ITEM_PRISM = "prism";
 
     public static final String NAME_ENTITY_INFRARED_PACKET = API.MOD_ID + ":infraredPacket";
@@ -52,29 +52,30 @@ public final class Constants {
             NAME_ITEM_MODULE_EXECUTION,
             NAME_ITEM_MODULE_INFRARED,
             NAME_ITEM_MODULE_KEYPAD,
+            NAME_ITEM_MODULE_QUEUE,
+            NAME_ITEM_MODULE_RANDOM,
+            NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY,
+            NAME_ITEM_MODULE_READ_ONLY_MEMORY,
             NAME_ITEM_MODULE_REDSTONE,
             NAME_ITEM_MODULE_SERIAL_PORT,
             NAME_ITEM_MODULE_STACK,
             NAME_ITEM_MODULE_TERMINAL,
-            NAME_ITEM_MODULE_TIMER,
-            NAME_ITEM_MODULE_QUEUE,
-            NAME_ITEM_MODULE_RANDOM,
-            NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY,
-            NAME_ITEM_MODULE_READ_ONLY_MEMORY
+            NAME_ITEM_MODULE_TIMER
     };
 
     // --------------------------------------------------------------------- //
     // Compiler errors
 
+    public static final String MESSAGE_COMPILE_ERROR = "tis3d.compiler.error";
+    public static final String MESSAGE_INVALID_FORMAT = "tis3d.compiler.invalidFormat";
+    public static final String MESSAGE_INVALID_INSTRUCTION = "tis3d.compiler.invalidInstruction";
+    public static final String MESSAGE_LABEL_DUPLICATE = "tis3d.compiler.labelDuplicate";
+    public static final String MESSAGE_LABEL_NOT_FOUND = "tis3d.compiler.labelNotFound";
+    public static final String MESSAGE_PARAMETER_INVALID = "tis3d.compiler.parameterInvalid";
+    public static final String MESSAGE_PARAMETER_OVERFLOW = "tis3d.compiler.parameterOverflow";
+    public static final String MESSAGE_PARAMETER_UNDERFLOW = "tis3d.compiler.parameterUnderflow";
+    public static final String MESSAGE_TOO_MANY_COLUMNS = "tis3d.compiler.tooManyColumns";
     public static final String MESSAGE_TOO_MANY_LINES = "tis3d.compiler.tooManyLines";
-    public static final String MESSAGE_LINE_TOO_LONG = "tis3d.compiler.tooManyColumns";
-    public static final String MESSAGE_UNEXPECTED_TOKEN = "tis3d.compiler.invalidFormat";
-    public static final String MESSAGE_UNKNOWN_INSTRUCTION = "tis3d.compiler.invalidInstruction";
-    public static final String MESSAGE_MISSING_PARAMETER = "tis3d.compiler.parameterUnderflow";
-    public static final String MESSAGE_INVALID_TARGET = "tis3d.compiler.parameterInvalid";
-    public static final String MESSAGE_EXCESS_TOKENS = "tis3d.compiler.parameterOverflow";
-    public static final String MESSAGE_NO_SUCH_LABEL = "tis3d.compiler.labelNotFound";
-    public static final String MESSAGE_DUPLICATE_LABEL = "tis3d.compiler.labelDuplicate";
 
     // --------------------------------------------------------------------- //
     // Code book
@@ -87,6 +88,10 @@ public final class Constants {
     // --------------------------------------------------------------------- //
     // Tooltips
     public static final int MAX_TOOLTIP_WIDTH = 200;
+
+    public static final String TOOLTIP_BOOK_CODE = "tis3d.tooltip.bookCode";
+    public static final String TOOLTIP_BOOK_MANUAL = "tis3d.tooltip.bookManual";
+    public static final String TOOLTIP_KEY = "tis3d.tooltip.key";
 
     // --------------------------------------------------------------------- //
 

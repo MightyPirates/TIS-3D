@@ -14,8 +14,9 @@ public final class FontRendererAPI {
      * @param string the string to render.
      */
     public static void drawString(final String string) {
-        if (API.fontRendererAPI != null)
+        if (API.fontRendererAPI != null) {
             API.fontRendererAPI.drawString(string);
+        }
     }
 
     /**
@@ -28,8 +29,9 @@ public final class FontRendererAPI {
      * @param maxChars the maximum number of characters to render.
      */
     public static void drawString(final String string, final int maxChars) {
-        if (API.fontRendererAPI != null)
+        if (API.fontRendererAPI != null) {
             API.fontRendererAPI.drawString(string, maxChars);
+        }
     }
 
     /**
@@ -38,8 +40,9 @@ public final class FontRendererAPI {
      * @return the width of the drawn characters.
      */
     public static int getCharWidth() {
-        if (API.fontRendererAPI != null)
+        if (API.fontRendererAPI != null) {
             return API.fontRendererAPI.getCharWidth();
+        }
         return 0;
     }
 
@@ -49,8 +52,9 @@ public final class FontRendererAPI {
      * @return the height of the drawn characters.
      */
     public static int getCharHeight() {
-        if (API.fontRendererAPI != null)
+        if (API.fontRendererAPI != null) {
             return API.fontRendererAPI.getCharHeight();
+        }
         return 0;
     }
 

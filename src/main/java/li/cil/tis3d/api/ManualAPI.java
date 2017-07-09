@@ -32,8 +32,9 @@ public final class ManualAPI {
      * @param path     the path to the page to open when the tab is clicked.
      */
     public static void addTab(final TabIconRenderer renderer, final String tooltip, final String path) {
-        if (API.manualAPI != null)
+        if (API.manualAPI != null) {
             API.manualAPI.addTab(renderer, tooltip, path);
+        }
     }
 
     /**
@@ -45,8 +46,9 @@ public final class ManualAPI {
      * @param provider the provider to register.
      */
     public static void addProvider(final PathProvider provider) {
-        if (API.manualAPI != null)
+        if (API.manualAPI != null) {
             API.manualAPI.addProvider(provider);
+        }
     }
 
     /**
@@ -60,8 +62,9 @@ public final class ManualAPI {
      * @param provider the provider to register.
      */
     public static void addProvider(final ContentProvider provider) {
-        if (API.manualAPI != null)
+        if (API.manualAPI != null) {
             API.manualAPI.addProvider(provider);
+        }
     }
 
     /**
@@ -83,8 +86,9 @@ public final class ManualAPI {
      * @param provider the provider to register.
      */
     public static void addProvider(final String prefix, final ImageProvider provider) {
-        if (API.manualAPI != null)
+        if (API.manualAPI != null) {
             API.manualAPI.addProvider(prefix, provider);
+        }
     }
 
     /**
@@ -98,8 +102,9 @@ public final class ManualAPI {
      * @return the custom renderer for that path.
      */
     public static ImageRenderer imageFor(final String path) {
-        if (API.manualAPI != null)
+        if (API.manualAPI != null) {
             return API.manualAPI.imageFor(path);
+        }
         return null;
     }
 
@@ -112,8 +117,9 @@ public final class ManualAPI {
      * @return the path to the page, <tt>null</tt> if none is known.
      */
     public static String pathFor(final ItemStack stack) {
-        if (API.manualAPI != null)
+        if (API.manualAPI != null) {
             return API.manualAPI.pathFor(stack);
+        }
         return null;
     }
 
@@ -127,8 +133,9 @@ public final class ManualAPI {
      * @return the path to the page, <tt>null</tt> if none is known.
      */
     public static String pathFor(final World world, final int x, final int y, final int z) {
-        if (API.manualAPI != null)
+        if (API.manualAPI != null) {
             return API.manualAPI.pathFor(world, x, y, z);
+        }
         return null;
     }
 
@@ -139,8 +146,9 @@ public final class ManualAPI {
      * @return the content of the page, or <tt>null</tt> if none exists.
      */
     public static Iterable<String> contentFor(final String path) {
-        if (API.manualAPI != null)
+        if (API.manualAPI != null) {
             return API.manualAPI.contentFor(path);
+        }
         return null;
     }
 
@@ -155,16 +163,18 @@ public final class ManualAPI {
      * @param player the player to open the manual for.
      */
     public static void openFor(final EntityPlayer player) {
-        if (API.manualAPI != null)
+        if (API.manualAPI != null) {
             API.manualAPI.openFor(player);
+        }
     }
 
     /**
      * Reset the history of the manual.
      */
     public static void reset() {
-        if (API.manualAPI != null)
+        if (API.manualAPI != null) {
             API.manualAPI.reset();
+        }
     }
 
     /**
@@ -173,8 +183,9 @@ public final class ManualAPI {
      * @param path the path to navigate to.
      */
     public static void navigate(final String path) {
-        if (API.manualAPI != null)
+        if (API.manualAPI != null) {
             API.manualAPI.navigate(path);
+        }
     }
 
     // ----------------------------------------------------------------------- //

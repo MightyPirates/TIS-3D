@@ -15,6 +15,7 @@ public final class MessageBookCodeData implements IMessage {
         this.nbt = nbt;
     }
 
+    @SuppressWarnings("unused") // For deserialization.
     public MessageBookCodeData() {
     }
 
@@ -29,8 +30,8 @@ public final class MessageBookCodeData implements IMessage {
 
     @Override
     public void fromBytes(final ByteBuf buf) {
+        final PacketBuffer buffer = new PacketBuffer(buf);
         try {
-            final PacketBuffer buffer = new PacketBuffer(buf);
             nbt = buffer.readNBTTagCompoundFromBuffer();
         } catch (final IOException e) {
             TIS3D.getLog().warn("Invalid packet received.", e);
@@ -39,8 +40,8 @@ public final class MessageBookCodeData implements IMessage {
 
     @Override
     public void toBytes(final ByteBuf buf) {
+        final PacketBuffer buffer = new PacketBuffer(buf);
         try {
-            final PacketBuffer buffer = new PacketBuffer(buf);
             buffer.writeNBTTagCompoundToBuffer(nbt);
         } catch (final IOException e) {
             TIS3D.getLog().warn("Failed sending packet.", e);

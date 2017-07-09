@@ -1,6 +1,7 @@
 package li.cil.tis3d.api.machine;
 
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Vec3;
 
 /**
  * The ports that can be available on a module.
@@ -62,6 +63,11 @@ public enum Port {
     public static final Port[] ROTATED = new Port[]{UP, DOWN, RIGHT, LEFT};
 
     /**
+     * List of ports in a clockwise fashion, starting at {@link #UP}.
+     */
+    public static final Port[] CLOCKWISE = new Port[]{UP, RIGHT, DOWN, LEFT};
+
+    /**
      * Mapping of port id to rotation relative to {@link #UP}.
      */
     public static final int[] ROTATION = new int[]{3, 1, 0, 2};
@@ -69,7 +75,7 @@ public enum Port {
     /**
      * Mapping of {@link EnumFacing}s to a horizontal {@link Port} equivalent.
      */
-    public static final Port[] HORIZONTAL = new Port[]{Port.UP, Port.UP, Port.DOWN, Port.UP, Port.LEFT, Port.RIGHT};
+    public static final Port[] HORIZONTAL = new Port[]{Port.UP, Port.UP, Port.DOWN, Port.UP, Port.RIGHT, Port.LEFT};
 
     // --------------------------------------------------------------------- //
 
@@ -81,5 +87,31 @@ public enum Port {
      */
     public static Port fromEnumFacing(final EnumFacing facing) {
         return HORIZONTAL[facing.ordinal()];
+    }
+
+    /**
+     * Convert a UV coordinate to the port on the side of the quadrant the UV
+     * coordinate falls into.
+     *
+     * @param uv the UV coordinate in <code>(0,0,0)</code> to <code>(1,1,0)</code>.
+     * @return the port of the quadrant the coordinate lies in.
+     */
+    public static Port fromUVQuadrant(final Vec3 uv) {
+        // Make coordinate relative to center of face.
+        final double u = uv.xCoord - 0.5;
+        final double v = uv.yCoord - 0.5;
+        if (Math.abs(u) > Math.abs(v)) {
+            if (u < 0) {
+                return Port.LEFT;
+            } else {
+                return Port.RIGHT;
+            }
+        } else {
+            if (v < 0) {
+                return Port.UP; // UV goes top to bottom!
+            } else {
+                return Port.DOWN;
+            }
+        }
     }
 }

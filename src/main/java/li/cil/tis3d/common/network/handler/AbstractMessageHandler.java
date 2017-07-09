@@ -12,13 +12,13 @@ import net.minecraftforge.common.DimensionManager;
 public abstract class AbstractMessageHandler<T extends IMessage> implements IMessageHandler<T, IMessage> {
     @Override
     public IMessage onMessage(final T message, final MessageContext context) {
-        process(message, context);
+        onMessageSynchronized(message, context);
         return null;
     }
 
     // --------------------------------------------------------------------- //
 
-    protected abstract void process(final T message, final MessageContext context);
+    protected abstract void onMessageSynchronized(final T message, final MessageContext context);
 
     // --------------------------------------------------------------------- //
 

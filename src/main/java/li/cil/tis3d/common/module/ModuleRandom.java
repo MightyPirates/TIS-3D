@@ -8,7 +8,8 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModule;
 import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.render.TextureLoader;
+import li.cil.tis3d.client.renderer.TextureLoader;
+import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Random;
@@ -23,8 +24,6 @@ public final class ModuleRandom extends AbstractModule {
 
     @Override
     public void step() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         for (final Port port : Port.VALUES) {
             stepOutput(port);
         }
@@ -32,8 +31,6 @@ public final class ModuleRandom extends AbstractModule {
 
     @Override
     public void onWriteComplete(final Port port) {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         // No need to clear other writing pipes because we're outputting random
         // values anyway, so yey.
 
@@ -66,7 +63,8 @@ public final class ModuleRandom extends AbstractModule {
     private void stepOutput(final Port port) {
         final Pipe sendingPipe = getCasing().getSendingPipe(getFace(), port);
         if (!sendingPipe.isWriting()) {
-            final Random random = getCasing().getCasingWorld().rand;
+            final World world = getCasing().getCasingWorld();
+            final Random random = world.rand;
             final short value = (short) random.nextInt(0xFFFF + 1);
             sendingPipe.beginWrite(value);
         }

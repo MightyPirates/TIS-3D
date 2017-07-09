@@ -11,7 +11,7 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.traits.BlockChangeAware;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.render.TextureLoader;
+import li.cil.tis3d.client.renderer.TextureLoader;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ItemBookCode;
@@ -28,9 +28,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -94,23 +96,19 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
 
     @Override
     public void step() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         final State prevState = state;
 
         if (compileError != null) {
             state = State.ERR;
         } else if (getState().instructions.isEmpty()) {
             state = State.IDLE;
+        } else if (machine.step()) {
+            state = State.RUN;
+            getCasing().markDirty();
+            sendPartialState();
+            return; // Don't send data twice.
         } else {
-            if (machine.step()) {
-                state = State.RUN;
-                getCasing().markDirty();
-                sendPartialState();
-                return; // Don't send data twice.
-            } else {
-                state = State.WAIT;
-            }
+            state = State.WAIT;
         }
 
         if (prevState != state) {
@@ -121,15 +119,11 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
 
     @Override
     public void onEnabled() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         sendFullState();
     }
 
     @Override
     public void onDisabled() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         getState().reset();
         state = State.IDLE;
 
@@ -145,14 +139,13 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
 
     @Override
     public boolean onActivate(final EntityPlayer player, final float hitX, final float hitY, final float hitZ) {
-        // Watcha holding there?
-        final ItemStack stack = player.getHeldItem();
+        final ItemStack heldItem = player.getHeldItem();
 
         // Vanilla book? If so, make that a code book.
-        if (stack != null && stack.getItem() == net.minecraft.init.Items.book) {
+        if (heldItem != null && heldItem.getItem() == net.minecraft.init.Items.book) {
             if (!player.getEntityWorld().isRemote) {
                 if (!player.capabilities.isCreativeMode) {
-                    stack.splitStack(1);
+                    heldItem.splitStack(1);
                 }
                 final ItemStack bookCode = new ItemStack(Items.bookCode);
                 if (player.inventory.addItemStackToInventory(bookCode)) {
@@ -167,11 +160,11 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         }
 
         // Code book? Store current program on it if sneaking.
-        if (Items.isBookCode(stack) && player.isSneaking()) {
-            final ItemBookCode.Data data = ItemBookCode.Data.loadFromStack(stack);
+        if (Items.isBookCode(heldItem) && player.isSneaking()) {
+            final ItemBookCode.Data data = ItemBookCode.Data.loadFromStack(heldItem);
             if (getState().code != null && getState().code.length > 0) {
                 data.addOrSelectProgram(Arrays.asList(getState().code));
-                ItemBookCode.Data.saveToStack(stack, data);
+                ItemBookCode.Data.saveToStack(heldItem, data);
             }
 
             return true;
@@ -188,19 +181,20 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         }
 
         // Get the provider for the item, if any.
-        final SourceCodeProvider provider = providerFor(stack);
+        final SourceCodeProvider provider = providerFor(heldItem);
         if (provider == null) {
             return false;
         }
 
         // Get the code from the item, if any.
-        final Iterable<String> code = provider.codeFor(stack);
+        final Iterable<String> code = provider.codeFor(heldItem);
         if (code == null || !code.iterator().hasNext()) {
             return true; // Handled, but does nothing.
         }
 
         // Compile the code into our machine state.
-        if (!getCasing().getCasingWorld().isRemote) {
+        final World world = getCasing().getCasingWorld();
+        if (!world.isRemote) {
             compile(code, player);
             sendFullState();
         }
@@ -215,13 +209,14 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
 
     @Override
     public void onData(final ByteBuf data) {
-        getState().pc = data.readShort();
-        getState().acc = data.readShort();
-        getState().bak = data.readShort();
+        final MachineState machineState = getState();
+        machineState.pc = data.readShort();
+        machineState.acc = data.readShort();
+        machineState.bak = data.readShort();
         if (data.readBoolean()) {
-            getState().last = Optional.of(Port.values()[data.readByte()]);
+            machineState.last = Optional.of(Port.values()[data.readByte()]);
         } else {
-            getState().last = Optional.empty();
+            machineState.last = Optional.empty();
         }
         state = State.values()[data.readByte()];
     }
@@ -300,22 +295,16 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
      * be left in a reset state.
      *
      * @param code   the code to compile.
-     * @param player the player that issued the compile, or <tt>null</tt>.
+     * @param player the player that issued the compile.
      */
-    public void compile(final Iterable<String> code, final EntityPlayer player) {
-        if (getCasing().getCasingWorld().isRemote) {
-            return; // When called from ItemBookCode e.g.
-        }
-
+    private void compile(final Iterable<String> code, final EntityPlayer player) {
         compileError = null;
         try {
             getState().clear();
             Compiler.compile(code, getState());
         } catch (final ParseException e) {
             compileError = e;
-            if (player != null) {
-                player.addChatMessage(new ChatComponentText(String.format("Compile error @%s.", e)));
-            }
+            player.addChatMessage(new ChatComponentTranslation(Constants.MESSAGE_COMPILE_ERROR, e.getLineNumber(), e.getStart(), e.getEnd()).appendSibling(new ChatComponentTranslation(e.getMessage())));
         }
     }
 

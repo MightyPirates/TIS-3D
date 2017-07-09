@@ -3,8 +3,8 @@ package li.cil.tis3d.api.prefab.manual;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import li.cil.tis3d.api.manual.TabIconRenderer;
+import li.cil.tis3d.api.util.RenderUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
@@ -26,8 +26,8 @@ public class ItemStackTabIconRenderer implements TabIconRenderer {
     @Override
     public void render() {
         GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+        RenderUtil.ignoreLighting();
         RenderHelper.enableGUIStandardItemLighting();
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
         RenderItem.getInstance().renderItemAndEffectIntoGUI(Minecraft.getMinecraft().fontRenderer, Minecraft.getMinecraft().getTextureManager(), stack, 0, 0);
         RenderHelper.disableStandardItemLighting();
     }

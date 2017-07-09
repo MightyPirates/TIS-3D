@@ -74,7 +74,7 @@ public final class Compiler {
             throw new ParseException(Constants.MESSAGE_TOO_MANY_LINES, Settings.maxLinesPerProgram, 0, 0);
         }
         for (int lineNumber = 0; lineNumber < lines.length; lineNumber++) {
-            lines[lineNumber] = lines[lineNumber].toUpperCase(Locale.ENGLISH);
+            lines[lineNumber] = lines[lineNumber].toUpperCase(Locale.US);
         }
 
         state.code = lines;
@@ -85,7 +85,7 @@ public final class Compiler {
             for (int lineNumber = 0; lineNumber < lines.length; lineNumber++) {
                 // Enforce max line length.
                 if (lines[lineNumber].length() > Settings.maxColumnsPerLine) {
-                    throw new ParseException(Constants.MESSAGE_LINE_TOO_LONG, lineNumber, Settings.maxColumnsPerLine, Settings.maxColumnsPerLine);
+                    throw new ParseException(Constants.MESSAGE_TOO_MANY_COLUMNS, lineNumber, Settings.maxColumnsPerLine, Settings.maxColumnsPerLine);
                 }
 
                 // Get current line, strip comments, trim whitespace and uppercase.
@@ -99,7 +99,7 @@ public final class Compiler {
                     parseInstruction(lineMatcher, state, lineNumber, validators);
                 } else {
                     // This should be pretty much impossible...
-                    throw new ParseException(Constants.MESSAGE_UNEXPECTED_TOKEN, lineNumber, 0, 0);
+                    throw new ParseException(Constants.MESSAGE_INVALID_FORMAT, lineNumber, 0, 0);
                 }
             }
 
@@ -132,7 +132,7 @@ public final class Compiler {
 
         // Got a label, store it and the address it represents.
         if (state.labels.containsKey(label)) {
-            throw new ParseException(Constants.MESSAGE_DUPLICATE_LABEL, lineNumber, matcher.start("label"), matcher.end("label"));
+            throw new ParseException(Constants.MESSAGE_LABEL_DUPLICATE, lineNumber, matcher.start("label"), matcher.end("label"));
         }
         state.labels.put(label, state.instructions.size());
     }
@@ -172,7 +172,7 @@ public final class Compiler {
     private static final Map<String, InstructionEmitter> EMITTER_MAP;
 
     static {
-        final ImmutableMap.Builder<String, InstructionEmitter> builder = ImmutableMap.<String, InstructionEmitter>builder();
+        final ImmutableMap.Builder<String, InstructionEmitter> builder = ImmutableMap.builder();
 
         // Special handling: actually emits an `ADD NIL`.
         addInstructionEmitter(builder, new InstructionEmitterUnary("NOP", () -> INSTRUCTION_NOP));
@@ -196,8 +196,8 @@ public final class Compiler {
         addInstructionEmitter(builder, new InstructionEmitterUnary("NEG", () -> InstructionNegate.INSTANCE));
         addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate("ADD", InstructionAdd::new, InstructionAddImmediate::new));
         addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate("SUB", InstructionSubtract::new, InstructionSubtractImmediate::new));
-	addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate("MUL", InstructionAdd::new, InstructionMulImmediate::new));
-	addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate("DIV", InstructionAdd::new, InstructionDivImmediate::new));
+        addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate("MUL", InstructionMul::new, InstructionMulImmediate::new));
+        addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate("DIV", InstructionDiv::new, InstructionDivImmediate::new));
 
         // Bitwise operations.
         addInstructionEmitter(builder, new InstructionEmitterUnary("NOT", () -> InstructionBitwiseNot.INSTANCE));

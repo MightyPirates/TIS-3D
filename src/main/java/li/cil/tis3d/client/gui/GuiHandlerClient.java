@@ -43,7 +43,7 @@ public final class GuiHandlerClient implements IGuiHandler {
             case MODULE_TERMINAL:
                 return getGuiModuleTerminal(world);
         }
-    return null;
+        return null;
     }
 
     @Nullable

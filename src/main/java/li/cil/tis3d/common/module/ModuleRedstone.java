@@ -4,7 +4,6 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
@@ -12,11 +11,11 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.traits.Redstone;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.render.TextureLoader;
+import li.cil.tis3d.client.renderer.TextureLoader;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 
 public final class ModuleRedstone extends AbstractModuleRotatable implements Redstone {
     // --------------------------------------------------------------------- //
@@ -68,24 +67,22 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
 
     @Override
     public void step() {
-        assert (!getCasing().getCasingWorld().isRemote);
+        final World world = getCasing().getCasingWorld();
 
         for (final Port port : Port.VALUES) {
             stepOutput(port);
             stepInput(port);
         }
 
-        if (scheduledNeighborUpdate && getCasing().getCasingWorld().getTotalWorldTime() > lastStep) {
+        if (scheduledNeighborUpdate && world.getTotalWorldTime() > lastStep) {
             notifyNeighbors();
         }
 
-        lastStep = getCasing().getCasingWorld().getTotalWorldTime();
+        lastStep = world.getTotalWorldTime();
     }
 
     @Override
     public void onDisabled() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         input = 0;
         output = 0;
 
@@ -96,8 +93,6 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
 
     @Override
     public void onEnabled() {
-        assert (!getCasing().getCasingWorld().isRemote);
-
         sendData();
     }
 
@@ -168,7 +163,8 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
     @Override
     public void setRedstoneInput(final short value) {
         // We never call this on the client side, but other might...
-        if (getCasing().getCasingWorld().isRemote) {
+        final World world = getCasing().getCasingWorld();
+        if (world.isRemote) {
             return;
         }
 
@@ -246,9 +242,11 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
      * Notify all neighbors of a block update, to let them realize our output changed.
      */
     private void notifyNeighbors() {
+        final World world = getCasing().getCasingWorld();
+
         scheduledNeighborUpdate = false;
-        final Block blockType = getCasing().getCasingWorld().getBlock(getCasing().getPositionX(), getCasing().getPositionY(), getCasing().getPositionZ());
-        getCasing().getCasingWorld().notifyBlocksOfNeighborChange(getCasing().getPositionX(), getCasing().getPositionY(), getCasing().getPositionZ(), blockType);
+        final Block blockType = world.getBlock(getCasing().getPositionX(), getCasing().getPositionY(), getCasing().getPositionZ());
+        world.notifyBlocksOfNeighborChange(getCasing().getPositionX(), getCasing().getPositionY(), getCasing().getPositionZ(), blockType);
     }
 
     /**

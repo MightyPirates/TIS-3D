@@ -40,7 +40,7 @@ public final class RenderSegment extends AbstractSegment implements InteractiveS
     @Override
     public boolean onMouseClick(final int mouseX, final int mouseY) {
         return imageRenderer instanceof InteractiveImageRenderer &&
-                ((InteractiveImageRenderer) imageRenderer).onMouseClick(mouseX - lastX, mouseY - lastY);
+               ((InteractiveImageRenderer) imageRenderer).onMouseClick(mouseX - lastX, mouseY - lastY);
     }
 
     @Override

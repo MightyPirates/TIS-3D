@@ -119,6 +119,13 @@ abstract class BasicTextSegment extends AbstractSegment implements Segment {
 
     // ----------------------------------------------------------------------- //
 
+    private boolean isLast() {
+        final Segment next = next();
+        return next == null || root() != next.root();
+    }
+
+    // ----------------------------------------------------------------------- //
+
     protected static int indexOfFirstNonWhitespace(final String s) {
         for (int i = 0; i < s.length(); i++) {
             if (!Character.isWhitespace(s.charAt(i))) {
@@ -126,14 +133,5 @@ abstract class BasicTextSegment extends AbstractSegment implements Segment {
             }
         }
         return s.length();
-    }
-
-    protected static boolean containsBreak(final String s) {
-        for (int i = 0; i < s.length(); i++) {
-            if (BREAKS.contains(s.charAt(i))) {
-                return true;
-            }
-        }
-        return false;
     }
 }

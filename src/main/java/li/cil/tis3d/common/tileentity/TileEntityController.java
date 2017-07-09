@@ -1,21 +1,25 @@
 package li.cil.tis3d.common.tileentity;
 
 import cpw.mods.fml.common.network.NetworkRegistry;
+import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.HaltAndCatchFireException;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageHaltAndCatchFire;
+import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Queue;
 import java.util.Set;
 
@@ -45,32 +49,58 @@ public final class TileEntityController extends TileEntityComputer {
         /**
          * A scan has been scheduled and will be performed in the next tick.
          */
-        SCANNING,
+        SCANNING(false),
 
         /**
          * In the last scan another controller was found; only one is allowed per multi-block.
          */
-        MULTIPLE_CONTROLLERS,
+        MULTIPLE_CONTROLLERS(true),
 
         /**
          * In the last scan more than {@link Settings#maxCasingsPerController} casings were found.
          */
-        TOO_COMPLEX,
+        TOO_COMPLEX(true),
 
         /**
          * In the last scan the border of the loaded area was hit; incomplete multi-blocks to nothing.
          */
-        INCOMPLETE,
+        INCOMPLETE(true),
 
         /**
          * The controller is in operational state and can update connected casings each tick.
          */
-        READY,
+        READY(false),
 
         /**
          * The controller is in operational state and powered, updating connected casings each tick.
          */
-        RUNNING
+        RUNNING(false);
+
+        // --------------------------------------------------------------------- //
+
+        /**
+         * Whether this states is an error state, i.e. whether it indicates the controller
+         * not operation normally due it being configured incorrectly, for example.
+         */
+        public final boolean isError;
+
+        /**
+         * The unlocalized message to display for this status, used to look up the actual
+         * translation from the currently set language on the client when rendering.
+         */
+        public final String translateKey;
+
+        ControllerState(final boolean isError) {
+            this.isError = isError;
+            this.translateKey = API.MOD_ID + ".controller.status." + name().toLowerCase(Locale.US);
+        }
+
+        // --------------------------------------------------------------------- //
+
+        /**
+         * All possible enum values for quick indexing.
+         */
+        public static final ControllerState[] VALUES = ControllerState.values();
     }
 
     /**
@@ -83,8 +113,14 @@ public final class TileEntityController extends TileEntityComputer {
      */
     private ControllerState state = ControllerState.SCANNING;
 
+    /**
+     * The last state we sent to clients, i.e. the state clients think the controller is in.
+     */
+    private ControllerState lastSentState = ControllerState.SCANNING;
+
     // NBT tag names.
     private static final String TAG_HCF_COOLDOWN = "hcfCooldown";
+    private static final String TAG_STATE = "state";
 
     /**
      * User scheduled a forced step for the next tick.
@@ -163,28 +199,14 @@ public final class TileEntityController extends TileEntityComputer {
         // If we were in an active state, deactivate all modules in connected cases.
         // Safe to always call this because the casings track their own enabled
         // state and just won't do anything if they're already disabled.
+        // Also, this is guaranteed to be correct, because we were either the sole
+        // controller, thus there is no controller anymore, or there were multiple
+        // controllers, in which case they were disabled to start with.
         casings.forEach(TileEntityCasing::onDisabled);
         for (final TileEntityCasing casing : casings) {
             casing.setController(null);
         }
         casings.clear();
-
-        // Tell our neighbors about our untimely death.
-        for (final EnumFacing facing : EnumFacing.values()) {
-            final int neighborX = xCoord + facing.getFrontOffsetX();
-            final int neighborY = yCoord + facing.getFrontOffsetY();
-            final int neighborZ = zCoord + facing.getFrontOffsetZ();
-            if (getWorldObj().blockExists(neighborX, neighborY, neighborZ)) {
-                final TileEntity tileEntity = getWorldObj().getTileEntity(neighborX, neighborY, neighborZ);
-                if (tileEntity instanceof TileEntityController) {
-                    final TileEntityController controller = (TileEntityController) tileEntity;
-                    controller.scheduleScan();
-                } else if (tileEntity instanceof TileEntityCasing) {
-                    final TileEntityCasing casing = (TileEntityCasing) tileEntity;
-                    casing.scheduleScan();
-                }
-            }
-        }
     }
 
     @Override
@@ -197,29 +219,47 @@ public final class TileEntityController extends TileEntityComputer {
         }
     }
 
+    // --------------------------------------------------------------------- //
+    // TileEntityComputer
+
     @Override
-    public void readFromNBT(final NBTTagCompound nbt) {
-        super.readFromNBT(nbt);
+    protected void readFromNBTForServer(final NBTTagCompound nbt) {
+        super.readFromNBTForServer(nbt);
 
         hcfCooldown = nbt.getInteger(TAG_HCF_COOLDOWN);
     }
 
     @Override
-    public void writeToNBT(final NBTTagCompound nbt) {
-        super.writeToNBT(nbt);
+    protected void writeToNBTForServer(final NBTTagCompound nbt) {
+        super.writeToNBTForServer(nbt);
 
         nbt.setInteger(TAG_HCF_COOLDOWN, hcfCooldown);
     }
 
     @Override
+    protected void readFromNBTForClient(final NBTTagCompound nbt) {
+        super.readFromNBTForClient(nbt);
+
+        state = ControllerState.VALUES[nbt.getByte(TAG_STATE) & 0xFF];
+    }
+
+    @Override
+    protected void writeToNBTForClient(final NBTTagCompound nbt) {
+        super.writeToNBTForClient(nbt);
+
+        nbt.setByte(TAG_STATE, (byte) state.ordinal());
+    }
+
+    @Override
     public void updateEntity() {
+        final World world = getWorldObj();
+
         // Only update multi-block and casings on the server.
-        if (getWorldObj().isRemote) {
+        if (world.isRemote) {
             if (hcfCooldown > 0) {
                 --hcfCooldown;
 
                 // Spawn some fire particles! No actual fire, that'd be... problematic.
-                final World world = getWorldObj();
                 for (final EnumFacing facing : EnumFacing.values()) {
                     final int neighborX = xCoord + facing.getFrontOffsetX();
                     final int neighborY = yCoord + facing.getFrontOffsetY();
@@ -238,6 +278,13 @@ public final class TileEntityController extends TileEntityComputer {
             }
 
             return;
+        }
+
+        if (state != lastSentState) {
+            final Chunk chunk = world.getChunkFromBlockCoords(xCoord, zCoord);
+            final Block block = world.getBlock(xCoord, yCoord, zCoord);
+            world.markAndNotifyBlock(xCoord, yCoord, zCoord, chunk, block, block, 7);
+            lastSentState = state;
         }
 
         // Enforce cooldown after HCF event.
@@ -277,7 +324,7 @@ public final class TileEntityController extends TileEntityComputer {
             forceStep = forceStep && power == 1;
 
             // Are we powered?
-            if (!getWorldObj().isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord)) {
+            if (!world.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord)) {
                 // Nope, fall back to ready state, disable modules.
                 state = ControllerState.READY;
                 casings.forEach(TileEntityCasing::onDisabled);
@@ -295,7 +342,7 @@ public final class TileEntityController extends TileEntityComputer {
                     if (power < 15) {
                         // Stepping slower than 100%.
                         final int delay = 15 - power;
-                        if (getWorldObj().getTotalWorldTime() % delay == 0 || forceStep) {
+                        if (world.getTotalWorldTime() % delay == 0 || forceStep) {
                             step();
                         }
                     } else {

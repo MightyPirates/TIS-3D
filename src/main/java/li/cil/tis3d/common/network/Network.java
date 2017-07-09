@@ -15,17 +15,23 @@ import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
-import li.cil.tis3d.client.network.handler.MessageHandlerCasingState;
+import li.cil.tis3d.client.network.handler.MessageHandlerCasingEnabledState;
+import li.cil.tis3d.client.network.handler.MessageHandlerCasingInventory;
+import li.cil.tis3d.client.network.handler.MessageHandlerCasingLockedState;
 import li.cil.tis3d.client.network.handler.MessageHandlerHaltAndCatchFire;
 import li.cil.tis3d.client.network.handler.MessageHandlerParticleEffects;
+import li.cil.tis3d.client.network.handler.MessageHandlerReceivingPipeLockedState;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.network.handler.MessageHandlerBookCodeData;
 import li.cil.tis3d.common.network.handler.MessageHandlerCasingData;
 import li.cil.tis3d.common.network.message.MessageBookCodeData;
 import li.cil.tis3d.common.network.message.MessageCasingData;
-import li.cil.tis3d.common.network.message.MessageCasingState;
+import li.cil.tis3d.common.network.message.MessageCasingEnabledState;
+import li.cil.tis3d.common.network.message.MessageCasingInventory;
+import li.cil.tis3d.common.network.message.MessageCasingLockedState;
 import li.cil.tis3d.common.network.message.MessageHaltAndCatchFire;
 import li.cil.tis3d.common.network.message.MessageParticleEffect;
+import li.cil.tis3d.common.network.message.MessageReceivingPipeLockedState;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
@@ -63,9 +69,12 @@ public final class Network {
         CasingDataClient,
         CasingDataServer,
         ParticleEffects,
-        CasingState,
+        CasingEnabledState,
         BookCodeData,
-        HaltAndCatchFire
+        HaltAndCatchFire,
+        CasingLockedState,
+        ReceivingPipeLockedState,
+        CasingInventory
     }
 
     // --------------------------------------------------------------------- //
@@ -73,12 +82,15 @@ public final class Network {
     public void init() {
         wrapper = NetworkRegistry.INSTANCE.newSimpleChannel(API.MOD_ID);
 
+        wrapper.registerMessage(MessageHandlerBookCodeData.class, MessageBookCodeData.class, Messages.BookCodeData.ordinal(), Side.SERVER);
         wrapper.registerMessage(MessageHandlerCasingData.class, MessageCasingData.class, Messages.CasingDataClient.ordinal(), Side.CLIENT);
         wrapper.registerMessage(MessageHandlerCasingData.class, MessageCasingData.class, Messages.CasingDataServer.ordinal(), Side.SERVER);
-        wrapper.registerMessage(MessageHandlerParticleEffects.class, MessageParticleEffect.class, Messages.ParticleEffects.ordinal(), Side.CLIENT);
-        wrapper.registerMessage(MessageHandlerCasingState.class, MessageCasingState.class, Messages.CasingState.ordinal(), Side.CLIENT);
-        wrapper.registerMessage(MessageHandlerBookCodeData.class, MessageBookCodeData.class, Messages.BookCodeData.ordinal(), Side.SERVER);
+        wrapper.registerMessage(MessageHandlerCasingEnabledState.class, MessageCasingEnabledState.class, Messages.CasingEnabledState.ordinal(), Side.CLIENT);
+        wrapper.registerMessage(MessageHandlerCasingLockedState.class, MessageCasingLockedState.class, Messages.CasingLockedState.ordinal(), Side.CLIENT);
+        wrapper.registerMessage(MessageHandlerCasingInventory.class, MessageCasingInventory.class, Messages.CasingInventory.ordinal(), Side.CLIENT);
         wrapper.registerMessage(MessageHandlerHaltAndCatchFire.class, MessageHaltAndCatchFire.class, Messages.HaltAndCatchFire.ordinal(), Side.CLIENT);
+        wrapper.registerMessage(MessageHandlerParticleEffects.class, MessageParticleEffect.class, Messages.ParticleEffects.ordinal(), Side.CLIENT);
+        wrapper.registerMessage(MessageHandlerReceivingPipeLockedState.class, MessageReceivingPipeLockedState.class, Messages.ReceivingPipeLockedState.ordinal(), Side.CLIENT);
     }
 
     public SimpleNetworkWrapper getWrapper() {
@@ -197,14 +209,18 @@ public final class Network {
 
         @Override
         public boolean equals(final Object obj) {
-            if (this == obj) return true;
-            if (obj == null || getClass() != obj.getClass()) return false;
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null || getClass() != obj.getClass()) {
+                return false;
+            }
 
             final Position that = (Position) obj;
             return world.provider.dimensionId == that.world.provider.dimensionId &&
-                    Float.compare(that.x, x) == 0 &&
-                    Float.compare(that.y, y) == 0 &&
-                    Float.compare(that.z, z) == 0;
+                   Float.compare(that.x, x) == 0 &&
+                   Float.compare(that.y, y) == 0 &&
+                   Float.compare(that.z, z) == 0;
 
         }
 
@@ -282,7 +298,8 @@ public final class Network {
     }
 
     private static CasingSendQueue getQueueFor(final Casing casing) {
-        final Side side = casing.getCasingWorld().isRemote ? Side.CLIENT : Side.SERVER;
+        final World world = casing.getCasingWorld();
+        final Side side = world.isRemote ? Side.CLIENT : Side.SERVER;
         final Map<Casing, CasingSendQueue> queues = getQueues(side);
         CasingSendQueue queue = queues.get(casing);
         if (queue == null) {
@@ -354,7 +371,8 @@ public final class Network {
          * @param casing the casing this queue belongs to.
          */
         public void flush(final Casing casing) {
-            final Side side = casing.getCasingWorld().isRemote ? Side.CLIENT : Side.SERVER;
+            final World world = casing.getCasingWorld();
+            final Side side = world.isRemote ? Side.CLIENT : Side.SERVER;
             final ByteBuf data = Unpooled.buffer();
             collectData(data);
             if (data.readableBytes() > 0) {
@@ -420,8 +438,14 @@ public final class Network {
          */
         public ByteBuf collectData() {
             // Building the list backwards to easily use the last data of
-            // any type without having to remove from the queue.
+            // any type without having to remove from the queue. However,
+            // that could lead to sending different types in the reverse
+            // they were queued in, so we first collect all packets to
+            // actually send (by appending to the queue), and then sending
+            // those selected packets -- in reverse again, to restore the
+            // original order they were queued in.
             final ByteBuf data = Unpooled.buffer();
+            final int firstToWrite = sendQueue.size();
             for (int i = sendQueue.size() - 1; i >= 0; i--) {
                 final byte type = sendQueue.get(i).type;
                 if (type >= 0) {
@@ -431,6 +455,9 @@ public final class Network {
                     sentTypes.set(type);
                 }
 
+                sendQueue.add(sendQueue.get(i));
+            }
+            for (int i = sendQueue.size() - 1; i >= firstToWrite; i--) {
                 sendQueue.get(i).write(data);
             }
 
@@ -529,7 +556,9 @@ public final class Network {
 
                 if (dx * dx + dy * dy + dz * dz < target.range * target.range) {
                     final NetworkDispatcher dispatcher = player.playerNetServerHandler.netManager.channel().attr(NetworkDispatcher.FML_DISPATCHER).get();
-                    if (dispatcher != null) return true;
+                    if (dispatcher != null) {
+                        return true;
+                    }
                 }
             }
         }

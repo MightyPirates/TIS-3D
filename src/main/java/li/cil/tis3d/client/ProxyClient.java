@@ -15,21 +15,25 @@ import li.cil.tis3d.client.manual.provider.BlockImageProvider;
 import li.cil.tis3d.client.manual.provider.ItemImageProvider;
 import li.cil.tis3d.client.manual.provider.OreDictImageProvider;
 import li.cil.tis3d.client.manual.provider.TextureImageProvider;
-import li.cil.tis3d.client.render.TextureLoader;
-import li.cil.tis3d.client.render.block.ISBRHCasing;
-import li.cil.tis3d.client.render.block.ISBRHController;
-import li.cil.tis3d.client.render.tile.TileEntitySpecialRendererCasing;
+import li.cil.tis3d.client.renderer.TextureLoader;
+import li.cil.tis3d.client.renderer.block.ISBRHCasing;
+import li.cil.tis3d.client.renderer.block.ISBRHController;
+import li.cil.tis3d.client.renderer.tileentity.TileEntitySpecialRendererCasing;
+import li.cil.tis3d.client.renderer.tileentity.TileEntitySpecialRendererController;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.ProxyCommon;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.init.Blocks;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.tileentity.TileEntityCasing;
+import li.cil.tis3d.common.tileentity.TileEntityController;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
+
+import java.util.Collection;
 
 /**
  * Takes care of client-side only setup.
@@ -52,6 +56,7 @@ public final class ProxyClient extends ProxyCommon {
 
         // Set up tile entity renderer for dynamic module content.
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCasing.class, new TileEntitySpecialRendererCasing());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityController.class, new TileEntitySpecialRendererController());
 
         // Register GUI handler for fancy GUIs in our almost GUI-less mod!
         NetworkRegistry.INSTANCE.registerGuiHandler(TIS3D.instance, new GuiHandlerClient());
@@ -64,7 +69,18 @@ public final class ProxyClient extends ProxyCommon {
 
         ManualAPI.addTab(new TextureTabIconRenderer(new ResourceLocation(API.MOD_ID, "textures/gui/manualHome.png")), "tis3d.manual.home", "%LANGUAGE%/index.md");
         ManualAPI.addTab(new ItemStackTabIconRenderer(new ItemStack(Blocks.controller)), "tis3d.manual.blocks", "%LANGUAGE%/block/index.md");
-        ManualAPI.addTab(new ItemStackTabIconRenderer(new ItemStack(Items.modules.get(Constants.NAME_ITEM_MODULE_EXECUTION))), "tis3d.manual.items", "%LANGUAGE%/item/index.md");
+        final Item module;
+        if (Items.getModules().containsKey(Constants.NAME_ITEM_MODULE_EXECUTION)) {
+            module = Items.getModules().get(Constants.NAME_ITEM_MODULE_EXECUTION);
+        } else {
+            final Collection<Item> allModules = Items.getModules().values();
+            if (allModules.isEmpty()) {
+                module = net.minecraft.init.Items.redstone;
+            } else {
+                module = allModules.iterator().next();
+            }
+        }
+        ManualAPI.addTab(new ItemStackTabIconRenderer(new ItemStack(module)), "tis3d.manual.items", "%LANGUAGE%/item/index.md");
         ManualAPI.addTab(new TextureTabIconRenderer(new ResourceLocation(API.MOD_ID, "textures/gui/manualSerialProtocols.png")), "tis3d.manual.serialProtocols", "%LANGUAGE%/serialProtocols.md");
     }
 

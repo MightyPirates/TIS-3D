@@ -106,7 +106,7 @@ public interface ManualAPI {
      * does not provide a renderer, this will return <tt>null</tt>.
      *
      * @param path the path to the image to get the renderer for.
-     * @return the custom renderer for that path.
+     * @return the custom renderer for that path, or <tt>null</tt> if none exists.
      */
     ImageRenderer imageFor(String path);
 
