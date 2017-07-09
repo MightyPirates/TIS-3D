@@ -4,7 +4,6 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import li.cil.tis3d.api.FontRendererAPI;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
@@ -212,6 +211,6 @@ public final class ModuleTimer extends AbstractModuleRotatable {
         GL11.glTranslatef(0.5f, 0.5f, 0);
         GL11.glScalef(1 / 80f, 1 / 80f, 1);
         GL11.glTranslatef(-width / 2f + 1, -height / 2f + 1, 0);
-        FontRendererAPI.drawString(time);
+        fontRenderer.drawString(time);
     }
 }
