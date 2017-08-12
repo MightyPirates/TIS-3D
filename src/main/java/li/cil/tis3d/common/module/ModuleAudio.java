@@ -118,6 +118,11 @@ public final class ModuleAudio extends AbstractModule {
             return;
         }
 
+        // Skip invalid instruments
+        if (instrumentId >= INSTRUMENTS.length) {
+            return;
+        }
+
         // Send event to check if the sound may be played / should be modulated.
         final World world = getCasing().getCasingWorld();
         final BlockPos pos = getCasing().getPosition();
