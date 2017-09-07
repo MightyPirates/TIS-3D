@@ -14,6 +14,7 @@ import li.cil.tis3d.common.api.SerialAPIImpl;
 import li.cil.tis3d.common.capabilities.CapabilityInfraredReceiver;
 import li.cil.tis3d.common.entity.EntityInfraredPacket;
 import li.cil.tis3d.common.event.TickHandlerInfraredPacket;
+import li.cil.tis3d.common.event.WorldUnloadHandler;
 import li.cil.tis3d.common.init.Blocks;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.integration.Integration;
@@ -107,6 +108,7 @@ public class ProxyCommon {
         MinecraftForge.EVENT_BUS.register(Network.INSTANCE);
         MinecraftForge.EVENT_BUS.register(RedstoneIntegration.INSTANCE);
         MinecraftForge.EVENT_BUS.register(TickHandlerInfraredPacket.INSTANCE);
+        MinecraftForge.EVENT_BUS.register(WorldUnloadHandler.INSTANCE);
 
         // Register providers for built-in modules.
         ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_AUDIO, ModuleAudio::new));
