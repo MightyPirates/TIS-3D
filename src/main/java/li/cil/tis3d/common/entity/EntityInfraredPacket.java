@@ -92,7 +92,7 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
         motionX = direction.xCoord * TRAVEL_SPEED;
         motionY = direction.yCoord * TRAVEL_SPEED;
         motionZ = direction.zCoord * TRAVEL_SPEED;
-        lifetime = DEFAULT_LIFETIME;
+        lifetime = DEFAULT_LIFETIME + 1; // First update in next frame.
         this.value = value;
         getDataManager().set(DATA_VALUE, value & 0xFFFF);
     }
