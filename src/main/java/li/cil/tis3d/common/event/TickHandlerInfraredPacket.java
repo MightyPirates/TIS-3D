@@ -45,10 +45,10 @@ public final class TickHandlerInfraredPacket {
             return;
         }
 
-        pendingAdds.forEach(livePackets::add);
+        livePackets.addAll(pendingAdds);
         pendingAdds.clear();
 
-        pendingRemovals.forEach(livePackets::remove);
+        livePackets.removeAll(pendingRemovals);
         pendingRemovals.clear();
 
         livePackets.forEach(EntityInfraredPacket::updateLifetime);
