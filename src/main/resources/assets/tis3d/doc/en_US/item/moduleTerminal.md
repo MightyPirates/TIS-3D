@@ -2,7 +2,7 @@
 
 ![I'm afraid it's terminal](item:tis3d:moduleTerminal)
 
-The terminal module provides a more advanced form of input than the [keypad module](module_keypad.md) with a more specific form of output than the [display module](module_display.md).
+The terminal module provides a more advanced form of input than the [keypad module](moduleKeypad.md) with a more specific form of output than the [display module](moduleDisplay.md).
 
 The user may input a single line of text, which, when submitted, is written character by character to all of the ports of the terminal module. Characters are converted to numerical values according to codepage 437. Further input submissions are disabled until the full line has been transmitted. This indicated by the input line being greyed out, and the caret not blinking. It is however possible to input more text in this state to prepare for the moment submissions are enabled again.
 
