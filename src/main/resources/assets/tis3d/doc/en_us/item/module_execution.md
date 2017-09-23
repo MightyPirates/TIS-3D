@@ -34,20 +34,20 @@ Virtual port. This is a pseudo-target that will store the *actual* port that fin
 In addition to a list of instructions, assembler code provided to an execution module may contain metadata. Comments are textual notes in the code that are completely ignored in the execution of the program. Labels mark positions in the code that can be addressed by jump instructions. Comments, labels and blank lines have no influence on the addressing of the compiled program. This is relevant when using the `JRO` instruction.
 
 ### Comments
-Comments are denoted by a leading `#` (#) hash character. They may either appear as the sole content of a line, or on the same line as an instruction or label.
-Example:
-`# Single line comment`
-`LOOP: # Start of loop`
+Comments are denoted by a leading `#` (#) hash character. They may either appear as the sole content of a line, or on the same line as an instruction or label.  
+Example:  
+`# Single line comment`  
+`LOOP: # Start of loop`  
 `MOV 0, ACC # Reset`
 
 ### Labels
-Labels are denoted by a string followed by a `:` (:) color character. A label always refers to the instruction following it. When used as the target of a jump instruction, that instruction is be jumped to directly. This also means that with respect to the program's execution, it makes no difference whether a label is placed on the same line, or the line preceding the instruction it references.
-Example:
-`START: MOV 8, ACC`
-`LOOP:`
-`SUB 1`
-`JGZ LOOP`
-`JMP START`
+Labels are denoted by a string followed by a `:` (:) color character. A label always refers to the instruction following it. When used as the target of a jump instruction, that instruction is be jumped to directly. This also means that with respect to the program's execution, it makes no difference whether a label is placed on the same line, or the line preceding the instruction it references.    
+Example:  
+`START: MOV 8, ACC`  
+`LOOP:`  
+`SUB 1`  
+`JGZ LOOP`  
+`JMP START`  
 `# Never reached`
 
 ### Instructions
@@ -56,10 +56,10 @@ Pseudo-instruction that has no effect on the state of the execution module's por
 
 #### Data Transfer
 `MOV <SRC> <DST>`
-Transfers data from the target `SRC` to the target `DST`. See above for a list of valid targets. Note that operating on registers / internal state is typically faster than operating on ports. Exact timings are not part of the specification, and vendor specific.
-Example:
-`MOV 8, ACC` Writes the value 8 to the `ACC` register.
-`MOV LEFT, RIGHT` Reads a value from the left port, then writes the read value to the right port.
+Transfers data from the target `SRC` to the target `DST`. See above for a list of valid targets. Note that operating on registers / internal state is typically faster than operating on ports. Exact timings are not part of the specification, and vendor specific.  
+Example:  
+`MOV 8, ACC` Writes the value 8 to the `ACC` register.  
+`MOV LEFT, RIGHT` Reads a value from the left port, then writes the read value to the right port.  
 `MOV DOWN, NIL` Reads the value from the bottom port and writes it to `NIL`, effectively discarding it.
 
 `SWP`
@@ -70,22 +70,61 @@ Copies the current value of `ACC` to `BAK`.
 
 #### Arithmetic Operations
 `ADD <SRC>`
-Reads a value from the specified target `SRC` and adds it to the current value of `ACC`, then writes the result of the operation back to `ACC`. Note that arithmetic over- or underflows are clamped, i.e. there is no over- or underflow. The value will merely cap out at the end of the range of valid values.
-Example:
-`ADD 1` Adds one to the current value of `ACC`.
+Reads a value from the specified target `SRC` and adds it to the current value of `ACC`, then writes the result of the operation back to `ACC`. Note that arithmetic over- or underflows are clamped, i.e. there is no over- or underflow. The value will merely cap out at the end of the range of valid values.  
+Example:  
+`ADD 1` Adds one to the current value of `ACC`.  
 `ADD LEFT` Reads a value from the left port, then adds it to `ACC`.
 
 `SUB <SRC>`
-Reads a value from the specified target `SRC` and subtracts it from the current value of `ACC`, then writes the result of the operation back to `ACC`. Note that arithmetic over- or underflows are clamped, i.e. there is no over- or underflow. The value will merely cap out at the end of the range of valid values.
-Example:
-`SUB 1` Subtracts one to the current value of `ACC`.
+Reads a value from the specified target `SRC` and subtracts it from the current value of `ACC`, then writes the result of the operation back to `ACC`. Note that arithmetic over- or underflows are clamped, i.e. there is no over- or underflow. The value will merely cap out at the end of the range of valid values.  
+Example:  
+`SUB 1` Subtracts one to the current value of `ACC`.  
 `SUB LEFT` Reads a value from the left port, then subtracts it from `ACC`.
+
+`MUL <SRC>`
+Reads a value from the specified target `SRC` and multiplies it with the current value of `ACC`, then writes the result of the operation back to `ACC`. Note that arithmetic overflows are clamped, i.e. there is no overflow. The value will merely cap out at the end of the range of valid values.  
+Example:  
+`MUL 2` Multiplies the value of `ACC` by two.  
+`MUL LEFT` Reads a value from the left port, then multiplies it with `ACC`.
+
+`DIV <SRC>`
+Reads a value from the specified target `SRC` and divides the current value of `ACC` by it, then writes the result of the operation back to `ACC`. Note that division by zero will lead to the system entering an errored state and resetting itself.  
+Example:  
+`DIV 2` Divides the value of `ACC` by two.  
+`DIV LEFT` Reads a value from the left port, then divides `ACC` by it.
 
 `NEG`
 Negates the current value of `ACC` and stores the result in `ACC`.
 
 ### Bitwise Operations
-TODO
+`AND <SRC>` Reads a value from the specified target `SRC` and performs a bitwise *and* operation on it and the current value of `ACC`.  
+Example:  
+`AND 0x00FF` Zeroes out the high byte of the value stored in `ACC`, keeping the low byte as-is.  
+`AND LEFT` Reads a value from the left port, then uses it as a bitmask on the current value in `ACC`. 
+
+`OR <SRC>` Reads a value from the specified target `SRC` and performs a bitwise *or* operation on it and the current value of `ACC`.  
+Example:  
+`OR 0x0001` Sets the lowest bit in the value stored in `ACC` and writes the result back to `ACC`.  
+`OR LEFT` Reads a value from the left port, then sets all bits in the read value not already set in `ACC` and writes the result back to `ACC`.
+
+`XOR <SRC>` Reads a value from the specified target `SRC` and performs a bitwise *exclusive or* operation on it and the current value of `ACC`.  
+Example:  
+`XOR 1` Sets the lowest bit in `ACC` if it is currently unset, resets it if it is currently set.  
+`XOR LEFT` Reads a value from the left port and applies an *xor* operation on it and the value of `ACC`.
+
+`SHL <SRC>` Reads a value from the specified target `SRC` and performs a bitwise shift to the left on the current value of `ACC` by the number of bits specified by the read value, then writes the result of the operation back to `ACC`.  
+Example:  
+`SHL 4` Shifts the value of `ACC` to the left by four bits, e.g. `0x0F` becomes `0xF0`.  
+`SHL LEFT` Reads a value from the left port and shifts the value of `ACC` to the left by that many bits.
+
+`SHR <SRC>` Reads a value from the specified target `SRC` and performs a bitwise shift to the right on the current value of `ACC` by the number of bits specified by the read value, then writes the result of the operation back to `ACC`.  
+Example:  
+`SHR 4` Shifts the value of `ACC` to the right by four bits, e.g. `0xF0` becomes `0x0F`.  
+`SHR LEFT` Reads a value from the left port and shifts the value of `ACC` to the right by that many bits.
+
+`NOT` Performs a bitwise negation on the current value of `ACC`, then writes the result of the operation back to `ACC`.  
+Example:  
+`NOT` with `ACC` holding the value `0xFF00` would convert it to `0x00FF`.
 
 ### Control Flow
 `JMP <LABEL>`
