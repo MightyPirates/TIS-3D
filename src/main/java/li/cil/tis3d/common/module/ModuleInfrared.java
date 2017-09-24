@@ -89,7 +89,7 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
 
         RenderUtil.ignoreLighting();
 
-        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_MODULE_INFRARED_OVERLAY));
+        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_INFRARED));
     }
 
     @Override

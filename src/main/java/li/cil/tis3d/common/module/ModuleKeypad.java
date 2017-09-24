@@ -162,7 +162,7 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
         // i.e. while no input is possible.
         value.ifPresent(unused -> GlStateManager.color(1, 1, 1, 0.5f));
         GlStateManager.depthMask(false);
-        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_MODULE_KEYPAD_OVERLAY));
+        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_KEYPAD));
         GlStateManager.depthMask(true);
 
         // Draw overlay for hovered button if we can currently input a value.

@@ -48,7 +48,7 @@ public final class ModuleRandom extends AbstractModule {
         RenderUtil.ignoreLighting();
         GlStateManager.enableBlend();
 
-        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_MODULE_RANDOM_OVERLAY));
+        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_RANDOM));
 
         GlStateManager.disableBlend();
     }
