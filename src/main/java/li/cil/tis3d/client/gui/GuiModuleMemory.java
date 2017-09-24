@@ -242,6 +242,7 @@ public class GuiModuleMemory extends GuiScreen {
         }
 
         GlStateManager.color(1, 1, 1, 1 - sinceInitialized / 0.5f);
+        GlStateManager.enableBlend();
 
         final int labelWidth = FontRendererAPI.getCharWidth() * LABEL_INITIALIZING.length();
 

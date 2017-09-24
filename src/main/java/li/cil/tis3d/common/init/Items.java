@@ -7,6 +7,7 @@ import li.cil.tis3d.common.item.ItemBookCode;
 import li.cil.tis3d.common.item.ItemBookManual;
 import li.cil.tis3d.common.item.ItemKey;
 import li.cil.tis3d.common.item.ItemModule;
+import li.cil.tis3d.common.item.ItemModuleReadOnlyMemory;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -20,6 +21,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Manages setup, registration and lookup of items.
@@ -121,7 +123,11 @@ public final class Items {
             return null;
         }
 
-        return registerItem(registry, new ItemModule(), name);
+        if (Objects.equals(name, Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY)) {
+            return registerItem(registry, new ItemModuleReadOnlyMemory(), name);
+        } else {
+            return registerItem(registry, new ItemModule(), name);
+        }
     }
 
     // --------------------------------------------------------------------- //
