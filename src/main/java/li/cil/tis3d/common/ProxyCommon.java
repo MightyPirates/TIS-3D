@@ -15,11 +15,13 @@ import li.cil.tis3d.common.capabilities.CapabilityInfraredReceiver;
 import li.cil.tis3d.common.entity.EntityInfraredPacket;
 import li.cil.tis3d.common.event.TickHandlerInfraredPacket;
 import li.cil.tis3d.common.event.WorldUnloadHandler;
+import li.cil.tis3d.common.gui.GuiHandlerCommon;
 import li.cil.tis3d.common.init.Blocks;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.integration.Integration;
 import li.cil.tis3d.common.integration.redstone.RedstoneIntegration;
 import li.cil.tis3d.common.item.ItemModule;
+import li.cil.tis3d.common.item.ItemModuleReadOnlyMemory;
 import li.cil.tis3d.common.module.ModuleAudio;
 import li.cil.tis3d.common.module.ModuleBundledRedstone;
 import li.cil.tis3d.common.module.ModuleDisplay;
@@ -46,11 +48,13 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -76,6 +80,9 @@ public class ProxyCommon {
         // Register blocks and items.
         Blocks.registerBlocks(this);
         Items.register(this);
+
+        // Register GUI handler for fancy GUIs in our almost GUI-less mod!
+        NetworkRegistry.INSTANCE.registerGuiHandler(TIS3D.instance, new GuiHandlerCommon());
 
         // Mod integration.
         Integration.preInit(event);
@@ -171,7 +178,11 @@ public class ProxyCommon {
             return null;
         }
 
-        return registerItem(name, ItemModule::new);
+        if (Objects.equals(name, Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY)) {
+            return registerItem(name, ItemModuleReadOnlyMemory::new);
+        } else {
+            return registerItem(name, ItemModule::new);
+        }
     }
 
     // --------------------------------------------------------------------- //

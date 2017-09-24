@@ -2,170 +2,294 @@ package li.cil.tis3d.client.gui;
 
 import li.cil.tis3d.api.FontRendererAPI;
 import li.cil.tis3d.client.renderer.TextureLoader;
+import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.module.ModuleRandomAccessMemory;
+import li.cil.tis3d.common.network.Network;
+import li.cil.tis3d.common.network.message.MessageModuleReadOnlyMemoryData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumHand;
 import org.lwjgl.input.Keyboard;
 
 import java.io.IOException;
 
-/**
- * Created by TheCodeWarrior
- */
 public class GuiModuleMemory extends GuiScreen {
-    private static final int GUI_WIDTH = 182;
-    private static final int GUI_HEIGHT = 122;
+    private static final int GUI_WIDTH = 190;
+    private static final int GUI_HEIGHT = 130;
 
-    private static final int GRID_LEFT = 21;
-    private static final int GRID_TOP = 9;
-    private static final int CELL_WIDTH = 9;
-    private static final int CELL_HEIGHT = 6;
+    private static final int GRID_LEFT = 25;
+    private static final int GRID_TOP = 13;
+    private static final int CELL_WIDTH = 10;
+    private static final int CELL_HEIGHT = 7;
+    public static final String LABEL_INITIALIZING = "INITIALIZING...";
 
-    private final ModuleRandomAccessMemory  module;
+    private final EntityPlayer player;
+    private final byte[] data = new byte[ModuleRandomAccessMemory.MEMORY_SIZE];
 
     private int guiX = 0;
     private int guiY = 0;
+    private static int selectedCell = 0;
+    private boolean highNibble = true;
+    private boolean receivedData;
+    private long initTime;
 
-    private int selectedCell = -1;
-    private boolean highBit = true;
-
-    public GuiModuleMemory(final ModuleRandomAccessMemory module) {
-        this.module = module;
+    public GuiModuleMemory(final EntityPlayer player) {
+        this.player = player;
     }
 
-    public boolean isFor(final ModuleRandomAccessMemory that) {
-        return that == module;
+    public void setData(final byte[] data) {
+        System.arraycopy(data, 0, this.data, 0, Math.min(data.length, this.data.length));
+        receivedData = true;
+        initTime = System.currentTimeMillis();
     }
+
+    // --------------------------------------------------------------------- //
+    // GuiScreen
 
     @Override
     public void initGui() {
         super.initGui();
         guiX = (width - GUI_WIDTH) / 2;
         guiY = (height - GUI_HEIGHT) / 2;
+
+        Keyboard.enableRepeatEvents(true);
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+    public void onGuiClosed() {
+        super.onGuiClosed();
+
+        // Only send to server if our data is actually based on the old server
+        // data to avoid erasing ROM when closing UI again too quickly.
+        if (receivedData) {
+            // Save any changes made and send them to the server.
+            Network.INSTANCE.getWrapper().sendToServer(new MessageModuleReadOnlyMemoryData(data));
+        }
+
+        Keyboard.enableRepeatEvents(false);
+    }
+
+    @Override
+    public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
+        if (!player.isEntityAlive() || !Items.isModuleReadOnlyMemory(player.getHeldItem(EnumHand.MAIN_HAND))) {
+            Minecraft.getMinecraft().displayGuiScreen(null);
+            return;
+        }
+
+        // Background.
+        GlStateManager.color(1, 1, 1, 1);
+        Minecraft.getMinecraft().getTextureManager().bindTexture(TextureLoader.LOCATION_GUI_MEMORY);
+        drawTexturedModalRect(guiX, guiY, 0, 0, GUI_WIDTH, GUI_HEIGHT);
+
+        // Draw row and column headers.
+        drawHeaders();
+
+        // Draw/fade out initializing info text.
+        drawInitializing();
+
+        if (!receivedData) {
+            return;
+        }
+
+        // Draw memory cells being edited.
+        drawMemory();
+
+        // Draw marker around currently selected memory cell.
+        drawSelectionBox();
+    }
+
+    @Override
+    protected void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) throws IOException {
         super.mouseClicked(mouseX, mouseY, mouseButton);
 
-        int col = (mouseX - guiX - GRID_LEFT) / (CELL_WIDTH+1);
-        int row = (mouseY - guiY - GRID_TOP) / (CELL_HEIGHT+1);
-
-        selectedCell = -1;
-        if(col >= 0 && row >= 0 && col <= 0xF && row <= 0xF) { // not outside the grid entirely
-
-            int insideX = (mouseX - guiX - GRID_LEFT) - (CELL_WIDTH+1)*col;
-            int insideY = (mouseY - guiY - GRID_TOP) - (CELL_HEIGHT+1)*row;
-
-            if(insideX < CELL_WIDTH && insideY < CELL_HEIGHT) { // not in the 1px border between cells
-                selectedCell = (row << 4) | col;
-                highBit = true;
-            }
-
-        }
+        selectCellAt(mouseX, mouseY);
     }
 
     @Override
-    protected void keyTyped(char typedChar, int keyCode) throws IOException {
+    protected void mouseClickMove(final int mouseX, final int mouseY, final int clickedMouseButton, final long timeSinceLastClick) {
+        super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
+
+        selectCellAt(mouseX, mouseY);
+    }
+
+    @Override
+    protected void keyTyped(final char typedChar, final int keyCode) throws IOException {
         super.keyTyped(typedChar, keyCode);
 
-        if(selectedCell >= 0) {
-            int digit = Character.digit(typedChar, 16);
-            if(digit >= 0) {
-                if(highBit) {
-                    int value = module.get((byte)selectedCell);
-                    value &= 0x0F;
-                    value |= (digit & 0x0F) << 4;
-                    module.set((byte)selectedCell, value);
-                    module.sendSingle((byte)selectedCell);
-                } else {
-                    int value = module.get((byte)selectedCell);
-                    value &= 0xF0;
-                    value |= digit & 0x0F;
-                    module.set((byte)selectedCell, value);
-                    module.sendSingle((byte)selectedCell);
-                }
-                highBit = !highBit;
-            } else if(keyCode == Keyboard.KEY_DELETE || keyCode == Keyboard.KEY_BACK) {
-                module.set((byte)selectedCell, 0);
-                module.sendSingle((byte)selectedCell);
-                highBit = true;
+        if (!receivedData) {
+            return;
+        }
+
+        final int digit = Character.digit(typedChar, 16);
+        if (digit >= 0) {
+            if (highNibble) {
+                byte value = data[selectedCell];
+                value &= 0x0F;
+                value |= (digit & 0x0F) << 4;
+                data[selectedCell] = value;
             } else {
-                int col = selectedCell & 0x0F;
-                int row = (selectedCell & 0xF0) >> 4;
-                int prevCol = col, prevRow = row;
-
-                switch (keyCode) {
-                    case Keyboard.KEY_LEFT:
-                    case Keyboard.KEY_H: // cause you gotta have vim keybinds. Absolutely required.
-                        col--;
-                        break;
-                    case Keyboard.KEY_RIGHT:
-                    case Keyboard.KEY_L:
-                        col++;
-                        break;
-                    case Keyboard.KEY_UP:
-                    case Keyboard.KEY_K:
-                        row--;
-                        break;
-                    case Keyboard.KEY_DOWN:
-                    case Keyboard.KEY_J:
-                        row++;
-                        break;
-                }
-                if(col < 0) col = 0;
-                if(col > 15) col = 15;
-                if(row < 0) row = 0;
-                if(row > 15) row = 15;
-
-                if(row != prevRow || col != prevCol) {
-                    selectedCell = (row << 4) | col;
-                    highBit = true;
-                }
+                byte value = data[selectedCell];
+                value &= 0xF0;
+                value |= digit & 0x0F;
+                data[selectedCell] = value;
             }
-        }
-    }
+            highNibble = !highNibble;
+            if (highNibble) {
+                selectedCell = (selectedCell + 1) % data.length;
+            }
+        } else if (keyCode == Keyboard.KEY_DELETE) {
+            data[selectedCell] = 0;
+            highNibble = true;
+        } else if (keyCode == Keyboard.KEY_BACK) {
+            if (highNibble) {
+                selectedCell = (selectedCell - 1 + data.length) % data.length;
+            }
+            data[selectedCell] = 0;
+            highNibble = true;
+        } else {
+            int col = selectedCell & 0x0F;
+            int row = (selectedCell & 0xF0) >> 4;
 
-    @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        GlStateManager.translate(guiX, guiY, 0);
-        Minecraft.getMinecraft().renderEngine.bindTexture(TextureLoader.LOCATION_GUI_MEMORY);
-        this.drawTexturedModalRect(0, 0, 0, 0, GUI_WIDTH, GUI_HEIGHT);
-
-
-        int prevX = 0, prevY = 0; // only translate by difference to avoid having to untranslate each time. For performance
-        for(int i = 0; i < module.size(); i++) {
-            int value = module.get((byte)i);
-            int col = i & 0x0F;
-            int row = (i & 0xF0) >> 4;
-
-            int x = GRID_LEFT + (CELL_WIDTH+1)*col + 1; // +1 for text offset. w/o +1 it is the outer box pos.
-            int y = GRID_TOP + (CELL_HEIGHT+1)*row + 1;
-
-            GlStateManager.translate(x-prevX, y-prevY, 0);
-
-            // replace because the 'O' character is clearer than the '0' character.
-            FontRendererAPI.drawString(String.format("%02X", value).replace('0','O'));
-
-            if(i == selectedCell) {
-                drawSelectionBox();
+            switch (keyCode) {
+                case Keyboard.KEY_LEFT:
+                case Keyboard.KEY_H:
+                    if (col == 0) {
+                        col = 15;
+                        row = (row - 1 + 16) % 16;
+                    } else {
+                        --col;
+                    }
+                    break;
+                case Keyboard.KEY_RIGHT:
+                case Keyboard.KEY_L:
+                    if (col == 15) {
+                        col = 0;
+                        row = (row + 1) % 16;
+                    } else {
+                        ++col;
+                    }
+                    break;
+                case Keyboard.KEY_UP:
+                case Keyboard.KEY_K:
+                    row = (row - 1 + 16) % 16;
+                    break;
+                case Keyboard.KEY_DOWN:
+                case Keyboard.KEY_J:
+                    row = (row + 1) % 16;
+                    break;
+                default:
+                    return;
             }
 
-            prevX = x;
-            prevY = y;
+            selectedCell = (row << 4) | col;
+            highNibble = true;
         }
-
-    }
-
-    private void drawSelectionBox() {
-        Minecraft.getMinecraft().renderEngine.bindTexture(TextureLoader.LOCATION_GUI_MEMORY);
-        int vPos = (int) (Minecraft.getMinecraft().world.getTotalWorldTime() % 16) * 8;
-        this.drawTexturedModalRect(-2, -2, 185, vPos, 11, 8);
     }
 
     @Override
     public boolean doesGuiPauseGame() {
         return false;
+    }
+
+    // --------------------------------------------------------------------- //
+
+    private void selectCellAt(final int mouseX, final int mouseY) {
+        if (!receivedData) {
+            return;
+        }
+
+        final int col = (mouseX + 1 - guiX - GRID_LEFT) / CELL_WIDTH;
+        final int row = (mouseY + 1 - guiY - GRID_TOP) / CELL_HEIGHT;
+
+        if (isInGridArea(col, row)) {
+            selectedCell = (row << 4) | col;
+            highNibble = true;
+        }
+    }
+
+    private boolean isInGridArea(final int col, final int row) {
+        return col >= 0 && row >= 0 && col <= 0xF && row <= 0xF;
+    }
+
+    private void drawHeaders() {
+        GlStateManager.color(0.25f, 0.25f, 0.25f, 1);
+
+        // Columns headers (top).
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(guiX + GRID_LEFT + 3, guiY + 6, 0);
+        for (int col = 0; col < 16; col++) {
+            FontRendererAPI.drawString(String.format("%X", col));
+            GlStateManager.translate(CELL_WIDTH, 0, 0);
+        }
+        GlStateManager.popMatrix();
+
+        // Row headers (left).
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(guiX + 7, guiY + 14, 0);
+        for (int row = 0; row < 16; row++) {
+            FontRendererAPI.drawString(String.format("0X%X0", row));
+            GlStateManager.translate(0, CELL_HEIGHT, 0);
+        }
+        GlStateManager.popMatrix();
+    }
+
+    private void drawInitializing() {
+        final float sinceInitialized = (System.currentTimeMillis() - initTime) / 1000f;
+        if (receivedData && sinceInitialized > 0.5f) {
+            return;
+        }
+
+        GlStateManager.color(1, 1, 1, 1 - sinceInitialized / 0.5f);
+
+        final int labelWidth = FontRendererAPI.getCharWidth() * LABEL_INITIALIZING.length();
+
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(guiX + GRID_LEFT + 3 + 7 * CELL_WIDTH - labelWidth / 2, guiY + GRID_TOP + 1 + 7 * CELL_HEIGHT, 0);
+        FontRendererAPI.drawString(LABEL_INITIALIZING);
+        GlStateManager.popMatrix();
+    }
+
+    private void drawMemory() {
+        GlStateManager.color(1, 1, 1, 1);
+
+        final int visibleCells = (int) (System.currentTimeMillis() - initTime);
+
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(guiX + GRID_LEFT + 1, guiY + GRID_TOP + 1, 0);
+        for (int i = 0, count = Math.min(visibleCells, data.length); i < count; i++) {
+            FontRendererAPI.drawString(String.format("%02X", data[i]));
+
+            final int col = i & 0x0F;
+            if (col < 0x0F) {
+                GlStateManager.translate(CELL_WIDTH, 0, 0);
+            } else {
+                GlStateManager.translate(-CELL_WIDTH * 0x0F, CELL_HEIGHT, 0);
+            }
+        }
+        GlStateManager.popMatrix();
+    }
+
+    private void drawSelectionBox() {
+        final int visibleCells = (int) (System.currentTimeMillis() - initTime) * 2;
+        if (selectedCell > visibleCells) {
+            return;
+        }
+
+        final int col = selectedCell & 0x0F;
+        final int row = (selectedCell & 0xF0) >> 4;
+
+        final int x = guiX + GRID_LEFT + CELL_WIDTH * col - 1;
+        final int y = guiY + GRID_TOP + CELL_HEIGHT * row - 1;
+
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(x, y, 0);
+
+        Minecraft.getMinecraft().renderEngine.bindTexture(TextureLoader.LOCATION_GUI_MEMORY);
+        final int vPos = (int) (Minecraft.getMinecraft().world.getTotalWorldTime() % 16) * 8;
+        drawTexturedModalRect(0, 0, 256 - (CELL_WIDTH + 1), vPos, 11, 8);
+
+        GlStateManager.popMatrix();
     }
 }
