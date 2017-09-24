@@ -10,12 +10,18 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
+import li.cil.tis3d.client.gui.GuiHandlerClient;
+import li.cil.tis3d.client.gui.GuiModuleMemory;
 import li.cil.tis3d.common.Constants;
+import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.util.EnumUtils;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Arrays;
@@ -61,6 +67,7 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
     protected static final byte PACKET_CLEAR = 0;
     protected static final byte PACKET_SINGLE = 1;
     protected static final byte PACKET_FULL = 2;
+    protected static final byte PACKET_ADDRESS = 3;
 
     // Rendering info.
     public static final float QUADS_U0 = 5 / 32f;
@@ -108,6 +115,13 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
     public boolean onActivate(final EntityPlayer player, final float hitX, final float hitY, final float hitZ) {
         final ItemStack heldItem = player.getHeldItem();
         if (!Items.isItem(heldItem, Items.getModules().get(Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY))) {
+            if (!player.isSneaking()) {
+                final World world = player.getEntityWorld();
+                if (world.isRemote) {
+                    player.openGui(TIS3D.instance, GuiHandlerClient.GuiId.MODULE_MEMORY.ordinal(), world, 0, 0, 0);
+                }
+                return true;
+            }
             return false;
         }
 
@@ -134,9 +148,11 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
             case PACKET_CLEAR:
                 clear();
                 break;
-            case PACKET_SINGLE:
+            case PACKET_ADDRESS:
                 address = data.readByte();
-                set(data.readByte());
+                break;
+            case PACKET_SINGLE:
+                set(data.readByte(), data.readByte());
                 break;
             case PACKET_FULL:
                 data.readBytes(memory);
@@ -190,6 +206,25 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
         nbt.setByteArray(TAG_MEMORY, memory.clone());
         nbt.setByte(TAG_ADDRESS, address);
         EnumUtils.writeToNBT(state, TAG_STATE, nbt);
+    }
+
+
+    @Override
+    public void onDisposed() {
+        if (getCasing().getCasingWorld().isRemote) {
+            closeGui();
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void closeGui() {
+        final GuiScreen screen = Minecraft.getMinecraft().currentScreen;
+        if (screen instanceof GuiModuleMemory) {
+            final GuiModuleMemory gui = (GuiModuleMemory) screen;
+            if (gui.isFor(this)) {
+                Minecraft.getMinecraft().displayGuiScreen(null);
+            }
+        }
     }
 
     // --------------------------------------------------------------------- //
@@ -252,14 +287,45 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
     }
 
     // --------------------------------------------------------------------- //
+    // Public API
 
-    private int get() {
+    public int get(final byte address) {
         return memory[address & 0xFF] & 0xFF;
     }
 
-    private void set(final int value) {
+    public void set(final byte address, final int value) {
         memory[address & 0xFF] = (byte) value;
     }
+
+    public int size() {
+        return memory.length;
+    }
+
+    public void sendSingle(final byte address) {
+        final ByteBuf data = Unpooled.buffer();
+        data.writeByte(PACKET_SINGLE);
+        data.writeByte(address);
+        data.writeByte(memory[address & 0xFF]);
+        getCasing().sendData(getFace(), data);
+    }
+
+    public void sendFull() {
+        final ByteBuf data = Unpooled.buffer();
+        data.writeByte(PACKET_FULL);
+        data.writeBytes(memory);
+        getCasing().sendData(getFace(), data);
+    }
+
+    // --------------------------------------------------------------------- //
+
+    private int get() {
+        return get(this.address);
+    }
+
+    private void set(final int value) {
+        set(this.address, value);
+    }
+
 
     private void clear() {
         Arrays.fill(memory, (byte) 0);
@@ -331,6 +397,7 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
         cancelWrite();
 
         // Update client representation.
+        sendAddress();
         sendSingle();
     }
 
@@ -340,19 +407,15 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
         getCasing().sendData(getFace(), data, DATA_TYPE_CLEAR);
     }
 
-    private void sendSingle() {
+    private void sendAddress() {
         final ByteBuf data = Unpooled.buffer();
-        data.writeByte(PACKET_SINGLE);
-        data.writeByte(address);
-        data.writeByte(memory[address & 0xFF]);
+        data.writeByte(PACKET_ADDRESS);
+        data.writeByte(this.address);
         getCasing().sendData(getFace(), data);
     }
 
-    private void sendFull() {
-        final ByteBuf data = Unpooled.buffer();
-        data.writeByte(PACKET_FULL);
-        data.writeBytes(memory);
-        getCasing().sendData(getFace(), data);
+    private void sendSingle() {
+        sendSingle(this.address);
     }
 
     private float sectorSum(final int offset, final int count) {

@@ -11,6 +11,7 @@ public final class TextureLoader {
     public static final ResourceLocation LOCATION_MANUAL_TAB = new ResourceLocation(API.MOD_ID, "textures/gui/manualTab.png");
     public static final ResourceLocation LOCATION_MANUAL_SCROLL = new ResourceLocation(API.MOD_ID, "textures/gui/manualScroll.png");
     public static final ResourceLocation LOCATION_MANUAL_MISSING = new ResourceLocation(API.MOD_ID, "textures/gui/manualMissing.png");
+    public static final ResourceLocation LOCATION_MODULEGUI_MEMORY = new ResourceLocation(API.MOD_ID, "textures/gui/module_memory.png");
 
     public static final ResourceLocation LOCATION_CASING_LOCKED_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/casingLocked");
     public static final ResourceLocation LOCATION_CASING_UNLOCKED_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/casingUnlocked");
