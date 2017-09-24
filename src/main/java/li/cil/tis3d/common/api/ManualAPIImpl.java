@@ -9,9 +9,9 @@ import li.cil.tis3d.api.manual.ImageProvider;
 import li.cil.tis3d.api.manual.ImageRenderer;
 import li.cil.tis3d.api.manual.PathProvider;
 import li.cil.tis3d.api.manual.TabIconRenderer;
-import li.cil.tis3d.client.gui.GuiHandlerClient;
 import li.cil.tis3d.client.gui.GuiManual;
 import li.cil.tis3d.common.TIS3D;
+import li.cil.tis3d.common.gui.GuiHandlerCommon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
@@ -181,7 +181,7 @@ public final class ManualAPIImpl implements ManualAPI {
     @Override
     public void openFor(final EntityPlayer player) {
         if (player.getEntityWorld().isRemote) {
-            player.openGui(TIS3D.instance, GuiHandlerClient.GuiId.BOOK_MANUAL.ordinal(), player.getEntityWorld(), 0, 0, 0);
+            player.openGui(TIS3D.instance, GuiHandlerCommon.GuiId.BOOK_MANUAL.ordinal(), player.getEntityWorld(), 0, 0, 0);
         }
     }
 

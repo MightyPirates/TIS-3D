@@ -19,18 +19,21 @@ import li.cil.tis3d.client.network.handler.MessageHandlerCasingEnabledState;
 import li.cil.tis3d.client.network.handler.MessageHandlerCasingInventory;
 import li.cil.tis3d.client.network.handler.MessageHandlerCasingLockedState;
 import li.cil.tis3d.client.network.handler.MessageHandlerHaltAndCatchFire;
+import li.cil.tis3d.client.network.handler.MessageHandlerModuleReadOnlyMemoryDataClient;
 import li.cil.tis3d.client.network.handler.MessageHandlerParticleEffects;
 import li.cil.tis3d.client.network.handler.MessageHandlerReceivingPipeLockedState;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.network.handler.MessageHandlerBookCodeData;
 import li.cil.tis3d.common.network.handler.MessageHandlerCasingData;
+import li.cil.tis3d.common.network.handler.MessageHandlerModuleReadOnlyMemoryDataServer;
 import li.cil.tis3d.common.network.message.MessageBookCodeData;
 import li.cil.tis3d.common.network.message.MessageCasingData;
 import li.cil.tis3d.common.network.message.MessageCasingEnabledState;
 import li.cil.tis3d.common.network.message.MessageCasingInventory;
 import li.cil.tis3d.common.network.message.MessageCasingLockedState;
 import li.cil.tis3d.common.network.message.MessageHaltAndCatchFire;
+import li.cil.tis3d.common.network.message.MessageModuleReadOnlyMemoryData;
 import li.cil.tis3d.common.network.message.MessageParticleEffect;
 import li.cil.tis3d.common.network.message.MessageReceivingPipeLockedState;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -75,7 +78,8 @@ public final class Network {
         HaltAndCatchFire,
         CasingLockedState,
         ReceivingPipeLockedState,
-        CasingInventory
+        CasingInventory,
+        ReadOnlyMemoryData,
     }
 
     // --------------------------------------------------------------------- //
@@ -92,6 +96,8 @@ public final class Network {
         wrapper.registerMessage(MessageHandlerHaltAndCatchFire.class, MessageHaltAndCatchFire.class, Messages.HaltAndCatchFire.ordinal(), Side.CLIENT);
         wrapper.registerMessage(MessageHandlerParticleEffects.class, MessageParticleEffect.class, Messages.ParticleEffects.ordinal(), Side.CLIENT);
         wrapper.registerMessage(MessageHandlerReceivingPipeLockedState.class, MessageReceivingPipeLockedState.class, Messages.ReceivingPipeLockedState.ordinal(), Side.CLIENT);
+        wrapper.registerMessage(MessageHandlerModuleReadOnlyMemoryDataClient.class, MessageModuleReadOnlyMemoryData.class, Messages.ReadOnlyMemoryData.ordinal(), Side.CLIENT);
+        wrapper.registerMessage(MessageHandlerModuleReadOnlyMemoryDataServer.class, MessageModuleReadOnlyMemoryData.class, Messages.ReadOnlyMemoryData.ordinal(), Side.SERVER);
     }
 
     public SimpleNetworkWrapper getWrapper() {

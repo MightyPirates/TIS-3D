@@ -3,9 +3,9 @@ package li.cil.tis3d.common.item;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import li.cil.tis3d.api.machine.Casing;
-import li.cil.tis3d.client.gui.GuiHandlerClient;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.TIS3D;
+import li.cil.tis3d.common.gui.GuiHandlerCommon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.player.EntityPlayer;
@@ -52,7 +52,7 @@ public final class ItemBookCode extends ItemBook {
     @Override
     public ItemStack onItemRightClick(final ItemStack stack, final World world, final EntityPlayer player) {
         if (world.isRemote) {
-            player.openGui(TIS3D.instance, GuiHandlerClient.GuiId.BOOK_CODE.ordinal(), world, 0, 0, 0);
+            player.openGui(TIS3D.instance, GuiHandlerCommon.GuiId.BOOK_CODE.ordinal(), world, 0, 0, 0);
         }
         return super.onItemRightClick(stack, world, player);
     }

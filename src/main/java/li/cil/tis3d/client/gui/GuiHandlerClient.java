@@ -1,11 +1,10 @@
 package li.cil.tis3d.client.gui;
 
-import cpw.mods.fml.common.network.IGuiHandler;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
+import li.cil.tis3d.common.gui.GuiHandlerCommon;
 import li.cil.tis3d.common.init.Items;
-import li.cil.tis3d.common.module.ModuleRandomAccessMemory;
 import li.cil.tis3d.common.module.ModuleTerminal;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -18,26 +17,11 @@ import javax.annotation.Nullable;
 /**
  * GUI handler for the client side - which is, still, all we need.
  */
-public final class GuiHandlerClient implements IGuiHandler {
-    public enum GuiId {
-        BOOK_MANUAL,
-        BOOK_CODE,
-        MODULE_TERMINAL,
-        MODULE_MEMORY;
-
-        public static final GuiId[] VALUES = values();
-    }
-
-    @Override
-    @Nullable
-    public Object getServerGuiElement(final int id, final EntityPlayer player, final World world, final int x, final int y, final int z) {
-        return null;
-    }
-
+public final class GuiHandlerClient extends GuiHandlerCommon {
     @Override
     @Nullable
     public Object getClientGuiElement(final int id, final EntityPlayer player, final World world, final int x, final int y, final int z) {
-        switch (GuiId.VALUES[id]) {
+        switch (GuiHandlerCommon.GuiId.VALUES[id]) {
             case BOOK_CODE:
                 return getGuiBookCode(player);
             case BOOK_MANUAL:
@@ -45,9 +29,20 @@ public final class GuiHandlerClient implements IGuiHandler {
             case MODULE_TERMINAL:
                 return getGuiModuleTerminal(world);
             case MODULE_MEMORY:
-                return getGuiModuleMemory(world);
+                return getGuiModuleMemory(player);
         }
         return null;
+    }
+
+    // --------------------------------------------------------------------- //
+
+    @Nullable
+    private Object getGuiBookCode(final EntityPlayer player) {
+        if (!Items.isBookCode(player.getHeldItem())) {
+            return null;
+        }
+
+        return new GuiBookCode(player);
     }
 
     @Nullable
@@ -71,34 +66,12 @@ public final class GuiHandlerClient implements IGuiHandler {
         return new GuiModuleTerminal((ModuleTerminal) module);
     }
 
-
     @Nullable
-    private Object getGuiModuleMemory(final World world) {
-        final MovingObjectPosition hit = Minecraft.getMinecraft().objectMouseOver;
-        if (hit == null || hit.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) {
+    private Object getGuiModuleMemory(final EntityPlayer player) {
+        if (!Items.isModuleReadOnlyMemory(player.getHeldItem())) {
             return null;
         }
 
-        final TileEntity tileEntity = world.getTileEntity(hit.blockX, hit.blockY, hit.blockZ);
-        if (!(tileEntity instanceof Casing)) {
-            return null;
-        }
-
-        final Casing casing = (Casing) tileEntity;
-        final Module module = casing.getModule(Face.fromIntFacing(hit.sideHit));
-        if (!(module instanceof ModuleRandomAccessMemory)) {
-            return null;
-        }
-
-        return new GuiModuleMemory((ModuleRandomAccessMemory) module);
-    }
-
-    @Nullable
-    private Object getGuiBookCode(final EntityPlayer player) {
-        if (!Items.isBookCode(player.getHeldItem())) {
-            return null;
-        }
-
-        return new GuiBookCode(player);
+        return new GuiModuleMemory(player);
     }
 }

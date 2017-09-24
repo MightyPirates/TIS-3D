@@ -80,6 +80,7 @@ public final class GuiBookCode extends GuiScreen {
     }
 
     // --------------------------------------------------------------------- //
+    // GuiScreen
 
     @Override
     public void initGui() {
