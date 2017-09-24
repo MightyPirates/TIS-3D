@@ -4,6 +4,7 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.common.init.Items;
+import li.cil.tis3d.common.module.ModuleRandomAccessMemory;
 import li.cil.tis3d.common.module.ModuleTerminal;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -22,7 +23,8 @@ public final class GuiHandlerClient implements IGuiHandler {
     public enum GuiId {
         BOOK_MANUAL,
         BOOK_CODE,
-        MODULE_TERMINAL;
+        MODULE_TERMINAL,
+        MODULE_MEMORY;
 
         public static final GuiId[] VALUES = values();
     }
@@ -43,6 +45,8 @@ public final class GuiHandlerClient implements IGuiHandler {
                 return new GuiManual();
             case MODULE_TERMINAL:
                 return getGuiModuleTerminal(world);
+            case MODULE_MEMORY:
+                return getGuiModuleMemory(world);
         }
         return null;
     }
@@ -66,6 +70,28 @@ public final class GuiHandlerClient implements IGuiHandler {
         }
 
         return new GuiModuleTerminal((ModuleTerminal) module);
+    }
+
+
+    @Nullable
+    private Object getGuiModuleMemory(final World world) {
+        final RayTraceResult hit = Minecraft.getMinecraft().objectMouseOver;
+        if (hit == null || hit.typeOfHit != RayTraceResult.Type.BLOCK) {
+            return null;
+        }
+
+        final TileEntity tileEntity = world.getTileEntity(hit.getBlockPos());
+        if (!(tileEntity instanceof Casing)) {
+            return null;
+        }
+
+        final Casing casing = (Casing) tileEntity;
+        final Module module = casing.getModule(Face.fromEnumFacing(hit.sideHit));
+        if (!(module instanceof ModuleRandomAccessMemory)) {
+            return null;
+        }
+
+        return new GuiModuleMemory((ModuleRandomAccessMemory) module);
     }
 
     @Nullable
