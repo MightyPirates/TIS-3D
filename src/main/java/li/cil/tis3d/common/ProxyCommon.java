@@ -15,6 +15,7 @@ import li.cil.tis3d.common.capabilities.CapabilityInfraredReceiver;
 import li.cil.tis3d.common.entity.EntityInfraredPacket;
 import li.cil.tis3d.common.event.TickHandlerInfraredPacket;
 import li.cil.tis3d.common.event.WorldUnloadHandler;
+import li.cil.tis3d.common.gui.GuiHandlerCommon;
 import li.cil.tis3d.common.init.Blocks;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.integration.Integration;
@@ -46,6 +47,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -69,6 +71,9 @@ public class ProxyCommon {
 
         // Initialize capabilities.
         CapabilityInfraredReceiver.register();
+
+        // Register GUI handler for fancy GUIs in our almost GUI-less mod!
+        NetworkRegistry.INSTANCE.registerGuiHandler(TIS3D.instance, new GuiHandlerCommon());
 
         // Mod integration.
         Integration.preInit(event);

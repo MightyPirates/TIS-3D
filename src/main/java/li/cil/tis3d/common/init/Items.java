@@ -79,6 +79,10 @@ public final class Items {
         return isItem(stack, keyCreative);
     }
 
+    public static boolean isModuleReadOnlyMemory(final ItemStack stack) {
+        return isItem(stack, modules.get(Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY));
+    }
+
     // --------------------------------------------------------------------- //
 
     public static void register(final IForgeRegistry<Item> registry) {
@@ -87,16 +91,6 @@ public final class Items {
             if (module != null) {
                 modules.put(moduleName, module);
             }
-        }
-
-        // Prevent stacking of ROM modules to avoid inconsistencies between new
-        // and already programmed modules, and allow sneak clicking with it to
-        // program it to the clicked RAM/ROM module.
-        if (!Settings.disabledModules.contains(Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY)) {
-            ((ItemModule) modules.get(Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY)).
-                    setShareTag(false).
-                    setDoesSneakBypassUse(true).
-                    setMaxStackSize(1);
         }
 
         registerItem(registry, new ItemBookCode(), Constants.NAME_ITEM_BOOK_CODE);

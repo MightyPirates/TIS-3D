@@ -3,6 +3,7 @@ package li.cil.tis3d.common.module;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
+import li.cil.tis3d.common.item.ItemModuleReadOnlyMemory;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
@@ -28,7 +29,7 @@ public final class ModuleReadOnlyMemory extends ModuleRandomAccessMemory {
     public void onInstalled(final ItemStack stack) {
         super.onInstalled(stack);
 
-        ModuleRandomAccessMemory.readDataFromStack(this, stack);
+        load(ItemModuleReadOnlyMemory.loadFromStack(stack));
     }
 
     @Override
@@ -37,7 +38,7 @@ public final class ModuleReadOnlyMemory extends ModuleRandomAccessMemory {
 
         // Write data back to the stack, our data may have changed in
         // the meantime (other ROM programmed into this one).
-        ModuleRandomAccessMemory.writeDataToStack(this, stack);
+        ItemModuleReadOnlyMemory.saveToStack(stack, memory);
     }
 
     // --------------------------------------------------------------------- //

@@ -7,7 +7,7 @@ public final class MissingItemRenderer extends TextureImageRenderer implements I
     private final String tooltip;
 
     public MissingItemRenderer(final String tooltip) {
-        super(TextureLoader.LOCATION_MANUAL_MISSING);
+        super(TextureLoader.LOCATION_GUI_MANUAL_MISSING);
         this.tooltip = tooltip;
     }
 

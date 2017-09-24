@@ -65,10 +65,10 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
     }
 
     private static final ResourceLocation[] STATE_LOCATIONS = new ResourceLocation[]{
-            TextureLoader.LOCATION_MODULE_EXECUTION_OVERLAY_IDLE,
-            TextureLoader.LOCATION_MODULE_EXECUTION_OVERLAY_ERROR,
-            TextureLoader.LOCATION_MODULE_EXECUTION_OVERLAY_RUNNING,
-            TextureLoader.LOCATION_MODULE_EXECUTION_OVERLAY_WAITING
+            TextureLoader.LOCATION_OVERLAY_MODULE_EXECUTION_IDLE,
+            TextureLoader.LOCATION_OVERLAY_MODULE_EXECUTION_ERROR,
+            TextureLoader.LOCATION_OVERLAY_MODULE_EXECUTION_RUNNING,
+            TextureLoader.LOCATION_OVERLAY_MODULE_EXECUTION_WAITING
     };
 
     // NBT tag names.

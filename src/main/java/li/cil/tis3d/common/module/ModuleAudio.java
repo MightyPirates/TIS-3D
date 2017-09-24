@@ -73,7 +73,7 @@ public final class ModuleAudio extends AbstractModule {
 
         GlStateManager.enableBlend();
 
-        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_MODULE_AUDIO_OVERLAY));
+        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_AUDIO));
 
         GlStateManager.disableBlend();
     }

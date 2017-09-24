@@ -8,12 +8,12 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.gui.GuiHandlerClient;
 import li.cil.tis3d.client.gui.GuiModuleTerminal;
 import li.cil.tis3d.client.renderer.TextureLoader;
 import li.cil.tis3d.client.renderer.font.FontRenderer;
 import li.cil.tis3d.client.renderer.font.FontRendererNormal;
 import li.cil.tis3d.common.TIS3D;
+import li.cil.tis3d.common.gui.GuiHandlerCommon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
@@ -178,7 +178,7 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
 
         final World world = player.getEntityWorld();
         if (world.isRemote) {
-            player.openGui(TIS3D.instance, GuiHandlerClient.GuiId.MODULE_TERMINAL.ordinal(), world, 0, 0, 0);
+            player.openGui(TIS3D.instance, GuiHandlerCommon.GuiId.MODULE_TERMINAL.ordinal(), world, 0, 0, 0);
         }
 
         return true;
@@ -231,7 +231,7 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
             renderText();
         } else {
             // Player too far away for details, draw static overlay.
-            RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_MODULE_TERMINAL_OVERLAY));
+            RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_TERMINAL));
         }
 
         GlStateManager.disableBlend();
