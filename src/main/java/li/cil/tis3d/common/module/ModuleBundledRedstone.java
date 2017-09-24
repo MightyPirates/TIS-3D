@@ -129,7 +129,7 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
         RenderUtil.ignoreLighting();
 
         // Draw base overlay.
-        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_MODULE_BUNDLED_REDSTONE_OVERLAY));
+        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_BUNDLED_REDSTONE));
 
         if (!enabled) {
             return;

@@ -80,10 +80,10 @@ public final class GuiManual extends GuiScreen {
         for (int i = 0; i < ManualAPIImpl.getTabs().size() && i < maxTabsPerSide; i++) {
             final int x = guiLeft + tabPosX;
             final int y = guiTop + tabPosY + i * (tabHeight - tabOverlap);
-            buttonList.add(new ImageButton(i, x, y, tabWidth, tabHeight - tabOverlap - 1, TextureLoader.LOCATION_MANUAL_TAB).setImageHeight(tabHeight).setVerticalImageOffset(-tabOverlap / 2));
+            buttonList.add(new ImageButton(i, x, y, tabWidth, tabHeight - tabOverlap - 1, TextureLoader.LOCATION_GUI_MANUAL_TAB).setImageHeight(tabHeight).setVerticalImageOffset(-tabOverlap / 2));
         }
 
-        scrollButton = new ImageButton(-1, guiLeft + scrollPosX, guiTop + scrollPosY, 26, 13, TextureLoader.LOCATION_MANUAL_SCROLL);
+        scrollButton = new ImageButton(-1, guiLeft + scrollPosX, guiTop + scrollPosY, 26, 13, TextureLoader.LOCATION_GUI_MANUAL_SCROLL);
         buttonList.add(scrollButton);
 
         refreshPage();
@@ -95,7 +95,7 @@ public final class GuiManual extends GuiScreen {
 
         super.drawScreen(mouseX, mouseY, partialTicks);
 
-        mc.renderEngine.bindTexture(TextureLoader.LOCATION_MANUAL_BACKGROUND);
+        mc.renderEngine.bindTexture(TextureLoader.LOCATION_GUI_MANUAL_BACKGROUND);
         Gui.drawModalRectWithCustomSizedTexture(guiLeft, guiTop, 0, 0, xSize, ySize, windowWidth, windowHeight);
 
         scrollButton.enabled = canScroll();

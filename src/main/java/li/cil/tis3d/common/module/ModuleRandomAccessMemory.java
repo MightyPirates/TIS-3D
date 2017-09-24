@@ -8,8 +8,8 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.init.Items;
+import li.cil.tis3d.common.item.ItemModuleReadOnlyMemory;
 import li.cil.tis3d.util.EnumUtils;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -44,7 +44,7 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
     /**
      * The size of the memory, in bytes.
      */
-    protected static final int MEMORY_SIZE = 256;
+    public static final int MEMORY_SIZE = 256;
 
     protected enum State {
         ADDRESS,
@@ -108,7 +108,7 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
 
     @Override
     public boolean onActivate(final EntityPlayer player, final EnumHand hand, @Nullable final ItemStack heldItem, final float hitX, final float hitY, final float hitZ) {
-        if (!Items.isItem(heldItem, Items.modules.get(Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY))) {
+        if (!Items.isModuleReadOnlyMemory(heldItem)) {
             return false;
         }
 
@@ -119,9 +119,9 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
 
         if (!getCasing().getCasingWorld().isRemote) {
             if (isReading) {
-                ModuleRandomAccessMemory.writeDataToStack(this, heldItem);
+                ItemModuleReadOnlyMemory.saveToStack(heldItem, memory);
             } else {
-                ModuleRandomAccessMemory.readDataFromStack(this, heldItem);
+                load(ItemModuleReadOnlyMemory.loadFromStack(heldItem));
                 sendFull();
             }
         }
@@ -179,7 +179,7 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
     public void readFromNBT(final NBTTagCompound nbt) {
         super.readFromNBT(nbt);
 
-        loadMemoryFromNBT(nbt);
+        load(nbt.getByteArray(TAG_MEMORY));
         address = nbt.getByte(TAG_ADDRESS);
         state = EnumUtils.readFromNBT(State.class, TAG_STATE, nbt);
     }
@@ -217,39 +217,6 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
     @SideOnly(Side.CLIENT)
     protected void setCellColor(final float brightness) {
         GlStateManager.color(0.4f, 1f, 1f, brightness);
-    }
-
-    /**
-     * Load memory stored on the specified item stack into the specified
-     * module's memory, clearing data that is after the end of the stored
-     * data and truncating memory from the stack that exceeds the module's
-     * capacity.
-     *
-     * @param memory the memory module to load the data into.
-     * @param stack  the stack holding the data to load.
-     */
-    protected static void readDataFromStack(final ModuleRandomAccessMemory memory, final ItemStack stack) {
-        final NBTTagCompound nbt = stack.getTagCompound();
-        if (nbt != null) {
-            memory.loadMemoryFromNBT(nbt);
-        } else {
-            memory.clear();
-        }
-    }
-
-    /**
-     * Stores memory from the specified memory module onto the specified
-     * item stack.
-     *
-     * @param memory the memory module to save the data of.
-     * @param stack  the stack to write the data into.
-     */
-    protected static void writeDataToStack(final ModuleRandomAccessMemory memory, final ItemStack stack) {
-        NBTTagCompound nbt = stack.getTagCompound();
-        if (nbt == null) {
-            stack.setTagCompound(nbt = new NBTTagCompound());
-        }
-        nbt.setByteArray(TAG_MEMORY, memory.memory.clone());
     }
 
     // --------------------------------------------------------------------- //
@@ -364,9 +331,10 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
         return sum / (count * (float) 0xFF);
     }
 
-    private void loadMemoryFromNBT(final NBTTagCompound nbt) {
-        clear();
-        final byte[] data = nbt.getByteArray(TAG_MEMORY);
+    protected final void load(final byte[] data) {
         System.arraycopy(data, 0, memory, 0, Math.min(data.length, memory.length));
+        if (data.length < memory.length) {
+            Arrays.fill(memory, data.length, memory.length, (byte) 0);
+        }
     }
 }

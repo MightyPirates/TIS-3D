@@ -115,13 +115,13 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
         RenderUtil.ignoreLighting();
 
         // Draw base overlay.
-        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_MODULE_REDSTONE_OVERLAY));
+        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_REDSTONE));
 
         if (!enabled) {
             return;
         }
 
-        final TextureAtlasSprite barsSprite = RenderUtil.getSprite(TextureLoader.LOCATION_MODULE_REDSTONE_BARS_OVERLAY);
+        final TextureAtlasSprite barsSprite = RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_REDSTONE_BARS);
 
         // Draw output bar.
         final float relativeOutput = output / 15f;
