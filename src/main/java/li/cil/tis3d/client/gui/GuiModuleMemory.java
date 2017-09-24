@@ -128,7 +128,7 @@ public class GuiModuleMemory extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         GL11.glTranslatef(guiX, guiY, 0);
-        Minecraft.getMinecraft().renderEngine.bindTexture(TextureLoader.LOCATION_MODULEGUI_MEMORY);
+        Minecraft.getMinecraft().renderEngine.bindTexture(TextureLoader.LOCATION_GUI_MEMORY);
         this.drawTexturedModalRect(0, 0, 0, 0, GUI_WIDTH, GUI_HEIGHT);
 
 
@@ -157,7 +157,7 @@ public class GuiModuleMemory extends GuiScreen {
     }
 
     private void drawSelectionBox() {
-        Minecraft.getMinecraft().renderEngine.bindTexture(TextureLoader.LOCATION_MODULEGUI_MEMORY);
+        Minecraft.getMinecraft().renderEngine.bindTexture(TextureLoader.LOCATION_GUI_MEMORY);
         int vPos = (int) (Minecraft.getMinecraft().theWorld.getTotalWorldTime() % 16) * 8;
         this.drawTexturedModalRect(-2, -2, 185, vPos, 11, 8);
     }

@@ -229,7 +229,7 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
             renderText();
         } else {
             // Player too far away for details, draw static overlay.
-            RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_MODULE_TERMINAL_OVERLAY));
+            RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_TERMINAL));
         }
 
         GL11.glDisable(GL11.GL_BLEND);

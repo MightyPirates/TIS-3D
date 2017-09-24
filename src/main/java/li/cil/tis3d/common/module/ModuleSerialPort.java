@@ -96,7 +96,7 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
 
         RenderUtil.ignoreLighting();
 
-        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_MODULE_SERIAL_PORT_OVERLAY));
+        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_SERIAL_PORT));
     }
 
     @Override

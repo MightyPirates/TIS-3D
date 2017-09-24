@@ -6,36 +6,36 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.TextureStitchEvent;
 
 public final class TextureLoader {
-    public static final ResourceLocation LOCATION_BOOK_CODE_BACKGROUND = new ResourceLocation(API.MOD_ID, "textures/gui/bookCode.png");
-    public static final ResourceLocation LOCATION_MANUAL_BACKGROUND = new ResourceLocation(API.MOD_ID, "textures/gui/manual.png");
-    public static final ResourceLocation LOCATION_MANUAL_TAB = new ResourceLocation(API.MOD_ID, "textures/gui/manualTab.png");
-    public static final ResourceLocation LOCATION_MANUAL_SCROLL = new ResourceLocation(API.MOD_ID, "textures/gui/manualScroll.png");
-    public static final ResourceLocation LOCATION_MANUAL_MISSING = new ResourceLocation(API.MOD_ID, "textures/gui/manualMissing.png");
-    public static final ResourceLocation LOCATION_MODULEGUI_MEMORY = new ResourceLocation(API.MOD_ID, "textures/gui/module_memory.png");
+    public static final ResourceLocation LOCATION_GUI_BOOK_CODE_BACKGROUND = new ResourceLocation(API.MOD_ID, "textures/gui/bookCode.png");
+    public static final ResourceLocation LOCATION_GUI_MANUAL_BACKGROUND = new ResourceLocation(API.MOD_ID, "textures/gui/manual.png");
+    public static final ResourceLocation LOCATION_GUI_MANUAL_TAB = new ResourceLocation(API.MOD_ID, "textures/gui/manualTab.png");
+    public static final ResourceLocation LOCATION_GUI_MANUAL_SCROLL = new ResourceLocation(API.MOD_ID, "textures/gui/manualScroll.png");
+    public static final ResourceLocation LOCATION_GUI_MANUAL_MISSING = new ResourceLocation(API.MOD_ID, "textures/gui/manualMissing.png");
+    public static final ResourceLocation LOCATION_GUI_MEMORY = new ResourceLocation(API.MOD_ID, "textures/gui/module_memory.png");
 
-    public static final ResourceLocation LOCATION_CASING_LOCKED_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/casingLocked");
-    public static final ResourceLocation LOCATION_CASING_UNLOCKED_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/casingUnlocked");
-    public static final ResourceLocation LOCATION_CASING_PORT_CLOSED_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/casing_port_closed");
-    public static final ResourceLocation LOCATION_CASING_PORT_OPEN_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/casing_port_open");
-    public static final ResourceLocation LOCATION_CASING_PORT_HIGHLIGHT_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/casing_port_highlight");
-    public static final ResourceLocation LOCATION_CASING_PORT_CLOSED_SMALL_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/casing_port_closed_small");
     public static final ResourceLocation LOCATION_CASING_MODULE = new ResourceLocation(API.MOD_ID, "casingModule");
-    public static final ResourceLocation LOCATION_MODULE_AUDIO_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/moduleAudio");
-    public static final ResourceLocation LOCATION_MODULE_BUNDLED_REDSTONE_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/moduleBundledRedstone");
-    public static final ResourceLocation LOCATION_MODULE_EXECUTION_OVERLAY_ERROR = new ResourceLocation(API.MOD_ID, "overlay/moduleExecutionError");
-    public static final ResourceLocation LOCATION_MODULE_EXECUTION_OVERLAY_IDLE = new ResourceLocation(API.MOD_ID, "overlay/moduleExecutionIdle");
-    public static final ResourceLocation LOCATION_MODULE_EXECUTION_OVERLAY_RUNNING = new ResourceLocation(API.MOD_ID, "overlay/moduleExecutionRunning");
-    public static final ResourceLocation LOCATION_MODULE_EXECUTION_OVERLAY_WAITING = new ResourceLocation(API.MOD_ID, "overlay/moduleExecutionWaiting");
-    public static final ResourceLocation LOCATION_MODULE_INFRARED_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/moduleInfrared");
-    public static final ResourceLocation LOCATION_MODULE_KEYPAD_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/moduleKeypad");
-    public static final ResourceLocation LOCATION_MODULE_QUEUE_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/moduleQueue");
-    public static final ResourceLocation LOCATION_MODULE_RANDOM_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/moduleRandom");
-    public static final ResourceLocation LOCATION_MODULE_REDSTONE_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/moduleRedstone");
-    public static final ResourceLocation LOCATION_MODULE_REDSTONE_BARS_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/moduleRedstoneBars");
-    public static final ResourceLocation LOCATION_MODULE_SERIAL_PORT_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/moduleSerialPort");
-    public static final ResourceLocation LOCATION_MODULE_STACK_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/moduleStack");
-    public static final ResourceLocation LOCATION_MODULE_TERMINAL_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/moduleTerminal");
-    public static final ResourceLocation LOCATION_MODULE_TIMER_OVERLAY = new ResourceLocation(API.MOD_ID, "overlay/moduleTimer");
+    public static final ResourceLocation LOCATION_OVERLAY_CASING_LOCKED = new ResourceLocation(API.MOD_ID, "blocks/overlay/casing_locked");
+    public static final ResourceLocation LOCATION_OVERLAY_CASING_UNLOCKED = new ResourceLocation(API.MOD_ID, "blocks/overlay/casing_unlocked");
+    public static final ResourceLocation LOCATION_OVERLAY_CASING_PORT_CLOSED = new ResourceLocation(API.MOD_ID, "blocks/overlay/casing_port_closed");
+    public static final ResourceLocation LOCATION_OVERLAY_CASING_PORT_OPEN = new ResourceLocation(API.MOD_ID, "blocks/overlay/casing_port_open");
+    public static final ResourceLocation LOCATION_OVERLAY_CASING_PORT_HIGHLIGHT = new ResourceLocation(API.MOD_ID, "blocks/overlay/casing_port_highlight");
+    public static final ResourceLocation LOCATION_OVERLAY_CASING_PORT_CLOSED_SMALL = new ResourceLocation(API.MOD_ID, "blocks/overlay/casing_port_closed_small");
+    public static final ResourceLocation LOCATION_OVERLAY_MODULE_AUDIO = new ResourceLocation(API.MOD_ID, "blocks/overlay/module_audio");
+    public static final ResourceLocation LOCATION_OVERLAY_MODULE_BUNDLED_REDSTONE = new ResourceLocation(API.MOD_ID, "blocks/overlay/module_bundled_redstone");
+    public static final ResourceLocation LOCATION_OVERLAY_MODULE_EXECUTION_ERROR = new ResourceLocation(API.MOD_ID, "blocks/overlay/module_execution_error");
+    public static final ResourceLocation LOCATION_OVERLAY_MODULE_EXECUTION_IDLE = new ResourceLocation(API.MOD_ID, "blocks/overlay/module_execution_idle");
+    public static final ResourceLocation LOCATION_OVERLAY_MODULE_EXECUTION_RUNNING = new ResourceLocation(API.MOD_ID, "blocks/overlay/module_execution_running");
+    public static final ResourceLocation LOCATION_OVERLAY_MODULE_EXECUTION_WAITING = new ResourceLocation(API.MOD_ID, "blocks/overlay/module_execution_waiting");
+    public static final ResourceLocation LOCATION_OVERLAY_MODULE_INFRARED = new ResourceLocation(API.MOD_ID, "blocks/overlay/module_infrared");
+    public static final ResourceLocation LOCATION_OVERLAY_MODULE_KEYPAD = new ResourceLocation(API.MOD_ID, "blocks/overlay/module_keypad");
+    public static final ResourceLocation LOCATION_OVERLAY_MODULE_QUEUE = new ResourceLocation(API.MOD_ID, "blocks/overlay/module_queue");
+    public static final ResourceLocation LOCATION_OVERLAY_MODULE_RANDOM = new ResourceLocation(API.MOD_ID, "blocks/overlay/module_random");
+    public static final ResourceLocation LOCATION_OVERLAY_MODULE_REDSTONE = new ResourceLocation(API.MOD_ID, "blocks/overlay/module_redstone");
+    public static final ResourceLocation LOCATION_OVERLAY_MODULE_REDSTONE_BARS = new ResourceLocation(API.MOD_ID, "blocks/overlay/module_redstone_bars");
+    public static final ResourceLocation LOCATION_OVERLAY_MODULE_SERIAL_PORT = new ResourceLocation(API.MOD_ID, "blocks/overlay/module_serial_port");
+    public static final ResourceLocation LOCATION_OVERLAY_MODULE_STACK = new ResourceLocation(API.MOD_ID, "blocks/overlay/module_stack");
+    public static final ResourceLocation LOCATION_OVERLAY_MODULE_TERMINAL = new ResourceLocation(API.MOD_ID, "blocks/overlay/module_terminal");
+    public static final ResourceLocation LOCATION_OVERLAY_MODULE_TIMER = new ResourceLocation(API.MOD_ID, "blocks/overlay/module_timer");
 
     public static final TextureLoader INSTANCE = new TextureLoader();
 
@@ -44,29 +44,29 @@ public final class TextureLoader {
         if (event.map.getTextureType() != 0) {
             return;
         }
-        event.map.registerIcon(LOCATION_CASING_LOCKED_OVERLAY.toString());
-        event.map.registerIcon(LOCATION_CASING_UNLOCKED_OVERLAY.toString());
-        event.map.registerIcon(LOCATION_CASING_PORT_CLOSED_OVERLAY.toString());
-        event.map.registerIcon(LOCATION_CASING_PORT_OPEN_OVERLAY.toString());
-        event.map.registerIcon(LOCATION_CASING_PORT_HIGHLIGHT_OVERLAY.toString());
-        event.map.registerIcon(LOCATION_CASING_PORT_CLOSED_SMALL_OVERLAY.toString());
         event.map.registerIcon(LOCATION_CASING_MODULE.toString());
-        event.map.registerIcon(LOCATION_MODULE_AUDIO_OVERLAY.toString());
-        event.map.registerIcon(LOCATION_MODULE_BUNDLED_REDSTONE_OVERLAY.toString());
-        event.map.registerIcon(LOCATION_MODULE_EXECUTION_OVERLAY_ERROR.toString());
-        event.map.registerIcon(LOCATION_MODULE_EXECUTION_OVERLAY_IDLE.toString());
-        event.map.registerIcon(LOCATION_MODULE_EXECUTION_OVERLAY_RUNNING.toString());
-        event.map.registerIcon(LOCATION_MODULE_EXECUTION_OVERLAY_WAITING.toString());
-        event.map.registerIcon(LOCATION_MODULE_INFRARED_OVERLAY.toString());
-        event.map.registerIcon(LOCATION_MODULE_KEYPAD_OVERLAY.toString());
-        event.map.registerIcon(LOCATION_MODULE_QUEUE_OVERLAY.toString());
-        event.map.registerIcon(LOCATION_MODULE_RANDOM_OVERLAY.toString());
-        event.map.registerIcon(LOCATION_MODULE_REDSTONE_OVERLAY.toString());
-        event.map.registerIcon(LOCATION_MODULE_REDSTONE_BARS_OVERLAY.toString());
-        event.map.registerIcon(LOCATION_MODULE_SERIAL_PORT_OVERLAY.toString());
-        event.map.registerIcon(LOCATION_MODULE_STACK_OVERLAY.toString());
-        event.map.registerIcon(LOCATION_MODULE_TERMINAL_OVERLAY.toString());
-        event.map.registerIcon(LOCATION_MODULE_TIMER_OVERLAY.toString());
+        event.map.registerIcon(LOCATION_OVERLAY_CASING_LOCKED.toString());
+        event.map.registerIcon(LOCATION_OVERLAY_CASING_UNLOCKED.toString());
+        event.map.registerIcon(LOCATION_OVERLAY_CASING_PORT_CLOSED.toString());
+        event.map.registerIcon(LOCATION_OVERLAY_CASING_PORT_OPEN.toString());
+        event.map.registerIcon(LOCATION_OVERLAY_CASING_PORT_HIGHLIGHT.toString());
+        event.map.registerIcon(LOCATION_OVERLAY_CASING_PORT_CLOSED_SMALL.toString());
+        event.map.registerIcon(LOCATION_OVERLAY_MODULE_AUDIO.toString());
+        event.map.registerIcon(LOCATION_OVERLAY_MODULE_BUNDLED_REDSTONE.toString());
+        event.map.registerIcon(LOCATION_OVERLAY_MODULE_EXECUTION_ERROR.toString());
+        event.map.registerIcon(LOCATION_OVERLAY_MODULE_EXECUTION_IDLE.toString());
+        event.map.registerIcon(LOCATION_OVERLAY_MODULE_EXECUTION_RUNNING.toString());
+        event.map.registerIcon(LOCATION_OVERLAY_MODULE_EXECUTION_WAITING.toString());
+        event.map.registerIcon(LOCATION_OVERLAY_MODULE_INFRARED.toString());
+        event.map.registerIcon(LOCATION_OVERLAY_MODULE_KEYPAD.toString());
+        event.map.registerIcon(LOCATION_OVERLAY_MODULE_QUEUE.toString());
+        event.map.registerIcon(LOCATION_OVERLAY_MODULE_RANDOM.toString());
+        event.map.registerIcon(LOCATION_OVERLAY_MODULE_REDSTONE.toString());
+        event.map.registerIcon(LOCATION_OVERLAY_MODULE_REDSTONE_BARS.toString());
+        event.map.registerIcon(LOCATION_OVERLAY_MODULE_SERIAL_PORT.toString());
+        event.map.registerIcon(LOCATION_OVERLAY_MODULE_STACK.toString());
+        event.map.registerIcon(LOCATION_OVERLAY_MODULE_TERMINAL.toString());
+        event.map.registerIcon(LOCATION_OVERLAY_MODULE_TIMER.toString());
     }
 
     // --------------------------------------------------------------------- //

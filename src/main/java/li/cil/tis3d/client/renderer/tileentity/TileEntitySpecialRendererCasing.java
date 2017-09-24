@@ -128,14 +128,14 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
             final Port lookingAtPort;
             final boolean isLookingAt = isPlayerLookingAt(casing.getPositionX(), casing.getPositionY(), casing.getPositionZ(), face);
             if (isLookingAt) {
-                closedSprite = RenderUtil.getSprite(TextureLoader.LOCATION_CASING_PORT_CLOSED_OVERLAY);
-                openSprite = RenderUtil.getSprite(TextureLoader.LOCATION_CASING_PORT_OPEN_OVERLAY);
+                closedSprite = RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_CASING_PORT_CLOSED);
+                openSprite = RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_CASING_PORT_OPEN);
 
                 final MovingObjectPosition hit = Minecraft.getMinecraft().objectMouseOver;
                 final Vec3 uv = TransformUtil.hitToUV(face, Vec3.createVectorHelper(hit.blockX, hit.blockY, hit.blockZ).subtract(hit.hitVec));
                 lookingAtPort = Port.fromUVQuadrant(uv);
             } else {
-                closedSprite = RenderUtil.getSprite(TextureLoader.LOCATION_CASING_PORT_CLOSED_SMALL_OVERLAY);
+                closedSprite = RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_CASING_PORT_CLOSED_SMALL);
                 openSprite = null;
 
                 lookingAtPort = null;
@@ -150,7 +150,7 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
                 }
 
                 if (port == lookingAtPort) {
-                    RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_CASING_PORT_HIGHLIGHT_OVERLAY));
+                    RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_CASING_PORT_HIGHLIGHT));
                 }
 
                 GL11.glTranslatef(0.5f, 0.5f, 0.5f);
@@ -163,9 +163,9 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
         } else {
             final TextureAtlasSprite sprite;
             if (casing.isLocked()) {
-                sprite = RenderUtil.getSprite(TextureLoader.LOCATION_CASING_LOCKED_OVERLAY);
+                sprite = RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_CASING_LOCKED);
             } else {
-                sprite = RenderUtil.getSprite(TextureLoader.LOCATION_CASING_UNLOCKED_OVERLAY);
+                sprite = RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_CASING_UNLOCKED);
             }
 
             RenderUtil.drawQuad(sprite);
@@ -175,7 +175,7 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
     }
 
     private void drawModuleOverlay(final TileEntityCasing casing, final Face face, final float partialTicks) {
-        final TextureAtlasSprite closedSprite = RenderUtil.getSprite(TextureLoader.LOCATION_CASING_PORT_CLOSED_SMALL_OVERLAY);
+        final TextureAtlasSprite closedSprite = RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_CASING_PORT_CLOSED_SMALL);
 
         GL11.glPushMatrix();
         GL11.glTranslated(0, 0, -0.005);
