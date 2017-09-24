@@ -26,9 +26,9 @@ public class ItemModuleReadOnlyMemory extends ItemModule {
     // Item
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(final World world, final EntityPlayer player, final EnumHand hand) {
+    public ActionResult<ItemStack> onItemRightClick(final ItemStack stack, final World world, final EntityPlayer player, final EnumHand hand) {
         player.openGui(TIS3D.instance, GuiHandlerCommon.GuiId.MODULE_MEMORY.ordinal(), world, 0, 0, 0);
-        return super.onItemRightClick(world, player, hand);
+        return super.onItemRightClick(stack, world, player, hand);
     }
 
     @Override

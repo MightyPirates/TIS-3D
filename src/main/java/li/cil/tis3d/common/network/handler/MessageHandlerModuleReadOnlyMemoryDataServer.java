@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 public final class MessageHandlerModuleReadOnlyMemoryDataServer extends AbstractMessageHandler<MessageModuleReadOnlyMemoryData> {
     @Override
     protected void onMessageSynchronized(final MessageModuleReadOnlyMemoryData message, final MessageContext context) {
-        final EntityPlayer player = context.getServerHandler().player;
+        final EntityPlayer player = context.getServerHandler().playerEntity;
         if (player != null) {
             final ItemStack stack = player.getHeldItem(EnumHand.MAIN_HAND);
             if (Items.isModuleReadOnlyMemory(stack)) {
