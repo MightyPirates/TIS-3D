@@ -229,11 +229,6 @@ public final class ModuleQueue extends AbstractModuleRotatable {
             if (receivingPipe.canTransfer()) {
                 // Store the value.
                 push(receivingPipe.read());
-
-                // Start reading again right away to read as fast as possible.
-                if (!isFull()) {
-                    receivingPipe.beginRead();
-                }
             }
         }
     }

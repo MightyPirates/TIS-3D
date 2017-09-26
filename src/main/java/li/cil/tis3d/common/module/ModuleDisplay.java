@@ -172,9 +172,6 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
         }
         if (receivingPipe.canTransfer()) {
             process(receivingPipe.read());
-
-            // Start reading again right away to read as fast as possible.
-            receivingPipe.beginRead();
         }
     }
 

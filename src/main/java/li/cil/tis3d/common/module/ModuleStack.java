@@ -225,11 +225,6 @@ public final class ModuleStack extends AbstractModuleRotatable {
 
                 // Restart all writes to ensure we're outputting the top-most value.
                 cancelWrite();
-
-                // Start reading again right away to read as fast as possible.
-                if (!isFull()) {
-                    receivingPipe.beginRead();
-                }
             }
         }
     }
