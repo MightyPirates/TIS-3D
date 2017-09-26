@@ -277,9 +277,6 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
             final char ch = toChar(receivingPipe.read());
             writeToDisplay(ch);
             sendDisplayToClient(ch);
-
-            // Start reading again right away to read as fast as possible.
-            receivingPipe.beginRead();
         }
     }
 

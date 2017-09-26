@@ -166,9 +166,6 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
                 final World world = getCasing().getCasingWorld();
                 if (world.getTotalWorldTime() > lastStep) {
                     emitInfraredPacket(receivingPipe.read());
-
-                    // Start reading again right away to read as fast as possible.
-                    receivingPipe.beginRead();
                 }
             }
         }
