@@ -52,9 +52,14 @@ public final class PipeImpl implements Pipe {
         READY,
 
         /**
+         * Data can be read from the pipe this update.
+         */
+        FLUSHING,
+
+        /**
          * Data was read from the pipe this update.
          */
-        FLUSHING
+        COMPLETE
     }
 
     // NBT tag names.
@@ -94,11 +99,19 @@ public final class PipeImpl implements Pipe {
     public void step() {
         if (writeState == State.BUSY) {
             writeState = State.READY;
-        } else if (readState == State.BUSY) {
+        }
+        if (readState == State.BUSY) {
             readState = State.READY;
-        } else if (writeState == State.READY && readState == State.READY) {
+        }
+        if (writeState == State.READY && readState == State.READY) {
             writeState = State.FLUSHING;
             readState = State.FLUSHING;
+        }
+        if (writeState == State.COMPLETE && readState == State.COMPLETE) {
+            cancelWrite();
+            cancelRead();
+
+            host.onWriteComplete(sendingFace, sendingPort);
         }
     }
 
@@ -172,15 +185,12 @@ public final class PipeImpl implements Pipe {
             throw new IllegalStateException("No data to read. Check canTransfer().");
         }
 
+        writeState = State.COMPLETE;
+        readState = State.COMPLETE;
+
         sendEffect();
 
-        final short result = value;
-
-        cancelWrite();
-        cancelRead();
-
-        host.onWriteComplete(sendingFace, sendingPort);
-        return result;
+        return value;
     }
 
     private void sendEffect() {
