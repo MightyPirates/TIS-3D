@@ -125,7 +125,10 @@ public final class MachineImpl implements Machine {
             case RIGHT:
             case UP:
             case DOWN:
-                final int rotation = Port.ROTATION[module.getFacing().ordinal()];
+                int rotation = Port.ROTATION[module.getFacing().ordinal()];
+                if (module.getFace() == Face.Y_NEG) {
+                    rotation = -rotation;
+                }
                 final Port port = Target.toPort(target);
                 final Port rotatedPort = port.rotated(rotation);
                 return Target.fromPort(rotatedPort);
