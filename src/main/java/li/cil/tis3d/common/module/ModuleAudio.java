@@ -91,9 +91,6 @@ public final class ModuleAudio extends AbstractModule {
                 final World world = getCasing().getCasingWorld();
                 if (world.getTotalWorldTime() > lastStep) {
                     playNote(receivingPipe.read());
-
-                    // Start reading again right away to read as fast as possible.
-                    receivingPipe.beginRead();
                 }
             }
         }

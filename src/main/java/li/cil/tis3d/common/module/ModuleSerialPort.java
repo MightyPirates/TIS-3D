@@ -218,11 +218,6 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
                 if (receivingPipe.canTransfer()) {
                     // Forward the value.
                     serialInterface.ifPresent(s -> s.write(receivingPipe.read()));
-
-                    // Start reading again right away to read as fast as possible.
-                    if (serialInterface.map(SerialInterface::canWrite).orElse(false)) {
-                        receivingPipe.beginRead();
-                    }
                 }
             }
         } else {

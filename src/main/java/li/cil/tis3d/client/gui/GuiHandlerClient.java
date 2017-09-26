@@ -38,7 +38,7 @@ public final class GuiHandlerClient extends GuiHandlerCommon {
     // --------------------------------------------------------------------- //
 
     @Nullable
-    private Object getGuiBookCode(final EntityPlayer player) {
+    private static Object getGuiBookCode(final EntityPlayer player) {
         if (!Items.isBookCode(player.getHeldItem(EnumHand.MAIN_HAND))) {
             return null;
         }
@@ -47,7 +47,7 @@ public final class GuiHandlerClient extends GuiHandlerCommon {
     }
 
     @Nullable
-    private Object getGuiModuleTerminal(final World world) {
+    private static Object getGuiModuleTerminal(final World world) {
         final RayTraceResult hit = Minecraft.getMinecraft().objectMouseOver;
         if (hit == null || hit.typeOfHit != RayTraceResult.Type.BLOCK) {
             return null;
@@ -68,7 +68,7 @@ public final class GuiHandlerClient extends GuiHandlerCommon {
     }
 
     @Nullable
-    private Object getGuiModuleMemory(final EntityPlayer player) {
+    private static Object getGuiModuleMemory(final EntityPlayer player) {
         if (!Items.isModuleReadOnlyMemory(player.getHeldItem(EnumHand.MAIN_HAND))) {
             return null;
         }
