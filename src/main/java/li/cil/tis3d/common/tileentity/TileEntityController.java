@@ -490,6 +490,8 @@ public final class TileEntityController extends TileEntityComputer implements IT
         // Ensure our parts know their neighbors.
         casings.forEach(TileEntityCasing::checkNeighbors);
         checkNeighbors();
+        casings.forEach(TileEntityComputer::rebuildOverrides);
+        rebuildOverrides();
 
         // Sort casings for deterministic order of execution (important when modules
         // write / read from multiple ports but only want to make the data available
@@ -519,10 +521,7 @@ public final class TileEntityController extends TileEntityComputer implements IT
     private void step() {
         casings.forEach(TileEntityCasing::stepModules);
         casings.forEach(TileEntityCasing::stepPipes);
-        casings.forEach(TileEntityCasing::stepForwarders);
-
         stepPipes();
-        stepForwarders();
     }
 
     /**
