@@ -246,9 +246,6 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
             if (receivingPipe.canTransfer()) {
                 // Handle the input.
                 process(receivingPipe.read());
-
-                // Start reading again right away to read as fast as possible.
-                beginRead(receivingPipe);
             }
         }
     }

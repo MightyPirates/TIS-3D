@@ -209,9 +209,6 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
         }
         if (receivingPipe.canTransfer()) {
             setRedstoneOutput(receivingPipe.read());
-
-            // Start reading again right away to read as fast as possible.
-            receivingPipe.beginRead();
         }
     }
 

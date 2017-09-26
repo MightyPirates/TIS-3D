@@ -133,6 +133,9 @@ public final class PipeImpl implements Pipe {
 
     @Override
     public void beginWrite(final short value) {
+        if (writeState == State.COMPLETE) { // TODO Remove in MC 1.13
+            return; // Silently ignore, backwards compatibility.
+        }
         if (writeState != State.IDLE) {
             throw new IllegalStateException("Trying to write to a busy pipe. Check isWriting().");
         }
@@ -156,8 +159,11 @@ public final class PipeImpl implements Pipe {
 
     @Override
     public void beginRead() {
+        if (readState == State.COMPLETE) { // TODO Remove in MC 1.13
+            return; // Silently ignore, backwards compatibility.
+        }
         if (readState != State.IDLE) {
-            throw new IllegalStateException("Trying to write to a busy pipe. Check isReading().");
+            throw new IllegalStateException("Trying to read from a busy pipe. Check isReading().");
         }
         readState = State.BUSY;
     }

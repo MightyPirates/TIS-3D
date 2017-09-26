@@ -178,9 +178,6 @@ public final class ModuleTimer extends AbstractModuleRotatable {
             if (receivingPipe.canTransfer()) {
                 // Set the value.
                 setTimer(receivingPipe.read());
-
-                // Start reading again right away to read as fast as possible.
-                receivingPipe.beginRead();
             }
         }
     }
