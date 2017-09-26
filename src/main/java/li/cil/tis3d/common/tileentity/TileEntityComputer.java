@@ -15,7 +15,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
-public abstract class TileEntityComputer extends TileEntity implements PipeHost {
+abstract class TileEntityComputer extends TileEntity implements PipeHost {
     // --------------------------------------------------------------------- //
     // Persisted data.
 
@@ -58,15 +58,16 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
     // NBT tag names.
     private static final String TAG_PIPES = "pipes";
 
-    protected final TileEntityComputer[] neighbors = new TileEntityComputer[Face.VALUES.length];
-    protected final Forwarder[] forwarders = new Forwarder[Face.VALUES.length];
+    private final TileEntityComputer[] neighbors = new TileEntityComputer[Face.VALUES.length];
+    private final PipeImpl[] pipeOverride = new PipeImpl[pipes.length];
 
     // --------------------------------------------------------------------- //
 
     protected TileEntityComputer() {
         for (final Face face : Face.VALUES) {
             for (final Port port : Port.VALUES) {
-                pipes[pack(face, port)] = new PipeImpl(this, face, mapFace(face, port), mapSide(face, port));
+                final int pipeIndex = pack(face, port);
+                pipeOverride[pipeIndex] = pipes[pipeIndex] = new PipeImpl(this, face, mapFace(face, port), mapPort(face, port));
             }
         }
     }
@@ -80,18 +81,6 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
     public void stepPipes() {
         for (final PipeImpl pipe : pipes) {
             pipe.step();
-        }
-    }
-
-    /**
-     * Advances the virtual modules used to bridge edges between modules, calling
-     * {@link Forwarder#step()} on them.
-     */
-    public void stepForwarders() {
-        for (final Forwarder forwarder : forwarders) {
-            if (forwarder != null) {
-                forwarder.step();
-            }
         }
     }
 
@@ -113,7 +102,7 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
      * @see li.cil.tis3d.api.machine.Casing#getReceivingPipe(Face, Port)
      */
     public Pipe getReceivingPipe(final Face face, final Port port) {
-        return pipes[pack(face, port)];
+        return pipeOverride[pack(face, port)];
     }
 
     /**
@@ -125,7 +114,7 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
      * @see li.cil.tis3d.api.machine.Casing#getSendingPipe(Face, Port)
      */
     public Pipe getSendingPipe(final Face face, final Port port) {
-        return pipes[packMapped(face, port)];
+        return pipeOverride[packMapped(face, port)];
     }
 
     // --------------------------------------------------------------------- //
@@ -153,10 +142,6 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
 
     @Override
     public void onWriteComplete(final Face sendingFace, final Port sendingPort) {
-        final Forwarder forwarder = forwarders[sendingFace.ordinal()];
-        if (forwarder != null) {
-            forwarder.onWriteComplete(sendingPort);
-        }
     }
 
     // --------------------------------------------------------------------- //
@@ -210,6 +195,10 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
         }
     }
 
+    protected boolean hasNeighbor(final Face face) {
+        return neighbors[face.ordinal()] != null;
+    }
+
     protected abstract void scheduleScan();
 
     protected void setNeighbor(final Face face, final TileEntityComputer neighbor) {
@@ -219,21 +208,30 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
             neighbors[face.ordinal()] = neighbor;
             scheduleScan();
         }
+    }
 
-        // Adjust forwarders, connecting multiple casings.
-        if (neighbor == null) {
-            // No neighbor, remove the virtual connector module.
-            forwarders[face.ordinal()] = null;
-        } else if (forwarders[face.ordinal()] == null) {
-            // Got a new connection, and we have not yet been set up by our
-            // neighbor. Create a virtual module that will be responsible
-            // for transferring data between the two casings.
-            final Forwarder forwarder = new Forwarder(this, face);
-            final Forwarder neighborForwarder = new Forwarder(neighbor, face.getOpposite());
-            forwarder.setSink(neighborForwarder);
-            neighborForwarder.setSink(forwarder);
-            forwarders[face.ordinal()] = forwarder;
-            neighbor.forwarders[face.getOpposite().ordinal()] = neighborForwarder;
+    protected void rebuildOverrides() {
+        // Reset to initial state before checking for inter-block connections.
+        System.arraycopy(pipes, 0, pipeOverride, 0, pipes.length);
+
+        // Check each open face's neighbors, if they're in front of another
+        // computer block, start connecting the pipe to where that leads us.
+        for (final Face face : Face.VALUES) {
+            if (neighbors[face.ordinal()] != null) {
+                continue;
+            }
+
+            for (final Port port : Port.VALUES) {
+                final Face otherFace = mapFace(face, port);
+                final Port otherPort = mapPort(face, port);
+
+                final TileEntityComputer neighbor = neighbors[otherFace.ordinal()];
+                if (neighbor != null) {
+                    final Face neighborFace = otherFace.getOpposite();
+                    final Port neighborPort = flipSide(otherFace, otherPort);
+                    neighbor.computePipeOverrides(neighborFace, neighborPort, this, face, port);
+                }
+            }
         }
     }
 
@@ -294,7 +292,7 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
      * @param port the port defining the edge.
      * @return the port on the other side of the edge.
      */
-    private static Port mapSide(final Face face, final Port port) {
+    private static Port mapPort(final Face face, final Port port) {
         return PORT_MAPPING[face.ordinal()][port.ordinal()];
     }
 
@@ -319,70 +317,60 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
      * @return the compressed representation of the mapped face-port tuple.
      */
     private static int packMapped(final Face face, final Port port) {
-        return mapFace(face, port).ordinal() * Port.VALUES.length + mapSide(face, port).ordinal();
+        return mapFace(face, port).ordinal() * Port.VALUES.length + mapPort(face, port).ordinal();
     }
 
-    // --------------------------------------------------------------------- //
+    /**
+     * Get the port opposite to the specified port in a casing opposite to the
+     * the specified facing. Used when connecting across multiple casings.
+     *
+     * @param face the face opposite to which to get the port for.
+     * @param port the port opposite to which to get the port for.
+     * @return the port opposite to the specified port on the specified face.
+     */
+    private static Port flipSide(final Face face, final Port port) {
+        if (face == Face.Y_NEG || face == Face.Y_POS) {
+            return (port == Port.UP || port == Port.DOWN) ? port.getOpposite() : port;
+        } else {
+            return (port == Port.LEFT || port == Port.RIGHT) ? port.getOpposite() : port;
+        }
+    }
 
     /**
-     * This is a "virtual module" for internal use, forwarding data on all incoming
-     * ports to the linked sink forwarder. This is used to transfer data between
-     * two adjacent casings. They're not actual modules since they are also present
-     * in controllers (to allow forwarding around concave corners with the controller
-     * in the corner), but are exclusively present with modules (i.e. there can't
-     * be a module on a face if there's a forwarder and vice versa).
-     * <p>
-     * Forwarders are always created in pairs, and each takes care of one of the two
-     * directions data has to be moved.
+     * Populates the {@link #pipeOverride} array for the specified computer's
+     * face and port by traversing the computer multi-block until an open face
+     * is found that at face and port connects to. Used to bridge casings so
+     * that we can write values to modules of other casings without latency.
+     *
+     * @param face      the face of <em>this</em> casing to search from.
+     * @param port      the port of <em>this</em> casing to search from.
+     * @param start     the computer we're searching for.
+     * @param startFace the face on the computer we're searching for.
+     * @param startPort the port on the computer we're searching for.
      */
-    private static final class Forwarder {
-        private final TileEntityComputer computer;
-        private final Face face;
-        private Forwarder other;
-
-        private Forwarder(final TileEntityComputer computer, final Face face) {
-            this.computer = computer;
-            this.face = face;
+    private void computePipeOverrides(final Face face, final Port port, final TileEntityComputer start, final Face startFace, final Port startPort) {
+        // Avoid cycles for inner faces of 2x2 structures.
+        if (start == this) {
+            return;
         }
 
-        public void setSink(final Forwarder other) {
-            this.other = other;
-        }
+        final Face otherFace = mapFace(face, port);
+        final Port otherPort = mapPort(face, port);
 
-        public void step() {
-            for (final Port port : Port.VALUES) {
-                beginForwarding(port);
-            }
-        }
-
-        public void onWriteComplete(final Port port) {
-            beginForwarding(port);
-        }
-
-        // --------------------------------------------------------------------- //
-
-        private void beginForwarding(final Port port) {
-            final Pipe receivingPipe = computer.getReceivingPipe(face, port);
-
-            final Pipe sendingPipe = other.computer.getSendingPipe(other.face, flipSide(face, port));
-            if (sendingPipe.isReading() && !sendingPipe.isWriting()) {
-                if (!receivingPipe.isReading()) {
-                    receivingPipe.beginRead();
-                }
-                if (receivingPipe.canTransfer()) {
-                    sendingPipe.beginWrite(receivingPipe.read());
-                }
-            } else if (receivingPipe.isReading()) {
-                receivingPipe.cancelRead();
-            }
-        }
-
-        private static Port flipSide(final Face face, final Port port) {
-            if (face == Face.Y_NEG || face == Face.Y_POS) {
-                return (port == Port.UP || port == Port.DOWN) ? port.getOpposite() : port;
-            } else {
-                return (port == Port.LEFT || port == Port.RIGHT) ? port.getOpposite() : port;
-            }
+        final TileEntityComputer neighbor = neighbors[otherFace.ordinal()];
+        if (neighbor != null) {
+            // Got a neighbor, continue searching through it. This can continue
+            // only two times before we run into the early exit above.
+            final Face neighborFace = otherFace.getOpposite();
+            final Port neighborPort = flipSide(otherFace, otherPort);
+            neighbor.computePipeOverrides(neighborFace, neighborPort, start, startFace, startPort);
+        } else {
+            // No neighbor, we have an open face. Use as target for the pipe.
+            // override in the original computer. Setting this up in one
+            // direction suffices as this is performed in both directions.
+            final int receivingIndex = pack(startFace, startPort);
+            final int mySendingIndex = packMapped(otherFace, otherPort);
+            start.pipeOverride[receivingIndex] = pipes[mySendingIndex];
         }
     }
 }

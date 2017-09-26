@@ -262,14 +262,14 @@ public final class TileEntityCasing extends TileEntityComputer implements
         super.setNeighbor(face, neighbor);
 
         // Ensure there are no modules installed between two casings.
-        if (neighbors[face.ordinal()] != null) {
+        if (hasNeighbor(face)) {
             InventoryUtils.drop(getWorldObj(), xCoord, yCoord, zCoord, this, face.ordinal(), getInventoryStackLimit(), Face.toEnumFacing(face));
         }
 
         if (neighbor instanceof TileEntityController) {
             // If we have a controller and it's not our controller, tell our
             // controller to do a re-scan (because now we have more than one
-            // controller, which is invalid).
+            // controller, which is invalid). The other one will scan anyway.
             if (getController() != neighbor && getController() != null) {
                 getController().scheduleScan();
             }
