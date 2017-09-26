@@ -101,7 +101,7 @@ public final class CasingImpl implements Casing {
      * Used by the casing when it is being unloaded.
      */
     public void onDisposed() {
-        for (final Module module : modules) {
+            for (final Module module : modules) {
             if (module != null) {
                 module.onDisposed();
             }

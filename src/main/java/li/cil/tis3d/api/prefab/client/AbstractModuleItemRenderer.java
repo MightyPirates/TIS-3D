@@ -26,7 +26,7 @@ import org.lwjgl.opengl.GL11;
  */
 public abstract class AbstractModuleItemRenderer implements IItemRenderer {
     public static final String LOCATION_MODULE_MODEL = API.MOD_ID + ":models/item/module.obj";
-    public static final String LOCATION_MODULE_TEXTURE = API.MOD_ID + ":textures/blocks/casingModule.png";
+    public static final String LOCATION_MODULE_TEXTURE = API.MOD_ID + ":textures/blocks/casing_module.png";
     public static final IModelCustom MODULE_MODEL = AdvancedModelLoader.loadModel(new ResourceLocation(LOCATION_MODULE_MODEL));
 
     // --------------------------------------------------------------------- //
