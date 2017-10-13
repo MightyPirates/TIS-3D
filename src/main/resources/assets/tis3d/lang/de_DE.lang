@@ -1,0 +1,38 @@
+itemGroup.tis3d=TIS-3D
+
+item.tis3d.book_code.name=Code-Bibel
+item.tis3d.book_manual.name=TIS-3D Benutzerhandbuch
+item.tis3d.key.name=Schlüssel
+item.tis3d.key_creative.name=Generalschlüssel
+item.tis3d.module_audio.name=Audiomodul
+item.tis3d.module_bundled_redstone.name=Bundled-Redstone-Modul
+item.tis3d.module_display.name=Bildschirmmodul
+item.tis3d.module_execution.name=Ausführmodul
+item.tis3d.module_infrared.name=Infrarotmodul
+item.tis3d.module_keypad.name=Tastenblockmodul
+item.tis3d.module_queue.name=Queue-Modul
+item.tis3d.module_random.name=Zufallsmodul
+item.tis3d.module_random_access_memory.name=RAM-Modul
+item.tis3d.module_read_only_memory.name=ROM-Modul
+item.tis3d.module_redstone.name=Redstone-Modul
+item.tis3d.module_serial_port.name=Schnittstellenmodul
+item.tis3d.module_stack.name=Stack-Modul
+item.tis3d.module_terminal.name=Eingabemodul
+item.tis3d.module_timer.name=Timer-Modul
+item.tis3d.prism.name=Prisma
+
+tile.tis3d.casing.name=Gehäuse
+tile.tis3d.controller.name=Controller
+
+
+tis3d.controller.status.incomplete=Scan fehlgeschlagen
+tis3d.controller.status.multiple_controllers=Mehrere Controller
+tis3d.controller.status.too_complex=Zu komplex
+
+
+tis3d.book_code.error_on_next_page=Error auf der nächsten Seite:
+tis3d.book_code.error_on_previous_page=Error auf der vorherigen Seite:
+
+tis3d.tooltip.book_code=§7Klicke mit einem Buch auf ein Ausführmodul, um ein Kopie zu erhalten.
+tis3d.tooltip.book_manual=§7Klicke mit einem Buch auf einen Controller, um ein Kopie zu erhalten.
+tis3d.tooltip.key=§7Schleiche bei Verwendung, um einzelne Ports einer Gehäuseseite zu deaktivieren.
