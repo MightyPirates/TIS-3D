@@ -44,7 +44,9 @@ def getGitRef() {
   }
 }
 
-if (System.getenv("BUILD_NUMBER") != null)
+if (System.getenv("PROMOTED_NUMBER") != null)
+    version += ".${System.getenv("PROMOTED_NUMBER")}"
+else if (System.getenv("BUILD_NUMBER") != null)
     version += ".${System.getenv("BUILD_NUMBER")}"
 else
     version += "+" + getGitRef()
