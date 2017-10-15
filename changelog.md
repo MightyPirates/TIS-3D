@@ -1,0 +1,1 @@
+* Added German localization (Vexatos).
