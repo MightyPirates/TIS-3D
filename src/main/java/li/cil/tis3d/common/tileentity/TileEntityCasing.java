@@ -1,7 +1,5 @@
 package li.cil.tis3d.common.tileentity;
 
-import li.cil.tis3d.api.infrared.InfraredPacket;
-import li.cil.tis3d.api.infrared.InfraredReceiver;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
@@ -33,7 +31,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fml.relauncher.Side;
@@ -59,7 +56,7 @@ import java.util.Set;
  * Casings do not tick. The modules installed in them are driven by a
  * controller (transitively) connected to their casing.
  */
-public final class TileEntityCasing extends TileEntityComputer implements SidedInventoryProxy, CasingProxy, InfraredReceiver {
+public final class TileEntityCasing extends TileEntityComputer implements SidedInventoryProxy, CasingProxy {
     // --------------------------------------------------------------------- //
     // Persisted data
 
@@ -309,17 +306,6 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
     @Override
     public Casing getCasing() {
         return casing;
-    }
-
-    // --------------------------------------------------------------------- //
-    // InfraredReceiver
-
-    @Override
-    public void onInfraredPacket(final InfraredPacket packet, final RayTraceResult hit) {
-        final Module module = getModule(Face.fromEnumFacing(hit.sideHit));
-        if (module instanceof InfraredReceiver) {
-            ((InfraredReceiver) module).onInfraredPacket(packet, hit);
-        }
     }
 
     // --------------------------------------------------------------------- //
