@@ -562,7 +562,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
         getWorld().playSound(null, getPos(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3f, isReceivingPipeLocked(face, port) ? 0.5f : 0.6f);
     }
 
-    private void decompressClosed(final byte[] compressed, final boolean[][] decompressed) {
+    private static void decompressClosed(final byte[] compressed, final boolean[][] decompressed) {
         if (compressed.length != 3) {
             return;
         }
@@ -579,7 +579,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
         }
     }
 
-    private byte[] compressClosed(final boolean[][] decompressed) {
+    private static byte[] compressClosed(final boolean[][] decompressed) {
         // Cram two faces into one byte (four ports use four bits).
         final byte[] compressed = new byte[3];
         for (int i = 0; i < 6; i++) {
