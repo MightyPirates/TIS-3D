@@ -1,7 +1,5 @@
 package li.cil.tis3d.common.tileentity;
 
-import li.cil.tis3d.api.infrared.InfraredPacket;
-import li.cil.tis3d.api.infrared.InfraredReceiver;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
@@ -30,9 +28,11 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -56,7 +56,7 @@ import java.util.Set;
  * Casings do not tick. The modules installed in them are driven by a
  * controller (transitively) connected to their casing.
  */
-public final class TileEntityCasing extends TileEntityComputer implements SidedInventoryProxy, CasingProxy, InfraredReceiver {
+public final class TileEntityCasing extends TileEntityComputer implements SidedInventoryProxy, CasingProxy {
     // --------------------------------------------------------------------- //
     // Persisted data
 
@@ -309,17 +309,6 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
     }
 
     // --------------------------------------------------------------------- //
-    // InfraredReceiver
-
-    @Override
-    public void onInfraredPacket(final InfraredPacket packet, final RayTraceResult hit) {
-        final Module module = getModule(Face.fromEnumFacing(hit.sideHit));
-        if (module instanceof InfraredReceiver) {
-            ((InfraredReceiver) module).onInfraredPacket(packet, hit);
-        }
-    }
-
-    // --------------------------------------------------------------------- //
     // TileEntity
 
     @Override
@@ -337,6 +326,46 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
         super.onChunkUnload();
 
         dispose();
+    }
+
+    @Override
+    public boolean hasCapability(final Capability<?> capability, @Nullable final EnumFacing facing) {
+        if (super.hasCapability(capability, facing)) {
+            return true;
+        }
+
+        if (facing == null) {
+            return false;
+        }
+
+        final Module module = getModule(Face.fromEnumFacing(facing));
+        if (module instanceof ICapabilityProvider) {
+            final ICapabilityProvider capabilityProvider = (ICapabilityProvider) module;
+            return capabilityProvider.hasCapability(capability, facing);
+        }
+
+        return false;
+    }
+
+    @Nullable
+    @Override
+    public <T> T getCapability(final Capability<T> capability, @Nullable final EnumFacing facing) {
+        final T instance = super.getCapability(capability, facing);
+        if (instance != null) {
+            return instance;
+        }
+
+        if (facing == null) {
+            return null;
+        }
+
+        final Module module = getModule(Face.fromEnumFacing(facing));
+        if (module instanceof ICapabilityProvider) {
+            final ICapabilityProvider capabilityProvider = (ICapabilityProvider) module;
+            return capabilityProvider.getCapability(capability, facing);
+        }
+
+        return null;
     }
 
     @Override
@@ -533,7 +562,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
         getWorld().playSound(null, getPos(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3f, isReceivingPipeLocked(face, port) ? 0.5f : 0.6f);
     }
 
-    private void decompressClosed(final byte[] compressed, final boolean[][] decompressed) {
+    private static void decompressClosed(final byte[] compressed, final boolean[][] decompressed) {
         if (compressed.length != 3) {
             return;
         }
@@ -550,7 +579,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
         }
     }
 
-    private byte[] compressClosed(final boolean[][] decompressed) {
+    private static byte[] compressClosed(final boolean[][] decompressed) {
         // Cram two faces into one byte (four ports use four bits).
         final byte[] compressed = new byte[3];
         for (int i = 0; i < 6; i++) {

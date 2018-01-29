@@ -11,6 +11,7 @@ import li.cil.tis3d.api.prefab.module.AbstractModule;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.renderer.TextureLoader;
 import li.cil.tis3d.common.Settings;
+import li.cil.tis3d.common.capabilities.CapabilityInfraredReceiver;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.util.EnumFacing;
@@ -18,13 +19,17 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Deque;
 import java.util.LinkedList;
 
-public final class ModuleInfrared extends AbstractModule implements InfraredReceiver {
+public final class ModuleInfrared extends AbstractModule implements ICapabilityProvider, InfraredReceiver {
     // --------------------------------------------------------------------- //
     // Persisted data
 
@@ -114,6 +119,25 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
         }
         final NBTTagIntArray receiveQueueNbt = new NBTTagIntArray(receiveQueueArray);
         nbt.setTag(TAG_RECEIVE_QUEUE, receiveQueueNbt);
+    }
+
+    // --------------------------------------------------------------------- //
+    // ICapabilityProvider
+
+    @Override
+    public boolean hasCapability(@Nonnull final Capability<?> capability, @Nullable final EnumFacing facing) {
+        return capability == CapabilityInfraredReceiver.INFRARED_RECEIVER_CAPABILITY;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Nullable
+    @Override
+    public <T> T getCapability(@Nonnull final Capability<T> capability, @Nullable final EnumFacing facing) {
+        if (capability == CapabilityInfraredReceiver.INFRARED_RECEIVER_CAPABILITY) {
+            return (T) this;
+        }
+
+        return null;
     }
 
     // --------------------------------------------------------------------- //
