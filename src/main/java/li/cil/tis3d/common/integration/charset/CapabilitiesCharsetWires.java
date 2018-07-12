@@ -1,4 +1,4 @@
-package li.cil.tis3d.common.integration.charsetwires;
+package li.cil.tis3d.common.integration.charset;
 
 import li.cil.tis3d.common.tileentity.TileEntityCasing;
 import net.minecraft.tileentity.TileEntity;

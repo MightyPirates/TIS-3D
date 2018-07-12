@@ -1,6 +1,6 @@
 package li.cil.tis3d.common.integration;
 
-import li.cil.tis3d.common.integration.charsetwires.ProxyCharsetWires;
+import li.cil.tis3d.common.integration.charset.ProxyCharsetWires;
 import li.cil.tis3d.common.integration.minecraft.ProxyMinecraft;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
