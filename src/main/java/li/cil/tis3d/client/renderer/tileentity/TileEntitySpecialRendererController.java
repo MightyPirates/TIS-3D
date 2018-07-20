@@ -23,7 +23,7 @@ public class TileEntitySpecialRendererController extends TileEntitySpecialRender
         }
 
         final MovingObjectPosition hit = Minecraft.getMinecraft().objectMouseOver;
-        if (hit != null && hit.blockX == controller.xCoord && hit.blockY == controller.yCoord && hit.blockZ == controller.zCoord) {
+        if (hit != null && hit.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && hit.blockX == controller.xCoord && hit.blockY == controller.yCoord && hit.blockZ == controller.zCoord) {
             setLightmapDisabled(true);
             drawNameplate(controller, I18n.format(state.translateKey), x, y, z, 12);
             setLightmapDisabled(false);
