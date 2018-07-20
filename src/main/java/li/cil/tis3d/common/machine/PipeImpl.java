@@ -108,10 +108,7 @@ public final class PipeImpl implements Pipe {
             readState = State.FLUSHING;
         }
         if (writeState == State.COMPLETE && readState == State.COMPLETE) {
-            cancelWrite();
-            cancelRead();
-
-            host.onWriteComplete(sendingFace, sendingPort);
+            finishTransfer();
         }
     }
 
@@ -125,6 +122,14 @@ public final class PipeImpl implements Pipe {
         EnumUtils.writeToNBT(readState, TAG_READ_STATE, nbt);
         EnumUtils.writeToNBT(writeState, TAG_WRITE_STATE, nbt);
         nbt.setShort(TAG_VALUE, value);
+    }
+
+    private void finishTransfer() {
+        readState = State.IDLE;
+        writeState = State.IDLE;
+        value = 0;
+
+        host.onWriteComplete(sendingFace, sendingPort);
     }
 
     // --------------------------------------------------------------------- //
@@ -145,11 +150,7 @@ public final class PipeImpl implements Pipe {
     @Override
     public void cancelWrite() {
         if (writeState == State.COMPLETE && readState == State.COMPLETE) {
-            writeState = State.IDLE;
-            value = 0;
-            cancelRead();
-
-            host.onWriteComplete(sendingFace, sendingPort);
+            finishTransfer();
         } else {
             writeState = State.IDLE;
             value = 0;
@@ -178,10 +179,7 @@ public final class PipeImpl implements Pipe {
     @Override
     public void cancelRead() {
         if (writeState == State.COMPLETE && readState == State.COMPLETE) {
-            readState = State.IDLE;
-            cancelWrite();
-
-            host.onWriteComplete(sendingFace, sendingPort);
+            finishTransfer();
         } else {
             readState = State.IDLE;
             if (writeState == State.FLUSHING) {
