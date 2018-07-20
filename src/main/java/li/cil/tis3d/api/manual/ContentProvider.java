@@ -29,5 +29,5 @@ public interface ContentProvider {
      * @return the content of the document at that path, or <tt>null</tt>.
      */
     @Nullable
-    Iterable<String> getContent(String path);
+    Iterable<String> getContent(final String path);
 }

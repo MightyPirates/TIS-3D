@@ -64,7 +64,7 @@ public final class CapabilityInfraredReceiver {
     private static final class InfraredReceiverCapabilityProvider implements ICapabilityProvider {
         private final InfraredReceiver receiver;
 
-        public InfraredReceiverCapabilityProvider(final InfraredReceiver receiver) {
+        InfraredReceiverCapabilityProvider(final InfraredReceiver receiver) {
             this.receiver = receiver;
         }
 

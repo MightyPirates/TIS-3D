@@ -21,7 +21,7 @@ public interface SerialAPI {
      *
      * @param provider the provider to register.
      */
-    void addProvider(SerialInterfaceProvider provider);
+    void addProvider(final SerialInterfaceProvider provider);
 
     /**
      * Find the first provider supporting the specified block position.
@@ -32,5 +32,5 @@ public interface SerialAPI {
      * @return the first provider supporting the item stack, or <tt>null</tt>.
      */
     @Nullable
-    SerialInterfaceProvider getProviderFor(World world, BlockPos position, EnumFacing side);
+    SerialInterfaceProvider getProviderFor(final World world, final BlockPos position, final EnumFacing side);
 }

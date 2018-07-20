@@ -21,7 +21,7 @@ public interface SerialInterfaceProvider {
      * @param side     the side of the position in question.
      * @return whether a {@link SerialInterface} can be provided for the position.
      */
-    boolean worksWith(World world, BlockPos position, EnumFacing side);
+    boolean worksWith(final World world, final BlockPos position, final EnumFacing side);
 
     /**
      * Creates a new serial interface instance for the specified position.
@@ -32,7 +32,7 @@ public interface SerialInterfaceProvider {
      * @return the interface to use for communicating with the position.
      */
     @Nullable
-    SerialInterface interfaceFor(World world, BlockPos position, EnumFacing side);
+    SerialInterface interfaceFor(final World world, final BlockPos position, final EnumFacing side);
 
     /**
      * A reference to a manual entry describing the protocol used by the
@@ -76,5 +76,5 @@ public interface SerialInterfaceProvider {
      * @param serialInterface the interface to validate.
      * @return <tt>true</tt> if the interface is still valid, <tt>false</tt> if a new one should be created.
      */
-    boolean isValid(World world, BlockPos position, EnumFacing side, SerialInterface serialInterface);
+    boolean isValid(final World world, final BlockPos position, final EnumFacing side, final SerialInterface serialInterface);
 }

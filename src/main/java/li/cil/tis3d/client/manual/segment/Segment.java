@@ -38,7 +38,7 @@ public interface Segment {
      * @param renderer the font renderer used.
      * @return the x position of the next segment.
      */
-    int nextX(int indent, int maxWidth, FontRenderer renderer);
+    int nextX(final int indent, final int maxWidth, final FontRenderer renderer);
 
     /**
      * Get the Y coordinate at which to render the next segment.
@@ -54,7 +54,7 @@ public interface Segment {
      * @param renderer the font renderer used.
      * @return the y position of the next segment.
      */
-    int nextY(int indent, int maxWidth, FontRenderer renderer);
+    int nextY(final int indent, final int maxWidth, final FontRenderer renderer);
 
     /**
      * Render the segment at the specified coordinates with the specified
@@ -91,5 +91,5 @@ public interface Segment {
     @Nullable
     Segment next();
 
-    void setNext(Segment segment);
+    void setNext(final Segment segment);
 }

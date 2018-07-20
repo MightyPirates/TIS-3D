@@ -3,7 +3,6 @@ package li.cil.tis3d.client.gui;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.module.ModuleTerminal;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.EnumHand;
@@ -21,7 +20,7 @@ import java.io.IOException;
  * Invisible GUI for the terminal module, purely used to grab keyboard input.
  */
 @SideOnly(Side.CLIENT)
-public class GuiModuleTerminal extends GuiScreen {
+public final class GuiModuleTerminal extends GuiScreen {
     private final ModuleTerminal module;
 
     public GuiModuleTerminal(final ModuleTerminal module) {
@@ -71,7 +70,7 @@ public class GuiModuleTerminal extends GuiScreen {
             module.writeToInput(typedChar);
 
             if (Settings.animateTypingHand) {
-                Minecraft.getMinecraft().player.swingArm(EnumHand.MAIN_HAND);
+                mc.player.swingArm(EnumHand.MAIN_HAND);
             }
         }
     }

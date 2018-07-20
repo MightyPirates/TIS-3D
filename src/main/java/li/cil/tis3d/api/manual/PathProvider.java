@@ -31,7 +31,7 @@ public interface PathProvider {
      * @return the path to the page, <tt>null</tt> if none is known.
      */
     @Nullable
-    String pathFor(@Nullable ItemStack stack);
+    String pathFor(@Nullable final ItemStack stack);
 
     /**
      * Get the path to the documentation page for the provided block.
@@ -44,5 +44,5 @@ public interface PathProvider {
      * @return the path to the page, <tt>null</tt> if none is known.
      */
     @Nullable
-    String pathFor(World world, BlockPos pos);
+    String pathFor(final World world, final BlockPos pos);
 }

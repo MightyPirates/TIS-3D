@@ -57,7 +57,7 @@ public interface Module {
      *
      * @param stack the item stack the module was created from.
      */
-    void onInstalled(ItemStack stack);
+    void onInstalled(final ItemStack stack);
 
     /**
      * Called after the module was uninstalled from a {@link Casing}.
@@ -74,7 +74,7 @@ public interface Module {
      *
      * @param stack the stack representing the module.
      */
-    void onUninstalled(ItemStack stack);
+    void onUninstalled(final ItemStack stack);
 
     /**
      * Called when the multi-block of casings the module is installed in is
@@ -164,7 +164,7 @@ public interface Module {
      * @see Casing#sendData(Face, ByteBuf, byte)
      * @see Casing#sendData(Face, ByteBuf)
      */
-    void onData(ByteBuf data);
+    void onData(final ByteBuf data);
 
     // --------------------------------------------------------------------- //
 

@@ -186,7 +186,7 @@ public final class GuiManual extends GuiScreen {
     }
 
     @Override
-    protected void actionPerformed(final GuiButton button) throws IOException {
+    protected void actionPerformed(final GuiButton button) {
         if (button.id >= 0 && button.id < ManualAPIImpl.getTabs().size()) {
             ManualAPI.navigate(ManualAPIImpl.getTabs().get(button.id).path);
         }
@@ -227,7 +227,7 @@ public final class GuiManual extends GuiScreen {
             ManualAPIImpl.popPath();
             refreshPage();
         } else {
-            Minecraft.getMinecraft().player.closeScreen();
+            mc.player.closeScreen();
         }
     }
 
@@ -264,17 +264,17 @@ public final class GuiManual extends GuiScreen {
         private int verticalImageOffset = 0;
         private int imageHeightOverride = 0;
 
-        public ImageButton(final int id, final int x, final int y, final int w, final int h, final ResourceLocation image) {
+        ImageButton(final int id, final int x, final int y, final int w, final int h, final ResourceLocation image) {
             super(id, x, y, w, h, "");
             this.image = image;
         }
 
-        public ImageButton setImageHeight(final int height) {
+        ImageButton setImageHeight(final int height) {
             this.imageHeightOverride = height;
             return this;
         }
 
-        public ImageButton setVerticalImageOffset(final int offset) {
+        ImageButton setVerticalImageOffset(final int offset) {
             this.verticalImageOffset = offset;
             return this;
         }
@@ -310,10 +310,10 @@ public final class GuiManual extends GuiScreen {
     }
 
     private static class ScaledResolution {
-        public final int scaledWidth;
-        public final int scaledHeight;
+        final int scaledWidth;
+        final int scaledHeight;
 
-        public ScaledResolution(final int width, final int height) {
+        ScaledResolution(final int width, final int height) {
             int scaleFactor = 1;
             int guiScale = Minecraft.getMinecraft().gameSettings.guiScale;
 

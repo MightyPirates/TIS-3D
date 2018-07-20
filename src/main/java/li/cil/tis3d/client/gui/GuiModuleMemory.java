@@ -6,7 +6,6 @@ import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.module.ModuleRandomAccessMemory;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageModuleReadOnlyMemoryData;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,7 +14,7 @@ import org.lwjgl.input.Keyboard;
 
 import java.io.IOException;
 
-public class GuiModuleMemory extends GuiScreen {
+public final class GuiModuleMemory extends GuiScreen {
     private static final int GUI_WIDTH = 190;
     private static final int GUI_HEIGHT = 130;
 
@@ -23,7 +22,7 @@ public class GuiModuleMemory extends GuiScreen {
     private static final int GRID_TOP = 13;
     private static final int CELL_WIDTH = 10;
     private static final int CELL_HEIGHT = 7;
-    public static final String LABEL_INITIALIZING = "INITIALIZING...";
+    private static final String LABEL_INITIALIZING = "INITIALIZING...";
 
     private final EntityPlayer player;
     private final byte[] data = new byte[ModuleRandomAccessMemory.MEMORY_SIZE];
@@ -74,13 +73,13 @@ public class GuiModuleMemory extends GuiScreen {
     @Override
     public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
         if (!player.isEntityAlive() || !Items.isModuleReadOnlyMemory(player.getHeldItem(EnumHand.MAIN_HAND))) {
-            Minecraft.getMinecraft().displayGuiScreen(null);
+            mc.displayGuiScreen(null);
             return;
         }
 
         // Background.
         GlStateManager.color(1, 1, 1, 1);
-        Minecraft.getMinecraft().getTextureManager().bindTexture(TextureLoader.LOCATION_GUI_MEMORY);
+        mc.getTextureManager().bindTexture(TextureLoader.LOCATION_GUI_MEMORY);
         drawTexturedModalRect(guiX, guiY, 0, 0, GUI_WIDTH, GUI_HEIGHT);
 
         // Draw row and column headers.
@@ -286,8 +285,8 @@ public class GuiModuleMemory extends GuiScreen {
         GlStateManager.pushMatrix();
         GlStateManager.translate(x, y, 0);
 
-        Minecraft.getMinecraft().renderEngine.bindTexture(TextureLoader.LOCATION_GUI_MEMORY);
-        final int vPos = (int) (Minecraft.getMinecraft().world.getTotalWorldTime() % 16) * 8;
+        mc.renderEngine.bindTexture(TextureLoader.LOCATION_GUI_MEMORY);
+        final int vPos = (int) (mc.world.getTotalWorldTime() % 16) * 8;
         drawTexturedModalRect(0, 0, 256 - (CELL_WIDTH + 1), vPos, 11, 8);
 
         GlStateManager.popMatrix();
