@@ -229,6 +229,11 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
 
     private boolean isPlayerLookingAt(final BlockPos pos, final Face face) {
         final RayTraceResult hit = rendererDispatcher.cameraHitResult;
-        return hit != null && Face.fromEnumFacing(hit.sideHit) == face && Objects.equals(hit.getBlockPos(), pos);
+        return hit != null &&
+                hit.typeOfHit == RayTraceResult.Type.BLOCK &&
+                hit.sideHit != null &&
+                hit.getBlockPos() != null &&
+                Face.fromEnumFacing(hit.sideHit) == face &&
+                Objects.equals(hit.getBlockPos(), pos);
     }
 }
