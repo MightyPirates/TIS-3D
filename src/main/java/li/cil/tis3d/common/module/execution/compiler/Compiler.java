@@ -98,7 +98,7 @@ public final class Compiler {
      * @param defines the map with defines to add results to.
      */
     private static void parseDefine(Matcher matcher, Map<String, String> defines) {
-        String key = matcher.group("key");
+        final String key = matcher.group("key");
         if (key == null) {
             return;
         }
@@ -106,6 +106,15 @@ public final class Compiler {
         String value = matcher.group("value");
         if (value == null) {
             return;
+        }
+
+        if (key.equals(value)) {
+            return;
+        }
+
+        // Resolve value if it is also a define.
+        if (defines.containsKey(value)) {
+            value = defines.get(value);
         }
 
         // Overwrite previous defines if there is one.

@@ -4,7 +4,6 @@ import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.module.execution.compiler.ParseException;
 import li.cil.tis3d.common.module.execution.target.Target;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.regex.Matcher;
 
@@ -28,7 +27,7 @@ abstract class AbstractInstructionEmitter implements InstructionEmitter {
     }
 
     static Target checkTarget(String name, final int lineNumber, final Map<String, String> defines, final int start, final int end) throws ParseException {
-        name = applyDefines(name, lineNumber, defines, start, end);
+        name = defines.getOrDefault(name, name);
         try {
             final Target target = Enum.valueOf(Target.class, name);
             if (!Target.VALID_TARGETS.contains(target)) {
@@ -41,7 +40,7 @@ abstract class AbstractInstructionEmitter implements InstructionEmitter {
     }
 
     static Object checkTargetOrNumber(String name, final int lineNumber, final Map<String, String> defines, final int start, final int end) throws ParseException {
-        name = applyDefines(name, lineNumber, defines, start, end);
+        name = defines.getOrDefault(name, name);
         try {
             final Target target = Enum.valueOf(Target.class, name);
             if (!Target.VALID_TARGETS.contains(target)) {
@@ -57,15 +56,4 @@ abstract class AbstractInstructionEmitter implements InstructionEmitter {
         }
     }
 
-    private static String applyDefines(String value, final int lineNumber, final Map<String, String> defines, final int start, final int end) throws ParseException {
-        final HashSet<String> seen = new HashSet<>();
-        while (defines.containsKey(value)) {
-            if (!seen.add(value)) {
-                throw new ParseException(Constants.MESSAGE_CYCLIC_DEFINE, lineNumber, start, end);
-            }
-            value = defines.get(value);
-        }
-
-        return value;
-    }
 }
