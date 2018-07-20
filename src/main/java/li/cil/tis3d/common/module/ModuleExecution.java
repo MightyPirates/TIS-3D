@@ -214,9 +214,9 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         machineState.acc = data.readShort();
         machineState.bak = data.readShort();
         if (data.readBoolean()) {
-            machineState.last = Optional.of(Port.values()[data.readByte()]);
+            machineState.dyn = Optional.of(Port.values()[data.readByte()]);
         } else {
-            machineState.last = Optional.empty();
+            machineState.dyn = Optional.empty();
         }
         state = State.values()[data.readByte()];
     }
@@ -330,9 +330,9 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         data.writeShort((short) getState().pc);
         data.writeShort(getState().acc);
         data.writeShort(getState().bak);
-        data.writeBoolean(getState().last.isPresent());
-        if (getState().last.isPresent()) {
-            data.writeByte((byte) getState().last.get().ordinal());
+        data.writeBoolean(getState().dyn.isPresent());
+        if (getState().dyn.isPresent()) {
+            data.writeByte((byte) getState().dyn.get().ordinal());
         }
         data.writeByte(state.ordinal());
 
@@ -348,7 +348,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         GlStateManager.color(1f, 1f, 1f, 1f);
 
         // Draw register info on top.
-        final String accLast = String.format("ACC:%4X LAST:%s", machineState.acc, machineState.last.map(Enum::name).orElse("NONE"));
+        final String accLast = String.format("ACC:%4X  DYN:%s", machineState.acc, machineState.dyn.map(Enum::name).orElse("NONE"));
         FontRendererAPI.drawString(accLast);
         GlStateManager.translate(0, FontRendererAPI.getCharHeight() + 4, 0);
         final String bakState = String.format("BAK:%4X MODE:%s", machineState.bak, state.name());

@@ -38,7 +38,8 @@ public final class MachineImpl implements Machine {
                 put(Target.UP, new TargetInterfaceSide(this, module, face, Port.UP)).
                 put(Target.DOWN, new TargetInterfaceSide(this, module, face, Port.DOWN)).
                 put(Target.ANY, new TargetInterfaceAny(this, module, face)).
-                put(Target.LAST, new TargetInterfaceLast(this, module, face)).
+                put(Target.DYN, new TargetInterfaceDyn(this, module, face)).
+                put(Target.DYNP, new TargetInterfaceDynPointer(this, module, face)).
                 build();
     }
 

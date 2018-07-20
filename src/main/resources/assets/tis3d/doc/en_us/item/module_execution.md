@@ -27,8 +27,12 @@ Port. These represent the four ports of the execution module. Operation on the e
 `ANY`
 Virtual port. This is a pseudo-target that will perform an operation on all ports simultaneously, but will only actually perform an operation on the first port to finish the operation. For example, `MOV 10 ANY` will begin writing the value 10 to all ports, but as soon as it was read from one port, it can no longer be read from all other ports; the write operation on all ports will effectively be canceled after one succeeded.
 
-`LAST`
-Virtual port. This is a pseudo-target that will store the *actual* port that finished the last operation that used the `ANY` pseudo-target.
+`DYN`
+Virtual port. This is a pseudo-target that can be set through code to any real port or `NIL`. By default it will point to the *actual* port that finished the last operation that used the `ANY` pseudo-target.
+
+`DYNP`
+Virtual register. Can store a value from -1 to 3 and can be used to get and set what port `DYN` points to. When writing, values less than -1 will be clamped to -1, and values greater than 3 will be wrapped using a modulus operator. This means you can rotate clockwise by simply adding (so long as `DYN` doesn't point to `NIL`)
+`-1=NIL, 0=UP, 1=RIGHT, 2=DOWN, 3=LEFT`
 
 ## Language Specification
 In addition to a list of instructions, assembler code provided to an execution module may contain metadata. Comments are textual notes in the code that are completely ignored in the execution of the program. Labels mark positions in the code that can be addressed by jump instructions. Comments, labels and blank lines have no influence on the addressing of the compiled program. This is relevant when using the `JRO` instruction.

@@ -66,7 +66,7 @@ public final class TargetInterfaceAny extends AbstractTargetInterfaceSide {
                     }
                 }
 
-                getMachine().getState().last = Optional.of(port);
+                getMachine().getState().dyn = Optional.of(port);
 
                 return read(port);
             }
@@ -78,7 +78,7 @@ public final class TargetInterfaceAny extends AbstractTargetInterfaceSide {
     @Override
     public void onWriteComplete(final Port port) {
         cancelWrite();
-        getMachine().getState().last = Optional.of(port);
+        getMachine().getState().dyn = Optional.of(port);
     }
 
     // --------------------------------------------------------------------- //
