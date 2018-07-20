@@ -1,10 +1,6 @@
 package li.cil.tis3d.api.detail;
 
-import li.cil.tis3d.api.manual.ContentProvider;
-import li.cil.tis3d.api.manual.ImageProvider;
-import li.cil.tis3d.api.manual.ImageRenderer;
-import li.cil.tis3d.api.manual.PathProvider;
-import li.cil.tis3d.api.manual.TabIconRenderer;
+import li.cil.tis3d.api.manual.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -25,7 +21,7 @@ public interface ManualAPI {
      * @param tooltip  the unlocalized tooltip of the tab, or <tt>null</tt>.
      * @param path     the path to the page to open when the tab is clicked.
      */
-    void addTab(TabIconRenderer renderer, @Nullable String tooltip, String path);
+    void addTab(final TabIconRenderer renderer, @Nullable final String tooltip, final String path);
 
     /**
      * Register a path provider.
@@ -35,7 +31,7 @@ public interface ManualAPI {
      *
      * @param provider the provider to register.
      */
-    void addProvider(PathProvider provider);
+    void addProvider(final PathProvider provider);
 
     /**
      * Register a content provider.
@@ -47,7 +43,7 @@ public interface ManualAPI {
      *
      * @param provider the provider to register.
      */
-    void addProvider(ContentProvider provider);
+    void addProvider(final ContentProvider provider);
 
     /**
      * Register an image provider.
@@ -66,7 +62,7 @@ public interface ManualAPI {
      * @param prefix   the prefix on which to use the provider.
      * @param provider the provider to register.
      */
-    void addProvider(String prefix, ImageProvider provider);
+    void addProvider(final String prefix, final ImageProvider provider);
 
     // ----------------------------------------------------------------------- //
 
@@ -77,7 +73,7 @@ public interface ManualAPI {
      * @return the path to the page, <tt>null</tt> if none is known.
      */
     @Nullable
-    String pathFor(ItemStack stack);
+    String pathFor(final ItemStack stack);
 
     /**
      * Look up the documentation for the specified block in the world.
@@ -87,7 +83,7 @@ public interface ManualAPI {
      * @return the path to the page, <tt>null</tt> if none is known.
      */
     @Nullable
-    String pathFor(World world, BlockPos pos);
+    String pathFor(final World world, final BlockPos pos);
 
     /**
      * Get the content of the documentation page at the specified location.
@@ -100,7 +96,7 @@ public interface ManualAPI {
      * @return the content of the page, or <tt>null</tt> if none exists.
      */
     @Nullable
-    Iterable<String> contentFor(String path);
+    Iterable<String> contentFor(final String path);
 
     /**
      * Get the image renderer for the specified image path.
@@ -113,7 +109,7 @@ public interface ManualAPI {
      * @return the custom renderer for that path, or <tt>null</tt> if none exists.
      */
     @Nullable
-    ImageRenderer imageFor(String path);
+    ImageRenderer imageFor(final String path);
 
     // ----------------------------------------------------------------------- //
 
@@ -125,7 +121,7 @@ public interface ManualAPI {
      *
      * @param player the player to open the manual for.
      */
-    void openFor(EntityPlayer player);
+    void openFor(final EntityPlayer player);
 
     /**
      * Reset the history of the manual.
@@ -137,5 +133,5 @@ public interface ManualAPI {
      *
      * @param path the path to navigate to.
      */
-    void navigate(String path);
+    void navigate(final String path);
 }

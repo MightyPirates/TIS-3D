@@ -13,11 +13,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -84,11 +80,11 @@ public final class SerialAPIImpl implements SerialAPI {
 
         // --------------------------------------------------------------------- //
 
-        public SerialProtocolContentProvider() {
+        SerialProtocolContentProvider() {
             super(API.MOD_ID, "doc/");
         }
 
-        public void addReference(@Nullable final SerialProtocolDocumentationReference reference) {
+        void addReference(@Nullable final SerialProtocolDocumentationReference reference) {
             if (reference != null && !protocols.contains(reference)) {
                 protocols.add(reference);
                 cachedList = Optional.empty();
@@ -131,7 +127,7 @@ public final class SerialAPIImpl implements SerialAPI {
                 }
                 cachedList = Optional.of(sb.toString());
             }
-            assert cachedList.isPresent();
+
             return cachedList.get();
         }
     }

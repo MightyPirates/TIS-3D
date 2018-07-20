@@ -24,11 +24,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -334,7 +330,7 @@ public final class GuiBookCode extends GuiScreen {
     }
 
     @Override
-    protected void actionPerformed(final GuiButton button) throws IOException {
+    protected void actionPerformed(final GuiButton button) {
         if (button == buttonNextPage) {
             changePage(1);
         } else if (button == buttonPreviousPage) {
@@ -654,7 +650,7 @@ public final class GuiBookCode extends GuiScreen {
 
         private final PageChangeType type;
 
-        public ButtonChangePage(final int buttonId, final int x, final int y, final PageChangeType type) {
+        ButtonChangePage(final int buttonId, final int x, final int y, final PageChangeType type) {
             super(buttonId, x, y, BUTTON_WIDTH, BUTTON_HEIGHT, "");
             this.type = type;
         }
@@ -680,7 +676,7 @@ public final class GuiBookCode extends GuiScreen {
         private static final int BUTTON_WIDTH = 14;
         private static final int BUTTON_HEIGHT = 14;
 
-        public ButtonDeletePage(final int buttonId, final int x, final int y) {
+        ButtonDeletePage(final int buttonId, final int x, final int y) {
             super(buttonId, x, y, BUTTON_WIDTH, BUTTON_HEIGHT, "");
         }
 

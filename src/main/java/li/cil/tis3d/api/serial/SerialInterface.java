@@ -43,7 +43,7 @@ public interface SerialInterface {
      *
      * @param value the value written to the serial interface.
      */
-    void write(short value);
+    void write(final short value);
 
     /**
      * Whether the interface can currently be read from.
@@ -101,7 +101,7 @@ public interface SerialInterface {
      *
      * @param nbt the tag to write the interface's state to.
      */
-    void writeToNBT(NBTTagCompound nbt);
+    void writeToNBT(final NBTTagCompound nbt);
 
     /**
      * Called when a serial port module is created and an earlier interface had
@@ -115,5 +115,5 @@ public interface SerialInterface {
      *
      * @param nbt the tag to restore the interface's state from.
      */
-    void readFromNBT(NBTTagCompound nbt);
+    void readFromNBT(final NBTTagCompound nbt);
 }

@@ -18,7 +18,7 @@ public interface ModuleProvider {
      * @param face   the face the module would be installed on.
      * @return <tt>true</tt> if the stack is supported, <tt>false</tt> otherwise.
      */
-    boolean worksWith(ItemStack stack, Casing casing, Face face);
+    boolean worksWith(final ItemStack stack, final Casing casing, final Face face);
 
     /**
      * Creates a new module instance for the specified item stack.
@@ -31,5 +31,5 @@ public interface ModuleProvider {
      * @return a new module instance, or <tt>null</tt>.
      */
     @Nullable
-    Module createModule(ItemStack stack, Casing casing, Face face);
+    Module createModule(final ItemStack stack, final Casing casing, final Face face);
 }

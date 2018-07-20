@@ -3,17 +3,7 @@ package li.cil.tis3d.client.manual;
 import com.google.common.base.Strings;
 import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.api.manual.ImageRenderer;
-import li.cil.tis3d.client.manual.segment.BoldSegment;
-import li.cil.tis3d.client.manual.segment.CodeSegment;
-import li.cil.tis3d.client.manual.segment.HeaderSegment;
-import li.cil.tis3d.client.manual.segment.InteractiveSegment;
-import li.cil.tis3d.client.manual.segment.ItalicSegment;
-import li.cil.tis3d.client.manual.segment.LinkSegment;
-import li.cil.tis3d.client.manual.segment.RenderSegment;
-import li.cil.tis3d.client.manual.segment.Segment;
-import li.cil.tis3d.client.manual.segment.SegmentRefiner;
-import li.cil.tis3d.client.manual.segment.StrikethroughSegment;
-import li.cil.tis3d.client.manual.segment.TextSegment;
+import li.cil.tis3d.client.manual.segment.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -245,10 +235,10 @@ public final class Document {
     };
 
     private static final class PatternMapping {
-        public final Pattern pattern;
-        public final SegmentRefiner refiner;
+        final Pattern pattern;
+        final SegmentRefiner refiner;
 
-        private PatternMapping(final String pattern, final SegmentRefiner refiner) {
+        PatternMapping(final String pattern, final SegmentRefiner refiner) {
             this.pattern = Pattern.compile(pattern);
             this.refiner = refiner;
         }

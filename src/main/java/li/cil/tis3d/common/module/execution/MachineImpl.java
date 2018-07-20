@@ -5,14 +5,7 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.common.module.ModuleExecution;
 import li.cil.tis3d.common.module.execution.instruction.Instruction;
-import li.cil.tis3d.common.module.execution.target.Target;
-import li.cil.tis3d.common.module.execution.target.TargetInterface;
-import li.cil.tis3d.common.module.execution.target.TargetInterfaceAcc;
-import li.cil.tis3d.common.module.execution.target.TargetInterfaceAny;
-import li.cil.tis3d.common.module.execution.target.TargetInterfaceBak;
-import li.cil.tis3d.common.module.execution.target.TargetInterfaceLast;
-import li.cil.tis3d.common.module.execution.target.TargetInterfaceNil;
-import li.cil.tis3d.common.module.execution.target.TargetInterfaceSide;
+import li.cil.tis3d.common.module.execution.target.*;
 
 import javax.annotation.Nullable;
 import java.util.Map;

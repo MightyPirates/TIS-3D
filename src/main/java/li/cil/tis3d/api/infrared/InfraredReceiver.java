@@ -35,5 +35,5 @@ public interface InfraredReceiver {
      * @param packet the packet that collided with this.
      * @param hit    the information on the hit.
      */
-    void onInfraredPacket(InfraredPacket packet, RayTraceResult hit);
+    void onInfraredPacket(final InfraredPacket packet, final RayTraceResult hit);
 }

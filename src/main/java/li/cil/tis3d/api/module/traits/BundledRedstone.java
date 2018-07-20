@@ -13,7 +13,7 @@ public interface BundledRedstone extends Module {
      * @param channel the bundle channel to get the value of.
      * @return the current redstone output on the channel.
      */
-    int getBundledRedstoneOutput(int channel);
+    int getBundledRedstoneOutput(final int channel);
 
     /**
      * Set the new bundled input value on the specified channel.
@@ -21,7 +21,7 @@ public interface BundledRedstone extends Module {
      * @param channel the bundled channel to set the value of.
      * @param value   the new input value on the channel.
      */
-    void setBundledRedstoneInput(int channel, short value);
+    void setBundledRedstoneInput(final int channel, final short value);
 
     /**
      * Get the current bundled input value on the specified channel.
@@ -29,5 +29,5 @@ public interface BundledRedstone extends Module {
      * @param channel the bundled channel to get the input value of.
      * @return the current input value on the channel
      */
-    short getBundledRedstoneInput(int channel);
+    short getBundledRedstoneInput(final int channel);
 }

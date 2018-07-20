@@ -27,5 +27,5 @@ public interface ImageProvider {
      * @return the image renderer for the data, or <tt>null</tt> if none exists.
      */
     @Nullable
-    ImageRenderer getImage(String data);
+    ImageRenderer getImage(final String data);
 }

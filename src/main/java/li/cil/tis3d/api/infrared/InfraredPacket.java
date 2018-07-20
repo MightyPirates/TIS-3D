@@ -47,5 +47,5 @@ public interface InfraredPacket {
      * @param direction     the new direction the packet should be heading.
      * @param addedLifetime how many ticks to add to the packet's lifetime.
      */
-    void redirectPacket(Vec3d position, Vec3d direction, int addedLifetime);
+    void redirectPacket(final Vec3d position, final Vec3d direction, final int addedLifetime);
 }

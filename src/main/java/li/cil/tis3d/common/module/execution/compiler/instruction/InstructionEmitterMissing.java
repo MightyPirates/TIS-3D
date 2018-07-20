@@ -6,6 +6,7 @@ import li.cil.tis3d.common.module.execution.compiler.Validator;
 import li.cil.tis3d.common.module.execution.instruction.Instruction;
 
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 
 public final class InstructionEmitterMissing implements InstructionEmitter {
@@ -15,7 +16,7 @@ public final class InstructionEmitterMissing implements InstructionEmitter {
     }
 
     @Override
-    public Instruction compile(final Matcher matcher, final int lineNumber, final List<Validator> validators) throws ParseException {
+    public Instruction compile(final Matcher matcher, final int lineNumber, final Map<String, String> defines, final List<Validator> validators) throws ParseException {
         throw new ParseException(Constants.MESSAGE_INVALID_INSTRUCTION, lineNumber, matcher.start("name"), matcher.end("name"));
     }
 }
