@@ -74,7 +74,6 @@ public final class Constants {
     public static final String MESSAGE_PARAMETER_UNDERFLOW = "tis3d.compiler.parameter_underflow";
     public static final String MESSAGE_TOO_MANY_COLUMNS = "tis3d.compiler.too_many_columns";
     public static final String MESSAGE_TOO_MANY_LINES = "tis3d.compiler.too_many_lines";
-    public static final String MESSAGE_CYCLIC_DEFINE = "tis3d.compiler.cyclic_define";
 
     // --------------------------------------------------------------------- //
     // Code book
