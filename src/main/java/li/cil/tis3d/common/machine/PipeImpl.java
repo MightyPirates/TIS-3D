@@ -179,8 +179,8 @@ public final class PipeImpl implements Pipe {
     @Override
     public void cancelRead() {
         if (writeState == State.COMPLETE && readState == State.COMPLETE) {
-            cancelWrite();
             readState = State.IDLE;
+            cancelWrite();
 
             host.onWriteComplete(sendingFace, sendingPort);
         } else {
