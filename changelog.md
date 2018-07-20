@@ -2,3 +2,4 @@
 * Added two new instructions, `RRLAST` and `RLLAST`, used to rotate the value of `LAST` one to the right or the left, respectively, if its value is not `NIL`.
 * Fix crash when controllers in errored state are in view and player is looking at an Entity (as opposed to a block).
 * Fix crash when rendering module overlay when player is looking at an Entity (as opposed to a block).
+* Fix modules potentially stopping in combination with the serial port module (and potentially modded modules).
