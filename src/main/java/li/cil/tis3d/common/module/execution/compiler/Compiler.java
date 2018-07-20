@@ -220,6 +220,10 @@ public final class Compiler {
         addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate("SHL", InstructionBitwiseShiftLeft::new, InstructionBitwiseShiftLeftImmediate::new));
         addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate("SHR", InstructionBitwiseShiftRight::new, InstructionBitwiseShiftRightImmediate::new));
 
+        // Operations on LAST.
+        addInstructionEmitter(builder, new InstructionEmitterUnary("RLLAST", InstructionLastRotateLeft::new));
+        addInstructionEmitter(builder, new InstructionEmitterUnary("RRLAST", InstructionLastRotateRight::new));
+
         EMITTER_MAP = builder.build();
     }
 

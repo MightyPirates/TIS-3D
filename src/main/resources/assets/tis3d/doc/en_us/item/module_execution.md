@@ -97,34 +97,47 @@ Example:
 Negates the current value of `ACC` and stores the result in `ACC`.
 
 ### Bitwise Operations
-`AND <SRC>` Reads a value from the specified target `SRC` and performs a bitwise *and* operation on it and the current value of `ACC`.  
+`AND <SRC>`
+Reads a value from the specified target `SRC` and performs a bitwise *and* operation on it and the current value of `ACC`.
 Example:  
-`AND 0x00FF` Zeroes out the high byte of the value stored in `ACC`, keeping the low byte as-is.  
+`AND 0x00FF` Zeroes out the high byte of the value stored in `ACC`, keeping the low byte as-is.
 `AND LEFT` Reads a value from the left port, then uses it as a bitmask on the current value in `ACC`. 
 
-`OR <SRC>` Reads a value from the specified target `SRC` and performs a bitwise *or* operation on it and the current value of `ACC`.  
+`OR <SRC>`
+Reads a value from the specified target `SRC` and performs a bitwise *or* operation on it and the current value of `ACC`.
 Example:  
-`OR 0x0001` Sets the lowest bit in the value stored in `ACC` and writes the result back to `ACC`.  
+`OR 0x0001` Sets the lowest bit in the value stored in `ACC` and writes the result back to `ACC`.
 `OR LEFT` Reads a value from the left port, then sets all bits in the read value not already set in `ACC` and writes the result back to `ACC`.
 
-`XOR <SRC>` Reads a value from the specified target `SRC` and performs a bitwise *exclusive or* operation on it and the current value of `ACC`.  
+`XOR <SRC>`
+Reads a value from the specified target `SRC` and performs a bitwise *exclusive or* operation on it and the current value of `ACC`.
 Example:  
 `XOR 1` Sets the lowest bit in `ACC` if it is currently unset, resets it if it is currently set.  
 `XOR LEFT` Reads a value from the left port and applies an *xor* operation on it and the value of `ACC`.
 
-`SHL <SRC>` Reads a value from the specified target `SRC` and performs a bitwise shift to the left on the current value of `ACC` by the number of bits specified by the read value, then writes the result of the operation back to `ACC`.  
+`SHL <SRC>`
+Reads a value from the specified target `SRC` and performs a bitwise shift to the left on the current value of `ACC` by the number of bits specified by the read value, then writes the result of the operation back to `ACC`.
 Example:  
 `SHL 4` Shifts the value of `ACC` to the left by four bits, e.g. `0x0F` becomes `0xF0`.  
 `SHL LEFT` Reads a value from the left port and shifts the value of `ACC` to the left by that many bits.
 
-`SHR <SRC>` Reads a value from the specified target `SRC` and performs a bitwise shift to the right on the current value of `ACC` by the number of bits specified by the read value, then writes the result of the operation back to `ACC`.  
+`SHR <SRC>`
+Reads a value from the specified target `SRC` and performs a bitwise shift to the right on the current value of `ACC` by the number of bits specified by the read value, then writes the result of the operation back to `ACC`.
 Example:  
 `SHR 4` Shifts the value of `ACC` to the right by four bits, e.g. `0xF0` becomes `0x0F`.  
 `SHR LEFT` Reads a value from the left port and shifts the value of `ACC` to the right by that many bits.
 
-`NOT` Performs a bitwise negation on the current value of `ACC`, then writes the result of the operation back to `ACC`.  
+`NOT`
+Performs a bitwise negation on the current value of `ACC`, then writes the result of the operation back to `ACC`.
 Example:  
 `NOT` with `ACC` holding the value `0xFF00` would convert it to `0x00FF`.
+
+### `LAST` manipulation
+`RRLAST`
+If the current value of `LAST` is not `NIL`, rotate the value right (clockwise) by one. Otherwise does nothing.
+
+`RLLAST`
+If the current value of `LAST` is not `NIL`, rotate the value left (counter-clockwise) by one. Otherwise does nothing.
 
 ### Control Flow
 `JMP <LABEL>`
