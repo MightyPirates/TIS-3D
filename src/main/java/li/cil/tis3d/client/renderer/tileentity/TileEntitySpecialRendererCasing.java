@@ -231,7 +231,8 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
 
     private boolean isPlayerLookingAt(final int x, final int y, final int z, final Face face) {
         final MovingObjectPosition hit = Minecraft.getMinecraft().objectMouseOver;
-        return hit != null && Face.fromIntFacing(hit.sideHit) == face &&
-               hit.blockX == x && hit.blockY == y && hit.blockZ == z;
+        return hit != null && hit.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK &&
+                Face.fromIntFacing(hit.sideHit) == face &&
+                hit.blockX == x && hit.blockY == y && hit.blockZ == z;
     }
 }
