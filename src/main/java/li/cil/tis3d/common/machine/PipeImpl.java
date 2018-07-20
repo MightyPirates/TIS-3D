@@ -144,10 +144,18 @@ public final class PipeImpl implements Pipe {
 
     @Override
     public void cancelWrite() {
-        writeState = State.IDLE;
-        value = 0;
-        if (readState == State.FLUSHING) {
-            readState = State.READY;
+        if (writeState == State.COMPLETE && readState == State.COMPLETE) {
+            writeState = State.IDLE;
+            value = 0;
+            cancelRead();
+
+            host.onWriteComplete(sendingFace, sendingPort);
+        } else {
+            writeState = State.IDLE;
+            value = 0;
+            if (readState == State.FLUSHING) {
+                readState = State.READY;
+            }
         }
     }
 
@@ -169,9 +177,16 @@ public final class PipeImpl implements Pipe {
 
     @Override
     public void cancelRead() {
-        readState = State.IDLE;
-        if (writeState == State.FLUSHING) {
-            writeState = State.READY;
+        if (writeState == State.COMPLETE && readState == State.COMPLETE) {
+            cancelWrite();
+            readState = State.IDLE;
+
+            host.onWriteComplete(sendingFace, sendingPort);
+        } else {
+            readState = State.IDLE;
+            if (writeState == State.FLUSHING) {
+                writeState = State.READY;
+            }
         }
     }
 
