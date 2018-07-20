@@ -13,9 +13,11 @@ public class TileEntitySpecialRendererController extends TileEntitySpecialRender
             return;
         }
 
-        if (rendererDispatcher.cameraHitResult != null &&
-                rendererDispatcher.cameraHitResult.typeOfHit == RayTraceResult.Type.BLOCK &&
-                rendererDispatcher.cameraHitResult.getBlockPos().equals(controller.getPos())) {
+        RayTraceResult hitResult = rendererDispatcher.cameraHitResult;
+        if (hitResult != null &&
+                hitResult.typeOfHit == RayTraceResult.Type.BLOCK &&
+                hitResult.getBlockPos() != null &&
+                hitResult.getBlockPos().equals(controller.getPos())) {
             setLightmapDisabled(true);
             drawNameplate(controller, I18n.format(state.translateKey), x, y, z, 12);
             setLightmapDisabled(false);
