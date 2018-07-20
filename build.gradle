@@ -122,8 +122,6 @@ curseforge {
         changelogType = "markdown"
         changelog = file("changelog.md")
         addGameVersion config.minecraft.version
-        addGameVersion "1.12.1"
-        addGameVersion "1.12.2"
         addGameVersion "Java 8"
     }
 }

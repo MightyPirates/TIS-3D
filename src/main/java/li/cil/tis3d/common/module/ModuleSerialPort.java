@@ -125,7 +125,7 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
         if (serialInterface.isPresent()) {
             final NBTTagCompound serialInterfaceNbt = new NBTTagCompound();
             serialInterface.get().writeToNBT(serialInterfaceNbt);
-            if (!nbt.hasNoTags()) {
+            if (!nbt.isEmpty()) {
                 nbt.setTag(TAG_SERIAL_INTERFACE, serialInterfaceNbt);
             }
         }
