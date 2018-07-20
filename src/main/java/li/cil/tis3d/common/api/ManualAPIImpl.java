@@ -3,11 +3,7 @@ package li.cil.tis3d.common.api;
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
 import li.cil.tis3d.api.detail.ManualAPI;
-import li.cil.tis3d.api.manual.ContentProvider;
-import li.cil.tis3d.api.manual.ImageProvider;
-import li.cil.tis3d.api.manual.ImageRenderer;
-import li.cil.tis3d.api.manual.PathProvider;
-import li.cil.tis3d.api.manual.TabIconRenderer;
+import li.cil.tis3d.api.manual.*;
 import li.cil.tis3d.client.gui.GuiManual;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.gui.GuiHandlerCommon;
@@ -20,12 +16,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Stack;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public final class ManualAPIImpl implements ManualAPI {

@@ -11,8 +11,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
-import javax.annotation.Nullable;
-
 /**
  * Utility class for rendering related operations.
  */
@@ -32,10 +30,9 @@ public final class RenderUtil {
      * block texture map.
      *
      * @param location the location of the texture to get the sprite for.
-     * @return the sprite of the texture in the block atlas; <code>null</code> if not found.
+     * @return the sprite of the texture in the block atlas; <code>missingno</code> if not found.
      */
     @SideOnly(Side.CLIENT)
-    @Nullable
     public static TextureAtlasSprite getSprite(final ResourceLocation location) {
         return Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(location.toString());
     }

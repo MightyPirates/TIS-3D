@@ -6,27 +6,13 @@ import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
-import li.cil.tis3d.client.network.handler.MessageHandlerCasingEnabledState;
-import li.cil.tis3d.client.network.handler.MessageHandlerCasingInventory;
-import li.cil.tis3d.client.network.handler.MessageHandlerCasingLockedState;
-import li.cil.tis3d.client.network.handler.MessageHandlerHaltAndCatchFire;
-import li.cil.tis3d.client.network.handler.MessageHandlerModuleReadOnlyMemoryDataClient;
-import li.cil.tis3d.client.network.handler.MessageHandlerParticleEffects;
-import li.cil.tis3d.client.network.handler.MessageHandlerReceivingPipeLockedState;
+import li.cil.tis3d.client.network.handler.*;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.network.handler.MessageHandlerBookCodeData;
 import li.cil.tis3d.common.network.handler.MessageHandlerCasingData;
 import li.cil.tis3d.common.network.handler.MessageHandlerModuleReadOnlyMemoryDataServer;
-import li.cil.tis3d.common.network.message.MessageBookCodeData;
-import li.cil.tis3d.common.network.message.MessageCasingData;
-import li.cil.tis3d.common.network.message.MessageCasingEnabledState;
-import li.cil.tis3d.common.network.message.MessageCasingInventory;
-import li.cil.tis3d.common.network.message.MessageCasingLockedState;
-import li.cil.tis3d.common.network.message.MessageHaltAndCatchFire;
-import li.cil.tis3d.common.network.message.MessageModuleReadOnlyMemoryData;
-import li.cil.tis3d.common.network.message.MessageParticleEffect;
-import li.cil.tis3d.common.network.message.MessageReceivingPipeLockedState;
+import li.cil.tis3d.common.network.message.*;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.CompressedStreamTools;
@@ -46,14 +32,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * Central networking hub for TIS-3D.

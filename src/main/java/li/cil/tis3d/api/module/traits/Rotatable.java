@@ -25,5 +25,5 @@ public interface Rotatable extends Module {
      *
      * @param port the orientation to set.
      */
-    void setFacing(Port port);
+    void setFacing(final Port port);
 }

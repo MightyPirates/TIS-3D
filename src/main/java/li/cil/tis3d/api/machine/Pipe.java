@@ -47,7 +47,7 @@ public interface Pipe {
      * @param value the value to write to the pipe.
      * @throws IllegalStateException if the pipe is already being written to.
      */
-    void beginWrite(short value) throws IllegalStateException;
+    void beginWrite(final short value) throws IllegalStateException;
 
     /**
      * Cancel an active write operation.

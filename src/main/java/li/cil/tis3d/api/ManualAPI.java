@@ -1,10 +1,6 @@
 package li.cil.tis3d.api;
 
-import li.cil.tis3d.api.manual.ContentProvider;
-import li.cil.tis3d.api.manual.ImageProvider;
-import li.cil.tis3d.api.manual.ImageRenderer;
-import li.cil.tis3d.api.manual.PathProvider;
-import li.cil.tis3d.api.manual.TabIconRenderer;
+import li.cil.tis3d.api.manual.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;

@@ -43,5 +43,5 @@ public interface ImageRenderer {
      * @param mouseX the X position of the mouse relative to the element.
      * @param mouseY the Y position of the mouse relative to the element.
      */
-    void render(int mouseX, int mouseY);
+    void render(final int mouseX, final int mouseY);
 }

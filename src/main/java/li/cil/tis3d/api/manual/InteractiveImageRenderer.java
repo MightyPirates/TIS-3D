@@ -16,7 +16,7 @@ public interface InteractiveImageRenderer extends ImageRenderer {
      * @param tooltip the original tooltip of the element.
      * @return the tooltip to use for the element.
      */
-    String getTooltip(String tooltip);
+    String getTooltip(final String tooltip);
 
     /**
      * Called when the mouse is clicked while over this image renderer.
@@ -31,5 +31,5 @@ public interface InteractiveImageRenderer extends ImageRenderer {
      * @param mouseY the Y coordinate of the mouse, relative to the element.
      * @return whether the click was handled.
      */
-    boolean onMouseClick(int mouseX, int mouseY);
+    boolean onMouseClick(final int mouseX, final int mouseY);
 }

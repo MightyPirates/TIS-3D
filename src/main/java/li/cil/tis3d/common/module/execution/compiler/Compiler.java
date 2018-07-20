@@ -5,49 +5,11 @@ import com.google.common.collect.Iterables;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.module.execution.MachineState;
-import li.cil.tis3d.common.module.execution.compiler.instruction.InstructionEmitter;
-import li.cil.tis3d.common.module.execution.compiler.instruction.InstructionEmitterLabel;
-import li.cil.tis3d.common.module.execution.compiler.instruction.InstructionEmitterMissing;
-import li.cil.tis3d.common.module.execution.compiler.instruction.InstructionEmitterMove;
-import li.cil.tis3d.common.module.execution.compiler.instruction.InstructionEmitterTargetOrImmediate;
-import li.cil.tis3d.common.module.execution.compiler.instruction.InstructionEmitterUnary;
-import li.cil.tis3d.common.module.execution.instruction.Instruction;
-import li.cil.tis3d.common.module.execution.instruction.InstructionAdd;
-import li.cil.tis3d.common.module.execution.instruction.InstructionAddImmediate;
-import li.cil.tis3d.common.module.execution.instruction.InstructionBitwiseAnd;
-import li.cil.tis3d.common.module.execution.instruction.InstructionBitwiseAndImmediate;
-import li.cil.tis3d.common.module.execution.instruction.InstructionBitwiseNot;
-import li.cil.tis3d.common.module.execution.instruction.InstructionBitwiseOr;
-import li.cil.tis3d.common.module.execution.instruction.InstructionBitwiseOrImmediate;
-import li.cil.tis3d.common.module.execution.instruction.InstructionBitwiseShiftLeft;
-import li.cil.tis3d.common.module.execution.instruction.InstructionBitwiseShiftLeftImmediate;
-import li.cil.tis3d.common.module.execution.instruction.InstructionBitwiseShiftRight;
-import li.cil.tis3d.common.module.execution.instruction.InstructionBitwiseShiftRightImmediate;
-import li.cil.tis3d.common.module.execution.instruction.InstructionBitwiseXor;
-import li.cil.tis3d.common.module.execution.instruction.InstructionBitwiseXorImmediate;
-import li.cil.tis3d.common.module.execution.instruction.InstructionDiv;
-import li.cil.tis3d.common.module.execution.instruction.InstructionDivImmediate;
-import li.cil.tis3d.common.module.execution.instruction.InstructionHaltAndCatchFire;
-import li.cil.tis3d.common.module.execution.instruction.InstructionJump;
-import li.cil.tis3d.common.module.execution.instruction.InstructionJumpEqualZero;
-import li.cil.tis3d.common.module.execution.instruction.InstructionJumpGreaterThanZero;
-import li.cil.tis3d.common.module.execution.instruction.InstructionJumpLessThanZero;
-import li.cil.tis3d.common.module.execution.instruction.InstructionJumpNotZero;
-import li.cil.tis3d.common.module.execution.instruction.InstructionJumpRelative;
-import li.cil.tis3d.common.module.execution.instruction.InstructionJumpRelativeImmediate;
-import li.cil.tis3d.common.module.execution.instruction.InstructionMul;
-import li.cil.tis3d.common.module.execution.instruction.InstructionMulImmediate;
-import li.cil.tis3d.common.module.execution.instruction.InstructionNegate;
-import li.cil.tis3d.common.module.execution.instruction.InstructionSave;
-import li.cil.tis3d.common.module.execution.instruction.InstructionSubtract;
-import li.cil.tis3d.common.module.execution.instruction.InstructionSubtractImmediate;
-import li.cil.tis3d.common.module.execution.instruction.InstructionSwap;
+import li.cil.tis3d.common.module.execution.compiler.instruction.*;
+import li.cil.tis3d.common.module.execution.instruction.*;
 import li.cil.tis3d.common.module.execution.target.Target;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -82,21 +44,33 @@ public final class Compiler {
         try {
             // Parse all lines into the specified machine state.
             final List<Validator> validators = new ArrayList<>();
+            final Map<String, String> defines = new HashMap<>();
             for (int lineNumber = 0; lineNumber < lines.length; lineNumber++) {
                 // Enforce max line length.
                 if (lines[lineNumber].length() > Settings.maxColumnsPerLine) {
                     throw new ParseException(Constants.MESSAGE_TOO_MANY_COLUMNS, lineNumber, Settings.maxColumnsPerLine, Settings.maxColumnsPerLine);
                 }
 
-                // Get current line, strip comments, trim whitespace and uppercase.
-                final Matcher commentMatcher = PATTERN_COMMENT.matcher(lines[lineNumber]);
-                final String line = commentMatcher.replaceFirst("");
+                // Check for defines, also trims whitespace.
+                final Matcher defineMatcher = PATTERN_DEFINE.matcher(lines[lineNumber]);
+                if (defineMatcher.matches()) {
+                    parseDefine(defineMatcher, defines);
+                }
 
-                // Extract a label, if any, pass the rest onto the instruction parser.
+                final Matcher undefineMatcher = PATTERN_UNDEFINE.matcher(lines[lineNumber]);
+                if (undefineMatcher.matches()) {
+                    parseUndefine(undefineMatcher, defines);
+                }
+
+                // Get current line, strip comments.
+                final Matcher commentMatcher = PATTERN_COMMENT.matcher(lines[lineNumber]);
+                final String line = commentMatcher.replaceFirst("").trim();
+
+                // Extract a label, if any, pass the rest onto the instruction parser. Also trims.
                 final Matcher lineMatcher = PATTERN_LINE.matcher(line);
                 if (lineMatcher.matches()) {
                     parseLabel(lineMatcher, state, lineNumber);
-                    parseInstruction(lineMatcher, state, lineNumber, validators);
+                    parseInstruction(lineMatcher, state, lineNumber, defines, validators);
                 } else {
                     // This should be pretty much impossible...
                     throw new ParseException(Constants.MESSAGE_INVALID_FORMAT, lineNumber, 0, 0);
@@ -116,6 +90,51 @@ public final class Compiler {
     }
 
     // --------------------------------------------------------------------- //
+
+    /**
+     * Parse a define from the specified match and put it in the map of defines.
+     *
+     * @param matcher the matcher for the line to parse.
+     * @param defines the map with defines to add results to.
+     */
+    private static void parseDefine(Matcher matcher, Map<String, String> defines) {
+        final String key = matcher.group("key");
+        if (key == null) {
+            return;
+        }
+
+        String value = matcher.group("value");
+        if (value == null) {
+            return;
+        }
+
+        if (key.equals(value)) {
+            return;
+        }
+
+        // Resolve value if it is also a define.
+        if (defines.containsKey(value)) {
+            value = defines.get(value);
+        }
+
+        // Overwrite previous defines if there is one.
+        defines.put(key, value);
+    }
+
+    /**
+     * Parse an undefine from the specified match and remove it from the map of defines.
+     *
+     * @param matcher the matcher for the line to parse.
+     * @param defines the map with defines to remove results from.
+     */
+    private static void parseUndefine(Matcher matcher, Map<String, String> defines) {
+        String key = matcher.group("key");
+        if (key == null) {
+            return;
+        }
+
+        defines.remove(key);
+    }
 
     /**
      * Look for a label on the specified line and store it if present.
@@ -143,10 +162,11 @@ public final class Compiler {
      * @param matcher    the matcher for the line to parse.
      * @param state      the machine state to store the generated instruction in.
      * @param lineNumber the number of the line we're parsing (for exceptions).
+     * @param defines    the map of currently active defines.
      * @param validators list of validators instruction emitters may add to.
      * @throws ParseException if there was a syntax error.
      */
-    private static void parseInstruction(final Matcher matcher, final MachineState state, final int lineNumber, final List<Validator> validators) throws ParseException {
+    private static void parseInstruction(final Matcher matcher, final MachineState state, final int lineNumber, Map<String, String> defines, final List<Validator> validators) throws ParseException {
         final String name = matcher.group("name");
         if (name == null) {
             return;
@@ -154,7 +174,7 @@ public final class Compiler {
 
         // Got an instruction, process arguments and instantiate it.
         final Instruction instruction = EMITTER_MAP.getOrDefault(name, EMITTER_MISSING).
-                compile(matcher, lineNumber, validators);
+                compile(matcher, lineNumber, defines, validators);
 
         // Remember line numbers for debugging.
         state.lineNumbers.put(state.instructions.size(), lineNumber);
@@ -166,6 +186,8 @@ public final class Compiler {
     // --------------------------------------------------------------------- //
 
     private static final Pattern PATTERN_COMMENT = Pattern.compile("#.*$");
+    private static final Pattern PATTERN_DEFINE = Pattern.compile("#DEFINE\\s+(?<key>\\S+)\\s*(?<value>\\S+)\\s*$");
+    private static final Pattern PATTERN_UNDEFINE = Pattern.compile("#UNDEF\\s+(?<key>\\S+)\\s*$");
     private static final Pattern PATTERN_LINE = Pattern.compile("^\\s*(?:(?<label>[^:\\s]+)\\s*:\\s*)?(?:(?<name>\\S+)\\s*(?<arg1>[^,\\s]+)?\\s*,?\\s*(?<arg2>[^,\\s]+)?\\s*(?<excess>.+)?)?\\s*$");
     private static final Instruction INSTRUCTION_NOP = new InstructionAdd(Target.NIL);
     private static final InstructionEmitter EMITTER_MISSING = new InstructionEmitterMissing();
@@ -206,6 +228,10 @@ public final class Compiler {
         addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate("XOR", InstructionBitwiseXor::new, InstructionBitwiseXorImmediate::new));
         addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate("SHL", InstructionBitwiseShiftLeft::new, InstructionBitwiseShiftLeftImmediate::new));
         addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate("SHR", InstructionBitwiseShiftRight::new, InstructionBitwiseShiftRightImmediate::new));
+
+        // Operations on LAST.
+        addInstructionEmitter(builder, new InstructionEmitterUnary("RLLAST", InstructionLastRotateLeft::new));
+        addInstructionEmitter(builder, new InstructionEmitterUnary("RRLAST", InstructionLastRotateRight::new));
 
         EMITTER_MAP = builder.build();
     }

@@ -4,5 +4,5 @@ import java.util.regex.Matcher;
 
 @FunctionalInterface
 public interface SegmentRefiner {
-    Segment refine(Segment segment, Matcher matcher);
+    Segment refine(final Segment segment, final Matcher matcher);
 }

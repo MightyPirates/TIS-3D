@@ -6,6 +6,7 @@ import li.cil.tis3d.common.module.execution.instruction.Instruction;
 import li.cil.tis3d.common.module.execution.target.Target;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 
@@ -26,10 +27,9 @@ public final class InstructionEmitterTargetOrImmediate extends AbstractInstructi
     }
 
     @Override
-    public Instruction compile(final Matcher matcher, final int lineNumber, final List<Validator> validators) throws ParseException {
-        final Object src = checkTargetOrNumber(lineNumber,
-                                               checkArg(lineNumber, matcher, "arg1", "name"),
-                                               matcher.start("arg1"), matcher.end("arg1"));
+    public Instruction compile(final Matcher matcher, final int lineNumber, final Map<String, String> defines, final List<Validator> validators) throws ParseException {
+        final Object src = checkTargetOrNumber(checkArg(lineNumber, matcher, "arg1", "name"),
+                lineNumber, defines, matcher.start("arg1"), matcher.end("arg1"));
         checkExcess(lineNumber, matcher, "arg2");
 
         if (src instanceof Target) {
