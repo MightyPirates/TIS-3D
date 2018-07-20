@@ -19,7 +19,7 @@ public interface ModuleAPI {
      *
      * @param provider the provider to register.
      */
-    void addProvider(ModuleProvider provider);
+    void addProvider(final ModuleProvider provider);
 
     /**
      * Find the first provider supporting the specified item stack.
@@ -30,5 +30,5 @@ public interface ModuleAPI {
      * @return the first provider supporting the item stack, or <tt>null</tt>.
      */
     @Nullable
-    ModuleProvider getProviderFor(ItemStack stack, Casing casing, Face face);
+    ModuleProvider getProviderFor(final ItemStack stack, final Casing casing, final Face face);
 }

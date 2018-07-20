@@ -9,16 +9,14 @@ import li.cil.tis3d.client.renderer.TextureLoader;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.tileentity.TileEntityCasing;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
@@ -62,7 +60,7 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
 
             ensureSanity();
 
-            if (!isPlayerHoldingKey() || !drawConfigOverlay(casing, face)) {
+            if (!isObserverHoldingKey() || !drawConfigOverlay(casing, face)) {
                 drawModuleOverlay(casing, face, partialTicks);
             }
 
@@ -77,7 +75,7 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
 
     private boolean isRenderingBackFace(final Face face, final double dx, final double dy, final double dz) {
         final EnumFacing facing = Face.toEnumFacing(face.getOpposite());
-        final double dotProduct = facing.getFrontOffsetX() * dx + facing.getFrontOffsetY() * (dy - Minecraft.getMinecraft().player.getEyeHeight()) + facing.getFrontOffsetZ() * dz;
+        final double dotProduct = facing.getFrontOffsetX() * dx + facing.getFrontOffsetY() * (dy - rendererDispatcher.entity.getEyeHeight()) + facing.getFrontOffsetZ() * dz;
         return dotProduct < 0;
     }
 
@@ -117,16 +115,16 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
 
     private boolean drawConfigOverlay(final TileEntityCasing casing, final Face face) {
         // Only bother rendering the overlay if the player is nearby.
-        if (!isPlayerKindaClose(casing)) {
+        if (!isObserverKindaClose(casing)) {
             return false;
         }
 
-        if (isPlayerSneaking() && !casing.isLocked()) {
+        if (isObserverSneaking() && !casing.isLocked()) {
             final TextureAtlasSprite closedSprite;
             final TextureAtlasSprite openSprite;
 
             final Port lookingAtPort;
-            final boolean isLookingAt = isPlayerLookingAt(casing.getPos(), face);
+            final boolean isLookingAt = isObserverLookingAt(casing.getPos(), face);
             if (isLookingAt) {
                 closedSprite = RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_CASING_PORT_CLOSED);
                 openSprite = RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_CASING_PORT_OPEN);
@@ -212,28 +210,31 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
         }
     }
 
-    private boolean isPlayerKindaClose(final TileEntityCasing casing) {
-        final EntityPlayer player = Minecraft.getMinecraft().player;
-        return player.getDistanceSqToCenter(casing.getPos()) < 16 * 16;
+    private boolean isObserverKindaClose(final TileEntityCasing casing) {
+        return rendererDispatcher.entity.getDistanceSqToCenter(casing.getPos()) < 16 * 16;
     }
 
-    private boolean isPlayerHoldingKey() {
-        final EntityPlayer player = Minecraft.getMinecraft().player;
-        return Items.isKey(player.getHeldItem(EnumHand.MAIN_HAND)) || Items.isKey(player.getHeldItem(EnumHand.OFF_HAND));
+    private boolean isObserverHoldingKey() {
+        for (ItemStack stack : rendererDispatcher.entity.getHeldEquipment()) {
+            if (Items.isKey(stack)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    private boolean isPlayerSneaking() {
-        final EntityPlayer player = Minecraft.getMinecraft().player;
-        return player.isSneaking();
+    private boolean isObserverSneaking() {
+        return rendererDispatcher.entity.isSneaking();
     }
 
-    private boolean isPlayerLookingAt(final BlockPos pos, final Face face) {
+    private boolean isObserverLookingAt(final BlockPos pos, final Face face) {
         final RayTraceResult hit = rendererDispatcher.cameraHitResult;
         return hit != null &&
                 hit.typeOfHit == RayTraceResult.Type.BLOCK &&
                 hit.sideHit != null &&
-                hit.getBlockPos() != null &&
                 Face.fromEnumFacing(hit.sideHit) == face &&
+                hit.getBlockPos() != null &&
                 Objects.equals(hit.getBlockPos(), pos);
     }
 }

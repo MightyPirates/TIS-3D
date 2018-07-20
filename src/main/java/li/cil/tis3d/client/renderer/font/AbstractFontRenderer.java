@@ -22,7 +22,7 @@ public abstract class AbstractFontRenderer implements FontRenderer {
     private final float U_STEP = (getCharWidth() + getGapU()) / (float) getResolution();
     private final float V_STEP = (getCharHeight() + getGapV()) / (float) getResolution();
 
-    protected AbstractFontRenderer() {
+    AbstractFontRenderer() {
         CHAR_MAP = new TCharIntHashMap();
         final CharSequence chars = getCharacters();
         for (int index = 0; index < chars.length(); index++) {
