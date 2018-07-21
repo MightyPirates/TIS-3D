@@ -5,6 +5,8 @@ import li.cil.tis3d.common.module.execution.target.Target;
 import li.cil.tis3d.common.module.execution.target.TargetInterface;
 
 public final class InstructionJumpRelative implements Instruction {
+    public static final String NAME = "JRO";
+
     private final Target source;
 
     public InstructionJumpRelative(final Target source) {
@@ -25,6 +27,6 @@ public final class InstructionJumpRelative implements Instruction {
 
     @Override
     public String toString() {
-        return "JRO " + source;
+        return NAME + " " + source;
     }
 }

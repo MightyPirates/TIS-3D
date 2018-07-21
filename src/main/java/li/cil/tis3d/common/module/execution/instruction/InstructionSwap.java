@@ -4,6 +4,7 @@ import li.cil.tis3d.common.module.execution.Machine;
 import li.cil.tis3d.common.module.execution.MachineState;
 
 public final class InstructionSwap implements Instruction {
+    public static final String NAME = "SWP";
     public static final Instruction INSTANCE = new InstructionSwap();
 
     @Override
@@ -17,6 +18,6 @@ public final class InstructionSwap implements Instruction {
 
     @Override
     public String toString() {
-        return "SWP";
+        return NAME;
     }
 }

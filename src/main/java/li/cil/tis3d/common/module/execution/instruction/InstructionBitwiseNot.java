@@ -4,6 +4,7 @@ import li.cil.tis3d.common.module.execution.Machine;
 import li.cil.tis3d.common.module.execution.MachineState;
 
 public final class InstructionBitwiseNot implements Instruction {
+    public static final String NAME = "NOT";
     public static final Instruction INSTANCE = new InstructionBitwiseNot();
 
     @Override
@@ -15,6 +16,6 @@ public final class InstructionBitwiseNot implements Instruction {
 
     @Override
     public String toString() {
-        return "NOT";
+        return NAME;
     }
 }

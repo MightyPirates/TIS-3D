@@ -3,6 +3,8 @@ package li.cil.tis3d.common.module.execution.instruction;
 import li.cil.tis3d.common.module.execution.MachineState;
 
 public final class InstructionJumpEqualZero extends AbstractInstructionJumpConditional {
+    public static final String NAME = "JEZ";
+
     public InstructionJumpEqualZero(final String label) {
         super(label);
     }
@@ -14,6 +16,6 @@ public final class InstructionJumpEqualZero extends AbstractInstructionJumpCondi
 
     @Override
     public String toString() {
-        return "JEZ " + label;
+        return NAME + " " + label;
     }
 }

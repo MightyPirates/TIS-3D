@@ -4,6 +4,8 @@ import li.cil.tis3d.common.module.execution.Machine;
 import li.cil.tis3d.common.module.execution.MachineState;
 
 public final class InstructionJump implements Instruction {
+    public static final String NAME = "JMP";
+
     private final String label;
 
     public InstructionJump(final String label) {
@@ -18,6 +20,6 @@ public final class InstructionJump implements Instruction {
 
     @Override
     public String toString() {
-        return "JMP " + label;
+        return NAME + " " + label;
     }
 }

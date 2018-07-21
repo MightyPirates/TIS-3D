@@ -19,6 +19,6 @@ public final class InstructionSubtractImmediate implements Instruction {
 
     @Override
     public String toString() {
-        return "SUB " + value;
+        return InstructionSubtract.NAME + " " + value;
     }
 }

@@ -19,6 +19,6 @@ public final class InstructionBitwiseAndImmediate implements Instruction {
 
     @Override
     public String toString() {
-        return "AND " + value;
+        return InstructionBitwiseAnd.NAME + " " + value;
     }
 }

@@ -19,6 +19,6 @@ public final class InstructionMulImmediate implements Instruction {
 
     @Override
     public String toString() {
-        return "MUL " + value;
+        return InstructionMul.NAME + " " + value;
     }
 }
