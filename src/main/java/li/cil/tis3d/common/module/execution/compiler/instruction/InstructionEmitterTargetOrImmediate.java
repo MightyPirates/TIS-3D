@@ -11,19 +11,12 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 
 public final class InstructionEmitterTargetOrImmediate extends AbstractInstructionEmitter {
-    private final String name;
     private final Function<Target, Instruction> constructorTarget;
     private final Function<Short, Instruction> constructorImmediate;
 
-    public InstructionEmitterTargetOrImmediate(final String name, final Function<Target, Instruction> target, final Function<Short, Instruction> immediate) {
-        this.name = name;
+    public InstructionEmitterTargetOrImmediate(final Function<Target, Instruction> target, final Function<Short, Instruction> immediate) {
         this.constructorTarget = target;
         this.constructorImmediate = immediate;
-    }
-
-    @Override
-    public String getInstructionName() {
-        return name;
     }
 
     @Override

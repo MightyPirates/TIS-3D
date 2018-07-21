@@ -19,6 +19,6 @@ public final class InstructionBitwiseXorImmediate implements Instruction {
 
     @Override
     public String toString() {
-        return "XOR " + value;
+        return InstructionBitwiseXor.NAME + " " + value;
     }
 }

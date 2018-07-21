@@ -192,7 +192,7 @@ public final class Network {
             this.z = z;
         }
 
-        public void sendMessage() {
+        private void sendMessage() {
             final MessageParticleEffect message = new MessageParticleEffect(world, EnumParticleTypes.REDSTONE, x, y, z);
             final NetworkRegistry.TargetPoint target = new NetworkRegistry.TargetPoint(world.provider.getDimension(), x, y, z, RANGE_LOW);
             Network.INSTANCE.getWrapper().sendToAllAround(message, target);
@@ -343,19 +343,19 @@ public final class Network {
      * Collects messages for a single casing.
      */
     private static final class CasingSendQueue {
-        public final ModuleSendQueue[] moduleQueues = new ModuleSendQueue[Face.VALUES.length];
+        private final ModuleSendQueue[] moduleQueues = new ModuleSendQueue[Face.VALUES.length];
 
-        public CasingSendQueue() {
+        private CasingSendQueue() {
             for (int i = 0; i < moduleQueues.length; i++) {
                 moduleQueues[i] = new ModuleSendQueue();
             }
         }
 
-        public void queueData(final Face face, final NBTTagCompound data, final byte type) {
+        private void queueData(final Face face, final NBTTagCompound data, final byte type) {
             moduleQueues[face.ordinal()].queueData(data, type);
         }
 
-        public void queueData(final Face face, final ByteBuf data, final byte type) {
+        private void queueData(final Face face, final ByteBuf data, final byte type) {
             moduleQueues[face.ordinal()].queueData(data, type);
         }
 
@@ -364,7 +364,7 @@ public final class Network {
          *
          * @param casing the casing this queue belongs to.
          */
-        public void flush(final Casing casing) {
+        private void flush(final Casing casing) {
             final World world = casing.getCasingWorld();
             final Side side = world.isRemote ? Side.CLIENT : Side.SERVER;
             final ByteBuf data = Unpooled.buffer();
@@ -411,7 +411,7 @@ public final class Network {
          * @param data the data to enqueue.
          * @param type the type of the data.
          */
-        public void queueData(final NBTTagCompound data, final byte type) {
+        private void queueData(final NBTTagCompound data, final byte type) {
             sendQueue.add(new QueueEntryNBT(type, data));
         }
 
@@ -421,7 +421,7 @@ public final class Network {
          * @param data the data to enqueue.
          * @param type the type of the data.
          */
-        public void queueData(final ByteBuf data, final byte type) {
+        private void queueData(final ByteBuf data, final byte type) {
             sendQueue.add(new QueueEntryByteBuf(type, data));
         }
 
@@ -430,7 +430,7 @@ public final class Network {
          *
          * @return the collected data for the module.
          */
-        public ByteBuf collectData() {
+        private ByteBuf collectData() {
             // Building the list backwards to easily use the last data of
             // any type without having to remove from the queue. However,
             // that could lead to sending different types in the reverse
@@ -467,7 +467,7 @@ public final class Network {
         private static abstract class QueueEntry {
             public final byte type;
 
-            protected QueueEntry(final byte type) {
+            private QueueEntry(final byte type) {
                 this.type = type;
             }
 
@@ -485,7 +485,7 @@ public final class Network {
         private static final class QueueEntryNBT extends QueueEntry {
             public final NBTTagCompound data;
 
-            public QueueEntryNBT(final byte type, final NBTTagCompound data) {
+            private QueueEntryNBT(final byte type, final NBTTagCompound data) {
                 super(type);
                 this.data = data;
             }
@@ -513,7 +513,7 @@ public final class Network {
         private static final class QueueEntryByteBuf extends QueueEntry {
             public final ByteBuf data;
 
-            public QueueEntryByteBuf(final byte type, final ByteBuf data) {
+            private QueueEntryByteBuf(final byte type, final ByteBuf data) {
                 super(type);
                 this.data = data;
             }
@@ -542,7 +542,7 @@ public final class Network {
      */
     private static boolean areAnyPlayersNear(final NetworkRegistry.TargetPoint target) {
         for (final EntityPlayerMP player : FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayers()) {
-            if (player.dimension == target.dimension) {
+            if (player.dimension == target.dimension && player.connection != null) {
                 final double dx = target.x - player.posX;
                 final double dy = target.y - player.posY;
                 final double dz = target.z - player.posZ;

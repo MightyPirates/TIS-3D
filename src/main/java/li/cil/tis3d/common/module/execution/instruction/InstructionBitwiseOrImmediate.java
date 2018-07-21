@@ -19,6 +19,6 @@ public final class InstructionBitwiseOrImmediate implements Instruction {
 
     @Override
     public String toString() {
-        return "OR " + value;
+        return InstructionBitwiseOr.NAME + " " + value;
     }
 }

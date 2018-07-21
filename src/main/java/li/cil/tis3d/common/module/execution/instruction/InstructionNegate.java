@@ -4,6 +4,7 @@ import li.cil.tis3d.common.module.execution.Machine;
 import li.cil.tis3d.common.module.execution.MachineState;
 
 public final class InstructionNegate implements Instruction {
+    public static final String NAME = "NEG";
     public static final Instruction INSTANCE = new InstructionNegate();
 
     @Override
@@ -15,6 +16,6 @@ public final class InstructionNegate implements Instruction {
 
     @Override
     public String toString() {
-        return "NEG";
+        return NAME;
     }
 }

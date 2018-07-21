@@ -286,7 +286,7 @@ public final class ManualAPIImpl implements ManualAPI {
         public final String path;
         public int offset = 0;
 
-        public History(final String path) {
+        private History(final String path) {
             this.path = path;
         }
     }
@@ -296,7 +296,7 @@ public final class ManualAPIImpl implements ManualAPI {
         public final String tooltip;
         public final String path;
 
-        public Tab(final TabIconRenderer renderer, @Nullable final String tooltip, final String path) {
+        private Tab(final TabIconRenderer renderer, @Nullable final String tooltip, final String path) {
             this.renderer = renderer;
             this.tooltip = tooltip;
             this.path = path;

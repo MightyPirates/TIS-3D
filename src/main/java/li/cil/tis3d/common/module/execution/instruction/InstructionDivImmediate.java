@@ -24,6 +24,6 @@ public final class InstructionDivImmediate implements Instruction {
 
     @Override
     public String toString() {
-        return "DIV " + value;
+        return InstructionDiv.NAME + " " + value;
     }
 }

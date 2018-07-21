@@ -35,19 +35,19 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
     // Computed data
 
     // NBT tag names.
-    public static final String TAG_VALUE = "value";
+    private static final String TAG_VALUE = "value";
 
     // Data packet types.
     private static final byte DATA_TYPE_VALUE = 0;
 
     // Rendering info.
-    public static final float KEYS_U0 = 5 / 32f;
-    public static final float KEYS_V0 = 5 / 32f;
-    public static final float KEYS_SIZE_U = 5 / 32f;
-    public static final float KEYS_SIZE_V = 5 / 32f;
-    public static final float KEYS_SIZE_V_LAST = 4 / 32f;
-    public static final float KEYS_STEP_U = 6 / 32f;
-    public static final float KEYS_STEP_V = 6 / 32f;
+    private static final float KEYS_U0 = 5 / 32f;
+    private static final float KEYS_V0 = 5 / 32f;
+    private static final float KEYS_SIZE_U = 5 / 32f;
+    private static final float KEYS_SIZE_V = 5 / 32f;
+    private static final float KEYS_SIZE_V_LAST = 4 / 32f;
+    private static final float KEYS_STEP_U = 6 / 32f;
+    private static final float KEYS_STEP_V = 6 / 32f;
 
     // Pitch lookup for click feedback sound cue per value, 0-9.
     // Roughly based on telephone keypad frequencies, except we have to mush

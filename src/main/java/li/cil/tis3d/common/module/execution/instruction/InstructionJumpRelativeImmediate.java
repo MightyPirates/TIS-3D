@@ -16,6 +16,6 @@ public final class InstructionJumpRelativeImmediate implements Instruction {
 
     @Override
     public String toString() {
-        return "JRO " + delta;
+        return InstructionJumpRelative.NAME + " " + delta;
     }
 }

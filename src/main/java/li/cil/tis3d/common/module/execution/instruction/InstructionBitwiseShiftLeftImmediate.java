@@ -19,6 +19,6 @@ public final class InstructionBitwiseShiftLeftImmediate implements Instruction {
 
     @Override
     public String toString() {
-        return "SHL " + value;
+        return InstructionBitwiseShiftLeft.NAME + " " + value;
     }
 }
