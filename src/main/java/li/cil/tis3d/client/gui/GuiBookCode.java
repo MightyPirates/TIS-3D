@@ -177,7 +177,7 @@ public final class GuiBookCode extends GuiScreen {
                 }
             }
         } else if (keyCode == Keyboard.KEY_RIGHT) {
-            if (column < lines.get(line).length() || line < lines.size()) {
+            if (column < lines.get(line).length() || line < lines.size() - 1) {
                 if (isShiftKeyDown()) {
                     selectionEnd = selectionEnd + 1;
                 } else {
