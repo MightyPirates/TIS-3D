@@ -171,7 +171,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
         }
     }
 
-    public void onEnabled() {
+    void onEnabled() {
         if (isEnabled) {
             return;
         }
@@ -180,7 +180,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
         casing.onEnabled();
     }
 
-    public void onDisabled() {
+    void onDisabled() {
         if (!isEnabled) {
             return;
         }
@@ -189,7 +189,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
         casing.onDisabled();
     }
 
-    public void stepRedstone() {
+    void stepRedstone() {
         if (!redstoneDirty) {
             return;
         }
@@ -213,7 +213,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
         }
     }
 
-    public void stepModules() {
+    void stepModules() {
         casing.stepModules();
     }
 

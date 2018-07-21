@@ -23,7 +23,7 @@ import java.io.IOException;
 public final class GuiModuleTerminal extends GuiScreen {
     private final ModuleTerminal module;
 
-    public GuiModuleTerminal(final ModuleTerminal module) {
+    GuiModuleTerminal(final ModuleTerminal module) {
         this.module = module;
     }
 

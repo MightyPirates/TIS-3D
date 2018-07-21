@@ -422,7 +422,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         boolean worksFor(ItemStack stack);
 
         @Nullable
-        Iterable<String> codeFor(ItemStack stack);
+        Iterable<String> codeFor(final ItemStack stack);
     }
 
     private static final class SourceCodeProviderVanilla implements SourceCodeProvider {
@@ -431,7 +431,6 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
             return Items.isItem(stack, net.minecraft.init.Items.WRITTEN_BOOK) || Items.isItem(stack, net.minecraft.init.Items.WRITABLE_BOOK);
         }
 
-        @Nullable
         @Override
         public Iterable<String> codeFor(final ItemStack stack) {
             final NBTTagCompound nbt = stack.getTagCompound();
@@ -458,7 +457,6 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
             return Items.isBookCode(stack);
         }
 
-        @Nullable
         @Override
         public Iterable<String> codeFor(final ItemStack stack) {
             final ItemBookCode.Data data = ItemBookCode.Data.loadFromStack(stack);
