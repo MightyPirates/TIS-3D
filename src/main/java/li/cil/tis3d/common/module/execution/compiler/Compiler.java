@@ -198,47 +198,43 @@ public final class Compiler {
         final ImmutableMap.Builder<String, InstructionEmitter> builder = ImmutableMap.builder();
 
         // Special handling: actually emits an `ADD NIL`.
-        addInstructionEmitter(builder, new InstructionEmitterUnary(INSTRUCTION_NO_NAME, () -> INSTRUCTION_NOP));
+        builder.put(INSTRUCTION_NO_NAME, new InstructionEmitterUnary(() -> INSTRUCTION_NOP));
         // Special handling: does super-special magic.
-        addInstructionEmitter(builder, new InstructionEmitterUnary(InstructionHaltAndCatchFire.NAME, InstructionHaltAndCatchFire::new));
+        builder.put(InstructionHaltAndCatchFire.NAME, new InstructionEmitterUnary(() -> InstructionHaltAndCatchFire.INSTANCE));
 
         // Jumps.
-        addInstructionEmitter(builder, new InstructionEmitterLabel(InstructionJump.NAME, InstructionJump::new));
-        addInstructionEmitter(builder, new InstructionEmitterLabel(InstructionJumpEqualZero.NAME, InstructionJumpEqualZero::new));
-        addInstructionEmitter(builder, new InstructionEmitterLabel(InstructionJumpGreaterThanZero.NAME, InstructionJumpGreaterThanZero::new));
-        addInstructionEmitter(builder, new InstructionEmitterLabel(InstructionJumpLessThanZero.NAME, InstructionJumpLessThanZero::new));
-        addInstructionEmitter(builder, new InstructionEmitterLabel(InstructionJumpNotZero.NAME, InstructionJumpNotZero::new));
-        addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate(InstructionJumpRelative.NAME, InstructionJumpRelative::new, InstructionJumpRelativeImmediate::new));
+        builder.put(InstructionJump.NAME, new InstructionEmitterLabel(InstructionJump::new));
+        builder.put(InstructionJumpEqualZero.NAME, new InstructionEmitterLabel(InstructionJumpEqualZero::new));
+        builder.put(InstructionJumpGreaterThanZero.NAME, new InstructionEmitterLabel(InstructionJumpGreaterThanZero::new));
+        builder.put(InstructionJumpLessThanZero.NAME, new InstructionEmitterLabel(InstructionJumpLessThanZero::new));
+        builder.put(InstructionJumpNotZero.NAME, new InstructionEmitterLabel(InstructionJumpNotZero::new));
+        builder.put(InstructionJumpRelative.NAME, new InstructionEmitterTargetOrImmediate(InstructionJumpRelative::new, InstructionJumpRelativeImmediate::new));
 
         // Data transfer.
-        addInstructionEmitter(builder, new InstructionEmitterMove());
-        addInstructionEmitter(builder, new InstructionEmitterUnary(InstructionSave.NAME, () -> InstructionSave.INSTANCE));
-        addInstructionEmitter(builder, new InstructionEmitterUnary(InstructionSwap.NAME, () -> InstructionSwap.INSTANCE));
+        builder.put(InstructionMove.NAME, new InstructionEmitterMove());
+        builder.put(InstructionSave.NAME, new InstructionEmitterUnary(() -> InstructionSave.INSTANCE));
+        builder.put(InstructionSwap.NAME, new InstructionEmitterUnary(() -> InstructionSwap.INSTANCE));
 
         // Arithmetic operations.
-        addInstructionEmitter(builder, new InstructionEmitterUnary(InstructionNegate.NAME, () -> InstructionNegate.INSTANCE));
-        addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate(InstructionAdd.NAME, InstructionAdd::new, InstructionAddImmediate::new));
-        addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate(InstructionSubtract.NAME, InstructionSubtract::new, InstructionSubtractImmediate::new));
-        addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate(InstructionMul.NAME, InstructionMul::new, InstructionMulImmediate::new));
-        addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate(InstructionDiv.NAME, InstructionDiv::new, InstructionDivImmediate::new));
+        builder.put(InstructionNegate.NAME, new InstructionEmitterUnary(() -> InstructionNegate.INSTANCE));
+        builder.put(InstructionAdd.NAME, new InstructionEmitterTargetOrImmediate(InstructionAdd::new, InstructionAddImmediate::new));
+        builder.put(InstructionSubtract.NAME, new InstructionEmitterTargetOrImmediate(InstructionSubtract::new, InstructionSubtractImmediate::new));
+        builder.put(InstructionMul.NAME, new InstructionEmitterTargetOrImmediate(InstructionMul::new, InstructionMulImmediate::new));
+        builder.put(InstructionDiv.NAME, new InstructionEmitterTargetOrImmediate(InstructionDiv::new, InstructionDivImmediate::new));
 
         // Bitwise operations.
-        addInstructionEmitter(builder, new InstructionEmitterUnary(InstructionBitwiseNot.NAME, () -> InstructionBitwiseNot.INSTANCE));
-        addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate(InstructionBitwiseAnd.NAME, InstructionBitwiseAnd::new, InstructionBitwiseAndImmediate::new));
-        addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate(InstructionBitwiseOr.NAME, InstructionBitwiseOr::new, InstructionBitwiseOrImmediate::new));
-        addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate(InstructionBitwiseXor.NAME, InstructionBitwiseXor::new, InstructionBitwiseXorImmediate::new));
-        addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate(InstructionBitwiseShiftLeft.NAME, InstructionBitwiseShiftLeft::new, InstructionBitwiseShiftLeftImmediate::new));
-        addInstructionEmitter(builder, new InstructionEmitterTargetOrImmediate(InstructionBitwiseShiftRight.NAME, InstructionBitwiseShiftRight::new, InstructionBitwiseShiftRightImmediate::new));
+        builder.put(InstructionBitwiseNot.NAME, new InstructionEmitterUnary(() -> InstructionBitwiseNot.INSTANCE));
+        builder.put(InstructionBitwiseAnd.NAME, new InstructionEmitterTargetOrImmediate(InstructionBitwiseAnd::new, InstructionBitwiseAndImmediate::new));
+        builder.put(InstructionBitwiseOr.NAME, new InstructionEmitterTargetOrImmediate(InstructionBitwiseOr::new, InstructionBitwiseOrImmediate::new));
+        builder.put(InstructionBitwiseXor.NAME, new InstructionEmitterTargetOrImmediate(InstructionBitwiseXor::new, InstructionBitwiseXorImmediate::new));
+        builder.put(InstructionBitwiseShiftLeft.NAME, new InstructionEmitterTargetOrImmediate(InstructionBitwiseShiftLeft::new, InstructionBitwiseShiftLeftImmediate::new));
+        builder.put(InstructionBitwiseShiftRight.NAME, new InstructionEmitterTargetOrImmediate(InstructionBitwiseShiftRight::new, InstructionBitwiseShiftRightImmediate::new));
 
         // Operations on LAST.
-        addInstructionEmitter(builder, new InstructionEmitterUnary(InstructionLastRotateLeft.NAME, InstructionLastRotateLeft::new));
-        addInstructionEmitter(builder, new InstructionEmitterUnary(InstructionLastRotateRight.NAME, InstructionLastRotateRight::new));
+        builder.put(InstructionLastRotateLeft.NAME, new InstructionEmitterUnary(() -> InstructionLastRotateLeft.INSTANCE));
+        builder.put(InstructionLastRotateRight.NAME, new InstructionEmitterUnary(() -> InstructionLastRotateRight.INSTANCE));
 
         EMITTER_MAP = builder.build();
-    }
-
-    private static void addInstructionEmitter(final ImmutableMap.Builder<String, InstructionEmitter> builder, final InstructionEmitter emitter) {
-        builder.put(emitter.getInstructionName(), emitter);
     }
 
     private Compiler() {

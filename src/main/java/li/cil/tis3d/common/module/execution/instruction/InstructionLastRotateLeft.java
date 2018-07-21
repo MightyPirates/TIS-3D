@@ -5,6 +5,7 @@ import li.cil.tis3d.common.module.execution.MachineState;
 
 public final class InstructionLastRotateLeft implements Instruction {
     public static final String NAME = "RLLAST";
+    public static final InstructionLastRotateLeft INSTANCE = new InstructionLastRotateLeft();
 
     @Override
     public void step(Machine machine) {
