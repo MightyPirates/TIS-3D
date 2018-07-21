@@ -103,8 +103,8 @@ public final class ModuleSequencer extends AbstractModuleRotatable {
         final World world = getCasing().getCasingWorld();
         if (world.isRemote) {
             final Vec3d uv = hitToUV(new Vec3d(hitX, hitY, hitZ));
-            final int col = uvToCol((float) uv.xCoord);
-            final int row = uvToRow((float) uv.yCoord);
+            final int col = uvToCol((float) uv.x);
+            final int row = uvToRow((float) uv.y);
             if (col >= 0 && row >= 0) {
                 configuration[col][row] = !configuration[col][row];
                 sendConfiguration(Side.SERVER);
@@ -176,8 +176,8 @@ public final class ModuleSequencer extends AbstractModuleRotatable {
         final Vec3d hitPos = getPlayerLookAt();
         if (hitPos != null) {
             final Vec3d uv = hitToUV(hitPos);
-            final int col = uvToCol((float) uv.xCoord);
-            final int row = uvToRow((float) uv.yCoord);
+            final int col = uvToCol((float) uv.x);
+            final int row = uvToRow((float) uv.y);
             if (col >= 0 && row >= 0) {
                 GlStateManager.color(0.7f, 0.8f, 0.9f, 0.5f);
                 final float u = CELLS_OUTER_U0 + col * CELLS_OUTER_STEP_U;
