@@ -1,5 +1,7 @@
 package li.cil.tis3d.common.module;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.machine.Casing;
@@ -9,15 +11,13 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.renderer.TextureLoader;
+import li.cil.tis3d.util.OneEightCompat;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.opengl.GL11;
 
 public final class ModuleSequencer extends AbstractModuleRotatable {
     // --------------------------------------------------------------------- //
@@ -92,7 +92,7 @@ public final class ModuleSequencer extends AbstractModuleRotatable {
     }
 
     @Override
-    public boolean onActivate(final EntityPlayer player, final EnumHand hand, final float hitX, final float hitY, final float hitZ) {
+    public boolean onActivate(final EntityPlayer player, final float hitX, final float hitY, final float hitZ) {
         if (player.isSneaking()) {
             return false;
         }
@@ -102,7 +102,7 @@ public final class ModuleSequencer extends AbstractModuleRotatable {
         // low resolution for some reason).
         final World world = getCasing().getCasingWorld();
         if (world.isRemote) {
-            final Vec3d uv = hitToUV(new Vec3d(hitX, hitY, hitZ));
+            final Vec3 uv = hitToUV(Vec3.createVectorHelper(hitX, hitY, hitZ));
             final int col = uvToCol((float) uv.xCoord);
             final int row = uvToRow((float) uv.yCoord);
             if (col >= 0 && row >= 0) {
@@ -137,30 +137,30 @@ public final class ModuleSequencer extends AbstractModuleRotatable {
 
         rotateForRendering();
         RenderUtil.ignoreLighting();
-        GlStateManager.enableBlend();
+        GL11.glEnable(GL11.GL_BLEND);
 
-        GlStateManager.disableTexture2D();
-        GlStateManager.depthMask(false);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glDepthMask(false);
 
         if (enabled) {
             // Draw bar in background indicating current position in sequence.
             final float barU0 = BAR_U0 + BAR_STEP_U * position;
             final float brightness = 0.75f + 0.25f * (delay == 0 ? 1 : (1 - (delay - stepsRemaining) / (float) delay));
-            GlStateManager.color(0.2f, 0.3f, 0.35f, brightness);
+            GL11.glColor4f(0.2f, 0.3f, 0.35f, brightness);
             RenderUtil.drawUntexturedQuad(barU0, BAR_V0, BAR_SIZE_U, BAR_SIZE_V);
         }
 
         // Draw base grid of sequencer entries.
-        GlStateManager.enableTexture2D();
-        GlStateManager.color(1, 1, 1, enabled ? 1 : 0.5f);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glColor4f(1, 1, 1, enabled ? 1 : 0.5f);
         RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_SEQUENCER));
-        GlStateManager.disableTexture2D();
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
 
-        GlStateManager.depthMask(true);
+        GL11.glDepthMask(true);
 
-        if (Minecraft.getMinecraft().player.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
+        if (OneEightCompat.getDistanceSqToCenter(Minecraft.getMinecraft().thePlayer, getCasing().getPositionX(), getCasing().getPositionY(), getCasing().getPositionZ()) < 64) {
             // Draw configuration of sequencer.
-            GlStateManager.color(0.8f, 0.85f, 0.875f, enabled ? 1 : 0.5f);
+            GL11.glColor4f(0.8f, 0.85f, 0.875f, enabled ? 1 : 0.5f);
             for (int col = 0; col < COL_COUNT; col++) {
                 for (int row = 0; row < ROW_COUNT; row++) {
                     if (configuration[col][row]) {
@@ -173,20 +173,20 @@ public final class ModuleSequencer extends AbstractModuleRotatable {
         }
 
         // Draw selection overlay for focused cell, if any.
-        final Vec3d hitPos = getPlayerLookAt();
+        final Vec3 hitPos = getPlayerLookAt();
         if (hitPos != null) {
-            final Vec3d uv = hitToUV(hitPos);
+            final Vec3 uv = hitToUV(hitPos);
             final int col = uvToCol((float) uv.xCoord);
             final int row = uvToRow((float) uv.yCoord);
             if (col >= 0 && row >= 0) {
-                GlStateManager.color(0.7f, 0.8f, 0.9f, 0.5f);
+                GL11.glColor4f(0.7f, 0.8f, 0.9f, 0.5f);
                 final float u = CELLS_OUTER_U0 + col * CELLS_OUTER_STEP_U;
                 final float v = CELLS_OUTER_V0 + row * CELLS_OUTER_STEP_V;
                 RenderUtil.drawUntexturedQuad(u, v, CELLS_OUTER_SIZE_U, CELLS_OUTER_SIZE_V);
             }
         }
 
-        GlStateManager.disableBlend();
+        GL11.glDisable(GL11.GL_BLEND);
     }
 
     @Override

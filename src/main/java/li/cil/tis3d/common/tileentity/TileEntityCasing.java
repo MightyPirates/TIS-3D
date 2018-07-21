@@ -42,6 +42,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 
+import javax.annotation.Nullable;
 import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.Queue;

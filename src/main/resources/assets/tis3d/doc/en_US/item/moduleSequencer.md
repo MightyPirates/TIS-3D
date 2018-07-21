@@ -1,6 +1,6 @@
 # Sequencer Module
 
-![Could you repeat that?](item:tis3d:module_sequencer)
+![Could you repeat that?](item:tis3d:moduleSequencer)
 
 The sequencer module emits a sequence of eight values in a loop. These eight values can be configured on the module by interacting with it after it has been installed in a [casing](../block/casing.md). Each column represents a sequence value, each row represents a bit of these values. The topmost row controls the first bit (1), the bottommost the highest (128).
 
