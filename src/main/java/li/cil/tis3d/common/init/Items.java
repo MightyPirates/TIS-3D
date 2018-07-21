@@ -86,6 +86,7 @@ public final class Items {
         addModuleRecipe(Constants.NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY, "gemEmerald");
         addModuleRecipe(Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY, net.minecraft.init.Items.book);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_REDSTONE, net.minecraft.init.Items.repeater);
+        addModuleRecipe(Constants.NAME_ITEM_MODULE_SEQUENCER, "record");
         addModuleRecipe(Constants.NAME_ITEM_MODULE_SERIAL_PORT, "blockQuartz");
         addModuleRecipe(Constants.NAME_ITEM_MODULE_STACK, Item.getItemFromBlock(net.minecraft.init.Blocks.chest));
         addModuleRecipe(Constants.NAME_ITEM_MODULE_TIMER, Item.getItemFromBlock(net.minecraft.init.Blocks.sand));

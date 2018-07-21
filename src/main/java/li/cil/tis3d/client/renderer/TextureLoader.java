@@ -32,6 +32,7 @@ public final class TextureLoader {
     public static final ResourceLocation LOCATION_OVERLAY_MODULE_RANDOM = new ResourceLocation(API.MOD_ID, "overlay/module_random");
     public static final ResourceLocation LOCATION_OVERLAY_MODULE_REDSTONE = new ResourceLocation(API.MOD_ID, "overlay/module_redstone");
     public static final ResourceLocation LOCATION_OVERLAY_MODULE_REDSTONE_BARS = new ResourceLocation(API.MOD_ID, "overlay/module_redstone_bars");
+    public static final ResourceLocation LOCATION_OVERLAY_MODULE_SEQUENCER = new ResourceLocation(API.MOD_ID, "overlay/module_sequencer");
     public static final ResourceLocation LOCATION_OVERLAY_MODULE_SERIAL_PORT = new ResourceLocation(API.MOD_ID, "overlay/module_serial_port");
     public static final ResourceLocation LOCATION_OVERLAY_MODULE_STACK = new ResourceLocation(API.MOD_ID, "overlay/module_stack");
     public static final ResourceLocation LOCATION_OVERLAY_MODULE_TERMINAL = new ResourceLocation(API.MOD_ID, "overlay/module_terminal");
@@ -63,6 +64,7 @@ public final class TextureLoader {
         event.map.registerIcon(LOCATION_OVERLAY_MODULE_RANDOM.toString());
         event.map.registerIcon(LOCATION_OVERLAY_MODULE_REDSTONE.toString());
         event.map.registerIcon(LOCATION_OVERLAY_MODULE_REDSTONE_BARS.toString());
+        event.map.registerIcon(LOCATION_OVERLAY_MODULE_SEQUENCER.toString());
         event.map.registerIcon(LOCATION_OVERLAY_MODULE_SERIAL_PORT.toString());
         event.map.registerIcon(LOCATION_OVERLAY_MODULE_STACK.toString());
         event.map.registerIcon(LOCATION_OVERLAY_MODULE_TERMINAL.toString());
