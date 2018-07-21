@@ -13,13 +13,6 @@ import java.util.regex.Matcher;
  */
 public interface InstructionEmitter {
     /**
-     * The name of the instruction as used in code, e.g. <tt>MOV</tt>.
-     *
-     * @return the name of the instruction.
-     */
-    String getInstructionName();
-
-    /**
      * Compile an instruction.
      *
      * @param matcher    the matcher used to parse the line.

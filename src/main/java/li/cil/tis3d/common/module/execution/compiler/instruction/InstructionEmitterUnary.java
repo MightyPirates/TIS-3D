@@ -10,17 +10,10 @@ import java.util.function.Supplier;
 import java.util.regex.Matcher;
 
 public final class InstructionEmitterUnary extends AbstractInstructionEmitter {
-    private final String name;
     private final Supplier<Instruction> constructor;
 
-    public InstructionEmitterUnary(final String name, final Supplier<Instruction> constructor) {
-        this.name = name;
+    public InstructionEmitterUnary(final Supplier<Instruction> constructor) {
         this.constructor = constructor;
-    }
-
-    @Override
-    public String getInstructionName() {
-        return name;
     }
 
     @Override
