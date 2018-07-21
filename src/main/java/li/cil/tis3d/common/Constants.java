@@ -33,6 +33,7 @@ public final class Constants {
     public static final String NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY = "module_random_access_memory";
     public static final String NAME_ITEM_MODULE_READ_ONLY_MEMORY = "module_read_only_memory";
     public static final String NAME_ITEM_MODULE_REDSTONE = "module_redstone";
+    public static final String NAME_ITEM_MODULE_SEQUENCER = "module_sequencer";
     public static final String NAME_ITEM_MODULE_SERIAL_PORT = "module_serial_port";
     public static final String NAME_ITEM_MODULE_STACK = "module_stack";
     public static final String NAME_ITEM_MODULE_TERMINAL = "module_terminal";
@@ -55,6 +56,7 @@ public final class Constants {
             NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY,
             NAME_ITEM_MODULE_READ_ONLY_MEMORY,
             NAME_ITEM_MODULE_REDSTONE,
+            NAME_ITEM_MODULE_SEQUENCER,
             NAME_ITEM_MODULE_SERIAL_PORT,
             NAME_ITEM_MODULE_STACK,
             NAME_ITEM_MODULE_TERMINAL,
