@@ -171,6 +171,32 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
         }
     }
 
+    public void setModule(final Face face, @Nullable final Module module) {
+        casing.setModule(face, module);
+    }
+
+    public void lock(final ItemStack stack) {
+        casing.lock(stack);
+        sendCasingLockedState();
+    }
+
+    public void unlock(final ItemStack stack) {
+        if (casing.unlock(stack)) {
+            sendCasingLockedState();
+        }
+    }
+
+    public void notifyModulesOfBlockChange(final BlockPos neighborPos) {
+        for (final Face face : Face.VALUES) {
+            final Module module = getModule(face);
+            if (module instanceof BlockChangeAware) {
+                final BlockPos moduleNeighborPos = getPosition().offset(Face.toEnumFacing(face));
+                final boolean isModuleNeighbor = Objects.equals(neighborPos, moduleNeighborPos);
+                ((BlockChangeAware) module).onNeighborBlockChange(neighborPos, isModuleNeighbor);
+            }
+        }
+    }
+
     void onEnabled() {
         if (isEnabled) {
             return;
@@ -215,32 +241,6 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
 
     void stepModules() {
         casing.stepModules();
-    }
-
-    public void setModule(final Face face, @Nullable final Module module) {
-        casing.setModule(face, module);
-    }
-
-    public void lock(final ItemStack stack) {
-        casing.lock(stack);
-        sendCasingLockedState();
-    }
-
-    public void unlock(final ItemStack stack) {
-        if (casing.unlock(stack)) {
-            sendCasingLockedState();
-        }
-    }
-
-    public void notifyModulesOfBlockChange(final BlockPos neighborPos) {
-        for (final Face face : Face.VALUES) {
-            final Module module = getModule(face);
-            if (module instanceof BlockChangeAware) {
-                final BlockPos moduleNeighborPos = getPosition().offset(Face.toEnumFacing(face));
-                final boolean isModuleNeighbor = Objects.equals(neighborPos, moduleNeighborPos);
-                ((BlockChangeAware) module).onNeighborBlockChange(neighborPos, isModuleNeighbor);
-            }
-        }
     }
 
     // --------------------------------------------------------------------- //

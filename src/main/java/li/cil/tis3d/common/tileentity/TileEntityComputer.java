@@ -200,10 +200,6 @@ abstract class TileEntityComputer extends TileEntity implements PipeHost {
         }
     }
 
-    boolean hasNeighbor(final Face face) {
-        return neighbors[face.ordinal()] != null;
-    }
-
     protected abstract void scheduleScan();
 
     protected void setNeighbor(final Face face, @Nullable final TileEntityComputer neighbor) {
@@ -212,31 +208,6 @@ abstract class TileEntityComputer extends TileEntity implements PipeHost {
         if (neighbor != oldNeighbor) {
             neighbors[face.ordinal()] = neighbor;
             scheduleScan();
-        }
-    }
-
-    void rebuildOverrides() {
-        // Reset to initial state before checking for inter-block connections.
-        System.arraycopy(pipes, 0, pipeOverride, 0, pipes.length);
-
-        // Check each open face's neighbors, if they're in front of another
-        // computer block, start connecting the pipe to where that leads us.
-        for (final Face face : Face.VALUES) {
-            if (neighbors[face.ordinal()] != null) {
-                continue;
-            }
-
-            for (final Port port : Port.VALUES) {
-                final Face otherFace = mapFace(face, port);
-                final Port otherPort = mapPort(face, port);
-
-                final TileEntityComputer neighbor = neighbors[otherFace.ordinal()];
-                if (neighbor != null) {
-                    final Face neighborFace = otherFace.getOpposite();
-                    final Port neighborPort = flipSide(otherFace, otherPort);
-                    neighbor.computePipeOverrides(neighborFace, neighborPort, this, face, port);
-                }
-            }
         }
     }
 
@@ -274,6 +245,35 @@ abstract class TileEntityComputer extends TileEntity implements PipeHost {
     }
 
     protected void writeToNBTCommon(final NBTTagCompound nbt) {
+    }
+
+    boolean hasNeighbor(final Face face) {
+        return neighbors[face.ordinal()] != null;
+    }
+
+    void rebuildOverrides() {
+        // Reset to initial state before checking for inter-block connections.
+        System.arraycopy(pipes, 0, pipeOverride, 0, pipes.length);
+
+        // Check each open face's neighbors, if they're in front of another
+        // computer block, start connecting the pipe to where that leads us.
+        for (final Face face : Face.VALUES) {
+            if (neighbors[face.ordinal()] != null) {
+                continue;
+            }
+
+            for (final Port port : Port.VALUES) {
+                final Face otherFace = mapFace(face, port);
+                final Port otherPort = mapPort(face, port);
+
+                final TileEntityComputer neighbor = neighbors[otherFace.ordinal()];
+                if (neighbor != null) {
+                    final Face neighborFace = otherFace.getOpposite();
+                    final Port neighborPort = flipSide(otherFace, otherPort);
+                    neighbor.computePipeOverrides(neighborFace, neighborPort, this, face, port);
+                }
+            }
+        }
     }
 
     // --------------------------------------------------------------------- //
