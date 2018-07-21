@@ -171,52 +171,6 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
         }
     }
 
-    public void onEnabled() {
-        if (isEnabled) {
-            return;
-        }
-        isEnabled = true;
-        sendState();
-        casing.onEnabled();
-    }
-
-    public void onDisabled() {
-        if (!isEnabled) {
-            return;
-        }
-        isEnabled = false;
-        sendState();
-        casing.onDisabled();
-    }
-
-    public void stepRedstone() {
-        if (!redstoneDirty) {
-            return;
-        }
-        redstoneDirty = false;
-
-        for (final Face face : Face.VALUES) {
-            final Module module = getCasing().getModule(face);
-            if (module instanceof Redstone) {
-                final Redstone redstone = (Redstone) module;
-                final short signal = (short) RedstoneIntegration.INSTANCE.getRedstoneInput(redstone);
-                redstone.setRedstoneInput(signal);
-            }
-
-            if (module instanceof BundledRedstone) {
-                final BundledRedstone bundledRedstone = (BundledRedstone) module;
-                for (int channel = 0; channel < 16; channel++) {
-                    final short signal = (short) RedstoneIntegration.INSTANCE.getBundledRedstoneInput(bundledRedstone, channel);
-                    bundledRedstone.setBundledRedstoneInput(channel, signal);
-                }
-            }
-        }
-    }
-
-    public void stepModules() {
-        casing.stepModules();
-    }
-
     public void setModule(final Face face, @Nullable final Module module) {
         casing.setModule(face, module);
     }
@@ -241,6 +195,52 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
                 ((BlockChangeAware) module).onNeighborBlockChange(neighborPos, isModuleNeighbor);
             }
         }
+    }
+
+    void onEnabled() {
+        if (isEnabled) {
+            return;
+        }
+        isEnabled = true;
+        sendState();
+        casing.onEnabled();
+    }
+
+    void onDisabled() {
+        if (!isEnabled) {
+            return;
+        }
+        isEnabled = false;
+        sendState();
+        casing.onDisabled();
+    }
+
+    void stepRedstone() {
+        if (!redstoneDirty) {
+            return;
+        }
+        redstoneDirty = false;
+
+        for (final Face face : Face.VALUES) {
+            final Module module = getCasing().getModule(face);
+            if (module instanceof Redstone) {
+                final Redstone redstone = (Redstone) module;
+                final short signal = (short) RedstoneIntegration.INSTANCE.getRedstoneInput(redstone);
+                redstone.setRedstoneInput(signal);
+            }
+
+            if (module instanceof BundledRedstone) {
+                final BundledRedstone bundledRedstone = (BundledRedstone) module;
+                for (int channel = 0; channel < 16; channel++) {
+                    final short signal = (short) RedstoneIntegration.INSTANCE.getBundledRedstoneInput(bundledRedstone, channel);
+                    bundledRedstone.setBundledRedstoneInput(channel, signal);
+                }
+            }
+        }
+    }
+
+    void stepModules() {
+        casing.stepModules();
     }
 
     // --------------------------------------------------------------------- //

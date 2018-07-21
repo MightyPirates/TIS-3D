@@ -5,6 +5,8 @@ import li.cil.tis3d.common.module.execution.MachineState;
 import li.cil.tis3d.common.module.execution.target.Target;
 
 public final class InstructionBitwiseOr extends AbstractInstructionRead {
+    public static final String NAME = "OR";
+
     public InstructionBitwiseOr(final Target source) {
         super(source);
     }
@@ -18,6 +20,6 @@ public final class InstructionBitwiseOr extends AbstractInstructionRead {
 
     @Override
     public String toString() {
-        return "OR " + source;
+        return NAME + " " + source;
     }
 }

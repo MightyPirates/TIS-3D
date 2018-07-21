@@ -5,6 +5,8 @@ import li.cil.tis3d.common.module.execution.target.Target;
 import li.cil.tis3d.common.module.execution.target.TargetInterface;
 
 public final class InstructionMove extends AbstractInstructionMove {
+    public static final String NAME = "MOV";
+
     private final Target source;
 
     public InstructionMove(final Target source, final Target destination) {
@@ -32,6 +34,6 @@ public final class InstructionMove extends AbstractInstructionMove {
 
     @Override
     public String toString() {
-        return "MOV " + source + " " + destination;
+        return NAME + " " + source + " " + destination;
     }
 }

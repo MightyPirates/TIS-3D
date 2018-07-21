@@ -5,6 +5,8 @@ import li.cil.tis3d.common.module.execution.MachineState;
 import li.cil.tis3d.common.module.execution.target.Target;
 
 public final class InstructionAdd extends AbstractInstructionRead {
+    public static final String NAME = "ADD";
+
     public InstructionAdd(final Target source) {
         super(source);
     }
@@ -18,6 +20,6 @@ public final class InstructionAdd extends AbstractInstructionRead {
 
     @Override
     public String toString() {
-        return "ADD " + source;
+        return NAME + " " + source;
     }
 }

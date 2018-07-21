@@ -15,5 +15,5 @@ public interface Validator {
      * @param state the machine state to validate.
      * @throws ParseException if the generated state is invalid in some way.
      */
-    void accept(MachineState state) throws ParseException;
+    void accept(final MachineState state) throws ParseException;
 }

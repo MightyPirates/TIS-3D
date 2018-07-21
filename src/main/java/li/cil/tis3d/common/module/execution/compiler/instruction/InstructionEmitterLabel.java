@@ -12,17 +12,10 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 
 public final class InstructionEmitterLabel extends AbstractInstructionEmitter {
-    private final String name;
     private final Function<String, Instruction> constructor;
 
-    public InstructionEmitterLabel(final String name, final Function<String, Instruction> constructor) {
-        this.name = name;
+    public InstructionEmitterLabel(final Function<String, Instruction> constructor) {
         this.constructor = constructor;
-    }
-
-    @Override
-    public String getInstructionName() {
-        return name;
     }
 
     @Override

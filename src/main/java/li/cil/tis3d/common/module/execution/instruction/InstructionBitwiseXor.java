@@ -5,6 +5,8 @@ import li.cil.tis3d.common.module.execution.MachineState;
 import li.cil.tis3d.common.module.execution.target.Target;
 
 public final class InstructionBitwiseXor extends AbstractInstructionRead {
+    public static final String NAME = "XOR";
+
     public InstructionBitwiseXor(final Target source) {
         super(source);
     }
@@ -18,6 +20,6 @@ public final class InstructionBitwiseXor extends AbstractInstructionRead {
 
     @Override
     public String toString() {
-        return "XOR " + source;
+        return NAME + " " + source;
     }
 }

@@ -4,6 +4,9 @@ import li.cil.tis3d.common.module.execution.Machine;
 import li.cil.tis3d.common.module.execution.MachineState;
 
 public final class InstructionLastRotateRight implements Instruction {
+    public static final String NAME = "RRLAST";
+    public static final InstructionLastRotateRight INSTANCE = new InstructionLastRotateRight();
+
     @Override
     public void step(Machine machine) {
         final MachineState state = machine.getState();
@@ -13,6 +16,6 @@ public final class InstructionLastRotateRight implements Instruction {
 
     @Override
     public String toString() {
-        return "RRLAST";
+        return NAME;
     }
 }

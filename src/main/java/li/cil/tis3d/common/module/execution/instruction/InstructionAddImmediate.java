@@ -19,6 +19,6 @@ public final class InstructionAddImmediate implements Instruction {
 
     @Override
     public String toString() {
-        return "ADD " + value;
+        return InstructionAdd.NAME + " " + value;
     }
 }

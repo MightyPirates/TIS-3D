@@ -28,5 +28,5 @@ public interface Machine {
      * @param target the target to get the interface for.
      * @return the interface for the specified target.
      */
-    TargetInterface getInterface(Target target);
+    TargetInterface getInterface(final Target target);
 }

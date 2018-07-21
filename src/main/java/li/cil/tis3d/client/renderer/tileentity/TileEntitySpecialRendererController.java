@@ -5,7 +5,7 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.math.RayTraceResult;
 
-public class TileEntitySpecialRendererController extends TileEntitySpecialRenderer<TileEntityController> {
+public final class TileEntitySpecialRendererController extends TileEntitySpecialRenderer<TileEntityController> {
     @Override
     public void render(final TileEntityController controller, final double x, final double y, final double z, final float partialTicks, final int destroyStage, final float alpha) {
         final TileEntityController.ControllerState state = controller.getState();

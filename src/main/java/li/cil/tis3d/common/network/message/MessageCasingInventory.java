@@ -10,7 +10,7 @@ import net.minecraft.network.PacketBuffer;
 import javax.annotation.Nullable;
 import java.io.IOException;
 
-public class MessageCasingInventory extends AbstractMessageWithLocation {
+public final class MessageCasingInventory extends AbstractMessageWithLocation {
     private int slot;
     private ItemStack stack;
     private NBTTagCompound moduleData;

@@ -13,11 +13,6 @@ import java.util.regex.Matcher;
 
 public final class InstructionEmitterMove extends AbstractInstructionEmitter {
     @Override
-    public String getInstructionName() {
-        return "MOV";
-    }
-
-    @Override
     public Instruction compile(final Matcher matcher, final int lineNumber, final Map<String, String> defines, final List<Validator> validators) throws ParseException {
         final Object src = checkTargetOrNumber(checkArg(lineNumber, matcher, "arg1", "name"),
                 lineNumber, defines, matcher.start("arg1"), matcher.end("arg1"));

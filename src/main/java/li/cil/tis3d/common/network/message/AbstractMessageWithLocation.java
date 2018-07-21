@@ -8,12 +8,12 @@ import net.minecraft.world.World;
 public abstract class AbstractMessageWithLocation extends AbstractMessageWithDimension {
     private BlockPos position;
 
-    protected AbstractMessageWithLocation(final World world, final BlockPos position) {
+    AbstractMessageWithLocation(final World world, final BlockPos position) {
         super(world);
         this.position = position;
     }
 
-    protected AbstractMessageWithLocation() {
+    AbstractMessageWithLocation() {
     }
 
     // --------------------------------------------------------------------- //

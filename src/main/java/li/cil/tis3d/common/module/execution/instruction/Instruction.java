@@ -17,7 +17,7 @@ public interface Instruction {
      *
      * @param machine the machine to run the instruction on.
      */
-    void step(Machine machine);
+    void step(final Machine machine);
 
     /**
      * Reset the state of the instruction if it has any.
