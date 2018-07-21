@@ -4,6 +4,7 @@ import li.cil.tis3d.common.module.execution.Machine;
 import li.cil.tis3d.common.module.execution.MachineState;
 
 public final class InstructionSave implements Instruction {
+    public static final String NAME = "SAV";
     public static final Instruction INSTANCE = new InstructionSave();
 
     @Override
@@ -15,6 +16,6 @@ public final class InstructionSave implements Instruction {
 
     @Override
     public String toString() {
-        return "SAV";
+        return NAME;
     }
 }
