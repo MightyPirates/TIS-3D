@@ -15,6 +15,7 @@ item.tis3d.moduleRandom.name=Random Module
 item.tis3d.moduleRandomAccessMemory.name=RAM Module
 item.tis3d.moduleReadOnlyMemory.name=ROM Module
 item.tis3d.moduleRedstone.name=Redstone Module
+item.tis3d.moduleSequencer.name=Sequencer Module
 item.tis3d.moduleSerialPort.name=Serial Port Module
 item.tis3d.moduleStack.name=Stack Module
 item.tis3d.moduleTerminal.name=Terminal Module
