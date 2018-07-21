@@ -184,7 +184,7 @@ public final class TileEntityCasing extends TileEntityComputer implements
         }
     }
 
-    public void onEnabled() {
+    void onEnabled() {
         if (isEnabled) {
             return;
         }
@@ -193,7 +193,7 @@ public final class TileEntityCasing extends TileEntityComputer implements
         casing.onEnabled();
     }
 
-    public void onDisabled() {
+    void onDisabled() {
         if (!isEnabled) {
             return;
         }
@@ -202,7 +202,7 @@ public final class TileEntityCasing extends TileEntityComputer implements
         casing.onDisabled();
     }
 
-    public void stepRedstone() {
+    void stepRedstone() {
         if (!redstoneDirty) {
             return;
         }
@@ -226,7 +226,7 @@ public final class TileEntityCasing extends TileEntityComputer implements
         }
     }
 
-    public void stepModules() {
+    void stepModules() {
         casing.stepModules();
     }
 

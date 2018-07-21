@@ -63,7 +63,7 @@ abstract class TileEntityComputer extends TileEntity implements PipeHost {
 
     // --------------------------------------------------------------------- //
 
-    protected TileEntityComputer() {
+    TileEntityComputer() {
         for (final Face face : Face.VALUES) {
             for (final Port port : Port.VALUES) {
                 final int pipeIndex = pack(face, port);
@@ -78,7 +78,7 @@ abstract class TileEntityComputer extends TileEntity implements PipeHost {
      * This will advance pipes with both an active read and write operation to
      * transferring mode, if they're not already in transferring mode.
      */
-    public void stepPipes() {
+    void stepPipes() {
         for (final PipeImpl pipe : pipes) {
             pipe.step();
         }
@@ -195,7 +195,7 @@ abstract class TileEntityComputer extends TileEntity implements PipeHost {
         }
     }
 
-    protected boolean hasNeighbor(final Face face) {
+    boolean hasNeighbor(final Face face) {
         return neighbors[face.ordinal()] != null;
     }
 
@@ -210,7 +210,7 @@ abstract class TileEntityComputer extends TileEntity implements PipeHost {
         }
     }
 
-    protected void rebuildOverrides() {
+    void rebuildOverrides() {
         // Reset to initial state before checking for inter-block connections.
         System.arraycopy(pipes, 0, pipeOverride, 0, pipes.length);
 

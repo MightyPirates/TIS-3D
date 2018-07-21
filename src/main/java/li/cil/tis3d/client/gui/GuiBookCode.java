@@ -72,7 +72,7 @@ public final class GuiBookCode extends GuiScreen {
 
     // --------------------------------------------------------------------- //
 
-    public GuiBookCode(final EntityPlayer player) {
+    GuiBookCode(final EntityPlayer player) {
         this.player = player;
         this.data = ItemBookCode.Data.loadFromStack(player.getHeldItem());
 

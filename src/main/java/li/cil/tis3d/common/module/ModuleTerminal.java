@@ -66,8 +66,8 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
     // Computed data
 
     // NBT tag names.
-    public static final String TAG_DISPLAY = "display";
-    public static final String TAG_OUTPUT = "output";
+    private static final String TAG_DISPLAY = "display";
+    private static final String TAG_OUTPUT = "output";
 
     // Data packet types.
     private static final byte DATA_TYPE_INPUT = 0;

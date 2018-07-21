@@ -32,7 +32,7 @@ public class GuiModuleMemory extends GuiScreen {
     private boolean receivedData;
     private long initTime;
 
-    public GuiModuleMemory(final EntityPlayer player) {
+    GuiModuleMemory(final EntityPlayer player) {
         this.player = player;
     }
 

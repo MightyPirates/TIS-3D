@@ -420,7 +420,8 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
     private interface SourceCodeProvider {
         boolean worksFor(ItemStack stack);
 
-        Iterable<String> codeFor(ItemStack stack);
+        @Nullable
+        Iterable<String> codeFor(final ItemStack stack);
     }
 
     private static final class SourceCodeProviderVanilla implements SourceCodeProvider {

@@ -50,25 +50,25 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
     }
 
     // NBT data names.
-    protected static final String TAG_MEMORY = "memory";
-    protected static final String TAG_ADDRESS = "address";
-    protected static final String TAG_STATE = "state";
+    private static final String TAG_MEMORY = "memory";
+    private static final String TAG_ADDRESS = "address";
+    private static final String TAG_STATE = "state";
 
     // Data packet types.
-    protected static final byte DATA_TYPE_CLEAR = 0;
+    private static final byte DATA_TYPE_CLEAR = 0;
 
     // Message types.
-    protected static final byte PACKET_CLEAR = 0;
-    protected static final byte PACKET_SINGLE = 1;
-    protected static final byte PACKET_FULL = 2;
+    private static final byte PACKET_CLEAR = 0;
+    private static final byte PACKET_SINGLE = 1;
+    private static final byte PACKET_FULL = 2;
 
     // Rendering info.
-    public static final float QUADS_U0 = 5 / 32f;
-    public static final float QUADS_V0 = 5 / 32f;
-    public static final float QUADS_SIZE_U = 4 / 32f;
-    public static final float QUADS_SIZE_V = 4 / 32f;
-    public static final float QUADS_STEP_U = 6 / 32f;
-    public static final float QUADS_STEP_V = 6 / 32f;
+    private static final float QUADS_U0 = 5 / 32f;
+    private static final float QUADS_V0 = 5 / 32f;
+    private static final float QUADS_SIZE_U = 4 / 32f;
+    private static final float QUADS_SIZE_V = 4 / 32f;
+    private static final float QUADS_STEP_U = 6 / 32f;
+    private static final float QUADS_STEP_V = 6 / 32f;
 
     // --------------------------------------------------------------------- //
 

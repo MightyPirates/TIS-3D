@@ -8,11 +8,11 @@ import net.minecraft.world.World;
 public abstract class AbstractMessageWithDimension implements IMessage {
     private int dimension;
 
-    protected AbstractMessageWithDimension(final World world) {
+    AbstractMessageWithDimension(final World world) {
         this.dimension = world.provider.dimensionId;
     }
 
-    protected AbstractMessageWithDimension() {
+    AbstractMessageWithDimension() {
     }
 
     // --------------------------------------------------------------------- //
