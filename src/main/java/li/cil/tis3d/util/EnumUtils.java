@@ -1,8 +1,8 @@
 package li.cil.tis3d.util;
 
 import li.cil.tis3d.api.API;
+import li.cil.tis3d.common.Constants;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.util.Constants;
 import org.apache.logging.log4j.LogManager;
 
 /**

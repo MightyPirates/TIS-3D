@@ -1,15 +1,14 @@
 package li.cil.tis3d.common.inventory;
 
+import li.cil.tis3d.common.Constants;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraftforge.common.util.Constants;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 
 /**
@@ -18,10 +17,10 @@ import java.util.Arrays;
 public class Inventory implements IInventory {
     private static final String TAG_ITEMS = "inventory";
 
-    private final String name;
+    private final ITextComponent name;
     protected final ItemStack[] items;
 
-    public Inventory(final String name, final int size) {
+    public Inventory(final ITextComponent name, final int size) {
         this.name = name;
         Arrays.fill(items = new ItemStack[size], ItemStack.EMPTY);
     }
@@ -30,9 +29,9 @@ public class Inventory implements IInventory {
 
     public void readFromNBT(final NBTTagCompound nbt) {
         final NBTTagList itemList = nbt.getTagList(TAG_ITEMS, Constants.NBT.TAG_COMPOUND);
-        final int count = Math.min(itemList.tagCount(), items.length);
+        final int count = Math.min(itemList.size(), items.length);
         for (int index = 0; index < count; index++) {
-            items[index] = new ItemStack(itemList.getCompoundTagAt(index));
+            items[index] = ItemStack.func_199557_a(itemList.getCompoundTagAt(index));
         }
     }
 
@@ -43,7 +42,7 @@ public class Inventory implements IInventory {
             if (stack != null) {
                 stack.writeToNBT(stackNbt);
             }
-            itemList.appendTag(stackNbt);
+            itemList.add(stackNbt);
         }
         nbt.setTag(TAG_ITEMS, itemList);
     }
@@ -60,7 +59,7 @@ public class Inventory implements IInventory {
     // IWorldNameable
 
     @Override
-    public String getName() {
+    public ITextComponent getName() {
         return name;
     }
 
@@ -71,10 +70,16 @@ public class Inventory implements IInventory {
 
     @Override
     public ITextComponent getDisplayName() {
-        return hasCustomName() ? new TextComponentString(getName()) : new TextComponentTranslation(getName());
+        return getName();
     }
 
-    // --------------------------------------------------------------------- //
+	@Nullable
+	@Override
+	public ITextComponent getCustomName() {
+		return null;
+	}
+
+	// --------------------------------------------------------------------- //
     // IInventory
 
     @Override

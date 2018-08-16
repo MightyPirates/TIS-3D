@@ -4,7 +4,6 @@ import li.cil.tis3d.api.module.traits.BundledRedstone;
 import li.cil.tis3d.api.module.traits.BundledRedstoneOutputChangedEvent;
 import li.cil.tis3d.api.module.traits.Redstone;
 import li.cil.tis3d.common.TIS3D;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +11,7 @@ import java.util.List;
 /**
  * Glue for notifying specific bundled redstone APIs of changes.
  */
-public enum RedstoneIntegration {
+public enum RedstoneIntegration implements BundledRedstoneOutputChangedEvent.Listener {
     INSTANCE;
 
     // --------------------------------------------------------------------- //
@@ -67,7 +66,7 @@ public enum RedstoneIntegration {
 
     // --------------------------------------------------------------------- //
 
-    @SubscribeEvent
+    @Override
     public void onBundledRedstoneOutputChanged(final BundledRedstoneOutputChangedEvent event) {
         final BundledRedstone module = event.getModule();
         final int channel = event.getChannel();

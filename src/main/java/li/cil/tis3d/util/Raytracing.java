@@ -6,6 +6,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -35,8 +36,8 @@ public final class Raytracing {
     public static RayTraceResult intersectIgnoringLiquids(final World world, final BlockPos position, final Vec3d start, final Vec3d end) {
         final IBlockState state = world.getBlockState(position);
         final Block block = state.getBlock();
-        if (state.getCollisionBoundingBox(world, position) != null && block.canCollideCheck(state, false)) {
-            return state.collisionRayTrace(world, position, start, end);
+        if (state.getShapeForRaytrace(world, position) != null && block.isCollidable(state)) {
+        	return Block.collisionRayTrace(state, world, position, start, end);
         }
         return null;
     }
@@ -54,12 +55,12 @@ public final class Raytracing {
     public static RayTraceResult intersectIgnoringTransparent(final World world, final BlockPos position, final Vec3d start, final Vec3d end) {
         final IBlockState state = world.getBlockState(position);
         final Block block = state.getBlock();
-        if (!state.getMaterial().blocksMovement() || !state.getMaterial().isOpaque() || !state.getMaterial().blocksLight()) {
+        if (!state.getMaterial().blocksMovement() || !state.getMaterial().isOpaque()) {
             return null;
         }
-        if (state.getCollisionBoundingBox(world, position) != null && block.canCollideCheck(state, false)) {
-            return state.collisionRayTrace(world, position, start, end);
-        }
+	    if (state.getShapeForRaytrace(world, position) != null && block.isCollidable(state)) {
+		    return Block.collisionRayTrace(state, world, position, start, end);
+	    }
         return null;
     }
 
@@ -101,9 +102,9 @@ public final class Raytracing {
         final int endPosY = MathHelper.floor(end.y);
         final int endPosZ = MathHelper.floor(end.z);
 
-        final int stepX = endPosX > startPosX ? 1 : endPosX < startPosX ? -1 : 0;
-        final int stepY = endPosY > startPosY ? 1 : endPosY < startPosY ? -1 : 0;
-        final int stepZ = endPosZ > startPosZ ? 1 : endPosZ < startPosZ ? -1 : 0;
+        final int stepX = Integer.compare(endPosX, startPosX);
+        final int stepY = Integer.compare(endPosY, startPosY);
+        final int stepZ = Integer.compare(endPosZ, startPosZ);
 
         // Planes for each axis that we will next cross.
         final int gxp = startPosX + (endPosX > startPosX ? 1 : 0);

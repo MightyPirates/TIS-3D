@@ -19,16 +19,16 @@ public final class GameRegistryPathProvider implements PathProvider {
         final Item item = stack.getItem();
         final Block block = Block.getBlockFromItem(item);
         if (block != Blocks.AIR) {
-            final String modId = Block.REGISTRY.getNameForObject(block).getResourceDomain();
+            final String modId = Block.REGISTRY.getNameForObject(block).getNamespace();
             if (API.MOD_ID.equals(modId)) {
-                return "%LANGUAGE%/block/" + block.getUnlocalizedName().replaceFirst("^tile\\.tis3d\\.", "") + ".md";
+                return "%LANGUAGE%/block/" + block.getTranslationKey().replaceFirst("^tile\\.tis3d\\.", "") + ".md";
             }
         } else {
             final ResourceLocation name = Item.REGISTRY.getNameForObject(item);
             if (name != null) {
-                final String modId = name.getResourceDomain();
+                final String modId = name.getNamespace();
                 if (API.MOD_ID.equals(modId)) {
-                    return "%LANGUAGE%/item/" + item.getUnlocalizedName().replaceFirst("^item\\.tis3d\\.", "") + ".md";
+                    return "%LANGUAGE%/item/" + item.getTranslationKey().replaceFirst("^item\\.tis3d\\.", "") + ".md";
                 }
             }
         }
@@ -41,9 +41,9 @@ public final class GameRegistryPathProvider implements PathProvider {
             return null;
         }
         final Block block = world.getBlockState(pos).getBlock();
-        final String modId = Block.REGISTRY.getNameForObject(block).getResourceDomain();
+        final String modId = Block.REGISTRY.getNameForObject(block).getNamespace();
         if (API.MOD_ID.equals(modId)) {
-            return "%LANGUAGE%/block/" + block.getUnlocalizedName().replaceFirst("^tile\\.tis3d\\.", "") + ".md";
+            return "%LANGUAGE%/block/" + block.getTranslationKey().replaceFirst("^tile\\.tis3d\\.", "") + ".md";
         }
         return null;
     }

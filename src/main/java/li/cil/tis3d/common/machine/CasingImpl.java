@@ -9,6 +9,7 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.ModuleProvider;
 import li.cil.tis3d.api.module.traits.Redstone;
+import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.tileentity.TileEntityCasing;
@@ -18,9 +19,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -154,7 +152,7 @@ public final class CasingImpl implements Casing {
         if (hadRedstone) {
             if (!getCasingWorld().isRemote) {
                 tileEntity.markDirty();
-                getCasingWorld().notifyNeighborsOfStateChange(getPosition(), tileEntity.getBlockType(), false);
+                getCasingWorld().notifyNeighborsOfStateChange(getPosition(), tileEntity.getBlockState().getBlock());
             }
         }
 
@@ -176,7 +174,7 @@ public final class CasingImpl implements Casing {
         tileEntity.markDirty();
     }
 
-    @SideOnly(Side.CLIENT)
+
     public void setLocked(final boolean locked) {
         if (locked) {
             lock = UUID.randomUUID();
@@ -265,7 +263,7 @@ public final class CasingImpl implements Casing {
         }
 
         final NBTTagList modulesNbt = nbt.getTagList(TAG_MODULES, Constants.NBT.TAG_COMPOUND);
-        final int moduleCount = Math.min(modulesNbt.tagCount(), modules.length);
+        final int moduleCount = Math.min(modulesNbt.size(), modules.length);
         for (int i = 0; i < moduleCount; i++) {
             if (modules[i] != null) {
                 modules[i].readFromNBT(modulesNbt.getCompoundTagAt(i));
@@ -291,7 +289,7 @@ public final class CasingImpl implements Casing {
             if (module != null) {
                 module.writeToNBT(moduleNbt);
             }
-            modulesNbt.appendTag(moduleNbt);
+            modulesNbt.add(moduleNbt);
         }
         nbt.setTag(TAG_MODULES, modulesNbt);
 

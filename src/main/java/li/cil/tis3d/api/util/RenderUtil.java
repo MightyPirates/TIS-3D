@@ -7,8 +7,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -20,7 +18,7 @@ public final class RenderUtil {
      *
      * @param location the location of the texture to bind.
      */
-    @SideOnly(Side.CLIENT)
+
     public static void bindTexture(final ResourceLocation location) {
         Minecraft.getMinecraft().getTextureManager().bindTexture(location);
     }
@@ -32,7 +30,7 @@ public final class RenderUtil {
      * @param location the location of the texture to get the sprite for.
      * @return the sprite of the texture in the block atlas; <code>missingno</code> if not found.
      */
-    @SideOnly(Side.CLIENT)
+
     public static TextureAtlasSprite getSprite(final ResourceLocation location) {
         return Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(location.toString());
     }
@@ -45,7 +43,7 @@ public final class RenderUtil {
      * @param w the width of the quad.
      * @param h the height of the quad.
      */
-    @SideOnly(Side.CLIENT)
+
     public static void drawUntexturedQuad(final float x, final float y, final float w, final float h) {
         final Tessellator tessellator = Tessellator.getInstance();
         final BufferBuilder buffer = tessellator.getBuffer();
@@ -69,7 +67,7 @@ public final class RenderUtil {
      * @param u1 upper u texture coordinate.
      * @param v1 upper v texture coordinate.
      */
-    @SideOnly(Side.CLIENT)
+
     public static void drawQuad(final float x, final float y, final float w, final float h, final float u0, final float v0, final float u1, final float v1) {
         final Tessellator tessellator = Tessellator.getInstance();
         final BufferBuilder buffer = tessellator.getBuffer();
@@ -89,7 +87,7 @@ public final class RenderUtil {
      * @param u1 upper u texture coordinate.
      * @param v1 upper v texture coordinate.
      */
-    @SideOnly(Side.CLIENT)
+
     public static void drawQuad(final float u0, final float v0, final float u1, final float v1) {
         drawQuad(0, 0, 1, 1, u0, v0, u1, v1);
     }
@@ -97,7 +95,7 @@ public final class RenderUtil {
     /**
      * Draw a full one-by-one quad.
      */
-    @SideOnly(Side.CLIENT)
+
     public static void drawQuad() {
         drawQuad(0, 0, 1, 1);
     }
@@ -117,7 +115,7 @@ public final class RenderUtil {
      * @param u1     upper u texture coordinate.
      * @param v1     upper v texture coordinate.
      */
-    @SideOnly(Side.CLIENT)
+
     public static void drawQuad(final TextureAtlasSprite sprite, final float x, final float y, final float w, final float h, final float u0, final float v0, final float u1, final float v1) {
         drawQuad(x, y, w, h, sprite.getInterpolatedU(u0 * 16), sprite.getInterpolatedV(v0 * 16), sprite.getInterpolatedU(u1 * 16), sprite.getInterpolatedV(v1 * 16));
     }
@@ -133,7 +131,7 @@ public final class RenderUtil {
      * @param u1     upper u texture coordinate.
      * @param v1     upper v texture coordinate.
      */
-    @SideOnly(Side.CLIENT)
+
     public static void drawQuad(final TextureAtlasSprite sprite, final float u0, final float v0, final float u1, final float v1) {
         drawQuad(sprite, 0, 0, 1, 1, u0, v0, u1, v1);
     }
@@ -143,7 +141,7 @@ public final class RenderUtil {
      *
      * @param sprite the sprite to render.
      */
-    @SideOnly(Side.CLIENT)
+
     public static void drawQuad(final TextureAtlasSprite sprite) {
         drawQuad(sprite, 0, 0, 1, 1);
     }
@@ -153,7 +151,7 @@ public final class RenderUtil {
      * full brightness, regardless of environment brightness. Useful for rendering
      * overlays that should be emissive to also be visible in the dark.
      */
-    @SideOnly(Side.CLIENT)
+
     public static void ignoreLighting() {
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
     }

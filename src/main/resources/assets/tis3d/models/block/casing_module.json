@@ -8,5 +8,9 @@
                 "north": { "texture": "#module", "cullface": "north" }
             }
         }
-    ]
+    ],
+    "textures": {
+        "module": "tis3d:block/casing_module",
+        "particle": "tis3d:block/casing_module"
+    }
 }

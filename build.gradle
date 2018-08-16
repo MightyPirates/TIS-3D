@@ -1,13 +1,14 @@
 buildscript {
     repositories {
         jcenter()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
+        maven { url = "https://www.dimdev.org/maven" }
+        maven { url = "http://files.minecraftforge.net/maven" }
+        maven { url 'http://repo.spongepowered.org/maven' }
+        maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath 'org.dimdev:ForgeGradle:2.3-SNAPSHOT'
+        classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
     }
 }
 
@@ -15,7 +16,9 @@ plugins {
     id "com.matthewprenger.cursegradle" version "1.0.9"
 }
 
-apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'net.minecraftforge.gradle.tweaker-client'
+apply plugin: 'java'
+apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'maven-publish'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -52,27 +55,39 @@ else
     version += "+" + getGitRef()
 
 ext.simpleVersion = version
-version = "MC${config.minecraft.version}-${project.version}"
+version = "MC${config.minecraft.version}-Rift-${project.version}"
 
 minecraft {
-    version = "${config.minecraft.version}-${config.forge.version}"
+    version = "${config.minecraft.version}"
     runDir = "run"
+    tweakClass = 'org.dimdev.riftloader.launch.RiftLoaderClientTweaker'
     mappings = config.minecraft.mappings
     replace "@VERSION@", project.simpleVersion
 }
 
 repositories {
-    maven { url "http://dvs1.progwml6.com/files/maven" }
+    mavenCentral()
+    maven { url 'https://www.dimdev.org/maven/' }
+    ivy {
+        artifactPattern "http://asie.pl/javadeps/proto/[module]-[revision](-[classifier]).[ext]"
+    }
 }
 
 dependencies {
-    deobfCompile "mezz.jei:jei_${config.minecraft.version}:${config.jei.version}"
+    implementation 'org.dimdev:rift:1.0.3-45:dev'
+    compile name: "Jankson", version: "0.0.3"
+    compile name: "JanksonShadowed", version: "0.0.3"
+    compile name: "ProtoCharset", version: "0.0.3-deobf"
+}
+
+mixin {
+    defaultObfuscationEnv notch
+    add sourceSets.main, 'mixins.tis3d.refmap.json'
 }
 
 processResources {
     inputs.property "version", project.simpleVersion
     inputs.property "mcversion", project.minecraft.version
-    inputs.property "fversion", config.forge.version
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
         expand 'version':project.simpleVersion, 'mcversion':project.minecraft.version, 'fversion':config.forge.version

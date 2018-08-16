@@ -131,14 +131,15 @@ public final class Document {
 
         GlStateManager.pushMatrix();
         GlStateManager.translate(0, 0, 500);
+        // TODO: Is this correct?
         GL11.glBegin(GL11.GL_QUADS);
         GL11.glVertex2f(0, y);
-        GL11.glVertex2f(mc.displayWidth, y);
-        GL11.glVertex2f(mc.displayWidth, 0);
+        GL11.glVertex2f(mc.mainWindow.getWidth(), y);
+        GL11.glVertex2f(mc.mainWindow.getWidth(), 0);
         GL11.glVertex2f(0, 0);
-        GL11.glVertex2f(0, mc.displayHeight);
-        GL11.glVertex2f(mc.displayWidth, mc.displayHeight);
-        GL11.glVertex2f(mc.displayWidth, y + maxHeight);
+        GL11.glVertex2f(0, mc.mainWindow.getHeight());
+        GL11.glVertex2f(mc.mainWindow.getWidth(), mc.mainWindow.getHeight());
+        GL11.glVertex2f(mc.mainWindow.getWidth(), y + maxHeight);
         GL11.glVertex2f(0, y + maxHeight);
         GL11.glEnd();
         GlStateManager.popMatrix();

@@ -1,0 +1,26 @@
+{
+  "type": "crafting_shaped",
+  "pattern": [
+    "PPP",
+    "ISI",
+    " R "
+  ],
+  "key": {
+    "P": {
+      "item": "minecraft:glass_pane"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "S": {
+      "item": "minecraft:quartz_block"
+    }
+  },
+  "result": {
+    "item": "tis3d:module_serial_port",
+    "count": 2
+  }
+}

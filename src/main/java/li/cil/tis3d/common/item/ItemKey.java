@@ -10,20 +10,23 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+
+
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Base item for all keys.
  */
 public final class ItemKey extends Item {
-    public ItemKey() {
-        setMaxStackSize(1);
+    public ItemKey(Item.Builder builder) {
+        super(builder.maxStackSize(1));
     }
 
     // --------------------------------------------------------------------- //
@@ -34,19 +37,20 @@ public final class ItemKey extends Item {
         return false;
     }
 
-    @SideOnly(Side.CLIENT)
+
     @Override
-    public void addInformation(final ItemStack stack, @Nullable final World world, final List<String> tooltip, final ITooltipFlag flag) {
+    public void addInformation(final ItemStack stack, @Nullable final World world, final List<ITextComponent> tooltip, final ITooltipFlag flag) {
         super.addInformation(stack, world, tooltip, flag);
         final String info = I18n.format(Constants.TOOLTIP_KEY);
         final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
-        tooltip.addAll(fontRenderer.listFormattedStringToWidth(info, li.cil.tis3d.common.Constants.MAX_TOOLTIP_WIDTH));
+        tooltip.addAll(fontRenderer.listFormattedStringToWidth(info, li.cil.tis3d.common.Constants.MAX_TOOLTIP_WIDTH).stream().map(TextComponentString::new).collect(Collectors.toList()));
     }
 
-    @Override
-    public boolean doesSneakBypassUse(final ItemStack stack, final IBlockAccess world, final BlockPos pos, final EntityPlayer player) {
+    // TODO
+    /* @Override
+    public boolean doesSneakBypassUse(final ItemStack stack, final IBlockReader world, final BlockPos pos, final EntityPlayer player) {
         return world.getTileEntity(pos) instanceof Casing;
-    }
+    } */
 
     @Override
     public boolean isEnchantable(final ItemStack stack) {

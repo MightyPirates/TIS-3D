@@ -1,0 +1,26 @@
+{
+  "type": "crafting_shaped",
+  "pattern": [
+    "PPP",
+    "ISI",
+    " R "
+  ],
+  "key": {
+    "P": {
+      "item": "minecraft:glass_pane"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "S": {
+      "item": "minecraft:spider_eye"
+    }
+  },
+  "result": {
+    "item": "tis3d:module_infrared",
+    "count": 2
+  }
+}

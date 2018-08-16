@@ -4,23 +4,16 @@ import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.infrared.InfraredPacket;
 import li.cil.tis3d.api.infrared.InfraredReceiver;
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTBase;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import javax.annotation.Nullable;
 
 public final class CapabilityInfraredReceiver {
-    public static final ResourceLocation INFRARED_RECEIVER_LOCATION = new ResourceLocation(API.MOD_ID, "infrared_receiver");
+    // TODO
+/*    public static final ResourceLocation INFRARED_RECEIVER_LOCATION = new ResourceLocation(API.MOD_ID, "infrared_receiver");
 
     @CapabilityInject(InfraredReceiver.class)
     public static Capability<InfraredReceiver> INFRARED_RECEIVER_CAPABILITY;
@@ -88,5 +81,5 @@ public final class CapabilityInfraredReceiver {
     }
 
     private CapabilityInfraredReceiver() {
-    }
+    } */
 }

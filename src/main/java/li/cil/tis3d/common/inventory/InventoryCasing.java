@@ -7,6 +7,7 @@ import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.ModuleProvider;
 import li.cil.tis3d.api.module.traits.Rotatable;
 import li.cil.tis3d.common.Constants;
+import li.cil.tis3d.common.init.Blocks;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageCasingInventory;
 import li.cil.tis3d.common.tileentity.TileEntityCasing;
@@ -14,7 +15,11 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.Packet;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.text.TextComponentTranslation;
+import pl.asie.protocharset.rift.network.PacketRegistry;
+import pl.asie.protocharset.rift.network.PacketServerHelper;
 
 /**
  * Inventory implementation for casings, having six slots for modules, one per face.
@@ -23,7 +28,7 @@ public final class InventoryCasing extends Inventory implements ISidedInventory 
     private final TileEntityCasing tileEntity;
 
     public InventoryCasing(final TileEntityCasing tileEntity) {
-        super(Constants.NAME_INVENTORY_CASING, Face.VALUES.length);
+        super(new TextComponentTranslation(Constants.NAME_INVENTORY_CASING), Face.VALUES.length);
         this.tileEntity = tileEntity;
     }
 
@@ -56,11 +61,12 @@ public final class InventoryCasing extends Inventory implements ISidedInventory 
 
     @Override
     public void markDirty() {
+        final IBlockState state = tileEntity.getWorld().getBlockState(tileEntity.getPos());
+        Blocks.casing.updateBlockState(state, tileEntity.getWorld(), tileEntity.getPos());
         tileEntity.markDirty();
         if (tileEntity.hasWorld() && tileEntity.getWorld().isRemote) {
             // Re-render on client, as module presence changes the block model.
-            final IBlockState state = tileEntity.getWorld().getBlockState(tileEntity.getPos());
-            tileEntity.getWorld().notifyBlockUpdate(tileEntity.getPos(), state, state, 1);
+            tileEntity.getWorld().markBlockRangeForRenderUpdate(tileEntity.getPos(), tileEntity.getPos());
         }
     }
 
@@ -128,7 +134,10 @@ public final class InventoryCasing extends Inventory implements ISidedInventory 
                 moduleData = null;
             }
 
-            Network.INSTANCE.getWrapper().sendToAllAround(new MessageCasingInventory(tileEntity, index, stack, moduleData), Network.getTargetPoint(tileEntity, Network.RANGE_HIGH));
+	        Packet packet = PacketRegistry.SERVER.wrap(new MessageCasingInventory(tileEntity, index, stack, moduleData));
+	        PacketServerHelper.forEachWatching(tileEntity.getCasingWorld(), tileEntity.getPos(), (player) -> {
+	        	player.connection.sendPacket(packet);
+	        });
         }
 
         tileEntity.setModule(Face.VALUES[index], module);
@@ -145,7 +154,10 @@ public final class InventoryCasing extends Inventory implements ISidedInventory 
                 module.onDisposed();
             }
 
-            Network.INSTANCE.getWrapper().sendToAllAround(new MessageCasingInventory(tileEntity, index, ItemStack.EMPTY, null), Network.getTargetPoint(tileEntity, Network.RANGE_HIGH));
+	        Packet packet = PacketRegistry.SERVER.wrap(new MessageCasingInventory(tileEntity, index, ItemStack.EMPTY, null));
+	        PacketServerHelper.forEachWatching(tileEntity.getCasingWorld(), tileEntity.getPos(), (player) -> {
+		        player.connection.sendPacket(packet);
+	        });
         }
     }
 }

@@ -1,16 +1,18 @@
 package li.cil.tis3d.api.module.traits;
 
-import net.minecraftforge.fml.common.eventhandler.Event;
-
 /**
- * Dispatch this on the {@link net.minecraftforge.common.MinecraftForge#EVENT_BUS}
+ * Dispatch this on the Rift listener bus
  * when the bundled output of a {@link BundledRedstone} capable module changes.
  * This will then be forwarded to all present bundled redstone APIs to allow
  * reacting to the new values; this means the module should be in a state where
  * querying {@link BundledRedstone#getBundledRedstoneOutput(int)} will already
  * return the new value.
  */
-public class BundledRedstoneOutputChangedEvent extends Event {
+public class BundledRedstoneOutputChangedEvent {
+    public interface Listener {
+        void onBundledRedstoneOutputChanged(BundledRedstoneOutputChangedEvent event);
+    }
+
     private final BundledRedstone module;
     private final int channel;
 

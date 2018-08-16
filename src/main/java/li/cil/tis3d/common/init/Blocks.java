@@ -7,9 +7,13 @@ import li.cil.tis3d.common.block.BlockController;
 import li.cil.tis3d.common.tileentity.TileEntityCasing;
 import li.cil.tis3d.common.tileentity.TileEntityController;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.IRegistry;
+import org.dimdev.rift.listener.BlockAdder;
+import org.dimdev.rift.listener.TileEntityTypeAdder;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,12 +21,9 @@ import java.util.List;
 /**
  * Manages setup, registration and lookup of blocks.
  */
-@GameRegistry.ObjectHolder(API.MOD_ID)
-public final class Blocks {
-    @GameRegistry.ObjectHolder(Constants.NAME_BLOCK_CASING)
-    public static final Block casing = null;
-    @GameRegistry.ObjectHolder(Constants.NAME_BLOCK_CONTROLLER)
-    public static final Block controller = null;
+public final class Blocks implements BlockAdder, TileEntityTypeAdder {
+    public static BlockCasing casing = null;
+    public static BlockController controller = null;
 
     public static List<Block> getAllBlocks() {
         return Arrays.asList(
@@ -33,26 +34,22 @@ public final class Blocks {
 
     // --------------------------------------------------------------------- //
 
-    public static void register(final IForgeRegistry<Block> registry) {
-        registerBlock(registry, new BlockCasing(), Constants.NAME_BLOCK_CASING, TileEntityCasing.class);
-        registerBlock(registry, new BlockController(), Constants.NAME_BLOCK_CONTROLLER, TileEntityController.class);
+    @Override
+    public void registerBlocks() {
+        Block.registerBlock(Constants.NAME_BLOCK_CASING, casing = new BlockCasing(Block.Builder.create(Material.IRON)
+            .hardnessAndResistance(5, 10)));
+        Block.registerBlock(Constants.NAME_BLOCK_CONTROLLER, controller = new BlockController(Block.Builder.create(Material.IRON)
+                .hardnessAndResistance(5, 10)));
+    }
+
+    @Override
+    public void registerTileEntityTypes() {
+        TileEntityCasing.TYPE = TileEntityType.registerTileEntityType(Constants.NAME_BLOCK_CASING.toString(), TileEntityType.Builder.create(TileEntityCasing::new));
+        TileEntityController.TYPE = TileEntityType.registerTileEntityType(Constants.NAME_BLOCK_CONTROLLER.toString(), TileEntityType.Builder.create(TileEntityController::new));
     }
 
     // --------------------------------------------------------------------- //
 
-    private static void registerBlock(final IForgeRegistry<Block> registry, final Block block, final String name, final Class<? extends TileEntity> tileEntity) {
-        registry.register(block.
-                setHardness(5).
-                setResistance(10).
-                setUnlocalizedName(API.MOD_ID + "." + name).
-                setCreativeTab(API.creativeTab).
-                setRegistryName(name));
-
-        GameRegistry.registerTileEntity(tileEntity, API.MOD_ID + ": " + name);
-    }
-
     // --------------------------------------------------------------------- //
 
-    private Blocks() {
-    }
 }

@@ -723,5 +723,9 @@
                 "up": { "texture": "#casing", "cullface": "up" }
             }
         }
-    ]
+    ],
+    "textures": {
+        "casing": "tis3d:block/casing_empty",
+        "particle": "tis3d:block/casing_empty"
+    }
 }

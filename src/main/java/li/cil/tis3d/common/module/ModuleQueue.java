@@ -14,8 +14,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+
+
 
 /**
  * The queue module can be used to store a number of values to be retrieved
@@ -94,7 +94,7 @@ public final class ModuleQueue extends AbstractModuleRotatable {
         }
     }
 
-    @SideOnly(Side.CLIENT)
+
     @Override
     public void render(final boolean enabled, final float partialTicks) {
         if (!enabled) {
@@ -242,7 +242,7 @@ public final class ModuleQueue extends AbstractModuleRotatable {
         getCasing().sendData(getFace(), data, DATA_TYPE_UPDATE);
     }
 
-    @SideOnly(Side.CLIENT)
+
     private void drawState() {
         // Offset to start drawing at top left of inner area, slightly inset.
         GlStateManager.translate(3 / 16f, 5 / 16f, 0);

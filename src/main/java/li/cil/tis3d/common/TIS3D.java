@@ -1,23 +1,18 @@
 package li.cil.tis3d.common;
 
 import li.cil.tis3d.api.API;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
  * Entry point for FML.
  */
-@Mod(modid = API.MOD_ID, version = API.MOD_VERSION, useMetadata = true)
+//@Mod(modid = API.MOD_ID, version = API.MOD_VERSION, useMetadata = true)
 public final class TIS3D {
     // --------------------------------------------------------------------- //
     // FML / Forge
 
-    @Mod.Instance(API.MOD_ID)
+ /*   @Mod.Instance(API.MOD_ID)
     public static TIS3D instance;
 
     @SidedProxy(clientSide = Constants.PROXY_CLIENT, serverSide = Constants.PROXY_COMMON)
@@ -52,6 +47,9 @@ public final class TIS3D {
      * @return the mod's logger.
      */
     public static Logger getLog() {
+        if (log == null) {
+            log = LogManager.getLogger();
+        }
         return log;
     }
 }

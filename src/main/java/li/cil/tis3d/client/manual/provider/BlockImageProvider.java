@@ -17,19 +17,10 @@ public final class BlockImageProvider implements ImageProvider {
 
     @Override
     public ImageRenderer getImage(final String data) {
-        final int splitIndex = data.lastIndexOf('@');
-        final String name, optMeta;
-        if (splitIndex > 0) {
-            name = data.substring(0, splitIndex);
-            optMeta = data.substring(splitIndex);
-        } else {
-            name = data;
-            optMeta = "";
-        }
-        final int meta = (Strings.isNullOrEmpty(optMeta)) ? 0 : Integer.parseInt(optMeta.substring(1));
+        final String name = data;
         final Block block = Block.REGISTRY.getObject(new ResourceLocation(name));
         if (Item.getItemFromBlock(block) != Items.AIR) {
-            return new ItemStackImageRenderer(new ItemStack(block, 1, meta));
+            return new ItemStackImageRenderer(new ItemStack(block, 1));
         } else {
             return new MissingItemRenderer(WARNING_BLOCK_MISSING);
         }

@@ -16,12 +16,14 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.InputMappings;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.input.Keyboard;
+
+
+import org.lwjgl.glfw.GLFW;
+import pl.asie.protocharset.rift.network.PacketRegistry;
 
 import java.io.IOException;
 import java.util.*;
@@ -31,7 +33,6 @@ import java.util.stream.Collectors;
  * GUI for the code book, used to write and manage ASM programs.
  */
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-@SideOnly(Side.CLIENT)
 public final class GuiBookCode extends GuiScreen {
     private static final int GUI_WIDTH = 148;
     private static final int GUI_HEIGHT = 230;
@@ -89,11 +90,11 @@ public final class GuiBookCode extends GuiScreen {
         guiY = 2;
 
         // Buttons for next / previous page of pages.
-        buttonList.add(buttonPreviousPage = new ButtonChangePage(ID_BUTTON_PAGE_PREV, guiX + BUTTON_PAGE_CHANGE_PREV_X, guiY + BUTTON_PAGE_CHANGE_Y, PageChangeType.Previous));
-        buttonList.add(buttonNextPage = new ButtonChangePage(ID_BUTTON_PAGE_NEXT, guiX + BUTTON_PAGE_CHANGE_NEXT_X, guiY + BUTTON_PAGE_CHANGE_Y, PageChangeType.Next));
-        buttonList.add(buttonDeletePage = new ButtonDeletePage(ID_BUTTON_PAGE_DELETE, guiX + BUTTON_PAGE_DELETE_X, guiY + BUTTON_PAGE_DELETE_Y));
+        this.addButton(buttonPreviousPage = new ButtonChangePage(ID_BUTTON_PAGE_PREV, guiX + BUTTON_PAGE_CHANGE_PREV_X, guiY + BUTTON_PAGE_CHANGE_Y, PageChangeType.Previous));
+        this.addButton(buttonNextPage = new ButtonChangePage(ID_BUTTON_PAGE_NEXT, guiX + BUTTON_PAGE_CHANGE_NEXT_X, guiY + BUTTON_PAGE_CHANGE_Y, PageChangeType.Next));
+        this.addButton(buttonDeletePage = new ButtonDeletePage(ID_BUTTON_PAGE_DELETE, guiX + BUTTON_PAGE_DELETE_X, guiY + BUTTON_PAGE_DELETE_Y));
 
-        Keyboard.enableRepeatEvents(true);
+        // TODO Keyboard.enableRepeatEvents(true);
     }
 
     @Override
@@ -106,9 +107,9 @@ public final class GuiBookCode extends GuiScreen {
         // Save any changes made and send them to the server.
         final NBTTagCompound nbt = new NBTTagCompound();
         data.writeToNBT(nbt);
-        Network.INSTANCE.getWrapper().sendToServer(new MessageBookCodeData(nbt));
+        Minecraft.getMinecraft().getConnection().sendPacket(PacketRegistry.CLIENT.wrap(new MessageBookCodeData(nbt)));
 
-        Keyboard.enableRepeatEvents(false);
+        // TODO Keyboard.enableRepeatEvents(false);
     }
 
     @Override
@@ -136,39 +137,57 @@ public final class GuiBookCode extends GuiScreen {
 
         // Draw page number.
         final String pageInfo = String.format("%d/%d", data.getSelectedPage() + 1, data.getPageCount());
-        getFontRenderer().drawString(pageInfo, guiX + PAGE_NUMBER_X - getFontRenderer().getStringWidth(pageInfo) / 2, guiY + PAGE_NUMBER_Y, COLOR_CODE);
+        getFontRenderer().func_211126_b(pageInfo, guiX + PAGE_NUMBER_X - getFontRenderer().getStringWidth(pageInfo) / 2, guiY + PAGE_NUMBER_Y, COLOR_CODE);
     }
 
     @Override
-    protected void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) throws IOException {
-        super.mouseClicked(mouseX, mouseY, mouseButton);
+    public boolean mouseClicked(final double mouseXd, final double mouseYd, final int mouseButton) {
+        if (super.mouseClicked(mouseXd, mouseYd, mouseButton)) {
+            return true;
+        }
+
+        int mouseX = (int) Math.round(mouseXd);
+        int mouseY = (int) Math.round(mouseYd);
 
         if (isInCodeArea(mouseX, mouseY)) {
             final int line = cursorToLine(mouseY);
             final int column = cursorToColumn(mouseX + 2, mouseY);
             selectionStart = selectionEnd = positionToIndex(line, column);
+            return true;
+        } else {
+            return false;
         }
     }
 
     @Override
-    protected void mouseClickMove(final int mouseX, final int mouseY, final int clickedMouseButton, final long timeSinceLastClick) {
-        super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
+    public boolean mouseDragged(final double mouseXd, final double mouseYd, final int clickedMouseButton, final double da, final double db) {
+        if (super.mouseDragged(mouseXd, mouseYd, clickedMouseButton, da, db)) {
+            return true;
+        }
+
+        int mouseX = (int) Math.round(mouseXd);
+        int mouseY = (int) Math.round(mouseYd);
 
         if (isInCodeArea(mouseX, mouseY)) {
             final int line = cursorToLine(mouseY);
             final int column = cursorToColumn(mouseX + 2, mouseY);
             selectionEnd = positionToIndex(line, column);
+            return true;
+        } else {
+            return false;
         }
     }
 
     @Override
-    protected void keyTyped(final char typedChar, final int keyCode) throws IOException {
-        super.keyTyped(typedChar, keyCode);
+    public boolean keyPressed(int keyCode, int scancode, int mods) {
+        if (super.keyPressed(keyCode, scancode, mods)) {
+            return true;
+        }
 
         final int line = indexToLine(getSelectionStart());
         final int column = indexToColumn(getSelectionStart());
 
-        if (keyCode == Keyboard.KEY_LEFT) {
+        if (keyCode == GLFW.GLFW_KEY_LEFT) {
             if (column > 0 || line > 0) {
                 if (isShiftKeyDown()) {
                     selectionEnd = selectionEnd - 1;
@@ -176,7 +195,7 @@ public final class GuiBookCode extends GuiScreen {
                     selectionStart = selectionEnd = selectionEnd - 1;
                 }
             }
-        } else if (keyCode == Keyboard.KEY_RIGHT) {
+        } else if (keyCode == GLFW.GLFW_KEY_RIGHT) {
             if (column < lines.get(line).length() || line < lines.size() - 1) {
                 if (isShiftKeyDown()) {
                     selectionEnd = selectionEnd + 1;
@@ -184,7 +203,7 @@ public final class GuiBookCode extends GuiScreen {
                     selectionStart = selectionEnd = selectionEnd + 1;
                 }
             }
-        } else if (keyCode == Keyboard.KEY_UP) {
+        } else if (keyCode == GLFW.GLFW_KEY_UP) {
             final int currLine = indexToLine(selectionEnd);
             if (currLine > 0) {
                 final int currColumn = indexToColumn(selectionEnd);
@@ -199,7 +218,7 @@ public final class GuiBookCode extends GuiScreen {
                     selectionStart = selectionEnd = index;
                 }
             }
-        } else if (keyCode == Keyboard.KEY_DOWN) {
+        } else if (keyCode == GLFW.GLFW_KEY_DOWN) {
             final int currLine = indexToLine(selectionEnd);
             if (currLine < lines.size() - 1) {
                 final int currColumn = indexToColumn(selectionEnd);
@@ -214,21 +233,21 @@ public final class GuiBookCode extends GuiScreen {
                     selectionStart = selectionEnd = index;
                 }
             }
-        } else if (keyCode == Keyboard.KEY_HOME) {
+        } else if (keyCode == GLFW.GLFW_KEY_HOME) {
             final int currLine = indexToLine(selectionEnd);
             if (isShiftKeyDown()) {
                 selectionEnd = positionToIndex(currLine, 0);
             } else {
                 selectionStart = selectionEnd = positionToIndex(currLine, 0);
             }
-        } else if (keyCode == Keyboard.KEY_END) {
+        } else if (keyCode == GLFW.GLFW_KEY_END) {
             final int currLine = indexToLine(selectionEnd);
             if (isShiftKeyDown()) {
                 selectionEnd = positionToIndex(currLine, lines.get(currLine).length());
             } else {
                 selectionStart = selectionEnd = positionToIndex(currLine, lines.get(currLine).length());
             }
-        } else if (keyCode == Keyboard.KEY_DELETE) {
+        } else if (keyCode == GLFW.GLFW_KEY_DELETE) {
             if (!deleteSelection()) {
                 if (isShiftKeyDown()) {
                     if (lines.size() > 1) {
@@ -251,7 +270,7 @@ public final class GuiBookCode extends GuiScreen {
             }
 
             recompile();
-        } else if (keyCode == Keyboard.KEY_BACK) {
+        } else if (keyCode == GLFW.GLFW_KEY_BACKSPACE) {
             if (!deleteSelection()) {
                 if (column > 0) {
                     lines.get(line).deleteCharAt(column - 1);
@@ -269,7 +288,7 @@ public final class GuiBookCode extends GuiScreen {
             }
 
             recompile();
-        } else if (keyCode == Keyboard.KEY_RETURN) {
+        } else if (keyCode == GLFW.GLFW_KEY_ENTER) {
             deleteSelection();
             if (lines.size() < Constants.MAX_LINES_PER_PAGE) {
                 final StringBuilder oldLine = lines.get(line);
@@ -285,22 +304,22 @@ public final class GuiBookCode extends GuiScreen {
 
             recompile();
         } else if (isCtrlKeyDown()) {
-            if (keyCode == Keyboard.KEY_A) {
+            if (keyCode == GLFW.GLFW_KEY_A) {
                 selectionStart = 0;
                 selectionEnd = positionToIndex(Integer.MAX_VALUE, Integer.MAX_VALUE);
-            } else if (keyCode == Keyboard.KEY_C) {
-                setClipboardString(selectionToString());
-            } else if (keyCode == Keyboard.KEY_X) {
-                setClipboardString(selectionToString());
+            } else if (keyCode == GLFW.GLFW_KEY_C) {
+                Minecraft.getMinecraft().keyboardListener.setClipboardString(selectionToString());
+            } else if (keyCode == GLFW.GLFW_KEY_X) {
+                Minecraft.getMinecraft().keyboardListener.setClipboardString(selectionToString());
                 deleteSelection();
 
                 recompile();
-            } else if (keyCode == Keyboard.KEY_V) {
+            } else if (keyCode == GLFW.GLFW_KEY_V) {
                 deleteSelection();
 
-                final String[] pastedLines = Constants.PATTERN_LINES.split(getClipboardString());
+                final String[] pastedLines = Constants.PATTERN_LINES.split(Minecraft.getMinecraft().keyboardListener.getClipboardString());
                 if (!isValidPaste(pastedLines)) {
-                    return;
+                    return true;
                 }
 
                 lines.get(line).insert(indexToColumn(column), pastedLines[0].toUpperCase(Locale.US));
@@ -317,28 +336,34 @@ public final class GuiBookCode extends GuiScreen {
 
                 recompile();
             }
-        } else if (!Character.isISOControl(typedChar)) {
-            deleteSelection();
-
-            if (lines.get(line).length() < Settings.maxColumnsPerLine) {
-                lines.get(line).insert(column, String.valueOf(typedChar).toUpperCase(Locale.US));
-                selectionStart = selectionEnd = selectionEnd + 1;
-            }
-
-            recompile();
+        } else {
+            return false;
         }
+
+        return true;
     }
 
     @Override
-    protected void actionPerformed(final GuiButton button) {
-        if (button == buttonNextPage) {
-            changePage(1);
-        } else if (button == buttonPreviousPage) {
-            changePage(-1);
-        } else if (button == buttonDeletePage) {
-            data.removePage(data.getSelectedPage());
-            rebuildLines();
-        }
+    public boolean charTyped(char chr, int code) {
+		if (super.charTyped(chr, code)) {
+			return true;
+		} else if (Character.isISOControl(chr)) {
+			return false;
+		}
+
+	    deleteSelection();
+
+	    final int line = indexToLine(getSelectionStart());
+	    final int column = indexToColumn(getSelectionStart());
+
+	    if (lines.get(line).length() < Settings.maxColumnsPerLine) {
+		    lines.get(line).insert(column, String.valueOf(chr).toUpperCase(Locale.US));
+		    selectionStart = selectionEnd = selectionEnd + 1;
+	    }
+
+	    recompile();
+
+	    return true;
     }
 
     @Override
@@ -559,20 +584,20 @@ public final class GuiBookCode extends GuiScreen {
                 final int selected = Math.min(line.length() - prefix, getSelectionEnd() - (position + prefix));
 
                 final String prefixText = line.substring(0, prefix);
-                getFontRenderer().drawString(prefixText, currX, lineY, COLOR_CODE, false);
+                getFontRenderer().func_211126_b(prefixText, currX, lineY, COLOR_CODE);
                 currX += getFontRenderer().getStringWidth(prefixText);
 
                 final String selectedText = line.substring(prefix, prefix + selected);
                 final int selectedWidth = getFontRenderer().getStringWidth(selectedText);
                 drawRect(currX - 1, lineY - 1, currX + selectedWidth, lineY + getFontRenderer().FONT_HEIGHT - 1, COLOR_SELECTION);
-                getFontRenderer().drawString(selectedText, currX, lineY, COLOR_CODE_SELECTED, false);
+                getFontRenderer().func_211126_b(selectedText, currX, lineY, COLOR_CODE_SELECTED);
                 currX += selectedWidth;
 
                 final String postfixString = line.substring(prefix + selected);
-                getFontRenderer().drawString(postfixString, currX, lineY, COLOR_CODE, false);
+                getFontRenderer().func_211126_b(postfixString, currX, lineY, COLOR_CODE);
             } else {
                 // No selection here, just draw the line. Get it? "draw the line"?
-                getFontRenderer().drawString(line.toString(), lineX, lineY, COLOR_CODE, false);
+                getFontRenderer().func_211126_b(line.toString(), lineX, lineY, COLOR_CODE);
             }
 
             position += line.length() + 1;
@@ -598,7 +623,7 @@ public final class GuiBookCode extends GuiScreen {
                 rawEndX = columnToX(localLineNumber, exception.getEnd());
             }
             final int startY = guiY + CODE_POS_Y + localLineNumber * getFontRenderer().FONT_HEIGHT - 1;
-            final int endX = Math.max(rawEndX, startX + getFontRenderer().getCharWidth(' '));
+            final int endX = Math.max(rawEndX, startX + getFontRenderer().getStringWidth(" "));
 
             drawRect(startX - 1, startY + getFontRenderer().FONT_HEIGHT - 1, endX, startY + getFontRenderer().FONT_HEIGHT, 0xFFFF3333);
 
@@ -613,7 +638,8 @@ public final class GuiBookCode extends GuiScreen {
                 } else if (isErrorOnNextPage) {
                     tooltip.add(I18n.format(Constants.MESSAGE_ERROR_ON_NEXT_PAGE));
                 }
-                tooltip.addAll(Arrays.asList(Constants.PATTERN_LINES.split(I18n.format(exception.getMessage()))));
+                tooltip.addAll(Arrays.asList(Constants.PATTERN_LINES.split(I18n.format(exception.getMessage())))
+                );
                 drawHoveringText(tooltip, mouseX, mouseY);
                 GlStateManager.disableLighting();
             }
@@ -656,7 +682,16 @@ public final class GuiBookCode extends GuiScreen {
         }
 
         @Override
-        public void drawButton(final Minecraft minecraft, final int mouseX, final int mouseY, final float partialTicks) {
+        public void mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_) {
+            if (type == PageChangeType.Next) {
+                changePage(1);
+            } else if (type == PageChangeType.Previous) {
+                changePage(-1);
+            }
+        }
+
+        @Override
+        public void func_194828_a(final int mouseX, final int mouseY, final float partialTicks) {
             if (!visible) {
                 return;
             }
@@ -681,7 +716,13 @@ public final class GuiBookCode extends GuiScreen {
         }
 
         @Override
-        public void drawButton(final Minecraft minecraft, final int mouseX, final int mouseY, final float partialTicks) {
+        public void mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_) {
+            data.removePage(data.getSelectedPage());
+            rebuildLines();
+        }
+
+        @Override
+        public void func_194828_a(final int mouseX, final int mouseY, final float partialTicks) {
             if (!visible) {
                 return;
             }

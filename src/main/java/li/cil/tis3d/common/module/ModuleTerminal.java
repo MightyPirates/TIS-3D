@@ -8,10 +8,12 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
+import li.cil.tis3d.client.gui.GuiHandlerClient;
 import li.cil.tis3d.client.gui.GuiModuleTerminal;
 import li.cil.tis3d.client.renderer.TextureLoader;
 import li.cil.tis3d.client.renderer.font.FontRenderer;
 import li.cil.tis3d.client.renderer.font.FontRendererNormal;
+import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.gui.GuiHandlerCommon;
 import net.minecraft.client.Minecraft;
@@ -25,9 +27,8 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+
+
 
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -178,11 +179,18 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
 
         final World world = player.getEntityWorld();
         if (world.isRemote) {
-            player.openGui(TIS3D.instance, GuiHandlerCommon.GuiId.MODULE_TERMINAL.ordinal(), world, 0, 0, 0);
+            openForClient(player);
         }
 
         return true;
     }
+
+	private void openForClient(final EntityPlayer player) {
+		GuiScreen screen = GuiHandlerClient.getClientGuiElement(GuiHandlerCommon.GuiId.MODULE_TERMINAL, player.getEntityWorld(), player);
+		if (screen != null) {
+			Minecraft.getMinecraft().displayGuiScreen(screen);
+		}
+	}
 
     @Override
     public void onData(final ByteBuf data) {
@@ -215,7 +223,7 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
         }
     }
 
-    @SideOnly(Side.CLIENT)
+
     @Override
     public void render(final boolean enabled, final float partialTicks) {
         if (!enabled || !isVisible()) {
@@ -243,7 +251,7 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
 
         final NBTTagList lines = nbt.getTagList(TAG_DISPLAY, Constants.NBT.TAG_STRING);
         display.clear();
-        for (int tagIndex = 0; tagIndex < lines.tagCount(); tagIndex++) {
+        for (int tagIndex = 0; tagIndex < lines.size(); tagIndex++) {
             display.add(new StringBuilder(lines.getStringTagAt(tagIndex)));
         }
 
@@ -258,7 +266,7 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
 
         final NBTTagList lines = new NBTTagList();
         for (final StringBuilder line : display) {
-            lines.appendTag(new NBTTagString(line.toString()));
+            lines.add(new NBTTagString(line.toString()));
         }
         nbt.setTag(TAG_DISPLAY, lines);
 
@@ -290,7 +298,7 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
     // --------------------------------------------------------------------- //
     // Rendering
 
-    @SideOnly(Side.CLIENT)
+
     private void renderText() {
         GlStateManager.translate(2f / 16f, 2f / 16f, 0);
         GlStateManager.scale(1 / 512f, 1 / 512f, 1);
@@ -346,7 +354,7 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
         }
     }
 
-    @SideOnly(Side.CLIENT)
+
     private void closeGui() {
         final GuiScreen screen = Minecraft.getMinecraft().currentScreen;
         if (screen instanceof GuiModuleTerminal) {

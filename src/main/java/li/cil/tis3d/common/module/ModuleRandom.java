@@ -9,8 +9,8 @@ import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.renderer.TextureLoader;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+
+
 
 import java.util.Random;
 
@@ -38,7 +38,7 @@ public final class ModuleRandom extends AbstractModule {
         stepOutput(port);
     }
 
-    @SideOnly(Side.CLIENT)
+
     @Override
     public void render(final boolean enabled, final float partialTicks) {
         if (!enabled) {

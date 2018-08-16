@@ -32,8 +32,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
@@ -221,7 +219,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         state = State.values()[data.readByte()];
     }
 
-    @SideOnly(Side.CLIENT)
+
     @Override
     public void render(final boolean enabled, final float partialTicks) {
         if ((!enabled || !isVisible()) && !isPlayerLookingAt()) {
@@ -339,7 +337,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         getCasing().sendData(getFace(), data, DATA_TYPE_INCREMENTAL);
     }
 
-    @SideOnly(Side.CLIENT)
+
     private void renderState(final MachineState machineState) {
         // Offset to start drawing at top left of inner area, slightly inset.
         GlStateManager.translate(3.5f / 16f, 3.5f / 16f, 0);
@@ -398,7 +396,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
      *
      * @param height the height of the line to draw.
      */
-    @SideOnly(Side.CLIENT)
+
     private static void drawLine(final int height) {
         GlStateManager.depthMask(false);
         GlStateManager.disableTexture2D();
@@ -438,13 +436,13 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
                 return null;
             }
 
-            final NBTTagList pages = nbt.getTagList("pages", net.minecraftforge.common.util.Constants.NBT.TAG_STRING);
-            if (pages.tagCount() < 1) {
+            final NBTTagList pages = nbt.getTagList("pages", Constants.NBT.TAG_STRING);
+            if (pages.size() < 1) {
                 return null;
             }
 
             final List<String> code = new ArrayList<>();
-            for (int page = 0; page < pages.tagCount(); page++) {
+            for (int page = 0; page < pages.size(); page++) {
                 Collections.addAll(code, Constants.PATTERN_LINES.split(pages.getStringTagAt(page)));
             }
             return code;

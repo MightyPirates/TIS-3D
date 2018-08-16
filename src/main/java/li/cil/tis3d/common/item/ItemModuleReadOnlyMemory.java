@@ -1,16 +1,23 @@
 package li.cil.tis3d.common.item;
 
 import li.cil.tis3d.api.machine.Casing;
+import li.cil.tis3d.client.gui.GuiHandlerClient;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.gui.GuiHandlerCommon;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.Container;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import pl.asie.protocharset.lib.inventory.InteractionObjectItemStack;
 
 import javax.annotation.Nullable;
 
@@ -18,8 +25,8 @@ public class ItemModuleReadOnlyMemory extends ItemModule {
     private static final String TAG_DATA = "data";
     private static final byte[] EMPTY_DATA = new byte[0];
 
-    public ItemModuleReadOnlyMemory() {
-        setMaxStackSize(1);
+    public ItemModuleReadOnlyMemory(Item.Builder builder) {
+        super(builder.maxStackSize(1));
     }
 
     // --------------------------------------------------------------------- //
@@ -27,14 +34,26 @@ public class ItemModuleReadOnlyMemory extends ItemModule {
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(final World world, final EntityPlayer player, final EnumHand hand) {
-        player.openGui(TIS3D.instance, GuiHandlerCommon.GuiId.MODULE_MEMORY.ordinal(), world, 0, 0, 0);
+        if (world.isRemote) {
+            openForClient(player);
+        } else {
+
+        }
         return super.onItemRightClick(world, player, hand);
     }
 
-    @Override
-    public boolean doesSneakBypassUse(final ItemStack stack, final IBlockAccess world, final BlockPos pos, final EntityPlayer player) {
-        return world.getTileEntity(pos) instanceof Casing;
+    private void openForClient(final EntityPlayer player) {
+        GuiScreen screen = GuiHandlerClient.getClientGuiElement(GuiHandlerCommon.GuiId.MODULE_MEMORY, player.getEntityWorld(), player);
+        if (screen != null) {
+            Minecraft.getMinecraft().displayGuiScreen(screen);
+        }
     }
+
+    // TODO
+    /* @Override
+    public boolean doesSneakBypassUse(final ItemStack stack, final IBlockReader world, final BlockPos pos, final EntityPlayer player) {
+        return world.getTileEntity(pos) instanceof Casing;
+    } */
 
     // --------------------------------------------------------------------- //
 

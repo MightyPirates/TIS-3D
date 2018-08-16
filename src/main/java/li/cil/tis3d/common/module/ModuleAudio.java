@@ -8,20 +8,19 @@ import li.cil.tis3d.api.prefab.module.AbstractModule;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.renderer.TextureLoader;
 import li.cil.tis3d.common.network.Network;
-import li.cil.tis3d.common.network.message.MessageParticleEffect;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.init.Particles;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.world.NoteBlockEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.world.WorldServer;
+import pl.asie.protocharset.rift.network.PacketRegistry;
+import pl.asie.protocharset.rift.network.PacketServerHelper;
 
 /**
  * The audio module, emitting sounds like none other.
@@ -35,9 +34,10 @@ public final class ModuleAudio extends AbstractModule {
      */
     private static final SoundEvent[] INSTRUMENTS = new SoundEvent[]{SoundEvents.BLOCK_NOTE_HARP, SoundEvents.BLOCK_NOTE_BASEDRUM, SoundEvents.BLOCK_NOTE_SNARE, SoundEvents.BLOCK_NOTE_HAT, SoundEvents.BLOCK_NOTE_BASS, SoundEvents.BLOCK_NOTE_FLUTE, SoundEvents.BLOCK_NOTE_BELL, SoundEvents.BLOCK_NOTE_GUITAR, SoundEvents.BLOCK_NOTE_CHIME, SoundEvents.BLOCK_NOTE_XYLOPHONE};
 
-    static {
+    // TODO
+    /* static {
         assert INSTRUMENTS.length == NoteBlockEvent.Instrument.values().length;
-    }
+    } */
 
     /**
      * The last tick we made a sound. Used to avoid emitting multiple sounds
@@ -64,7 +64,7 @@ public final class ModuleAudio extends AbstractModule {
         lastStep = world.getTotalWorldTime();
     }
 
-    @SideOnly(Side.CLIENT)
+
     @Override
     public void render(final boolean enabled, final float partialTicks) {
         if (!enabled) {
@@ -118,24 +118,23 @@ public final class ModuleAudio extends AbstractModule {
         // Send event to check if the sound may be played / should be modulated.
         final World world = getCasing().getCasingWorld();
         final BlockPos pos = getCasing().getPosition();
-        final NoteBlockEvent.Play event = new NoteBlockEvent.Play(world, pos, world.getBlockState(pos), noteId, instrumentId);
-        if (!MinecraftForge.EVENT_BUS.post(event)) {
+        // TODO
+        /* final NoteBlockEvent.Play event = new NoteBlockEvent.Play(world, pos, world.getBlockState(pos), noteId, instrumentId);
+        if (!MinecraftForge.EVENT_BUS.post(event)) { */
             // Not cancelled, get pitch, sound effect name.
-            final int note = event.getVanillaNoteId();
+            final int note = /* event.getVanillaNoteId(); */ noteId;
             final float pitch = (float) Math.pow(2, (note - 12) / 12.0);
-            final SoundEvent sound = INSTRUMENTS[event.getInstrument().ordinal()];
+            final SoundEvent sound = INSTRUMENTS[/* event.getInstrument().ordinal() */ instrumentId];
 
             // Offset to have the actual origin be in front of the module.
             final EnumFacing facing = Face.toEnumFacing(getFace());
-            final double x = pos.getX() + 0.5 + facing.getFrontOffsetX() * 0.6;
-            final double y = pos.getY() + 0.5 + facing.getFrontOffsetY() * 0.6;
-            final double z = pos.getZ() + 0.5 + facing.getFrontOffsetZ() * 0.6;
+            final double x = pos.getX() + 0.5 + facing.getXOffset() * 0.6;
+            final double y = pos.getY() + 0.5 + facing.getYOffset() * 0.6;
+            final double z = pos.getZ() + 0.5 + facing.getZOffset() * 0.6;
 
             // Let there be sound!
             world.playSound(null, x, y, z, sound, SoundCategory.BLOCKS, volume, pitch);
-            final MessageParticleEffect message = new MessageParticleEffect(world, EnumParticleTypes.NOTE, x, y, z);
-            final NetworkRegistry.TargetPoint target = Network.getTargetPoint(world, x, y, z, Network.RANGE_LOW);
-            Network.INSTANCE.getWrapper().sendToAllAround(message, target);
-        }
+            ((WorldServer) world).func_195598_a(Particles.NOTE, x, y, z, 1, 0, 0, 0, 0);
+        /* } */
     }
 }

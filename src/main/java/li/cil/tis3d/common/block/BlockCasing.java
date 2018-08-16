@@ -12,10 +12,9 @@ import li.cil.tis3d.common.tileentity.TileEntityCasing;
 import li.cil.tis3d.util.InventoryUtils;
 import li.cil.tis3d.util.WorldUtils;
 import net.minecraft.block.Block;
+import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockFaceShape;
-import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -23,6 +22,7 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
+import net.minecraft.state.BooleanProperty;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -30,71 +30,76 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+
+import javax.annotation.Nullable;
 
 /**
  * Block for the module casings.
  */
-public final class BlockCasing extends Block {
-    private static final PropertyBool MODULE_X_NEG = PropertyBool.create("xneg");
-    private static final PropertyBool MODULE_X_POS = PropertyBool.create("xpos");
-    private static final PropertyBool MODULE_Y_NEG = PropertyBool.create("yneg");
-    private static final PropertyBool MODULE_Y_POS = PropertyBool.create("ypos");
-    private static final PropertyBool MODULE_Z_NEG = PropertyBool.create("zneg");
-    private static final PropertyBool MODULE_Z_POS = PropertyBool.create("zpos");
+public final class BlockCasing extends Block implements ITileEntityProvider {
+    private static final BooleanProperty MODULE_X_NEG = BooleanProperty.create("xneg");
+    private static final BooleanProperty MODULE_X_POS = BooleanProperty.create("xpos");
+    private static final BooleanProperty MODULE_Y_NEG = BooleanProperty.create("yneg");
+    private static final BooleanProperty MODULE_Y_POS = BooleanProperty.create("ypos");
+    private static final BooleanProperty MODULE_Z_NEG = BooleanProperty.create("zneg");
+    private static final BooleanProperty MODULE_Z_POS = BooleanProperty.create("zpos");
 
     // --------------------------------------------------------------------- //
 
-    public BlockCasing() {
-        super(Material.IRON);
+    public BlockCasing(Block.Builder builder) {
+        super(builder);
+        setDefaultState(getDefaultState().withProperty(MODULE_X_NEG, false).withProperty(MODULE_X_POS, false).withProperty(MODULE_Y_NEG, false).withProperty(MODULE_Y_POS, false).withProperty(MODULE_Z_NEG, false).withProperty(MODULE_Z_POS, false));
     }
 
     // --------------------------------------------------------------------- //
     // State
 
     @Override
-    public BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, MODULE_X_NEG, MODULE_X_POS, MODULE_Y_NEG, MODULE_Y_POS, MODULE_Z_NEG, MODULE_Z_POS);
+    protected void addPropertiesToBuilder(net.minecraft.state.StateContainer.Builder<Block, IBlockState> builder) {
+        builder.addProperties(
+                MODULE_X_NEG,
+                MODULE_X_POS,
+                MODULE_Y_NEG,
+                MODULE_Y_POS,
+                MODULE_Z_NEG,
+                MODULE_Z_POS
+        );
     }
 
-    @Override
-    public int getMetaFromState(final IBlockState state) {
-        return 0;
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public IBlockState getActualState(final IBlockState state, final IBlockAccess world, final BlockPos pos) {
+    public void updateBlockState(final IBlockState state, final World world, final BlockPos pos) {
         final TileEntity tileEntity = WorldUtils.getTileEntityThreadsafe(world, pos);
         if (!(tileEntity instanceof TileEntityCasing)) {
-            return super.getActualState(state, world, pos);
+            return;
         }
         final TileEntityCasing casing = (TileEntityCasing) tileEntity;
-        return state.
+        world.setBlockState(pos, state.
                 withProperty(MODULE_X_NEG, casing.getModule(Face.X_NEG) != null).
                 withProperty(MODULE_X_POS, casing.getModule(Face.X_POS) != null).
                 withProperty(MODULE_Y_NEG, casing.getModule(Face.Y_NEG) != null).
                 withProperty(MODULE_Y_POS, casing.getModule(Face.Y_POS) != null).
                 withProperty(MODULE_Z_NEG, casing.getModule(Face.Z_NEG) != null).
-                withProperty(MODULE_Z_POS, casing.getModule(Face.Z_POS) != null);
+                withProperty(MODULE_Z_POS, casing.getModule(Face.Z_POS) != null), 2);
     }
 
     // --------------------------------------------------------------------- //
     // Client
 
     @Override
-    public ItemStack getPickBlock(final IBlockState state, final RayTraceResult target, final World world, final BlockPos pos, final EntityPlayer player) {
+    public ItemStack getItem(IBlockReader reader, BlockPos pos, IBlockState state) {
         // Allow picking modules installed in the casing.
-        final TileEntity tileEntity = world.getTileEntity(pos);
+        // TODO
+/*        final TileEntity tileEntity = reader.getTileEntity(pos);
         if (tileEntity instanceof TileEntityCasing) {
             final TileEntityCasing casing = (TileEntityCasing) tileEntity;
             final ItemStack stack = casing.getStackInSlot(target.sideHit.ordinal());
             if (!stack.isEmpty()) {
                 return stack.copy();
             }
-        }
-        return super.getPickBlock(state, target, world, pos, player);
+        } */
+        return super.getItem(reader, pos, state);
     }
 
     // --------------------------------------------------------------------- //
@@ -102,22 +107,18 @@ public final class BlockCasing extends Block {
 
     @SuppressWarnings("deprecation")
     @Override
-    public BlockFaceShape getBlockFaceShape(final IBlockAccess world, final IBlockState state, final BlockPos pos, final EnumFacing side) {
+    public BlockFaceShape getBlockFaceShape(final IBlockReader world, final IBlockState state, final BlockPos pos, final EnumFacing side) {
         return BlockFaceShape.UNDEFINED;
     }
 
+    @Nullable
     @Override
-    public boolean hasTileEntity(final IBlockState state) {
-        return true;
-    }
-
-    @Override
-    public TileEntity createTileEntity(final World world, final IBlockState state) {
+    public TileEntity getTileEntity(IBlockReader iBlockReader) {
         return new TileEntityCasing();
     }
 
     @Override
-    public boolean onBlockActivated(final World world, final BlockPos pos, final IBlockState state, final EntityPlayer player, final EnumHand hand, final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
+    public boolean onRightClick(final IBlockState state, final World world, final BlockPos pos, final EntityPlayer player, final EnumHand hand, final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
         if (world.isBlockLoaded(pos)) {
             final TileEntity tileEntity = world.getTileEntity(pos);
             if (tileEntity instanceof TileEntityCasing) {
@@ -160,7 +161,7 @@ public final class BlockCasing extends Block {
 
                 // Don't allow changing modules while casing is locked.
                 if (casing.isLocked()) {
-                    return super.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
+                    return super.onRightClick(state, world, pos, player, hand, side, hitX, hitY, hitZ);
                 }
 
                 // Remove old module or install new one.
@@ -199,17 +200,21 @@ public final class BlockCasing extends Block {
                 }
             }
         }
-        return super.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
+
+        return super.onRightClick(state, world, pos, player, hand, side, hitX, hitY, hitZ);
     }
 
     @Override
-    public void breakBlock(final World world, final BlockPos pos, final IBlockState state) {
-        final TileEntity tileentity = world.getTileEntity(pos);
-        if (tileentity instanceof TileEntityCasing) {
-            InventoryHelper.dropInventoryItems(world, pos, (TileEntityCasing) tileentity);
-            world.updateComparatorOutputLevel(pos, this);
+    public void beforeReplacingBlock(IBlockState state, World world, BlockPos pos, IBlockState newState, boolean flag) {
+        if (state.getBlock() != newState.getBlock()) {
+            final TileEntity tileentity = world.getTileEntity(pos);
+            if (tileentity instanceof TileEntityCasing) {
+                InventoryHelper.dropInventoryItems(world, pos, (TileEntityCasing) tileentity);
+                world.updateComparatorOutputLevel(pos, this);
+            }
+            world.removeTileEntity(pos);
         }
-        super.breakBlock(world, pos, state);
+        super.beforeReplacingBlock(state, world, pos, newState, flag);
     }
 
     // --------------------------------------------------------------------- //
@@ -229,7 +234,7 @@ public final class BlockCasing extends Block {
 
     @SuppressWarnings("deprecation")
     @Override
-    public int getWeakPower(final IBlockState blockState, final IBlockAccess world, final BlockPos pos, final EnumFacing side) {
+    public int getWeakPower(final IBlockState blockState, final IBlockReader world, final BlockPos pos, final EnumFacing side) {
         final TileEntity tileentity = world.getTileEntity(pos);
         if (tileentity instanceof TileEntityCasing) {
             final TileEntityCasing casing = (TileEntityCasing) tileentity;

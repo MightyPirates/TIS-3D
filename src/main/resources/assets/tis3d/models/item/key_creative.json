@@ -1,7 +1,7 @@
 {
     "parent": "item/handheld",
     "textures": {
-        "layer0": "tis3d:items/key_creative"
+        "layer0": "tis3d:item/key_creative"
     },
     "display": {
         "thirdperson": {

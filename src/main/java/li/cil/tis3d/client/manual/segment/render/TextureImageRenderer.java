@@ -3,12 +3,9 @@ package li.cil.tis3d.client.manual.segment.render;
 import li.cil.tis3d.api.manual.ImageRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.texture.AbstractTexture;
-import net.minecraft.client.renderer.texture.ITextureObject;
-import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.renderer.texture.TextureUtil;
-import net.minecraft.client.resources.IResource;
-import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.client.renderer.texture.*;
+import net.minecraft.resources.IResource;
+import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
@@ -73,13 +70,16 @@ public class TextureImageRenderer implements ImageRenderer {
         }
 
         @Override
-        public void loadTexture(final IResourceManager manager) throws IOException {
+        public void func_195413_a(final IResourceManager manager) throws IOException {
             deleteGlTexture();
 
             final IResource resource = manager.getResource(location);
             try (InputStream is = resource.getInputStream()) {
-                final BufferedImage bi = ImageIO.read(is);
-                TextureUtil.uploadTextureImageAllocate(getGlTextureId(), bi, false, false);
+                final NativeImage bi = NativeImage.func_195713_a(is);
+
+                TextureUtil.allocateTexture(this.getGlTextureId(), bi.getWidth(), bi.getHeight());
+                bi.func_195697_a(0, 0, 0, false);
+
                 width = bi.getWidth();
                 height = bi.getHeight();
             }

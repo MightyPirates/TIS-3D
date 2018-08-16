@@ -1,42 +1,38 @@
 package li.cil.tis3d.common.block;
 
 import li.cil.tis3d.common.init.Items;
+import li.cil.tis3d.common.tileentity.TileEntityCasing;
 import li.cil.tis3d.common.tileentity.TileEntityController;
 import net.minecraft.block.Block;
+import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+
+import javax.annotation.Nullable;
 
 /**
  * Block for the controller driving the casings.
  */
-public final class BlockController extends Block {
-    public BlockController() {
-        super(Material.IRON);
+public final class BlockController extends Block implements ITileEntityProvider {
+    public BlockController(Block.Builder builder) {
+        super(builder);
     }
 
     // --------------------------------------------------------------------- //
     // Common
 
     @Override
-    public boolean hasTileEntity(final IBlockState state) {
-        return true;
-    }
-
-    @Override
-    public TileEntity createTileEntity(final World world, final IBlockState state) {
-        return new TileEntityController();
-    }
-
-    @Override
-    public boolean onBlockActivated(final World world, final BlockPos pos, final IBlockState state, final EntityPlayer player, final EnumHand hand, final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
+    public boolean onRightClick(final IBlockState state, final World world, final BlockPos pos, final EntityPlayer player, final EnumHand hand, final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
         final ItemStack heldItem = player.getHeldItem(hand);
         if (!heldItem.isEmpty()) {
             final Item item = heldItem.getItem();
@@ -67,7 +63,15 @@ public final class BlockController extends Block {
 
             return true;
         }
-        return super.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
+        return super.onRightClick(state, world, pos, player, hand, side, hitX, hitY, hitZ);
+    }
+
+    @Override
+    public void beforeReplacingBlock(IBlockState state, World world, BlockPos pos, IBlockState newState, boolean flag) {
+        if (state.getBlock() != newState.getBlock()) {
+            world.removeTileEntity(pos);
+        }
+        super.beforeReplacingBlock(state, world, pos, newState, flag);
     }
 
     // --------------------------------------------------------------------- //
@@ -102,5 +106,11 @@ public final class BlockController extends Block {
             controller.checkNeighbors();
         }
         super.neighborChanged(state, world, pos, neighborBlock, neighborPos);
+    }
+
+    @Nullable
+    @Override
+    public TileEntity getTileEntity(IBlockReader iBlockReader) {
+        return new TileEntityController();
     }
 }

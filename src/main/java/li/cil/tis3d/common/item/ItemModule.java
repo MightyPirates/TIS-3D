@@ -6,6 +6,9 @@ import net.minecraft.item.Item;
  * Base item for all modules.
  */
 public class ItemModule extends Item {
+    public ItemModule(Builder builder) {
+        super(builder);
+    }
     // --------------------------------------------------------------------- //
     // Item
 

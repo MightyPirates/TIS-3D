@@ -1,5 +1,7 @@
 package li.cil.tis3d.common.tileentity;
 
+import li.cil.tis3d.api.infrared.InfraredReceiver;
+import li.cil.tis3d.api.infrared.InfraredReceiverTile;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
@@ -9,6 +11,8 @@ import li.cil.tis3d.api.module.traits.BlockChangeAware;
 import li.cil.tis3d.api.module.traits.BundledRedstone;
 import li.cil.tis3d.api.module.traits.Redstone;
 import li.cil.tis3d.common.Settings;
+import li.cil.tis3d.common.block.BlockCasing;
+import li.cil.tis3d.common.init.Blocks;
 import li.cil.tis3d.common.integration.redstone.RedstoneIntegration;
 import li.cil.tis3d.common.inventory.InventoryCasing;
 import li.cil.tis3d.common.inventory.SidedInventoryProxy;
@@ -26,15 +30,15 @@ import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import pl.asie.protocharset.rift.network.PacketRegistry;
+import pl.asie.protocharset.rift.network.PacketServerHelper;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -52,7 +56,9 @@ import java.util.*;
  * Casings do not tick. The modules installed in them are driven by a
  * controller (transitively) connected to their casing.
  */
-public final class TileEntityCasing extends TileEntityComputer implements SidedInventoryProxy, CasingProxy {
+public final class TileEntityCasing extends TileEntityComputer implements InfraredReceiverTile, SidedInventoryProxy, CasingProxy {
+    public static TileEntityType<TileEntityCasing> TYPE;
+
     // --------------------------------------------------------------------- //
     // Persisted data
 
@@ -78,6 +84,10 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
     private boolean redstoneDirty = true;
 
     // --------------------------------------------------------------------- //
+
+    public TileEntityCasing() {
+        super(TYPE);
+    }
 
     /**
      * Actual state tracking implementation of enabled state, used in {@link CasingImpl#isEnabled()}.
@@ -317,14 +327,16 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
         dispose();
     }
 
-    @Override
+    // TODO
+    /* @Override
     public void onChunkUnload() {
         super.onChunkUnload();
 
         dispose();
-    }
+    } */
 
-    @Override
+    // TODO
+    /* @Override
     public boolean hasCapability(final Capability<?> capability, @Nullable final EnumFacing facing) {
         if (super.hasCapability(capability, facing)) {
             return true;
@@ -362,15 +374,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
         }
 
         return null;
-    }
-
-    @Override
-    public void onDataPacket(final NetworkManager manager, final SPacketUpdateTileEntity packet) {
-        super.onDataPacket(manager, packet);
-
-        final IBlockState state = getWorld().getBlockState(getPos());
-        getWorld().notifyBlockUpdate(getPos(), state, state, 2);
-    }
+    } */
 
     @Override
     public double getMaxRenderDistanceSquared() {
@@ -390,6 +394,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
         super.readFromNBTForClient(nbt);
 
         isEnabled = nbt.getBoolean(TAG_ENABLED);
+	    getWorld().notifyBlockUpdate(getPos(), getBlockState(), getBlockState(), 2);
     }
 
     @Override
@@ -440,7 +445,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
      *
      * @param locked the new locked state of the case.
      */
-    @SideOnly(Side.CLIENT)
+
     public void setCasingLockedClient(final boolean locked) {
         casing.setLocked(locked);
     }
@@ -454,7 +459,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
      * @param stack      the new item stack in that slot, if any.
      * @param moduleData the original state of the module on the server, if present.
      */
-    @SideOnly(Side.CLIENT)
+
     public void setStackAndModuleClient(final int slot, final ItemStack stack, final NBTTagCompound moduleData) {
         inventory.setInventorySlotContents(slot, stack);
         final Module module = casing.getModule(Face.VALUES[slot]);
@@ -469,7 +474,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
      *
      * @param value the new enabled state of this casing.
      */
-    @SideOnly(Side.CLIENT)
+
     public void setEnabledClient(final boolean value) {
         isEnabled = value;
     }
@@ -482,7 +487,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
      * @param port  the port to set the locked state of.
      * @param value the new enabled state of this casing.
      */
-    @SideOnly(Side.CLIENT)
+
     public void setReceivingPipeLockedClient(final Face face, final Port port, final boolean value) {
         locked[face.ordinal()][port.ordinal()] = value;
     }
@@ -538,7 +543,8 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
 
     private void sendState() {
         final MessageCasingEnabledState message = new MessageCasingEnabledState(this, isEnabled);
-        Network.INSTANCE.getWrapper().sendToDimension(message, getWorld().provider.getDimension());
+        final Packet packet = PacketRegistry.SERVER.wrap(message);
+        PacketServerHelper.forEachWatching(world, pos, (player) -> player.connection.sendPacket(packet));
     }
 
     private void dispose() {
@@ -549,12 +555,14 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
     }
 
     private void sendCasingLockedState() {
-        Network.INSTANCE.getWrapper().sendToAllAround(new MessageCasingLockedState(this, isLocked()), Network.getTargetPoint(this, Network.RANGE_HIGH));
+        final Packet packet = PacketRegistry.SERVER.wrap(new MessageCasingLockedState(this, isLocked()));
+        PacketServerHelper.forEachWatching(world, pos, (player) -> player.connection.sendPacket(packet));
         getWorld().playSound(null, getPos(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3f, isLocked() ? 0.5f : 0.6f);
     }
 
     private void sendReceivingPipeLockedState(final Face face, final Port port) {
-        Network.INSTANCE.getWrapper().sendToAllAround(new MessageReceivingPipeLockedState(this, face, port, isReceivingPipeLocked(face, port)), Network.getTargetPoint(this, Network.RANGE_HIGH));
+        final Packet packet = PacketRegistry.SERVER.wrap(new MessageReceivingPipeLockedState(this, face, port, isReceivingPipeLocked(face, port)));
+        PacketServerHelper.forEachWatching(world, pos, (player) -> player.connection.sendPacket(packet));
         getWorld().playSound(null, getPos(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3f, isReceivingPipeLocked(face, port) ? 0.5f : 0.6f);
     }
 
@@ -592,6 +600,16 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
             compressed[i >> 1] |= (byte) c;
         }
         return compressed;
+    }
+
+    @Nullable
+    @Override
+    public InfraredReceiver getInfraredReceiver(EnumFacing facing) {
+        if (getModule(Face.fromEnumFacing(facing)) instanceof InfraredReceiver) {
+            return (InfraredReceiver) getModule(Face.fromEnumFacing(facing));
+        } else {
+            return null;
+        }
     }
 
     // --------------------------------------------------------------------- //

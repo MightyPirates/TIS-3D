@@ -1,7 +1,7 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "tis3d:items/prism"
+        "layer0": "tis3d:item/prism"
     },
     "display": {
         "thirdperson": {

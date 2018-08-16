@@ -7,11 +7,16 @@ import li.cil.tis3d.common.gui.GuiHandlerCommon;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.module.ModuleTerminal;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.IInteractionObject;
 import net.minecraft.world.World;
+import org.dimdev.rift.listener.client.GameGuiAdder;
 
 import javax.annotation.Nullable;
 
@@ -19,10 +24,8 @@ import javax.annotation.Nullable;
  * GUI handler for the client side - which is, still, all we need.
  */
 public final class GuiHandlerClient extends GuiHandlerCommon {
-    @Override
-    @Nullable
-    public Object getClientGuiElement(final int id, final EntityPlayer player, final World world, final int x, final int y, final int z) {
-        switch (GuiHandlerCommon.GuiId.VALUES[id]) {
+    public static GuiScreen getClientGuiElement(GuiId id, World world, EntityPlayer player) {
+        switch (id) {
             case BOOK_CODE:
                 return getGuiBookCode(player);
             case BOOK_MANUAL:
@@ -38,7 +41,7 @@ public final class GuiHandlerClient extends GuiHandlerCommon {
     // --------------------------------------------------------------------- //
 
     @Nullable
-    private static Object getGuiBookCode(final EntityPlayer player) {
+    private static GuiScreen getGuiBookCode(final EntityPlayer player) {
         if (!Items.isBookCode(player.getHeldItem(EnumHand.MAIN_HAND))) {
             return null;
         }
@@ -47,7 +50,7 @@ public final class GuiHandlerClient extends GuiHandlerCommon {
     }
 
     @Nullable
-    private static Object getGuiModuleTerminal(final World world) {
+    private static GuiScreen getGuiModuleTerminal(final World world) {
         final RayTraceResult hit = Minecraft.getMinecraft().objectMouseOver;
         if (hit == null || hit.typeOfHit != RayTraceResult.Type.BLOCK) {
             return null;
@@ -68,7 +71,7 @@ public final class GuiHandlerClient extends GuiHandlerCommon {
     }
 
     @Nullable
-    private static Object getGuiModuleMemory(final EntityPlayer player) {
+    private static GuiScreen getGuiModuleMemory(final EntityPlayer player) {
         if (!Items.isModuleReadOnlyMemory(player.getHeldItem(EnumHand.MAIN_HAND))) {
             return null;
         }

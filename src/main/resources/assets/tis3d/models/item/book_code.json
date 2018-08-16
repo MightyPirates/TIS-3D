@@ -1,7 +1,7 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "tis3d:items/book_code"
+        "layer0": "tis3d:item/book_code"
     },
     "display": {
         "thirdperson": {

@@ -1,0 +1,17 @@
+{
+  "id": "tis3d",
+  "name": "TIS-3D",
+  "authors": [
+    "Sangar"
+  ],
+  "listeners": [
+    "li.cil.tis3d.client.ProxyClient",
+    "li.cil.tis3d.client.renderer.TextureLoader",
+    "li.cil.tis3d.common.TIS3D",
+    "li.cil.tis3d.common.ProxyCommon",
+    "li.cil.tis3d.common.init.Blocks",
+    "li.cil.tis3d.common.init.Items",
+    "li.cil.tis3d.common.integration.redstone.RedstoneIntegration",
+    "li.cil.tis3d.common.network.Network"
+  ]
+}

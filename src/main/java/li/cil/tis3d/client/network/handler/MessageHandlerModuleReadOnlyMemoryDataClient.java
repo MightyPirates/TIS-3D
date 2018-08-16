@@ -5,11 +5,12 @@ import li.cil.tis3d.common.network.handler.AbstractMessageHandler;
 import li.cil.tis3d.common.network.message.MessageModuleReadOnlyMemoryData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import pl.asie.protocharset.rift.network.NetworkContext;
+
 
 public final class MessageHandlerModuleReadOnlyMemoryDataClient extends AbstractMessageHandler<MessageModuleReadOnlyMemoryData> {
     @Override
-    protected void onMessageSynchronized(final MessageModuleReadOnlyMemoryData message, final MessageContext context) {
+    protected void onMessageSynchronized(final MessageModuleReadOnlyMemoryData message, final NetworkContext context) {
         final GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
         if (!(guiScreen instanceof GuiModuleMemory)) {
             return;

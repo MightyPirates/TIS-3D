@@ -7,24 +7,33 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBook;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUseContext;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+
+
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The manual!
  */
 public final class ItemBookManual extends ItemBook {
+	public ItemBookManual(Item.Builder builder) {
+		super(builder);
+	}
+
     public static boolean tryOpenManual(final World world, final EntityPlayer player, @Nullable final String path) {
         if (path == null) {
             return false;
@@ -42,18 +51,18 @@ public final class ItemBookManual extends ItemBook {
     // --------------------------------------------------------------------- //
     // Item
 
-    @SideOnly(Side.CLIENT)
+
     @Override
-    public void addInformation(final ItemStack stack, @Nullable final World world, final List<String> tooltip, final ITooltipFlag flag) {
+    public void addInformation(final ItemStack stack, @Nullable final World world, final List<ITextComponent> tooltip, final ITooltipFlag flag) {
         super.addInformation(stack, world, tooltip, flag);
         final String info = I18n.format(Constants.TOOLTIP_BOOK_MANUAL);
         final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
-        tooltip.addAll(fontRenderer.listFormattedStringToWidth(info, li.cil.tis3d.common.Constants.MAX_TOOLTIP_WIDTH));
+	    tooltip.addAll(fontRenderer.listFormattedStringToWidth(info, li.cil.tis3d.common.Constants.MAX_TOOLTIP_WIDTH).stream().map(TextComponentString::new).collect(Collectors.toList()));
     }
 
     @Override
-    public EnumActionResult onItemUse(final EntityPlayer player, final World world, final BlockPos pos, final EnumHand hand, final EnumFacing facing, final float hitX, final float hitY, final float hitZ) {
-        return tryOpenManual(world, player, ManualAPI.pathFor(world, pos)) ? EnumActionResult.SUCCESS : EnumActionResult.PASS;
+    public EnumActionResult func_195939_a(final ItemUseContext context) {
+        return tryOpenManual(context.func_195991_k(), context.func_195999_j(), ManualAPI.pathFor(context.func_195991_k(), context.func_195995_a())) ? EnumActionResult.SUCCESS : EnumActionResult.PASS;
     }
 
     @Override

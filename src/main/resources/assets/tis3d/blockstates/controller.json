@@ -1,14 +1,7 @@
 {
-    "forge_marker": 1,
-    "defaults": {
-        "textures": {
-            "controller": "tis3d:blocks/controller",
-            "particle": "tis3d:blocks/controller"
-        },
-        "model": "tis3d:controller"
-    },
     "variants": {
-        "normal": [{}],
-        "inventory": [{}]
+        "": {
+            "model": "tis3d:block/controller"
+        }
     }
 }

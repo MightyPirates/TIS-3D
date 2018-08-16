@@ -16,9 +16,9 @@ import net.minecraft.block.Block;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+
+
+import org.dimdev.riftloader.RiftLoader;
 
 import java.util.Arrays;
 
@@ -91,7 +91,8 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
         channel = 0;
 
         final BundledRedstoneOutputChangedEvent event = new BundledRedstoneOutputChangedEvent(this, -1);
-        MinecraftForge.EVENT_BUS.post(event);
+	    RiftLoader.instance.getListeners(BundledRedstoneOutputChangedEvent.Listener.class).forEach((l) -> l.onBundledRedstoneOutputChanged(event));
+        //MinecraftForge.EVENT_BUS.post(event);
 
         sendData();
     }
@@ -118,7 +119,7 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
         channel = data.readShort();
     }
 
-    @SideOnly(Side.CLIENT)
+
     @Override
     public void render(final boolean enabled, final float partialTicks) {
         if (!isVisible()) {
@@ -303,7 +304,8 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
 
         // Notify bundled redstone APIs.
         final BundledRedstoneOutputChangedEvent event = new BundledRedstoneOutputChangedEvent(this, channel);
-        MinecraftForge.EVENT_BUS.post(event);
+	    RiftLoader.instance.getListeners(BundledRedstoneOutputChangedEvent.Listener.class).forEach((l) -> l.onBundledRedstoneOutputChanged(event));
+	    //MinecraftForge.EVENT_BUS.post(event);
 
         sendData();
     }
@@ -316,7 +318,7 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
 
         scheduledNeighborUpdate = false;
         final Block blockType = world.getBlockState(getCasing().getPosition()).getBlock();
-        world.notifyNeighborsOfStateChange(getCasing().getPosition(), blockType, false);
+        world.notifyNeighborsOfStateChange(getCasing().getPosition(), blockType);
     }
 
     /**
@@ -334,7 +336,7 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
         getCasing().sendData(getFace(), data, DATA_TYPE_UPDATE);
     }
 
-    @SideOnly(Side.CLIENT)
+
     private void renderBar(final short[] values, final float u) {
         GlStateManager.disableTexture2D();
         for (int channel = 0; channel < values.length; channel++) {

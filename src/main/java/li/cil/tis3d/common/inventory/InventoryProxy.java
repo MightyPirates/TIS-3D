@@ -89,8 +89,13 @@ public interface InventoryProxy extends IInventory {
     }
 
     @Override
-    default String getName() {
+    default ITextComponent getName() {
         return getInventory().getName();
+    }
+
+    @Override
+    default ITextComponent getCustomName() {
+        return getInventory().getCustomName();
     }
 
     @Override
@@ -101,5 +106,15 @@ public interface InventoryProxy extends IInventory {
     @Override
     default ITextComponent getDisplayName() {
         return getInventory().getDisplayName();
+    }
+
+    @Override
+    default int getWidth() {
+        return getInventory().getWidth();
+    }
+
+    @Override
+    default int getHeight() {
+        return getInventory().getHeight();
     }
 }

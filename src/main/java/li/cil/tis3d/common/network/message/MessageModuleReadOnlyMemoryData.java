@@ -1,10 +1,10 @@
 package li.cil.tis3d.common.network.message;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import pl.asie.protocharset.rift.network.SendNetwork;
 
-public final class MessageModuleReadOnlyMemoryData implements IMessage {
-    private byte[] data;
+public final class MessageModuleReadOnlyMemoryData extends AbstractMessage {
+    @SendNetwork public byte[] data;
 
     public MessageModuleReadOnlyMemoryData(final byte[] data) {
         this.data = data;
@@ -18,20 +18,5 @@ public final class MessageModuleReadOnlyMemoryData implements IMessage {
 
     public byte[] getData() {
         return data;
-    }
-
-    // --------------------------------------------------------------------- //
-    // IMessage
-
-    @Override
-    public void fromBytes(final ByteBuf buf) {
-        data = new byte[buf.readInt()];
-        buf.readBytes(data);
-    }
-
-    @Override
-    public void toBytes(final ByteBuf buf) {
-        buf.writeInt(data.length);
-        buf.writeBytes(data);
     }
 }

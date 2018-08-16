@@ -4,16 +4,17 @@ import com.google.common.base.Strings;
 import com.google.common.io.Files;
 import li.cil.tis3d.api.detail.ManualAPI;
 import li.cil.tis3d.api.manual.*;
+import li.cil.tis3d.client.gui.GuiHandlerClient;
 import li.cil.tis3d.client.gui.GuiManual;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.gui.GuiHandlerCommon;
+import li.cil.tis3d.common.network.message.MessageOpenGUI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -147,7 +148,9 @@ public final class ManualAPIImpl implements ManualAPI {
     @Nullable
     public Iterable<String> contentFor(final String path) {
         final String cleanPath = Files.simplifyPath(path);
-        final String language = FMLCommonHandler.instance().getCurrentLanguage();
+        // TODO
+        // final String language = FMLCommonHandler.instance().getCurrentLanguage();
+        final String language = "en_us";
         final Optional<Iterable<String>> result = contentForWithRedirects(PATTERN_LANGUAGE_KEY.matcher(cleanPath).replaceAll(language));
         if (result.isPresent()) {
             return result.get();
@@ -178,7 +181,14 @@ public final class ManualAPIImpl implements ManualAPI {
     @Override
     public void openFor(final EntityPlayer player) {
         if (player.getEntityWorld().isRemote) {
-            player.openGui(TIS3D.instance, GuiHandlerCommon.GuiId.BOOK_MANUAL.ordinal(), player.getEntityWorld(), 0, 0, 0);
+            openForClient(player);
+        }
+    }
+
+    private void openForClient(final EntityPlayer player) {
+        GuiScreen screen = GuiHandlerClient.getClientGuiElement(GuiHandlerCommon.GuiId.BOOK_MANUAL, player.getEntityWorld(), player);
+        if (screen != null) {
+            Minecraft.getMinecraft().displayGuiScreen(screen);
         }
     }
 

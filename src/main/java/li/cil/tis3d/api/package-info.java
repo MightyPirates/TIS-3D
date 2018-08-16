@@ -13,13 +13,9 @@
  * can interact with the casing and other modules.
  */
 @ParametersAreNonnullByDefault
-@MethodsReturnNonnullByDefault
-@net.minecraftforge.fml.common.API(
-        owner = API.MOD_ID,
-        provides = API.MOD_ID + "API",
-        apiVersion = API.MOD_VERSION)
+
 package li.cil.tis3d.api;
 
-import mcp.MethodsReturnNonnullByDefault;
+
 
 import javax.annotation.ParametersAreNonnullByDefault;

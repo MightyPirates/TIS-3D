@@ -16,8 +16,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+
+
 
 import java.util.Arrays;
 
@@ -145,7 +145,7 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
         }
     }
 
-    @SideOnly(Side.CLIENT)
+
     @Override
     public void render(final boolean enabled, final float partialTicks) {
         if (!enabled || !isVisible()) {
@@ -214,7 +214,7 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
      *
      * @param brightness the brightness the cell is rendered at (the alpha).
      */
-    @SideOnly(Side.CLIENT)
+
     protected void setCellColor(final float brightness) {
         GlStateManager.color(0.4f, 1f, 1f, brightness);
     }

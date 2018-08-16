@@ -1,8 +1,16 @@
 package li.cil.tis3d.common;
 
-import net.minecraftforge.common.config.Configuration;
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
+import pl.asie.protocharset.lib.repack.blue.endless.jankson.Jankson;
+import pl.asie.protocharset.lib.repack.blue.endless.jankson.JsonObject;
+import pl.asie.protocharset.lib.repack.blue.endless.jankson.JsonPrimitive;
+import pl.asie.protocharset.lib.repack.blue.endless.jankson.impl.SyntaxError;
+import net.minecraft.launchwrapper.Launch;
+import net.minecraft.util.ResourceLocation;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -60,12 +68,12 @@ public final class Settings {
 
     private static final String CONFIG_VERSION = "1";
 
-    private static final String CATEGORY_NETWORK = "network";
-    private static final String CATEGORY_CONTROLLER = "controller";
-    private static final String CATEGORY_MODULE = "module";
-    private static final String CATEGORY_MODULE_EXECUTION = "module.execution";
-    private static final String CATEGORY_MODULE_INFRARED = "module.infrared";
-    private static final String CATEGORY_MODULE_TERMINAL = "module.terminal";
+    private static final String CATEGORY_NETWORK = "network.";
+    private static final String CATEGORY_CONTROLLER = "controller.";
+    private static final String CATEGORY_MODULE = "module.";
+    private static final String CATEGORY_MODULE_EXECUTION = "module.execution.";
+    private static final String CATEGORY_MODULE_INFRARED = "module.infrared.";
+    private static final String CATEGORY_MODULE_TERMINAL = "module.terminal.";
 
     private static final String NAME_ANIMATE_TYPING = "animateTyping";
     private static final String NAME_MAX_PACKETS_PER_TICK = "maxPacketsPerTick";
@@ -87,8 +95,70 @@ public final class Settings {
 
     // --------------------------------------------------------------------- //
 
-    public static void load(final File configFile) {
-        final Configuration config = new Configuration(configFile, CONFIG_VERSION);
+    private static boolean loaded;
+
+    @SuppressWarnings("ConstantConditions")
+    public static void load() {
+        if (loaded) return;
+        loaded = true;
+        File configDir = new File(Launch.minecraftHome, "config");
+        if (!configDir.exists()) configDir.mkdir();
+        File configFile = new File(configDir, "tis3d.hjson");
+
+        JsonObject config;
+        try {
+            config = Jankson.builder().build().load(configFile);
+        } catch (SyntaxError | IOException var9) {
+            config = new JsonObject();
+        }
+
+        config.putDefault("network", new JsonObject(), null);
+        config.putDefault("controller", new JsonObject(), null);
+        config.putDefault("module", new JsonObject(), null);
+
+        // Rebuild list of disabled modules.
+        disabledModules.clear();
+
+        for (final ResourceLocation module : Constants.MODULES) {
+            final String name;
+            if (module.getPath().startsWith("module_")) {
+                name = module.getPath().substring(7, 8).toLowerCase(Locale.ROOT) + module.getPath().substring(8);
+            } else {
+                name = module.getPath().substring(0, 1).toLowerCase(Locale.ROOT) + module.getPath().substring(1);
+            }
+            config.recursiveGet(JsonObject.class, "module").putDefault(name, new JsonObject(), null);
+            config.recursiveGet(JsonObject.class, CATEGORY_MODULE + name).putDefault("enabled", new JsonPrimitive(true), COMMENT_MODULE_ENABLED);
+
+            boolean enabled = config.recursiveGet(JsonObject.class, CATEGORY_MODULE + name).get(Boolean.class, "enabled");
+            if (!enabled) {
+                disabledModules.add(name);
+            }
+        }
+
+        config.recursiveGet(JsonObject.class, "network").putDefault(NAME_MAX_PACKETS_PER_TICK, new JsonPrimitive(maxPacketsPerTick), COMMENT_MAX_PACKETS_PER_TICK + " [1-500]");
+        config.recursiveGet(JsonObject.class, "network").putDefault(NAME_MAX_PARTICLES_PER_TICK, new JsonPrimitive(maxParticlesPerTick), COMMENT_MAX_PARTICLES_PER_TICK + " [1-500]");
+        config.recursiveGet(JsonObject.class, "controller").putDefault(NAME_MAX_CASINGS_PER_CONTROLLER, new JsonPrimitive(maxCasingsPerController), COMMENT_MAX_CASINGS_PER_CONTROLLER + " [1-512]");
+        config.recursiveGet(JsonObject.class, "module.execution").putDefault(NAME_MAX_LINES_PER_PROGRAM, new JsonPrimitive(maxLinesPerProgram), COMMENT_MAX_LINES_PER_PROGRAM + " [1-200]");
+        config.recursiveGet(JsonObject.class, "module.execution").putDefault(NAME_MAX_COLUMNS_PER_LINE, new JsonPrimitive(maxColumnsPerLine), COMMENT_MAX_COLUMNS_PER_LINE + " [1-80]");
+        config.recursiveGet(JsonObject.class, "module.infrared").putDefault(NAME_MAX_QUEUE_LENGTH, new JsonPrimitive(maxInfraredQueueLength), COMMENT_MAX_QUEUE_LENGTH + " [1-64]");
+        config.recursiveGet(JsonObject.class, "module.terminal").putDefault(NAME_ANIMATE_TYPING, new JsonPrimitive(animateTypingHand), COMMENT_ANIMATE_TYPING);
+
+        maxPacketsPerTick = config.recursiveGet(Integer.TYPE, CATEGORY_NETWORK + NAME_MAX_PACKETS_PER_TICK);
+        maxParticlesPerTick = config.recursiveGet(Integer.TYPE, CATEGORY_NETWORK + NAME_MAX_PARTICLES_PER_TICK);
+        maxCasingsPerController = config.recursiveGet(Integer.TYPE, CATEGORY_CONTROLLER + NAME_MAX_CASINGS_PER_CONTROLLER);
+        maxLinesPerProgram = config.recursiveGet(Integer.TYPE, CATEGORY_MODULE_EXECUTION + NAME_MAX_LINES_PER_PROGRAM);
+        maxColumnsPerLine = config.recursiveGet(Integer.TYPE, CATEGORY_MODULE_EXECUTION + NAME_MAX_COLUMNS_PER_LINE);
+        maxInfraredQueueLength = config.recursiveGet(Integer.TYPE, CATEGORY_MODULE_INFRARED + NAME_MAX_QUEUE_LENGTH);
+        animateTypingHand = config.recursiveGet(Boolean.TYPE, CATEGORY_MODULE_TERMINAL + NAME_ANIMATE_TYPING);
+
+        try {
+            Files.write(config.toJson(true, true), configFile, Charsets.UTF_8);
+        } catch (Exception var8) {
+            var8.printStackTrace();
+        }
+
+        // TODO
+        /* final Configuration config = new Configuration(configFile, CONFIG_VERSION);
 
         config.load();
 
@@ -122,10 +192,10 @@ public final class Settings {
 
         if (config.hasChanged()) {
             config.save();
-        }
+        } */
     }
 
-    private static void upgradeConfig(final Configuration config) {
+/*    private static void upgradeConfig(final Configuration config) {
         final String loadedVersion = config.getLoadedConfigVersion();
         int loadedVersionInt;
         try {
@@ -155,7 +225,7 @@ public final class Settings {
         if (!config.getBoolean(NAME_MODULE_ENABLED, path, true, COMMENT_MODULE_ENABLED)) {
             disabledModules.add(name);
         }
-    }
+    } */
 
     // --------------------------------------------------------------------- //
 

@@ -1,62 +1,78 @@
 package li.cil.tis3d.common.item;
 
 import li.cil.tis3d.api.machine.Casing;
+import li.cil.tis3d.client.gui.GuiHandlerClient;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.gui.GuiHandlerCommon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBook;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+
+
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * The code book, utility book for coding ASM programs for execution modules.
  */
 public final class ItemBookCode extends ItemBook {
-    public ItemBookCode() {
-        setMaxStackSize(1);
+    public ItemBookCode(Item.Builder builder) {
+        super(builder.maxStackSize(1));
     }
 
     // --------------------------------------------------------------------- //
     // Item
 
-    @SideOnly(Side.CLIENT)
+
     @Override
-    public void addInformation(final ItemStack stack, @Nullable final World world, final List<String> tooltip, final ITooltipFlag flag) {
+    public void addInformation(final ItemStack stack, @Nullable final World world, final List<ITextComponent> tooltip, final ITooltipFlag flag) {
         super.addInformation(stack, world, tooltip, flag);
         final String info = I18n.format(Constants.TOOLTIP_BOOK_CODE);
         final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
-        tooltip.addAll(fontRenderer.listFormattedStringToWidth(info, Constants.MAX_TOOLTIP_WIDTH));
+        tooltip.addAll(fontRenderer.listFormattedStringToWidth(info, li.cil.tis3d.common.Constants.MAX_TOOLTIP_WIDTH).stream().map(TextComponentString::new).collect(Collectors.toList()));
     }
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(final World world, final EntityPlayer player, final EnumHand hand) {
         if (world.isRemote) {
-            player.openGui(TIS3D.instance, GuiHandlerCommon.GuiId.BOOK_CODE.ordinal(), world, 0, 0, 0);
+            openForClient(player);
         }
-        return super.onItemRightClick(world, player, hand);
+        GuiHandlerCommon.sendModuleMemory(player);
+        return new ActionResult(EnumActionResult.SUCCESS, player.getHeldItem(hand));
     }
 
-    @Override
-    public boolean doesSneakBypassUse(final ItemStack stack, final IBlockAccess world, final BlockPos pos, final EntityPlayer player) {
+	private void openForClient(final EntityPlayer player) {
+		GuiScreen screen = GuiHandlerClient.getClientGuiElement(GuiHandlerCommon.GuiId.BOOK_CODE, player.getEntityWorld(), player);
+		if (screen != null) {
+			Minecraft.getMinecraft().displayGuiScreen(screen);
+		}
+	}
+
+    // TODO
+    /* @Override
+    public boolean doesSneakBypassUse(final ItemStack stack, final IBlockReader world, final BlockPos pos, final EntityPlayer player) {
         return world.getTileEntity(pos) instanceof Casing;
-    }
+    } */
 
     // --------------------------------------------------------------------- //
     // ItemBook
@@ -281,8 +297,8 @@ public final class ItemBookCode extends ItemBook {
         public void readFromNBT(final NBTTagCompound nbt) {
             pages.clear();
 
-            final NBTTagList pagesNbt = nbt.getTagList(TAG_PAGES, net.minecraftforge.common.util.Constants.NBT.TAG_STRING);
-            for (int index = 0; index < pagesNbt.tagCount(); index++) {
+            final NBTTagList pagesNbt = nbt.getTagList(TAG_PAGES, Constants.NBT.TAG_STRING);
+            for (int index = 0; index < pagesNbt.size(); index++) {
                 pages.add(Arrays.asList(Constants.PATTERN_LINES.split(pagesNbt.getStringTagAt(index))));
             }
 
@@ -301,7 +317,7 @@ public final class ItemBookCode extends ItemBook {
             for (int index = 0; index < pages.size(); index++) {
                 final List<String> program = pages.get(index);
                 if (program.size() > 1 || program.get(0).length() > 0) {
-                    pagesNbt.appendTag(new NBTTagString(String.join("\n", program)));
+                    pagesNbt.add(new NBTTagString(String.join("\n", program)));
                 } else if (index < selectedPage) {
                     removed++;
                 }

@@ -138,9 +138,6 @@ public final class PipeImpl implements Pipe {
 
     @Override
     public void beginWrite(final short value) {
-        if (writeState == State.COMPLETE) { // TODO Remove in MC 1.13
-            return; // Silently ignore, backwards compatibility.
-        }
         if (writeState != State.IDLE) {
             throw new IllegalStateException("Trying to write to a busy pipe. Check isWriting().");
         }
@@ -168,9 +165,6 @@ public final class PipeImpl implements Pipe {
 
     @Override
     public void beginRead() {
-        if (readState == State.COMPLETE) { // TODO Remove in MC 1.13
-            return; // Silently ignore, backwards compatibility.
-        }
         if (readState != State.IDLE) {
             throw new IllegalStateException("Trying to read from a busy pipe. Check isReading().");
         }
@@ -215,9 +209,9 @@ public final class PipeImpl implements Pipe {
 
     private void sendEffect() {
         final BlockPos position = host.getPipeHostPosition();
-        final double ox = Face.toEnumFacing(receivingFace).getFrontOffsetX() + Face.toEnumFacing(sendingFace).getFrontOffsetX();
-        final double oy = Face.toEnumFacing(receivingFace).getFrontOffsetY() + Face.toEnumFacing(sendingFace).getFrontOffsetY();
-        final double oz = Face.toEnumFacing(receivingFace).getFrontOffsetZ() + Face.toEnumFacing(sendingFace).getFrontOffsetZ();
+        final double ox = Face.toEnumFacing(receivingFace).getXOffset() + Face.toEnumFacing(sendingFace).getXOffset();
+        final double oy = Face.toEnumFacing(receivingFace).getYOffset() + Face.toEnumFacing(sendingFace).getYOffset();
+        final double oz = Face.toEnumFacing(receivingFace).getZOffset() + Face.toEnumFacing(sendingFace).getZOffset();
         final double x = ox * 0.55 + position.getX() + 0.5;
         final double y = oy * 0.55 + position.getY() + 0.5;
         final double z = oz * 0.55 + position.getZ() + 0.5;

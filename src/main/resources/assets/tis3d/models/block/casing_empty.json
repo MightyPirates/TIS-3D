@@ -119,5 +119,9 @@
                 "north": { "texture": "#casing", "cullface": "north" }
             }
         }
-    ]
+    ],
+    "textures": {
+        "casing": "tis3d:block/casing_empty",
+        "particle": "tis3d:block/casing_empty"
+    }
 }

@@ -598,5 +598,9 @@
                 "west": { "texture": "#controller", "cullface": "up" }
             }
         }
-    ]
+    ],
+    "textures": {
+        "controller": "tis3d:block/controller",
+        "particle": "tis3d:block/controller"
+    }
 }

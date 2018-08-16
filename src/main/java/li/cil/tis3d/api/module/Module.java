@@ -8,8 +8,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * A module that can be installed in a TIS-3D {@link Casing}.
@@ -180,7 +178,6 @@ public interface Module {
      * @param enabled      whether the module is currently enabled.
      * @param partialTicks the partial time elapsed in this tick.
      */
-    @SideOnly(Side.CLIENT)
     void render(final boolean enabled, final float partialTicks);
 
     // --------------------------------------------------------------------- //

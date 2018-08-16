@@ -9,8 +9,6 @@ import li.cil.tis3d.util.EnumUtils;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * This is a utility implementation of a rotatable module.
@@ -46,11 +44,10 @@ public abstract class AbstractModuleRotatable extends AbstractModule implements 
     /**
      * Apply the module's rotation to the OpenGL state.
      */
-    @SideOnly(Side.CLIENT)
     protected void rotateForRendering() {
         final int rotation = Port.ROTATION[getFacing().ordinal()];
         GlStateManager.translate(0.5f, 0.5f, 0);
-        GlStateManager.rotate(90 * rotation, 0, 0, Face.toEnumFacing(getFace()).getFrontOffsetY());
+        GlStateManager.rotate(90 * rotation, 0, 0, Face.toEnumFacing(getFace()).getYOffset());
         GlStateManager.translate(-0.5f, -0.5f, 0);
     }
 

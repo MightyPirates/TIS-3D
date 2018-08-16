@@ -10,7 +10,6 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -96,7 +95,9 @@ public final class SerialAPIImpl implements SerialAPI {
         @Override
         @Nullable
         public Iterable<String> getContent(final String path) {
-            final String language = FMLCommonHandler.instance().getCurrentLanguage();
+            // TODO
+            // final String language = FMLCommonHandler.instance().getCurrentLanguage();
+            final String language = "en_us";
             final String localizedProtocolsPath = PATTERN_LANGUAGE_KEY.matcher(SERIAL_PROTOCOLS_PATH).replaceAll(language);
             if (localizedProtocolsPath.equals(path)) {
                 final String localizedTemplatePath = PATTERN_LANGUAGE_KEY.matcher(SERIAL_PROTOCOLS_TEMPLATE).replaceAll(language);

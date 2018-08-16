@@ -6,12 +6,9 @@ import li.cil.tis3d.common.module.ModuleTerminal;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.EnumHand;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.input.Keyboard;
+import net.minecraft.util.SharedConstants;
+
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
@@ -19,7 +16,7 @@ import java.io.IOException;
 /**
  * Invisible GUI for the terminal module, purely used to grab keyboard input.
  */
-@SideOnly(Side.CLIENT)
+
 public final class GuiModuleTerminal extends GuiScreen {
     private final ModuleTerminal module;
 
@@ -59,32 +56,44 @@ public final class GuiModuleTerminal extends GuiScreen {
     }
 
     @Override
-    protected void keyTyped(final char typedChar, final int keyCode) throws IOException {
-        super.keyTyped(typedChar, keyCode);
-
-        if (keyCode == Keyboard.KEY_ESCAPE) {
-            return;
+    public boolean keyPressed(int keyCode, int scancode, int mods) {
+        if (super.keyPressed(keyCode, scancode, mods)) {
+            return true;
         }
 
-        if (typedChar != '\0') {
-            module.writeToInput(typedChar);
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean charTyped(char chr, int code) {
+        if (super.charTyped(chr, code)) {
+            return true;
+        }
+
+        if (chr != '\0') {
+            module.writeToInput(chr);
 
             if (Settings.animateTypingHand) {
                 mc.player.swingArm(EnumHand.MAIN_HAND);
             }
+            return true;
+        } else {
+            return false;
         }
     }
 
     @Override
     public void initGui() {
-        Keyboard.enableRepeatEvents(true);
-        MinecraftForge.EVENT_BUS.register(this);
+        // TODO Keyboard.enableRepeatEvents(true);
     }
 
     @Override
     public void onGuiClosed() {
-        Keyboard.enableRepeatEvents(false);
-        MinecraftForge.EVENT_BUS.unregister(this);
+        // TODO Keyboard.enableRepeatEvents(false);
     }
 
     @Override
@@ -92,9 +101,10 @@ public final class GuiModuleTerminal extends GuiScreen {
         return false;
     }
 
-    @SubscribeEvent
+    // TODO
+    /* @SubscribeEvent
     public void handleRenderGameOverlay(final RenderGameOverlayEvent.Pre event) {
         event.setCanceled(true);
         mc.entityRenderer.setupOverlayRendering();
-    }
+    } */
 }

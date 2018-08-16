@@ -6,11 +6,13 @@ import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.module.ModuleRandomAccessMemory;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageModuleReadOnlyMemoryData;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumHand;
-import org.lwjgl.input.Keyboard;
+import org.lwjgl.glfw.GLFW;
+import pl.asie.protocharset.rift.network.PacketRegistry;
 
 import java.io.IOException;
 
@@ -53,7 +55,7 @@ public final class GuiModuleMemory extends GuiScreen {
         guiX = (width - GUI_WIDTH) / 2;
         guiY = (height - GUI_HEIGHT) / 2;
 
-        Keyboard.enableRepeatEvents(true);
+        // TODO Keyboard.enableRepeatEvents(true);
     }
 
     @Override
@@ -64,10 +66,10 @@ public final class GuiModuleMemory extends GuiScreen {
         // data to avoid erasing ROM when closing UI again too quickly.
         if (receivedData) {
             // Save any changes made and send them to the server.
-            Network.INSTANCE.getWrapper().sendToServer(new MessageModuleReadOnlyMemoryData(data));
+            Minecraft.getMinecraft().getConnection().sendPacket(PacketRegistry.CLIENT.wrap(new MessageModuleReadOnlyMemoryData(data)));
         }
 
-        Keyboard.enableRepeatEvents(false);
+        // TODO Keyboard.enableRepeatEvents(false);
     }
 
     @Override
@@ -100,28 +102,42 @@ public final class GuiModuleMemory extends GuiScreen {
     }
 
     @Override
-    protected void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) throws IOException {
-        super.mouseClicked(mouseX, mouseY, mouseButton);
-
-        selectCellAt(mouseX, mouseY);
-    }
-
-    @Override
-    protected void mouseClickMove(final int mouseX, final int mouseY, final int clickedMouseButton, final long timeSinceLastClick) {
-        super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
-
-        selectCellAt(mouseX, mouseY);
-    }
-
-    @Override
-    protected void keyTyped(final char typedChar, final int keyCode) throws IOException {
-        super.keyTyped(typedChar, keyCode);
-
-        if (!receivedData) {
-            return;
+    public boolean mouseClicked(final double mouseXd, final double mouseYd, final int mouseButton) {
+        if (super.mouseClicked(mouseXd, mouseYd, mouseButton)) {
+            return true;
         }
 
-        final int digit = Character.digit(typedChar, 16);
+        int mouseX = (int) Math.round(mouseXd);
+        int mouseY = (int) Math.round(mouseYd);
+
+        selectCellAt(mouseX, mouseY);
+        return true;
+    }
+
+    @Override
+    public boolean mouseDragged(final double mouseXd, final double mouseYd, final int clickedMouseButton, final double da, final double db) {
+        if (super.mouseDragged(mouseXd, mouseYd, clickedMouseButton, da, db)) {
+            return true;
+        }
+
+        int mouseX = (int) Math.round(mouseXd);
+        int mouseY = (int) Math.round(mouseYd);
+
+        selectCellAt(mouseX, mouseY);
+        return true;
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scancode, int mods) {
+        if (super.keyPressed(keyCode, scancode, mods)) {
+            return true;
+        }
+
+        if (!receivedData) {
+            return false;
+        }
+
+        final int digit = Character.digit(keyCode, 16);
         if (digit >= 0) {
             if (highNibble) {
                 byte value = data[selectedCell];
@@ -138,10 +154,10 @@ public final class GuiModuleMemory extends GuiScreen {
             if (highNibble) {
                 selectedCell = (selectedCell + 1) % data.length;
             }
-        } else if (keyCode == Keyboard.KEY_DELETE) {
+        } else if (keyCode == GLFW.GLFW_KEY_DELETE) {
             data[selectedCell] = 0;
             highNibble = true;
-        } else if (keyCode == Keyboard.KEY_BACK) {
+        } else if (keyCode == GLFW.GLFW_KEY_BACKSPACE) {
             if (highNibble) {
                 selectedCell = (selectedCell - 1 + data.length) % data.length;
             }
@@ -152,8 +168,8 @@ public final class GuiModuleMemory extends GuiScreen {
             int row = (selectedCell & 0xF0) >> 4;
 
             switch (keyCode) {
-                case Keyboard.KEY_LEFT:
-                case Keyboard.KEY_H:
+                case GLFW.GLFW_KEY_LEFT:
+                case GLFW.GLFW_KEY_H:
                     if (col == 0) {
                         col = 15;
                         row = (row - 1 + 16) % 16;
@@ -161,8 +177,8 @@ public final class GuiModuleMemory extends GuiScreen {
                         --col;
                     }
                     break;
-                case Keyboard.KEY_RIGHT:
-                case Keyboard.KEY_L:
+                case GLFW.GLFW_KEY_RIGHT:
+                case GLFW.GLFW_KEY_L:
                     if (col == 15) {
                         col = 0;
                         row = (row + 1) % 16;
@@ -170,21 +186,23 @@ public final class GuiModuleMemory extends GuiScreen {
                         ++col;
                     }
                     break;
-                case Keyboard.KEY_UP:
-                case Keyboard.KEY_K:
+                case GLFW.GLFW_KEY_UP:
+                case GLFW.GLFW_KEY_K:
                     row = (row - 1 + 16) % 16;
                     break;
-                case Keyboard.KEY_DOWN:
-                case Keyboard.KEY_J:
+                case GLFW.GLFW_KEY_DOWN:
+                case GLFW.GLFW_KEY_J:
                     row = (row + 1) % 16;
                     break;
                 default:
-                    return;
+                    return false;
             }
 
             selectedCell = (row << 4) | col;
             highNibble = true;
         }
+
+        return true;
     }
 
     @Override
@@ -286,7 +304,7 @@ public final class GuiModuleMemory extends GuiScreen {
         GlStateManager.pushMatrix();
         GlStateManager.translate(x, y, 0);
 
-        mc.renderEngine.bindTexture(TextureLoader.LOCATION_GUI_MEMORY);
+        mc.getTextureManager().bindTexture(TextureLoader.LOCATION_GUI_MEMORY);
         final int vPos = (int) (mc.world.getTotalWorldTime() % 16) * 8;
         drawTexturedModalRect(0, 0, 256 - (CELL_WIDTH + 1), vPos, 11, 8);
 

@@ -1,7 +1,7 @@
 package li.cil.tis3d.client.renderer.font;
 
-import gnu.trove.map.TCharIntMap;
-import gnu.trove.map.hash.TCharIntHashMap;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -14,7 +14,7 @@ import org.lwjgl.opengl.GL11;
  * Base implementation for texture based font rendering.
  */
 public abstract class AbstractFontRenderer implements FontRenderer {
-    private final TCharIntMap CHAR_MAP;
+    private final Int2IntMap CHAR_MAP;
 
     private final int COLUMNS = getResolution() / (getCharWidth() + getGapU());
     private final float U_SIZE = getCharWidth() / (float) getResolution();
@@ -23,7 +23,7 @@ public abstract class AbstractFontRenderer implements FontRenderer {
     private final float V_STEP = (getCharHeight() + getGapV()) / (float) getResolution();
 
     AbstractFontRenderer() {
-        CHAR_MAP = new TCharIntHashMap();
+        CHAR_MAP = new Int2IntOpenHashMap();
         final CharSequence chars = getCharacters();
         for (int index = 0; index < chars.length(); index++) {
             CHAR_MAP.put(chars.charAt(index), index);

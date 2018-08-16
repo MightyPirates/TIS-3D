@@ -25,7 +25,7 @@ import net.minecraft.util.math.RayTraceResult;
  * the corresponding capability attached automatically.
  * <p>
  * Note that for non-opaque blocks, defined as <tt>!{@link Material#blocksMovement()} ||
- * !{@link Material#isOpaque()} || !{@link Material#blocksLight()})</tt>) this will
+ * !{@link Material#isOpaque()}</tt> this will
  * never be called, as they will be skipped when performing a collision check!
  */
 public interface InfraredReceiver {

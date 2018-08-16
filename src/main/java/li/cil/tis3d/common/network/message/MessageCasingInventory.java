@@ -6,14 +6,15 @@ import li.cil.tis3d.common.TIS3D;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
+import pl.asie.protocharset.rift.network.SendNetwork;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 
 public final class MessageCasingInventory extends AbstractMessageWithLocation {
-    private int slot;
-    private ItemStack stack;
-    private NBTTagCompound moduleData;
+    @SendNetwork public int slot;
+    @SendNetwork public ItemStack stack;
+    @SendNetwork public NBTTagCompound moduleData;
 
     public MessageCasingInventory(final Casing casing, final int slot, final ItemStack stack, @Nullable final NBTTagCompound moduleData) {
         super(casing.getCasingWorld(), casing.getPosition());
@@ -38,39 +39,5 @@ public final class MessageCasingInventory extends AbstractMessageWithLocation {
 
     public NBTTagCompound getModuleData() {
         return moduleData != null ? moduleData : new NBTTagCompound();
-    }
-
-    // --------------------------------------------------------------------- //
-
-    @Override
-    public void fromBytes(final ByteBuf buf) {
-        super.fromBytes(buf);
-
-        final PacketBuffer packet = new PacketBuffer(buf);
-
-        slot = packet.readByte() & 0xFF;
-        try {
-            stack = packet.readItemStack();
-        } catch (final IOException e) {
-            TIS3D.getLog().warn("Failed parsing received ItemStack.", e);
-            stack = ItemStack.EMPTY;
-        }
-        try {
-            moduleData = packet.readCompoundTag();
-        } catch (final IOException e) {
-            TIS3D.getLog().warn("Failed parsing received NBTTagCompound.", e);
-            moduleData = new NBTTagCompound();
-        }
-    }
-
-    @Override
-    public void toBytes(final ByteBuf buf) {
-        super.toBytes(buf);
-
-        final PacketBuffer packet = new PacketBuffer(buf);
-
-        packet.writeByte(slot);
-        packet.writeItemStack(stack);
-        packet.writeCompoundTag(moduleData);
     }
 }

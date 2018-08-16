@@ -19,17 +19,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+
+
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Deque;
 import java.util.LinkedList;
 
-public final class ModuleInfrared extends AbstractModule implements ICapabilityProvider, InfraredReceiver {
+public final class ModuleInfrared extends AbstractModule implements /* ICapabilityProvider, */InfraredReceiver {
     // --------------------------------------------------------------------- //
     // Persisted data
 
@@ -85,7 +83,7 @@ public final class ModuleInfrared extends AbstractModule implements ICapabilityP
         stepOutput();
     }
 
-    @SideOnly(Side.CLIENT)
+
     @Override
     public void render(final boolean enabled, final float partialTicks) {
         if (!enabled) {
@@ -124,7 +122,8 @@ public final class ModuleInfrared extends AbstractModule implements ICapabilityP
     // --------------------------------------------------------------------- //
     // ICapabilityProvider
 
-    @Override
+    // TODO
+    /* @Override
     public boolean hasCapability(@Nonnull final Capability<?> capability, @Nullable final EnumFacing facing) {
         return capability == CapabilityInfraredReceiver.INFRARED_RECEIVER_CAPABILITY;
     }
@@ -138,7 +137,7 @@ public final class ModuleInfrared extends AbstractModule implements ICapabilityP
         }
 
         return null;
-    }
+    } */
 
     // --------------------------------------------------------------------- //
     // InfraredReceiver
@@ -206,7 +205,7 @@ public final class ModuleInfrared extends AbstractModule implements ICapabilityP
 
         final World world = getCasing().getCasingWorld();
         final Vec3d position = new Vec3d(blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5);
-        final Vec3d direction = new Vec3d(facing.getFrontOffsetX(), facing.getFrontOffsetY(), facing.getFrontOffsetZ());
+        final Vec3d direction = new Vec3d(facing.getXOffset(), facing.getYOffset(), facing.getZOffset());
 
         InfraredAPI.sendPacket(world, position, direction, value);
     }

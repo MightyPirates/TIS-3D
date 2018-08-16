@@ -14,8 +14,8 @@ import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+
+
 
 public final class ModuleRedstone extends AbstractModuleRotatable implements Redstone {
     // --------------------------------------------------------------------- //
@@ -108,7 +108,7 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
         output = data.readShort();
     }
 
-    @SideOnly(Side.CLIENT)
+
     @Override
     public void render(final boolean enabled, final float partialTicks) {
         rotateForRendering();
@@ -243,7 +243,7 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
 
         scheduledNeighborUpdate = false;
         final Block blockType = world.getBlockState(getCasing().getPosition()).getBlock();
-        world.notifyNeighborsOfStateChange(getCasing().getPosition(), blockType, false);
+        world.notifyNeighborsOfStateChange(getCasing().getPosition(), blockType);
     }
 
     /**

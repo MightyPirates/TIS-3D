@@ -18,9 +18,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.input.Mouse;
+
 import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
@@ -28,7 +26,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-@SideOnly(Side.CLIENT)
+
 public final class GuiManual extends GuiScreen {
     private static final int documentMaxWidth = 220;
     private static final int documentMaxHeight = 176;
@@ -68,7 +66,7 @@ public final class GuiManual extends GuiScreen {
     public void initGui() {
         super.initGui();
 
-        final ScaledResolution screenSize = new ScaledResolution(mc.displayWidth, mc.displayHeight);
+        final ScaledResolution screenSize = new ScaledResolution(mc.mainWindow.getWidth(), mc.mainWindow.getHeight());
         final ScaledResolution guiSize = new ScaledResolution(windowWidth, windowHeight);
         final int midX = screenSize.scaledWidth / 2;
         final int midY = screenSize.scaledHeight / 2;
@@ -80,11 +78,21 @@ public final class GuiManual extends GuiScreen {
         for (int i = 0; i < ManualAPIImpl.getTabs().size() && i < maxTabsPerSide; i++) {
             final int x = guiLeft + tabPosX;
             final int y = guiTop + tabPosY + i * (tabHeight - tabOverlap);
-            buttonList.add(new ImageButton(i, x, y, tabWidth, tabHeight - tabOverlap - 1, TextureLoader.LOCATION_GUI_MANUAL_TAB).setImageHeight(tabHeight).setVerticalImageOffset(-tabOverlap / 2));
+            this.addButton(new ImageButton(i, x, y, tabWidth, tabHeight - tabOverlap - 1, TextureLoader.LOCATION_GUI_MANUAL_TAB) {
+                @Override
+                public void mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_) {
+                    ManualAPI.navigate(ManualAPIImpl.getTabs().get(id).path);
+                }
+            }.setImageHeight(tabHeight).setVerticalImageOffset(-tabOverlap / 2));
         }
 
-        scrollButton = new ImageButton(-1, guiLeft + scrollPosX, guiTop + scrollPosY, 26, 13, TextureLoader.LOCATION_GUI_MANUAL_SCROLL);
-        buttonList.add(scrollButton);
+        scrollButton = new ImageButton(-1, guiLeft + scrollPosX, guiTop + scrollPosY, 26, 13, TextureLoader.LOCATION_GUI_MANUAL_SCROLL) {
+            @Override
+            public boolean mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_, int p_mouseClicked_5_) {
+                return false; // Handled in parent mouseClicked
+            }
+        };
+        this.addButton(scrollButton);
 
         refreshPage();
     }
@@ -95,7 +103,7 @@ public final class GuiManual extends GuiScreen {
 
         super.drawScreen(mouseX, mouseY, partialTicks);
 
-        mc.renderEngine.bindTexture(TextureLoader.LOCATION_GUI_MANUAL_BACKGROUND);
+        mc.getTextureManager().bindTexture(TextureLoader.LOCATION_GUI_MANUAL_BACKGROUND);
         Gui.drawModalRectWithCustomSizedTexture(guiLeft, guiTop, 0, 0, xSize, ySize, windowWidth, windowHeight);
 
         scrollButton.enabled = canScroll();
@@ -113,83 +121,92 @@ public final class GuiManual extends GuiScreen {
         currentSegment = Document.render(document, guiLeft + 16, guiTop + 48, documentMaxWidth, documentMaxHeight, offset(), getFontRenderer(), mouseX, mouseY);
 
         if (!isDragging) {
-            currentSegment.ifPresent(s -> s.tooltip().ifPresent(t -> drawHoveringText(Collections.singletonList(I18n.format(t)), mouseX, mouseY, getFontRenderer())));
+            currentSegment.ifPresent(s -> s.tooltip().ifPresent(t -> drawHoveringText(Collections.singletonList(I18n.format(t)), mouseX, mouseY)));
 
             for (int i = 0; i < ManualAPIImpl.getTabs().size() && i < maxTabsPerSide; i++) {
                 final ManualAPIImpl.Tab tab = ManualAPIImpl.getTabs().get(i);
                 final ImageButton button = (ImageButton) buttonList.get(i);
-                if (mouseX > button.x && mouseX < button.x + button.width && mouseY > button.y && mouseY < button.y + button.height) {
+                if (mouseX > button.x && mouseX < button.x + button.getWidth() && mouseY > button.y && mouseY < button.y + button.getHeight()) {
                     if (tab.tooltip != null) {
-                        drawHoveringText(Collections.singletonList(I18n.format(tab.tooltip)), mouseX, mouseY, getFontRenderer());
+                        drawHoveringText(Collections.singletonList(I18n.format(tab.tooltip)), mouseX, mouseY);
                     }
                 }
             }
         }
 
         if (canScroll() && (isCoordinateOverScrollBar(mouseX - guiLeft, mouseY - guiTop) || isDragging)) {
-            drawHoveringText(Collections.singletonList(100 * offset() / maxOffset() + "%"), guiLeft + scrollPosX + scrollWidth, scrollButton.y + scrollButton.height + 1, getFontRenderer());
+            drawHoveringText(Collections.singletonList(100 * offset() / maxOffset() + "%"), guiLeft + scrollPosX + scrollWidth, scrollButton.y + scrollButton.getHeight() + 1);
         }
     }
 
     @Override
-    public void handleMouseInput() throws IOException {
-        super.handleMouseInput();
-
-        if (Mouse.hasWheel() && Mouse.getEventDWheel() != 0) {
-            if (Math.signum(Mouse.getEventDWheel()) < 0) {
-                scrollDown();
-            } else {
-                scrollUp();
-            }
+    public boolean mouseScrolled(double value) {
+        if (value != 0) {
+            scroll(-value);
         }
+        return true;
     }
 
     @Override
-    protected void keyTyped(final char ch, final int code) throws IOException {
-        if (code == mc.gameSettings.keyBindJump.getKeyCode()) {
+    public boolean keyPressed(int code, int scancode, int mods) {
+        if (code == mc.gameSettings.keyBindJump.func_197977_i().getKeyCode()) {
             popPage();
-        } else if (code == mc.gameSettings.keyBindInventory.getKeyCode()) {
+            return true;
+        } else if (code == mc.gameSettings.keyBindInventory.func_197977_i().getKeyCode()) {
             mc.player.closeScreen();
+            return true;
         } else {
-            super.keyTyped(ch, code);
+            return super.keyPressed(code, scancode, mods);
         }
     }
 
     @Override
-    protected void mouseClicked(final int mouseX, final int mouseY, final int button) throws IOException {
-        super.mouseClicked(mouseX, mouseY, button);
+    public boolean mouseClicked(final double mouseXd, final double mouseYd, final int button) {
+        if (super.mouseClicked(mouseXd, mouseYd, button)) {
+            return true;
+        }
+
+        int mouseX = (int) Math.round(mouseXd);
+        int mouseY = (int) Math.round(mouseYd);
 
         if (canScroll() && button == 0 && isCoordinateOverScrollBar(mouseX - guiLeft, mouseY - guiTop)) {
             isDragging = true;
-            scrollMouse(mouseY);
+            scrollMouse(mouseYd);
+            return true;
         } else if (button == 0) {
             currentSegment.ifPresent(s -> s.onMouseClick(mouseX, mouseY));
+            return true;
         } else if (button == 1) {
             popPage();
+            return true;
+        } else {
+            return false;
         }
     }
 
     @Override
-    protected void mouseClickMove(final int mouseX, final int mouseY, final int lastButtonClicked, final long timeSinceMouseClick) {
-        super.mouseClickMove(mouseX, mouseY, lastButtonClicked, timeSinceMouseClick);
+    public boolean mouseDragged(final double mouseXd, final double mouseYd, final int clickedMouseButton, final double da, final double db) {
+        if (super.mouseDragged(mouseXd, mouseYd, clickedMouseButton, da, db)) {
+            return true;
+        }
+
         if (isDragging) {
-            scrollMouse(mouseY);
+            scrollMouse(mouseYd);
+            return true;
+        } else {
+            return false;
         }
     }
 
     @Override
-    protected void mouseReleased(final int mouseX, final int mouseY, final int button) {
+    public boolean mouseReleased(final double mouseX, final double mouseY, final int button) {
         super.mouseReleased(mouseX, mouseY, button);
+
         if (button == 0) {
             isDragging = false;
         }
-    }
 
-    @Override
-    protected void actionPerformed(final GuiButton button) {
-        if (button.id >= 0 && button.id < ManualAPIImpl.getTabs().size()) {
-            ManualAPI.navigate(ManualAPIImpl.getTabs().get(button.id).path);
-        }
+        return true;
     }
 
     @Override
@@ -231,16 +248,12 @@ public final class GuiManual extends GuiScreen {
         }
     }
 
-    private void scrollMouse(final int mouseY) {
+    private void scrollMouse(final double mouseY) {
         scrollTo((int) Math.round((mouseY - guiTop - scrollPosY - 6.5) * maxOffset() / (scrollHeight - 13.0)));
     }
 
-    private void scrollUp() {
-        scrollTo(offset() - Document.lineHeight(getFontRenderer()) * 3);
-    }
-
-    private void scrollDown() {
-        scrollTo(offset() + Document.lineHeight(getFontRenderer()) * 3);
+    private void scroll(double amount) {
+        scrollTo(offset() + (int) Math.round(Document.lineHeight(getFontRenderer()) * 3 * amount));
     }
 
     private void scrollTo(final int row) {
@@ -279,10 +292,18 @@ public final class GuiManual extends GuiScreen {
             return this;
         }
 
+        public int getWidth() {
+        	return width;
+        }
+
+        public int getHeight() {
+        	return height;
+        }
+
         @Override
-        public void drawButton(final Minecraft mc, final int mouseX, final int mouseY, final float partialTicks) {
+        public void func_194828_a(final int mouseX, final int mouseY, final float partialTicks) {
             if (visible) {
-                mc.getTextureManager().bindTexture(image);
+                Minecraft.getMinecraft().getTextureManager().bindTexture(image);
                 GlStateManager.color(1, 1, 1, 1);
 
                 hovered = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;

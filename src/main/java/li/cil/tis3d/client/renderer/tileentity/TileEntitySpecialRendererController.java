@@ -1,13 +1,13 @@
 package li.cil.tis3d.client.renderer.tileentity;
 
 import li.cil.tis3d.common.tileentity.TileEntityController;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.math.RayTraceResult;
 
-public final class TileEntitySpecialRendererController extends TileEntitySpecialRenderer<TileEntityController> {
+public final class TileEntitySpecialRendererController extends TileEntityRenderer<TileEntityController> {
     @Override
-    public void render(final TileEntityController controller, final double x, final double y, final double z, final float partialTicks, final int destroyStage, final float alpha) {
+    public void func_199341_a(final TileEntityController controller, final double x, final double y, final double z, final float partialTicks, final int destroyStage) {
         final TileEntityController.ControllerState state = controller.getState();
         if (!state.isError) {
             return;

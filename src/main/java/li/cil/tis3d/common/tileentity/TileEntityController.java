@@ -6,17 +6,19 @@ import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageHaltAndCatchFire;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.particle.ParticleManager;
+import net.minecraft.init.Particles;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
+import pl.asie.protocharset.rift.network.PacketRegistry;
+import pl.asie.protocharset.rift.network.PacketServerHelper;
 
 import java.util.*;
 
@@ -31,6 +33,8 @@ import java.util.*;
  * signal, and can be reset by right-clicking them.
  */
 public final class TileEntityController extends TileEntityComputer implements ITickable {
+	public static TileEntityType<TileEntityController> TYPE;
+
     // --------------------------------------------------------------------- //
     // Computed data
 
@@ -39,7 +43,7 @@ public final class TileEntityController extends TileEntityComputer implements IT
      */
     private static final int COOLDOWN_HCF = 60;
 
-    /**
+	/**
      * Possible states of a controller.
      */
     public enum ControllerState {
@@ -138,6 +142,10 @@ public final class TileEntityController extends TileEntityComputer implements IT
 
     // --------------------------------------------------------------------- //
 
+	public TileEntityController() {
+		super(TYPE);
+	}
+
     /**
      * Get the current state of the controller.
      *
@@ -176,8 +184,9 @@ public final class TileEntityController extends TileEntityComputer implements IT
             state = ControllerState.READY;
             casings.forEach(TileEntityCasing::onDisabled);
             final MessageHaltAndCatchFire message = new MessageHaltAndCatchFire(getWorld(), getPos());
-            final NetworkRegistry.TargetPoint target = Network.getTargetPoint(getWorld(), getPos().getX(), getPos().getY(), getPos().getZ(), Network.RANGE_MEDIUM);
-            Network.INSTANCE.getWrapper().sendToAllAround(message, target);
+	        PacketServerHelper.forEachWatching(getWorld(), getPos(), (player) -> {
+	        	player.connection.sendPacket(PacketRegistry.SERVER.wrap(message));
+	        });
         }
         hcfCooldown = COOLDOWN_HCF;
     }
@@ -206,7 +215,8 @@ public final class TileEntityController extends TileEntityComputer implements IT
         casings.clear();
     }
 
-    @Override
+    // TODO
+    /* @Override
     public void onChunkUnload() {
         super.onChunkUnload();
 
@@ -214,7 +224,7 @@ public final class TileEntityController extends TileEntityComputer implements IT
         for (final TileEntityCasing casing : casings) {
             casing.setController(null);
         }
-    }
+    } */
 
     // --------------------------------------------------------------------- //
     // TileEntityComputer
@@ -260,7 +270,7 @@ public final class TileEntityController extends TileEntityComputer implements IT
                 --hcfCooldown;
 
                 // Spawn some fire particles! No actual fire, that'd be... problematic.
-                for (final EnumFacing facing : EnumFacing.VALUES) {
+                for (final EnumFacing facing : EnumFacing.values()) {
                     final BlockPos neighborPos = getPos().offset(facing);
                     final IBlockState neighborState = world.getBlockState(neighborPos);
                     if (neighborState.isFullCube()) {
@@ -272,7 +282,7 @@ public final class TileEntityController extends TileEntityComputer implements IT
                     final float ox = neighborPos.getX() + world.rand.nextFloat();
                     final float oy = neighborPos.getY() + world.rand.nextFloat();
                     final float oz = neighborPos.getZ() + world.rand.nextFloat();
-                    world.spawnParticle(EnumParticleTypes.FLAME, ox, oy, oz, 0, 0, 0);
+                    world.addParticle(Particles.FLAME, ox, oy, oz, 0, 0, 0);
                 }
             }
 
@@ -280,9 +290,9 @@ public final class TileEntityController extends TileEntityComputer implements IT
         }
 
         if (state != lastSentState) {
-            final Chunk chunk = world.getChunkFromBlockCoords(pos);
             final IBlockState blockState = world.getBlockState(getPos());
-            world.markAndNotifyBlock(getPos(), chunk, blockState, blockState, 7);
+            // TODO markAndNotifyBlock
+            world.setBlockState(getPos(), blockState, 7);
             lastSentState = state;
         }
 
@@ -390,7 +400,7 @@ public final class TileEntityController extends TileEntityComputer implements IT
      * @return <tt>true</tt> if all neighbors could be checked, <tt>false</tt> otherwise.
      */
     static boolean addNeighbors(final World world, final TileEntity tileEntity, final Set<TileEntity> processed, final Queue<TileEntity> queue) {
-        for (final EnumFacing facing : EnumFacing.VALUES) {
+        for (final EnumFacing facing : EnumFacing.values()) {
             final BlockPos neighborPos = tileEntity.getPos().offset(facing);
             if (!world.isBlockLoaded(neighborPos)) {
                 return false;
@@ -502,7 +512,7 @@ public final class TileEntityController extends TileEntityComputer implements IT
      */
     private int computePower() {
         int acc = 0;
-        for (final EnumFacing facing : EnumFacing.VALUES) {
+        for (final EnumFacing facing : EnumFacing.values()) {
             acc += Math.max(0, Math.min(15, getWorld().getRedstonePower(getPos().offset(facing), facing)));
         }
         return acc;

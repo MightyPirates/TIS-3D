@@ -1,5 +1,6 @@
 package li.cil.tis3d.common.module;
 
+import com.sun.org.apache.regexp.internal.RE;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.machine.Casing;
@@ -10,12 +11,14 @@ import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.util.ColorUtils;
 import li.cil.tis3d.util.EnumUtils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.texture.NativeImage;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+
+
 
 import java.util.Arrays;
 
@@ -29,6 +32,8 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
      * current state to newly connected/coming closer clients.
      */
     private final int[] image = new int[RESOLUTION * RESOLUTION];
+    private Object nativeImage;
+    private boolean imageDirty = false;
 
     /**
      * The current input state, i.e. what value we're currently reading.
@@ -99,6 +104,7 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
     public void onDisabled() {
         Arrays.fill(image, 0);
         state = State.COLOR;
+        imageDirty = true;
 
         sendClear();
     }
@@ -119,10 +125,11 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
             data.readBytes(drawCall);
             applyDrawCall(drawCall);
         }
-        TextureUtil.uploadTexture(getGlTextureId(), image, RESOLUTION, RESOLUTION);
+
+        imageDirty = true;
     }
 
-    @SideOnly(Side.CLIENT)
+
     @Override
     public void render(final boolean enabled, final float partialTicks) {
         if (!enabled) {
@@ -142,6 +149,7 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
 
         final int[] imageNbt = nbt.getIntArray(TAG_IMAGE);
         System.arraycopy(imageNbt, 0, image, 0, Math.min(imageNbt.length, image.length));
+        imageDirty = true;
 
         state = EnumUtils.readFromNBT(State.class, TAG_STATE, nbt);
 
@@ -210,7 +218,9 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
             final int offset = y * RESOLUTION;
             for (int x = x0; x < x1; x++) {
                 final int index = offset + x;
-                image[index] = ColorUtils.getColorByIndex(Math.max(0, color));
+                int v = ColorUtils.getColorByIndex(Math.max(0, color));
+                v = (v & 0xFF00FF00) | ((v & 0xFF0000) >> 16) | ((v & 0xFF) << 16);
+                image[index] = v;
             }
         }
     }
@@ -223,8 +233,21 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
     private int getGlTextureId() {
         if (glTextureId == 0) {
             glTextureId = GlStateManager.generateTexture();
+            nativeImage = new NativeImage(RESOLUTION, RESOLUTION, false);
             TextureUtil.allocateTexture(glTextureId, RESOLUTION, RESOLUTION);
-            TextureUtil.uploadTexture(glTextureId, image, RESOLUTION, RESOLUTION);
+            imageDirty = true;
+        }
+        if (imageDirty) {
+            // TODO: Can we write more directly?
+            int ip = 0;
+            for (int iy = 0; iy < RESOLUTION; iy++) {
+                for (int ix = 0; ix < RESOLUTION; ix++, ip++) {
+                    ((NativeImage) nativeImage).setPixelRGBA(ix, iy, image[ip]);
+                }
+            }
+
+            GlStateManager.bindTexture(glTextureId);
+            ((NativeImage) nativeImage).func_195697_a(0, 0, 0, false);
         }
         return glTextureId;
     }

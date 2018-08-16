@@ -14,8 +14,8 @@ import li.cil.tis3d.client.renderer.font.FontRendererNormal;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+
+
 
 /**
  * The timer module can be used to wait for a specific amount of game time.
@@ -91,7 +91,7 @@ public final class ModuleTimer extends AbstractModuleRotatable {
         hasElapsed = false; // Recompute in render().
     }
 
-    @SideOnly(Side.CLIENT)
+
     @Override
     public void render(final boolean enabled, final float partialTicks) {
         if (!enabled) {
@@ -188,7 +188,7 @@ public final class ModuleTimer extends AbstractModuleRotatable {
         getCasing().sendData(getFace(), data, DATA_TYPE_UPDATE);
     }
 
-    @SideOnly(Side.CLIENT)
+
     private void drawState(final float remaining) {
         final float milliseconds = remaining * 50f; // One tick is 50ms.
         final float seconds = milliseconds / 1000f;

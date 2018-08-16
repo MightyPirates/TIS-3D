@@ -10,14 +10,13 @@ import li.cil.tis3d.common.tileentity.TileEntityCasing;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import pl.asie.protocharset.rift.network.NetworkContext;
 
 import java.io.IOException;
 
 public final class MessageHandlerCasingData extends AbstractMessageHandlerWithLocation<MessageCasingData> {
     @Override
-    protected void onMessageSynchronized(final MessageCasingData message, final MessageContext context) {
+    protected void onMessageSynchronized(final MessageCasingData message, final NetworkContext context) {
         final TileEntity tileEntity = getTileEntity(message, context);
         if (!(tileEntity instanceof TileEntityCasing)) {
             return;
@@ -27,10 +26,11 @@ public final class MessageHandlerCasingData extends AbstractMessageHandlerWithLo
         final ByteBuf data = message.getData();
         while (data.readableBytes() > 0) {
             final Module module = casing.getModule(Face.VALUES[data.readByte()]);
-            final ByteBuf moduleData = data.readBytes(ByteBufUtils.readVarShort(data));
+            final ByteBuf moduleData = data.readBytes(data.readShort());
             while (moduleData.readableBytes() > 0) {
                 final boolean isNbt = moduleData.readBoolean();
-                final ByteBuf packet = moduleData.readBytes(ByteBufUtils.readVarShort(moduleData));
+                int size = moduleData.readShort();
+                final ByteBuf packet = moduleData.readBytes(size);
                 if (module != null) {
                     if (isNbt) {
                         try {

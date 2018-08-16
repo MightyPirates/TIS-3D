@@ -6,8 +6,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Simple implementation of a tab icon renderer using an item stack as its graphic.
@@ -20,7 +18,6 @@ public class ItemStackTabIconRenderer implements TabIconRenderer {
         this.stack = stack;
     }
 
-    @SideOnly(Side.CLIENT)
     @Override
     public void render() {
         GlStateManager.enableRescaleNormal();

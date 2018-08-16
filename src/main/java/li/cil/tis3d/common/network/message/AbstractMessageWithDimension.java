@@ -1,15 +1,16 @@
 package li.cil.tis3d.common.network.message;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import pl.asie.protocharset.rift.network.NetworkContext;
+import pl.asie.protocharset.rift.network.Packet;
+import pl.asie.protocharset.rift.network.SendNetwork;
 
-public abstract class AbstractMessageWithDimension implements IMessage {
-    private int dimension;
+public abstract class AbstractMessageWithDimension extends AbstractMessage {
+    @SendNetwork public int dimension;
 
     AbstractMessageWithDimension(final World world) {
-        this.dimension = world.provider.getDimension();
+        this.dimension = world.provider.getDimensionType().getId();
     }
 
     AbstractMessageWithDimension() {
@@ -19,21 +20,5 @@ public abstract class AbstractMessageWithDimension implements IMessage {
 
     public int getDimension() {
         return dimension;
-    }
-
-    // --------------------------------------------------------------------- //
-    // IMessage
-
-    @Override
-    public void fromBytes(final ByteBuf buf) {
-        final PacketBuffer buffer = new PacketBuffer(buf);
-        dimension = buffer.readVarInt();
-
-    }
-
-    @Override
-    public void toBytes(final ByteBuf buf) {
-        final PacketBuffer buffer = new PacketBuffer(buf);
-        buffer.writeVarInt(dimension);
     }
 }

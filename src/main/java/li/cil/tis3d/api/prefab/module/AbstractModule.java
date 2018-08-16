@@ -8,19 +8,20 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.util.TransformUtil;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 
@@ -70,7 +71,6 @@ public abstract class AbstractModule implements Module {
      *
      * @return <tt>true</tt> if the player is looking at the module, <tt>false</tt> otherwise.
      */
-    @SideOnly(Side.CLIENT)
     protected boolean isPlayerLookingAt() {
         final RayTraceResult hit = Minecraft.getMinecraft().objectMouseOver;
         return hit != null &&
@@ -91,7 +91,6 @@ public abstract class AbstractModule implements Module {
      *
      * @return the UV coordinate the player is looking at as the X and Y components.
      */
-    @SideOnly(Side.CLIENT)
     @Nullable
     protected Vec3d getPlayerLookAt() {
         final RayTraceResult hit = Minecraft.getMinecraft().objectMouseOver;
@@ -143,16 +142,16 @@ public abstract class AbstractModule implements Module {
             return false;
         }
 
-        final Chunk chunk = world.getChunkFromBlockCoords(neighborPos);
+        final Chunk chunk = world.getChunk(neighborPos);
         if (chunk.isEmpty()) {
             // If the neighbor chunk is empty, we must assume we're visible.
             return true;
         }
 
         // Otherwise check if the neighboring block blocks visibility to our face.
+        // TODO: Can this be done better? It probably can.
         final IBlockState neighborState = world.getBlockState(neighborPos);
-        final Block neighborBlock = neighborState.getBlock();
-        return !neighborBlock.doesSideBlockRendering(neighborState, world, neighborPos, Face.toEnumFacing(getFace().getOpposite()));
+        return neighborState.isFullCube() && neighborState.getBlock().getRenderLayer() == BlockRenderLayer.SOLID;
     }
 
     // --------------------------------------------------------------------- //
@@ -209,7 +208,6 @@ public abstract class AbstractModule implements Module {
     public void onData(final ByteBuf data) {
     }
 
-    @SideOnly(Side.CLIENT)
     @Override
     public void render(final boolean enabled, final float partialTicks) {
     }

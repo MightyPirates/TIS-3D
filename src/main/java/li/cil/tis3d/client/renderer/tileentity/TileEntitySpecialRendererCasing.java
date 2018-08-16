@@ -9,12 +9,14 @@ import li.cil.tis3d.client.renderer.TextureLoader;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.tileentity.TileEntityCasing;
+import li.cil.tis3d.common.tileentity.TileEntityController;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -32,11 +34,11 @@ import java.util.Set;
  * also so as not to spam the model registry with potentially a gazillion
  * block states for static individual texturing).
  */
-public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRenderer<TileEntityCasing> {
+public final class TileEntitySpecialRendererCasing extends TileEntityRenderer<TileEntityCasing> {
     private final static Set<Class<?>> BLACKLIST = new HashSet<>();
 
     @Override
-    public void render(final TileEntityCasing casing, final double x, final double y, final double z, final float partialTicks, final int destroyStage, final float alpha) {
+    public void func_199341_a(final TileEntityCasing casing, final double x, final double y, final double z, final float partialTicks, final int destroyStage) {
         final double dx = x + 0.5;
         final double dy = y + 0.5;
         final double dz = z + 0.5;
@@ -59,11 +61,13 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
             setupMatrix(face);
 
             ensureSanity();
+            Minecraft.getMinecraft().getTextureMapBlocks().setBlurMipmap(false, false);
 
             if (!isObserverHoldingKey() || !drawConfigOverlay(casing, face)) {
                 drawModuleOverlay(casing, face, partialTicks);
             }
 
+            Minecraft.getMinecraft().getTextureMapBlocks().restoreLastBlurMipmap();
             GlStateManager.popAttrib();
             GlStateManager.popMatrix();
         }
@@ -75,7 +79,7 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
 
     private boolean isRenderingBackFace(final Face face, final double dx, final double dy, final double dz) {
         final EnumFacing facing = Face.toEnumFacing(face.getOpposite());
-        final double dotProduct = facing.getFrontOffsetX() * dx + facing.getFrontOffsetY() * (dy - rendererDispatcher.entity.getEyeHeight()) + facing.getFrontOffsetZ() * dz;
+        final double dotProduct = facing.getXOffset() * dx + facing.getYOffset() * (dy - rendererDispatcher.entity.getEyeHeight()) + facing.getZOffset() * dz;
         return dotProduct < 0;
     }
 

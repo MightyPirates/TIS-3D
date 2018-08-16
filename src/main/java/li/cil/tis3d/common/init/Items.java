@@ -11,9 +11,10 @@ import li.cil.tis3d.common.item.ItemModuleReadOnlyMemory;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraft.util.ResourceLocation;
+import org.dimdev.rift.listener.ItemAdder;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -26,22 +27,18 @@ import java.util.Objects;
 /**
  * Manages setup, registration and lookup of items.
  */
-@GameRegistry.ObjectHolder(API.MOD_ID)
-public final class Items {
-    private static final Map<String, Item> modules = new HashMap<>();
+public final class Items implements ItemAdder {
+    private static final Map<ResourceLocation, Item> modules = new HashMap<>();
 
-    @GameRegistry.ObjectHolder(Constants.NAME_ITEM_BOOK_CODE)
-    public static final Item bookCode = null;
-    @GameRegistry.ObjectHolder(Constants.NAME_ITEM_BOOK_MANUAL)
-    public static final Item bookManual = null;
-    @GameRegistry.ObjectHolder(Constants.NAME_ITEM_KEY)
-    public static final Item key = null;
-    @GameRegistry.ObjectHolder(Constants.NAME_ITEM_KEY_CREATIVE)
-    public static final Item keyCreative = null;
-    @GameRegistry.ObjectHolder(Constants.NAME_ITEM_PRISM)
-    public static final Item prism = null;
+    public static Item bookCode = null;
+    public static Item bookManual = null;
+    public static Item key = null;
+    public static Item keyCreative = null;
+    public static Item prism = null;
+    public static ItemBlock casing = null;
+    public static ItemBlock controller = null;
 
-    public static Map<String, Item> getModules() {
+    public static Map<ResourceLocation, Item> getModules() {
         return modules;
     }
 
@@ -87,51 +84,48 @@ public final class Items {
 
     // --------------------------------------------------------------------- //
 
-    public static void register(final IForgeRegistry<Item> registry) {
-        for (final String moduleName : Constants.MODULES) {
-            final Item module = registerModule(registry, moduleName);
+
+    @Override
+    public void registerItems() {
+        for (final ResourceLocation moduleName : Constants.MODULES) {
+            final Item module = registerModule(moduleName);
             if (module != null) {
                 modules.put(moduleName, module);
             }
         }
 
-        registerItem(registry, new ItemBookCode(), Constants.NAME_ITEM_BOOK_CODE);
-        registerItem(registry, new ItemBookManual(), Constants.NAME_ITEM_BOOK_MANUAL);
+        registerItem(bookCode = new ItemBookCode(new Item.Builder().group(ItemGroup.REDSTONE)), Constants.NAME_ITEM_BOOK_CODE);
+        registerItem(bookManual = new ItemBookManual(new Item.Builder().group(ItemGroup.REDSTONE)), Constants.NAME_ITEM_BOOK_MANUAL);
 
-        registerItem(registry, new ItemKey(), Constants.NAME_ITEM_KEY);
-        registerItem(registry, new ItemKey(), Constants.NAME_ITEM_KEY_CREATIVE);
-        registerItem(registry, new Item(), Constants.NAME_ITEM_PRISM);
+        registerItem(key = new ItemKey(new Item.Builder().group(ItemGroup.REDSTONE)), Constants.NAME_ITEM_KEY);
+        registerItem(keyCreative = new ItemKey(new Item.Builder().group(ItemGroup.REDSTONE)), Constants.NAME_ITEM_KEY_CREATIVE);
+        registerItem(prism = new Item(new Item.Builder().group(ItemGroup.REDSTONE)), Constants.NAME_ITEM_PRISM);
 
-        for (final Block block : Blocks.getAllBlocks()) {
-            registerItem(registry, new ItemBlock(block), block.getRegistryName().getResourcePath());
-        }
+        Item.registerItemBlock(casing = new ItemBlock(Blocks.casing, new Item.Builder().group(ItemGroup.REDSTONE)));
+	    Item.registerItemBlock(controller = new ItemBlock(Blocks.controller, new Item.Builder().group(ItemGroup.REDSTONE)));
     }
 
     // --------------------------------------------------------------------- //
 
-    private static Item registerItem(final IForgeRegistry<Item> registry, final Item item, final String name) {
-        registry.register(item.
-                setUnlocalizedName(API.MOD_ID + "." + name).
-                setCreativeTab(API.creativeTab).
-                setRegistryName(name));
+    private static Item registerItem(final Item item, final ResourceLocation name) {
+        Item.registerItem(name, item);
         return item;
     }
 
     @Nullable
-    private static Item registerModule(final IForgeRegistry<Item> registry, final String name) {
+    private static Item registerModule(final ResourceLocation name) {
+    	Settings.load();
         if (Settings.disabledModules.contains(name)) {
             return null;
         }
 
         if (Objects.equals(name, Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY)) {
-            return registerItem(registry, new ItemModuleReadOnlyMemory(), name);
+            return registerItem(new ItemModuleReadOnlyMemory(new Item.Builder().group(ItemGroup.REDSTONE)), name);
         } else {
-            return registerItem(registry, new ItemModule(), name);
+            return registerItem(new ItemModule(new Item.Builder().group(ItemGroup.REDSTONE)), name);
         }
     }
 
     // --------------------------------------------------------------------- //
 
-    private Items() {
-    }
 }

@@ -1,8 +1,8 @@
 package li.cil.tis3d.common.event;
 
 import li.cil.tis3d.common.entity.EntityInfraredPacket;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraft.server.MinecraftServer;
+import org.dimdev.rift.listener.ServerTickable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -16,7 +16,7 @@ import java.util.Set;
  * fact that entities do not update while inside the one-chunk wide border
  * of loaded chunks around the overall area of loaded chunks.
  */
-public final class TickHandlerInfraredPacket {
+public final class TickHandlerInfraredPacket implements ServerTickable {
     public static final TickHandlerInfraredPacket INSTANCE = new TickHandlerInfraredPacket();
 
     // --------------------------------------------------------------------- //
@@ -39,7 +39,7 @@ public final class TickHandlerInfraredPacket {
 
     // --------------------------------------------------------------------- //
 
-    @SubscribeEvent
+ /*   @SubscribeEvent
     public void onServerTick(final TickEvent.ServerTickEvent event) {
         if (event.phase != TickEvent.Phase.END) {
             return;
@@ -52,10 +52,21 @@ public final class TickHandlerInfraredPacket {
         pendingRemovals.clear();
 
         livePackets.forEach(EntityInfraredPacket::updateLifetime);
-    }
+    } */
 
     // --------------------------------------------------------------------- //
 
     private TickHandlerInfraredPacket() {
+    }
+
+    @Override
+    public void serverTick(MinecraftServer server) {
+        livePackets.addAll(pendingAdds);
+        pendingAdds.clear();
+
+        livePackets.removeAll(pendingRemovals);
+        pendingRemovals.clear();
+
+        livePackets.forEach(EntityInfraredPacket::updateLifetime);
     }
 }

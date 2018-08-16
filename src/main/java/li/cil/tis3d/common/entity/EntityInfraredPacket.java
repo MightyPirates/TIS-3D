@@ -2,29 +2,28 @@ package li.cil.tis3d.common.entity;
 
 import li.cil.tis3d.api.infrared.InfraredPacket;
 import li.cil.tis3d.api.infrared.InfraredReceiver;
-import li.cil.tis3d.common.capabilities.CapabilityInfraredReceiver;
+import li.cil.tis3d.api.infrared.InfraredReceiverTile;
 import li.cil.tis3d.common.event.TickHandlerInfraredPacket;
 import li.cil.tis3d.common.network.Network;
-import li.cil.tis3d.common.network.message.MessageParticleEffect;
 import li.cil.tis3d.util.Raytracing;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.world.WorldServer;
+import pl.asie.protocharset.rift.network.PacketRegistry;
+import pl.asie.protocharset.rift.network.PacketServerHelper;
+
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -33,6 +32,8 @@ import java.util.List;
  * Represents a single value in transmission, sent by an {@link li.cil.tis3d.common.module.ModuleInfrared}.
  */
 public final class EntityInfraredPacket extends Entity implements InfraredPacket {
+    public static EntityType<EntityInfraredPacket> TYPE;
+
     // --------------------------------------------------------------------- //
     // Computed data
 
@@ -70,7 +71,7 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
     private short value;
 
     public EntityInfraredPacket(final World world) {
-        super(world);
+        super(TYPE, world);
         isImmuneToFire = true;
         setSize(0.25f, 0.25f);
     }
@@ -187,21 +188,23 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
         return true;
     }
 
-    @Override
+	// TODO
+/*    @Override
     public ItemStack getPickedResult(final RayTraceResult hit) {
         return ItemStack.EMPTY;
-    }
+    } */
 
-    @SideOnly(Side.CLIENT)
+
     @Override
     public boolean isInRangeToRenderDist(final double distance) {
         return false;
     }
 
-    @Override
+    // TODO
+/*    @Override
     public boolean shouldRenderInPass(final int pass) {
         return false;
-    }
+    } */
 
     // --------------------------------------------------------------------- //
     // InfraredPacket
@@ -282,9 +285,10 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
         final double y = posY + dy * t;
         final double z = posZ + dz * t;
 
-        final MessageParticleEffect message = new MessageParticleEffect(world, EnumParticleTypes.REDSTONE, x, y, z);
-        final NetworkRegistry.TargetPoint target = Network.getTargetPoint(world, x, y, z, Network.RANGE_LOW);
-        Network.INSTANCE.getWrapper().sendToAllAround(message, target);
+        ((WorldServer) world).func_195598_a(
+                new RedstoneParticleData(1f, 0.2f, 0 , 0),
+                x, y, z, 1, 0, 0, 0, 0
+        );
     }
 
     @Nullable
@@ -309,7 +313,7 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
             // distance the packet travels per tick stays constant, even if
             // it was moved around by a packet handler.
             final Vec3d newPos = getPositionVector();
-            final double delta = newPos.subtract(oldPos).lengthVector() / TRAVEL_SPEED;
+            final double delta = newPos.subtract(oldPos).length() / TRAVEL_SPEED;
             posX -= motionX * delta;
             posY -= motionY * delta;
             posZ -= motionZ * delta;
@@ -321,7 +325,7 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
     private RayTraceResult checkCollision() {
         final World world = getEntityWorld();
         final Vec3d start = new Vec3d(posX, posY, posZ);
-        final Vec3d target = start.addVector(motionX, motionY, motionZ);
+        final Vec3d target = start.add(motionX, motionY, motionZ);
 
         // Check for block collisions.
         final RayTraceResult blockHit = Raytracing.raytrace(world, start, target, Raytracing::intersectIgnoringTransparent);
@@ -405,12 +409,27 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
         onCapabilityProviderCollision(hit, hit.entityHit);
     }
 
-    private void onCapabilityProviderCollision(final RayTraceResult hit, @Nullable final ICapabilityProvider provider) {
+	private void onCapabilityProviderCollision(final RayTraceResult hit, @Nullable final Object provider) {
+		if (provider instanceof InfraredReceiverTile) {
+            final InfraredReceiver capability = ((InfraredReceiverTile) provider).getInfraredReceiver(hit.sideHit);
+            if (capability != null) {
+                capability.onInfraredPacket(this, hit);
+            }
+
+            // TODO
+			/* final InfraredReceiver capability = provider.getCapability(CapabilityInfraredReceiver.INFRARED_RECEIVER_CAPABILITY, hit.sideHit);
+			if (capability != null) {
+				capability.onInfraredPacket(this, hit);
+			} */
+		}
+	}
+
+    /* private void onCapabilityProviderCollision(final RayTraceResult hit, @Nullable final ICapabilityProvider provider) {
         if (provider != null) {
             final InfraredReceiver capability = provider.getCapability(CapabilityInfraredReceiver.INFRARED_RECEIVER_CAPABILITY, hit.sideHit);
             if (capability != null) {
                 capability.onInfraredPacket(this, hit);
             }
         }
-    }
+    } */
 }

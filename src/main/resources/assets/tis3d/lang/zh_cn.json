@@ -1,0 +1,45 @@
+{
+  "itemGroup.tis3d": "TIS-3D",
+
+  "item.tis3d.book_code": "编码书",
+  "item.tis3d.book_manual": "TIS-3D 参考手册",
+  "item.tis3d.key": "钥匙",
+  "item.tis3d.key_creative": "骷髅钥匙",
+  "item.tis3d.module_audio": "音频模块",
+  "item.tis3d.module_bundled_redstone": "捆绑红石模块",
+  "item.tis3d.module_display": "显示模块",
+  "item.tis3d.module_execution": "执行模块",
+  "item.tis3d.module_infrared": "红外模块",
+  "item.tis3d.module_keypad": "键盘模块",
+  "item.tis3d.module_random": "随机模块",
+  "item.tis3d.module_random_access_memory": "RAM模块",
+  "item.tis3d.module_redstone": "红石模块",
+  "item.tis3d.module_serial_port": "串口模块",
+  "item.tis3d.module_stack": "栈模块",
+  "item.tis3d.prism": "棱镜",
+
+  "block.tis3d.casing": "外壳",
+  "block.tis3d.controller": "控制器",
+
+  "tis3d.compiler.too_many_lines": "行太多",
+  "tis3d.compiler.too_many_columns": "行太长",
+  "tis3d.compiler.invalid_format": "意外的标记",
+  "tis3d.compiler.invalid_instruction": "无效操作码",
+  "tis3d.compiler.parameter_underflow": "缺少操作数",
+  "tis3d.compiler.parameter_invalid": "无效寄存器",
+  "tis3d.compiler.parameter_overflow": "太多操作数",
+  "tis3d.compiler.label_not_found": "未定义标签",
+  "tis3d.compiler.label_duplicate": "标签已经定义",
+
+  "tis3d.manual.home": "主页",
+  "tis3d.manual.blocks": "方块",
+  "tis3d.manual.items": "物品",
+  "tis3d.manual.serial_protocols": "串行协议",
+  "tis3d.manual.warning.missing.block": "方块不可用.",
+  "tis3d.manual.warning.missing.image": "未找到图片.",
+  "tis3d.manual.warning.missing.item": "物品不可用.",
+  "tis3d.manual.warning.missing.oreDict": "矿石辞典不可用.",
+
+  "tis3d.tooltip.book_code": "§7将书使用在已安装的执行模块上来得到拷贝.",
+  "tis3d.tooltip.book_manual": "§7将书使用在控制器上来得到拷贝."
+}

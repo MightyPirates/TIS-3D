@@ -1,11 +1,18 @@
 package li.cil.tis3d.common;
 
+import net.minecraft.util.ResourceLocation;
+
 import java.util.regex.Pattern;
 
 /**
  * Collection of constants used throughout the mod.
  */
 public final class Constants {
+    public class NBT {
+        public static final int TAG_STRING = 8;
+        public static final int TAG_COMPOUND = 10;
+    }
+
     // --------------------------------------------------------------------- //
     // Mod data
 
@@ -15,36 +22,36 @@ public final class Constants {
     // --------------------------------------------------------------------- //
     // Block, item, entity and container names
 
-    public static final String NAME_BLOCK_CASING = "casing";
-    public static final String NAME_BLOCK_CONTROLLER = "controller";
+    public static final ResourceLocation NAME_BLOCK_CASING = new ResourceLocation("tis3d", "casing");
+    public static final ResourceLocation NAME_BLOCK_CONTROLLER = new ResourceLocation("tis3d", "controller");
 
-    public static final String NAME_ITEM_BOOK_CODE = "book_code";
-    public static final String NAME_ITEM_BOOK_MANUAL = "book_manual";
-    public static final String NAME_ITEM_KEY = "key";
-    public static final String NAME_ITEM_KEY_CREATIVE = "key_creative";
-    public static final String NAME_ITEM_MODULE_AUDIO = "module_audio";
-    public static final String NAME_ITEM_MODULE_BUNDLED_REDSTONE = "module_bundled_redstone";
-    public static final String NAME_ITEM_MODULE_DISPLAY = "module_display";
-    public static final String NAME_ITEM_MODULE_EXECUTION = "module_execution";
-    public static final String NAME_ITEM_MODULE_INFRARED = "module_infrared";
-    public static final String NAME_ITEM_MODULE_KEYPAD = "module_keypad";
-    public static final String NAME_ITEM_MODULE_QUEUE = "module_queue";
-    public static final String NAME_ITEM_MODULE_RANDOM = "module_random";
-    public static final String NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY = "module_random_access_memory";
-    public static final String NAME_ITEM_MODULE_READ_ONLY_MEMORY = "module_read_only_memory";
-    public static final String NAME_ITEM_MODULE_REDSTONE = "module_redstone";
-    public static final String NAME_ITEM_MODULE_SEQUENCER = "module_sequencer";
-    public static final String NAME_ITEM_MODULE_SERIAL_PORT = "module_serial_port";
-    public static final String NAME_ITEM_MODULE_STACK = "module_stack";
-    public static final String NAME_ITEM_MODULE_TERMINAL = "module_terminal";
-    public static final String NAME_ITEM_MODULE_TIMER = "module_timer";
-    public static final String NAME_ITEM_PRISM = "prism";
+    public static final ResourceLocation NAME_ITEM_BOOK_CODE = new ResourceLocation("tis3d", "book_code");
+    public static final ResourceLocation NAME_ITEM_BOOK_MANUAL = new ResourceLocation("tis3d", "book_manual");
+    public static final ResourceLocation NAME_ITEM_KEY = new ResourceLocation("tis3d", "key");
+    public static final ResourceLocation NAME_ITEM_KEY_CREATIVE = new ResourceLocation("tis3d", "key_creative");
+    public static final ResourceLocation NAME_ITEM_MODULE_AUDIO = new ResourceLocation("tis3d", "module_audio");
+    public static final ResourceLocation NAME_ITEM_MODULE_BUNDLED_REDSTONE = new ResourceLocation("tis3d", "module_bundled_redstone");
+    public static final ResourceLocation NAME_ITEM_MODULE_DISPLAY = new ResourceLocation("tis3d", "module_display");
+    public static final ResourceLocation NAME_ITEM_MODULE_EXECUTION = new ResourceLocation("tis3d", "module_execution");
+    public static final ResourceLocation NAME_ITEM_MODULE_INFRARED = new ResourceLocation("tis3d", "module_infrared");
+    public static final ResourceLocation NAME_ITEM_MODULE_KEYPAD = new ResourceLocation("tis3d", "module_keypad");
+    public static final ResourceLocation NAME_ITEM_MODULE_QUEUE = new ResourceLocation("tis3d", "module_queue");
+    public static final ResourceLocation NAME_ITEM_MODULE_RANDOM = new ResourceLocation("tis3d", "module_random");
+    public static final ResourceLocation NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY = new ResourceLocation("tis3d", "module_random_access_memory");
+    public static final ResourceLocation NAME_ITEM_MODULE_READ_ONLY_MEMORY = new ResourceLocation("tis3d", "module_read_only_memory");
+    public static final ResourceLocation NAME_ITEM_MODULE_REDSTONE = new ResourceLocation("tis3d", "module_redstone");
+    public static final ResourceLocation NAME_ITEM_MODULE_SEQUENCER = new ResourceLocation("tis3d", "module_sequencer");
+    public static final ResourceLocation NAME_ITEM_MODULE_SERIAL_PORT = new ResourceLocation("tis3d", "module_serial_port");
+    public static final ResourceLocation NAME_ITEM_MODULE_STACK = new ResourceLocation("tis3d", "module_stack");
+    public static final ResourceLocation NAME_ITEM_MODULE_TERMINAL = new ResourceLocation("tis3d", "module_terminal");
+    public static final ResourceLocation NAME_ITEM_MODULE_TIMER = new ResourceLocation("tis3d", "module_timer");
+    public static final ResourceLocation NAME_ITEM_PRISM = new ResourceLocation("tis3d", "prism");
 
     public static final String NAME_ENTITY_INFRARED_PACKET = "infrared_packet";
 
     public static final String NAME_INVENTORY_CASING = "container.casing";
 
-    public static final String[] MODULES = new String[]{
+    public static final ResourceLocation[] MODULES = new ResourceLocation[]{
             NAME_ITEM_MODULE_AUDIO,
             NAME_ITEM_MODULE_BUNDLED_REDSTONE,
             NAME_ITEM_MODULE_DISPLAY,

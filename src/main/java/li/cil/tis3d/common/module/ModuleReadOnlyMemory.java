@@ -6,8 +6,8 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.common.item.ItemModuleReadOnlyMemory;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+
+
 
 /**
  * The RAM module can be used to store up to 256 values by address. It runs
@@ -55,7 +55,7 @@ public final class ModuleReadOnlyMemory extends ModuleRandomAccessMemory {
         }
     }
 
-    @SideOnly(Side.CLIENT)
+
     @Override
     protected void setCellColor(final float brightness) {
         GlStateManager.color(0.4f, 1, 0.4f, brightness);

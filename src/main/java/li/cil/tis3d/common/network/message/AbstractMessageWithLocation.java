@@ -4,9 +4,10 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import pl.asie.protocharset.rift.network.SendNetwork;
 
 public abstract class AbstractMessageWithLocation extends AbstractMessageWithDimension {
-    private BlockPos position;
+    @SendNetwork public BlockPos position;
 
     AbstractMessageWithLocation(final World world, final BlockPos position) {
         super(world);
@@ -20,23 +21,5 @@ public abstract class AbstractMessageWithLocation extends AbstractMessageWithDim
 
     public BlockPos getPosition() {
         return position;
-    }
-
-    // --------------------------------------------------------------------- //
-    // IMessage
-
-    @Override
-    public void fromBytes(final ByteBuf buf) {
-        super.fromBytes(buf);
-        final PacketBuffer buffer = new PacketBuffer(buf);
-        position = buffer.readBlockPos();
-
-    }
-
-    @Override
-    public void toBytes(final ByteBuf buf) {
-        super.toBytes(buf);
-        final PacketBuffer buffer = new PacketBuffer(buf);
-        buffer.writeBlockPos(position);
     }
 }

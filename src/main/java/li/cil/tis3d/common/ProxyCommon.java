@@ -19,25 +19,74 @@ import li.cil.tis3d.common.module.*;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.provider.SimpleModuleProvider;
 import net.minecraft.block.Block;
+import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.registry.EntityRegistry;
-import net.minecraftforge.oredict.OreDictionary;
+import org.dimdev.rift.listener.EntityTypeAdder;
+import org.dimdev.rift.listener.MinecraftStartListener;
+import pl.asie.protocharset.rift.listeners.BootstrapListener;
 
 /**
  * Takes care of common setup.
  */
-@Mod.EventBusSubscriber
-public class ProxyCommon {
-    public void onPreInit(final FMLPreInitializationEvent event) {
+public class ProxyCommon implements BootstrapListener, EntityTypeAdder {
+    @Override
+    public void afterBootstrap() {
+        // Load our settings first to have all we need for remaining init.
+        // TODO
+        // Settings.load(event.getSuggestedConfigurationFile());
+
+        // Initialize API.
+        API.creativeTab = new CreativeTab();
+
+        API.fontRendererAPI = new FontRendererAPIImpl();
+        API.infraredAPI = new InfraredAPIImpl();
+        API.manualAPI = ManualAPIImpl.INSTANCE;
+        API.moduleAPI = new ModuleAPIImpl();
+        API.serialAPI = SerialAPIImpl.INSTANCE;
+
+        // Initialize capabilities.
+        // TODO
+        // CapabilityInfraredReceiver.register();
+
+        // Register GUI handler for fancy GUIs in our almost GUI-less mod!
+        // TODO
+        //NetworkRegistry.INSTANCE.registerGuiHandler(TIS3D.instance, new GuiHandlerCommon());
+
+        // Register providers for built-in modules.
+        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_AUDIO, ModuleAudio::new));
+        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_BUNDLED_REDSTONE, ModuleBundledRedstone::new));
+        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_DISPLAY, ModuleDisplay::new));
+        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_EXECUTION, ModuleExecution::new));
+        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_INFRARED, ModuleInfrared::new));
+        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_KEYPAD, ModuleKeypad::new));
+        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_QUEUE, ModuleQueue::new));
+        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_RANDOM, ModuleRandom::new));
+        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY, ModuleRandomAccessMemory::new));
+        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY, ModuleReadOnlyMemory::new));
+        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_REDSTONE, ModuleRedstone::new));
+        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_SEQUENCER, ModuleSequencer::new));
+        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_SERIAL_PORT, ModuleSerialPort::new));
+        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_STACK, ModuleStack::new));
+        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_TERMINAL, ModuleTerminal::new));
+        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_TIMER, ModuleTimer::new));
+
+        // Add default manual providers for server side stuff.
+        ManualAPI.addProvider(new GameRegistryPathProvider());
+        ManualAPI.addProvider(new ResourceContentProvider(API.MOD_ID, "doc/"));
+        ManualAPI.addProvider(SerialAPIImpl.INSTANCE.getSerialProtocolContentProvider());
+
+        // Mod integration.
+        Integration.init();
+    }
+
+    @Override
+    public void registerEntityTypes() {
+        EntityInfraredPacket.TYPE = EntityType.registerEntityType("tis3d:infrared_packet", EntityType.Builder.create(
+                EntityInfraredPacket.class, EntityInfraredPacket::new
+        ));
+    }
+ /*   public void onPreInit(final FMLPreInitializationEvent event) {
         // Load our settings first to have all we need for remaining init.
         Settings.load(event.getSuggestedConfigurationFile());
 
@@ -133,5 +182,5 @@ public class ProxyCommon {
         }
 
         OreDictionary.registerOre(API.MOD_ID + ":module", Item.REGISTRY.getObject(new ResourceLocation(API.MOD_ID, name)));
-    }
+    } */
 }
