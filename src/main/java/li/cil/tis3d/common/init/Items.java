@@ -3,18 +3,26 @@ package li.cil.tis3d.common.init;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.Settings;
+import li.cil.tis3d.common.block.BlockCasing;
 import li.cil.tis3d.common.item.ItemBookCode;
 import li.cil.tis3d.common.item.ItemBookManual;
 import li.cil.tis3d.common.item.ItemKey;
 import li.cil.tis3d.common.item.ItemModule;
 import li.cil.tis3d.common.item.ItemModuleReadOnlyMemory;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.World;
 import org.dimdev.rift.listener.ItemAdder;
+import pl.asie.protocharset.rift.listeners.RightClickListener;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -27,7 +35,7 @@ import java.util.Objects;
 /**
  * Manages setup, registration and lookup of items.
  */
-public final class Items implements ItemAdder {
+public final class Items implements ItemAdder, RightClickListener {
     private static final Map<ResourceLocation, Item> modules = new HashMap<>();
 
     public static Item bookCode = null;
@@ -54,6 +62,27 @@ public final class Items implements ItemAdder {
                 Item.getItemFromBlock(Blocks.controller)
         ));
         return result;
+    }
+
+    // TODO: This is a doesSneakBypassUse hack.
+    @Override
+    public EnumActionResult onRightClick(EntityPlayer entityPlayer, World world, EnumHand enumHand, RayTraceResult rayTraceResult) {
+        if (!entityPlayer.isSneaking() || rayTraceResult.typeOfHit != RayTraceResult.Type.BLOCK) {
+            return EnumActionResult.PASS;
+        }
+
+        ItemStack stack = entityPlayer.getHeldItem(enumHand);
+        if (stack.getItem() instanceof ItemBookCode || stack.getItem() instanceof ItemKey || stack.getItem() instanceof ItemModuleReadOnlyMemory) {
+            IBlockState state = world.getBlockState(rayTraceResult.getBlockPos());
+            if (state.getBlock() instanceof BlockCasing) {
+                return state.onRightClick(world, rayTraceResult.getBlockPos(), entityPlayer, enumHand, rayTraceResult.sideHit,
+                        (float) rayTraceResult.hitVec.x - rayTraceResult.getBlockPos().getX(),
+                         (float) rayTraceResult.hitVec.y - rayTraceResult.getBlockPos().getY(),
+                        (float) rayTraceResult.hitVec.z - rayTraceResult.getBlockPos().getZ()) ? EnumActionResult.SUCCESS : EnumActionResult.PASS;
+            }
+        }
+
+        return EnumActionResult.PASS;
     }
 
     // --------------------------------------------------------------------- //
