@@ -138,6 +138,11 @@ curseforge {
         changelog = file("changelog.md")
         addGameVersion config.minecraft.version
         addGameVersion "Java 8"
+
+        relations {
+            requiredLibrary 'rift'
+            requiredLibrary 'protocharset'
+        }
     }
 }
 
