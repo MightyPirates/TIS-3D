@@ -3,6 +3,7 @@ package li.cil.tis3d.common.event;
 import li.cil.tis3d.common.entity.EntityInfraredPacket;
 import net.minecraft.server.MinecraftServer;
 import org.dimdev.rift.listener.ServerTickable;
+import pl.asie.protocharset.rift.listeners.BootstrapListener;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -16,8 +17,8 @@ import java.util.Set;
  * fact that entities do not update while inside the one-chunk wide border
  * of loaded chunks around the overall area of loaded chunks.
  */
-public final class TickHandlerInfraredPacket implements ServerTickable {
-    public static final TickHandlerInfraredPacket INSTANCE = new TickHandlerInfraredPacket();
+public final class TickHandlerInfraredPacket implements BootstrapListener, ServerTickable {
+    public static TickHandlerInfraredPacket INSTANCE;
 
     // --------------------------------------------------------------------- //
 
@@ -68,5 +69,10 @@ public final class TickHandlerInfraredPacket implements ServerTickable {
         pendingRemovals.clear();
 
         livePackets.forEach(EntityInfraredPacket::updateLifetime);
+    }
+
+    @Override
+    public void afterBootstrap() {
+        INSTANCE = this;
     }
 }
