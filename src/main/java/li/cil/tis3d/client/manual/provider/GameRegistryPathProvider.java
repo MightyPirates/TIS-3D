@@ -43,7 +43,7 @@ public final class GameRegistryPathProvider implements PathProvider {
         final Block block = world.getBlockState(pos).getBlock();
         final String modId = Block.REGISTRY.getNameForObject(block).getNamespace();
         if (API.MOD_ID.equals(modId)) {
-            return "%LANGUAGE%/block/" + block.getTranslationKey().replaceFirst("^tile\\.tis3d\\.", "") + ".md";
+            return "%LANGUAGE%/block/" + block.getTranslationKey().replaceFirst("^block\\.tis3d\\.", "") + ".md";
         }
         return null;
     }
