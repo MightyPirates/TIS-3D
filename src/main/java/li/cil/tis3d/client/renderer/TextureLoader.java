@@ -42,29 +42,29 @@ public final class TextureLoader implements TextureLocationLoader {
 
     @Override
     public void loadTextureLocations(IResourceManager manager, TextureMap map) {
-        map.func_199362_a(manager, LOCATION_OVERLAY_CASING_LOCKED);
-        map.func_199362_a(manager, LOCATION_OVERLAY_CASING_UNLOCKED);
-        map.func_199362_a(manager, LOCATION_OVERLAY_CASING_PORT_CLOSED);
-        map.func_199362_a(manager, LOCATION_OVERLAY_CASING_PORT_OPEN);
-        map.func_199362_a(manager, LOCATION_OVERLAY_CASING_PORT_HIGHLIGHT);
-        map.func_199362_a(manager, LOCATION_OVERLAY_CASING_PORT_CLOSED_SMALL);
-        map.func_199362_a(manager, LOCATION_OVERLAY_MODULE_AUDIO);
-        map.func_199362_a(manager, LOCATION_OVERLAY_MODULE_BUNDLED_REDSTONE);
-        map.func_199362_a(manager, LOCATION_OVERLAY_MODULE_EXECUTION_ERROR);
-        map.func_199362_a(manager, LOCATION_OVERLAY_MODULE_EXECUTION_IDLE);
-        map.func_199362_a(manager, LOCATION_OVERLAY_MODULE_EXECUTION_RUNNING);
-        map.func_199362_a(manager, LOCATION_OVERLAY_MODULE_EXECUTION_WAITING);
-        map.func_199362_a(manager, LOCATION_OVERLAY_MODULE_INFRARED);
-        map.func_199362_a(manager, LOCATION_OVERLAY_MODULE_KEYPAD);
-        map.func_199362_a(manager, LOCATION_OVERLAY_MODULE_QUEUE);
-        map.func_199362_a(manager, LOCATION_OVERLAY_MODULE_RANDOM);
-        map.func_199362_a(manager, LOCATION_OVERLAY_MODULE_REDSTONE);
-        map.func_199362_a(manager, LOCATION_OVERLAY_MODULE_REDSTONE_BARS);
-        map.func_199362_a(manager, LOCATION_OVERLAY_MODULE_SEQUENCER);
-        map.func_199362_a(manager, LOCATION_OVERLAY_MODULE_SERIAL_PORT);
-        map.func_199362_a(manager, LOCATION_OVERLAY_MODULE_STACK);
-        map.func_199362_a(manager, LOCATION_OVERLAY_MODULE_TERMINAL);
-        map.func_199362_a(manager, LOCATION_OVERLAY_MODULE_TIMER);
+        map.registerSprite(manager, LOCATION_OVERLAY_CASING_LOCKED);
+        map.registerSprite(manager, LOCATION_OVERLAY_CASING_UNLOCKED);
+        map.registerSprite(manager, LOCATION_OVERLAY_CASING_PORT_CLOSED);
+        map.registerSprite(manager, LOCATION_OVERLAY_CASING_PORT_OPEN);
+        map.registerSprite(manager, LOCATION_OVERLAY_CASING_PORT_HIGHLIGHT);
+        map.registerSprite(manager, LOCATION_OVERLAY_CASING_PORT_CLOSED_SMALL);
+        map.registerSprite(manager, LOCATION_OVERLAY_MODULE_AUDIO);
+        map.registerSprite(manager, LOCATION_OVERLAY_MODULE_BUNDLED_REDSTONE);
+        map.registerSprite(manager, LOCATION_OVERLAY_MODULE_EXECUTION_ERROR);
+        map.registerSprite(manager, LOCATION_OVERLAY_MODULE_EXECUTION_IDLE);
+        map.registerSprite(manager, LOCATION_OVERLAY_MODULE_EXECUTION_RUNNING);
+        map.registerSprite(manager, LOCATION_OVERLAY_MODULE_EXECUTION_WAITING);
+        map.registerSprite(manager, LOCATION_OVERLAY_MODULE_INFRARED);
+        map.registerSprite(manager, LOCATION_OVERLAY_MODULE_KEYPAD);
+        map.registerSprite(manager, LOCATION_OVERLAY_MODULE_QUEUE);
+        map.registerSprite(manager, LOCATION_OVERLAY_MODULE_RANDOM);
+        map.registerSprite(manager, LOCATION_OVERLAY_MODULE_REDSTONE);
+        map.registerSprite(manager, LOCATION_OVERLAY_MODULE_REDSTONE_BARS);
+        map.registerSprite(manager, LOCATION_OVERLAY_MODULE_SEQUENCER);
+        map.registerSprite(manager, LOCATION_OVERLAY_MODULE_SERIAL_PORT);
+        map.registerSprite(manager, LOCATION_OVERLAY_MODULE_STACK);
+        map.registerSprite(manager, LOCATION_OVERLAY_MODULE_TERMINAL);
+        map.registerSprite(manager, LOCATION_OVERLAY_MODULE_TIMER);
     }
 
     // --------------------------------------------------------------------- //

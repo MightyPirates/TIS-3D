@@ -31,7 +31,7 @@ public class Inventory implements IInventory {
         final NBTTagList itemList = nbt.getTagList(TAG_ITEMS, Constants.NBT.TAG_COMPOUND);
         final int count = Math.min(itemList.size(), items.length);
         for (int index = 0; index < count; index++) {
-            items[index] = ItemStack.func_199557_a(itemList.getCompoundTagAt(index));
+            items[index] = ItemStack.loadFromNBT(itemList.getCompoundTagAt(index));
         }
     }
 

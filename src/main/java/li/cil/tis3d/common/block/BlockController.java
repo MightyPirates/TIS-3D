@@ -32,7 +32,7 @@ public final class BlockController extends Block implements ITileEntityProvider 
     // Common
 
     @Override
-    public boolean onRightClick(final IBlockState state, final World world, final BlockPos pos, final EntityPlayer player, final EnumHand hand, final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
+    public boolean onBlockActivated(final IBlockState state, final World world, final BlockPos pos, final EntityPlayer player, final EnumHand hand, final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
         final ItemStack heldItem = player.getHeldItem(hand);
         if (!heldItem.isEmpty()) {
             final Item item = heldItem.getItem();
@@ -63,15 +63,15 @@ public final class BlockController extends Block implements ITileEntityProvider 
 
             return true;
         }
-        return super.onRightClick(state, world, pos, player, hand, side, hitX, hitY, hitZ);
+        return super.onBlockActivated(state, world, pos, player, hand, side, hitX, hitY, hitZ);
     }
 
     @Override
-    public void beforeReplacingBlock(IBlockState state, World world, BlockPos pos, IBlockState newState, boolean flag) {
+    public void onReplaced(IBlockState state, World world, BlockPos pos, IBlockState newState, boolean flag) {
         if (state.getBlock() != newState.getBlock()) {
             world.removeTileEntity(pos);
         }
-        super.beforeReplacingBlock(state, world, pos, newState, flag);
+        super.onReplaced(state, world, pos, newState, flag);
     }
 
     // --------------------------------------------------------------------- //
@@ -110,7 +110,7 @@ public final class BlockController extends Block implements ITileEntityProvider 
 
     @Nullable
     @Override
-    public TileEntity getTileEntity(IBlockReader iBlockReader) {
+    public TileEntity createNewTileEntity(IBlockReader iBlockReader) {
         return new TileEntityController();
     }
 }

@@ -137,7 +137,7 @@ public final class GuiBookCode extends GuiScreen {
 
         // Draw page number.
         final String pageInfo = String.format("%d/%d", data.getSelectedPage() + 1, data.getPageCount());
-        getFontRenderer().func_211126_b(pageInfo, guiX + PAGE_NUMBER_X - getFontRenderer().getStringWidth(pageInfo) / 2, guiY + PAGE_NUMBER_Y, COLOR_CODE);
+        getFontRenderer().drawString(pageInfo, guiX + PAGE_NUMBER_X - getFontRenderer().getStringWidth(pageInfo) / 2, guiY + PAGE_NUMBER_Y, COLOR_CODE);
     }
 
     @Override
@@ -584,20 +584,20 @@ public final class GuiBookCode extends GuiScreen {
                 final int selected = Math.min(line.length() - prefix, getSelectionEnd() - (position + prefix));
 
                 final String prefixText = line.substring(0, prefix);
-                getFontRenderer().func_211126_b(prefixText, currX, lineY, COLOR_CODE);
+                getFontRenderer().drawString(prefixText, currX, lineY, COLOR_CODE);
                 currX += getFontRenderer().getStringWidth(prefixText);
 
                 final String selectedText = line.substring(prefix, prefix + selected);
                 final int selectedWidth = getFontRenderer().getStringWidth(selectedText);
                 drawRect(currX - 1, lineY - 1, currX + selectedWidth, lineY + getFontRenderer().FONT_HEIGHT - 1, COLOR_SELECTION);
-                getFontRenderer().func_211126_b(selectedText, currX, lineY, COLOR_CODE_SELECTED);
+                getFontRenderer().drawString(selectedText, currX, lineY, COLOR_CODE_SELECTED);
                 currX += selectedWidth;
 
                 final String postfixString = line.substring(prefix + selected);
-                getFontRenderer().func_211126_b(postfixString, currX, lineY, COLOR_CODE);
+                getFontRenderer().drawString(postfixString, currX, lineY, COLOR_CODE);
             } else {
                 // No selection here, just draw the line. Get it? "draw the line"?
-                getFontRenderer().func_211126_b(line.toString(), lineX, lineY, COLOR_CODE);
+                getFontRenderer().drawString(line.toString(), lineX, lineY, COLOR_CODE);
             }
 
             position += line.length() + 1;
@@ -682,7 +682,7 @@ public final class GuiBookCode extends GuiScreen {
         }
 
         @Override
-        public void mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_) {
+        public void mousePressed(double p_mouseClicked_1_, double p_mouseClicked_3_) {
             if (type == PageChangeType.Next) {
                 changePage(1);
             } else if (type == PageChangeType.Previous) {
@@ -691,7 +691,7 @@ public final class GuiBookCode extends GuiScreen {
         }
 
         @Override
-        public void func_194828_a(final int mouseX, final int mouseY, final float partialTicks) {
+        public void drawButton(final int mouseX, final int mouseY, final float partialTicks) {
             if (!visible) {
                 return;
             }
@@ -716,13 +716,13 @@ public final class GuiBookCode extends GuiScreen {
         }
 
         @Override
-        public void mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_) {
+        public void mousePressed(double p_mouseClicked_1_, double p_mouseClicked_3_) {
             data.removePage(data.getSelectedPage());
             rebuildLines();
         }
 
         @Override
-        public void func_194828_a(final int mouseX, final int mouseY, final float partialTicks) {
+        public void drawButton(final int mouseX, final int mouseY, final float partialTicks) {
             if (!visible) {
                 return;
             }

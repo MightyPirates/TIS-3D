@@ -285,7 +285,7 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
         final double y = posY + dy * t;
         final double z = posZ + dz * t;
 
-        ((WorldServer) world).func_195598_a(
+        ((WorldServer) world).spawnParticle(
                 new RedstoneParticleData(1f, 0.2f, 0 , 0),
                 x, y, z, 1, 0, 0, 0, 0
         );
@@ -386,7 +386,7 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
         final Block block = world.getBlockState(pos).getBlock();
 
         // Traveling through a portal?
-        if (hit.typeOfHit == RayTraceResult.Type.BLOCK && block == Blocks.PORTAL) {
+        if (hit.typeOfHit == RayTraceResult.Type.BLOCK && block == Blocks.NETHER_PORTAL) {
             setPortal(pos);
             return;
         }

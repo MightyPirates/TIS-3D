@@ -75,7 +75,7 @@ public final class Items implements ItemAdder, RightClickListener {
         if (stack.getItem() instanceof ItemBookCode || stack.getItem() instanceof ItemKey || stack.getItem() instanceof ItemModuleReadOnlyMemory) {
             IBlockState state = world.getBlockState(rayTraceResult.getBlockPos());
             if (state.getBlock() instanceof BlockCasing) {
-                return state.onRightClick(world, rayTraceResult.getBlockPos(), entityPlayer, enumHand, rayTraceResult.sideHit,
+                return state.onBlockActivated(world, rayTraceResult.getBlockPos(), entityPlayer, enumHand, rayTraceResult.sideHit,
                         (float) rayTraceResult.hitVec.x - rayTraceResult.getBlockPos().getX(),
                          (float) rayTraceResult.hitVec.y - rayTraceResult.getBlockPos().getY(),
                         (float) rayTraceResult.hitVec.z - rayTraceResult.getBlockPos().getZ()) ? EnumActionResult.SUCCESS : EnumActionResult.PASS;

@@ -36,7 +36,7 @@ public final class Raytracing {
     public static RayTraceResult intersectIgnoringLiquids(final World world, final BlockPos position, final Vec3d start, final Vec3d end) {
         final IBlockState state = world.getBlockState(position);
         final Block block = state.getBlock();
-        if (state.getShapeForRaytrace(world, position) != null && block.isCollidable(state)) {
+        if (state.getRaytraceShape(world, position) != null && block.isCollidable(state)) {
         	return Block.collisionRayTrace(state, world, position, start, end);
         }
         return null;
@@ -58,7 +58,7 @@ public final class Raytracing {
         if (!state.getMaterial().blocksMovement() || !state.getMaterial().isOpaque()) {
             return null;
         }
-	    if (state.getShapeForRaytrace(world, position) != null && block.isCollidable(state)) {
+	    if (state.getRaytraceShape(world, position) != null && block.isCollidable(state)) {
 		    return Block.collisionRayTrace(state, world, position, start, end);
 	    }
         return null;

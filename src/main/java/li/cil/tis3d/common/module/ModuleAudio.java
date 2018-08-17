@@ -32,7 +32,7 @@ public final class ModuleAudio extends AbstractModule {
     /**
      * Resolve instrument ID to sound event used for instrument.
      */
-    private static final SoundEvent[] INSTRUMENTS = new SoundEvent[]{SoundEvents.BLOCK_NOTE_HARP, SoundEvents.BLOCK_NOTE_BASEDRUM, SoundEvents.BLOCK_NOTE_SNARE, SoundEvents.BLOCK_NOTE_HAT, SoundEvents.BLOCK_NOTE_BASS, SoundEvents.BLOCK_NOTE_FLUTE, SoundEvents.BLOCK_NOTE_BELL, SoundEvents.BLOCK_NOTE_GUITAR, SoundEvents.BLOCK_NOTE_CHIME, SoundEvents.BLOCK_NOTE_XYLOPHONE};
+    private static final SoundEvent[] INSTRUMENTS = new SoundEvent[]{SoundEvents.BLOCK_NOTE_BLOCK_HARP, SoundEvents.BLOCK_NOTE_BLOCK_BASEDRUM, SoundEvents.BLOCK_NOTE_BLOCK_SNARE, SoundEvents.BLOCK_NOTE_BLOCK_HAT, SoundEvents.BLOCK_NOTE_BLOCK_BASS, SoundEvents.BLOCK_NOTE_BLOCK_FLUTE, SoundEvents.BLOCK_NOTE_BLOCK_BELL, SoundEvents.BLOCK_NOTE_BLOCK_GUITAR, SoundEvents.BLOCK_NOTE_BLOCK_CHIME, SoundEvents.BLOCK_NOTE_BLOCK_XYLOPHONE};
 
     // TODO
     /* static {
@@ -134,7 +134,7 @@ public final class ModuleAudio extends AbstractModule {
 
             // Let there be sound!
             world.playSound(null, x, y, z, sound, SoundCategory.BLOCKS, volume, pitch);
-            ((WorldServer) world).func_195598_a(Particles.NOTE, x, y, z, 1, 0, 0, 0, 0);
+            ((WorldServer) world).spawnParticle(Particles.NOTE, x, y, z, 1, 0, 0, 0, 0);
         /* } */
     }
 }

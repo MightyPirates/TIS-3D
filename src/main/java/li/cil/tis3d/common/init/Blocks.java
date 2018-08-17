@@ -36,9 +36,9 @@ public final class Blocks implements BlockAdder, TileEntityTypeAdder {
 
     @Override
     public void registerBlocks() {
-        Block.registerBlock(Constants.NAME_BLOCK_CASING, casing = new BlockCasing(Block.Builder.create(Material.IRON)
+        Block.register(Constants.NAME_BLOCK_CASING, casing = new BlockCasing(Block.Builder.create(Material.IRON)
             .hardnessAndResistance(5, 10)));
-        Block.registerBlock(Constants.NAME_BLOCK_CONTROLLER, controller = new BlockController(Block.Builder.create(Material.IRON)
+        Block.register(Constants.NAME_BLOCK_CONTROLLER, controller = new BlockController(Block.Builder.create(Material.IRON)
                 .hardnessAndResistance(5, 10)));
     }
 

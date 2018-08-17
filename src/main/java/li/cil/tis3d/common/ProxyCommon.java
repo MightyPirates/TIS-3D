@@ -82,7 +82,7 @@ public class ProxyCommon implements BootstrapListener, EntityTypeAdder {
 
     @Override
     public void registerEntityTypes() {
-        EntityInfraredPacket.TYPE = EntityType.registerEntityType("tis3d:infrared_packet", EntityType.Builder.create(
+        EntityInfraredPacket.TYPE = EntityType.register("tis3d:infrared_packet", EntityType.Builder.create(
                 EntityInfraredPacket.class, EntityInfraredPacket::new
         ));
     }

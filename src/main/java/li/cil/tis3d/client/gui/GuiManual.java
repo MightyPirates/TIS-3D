@@ -80,7 +80,7 @@ public final class GuiManual extends GuiScreen {
             final int y = guiTop + tabPosY + i * (tabHeight - tabOverlap);
             this.addButton(new ImageButton(i, x, y, tabWidth, tabHeight - tabOverlap - 1, TextureLoader.LOCATION_GUI_MANUAL_TAB) {
                 @Override
-                public void mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_) {
+                public void mousePressed(double p_mouseClicked_1_, double p_mouseClicked_3_) {
                     ManualAPI.navigate(ManualAPIImpl.getTabs().get(id).path);
                 }
             }.setImageHeight(tabHeight).setVerticalImageOffset(-tabOverlap / 2));
@@ -301,7 +301,7 @@ public final class GuiManual extends GuiScreen {
         }
 
         @Override
-        public void func_194828_a(final int mouseX, final int mouseY, final float partialTicks) {
+        public void drawButton(final int mouseX, final int mouseY, final float partialTicks) {
             if (visible) {
                 Minecraft.getMinecraft().getTextureManager().bindTexture(image);
                 GlStateManager.color(1, 1, 1, 1);
@@ -346,7 +346,7 @@ public final class GuiManual extends GuiScreen {
                 ++scaleFactor;
             }
 
-            if (Minecraft.getMinecraft().isUnicode() && scaleFactor % 2 != 0 && scaleFactor != 1) {
+            if (Minecraft.getMinecraft().getForceUnicodeFont() && scaleFactor % 2 != 0 && scaleFactor != 1) {
                 --scaleFactor;
             }
 

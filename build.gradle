@@ -74,10 +74,10 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.dimdev:rift:1.0.3-45:dev'
+    implementation 'org.dimdev:rift:1.0.4-51:dev'
     compile name: "Jankson", version: "0.0.3"
     compile name: "JanksonShadowed", version: "0.0.3"
-    compile name: "ProtoCharset", version: "0.0.3-deobf"
+    compile name: "ProtoCharset", version: "0.0.3-0817-deobf"
 }
 
 mixin {

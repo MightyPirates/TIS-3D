@@ -61,8 +61,8 @@ public final class ItemBookManual extends ItemBook {
     }
 
     @Override
-    public EnumActionResult func_195939_a(final ItemUseContext context) {
-        return tryOpenManual(context.func_195991_k(), context.func_195999_j(), ManualAPI.pathFor(context.func_195991_k(), context.func_195995_a())) ? EnumActionResult.SUCCESS : EnumActionResult.PASS;
+    public EnumActionResult onItemUse(final ItemUseContext context) {
+        return tryOpenManual(context.getWorld(), context.getPlayer(), ManualAPI.pathFor(context.getWorld(), context.getPos())) ? EnumActionResult.SUCCESS : EnumActionResult.PASS;
     }
 
     @Override

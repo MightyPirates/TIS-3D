@@ -472,7 +472,7 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
     private void bell() {
         final World world = getCasing().getCasingWorld();
         if (!world.isRemote) {
-            world.playSound(null, getCasing().getPosition(), SoundEvents.BLOCK_NOTE_PLING, SoundCategory.BLOCKS, 0.3f, 2f);
+            world.playSound(null, getCasing().getPosition(), SoundEvents.BLOCK_NOTE_BLOCK_PLING, SoundCategory.BLOCKS, 0.3f, 2f);
         }
     }
 

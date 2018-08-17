@@ -282,7 +282,7 @@ public final class TileEntityController extends TileEntityComputer implements IT
                     final float ox = neighborPos.getX() + world.rand.nextFloat();
                     final float oy = neighborPos.getY() + world.rand.nextFloat();
                     final float oz = neighborPos.getZ() + world.rand.nextFloat();
-                    world.addParticle(Particles.FLAME, ox, oy, oz, 0, 0, 0);
+                    world.spawnParticle(Particles.FLAME, ox, oy, oz, 0, 0, 0);
                 }
             }
 

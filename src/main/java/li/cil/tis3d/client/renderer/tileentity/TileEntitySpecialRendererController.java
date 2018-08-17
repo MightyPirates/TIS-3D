@@ -7,7 +7,7 @@ import net.minecraft.util.math.RayTraceResult;
 
 public final class TileEntitySpecialRendererController extends TileEntityRenderer<TileEntityController> {
     @Override
-    public void func_199341_a(final TileEntityController controller, final double x, final double y, final double z, final float partialTicks, final int destroyStage) {
+    public void render(final TileEntityController controller, final double x, final double y, final double z, final float partialTicks, final int destroyStage) {
         final TileEntityController.ControllerState state = controller.getState();
         if (!state.isError) {
             return;

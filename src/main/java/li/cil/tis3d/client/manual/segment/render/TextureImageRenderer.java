@@ -70,7 +70,7 @@ public class TextureImageRenderer implements ImageRenderer {
         }
 
         @Override
-        public void func_195413_a(final IResourceManager manager) throws IOException {
+        public void loadTexture(final IResourceManager manager) throws IOException {
             deleteGlTexture();
 
             final IResource resource = manager.getResource(location);
