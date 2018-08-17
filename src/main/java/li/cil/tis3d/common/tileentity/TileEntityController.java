@@ -291,8 +291,7 @@ public final class TileEntityController extends TileEntityComputer implements IT
 
         if (state != lastSentState) {
             final IBlockState blockState = world.getBlockState(getPos());
-            // TODO markAndNotifyBlock
-            world.setBlockState(getPos(), blockState, 7);
+            world.notifyBlockUpdate(getPipeHostPosition(), blockState, blockState, 2);
             lastSentState = state;
         }
 
