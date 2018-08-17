@@ -161,16 +161,14 @@ abstract class TileEntityComputer extends TileEntity implements PipeHost {
     @Nullable
     @Override
     public SPacketUpdateTileEntity getUpdatePacket() {
-        final NBTTagCompound nbt = new NBTTagCompound();
-        writeToNBTForClient(nbt);
-        nbt.setBoolean("_client", true);
-        return new SPacketUpdateTileEntity(getPos(), 0, nbt);
+        return new SPacketUpdateTileEntity(getPos(), 0, getUpdateTag());
     }
 
     @Override
     public NBTTagCompound getUpdateTag() {
         final NBTTagCompound nbt = super.getUpdateTag();
         writeToNBTForClient(nbt);
+        nbt.setBoolean("_client", true);
         return nbt;
     }
 
