@@ -48,7 +48,8 @@ import java.util.function.BiConsumer;
  */
 public final class Network implements PacketAdderClient, PacketAdderServer, ClientTickable, ServerTickable {
     public static final Network INSTANCE = new Network();
-    public static Map<Class<?>, BiConsumer<Packet, NetworkContext>> HANDLER_MAP = new HashMap<>();
+    public static Map<Class<?>, BiConsumer<Packet, NetworkContext>> HANDLER_MAP_CLIENT = new HashMap<>();
+    public static Map<Class<?>, BiConsumer<Packet, NetworkContext>> HANDLER_MAP_SERVER = new HashMap<>();
 
     public static final int RANGE_HIGH = 48;
     public static final int RANGE_MEDIUM = 32;
@@ -72,8 +73,11 @@ public final class Network implements PacketAdderClient, PacketAdderServer, Clie
 	private void registerMessage(PacketRegistry registry, Class<? extends AbstractMessageHandler> hcl, Class<? extends AbstractMessage> cl, int id, Side side) {
 		try {
 		    AbstractMessageHandler mh = hcl.newInstance();
-			//noinspection uncheckedc
-			HANDLER_MAP.put(cl, mh::onMessage);
+		    if (side == Side.CLIENT) {
+                HANDLER_MAP_CLIENT.put(cl, mh::onMessage);
+            } else {
+		        HANDLER_MAP_SERVER.put(cl, mh::onMessage);
+            }
 			registry.register(new ResourceLocation("tis3d", cl.getSimpleName().toLowerCase(Locale.ROOT)), cl, false);
 		} catch (Exception e) {
 			throw new RuntimeException(e);

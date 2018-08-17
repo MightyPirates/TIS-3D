@@ -73,7 +73,7 @@ public final class ItemBookManual extends ItemBook {
             }
             ManualAPI.openFor(player);
         }
-        return super.onItemRightClick(world, player, hand);
+        return new ActionResult(EnumActionResult.SUCCESS, player.getHeldItem(hand));
     }
 
     // --------------------------------------------------------------------- //
