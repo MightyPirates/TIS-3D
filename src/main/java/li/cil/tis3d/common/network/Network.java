@@ -192,7 +192,7 @@ public final class Network implements PacketAdderClient, PacketAdderServer, Clie
 
         private void sendMessage() {
             if (((WorldServer) world).spawnParticle(
-                    new RedstoneParticleData(1f, 0.2f, 0 , 0),
+                    new RedstoneParticleData(1f, 0.2f, 0 , 1f),
                     x, y, z, 1, 0, 0, 0, 0
             ) > 0) {
                 particlesSent++;

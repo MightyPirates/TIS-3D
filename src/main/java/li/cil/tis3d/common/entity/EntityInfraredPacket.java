@@ -286,7 +286,7 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
         final double z = posZ + dz * t;
 
         ((WorldServer) world).spawnParticle(
-                new RedstoneParticleData(1f, 0.2f, 0 , 0),
+                new RedstoneParticleData(1f, 0.2f, 0 , 1f),
                 x, y, z, 1, 0, 0, 0, 0
         );
     }
