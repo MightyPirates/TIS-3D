@@ -149,10 +149,10 @@ public final class GuiManual extends GuiScreen {
 
     @Override
     public boolean keyPressed(int code, int scancode, int mods) {
-        if (code == mc.gameSettings.keyBindJump.func_197977_i().getKeyCode()) {
+        if (mc.gameSettings.keyBindJump.func_197976_a(code, scancode)) {
             popPage();
             return true;
-        } else if (code == mc.gameSettings.keyBindInventory.func_197977_i().getKeyCode()) {
+        } else if (mc.gameSettings.keyBindInventory.func_197976_a(code, scancode)) {
             mc.player.closeScreen();
             return true;
         } else {
