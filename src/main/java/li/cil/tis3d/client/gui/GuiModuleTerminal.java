@@ -6,12 +6,8 @@ import li.cil.tis3d.common.module.ModuleTerminal;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.SharedConstants;
-
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
-
-import java.io.IOException;
 
 /**
  * Invisible GUI for the terminal module, purely used to grab keyboard input.
@@ -63,6 +59,12 @@ public final class GuiModuleTerminal extends GuiScreen {
 
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
             return true;
+        } else if (keyCode == GLFW.GLFW_KEY_BACKSPACE) {
+            return writeToModule('\b');
+        } else if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
+            return writeToModule('\n');
+        } else if (keyCode == GLFW.GLFW_KEY_TAB) {
+            return writeToModule('\t');
         }
 
         return false;
@@ -75,15 +77,19 @@ public final class GuiModuleTerminal extends GuiScreen {
         }
 
         if (chr != '\0') {
-            module.writeToInput(chr);
-
-            if (Settings.animateTypingHand) {
-                mc.player.swingArm(EnumHand.MAIN_HAND);
-            }
-            return true;
+            return writeToModule(chr);
         } else {
             return false;
         }
+    }
+
+    private boolean writeToModule(char chr) {
+        module.writeToInput(chr);
+
+        if (Settings.animateTypingHand) {
+            mc.player.swingArm(EnumHand.MAIN_HAND);
+        }
+        return true;
     }
 
     @Override
