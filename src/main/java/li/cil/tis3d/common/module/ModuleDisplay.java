@@ -82,7 +82,7 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
     /**
      * The ID of the uploaded texture on the GPU (client only).
      */
-    private int glTextureId;
+    private int glTextureId = 0;
 
     // --------------------------------------------------------------------- //
 
@@ -111,10 +111,12 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
 
     @Override
     public void onDisposed() {
-        final World world = getCasing().getCasingWorld();
-        if (world.isRemote) {
-            deleteTexture();
-        }
+        deleteTexture();
+    }
+
+    @Override
+    public void finalize() {
+        deleteTexture();
     }
 
     @Override
@@ -259,6 +261,9 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
         if (glTextureId != 0) {
             TextureUtil.deleteTexture(glTextureId);
             glTextureId = 0;
+        }
+        if (nativeImage != null) {
+            ((NativeImage) nativeImage).close();
         }
     }
 
