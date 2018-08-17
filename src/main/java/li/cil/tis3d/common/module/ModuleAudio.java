@@ -108,7 +108,7 @@ public final class ModuleAudio extends AbstractModule {
     private void playNote(final int value) {
         final int noteId = (value & 0xFF00) >>> 8;
         final int volume = Math.min(4, (value & 0x00F0) >>> 4);
-        final int instrumentId = value & 0x000F;
+        int instrumentId = value & 0x000F;
 
         // Skip mute sounds.
         if (volume < 1) {
@@ -119,6 +119,7 @@ public final class ModuleAudio extends AbstractModule {
         final World world = getCasing().getCasingWorld();
         final BlockPos pos = getCasing().getPosition();
         // TODO
+        if (instrumentId >= INSTRUMENTS.length) instrumentId = 0;
         /* final NoteBlockEvent.Play event = new NoteBlockEvent.Play(world, pos, world.getBlockState(pos), noteId, instrumentId);
         if (!MinecraftForge.EVENT_BUS.post(event)) { */
             // Not cancelled, get pitch, sound effect name.
