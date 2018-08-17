@@ -8,6 +8,7 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.util.TransformUtil;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -151,7 +152,7 @@ public abstract class AbstractModule implements Module {
         // Otherwise check if the neighboring block blocks visibility to our face.
         // TODO: Can this be done better? It probably can.
         final IBlockState neighborState = world.getBlockState(neighborPos);
-        return neighborState.isFullCube() && neighborState.getBlock().getRenderLayer() == BlockRenderLayer.SOLID;
+        return neighborState.getMaterial() == Material.AIR || !neighborState.isFullCube() || neighborState.getBlock().getRenderLayer() != BlockRenderLayer.SOLID;
     }
 
     // --------------------------------------------------------------------- //
