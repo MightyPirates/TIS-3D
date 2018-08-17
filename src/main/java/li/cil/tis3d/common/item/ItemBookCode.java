@@ -57,7 +57,6 @@ public final class ItemBookCode extends ItemBook {
         if (world.isRemote) {
             openForClient(player);
         }
-        GuiHandlerCommon.sendModuleMemory(player);
         return new ActionResult(EnumActionResult.SUCCESS, player.getHeldItem(hand));
     }
 

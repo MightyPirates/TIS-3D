@@ -37,7 +37,7 @@ public class ItemModuleReadOnlyMemory extends ItemModule {
         if (world.isRemote) {
             openForClient(player);
         } else {
-
+            GuiHandlerCommon.sendModuleMemory(player);
         }
         return super.onItemRightClick(world, player, hand);
     }
