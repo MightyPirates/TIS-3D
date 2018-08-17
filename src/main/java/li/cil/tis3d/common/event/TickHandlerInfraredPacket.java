@@ -57,9 +57,6 @@ public final class TickHandlerInfraredPacket implements BootstrapListener, Serve
 
     // --------------------------------------------------------------------- //
 
-    private TickHandlerInfraredPacket() {
-    }
-
     @Override
     public void serverTick(MinecraftServer server) {
         livePackets.addAll(pendingAdds);
