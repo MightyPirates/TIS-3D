@@ -8,9 +8,8 @@ import li.cil.tis3d.api.prefab.module.AbstractModule;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.renderer.TextureLoader;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.world.World;
-
-
 
 import java.util.Random;
 
@@ -40,8 +39,8 @@ public final class ModuleRandom extends AbstractModule {
 
 
     @Override
-    public void render(final boolean enabled, final float partialTicks) {
-        if (!enabled) {
+    public void render(final TileEntityRendererDispatcher rendererDispatcher, final float partialTicks) {
+        if (!getCasing().isEnabled()) {
             return;
         }
 

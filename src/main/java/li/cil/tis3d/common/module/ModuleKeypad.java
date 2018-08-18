@@ -8,6 +8,7 @@ import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.renderer.TextureLoader;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
@@ -15,8 +16,6 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-
-
 
 import java.util.Optional;
 
@@ -152,8 +151,8 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
 
 
     @Override
-    public void render(final boolean enabled, final float partialTicks) {
-        if (!enabled || !isVisible()) {
+    public void render(final TileEntityRendererDispatcher rendererDispatcher, final float partialTicks) {
+        if (!getCasing().isEnabled() || !isVisible()) {
             return;
         }
 
@@ -170,7 +169,7 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
 
         // Draw overlay for hovered button if we can currently input a value.
         if (!value.isPresent()) {
-            final Vec3d hitPos = getPlayerLookAt();
+            final Vec3d hitPos = getObserverLookAt(rendererDispatcher);
             if (hitPos != null) {
                 final Vec3d uv = hitToUV(hitPos);
                 final int button = uvToButton((float) uv.x, (float) uv.y);

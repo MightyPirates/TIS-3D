@@ -14,11 +14,11 @@ import li.cil.tis3d.client.renderer.TextureLoader;
 import li.cil.tis3d.client.renderer.font.FontRenderer;
 import li.cil.tis3d.client.renderer.font.FontRendererNormal;
 import li.cil.tis3d.common.Constants;
-import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.gui.GuiHandlerCommon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
@@ -27,8 +27,6 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
-
-
 
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -229,8 +227,8 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
 
 
     @Override
-    public void render(final boolean enabled, final float partialTicks) {
-        if (!enabled || !isVisible()) {
+    public void render(final TileEntityRendererDispatcher rendererDispatcher, final float partialTicks) {
+        if (!getCasing().isEnabled() || !isVisible()) {
             return;
         }
 
@@ -238,8 +236,7 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
         RenderUtil.ignoreLighting();
         GlStateManager.enableBlend();
 
-        final Minecraft mc = Minecraft.getMinecraft();
-        if (mc != null && mc.player != null && mc.player.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
+        if (rendererDispatcher.entity.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
             // Player is close, render actual terminal text.
             renderText();
         } else {

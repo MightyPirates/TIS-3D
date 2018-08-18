@@ -11,7 +11,7 @@ import li.cil.tis3d.api.prefab.module.AbstractModule;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.renderer.TextureLoader;
 import li.cil.tis3d.common.Settings;
-import li.cil.tis3d.common.capabilities.CapabilityInfraredReceiver;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.util.EnumFacing;
@@ -20,10 +20,6 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Deque;
 import java.util.LinkedList;
 
@@ -92,8 +88,8 @@ public final class ModuleInfrared extends AbstractModule implements /* ICapabili
 
 
     @Override
-    public void render(final boolean enabled, final float partialTicks) {
-        if (!enabled) {
+    public void render(final TileEntityRendererDispatcher rendererDispatcher, final float partialTicks) {
+        if (!getCasing().isEnabled()) {
             return;
         }
 

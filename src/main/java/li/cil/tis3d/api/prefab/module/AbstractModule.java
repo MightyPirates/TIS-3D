@@ -7,16 +7,13 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.util.TransformUtil;
-import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -72,8 +69,8 @@ public abstract class AbstractModule implements Module {
      *
      * @return <tt>true</tt> if the player is looking at the module, <tt>false</tt> otherwise.
      */
-    protected boolean isPlayerLookingAt() {
-        final RayTraceResult hit = Minecraft.getMinecraft().objectMouseOver;
+    protected boolean isObserverLookingAt(final TileEntityRendererDispatcher rendererDispatcher) {
+        final RayTraceResult hit = rendererDispatcher.cameraHitResult;
         return hit != null &&
             hit.typeOfHit == RayTraceResult.Type.BLOCK &&
             getCasing().getPosition().equals(hit.getBlockPos()) &&
@@ -93,8 +90,8 @@ public abstract class AbstractModule implements Module {
      * @return the UV coordinate the player is looking at as the X and Y components.
      */
     @Nullable
-    protected Vec3d getPlayerLookAt() {
-        final RayTraceResult hit = Minecraft.getMinecraft().objectMouseOver;
+    protected Vec3d getObserverLookAt(final TileEntityRendererDispatcher rendererDispatcher) {
+        final RayTraceResult hit = rendererDispatcher.cameraHitResult;
         if (hit != null &&
             hit.typeOfHit == RayTraceResult.Type.BLOCK &&
             getCasing().getPosition().equals(hit.getBlockPos()) &&
@@ -119,7 +116,7 @@ public abstract class AbstractModule implements Module {
      *
      * @param hitPos the hit position to project.
      * @return the projected UV coordinate, with the Z component being 0.
-     * @see #getPlayerLookAt()
+     * @see #getObserverLookAt(TileEntityRendererDispatcher)
      * @see Module#onActivate(EntityPlayer, EnumHand, float, float, float)
      */
     protected Vec3d hitToUV(final Vec3d hitPos) {
@@ -214,7 +211,7 @@ public abstract class AbstractModule implements Module {
     }
 
     @Override
-    public void render(final boolean enabled, final float partialTicks) {
+    public void render(final TileEntityRendererDispatcher rendererDispatcher, final float partialTicks) {
     }
 
     @Override

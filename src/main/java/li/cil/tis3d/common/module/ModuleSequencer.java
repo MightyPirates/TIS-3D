@@ -10,15 +10,13 @@ import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.renderer.TextureLoader;
 import li.cil.tis3d.util.Side;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-
-
 
 public final class ModuleSequencer extends AbstractModuleRotatable {
     // --------------------------------------------------------------------- //
@@ -131,7 +129,7 @@ public final class ModuleSequencer extends AbstractModuleRotatable {
 
 
     @Override
-    public void render(final boolean enabled, final float partialTicks) {
+    public void render(final TileEntityRendererDispatcher rendererDispatcher, final float partialTicks) {
         if (!isVisible()) {
             return;
         }
@@ -143,6 +141,7 @@ public final class ModuleSequencer extends AbstractModuleRotatable {
         GlStateManager.disableTexture2D();
         GlStateManager.depthMask(false);
 
+        final boolean enabled = getCasing().isEnabled();
         if (enabled) {
             // Draw bar in background indicating current position in sequence.
             final float barU0 = BAR_U0 + BAR_STEP_U * position;
@@ -159,8 +158,7 @@ public final class ModuleSequencer extends AbstractModuleRotatable {
 
         GlStateManager.depthMask(true);
 
-        final Minecraft mc = Minecraft.getMinecraft();
-        if (mc != null && mc.player != null && mc.player.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
+        if (rendererDispatcher.entity.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
             // Draw configuration of sequencer.
             GlStateManager.color(0.8f, 0.85f, 0.875f, enabled ? 1 : 0.5f);
             for (int col = 0; col < COL_COUNT; col++) {
@@ -175,7 +173,7 @@ public final class ModuleSequencer extends AbstractModuleRotatable {
         }
 
         // Draw selection overlay for focused cell, if any.
-        final Vec3d hitPos = getPlayerLookAt();
+        final Vec3d hitPos = getObserverLookAt(rendererDispatcher);
         if (hitPos != null) {
             final Vec3d uv = hitToUV(hitPos);
             final int col = uvToCol((float) uv.x);

@@ -18,10 +18,10 @@ import li.cil.tis3d.common.module.execution.MachineState;
 import li.cil.tis3d.common.module.execution.compiler.Compiler;
 import li.cil.tis3d.common.module.execution.compiler.ParseException;
 import li.cil.tis3d.util.EnumUtils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -226,10 +226,9 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         state = State.values()[data.readByte()];
     }
 
-
     @Override
-    public void render(final boolean enabled, final float partialTicks) {
-        if ((!enabled || !isVisible()) && !isPlayerLookingAt()) {
+    public void render(final TileEntityRendererDispatcher rendererDispatcher, final float partialTicks) {
+        if ((!getCasing().isEnabled() || !isVisible()) && !isObserverLookingAt(rendererDispatcher)) {
             return;
         }
 
@@ -241,8 +240,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
 
         // Render detailed state when player is close.
         final MachineState machineState = getState();
-        final Minecraft mc = Minecraft.getMinecraft();
-        if (machineState.code != null && mc != null && mc.player != null && mc.player.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
+        if (machineState.code != null && rendererDispatcher.entity.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
             renderState(machineState);
         }
     }

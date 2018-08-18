@@ -7,20 +7,16 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModule;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.renderer.TextureLoader;
-import li.cil.tis3d.common.network.Network;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.init.Particles;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import pl.asie.protocharset.rift.network.PacketRegistry;
-import pl.asie.protocharset.rift.network.PacketServerHelper;
 
 /**
  * The audio module, emitting sounds like none other.
@@ -66,8 +62,8 @@ public final class ModuleAudio extends AbstractModule {
 
 
     @Override
-    public void render(final boolean enabled, final float partialTicks) {
-        if (!enabled) {
+    public void render(final TileEntityRendererDispatcher rendererDispatcher, final float partialTicks) {
+        if (!getCasing().isEnabled()) {
             return;
         }
 

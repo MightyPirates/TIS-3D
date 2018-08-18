@@ -9,7 +9,6 @@ import li.cil.tis3d.client.renderer.TextureLoader;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.tileentity.TileEntityCasing;
-import li.cil.tis3d.common.tileentity.TileEntityController;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -208,7 +207,7 @@ public final class TileEntitySpecialRendererCasing extends TileEntityRenderer<Ti
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, brightness % 65536, brightness / 65536);
 
         try {
-            module.render(casing.isEnabled(), partialTicks);
+            module.render(rendererDispatcher, partialTicks);
         } catch (final Exception e) {
             BLACKLIST.add(module.getClass());
             TIS3D.getLog().error("A module threw an exception while rendering, won't render again!", e);

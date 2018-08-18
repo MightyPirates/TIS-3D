@@ -10,12 +10,10 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.renderer.TextureLoader;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.MathHelper;
-
-
 
 /**
  * The queue module can be used to store a number of values to be retrieved
@@ -103,8 +101,8 @@ public final class ModuleQueue extends AbstractModuleRotatable {
 
 
     @Override
-    public void render(final boolean enabled, final float partialTicks) {
-        if (!enabled) {
+    public void render(final TileEntityRendererDispatcher rendererDispatcher, final float partialTicks) {
+        if (!getCasing().isEnabled()) {
             return;
         }
 
@@ -114,8 +112,7 @@ public final class ModuleQueue extends AbstractModuleRotatable {
         RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_QUEUE));
 
         // Render detailed state when player is close.
-        final Minecraft mc = Minecraft.getMinecraft();
-        if (!isEmpty() && mc != null && mc.player != null && mc.player.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
+        if (!isEmpty() && rendererDispatcher.entity.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
             drawState();
         }
     }

@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -191,11 +192,10 @@ public interface Module {
      * it is merely passed along for backwards compatibility from before the
      * time that getter existed.
      *
-     * @param enabled      whether the module is currently enabled.
-     * @param partialTicks the partial time elapsed in this tick.
+     * @param rendererDispatcher the render context of the tile entity the module sits in.
+     * @param partialTicks       the partial time elapsed in this tick.
      */
-    // TODO In 1.13, pass along TileEntityRendererDispatcher so we don't have to fetch info that's in there statically.
-    void render(final boolean enabled, final float partialTicks);
+    void render(final TileEntityRendererDispatcher rendererDispatcher, final float partialTicks);
 
     // --------------------------------------------------------------------- //
 

@@ -14,9 +14,9 @@ import li.cil.tis3d.client.renderer.TextureLoader;
 import li.cil.tis3d.util.ColorUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-
 
 import org.dimdev.riftloader.RiftLoader;
 
@@ -121,7 +121,7 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
 
 
     @Override
-    public void render(final boolean enabled, final float partialTicks) {
+    public void render(final TileEntityRendererDispatcher rendererDispatcher, final float partialTicks) {
         if (!isVisible()) {
             return;
         }
@@ -132,7 +132,7 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
         // Draw base overlay.
         RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_BUNDLED_REDSTONE));
 
-        if (!enabled) {
+        if (!getCasing().isEnabled()) {
             return;
         }
 

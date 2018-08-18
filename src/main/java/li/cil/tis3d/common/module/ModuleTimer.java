@@ -13,6 +13,7 @@ import li.cil.tis3d.client.renderer.font.FontRenderer;
 import li.cil.tis3d.client.renderer.font.FontRendererNormal;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.nbt.NBTTagCompound;
 
 
@@ -93,8 +94,8 @@ public final class ModuleTimer extends AbstractModuleRotatable {
 
 
     @Override
-    public void render(final boolean enabled, final float partialTicks) {
-        if (!enabled) {
+    public void render(final TileEntityRendererDispatcher rendererDispatcher, final float partialTicks) {
+        if (!getCasing().isEnabled()) {
             return;
         }
 
@@ -104,9 +105,9 @@ public final class ModuleTimer extends AbstractModuleRotatable {
         RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_TIMER));
 
         // Render detailed state when player is close.
-        final Minecraft mc = Minecraft.getMinecraft();
-        if (!hasElapsed && mc != null && mc.player != null && mc.player.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
-            final long worldTime = mc.world != null ? mc.world.getTotalWorldTime() : 0;
+        if (!hasElapsed && rendererDispatcher.entity.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
+            final Minecraft mc = Minecraft.getMinecraft();
+            final long worldTime = mc != null && mc.world != null ? mc.world.getTotalWorldTime() : 0;
             final float remaining = (float) (timer - worldTime) - partialTicks;
             if (remaining <= 0) {
                 hasElapsed = true;

@@ -12,10 +12,9 @@ import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.renderer.TextureLoader;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-
-
 
 public final class ModuleRedstone extends AbstractModuleRotatable implements Redstone {
     // --------------------------------------------------------------------- //
@@ -110,14 +109,14 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
 
 
     @Override
-    public void render(final boolean enabled, final float partialTicks) {
+    public void render(final TileEntityRendererDispatcher rendererDispatcher, final float partialTicks) {
         rotateForRendering();
         RenderUtil.ignoreLighting();
 
         // Draw base overlay.
         RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_REDSTONE));
 
-        if (!enabled) {
+        if (!getCasing().isEnabled()) {
             return;
         }
 
