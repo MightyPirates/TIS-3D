@@ -43,15 +43,21 @@ public final class MachineState {
      */
     public String[] code;
 
+    /**
+     * State of program counter after last call to {@link #finishCycle()}.
+     */
+    private int pcPrev;
+
     // --------------------------------------------------------------------- //
     // Computed data
 
     // NBT tag names.
-    public static final String TAG_CODE = "code";
-    public static final String TAG_PC = "pc";
-    public static final String TAG_ACC = "acc";
-    public static final String TAG_BAK = "bak";
-    public static final String TAG_LAST = "last";
+    private static final String TAG_CODE = "code";
+    private static final String TAG_PC = "pc";
+    private static final String TAG_ACC = "acc";
+    private static final String TAG_BAK = "bak";
+    private static final String TAG_LAST = "last";
+    private static final String TAG_PC_PREV = "pcPrev";
 
     /**
      * List of instructions (the program) stored in the machine.
@@ -71,14 +77,27 @@ public final class MachineState {
     // --------------------------------------------------------------------- //
 
     /**
-     * Ensure values of the state are valid ones.
+     * Finishes an execution cycle, ensuring values of the state are valid ones and
+     * returning whether the internal state changed since the last call to this method.
+     *
+     * @return <c>true</c> if the internal state had changed since the last call.
      */
-    public void validate() {
+    public boolean finishCycle() {
+        // Check this before wrapping program counter because this also determines the run
+        // state of the hosting execution module, so we need to report change when the
+        // instruction at the current program counter position has finished (which we can
+        // tell by seeing that it incremented / changed the program counter state).
+        final boolean hasChanged = pc != pcPrev;
+
         // Set to zero even when running out at the end to have programs
         // restart automatically.
         if (pc < 0 || pc >= instructions.size()) {
             pc = 0;
         }
+
+        pcPrev = pc;
+
+        return hasChanged;
     }
 
     /**
@@ -124,8 +143,7 @@ public final class MachineState {
         } else {
             last = Optional.empty();
         }
-
-        validate();
+        pcPrev = nbt.getInteger(TAG_PC_PREV);
     }
 
     public void writeToNBT(final NBTTagCompound nbt) {
@@ -133,6 +151,7 @@ public final class MachineState {
         nbt.setShort(TAG_ACC, acc);
         nbt.setShort(TAG_BAK, bak);
         last.ifPresent(port -> EnumUtils.writeToNBT(port, TAG_LAST, nbt));
+        nbt.setInteger(TAG_PC_PREV, pcPrev);
 
         if (code != null) {
             nbt.setString(TAG_CODE, String.join("\n", (CharSequence[]) code));

@@ -49,13 +49,13 @@ public final class MachineImpl implements Machine {
      * @return <tt>true</tt> if the current instruction changed (even if it's the same again).
      */
     public boolean step() {
-        final int pc = state.pc;
         final Instruction instruction = getInstruction();
         if (instruction != null) {
             instruction.step(this);
         }
 
-        final boolean stateChanged = state.pc != pc;
+        return state.finishCycle();
+    }
 
     /**
      * Inform the active instruction that a write operation will be completed.
