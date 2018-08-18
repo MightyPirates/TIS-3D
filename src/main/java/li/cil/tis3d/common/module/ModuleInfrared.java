@@ -152,6 +152,10 @@ public final class ModuleInfrared extends AbstractModule implements ICapabilityP
 
     @Override
     public void onInfraredPacket(final InfraredPacket packet, final RayTraceResult hit) {
+        if (!getCasing().isEnabled()) {
+            return;
+        }
+
         final World world = getCasing().getCasingWorld();
         if (world.isRemote) {
             return;
