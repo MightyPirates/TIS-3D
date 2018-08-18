@@ -1,9 +1,13 @@
 package li.cil.tis3d.util;
 
+import li.cil.tis3d.common.Constants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Utility methods based on the default Minecraft font renderer.
@@ -18,13 +22,13 @@ public final class FontRendererUtils {
      * @param info    the info to add to the tooltip.
      * @param tooltip the tooltip to add the info to.
      */
-    public static void addStringToTooltip(final String info, final List<String> tooltip) {
+    public static void addStringToTooltip(final String info, final List<ITextComponent> tooltip) {
         final Minecraft mc = Minecraft.getMinecraft();
         if (mc != null) {
             final FontRenderer fontRenderer = mc.fontRenderer;
-            tooltip.addAll(fontRenderer.listFormattedStringToWidth(info, li.cil.tis3d.common.Constants.MAX_TOOLTIP_WIDTH));
+            tooltip.addAll(fontRenderer.listFormattedStringToWidth(info, Constants.MAX_TOOLTIP_WIDTH).stream().map(TextComponentString::new).collect(Collectors.toList()));
         } else {
-            tooltip.add(info);
+            tooltip.add(new TextComponentString(info));
         }
     }
 
