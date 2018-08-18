@@ -21,7 +21,7 @@ public final class FontRendererUtils {
     public static void addStringToTooltip(final String info, final List<String> tooltip) {
         final Minecraft mc = Minecraft.getMinecraft();
         if (mc != null) {
-            final FontRenderer fontRenderer = mc.fontRenderer;
+            final FontRenderer fontRenderer = mc.fontRendererObj;
             tooltip.addAll(fontRenderer.listFormattedStringToWidth(info, li.cil.tis3d.common.Constants.MAX_TOOLTIP_WIDTH));
         } else {
             tooltip.add(info);
