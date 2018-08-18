@@ -231,6 +231,7 @@ public final class ModuleStack extends AbstractModuleRotatable {
 
                 // Restart all writes to ensure we're outputting the top-most value.
                 cancelWrite();
+                stepOutput();
             }
         }
     }
