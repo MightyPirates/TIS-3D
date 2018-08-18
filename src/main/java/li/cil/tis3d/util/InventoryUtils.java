@@ -48,9 +48,9 @@ public final class InventoryUtils {
 
         final Random rng = world.rand;
 
-        final double ox = towards.getFrontOffsetX();
-        final double oy = towards.getFrontOffsetY();
-        final double oz = towards.getFrontOffsetZ();
+        final double ox = towards.getXOffset();
+        final double oy = towards.getYOffset();
+        final double oz = towards.getZOffset();
         final double tx = 0.1 * (rng.nextDouble() - 0.5) + ox * 0.65;
         final double ty = 0.1 * (rng.nextDouble() - 0.5) + oy * 0.75 + (ox + oz) * 0.25;
         final double tz = 0.1 * (rng.nextDouble() - 0.5) + oz * 0.65;

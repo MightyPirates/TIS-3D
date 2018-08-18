@@ -75,7 +75,7 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
 
     private boolean isRenderingBackFace(final Face face, final double dx, final double dy, final double dz) {
         final EnumFacing facing = Face.toEnumFacing(face.getOpposite());
-        final double dotProduct = facing.getFrontOffsetX() * dx + facing.getFrontOffsetY() * (dy - rendererDispatcher.entity.getEyeHeight()) + facing.getFrontOffsetZ() * dz;
+        final double dotProduct = facing.getXOffset() * dx + facing.getYOffset() * (dy - rendererDispatcher.entity.getEyeHeight()) + facing.getZOffset() * dz;
         return dotProduct < 0;
     }
 

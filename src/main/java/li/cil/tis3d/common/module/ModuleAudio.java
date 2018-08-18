@@ -127,9 +127,9 @@ public final class ModuleAudio extends AbstractModule {
 
             // Offset to have the actual origin be in front of the module.
             final EnumFacing facing = Face.toEnumFacing(getFace());
-            final double x = pos.getX() + 0.5 + facing.getFrontOffsetX() * 0.6;
-            final double y = pos.getY() + 0.5 + facing.getFrontOffsetY() * 0.6;
-            final double z = pos.getZ() + 0.5 + facing.getFrontOffsetZ() * 0.6;
+            final double x = pos.getX() + 0.5 + facing.getXOffset() * 0.6;
+            final double y = pos.getY() + 0.5 + facing.getYOffset() * 0.6;
+            final double z = pos.getZ() + 0.5 + facing.getZOffset() * 0.6;
 
             // Let there be sound!
             world.playSound(null, x, y, z, sound, SoundCategory.BLOCKS, volume, pitch);

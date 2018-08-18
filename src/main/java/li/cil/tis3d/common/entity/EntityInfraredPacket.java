@@ -309,7 +309,7 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
             // distance the packet travels per tick stays constant, even if
             // it was moved around by a packet handler.
             final Vec3d newPos = getPositionVector();
-            final double delta = newPos.subtract(oldPos).lengthVector() / TRAVEL_SPEED;
+            final double delta = newPos.subtract(oldPos).length() / TRAVEL_SPEED;
             posX -= motionX * delta;
             posY -= motionY * delta;
             posZ -= motionZ * delta;
@@ -321,7 +321,7 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
     private RayTraceResult checkCollision() {
         final World world = getEntityWorld();
         final Vec3d start = new Vec3d(posX, posY, posZ);
-        final Vec3d target = start.addVector(motionX, motionY, motionZ);
+        final Vec3d target = start.add(motionX, motionY, motionZ);
 
         // Check for block collisions.
         final RayTraceResult blockHit = Raytracing.raytrace(world, start, target, Raytracing::intersectIgnoringTransparent);

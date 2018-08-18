@@ -143,7 +143,7 @@ public abstract class AbstractModule implements Module {
             return false;
         }
 
-        final Chunk chunk = world.getChunkFromBlockCoords(neighborPos);
+        final Chunk chunk = world.getChunk(neighborPos);
         if (chunk.isEmpty()) {
             // If the neighbor chunk is empty, we must assume we're visible.
             return true;

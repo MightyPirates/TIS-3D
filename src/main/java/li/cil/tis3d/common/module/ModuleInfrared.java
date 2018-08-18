@@ -213,7 +213,7 @@ public final class ModuleInfrared extends AbstractModule implements ICapabilityP
 
         final World world = getCasing().getCasingWorld();
         final Vec3d position = new Vec3d(blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5);
-        final Vec3d direction = new Vec3d(facing.getFrontOffsetX(), facing.getFrontOffsetY(), facing.getFrontOffsetZ());
+        final Vec3d direction = new Vec3d(facing.getXOffset(), facing.getYOffset(), facing.getZOffset());
 
         InfraredAPI.sendPacket(world, position, direction, value);
     }

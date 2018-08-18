@@ -280,7 +280,7 @@ public final class TileEntityController extends TileEntityComputer implements IT
         }
 
         if (state != lastSentState) {
-            final Chunk chunk = world.getChunkFromBlockCoords(pos);
+            final Chunk chunk = world.getChunk(pos);
             final IBlockState blockState = world.getBlockState(getPos());
             world.markAndNotifyBlock(getPos(), chunk, blockState, blockState, 7);
             lastSentState = state;

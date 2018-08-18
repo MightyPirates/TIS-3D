@@ -94,7 +94,7 @@ public final class Items {
         registerItem(registry, new Item(), Constants.NAME_ITEM_PRISM);
 
         for (final Block block : Blocks.getAllBlocks()) {
-            registerItem(registry, new ItemBlock(block), block.getRegistryName().getResourcePath());
+            registerItem(registry, new ItemBlock(block), block.getRegistryName().getPath());
         }
     }
 
@@ -102,7 +102,7 @@ public final class Items {
 
     private static Item registerItem(final IForgeRegistry<Item> registry, final Item item, final String name) {
         registry.register(item.
-            setUnlocalizedName(API.MOD_ID + "." + name).
+            setTranslationKey(API.MOD_ID + "." + name).
             setCreativeTab(API.creativeTab).
             setRegistryName(name));
         return item;

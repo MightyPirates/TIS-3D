@@ -45,7 +45,7 @@ public final class Blocks {
         registry.register(block.
             setHardness(5).
             setResistance(10).
-            setUnlocalizedName(API.MOD_ID + "." + name).
+            setTranslationKey(API.MOD_ID + "." + name).
             setCreativeTab(API.creativeTab).
             setRegistryName(name));
 
