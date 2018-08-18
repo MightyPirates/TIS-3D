@@ -8,6 +8,7 @@ import li.cil.tis3d.common.tileentity.TileEntityCasing;
 import li.cil.tis3d.common.tileentity.TileEntityController;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
 
@@ -48,7 +49,8 @@ public final class Blocks {
             setCreativeTab(API.creativeTab).
             setRegistryName(name));
 
-        GameRegistry.registerTileEntity(tileEntity, API.MOD_ID + ": " + name);
+        final ResourceLocation registryName = new ResourceLocation(API.MOD_ID, name);
+        GameRegistry.registerTileEntity(tileEntity, registryName);
     }
 
     // --------------------------------------------------------------------- //
