@@ -8,5 +8,5 @@ import li.cil.tis3d.api.module.traits.BundledRedstone;
  */
 @FunctionalInterface
 public interface BundledRedstoneOutputChangedCallback {
-    void onBundledRedstoneOutputChanged(BundledRedstone module, int channel);
+    void onBundledRedstoneOutputChanged(final BundledRedstone module, final int channel);
 }

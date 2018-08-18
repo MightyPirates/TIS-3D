@@ -33,7 +33,7 @@ import java.util.*;
  * signal, and can be reset by right-clicking them.
  */
 public final class TileEntityController extends TileEntityComputer implements ITickable {
-	public static TileEntityType<TileEntityController> TYPE;
+    public static TileEntityType<TileEntityController> TYPE;
 
     // --------------------------------------------------------------------- //
     // Computed data
@@ -43,7 +43,7 @@ public final class TileEntityController extends TileEntityComputer implements IT
      */
     private static final int COOLDOWN_HCF = 60;
 
-	/**
+    /**
      * Possible states of a controller.
      */
     public enum ControllerState {
@@ -142,9 +142,9 @@ public final class TileEntityController extends TileEntityComputer implements IT
 
     // --------------------------------------------------------------------- //
 
-	public TileEntityController() {
-		super(TYPE);
-	}
+    public TileEntityController() {
+        super(TYPE);
+    }
 
     /**
      * Get the current state of the controller.
@@ -184,9 +184,9 @@ public final class TileEntityController extends TileEntityComputer implements IT
             state = ControllerState.READY;
             casings.forEach(TileEntityCasing::onDisabled);
             final MessageHaltAndCatchFire message = new MessageHaltAndCatchFire(getWorld(), getPos());
-	        PacketServerHelper.forEachWatching(getWorld(), getPos(), (player) -> {
-	        	player.connection.sendPacket(PacketRegistry.SERVER.wrap(message));
-	        });
+            PacketServerHelper.forEachWatching(getWorld(), getPos(), (player) -> {
+                player.connection.sendPacket(PacketRegistry.SERVER.wrap(message));
+            });
         }
         hcfCooldown = COOLDOWN_HCF;
     }

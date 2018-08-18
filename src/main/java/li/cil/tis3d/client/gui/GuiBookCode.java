@@ -127,7 +127,7 @@ public final class GuiBookCode extends GuiScreen {
         // Check page change button availability.
         buttonPreviousPage.visible = data.getSelectedPage() > 0 && data.getPageCount() > 0;
         buttonNextPage.visible = (data.getSelectedPage() < data.getPageCount() - 1) ||
-                                 (data.getSelectedPage() == data.getPageCount() - 1 && isCurrentProgramNonEmpty());
+            (data.getSelectedPage() == data.getPageCount() - 1 && isCurrentProgramNonEmpty());
         buttonDeletePage.visible = data.getPageCount() > 1 || isCurrentProgramNonEmpty();
 
         super.drawScreen(mouseX, mouseY, partialTicks);
@@ -324,10 +324,10 @@ public final class GuiBookCode extends GuiScreen {
 
                 lines.get(line).insert(indexToColumn(column), pastedLines[0].toUpperCase(Locale.US));
                 lines.addAll(line + 1, Arrays.stream(pastedLines).
-                        skip(1).
-                        map(l -> l.toUpperCase(Locale.US)).
-                        map(StringBuilder::new).
-                        collect(Collectors.toList()));
+                    skip(1).
+                    map(l -> l.toUpperCase(Locale.US)).
+                    map(StringBuilder::new).
+                    collect(Collectors.toList()));
 
                 selectionStart = selectionEnd = selectionEnd + pastedLines[0].length();
                 for (int i = 1; i < pastedLines.length; i++) {
@@ -462,7 +462,7 @@ public final class GuiBookCode extends GuiScreen {
 
     private boolean isInCodeArea(final int mouseX, final int mouseY) {
         return mouseX >= guiX + CODE_POS_X - CODE_MARGIN && mouseX <= guiX + CODE_POS_X + CODE_WIDTH + CODE_MARGIN &&
-               mouseY >= guiY + CODE_POS_Y - CODE_MARGIN && mouseY <= guiY + CODE_POS_Y + getFontRenderer().FONT_HEIGHT * Constants.MAX_LINES_PER_PAGE + CODE_MARGIN;
+            mouseY >= guiY + CODE_POS_Y - CODE_MARGIN && mouseY <= guiY + CODE_POS_Y + getFontRenderer().FONT_HEIGHT * Constants.MAX_LINES_PER_PAGE + CODE_MARGIN;
     }
 
     private boolean isCurrentProgramNonEmpty() {
@@ -504,9 +504,7 @@ public final class GuiBookCode extends GuiScreen {
                 lines.get(startLine).delete(startColumn, lines.get(startLine).length());
                 lines.get(endLine).delete(0, endColumn);
                 lines.get(startLine).append(lines.get(endLine));
-                for (int line = endLine; line > startLine; --line) {
-                    lines.remove(line);
-                }
+                lines.subList(startLine + 1, endLine + 1).clear();
             }
 
             selectionStart = selectionEnd = getSelectionStart();

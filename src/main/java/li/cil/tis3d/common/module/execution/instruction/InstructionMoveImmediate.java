@@ -13,7 +13,7 @@ public final class InstructionMoveImmediate extends AbstractInstructionMove {
     }
 
     @Override
-    protected void doStep(final Machine machine) {
+    public void step(final Machine machine) {
         final TargetInterface destinationInterface = machine.getInterface(destination);
 
         if (!destinationInterface.isWriting()) {

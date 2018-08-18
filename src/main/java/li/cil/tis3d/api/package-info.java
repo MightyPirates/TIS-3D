@@ -16,6 +16,4 @@
 
 package li.cil.tis3d.api;
 
-
-
 import javax.annotation.ParametersAreNonnullByDefault;

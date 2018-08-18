@@ -73,12 +73,19 @@ public final class ModuleQueue extends AbstractModuleRotatable {
     }
 
     @Override
-    public void onWriteComplete(final Port port) {
+    public void onBeforeWriteComplete(final Port port) {
         // Pop the bottom value (the one that was being written).
         pop();
 
         // If one completes, cancel all other writes to ensure a value is only
         // written once.
+        cancelWrite();
+    }
+
+    @Override
+    public void onWriteComplete(final Port port) {
+        // Re-cancel in case step() was called after onBeforeWriteComplete() to
+        // ensure all our writes are in sync.
         cancelWrite();
 
         // Start writing again right away to write as fast as possible.
@@ -107,7 +114,8 @@ public final class ModuleQueue extends AbstractModuleRotatable {
         RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_QUEUE));
 
         // Render detailed state when player is close.
-        if (!isEmpty() && Minecraft.getMinecraft().player.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
+        final Minecraft mc = Minecraft.getMinecraft();
+        if (!isEmpty() && mc != null && mc.player != null && mc.player.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
             drawState();
         }
     }
@@ -226,8 +234,14 @@ public final class ModuleQueue extends AbstractModuleRotatable {
                 receivingPipe.beginRead();
             }
             if (receivingPipe.canTransfer()) {
+                final boolean wasEmpty = isEmpty();
+
                 // Store the value.
                 push(receivingPipe.read());
+
+                if (wasEmpty) {
+                    stepOutput();
+                }
             }
         }
     }

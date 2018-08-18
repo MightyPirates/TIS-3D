@@ -276,6 +276,16 @@ public final class TileEntityCasing extends TileEntityComputer implements Infrar
     }
 
     @Override
+    public void onBeforeWriteComplete(final Face sendingFace, final Port sendingPort) {
+        super.onBeforeWriteComplete(sendingFace, sendingPort);
+
+        final Module module = getModule(sendingFace);
+        if (module != null) {
+            module.onBeforeWriteComplete(sendingPort);
+        }
+    }
+
+    @Override
     public void onWriteComplete(final Face sendingFace, final Port sendingPort) {
         super.onWriteComplete(sendingFace, sendingPort);
 

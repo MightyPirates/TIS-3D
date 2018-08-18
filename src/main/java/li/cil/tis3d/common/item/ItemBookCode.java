@@ -8,6 +8,7 @@ import li.cil.tis3d.common.gui.GuiHandlerCommon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
+import li.cil.tis3d.util.FontRendererUtils;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,7 +26,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-
 
 
 import javax.annotation.Nullable;
@@ -48,8 +48,7 @@ public final class ItemBookCode extends ItemBook {
     public void addInformation(final ItemStack stack, @Nullable final World world, final List<ITextComponent> tooltip, final ITooltipFlag flag) {
         super.addInformation(stack, world, tooltip, flag);
         final String info = I18n.format(Constants.TOOLTIP_BOOK_CODE);
-        final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
-        tooltip.addAll(fontRenderer.listFormattedStringToWidth(info, li.cil.tis3d.common.Constants.MAX_TOOLTIP_WIDTH).stream().map(TextComponentString::new).collect(Collectors.toList()));
+        FontRendererUtils.addStringToTooltip(info, tooltip);
     }
 
     @Override
@@ -60,12 +59,12 @@ public final class ItemBookCode extends ItemBook {
         return new ActionResult(EnumActionResult.SUCCESS, player.getHeldItem(hand));
     }
 
-	private void openForClient(final EntityPlayer player) {
-		GuiScreen screen = GuiHandlerClient.getClientGuiElement(GuiHandlerCommon.GuiId.BOOK_CODE, player.getEntityWorld(), player);
-		if (screen != null) {
-			Minecraft.getMinecraft().displayGuiScreen(screen);
-		}
-	}
+    private void openForClient(final EntityPlayer player) {
+        GuiScreen screen = GuiHandlerClient.getClientGuiElement(GuiHandlerCommon.GuiId.BOOK_CODE, player.getEntityWorld(), player);
+        if (screen != null) {
+            Minecraft.getMinecraft().displayGuiScreen(screen);
+        }
+    }
 
     // TODO
     /* @Override
@@ -271,24 +270,6 @@ public final class ItemBookCode extends ItemBook {
         }
 
         /**
-         * Check if this program continues on the next page, i.e. if the last
-         * non-whitespace line has the <code>#BWTM</code> preprocessor macro.
-         *
-         * @param program the program to check for.
-         * @return <code>true</code> if the program continues; <code>false</code> otherwise.
-         */
-        public static boolean isPartialProgram(final List<String> program) {
-            boolean continues = false;
-            for (final String line : program) {
-                if (line.trim().isEmpty()) {
-                    continue;
-                }
-                continues = Objects.equals(line.trim().toUpperCase(Locale.US), CONTINUATION_MACRO);
-            }
-            return continues;
-        }
-
-        /**
          * Load data from the specified NBT tag.
          *
          * @param nbt the tag to load the data from.
@@ -382,6 +363,19 @@ public final class ItemBookCode extends ItemBook {
                 stack.setTagCompound(nbt = new NBTTagCompound());
             }
             data.writeToNBT(nbt);
+        }
+
+        // --------------------------------------------------------------------- //
+
+        private static boolean isPartialProgram(final List<String> program) {
+            boolean continues = false;
+            for (final String line : program) {
+                if (line.trim().isEmpty()) {
+                    continue;
+                }
+                continues = Objects.equals(line.trim().toUpperCase(Locale.US), CONTINUATION_MACRO);
+            }
+            return continues;
         }
     }
 }

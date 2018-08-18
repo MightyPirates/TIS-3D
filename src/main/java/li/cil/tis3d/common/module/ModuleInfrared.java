@@ -71,12 +71,19 @@ public final class ModuleInfrared extends AbstractModule implements /* ICapabili
     }
 
     @Override
-    public void onWriteComplete(final Port port) {
+    public void onBeforeWriteComplete(final Port port) {
         // Pop the top value (the one that was being written).
         receiveQueue.removeFirst();
 
         // If one completes, cancel all other writes to ensure a value is only
         // written once.
+        cancelWrite();
+    }
+
+    @Override
+    public void onWriteComplete(final Port port) {
+        // Re-cancel in case step() was called after onBeforeWriteComplete() to
+        // ensure all our writes are in sync.
         cancelWrite();
 
         // Start writing again right away to write as fast as possible.
@@ -144,6 +151,10 @@ public final class ModuleInfrared extends AbstractModule implements /* ICapabili
 
     @Override
     public void onInfraredPacket(final InfraredPacket packet, final RayTraceResult hit) {
+        if (!getCasing().isEnabled()) {
+            return;
+        }
+
         final World world = getCasing().getCasingWorld();
         if (world.isRemote) {
             return;

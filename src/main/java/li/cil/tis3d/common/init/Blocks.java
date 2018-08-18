@@ -27,8 +27,8 @@ public final class Blocks implements BlockAdder, TileEntityTypeAdder {
 
     public static List<Block> getAllBlocks() {
         return Arrays.asList(
-                casing,
-                controller
+            casing,
+            controller
         );
     }
 
@@ -39,7 +39,7 @@ public final class Blocks implements BlockAdder, TileEntityTypeAdder {
         Block.register(Constants.NAME_BLOCK_CASING, casing = new BlockCasing(Block.Builder.create(Material.IRON)
             .hardnessAndResistance(5, 10)));
         Block.register(Constants.NAME_BLOCK_CONTROLLER, controller = new BlockController(Block.Builder.create(Material.IRON)
-                .hardnessAndResistance(5, 10)));
+            .hardnessAndResistance(5, 10)));
     }
 
     @Override
@@ -47,9 +47,4 @@ public final class Blocks implements BlockAdder, TileEntityTypeAdder {
         TileEntityCasing.TYPE = TileEntityType.registerTileEntityType(Constants.NAME_BLOCK_CASING.toString(), TileEntityType.Builder.create(TileEntityCasing::new));
         TileEntityController.TYPE = TileEntityType.registerTileEntityType(Constants.NAME_BLOCK_CONTROLLER.toString(), TileEntityType.Builder.create(TileEntityController::new));
     }
-
-    // --------------------------------------------------------------------- //
-
-    // --------------------------------------------------------------------- //
-
 }

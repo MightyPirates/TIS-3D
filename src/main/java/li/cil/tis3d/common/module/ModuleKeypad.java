@@ -78,14 +78,17 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
     }
 
     @Override
-    public void onWriteComplete(final Port port) {
+    public void onBeforeWriteComplete(final Port port) {
         // Pop the value (that was being written).
         value = Optional.empty();
 
         // If one completes, cancel all other writes to ensure a value is only
         // written once.
         cancelWrite();
+    }
 
+    @Override
+    public void onWriteComplete(final Port port) {
         // Tell clients we can input again.
         getCasing().sendData(getFace(), new NBTTagCompound(), DATA_TYPE_VALUE);
     }

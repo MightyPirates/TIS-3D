@@ -60,12 +60,12 @@ public final class BlockCasing extends Block implements ITileEntityProvider {
     @Override
     protected void addPropertiesToBuilder(net.minecraft.state.StateContainer.Builder<Block, IBlockState> builder) {
         builder.add(
-                MODULE_X_NEG,
-                MODULE_X_POS,
-                MODULE_Y_NEG,
-                MODULE_Y_POS,
-                MODULE_Z_NEG,
-                MODULE_Z_POS
+            MODULE_X_NEG,
+            MODULE_X_POS,
+            MODULE_Y_NEG,
+            MODULE_Y_POS,
+            MODULE_Z_NEG,
+            MODULE_Z_POS
         );
     }
 
@@ -76,12 +76,12 @@ public final class BlockCasing extends Block implements ITileEntityProvider {
         }
         final TileEntityCasing casing = (TileEntityCasing) tileEntity;
         world.setBlockState(pos, state.
-                withProperty(MODULE_X_NEG, casing.getModule(Face.X_NEG) != null).
-                withProperty(MODULE_X_POS, casing.getModule(Face.X_POS) != null).
-                withProperty(MODULE_Y_NEG, casing.getModule(Face.Y_NEG) != null).
-                withProperty(MODULE_Y_POS, casing.getModule(Face.Y_POS) != null).
-                withProperty(MODULE_Z_NEG, casing.getModule(Face.Z_NEG) != null).
-                withProperty(MODULE_Z_POS, casing.getModule(Face.Z_POS) != null), 2);
+            withProperty(MODULE_X_NEG, casing.getModule(Face.X_NEG) != null).
+            withProperty(MODULE_X_POS, casing.getModule(Face.X_POS) != null).
+            withProperty(MODULE_Y_NEG, casing.getModule(Face.Y_NEG) != null).
+            withProperty(MODULE_Y_POS, casing.getModule(Face.Y_POS) != null).
+            withProperty(MODULE_Z_NEG, casing.getModule(Face.Z_NEG) != null).
+            withProperty(MODULE_Z_POS, casing.getModule(Face.Z_POS) != null), 2);
     }
 
     // --------------------------------------------------------------------- //

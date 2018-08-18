@@ -52,22 +52,22 @@ public final class Constants {
     public static final String NAME_INVENTORY_CASING = "container.casing";
 
     public static final ResourceLocation[] MODULES = new ResourceLocation[]{
-            NAME_ITEM_MODULE_AUDIO,
-            NAME_ITEM_MODULE_BUNDLED_REDSTONE,
-            NAME_ITEM_MODULE_DISPLAY,
-            NAME_ITEM_MODULE_EXECUTION,
-            NAME_ITEM_MODULE_INFRARED,
-            NAME_ITEM_MODULE_KEYPAD,
-            NAME_ITEM_MODULE_QUEUE,
-            NAME_ITEM_MODULE_RANDOM,
-            NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY,
-            NAME_ITEM_MODULE_READ_ONLY_MEMORY,
-            NAME_ITEM_MODULE_REDSTONE,
-            NAME_ITEM_MODULE_SEQUENCER,
-            NAME_ITEM_MODULE_SERIAL_PORT,
-            NAME_ITEM_MODULE_STACK,
-            NAME_ITEM_MODULE_TERMINAL,
-            NAME_ITEM_MODULE_TIMER
+        NAME_ITEM_MODULE_AUDIO,
+        NAME_ITEM_MODULE_BUNDLED_REDSTONE,
+        NAME_ITEM_MODULE_DISPLAY,
+        NAME_ITEM_MODULE_EXECUTION,
+        NAME_ITEM_MODULE_INFRARED,
+        NAME_ITEM_MODULE_KEYPAD,
+        NAME_ITEM_MODULE_QUEUE,
+        NAME_ITEM_MODULE_RANDOM,
+        NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY,
+        NAME_ITEM_MODULE_READ_ONLY_MEMORY,
+        NAME_ITEM_MODULE_REDSTONE,
+        NAME_ITEM_MODULE_SEQUENCER,
+        NAME_ITEM_MODULE_SERIAL_PORT,
+        NAME_ITEM_MODULE_STACK,
+        NAME_ITEM_MODULE_TERMINAL,
+        NAME_ITEM_MODULE_TIMER
     };
 
     // --------------------------------------------------------------------- //

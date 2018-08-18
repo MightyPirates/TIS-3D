@@ -2,6 +2,7 @@ package li.cil.tis3d.common.module.execution.instruction;
 
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.common.module.execution.Machine;
+import li.cil.tis3d.common.module.execution.MachineImpl;
 
 /**
  * A single instruction that can be executed by the execution module.
@@ -20,9 +21,14 @@ public interface Instruction {
     void step(final Machine machine);
 
     /**
-     * Reset the state of the instruction if it has any.
+     * Take action based on pending write operation completion, e.g. to abort other
+     * writes when a value should only be readable once.
+     *
+     * @param machine the machine the operation will finish on.
+     * @param port    the port the operation will finish on.
+     * @see li.cil.tis3d.api.module.Module#onBeforeWriteComplete(Port)
      */
-    default void reset() {
+    default void onBeforeWriteComplete(final MachineImpl machine, final Port port) {
     }
 
     /**

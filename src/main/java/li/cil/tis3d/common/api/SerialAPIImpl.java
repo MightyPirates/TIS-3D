@@ -12,7 +12,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -75,7 +78,9 @@ public final class SerialAPIImpl implements SerialAPI {
         // --------------------------------------------------------------------- //
 
         private final List<SerialProtocolDocumentationReference> protocols = new ArrayList<>();
-        private Optional<String> cachedList = Optional.empty();
+
+        @Nullable
+        private String cachedList = null;
 
         // --------------------------------------------------------------------- //
 
@@ -86,7 +91,7 @@ public final class SerialAPIImpl implements SerialAPI {
         void addReference(@Nullable final SerialProtocolDocumentationReference reference) {
             if (reference != null && !protocols.contains(reference)) {
                 protocols.add(reference);
-                cachedList = Optional.empty();
+                cachedList = null;
             }
         }
 
@@ -114,22 +119,22 @@ public final class SerialAPIImpl implements SerialAPI {
                 return null;
             }
             return StreamSupport.
-                    stream(template.spliterator(), false).
-                    flatMap(line -> Arrays.stream(PATTERN_LINE_END.split(PATTERN_LIST.matcher(line).replaceAll(compileLinkList())))).
-                    collect(Collectors.toList());
+                stream(template.spliterator(), false).
+                flatMap(line -> Arrays.stream(PATTERN_LINE_END.split(PATTERN_LIST.matcher(line).replaceAll(compileLinkList())))).
+                collect(Collectors.toList());
         }
 
         private String compileLinkList() {
-            if (!cachedList.isPresent()) {
+            if (cachedList == null) {
                 final StringBuilder sb = new StringBuilder();
                 protocols.sort(Comparator.comparing(s -> s.name));
                 for (final SerialProtocolDocumentationReference protocol : protocols) {
                     sb.append("- [").append(I18n.format(protocol.name)).append("](").append(protocol.link).append(")\n");
                 }
-                cachedList = Optional.of(sb.toString());
+                cachedList = sb.toString();
             }
 
-            return cachedList.get();
+            return cachedList;
         }
     }
 

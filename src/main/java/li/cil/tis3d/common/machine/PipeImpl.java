@@ -148,13 +148,13 @@ public final class PipeImpl implements Pipe {
     @Override
     public void cancelWrite() {
         if (writeState == State.COMPLETE && readState == State.COMPLETE) {
-            finishTransfer();
-        } else {
-            writeState = State.IDLE;
-            value = 0;
-            if (readState == State.FLUSHING) {
-                readState = State.READY;
-            }
+            return; // Ignore, wait for next step() to avoid execution order dependent cycle count.
+        }
+
+        writeState = State.IDLE;
+        value = 0;
+        if (readState == State.FLUSHING) {
+            readState = State.READY;
         }
     }
 
@@ -174,12 +174,12 @@ public final class PipeImpl implements Pipe {
     @Override
     public void cancelRead() {
         if (writeState == State.COMPLETE && readState == State.COMPLETE) {
-            finishTransfer();
-        } else {
-            readState = State.IDLE;
-            if (writeState == State.FLUSHING) {
-                writeState = State.READY;
-            }
+            return; // Ignore, wait for next step() to avoid execution order dependent cycle count.
+        }
+
+        readState = State.IDLE;
+        if (writeState == State.FLUSHING) {
+            writeState = State.READY;
         }
     }
 
@@ -203,6 +203,8 @@ public final class PipeImpl implements Pipe {
         readState = State.COMPLETE;
 
         sendEffect();
+
+        host.onBeforeWriteComplete(sendingFace, sendingPort);
 
         return value;
     }

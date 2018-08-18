@@ -104,8 +104,9 @@ public final class ModuleTimer extends AbstractModuleRotatable {
         RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_TIMER));
 
         // Render detailed state when player is close.
-        if (!hasElapsed && Minecraft.getMinecraft().player.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
-            final long worldTime = Minecraft.getMinecraft().world.getTotalWorldTime();
+        final Minecraft mc = Minecraft.getMinecraft();
+        if (!hasElapsed && mc != null && mc.player != null && mc.player.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
+            final long worldTime = mc.world != null ? mc.world.getTotalWorldTime() : 0;
             final float remaining = (float) (timer - worldTime) - partialTicks;
             if (remaining <= 0) {
                 hasElapsed = true;

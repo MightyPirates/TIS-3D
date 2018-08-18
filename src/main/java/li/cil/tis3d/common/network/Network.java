@@ -70,38 +70,38 @@ public final class Network implements PacketAdderClient, PacketAdderServer, Clie
 
     // --------------------------------------------------------------------- //
 
-	private void registerMessage(PacketRegistry registry, Class<? extends AbstractMessageHandler> hcl, Class<? extends AbstractMessage> cl, int id, Side side) {
-		try {
-		    AbstractMessageHandler mh = hcl.newInstance();
-		    if (side == Side.CLIENT) {
+    private void registerMessage(PacketRegistry registry, Class<? extends AbstractMessageHandler> hcl, Class<? extends AbstractMessage> cl, int id, Side side) {
+        try {
+            AbstractMessageHandler mh = hcl.newInstance();
+            if (side == Side.CLIENT) {
                 HANDLER_MAP_CLIENT.put(cl, mh::onMessage);
             } else {
-		        HANDLER_MAP_SERVER.put(cl, mh::onMessage);
+                HANDLER_MAP_SERVER.put(cl, mh::onMessage);
             }
-			registry.register(new ResourceLocation("tis3d", cl.getSimpleName().toLowerCase(Locale.ROOT)), cl, false);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+            registry.register(new ResourceLocation("tis3d", cl.getSimpleName().toLowerCase(Locale.ROOT)), cl, false);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	@Override
-	public void registerClientPackets(PacketRegistry packetRegistry) {
-		registerMessage(packetRegistry, MessageHandlerCasingData.class, MessageCasingData.class, Messages.CasingDataClient.ordinal(), Side.CLIENT);
-		registerMessage(packetRegistry, MessageHandlerCasingEnabledState.class, MessageCasingEnabledState.class, Messages.CasingEnabledState.ordinal(), Side.CLIENT);
-		registerMessage(packetRegistry, MessageHandlerCasingLockedState.class, MessageCasingLockedState.class, Messages.CasingLockedState.ordinal(), Side.CLIENT);
-		registerMessage(packetRegistry, MessageHandlerCasingInventory.class, MessageCasingInventory.class, Messages.CasingInventory.ordinal(), Side.CLIENT);
-		registerMessage(packetRegistry, MessageHandlerHaltAndCatchFire.class, MessageHaltAndCatchFire.class, Messages.HaltAndCatchFire.ordinal(), Side.CLIENT);
-		registerMessage(packetRegistry, MessageHandlerOpenGUI.class, MessageOpenGUI.class, -1, Side.CLIENT);
-		registerMessage(packetRegistry, MessageHandlerReceivingPipeLockedState.class, MessageReceivingPipeLockedState.class, Messages.ReceivingPipeLockedState.ordinal(), Side.CLIENT);
-		registerMessage(packetRegistry, MessageHandlerModuleReadOnlyMemoryDataClient.class, MessageModuleReadOnlyMemoryData.class, Messages.ReadOnlyMemoryData.ordinal(), Side.CLIENT);
-	}
+    @Override
+    public void registerClientPackets(PacketRegistry packetRegistry) {
+        registerMessage(packetRegistry, MessageHandlerCasingData.class, MessageCasingData.class, Messages.CasingDataClient.ordinal(), Side.CLIENT);
+        registerMessage(packetRegistry, MessageHandlerCasingEnabledState.class, MessageCasingEnabledState.class, Messages.CasingEnabledState.ordinal(), Side.CLIENT);
+        registerMessage(packetRegistry, MessageHandlerCasingLockedState.class, MessageCasingLockedState.class, Messages.CasingLockedState.ordinal(), Side.CLIENT);
+        registerMessage(packetRegistry, MessageHandlerCasingInventory.class, MessageCasingInventory.class, Messages.CasingInventory.ordinal(), Side.CLIENT);
+        registerMessage(packetRegistry, MessageHandlerHaltAndCatchFire.class, MessageHaltAndCatchFire.class, Messages.HaltAndCatchFire.ordinal(), Side.CLIENT);
+        registerMessage(packetRegistry, MessageHandlerOpenGUI.class, MessageOpenGUI.class, -1, Side.CLIENT);
+        registerMessage(packetRegistry, MessageHandlerReceivingPipeLockedState.class, MessageReceivingPipeLockedState.class, Messages.ReceivingPipeLockedState.ordinal(), Side.CLIENT);
+        registerMessage(packetRegistry, MessageHandlerModuleReadOnlyMemoryDataClient.class, MessageModuleReadOnlyMemoryData.class, Messages.ReadOnlyMemoryData.ordinal(), Side.CLIENT);
+    }
 
-	@Override
-	public void registerServerPackets(PacketRegistry packetRegistry) {
-		registerMessage(packetRegistry, MessageHandlerBookCodeData.class, MessageBookCodeData.class, Messages.BookCodeData.ordinal(), Side.SERVER);
-		registerMessage(packetRegistry, MessageHandlerCasingData.class, MessageCasingData.class, Messages.CasingDataServer.ordinal(), Side.SERVER);
-		registerMessage(packetRegistry, MessageHandlerModuleReadOnlyMemoryDataServer.class, MessageModuleReadOnlyMemoryData.class, Messages.ReadOnlyMemoryData.ordinal(), Side.SERVER);
-	}
+    @Override
+    public void registerServerPackets(PacketRegistry packetRegistry) {
+        registerMessage(packetRegistry, MessageHandlerBookCodeData.class, MessageBookCodeData.class, Messages.BookCodeData.ordinal(), Side.SERVER);
+        registerMessage(packetRegistry, MessageHandlerCasingData.class, MessageCasingData.class, Messages.CasingDataServer.ordinal(), Side.SERVER);
+        registerMessage(packetRegistry, MessageHandlerModuleReadOnlyMemoryDataServer.class, MessageModuleReadOnlyMemoryData.class, Messages.ReadOnlyMemoryData.ordinal(), Side.SERVER);
+    }
 
     public void init() {
     }
@@ -196,8 +196,8 @@ public final class Network implements PacketAdderClient, PacketAdderServer, Clie
 
         private void sendMessage() {
             if (((WorldServer) world).spawnParticle(
-                    new RedstoneParticleData(1f, 0.2f, 0 , 1f),
-                    x, y, z, 1, 0, 0, 0, 0
+                new RedstoneParticleData(1f, 0.2f, 0, 1f),
+                x, y, z, 1, 0, 0, 0, 0
             ) > 0) {
                 particlesSent++;
             }
@@ -214,9 +214,9 @@ public final class Network implements PacketAdderClient, PacketAdderServer, Clie
 
             final Position that = (Position) obj;
             return world.provider.getDimensionType() == that.world.provider.getDimensionType() &&
-                   Float.compare(that.x, x) == 0 &&
-                   Float.compare(that.y, y) == 0 &&
-                   Float.compare(that.z, z) == 0;
+                Float.compare(that.x, x) == 0 &&
+                Float.compare(that.y, y) == 0 &&
+                Float.compare(that.z, z) == 0;
 
         }
 

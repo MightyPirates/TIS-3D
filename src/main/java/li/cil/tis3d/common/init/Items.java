@@ -25,12 +25,7 @@ import org.dimdev.rift.listener.ItemAdder;
 import pl.asie.protocharset.rift.listeners.RightClickListener;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Manages setup, registration and lookup of items.
@@ -53,13 +48,13 @@ public final class Items implements ItemAdder, RightClickListener {
     public static List<Item> getAllItems() {
         final List<Item> result = new ArrayList<>(modules.values());
         result.addAll(Arrays.asList(
-                bookCode,
-                bookManual,
-                key,
-                keyCreative,
-                prism,
-                Item.getItemFromBlock(Blocks.casing),
-                Item.getItemFromBlock(Blocks.controller)
+            bookCode,
+            bookManual,
+            key,
+            keyCreative,
+            prism,
+            Item.getItemFromBlock(Blocks.casing),
+            Item.getItemFromBlock(Blocks.controller)
         ));
         return result;
     }
@@ -76,9 +71,9 @@ public final class Items implements ItemAdder, RightClickListener {
             IBlockState state = world.getBlockState(rayTraceResult.getBlockPos());
             if (state.getBlock() instanceof BlockCasing) {
                 return state.onBlockActivated(world, rayTraceResult.getBlockPos(), entityPlayer, enumHand, rayTraceResult.sideHit,
-                        (float) rayTraceResult.hitVec.x - rayTraceResult.getBlockPos().getX(),
-                         (float) rayTraceResult.hitVec.y - rayTraceResult.getBlockPos().getY(),
-                        (float) rayTraceResult.hitVec.z - rayTraceResult.getBlockPos().getZ()) ? EnumActionResult.SUCCESS : EnumActionResult.PASS;
+                    (float) rayTraceResult.hitVec.x - rayTraceResult.getBlockPos().getX(),
+                    (float) rayTraceResult.hitVec.y - rayTraceResult.getBlockPos().getY(),
+                    (float) rayTraceResult.hitVec.z - rayTraceResult.getBlockPos().getZ()) ? EnumActionResult.SUCCESS : EnumActionResult.PASS;
             }
         }
 
@@ -131,7 +126,7 @@ public final class Items implements ItemAdder, RightClickListener {
         registerItem(prism = new Item(new Item.Builder().group(ItemGroup.REDSTONE)), Constants.NAME_ITEM_PRISM);
 
         Item.registerItemBlock(casing = new ItemBlock(Blocks.casing, new Item.Builder().group(ItemGroup.REDSTONE)));
-	    Item.registerItemBlock(controller = new ItemBlock(Blocks.controller, new Item.Builder().group(ItemGroup.REDSTONE)));
+        Item.registerItemBlock(controller = new ItemBlock(Blocks.controller, new Item.Builder().group(ItemGroup.REDSTONE)));
     }
 
     // --------------------------------------------------------------------- //
@@ -143,7 +138,7 @@ public final class Items implements ItemAdder, RightClickListener {
 
     @Nullable
     private static Item registerModule(final ResourceLocation name) {
-    	Settings.load();
+        Settings.load();
         if (Settings.disabledModules.contains(name)) {
             return null;
         }

@@ -76,7 +76,7 @@ public final class TargetInterfaceAny extends AbstractTargetInterfaceSide {
     }
 
     @Override
-    public void onWriteComplete(final Port port) {
+    public void onBeforeWriteComplete(final Port port) {
         cancelWrite();
         getMachine().getState().last = Optional.of(port);
     }

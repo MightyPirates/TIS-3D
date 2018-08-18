@@ -18,6 +18,7 @@ import li.cil.tis3d.common.integration.redstone.RedstoneIntegration;
 import li.cil.tis3d.common.module.*;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.provider.SimpleModuleProvider;
+import li.cil.tis3d.util.datafix.Fixes;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
@@ -123,6 +124,9 @@ public class ProxyCommon implements BootstrapListener, EntityTypeAdder {
 
         // Register network handler.
         Network.INSTANCE.init();
+
+        // Register data fixes.
+        Fixes.init();
 
         // Register event handlers.
         MinecraftForge.EVENT_BUS.register(Network.INSTANCE);
