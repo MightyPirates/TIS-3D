@@ -74,9 +74,9 @@ public abstract class AbstractModule implements Module {
     protected boolean isPlayerLookingAt() {
         final RayTraceResult hit = Minecraft.getMinecraft().objectMouseOver;
         return hit != null &&
-               hit.typeOfHit == RayTraceResult.Type.BLOCK &&
-               getCasing().getPosition().equals(hit.getBlockPos()) &&
-               hit.sideHit == Face.toEnumFacing(getFace());
+            hit.typeOfHit == RayTraceResult.Type.BLOCK &&
+            getCasing().getPosition().equals(hit.getBlockPos()) &&
+            hit.sideHit == Face.toEnumFacing(getFace());
     }
 
     /**
@@ -100,8 +100,8 @@ public abstract class AbstractModule implements Module {
             getCasing().getPosition().equals(hit.getBlockPos()) &&
             hit.sideHit == Face.toEnumFacing(getFace())) {
             return new Vec3d(hit.hitVec.xCoord - hit.getBlockPos().getX(),
-                             hit.hitVec.yCoord - hit.getBlockPos().getY(),
-                             hit.hitVec.zCoord - hit.getBlockPos().getZ());
+                hit.hitVec.yCoord - hit.getBlockPos().getY(),
+                hit.hitVec.zCoord - hit.getBlockPos().getZ());
         } else {
             return null;
         }
@@ -190,6 +190,10 @@ public abstract class AbstractModule implements Module {
 
     @Override
     public void onDisposed() {
+    }
+
+    @Override
+    public void onBeforeWriteComplete(final Port port) {
     }
 
     @Override

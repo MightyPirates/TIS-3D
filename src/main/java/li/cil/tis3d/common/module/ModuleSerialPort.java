@@ -76,12 +76,19 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
     }
 
     @Override
-    public void onWriteComplete(final Port port) {
+    public void onBeforeWriteComplete(final Port port) {
         // Consume the read value (the one that was being written).
         serialInterface.ifPresent(SerialInterface::skip);
 
         // If one completes, cancel all other writes to ensure a value is only
         // written once.
+        cancelWrite();
+    }
+
+    @Override
+    public void onWriteComplete(final Port port) {
+        // Re-cancel in case step() was called after onBeforeWriteComplete() to
+        // ensure all our writes are in sync.
         cancelWrite();
 
         // Start writing again right away to write as fast as possible.
@@ -205,7 +212,7 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
     }
 
     /**
-     * Update the inputs of the stack, pulling values onto the stack.
+     * Update the inputs of the serial port, moving values to the present serial interface.
      */
     private void stepInput() {
         if (serialInterface.map(SerialInterface::canWrite).orElse(false)) {

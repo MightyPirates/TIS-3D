@@ -2,8 +2,7 @@ package li.cil.tis3d.common.item;
 
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.common.Constants;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
+import li.cil.tis3d.util.FontRendererUtils;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -36,8 +35,7 @@ public final class ItemKey extends Item {
     public void addInformation(final ItemStack stack, final EntityPlayer playerIn, final List<String> tooltip, final boolean advanced) {
         super.addInformation(stack, playerIn, tooltip, advanced);
         final String info = I18n.format(Constants.TOOLTIP_KEY);
-        final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
-        tooltip.addAll(fontRenderer.listFormattedStringToWidth(info, li.cil.tis3d.common.Constants.MAX_TOOLTIP_WIDTH));
+        FontRendererUtils.addStringToTooltip(info, tooltip);
     }
 
     @Override

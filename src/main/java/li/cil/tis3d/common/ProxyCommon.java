@@ -182,16 +182,16 @@ public class ProxyCommon {
 
     public Block registerBlock(final String name, final Supplier<Block> constructor, final Class<? extends TileEntity> tileEntity) {
         final Block block = constructor.get().
-                setHardness(5).
-                setResistance(10).
-                setUnlocalizedName(API.MOD_ID + "." + name).
-                setCreativeTab(API.creativeTab).
-                setRegistryName(name);
+            setHardness(5).
+            setResistance(10).
+            setUnlocalizedName(API.MOD_ID + "." + name).
+            setCreativeTab(API.creativeTab).
+            setRegistryName(name);
         GameRegistry.register(block);
         GameRegistry.registerTileEntityWithAlternatives(tileEntity, API.MOD_ID + ": " + name, name);
 
         final Item itemBlock = new ItemBlock(block).
-                setRegistryName(name);
+            setRegistryName(name);
         GameRegistry.register(itemBlock);
 
         return block;
@@ -199,9 +199,9 @@ public class ProxyCommon {
 
     public Item registerItem(final String name, final Supplier<Item> constructor) {
         final Item item = constructor.get().
-                setUnlocalizedName(API.MOD_ID + "." + name).
-                setCreativeTab(API.creativeTab).
-                setRegistryName(name);
+            setUnlocalizedName(API.MOD_ID + "." + name).
+            setCreativeTab(API.creativeTab).
+            setRegistryName(name);
         GameRegistry.register(item);
         return item;
     }

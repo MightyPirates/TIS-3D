@@ -109,6 +109,22 @@ public interface Module {
     void onDisposed();
 
     /**
+     * Called from a pipe this module is writing to when the data is being read.
+     * <p>
+     * The key difference to {@link #onWriteComplete(Port)} is that this is called
+     * directly during the read operation, so this may be called before or after
+     * the module's {@link #step()} for the current cycle. As such, no operations
+     * which might influence number of required cycles for the current transfer
+     * operation should be performed in this method. It may be used to cancel
+     * other write operations to write a value only once, for example, or to update
+     * some other internal state before a read operation completes (used by the
+     * stack module for example, to ensure the correct value is being popped).
+     *
+     * @param port the port on which the write operation will be completed.
+     */
+    void onBeforeWriteComplete(final Port port);
+
+    /**
      * Called from a pipe this module is writing to when the data was read.
      * <p>
      * This allows completing the operation in the same tick in which the
@@ -183,6 +199,7 @@ public interface Module {
      * @param enabled      whether the module is currently enabled.
      * @param partialTicks the partial time elapsed in this tick.
      */
+    // TODO In 1.13, pass along TileEntityRendererDispatcher so we don't have to fetch info that's in there statically.
     @SideOnly(Side.CLIENT)
     void render(final boolean enabled, final float partialTicks);
 

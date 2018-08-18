@@ -8,5 +8,5 @@ import li.cil.tis3d.api.module.Module;
  * When thrown, will cause the controller of the containing TIS-3D computer to
  * reset and restart after a short delay (and shortly catch on fire).
  */
-public class HaltAndCatchFireException extends RuntimeException {
+public final class HaltAndCatchFireException extends RuntimeException {
 }
