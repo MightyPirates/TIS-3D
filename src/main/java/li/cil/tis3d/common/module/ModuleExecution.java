@@ -131,6 +131,13 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
     }
 
     @Override
+    public void onBeforeWriteComplete(final Port port) {
+        if (compileError == null) {
+            machine.onBeforeWriteComplete(port);
+        }
+    }
+
+    @Override
     public void onWriteComplete(final Port port) {
         if (compileError == null) {
             machine.onWriteCompleted(port);

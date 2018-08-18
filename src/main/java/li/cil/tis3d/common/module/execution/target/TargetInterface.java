@@ -91,14 +91,12 @@ public interface TargetInterface {
     short read();
 
     /**
-     * Finish a write operation started by the instruction, usually by
-     * advancing the program counter.
-     * <p>
-     * Instructions must <em>always</em> await or cancel a write operation they
-     * started.
+     * Take action based on pending write operation completion, e.g. to abort other
+     * writes when a value should only be readable once.
      *
-     * @param port the port the interface was writing to.
+     * @param port the port the write operation will complete on.
+     * @see li.cil.tis3d.api.module.Module#onBeforeWriteComplete(Port)
      */
-    default void onWriteComplete(final Port port) {
+    default void onBeforeWriteComplete(final Port port) {
     }
 }

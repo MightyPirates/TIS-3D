@@ -115,13 +115,8 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
 
     @Override
     public void step() {
-        final boolean isWriting = isWriting();
-        for (final Port port : Port.VALUES) {
-            stepInput(port);
-            if (isWriting) {
-                stepOutput(port);
-            }
-        }
+        stepOutput();
+        stepInput();
 
         final World world = getCasing().getCasingWorld();
         if (sendBuffer != null && world.getTotalWorldTime() > lastSendTick) {
@@ -150,17 +145,26 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
     }
 
     @Override
-    public void onWriteComplete(final Port port) {
+    public void onBeforeWriteComplete(final Port port) {
         // Pop the value (that was being written).
         output.setLength(output.length() - 1);
 
         // If one completes, cancel all other writes to ensure a value is only
         // written once.
         cancelWrite();
+    }
+
+    @Override
+    public void onWriteComplete(final Port port) {
+        // Re-cancel in case step() was called after onBeforeWriteComplete() to
+        // ensure all our writes are in sync.
+        cancelWrite();
 
         // If we're done, tell clients we can input again.
         if (!isWriting()) {
             sendInputEnabled(true);
+        } else {
+            stepOutput();
         }
     }
 
@@ -267,23 +271,29 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
 
     // --------------------------------------------------------------------- //
 
-    private void stepInput(final Port port) {
-        // Continuously read from all ports.
-        final Pipe receivingPipe = getCasing().getReceivingPipe(getFace(), port);
-        if (!receivingPipe.isReading()) {
-            receivingPipe.beginRead();
-        }
-        if (receivingPipe.canTransfer()) {
-            final char ch = toChar(receivingPipe.read());
-            writeToDisplay(ch);
-            sendDisplayToClient(ch);
+    private void stepInput() {
+        for (final Port port : Port.VALUES) {
+            // Continuously read from all ports.
+            final Pipe receivingPipe = getCasing().getReceivingPipe(getFace(), port);
+            if (!receivingPipe.isReading()) {
+                receivingPipe.beginRead();
+            }
+            if (receivingPipe.canTransfer()) {
+                final char ch = toChar(receivingPipe.read());
+                writeToDisplay(ch);
+                sendDisplayToClient(ch);
+            }
         }
     }
 
-    private void stepOutput(final Port port) {
-        final Pipe sendingPipe = getCasing().getSendingPipe(getFace(), port);
-        if (!sendingPipe.isWriting()) {
-            sendingPipe.beginWrite(toShort(peekChar()));
+    private void stepOutput() {
+        if (isWriting()) {
+            for (final Port port : Port.VALUES) {
+                final Pipe sendingPipe = getCasing().getSendingPipe(getFace(), port);
+                if (!sendingPipe.isWriting()) {
+                    sendingPipe.beginWrite(toShort(peekChar()));
+                }
+            }
         }
     }
 

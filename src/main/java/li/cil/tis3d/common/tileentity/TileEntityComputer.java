@@ -132,10 +132,6 @@ abstract class TileEntityComputer extends TileEntity implements PipeHost {
         return getPos();
     }
 
-    @Override
-    public void onWriteComplete(final Face sendingFace, final Port sendingPort) {
-    }
-
     // --------------------------------------------------------------------- //
     // TileEntity
 

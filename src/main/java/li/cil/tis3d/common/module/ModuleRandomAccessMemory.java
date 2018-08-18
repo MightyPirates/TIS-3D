@@ -96,13 +96,23 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
     }
 
     @Override
-    public void onWriteComplete(final Port port) {
-        // Memory access was completed with a read operation.
-        state = State.ADDRESS;
-
+    public void onBeforeWriteComplete(final Port port) {
         // If one completes, cancel all other writes to ensure a value is only
         // written once.
         cancelWrite();
+    }
+
+    @Override
+    public void onWriteComplete(final Port port) {
+        // Re-cancel in case step() was called after onBeforeWriteComplete() to
+        // ensure we're not writing while waiting for operation type input.
+        cancelWrite();
+
+        // Memory access was completed with a read operation.
+        state = State.ADDRESS;
+
+        // Start reading again right away to read as fast as possible.
+        stepInput();
     }
 
     @Override

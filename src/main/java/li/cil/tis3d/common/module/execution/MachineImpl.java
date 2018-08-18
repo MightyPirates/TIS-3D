@@ -57,9 +57,17 @@ public final class MachineImpl implements Machine {
 
         final boolean stateChanged = state.pc != pc;
 
-        state.validate();
-
-        return stateChanged;
+    /**
+     * Inform the active instruction that a write operation will be completed.
+     *
+     * @param port the port on which the write operation will be completed.
+     * @see li.cil.tis3d.api.module.Module#onBeforeWriteComplete(Port)
+     */
+    public void onBeforeWriteComplete(final Port port) {
+        final Instruction instruction = getInstruction();
+        if (instruction != null) {
+            instruction.onBeforeWriteComplete(this, port);
+        }
     }
 
     /**

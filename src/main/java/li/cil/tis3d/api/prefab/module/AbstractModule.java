@@ -193,6 +193,10 @@ public abstract class AbstractModule implements Module {
     }
 
     @Override
+    public void onBeforeWriteComplete(final Port port) {
+    }
+
+    @Override
     public void onWriteComplete(final Port port) {
     }
 
