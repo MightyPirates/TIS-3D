@@ -230,7 +230,8 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
         RenderUtil.ignoreLighting();
         GlStateManager.enableBlend();
 
-        if (Minecraft.getMinecraft().player.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
+        final Minecraft mc = Minecraft.getMinecraft();
+        if (mc != null && mc.player != null && mc.player.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
             // Player is close, render actual terminal text.
             renderText();
         } else {
@@ -358,11 +359,16 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
 
     @SideOnly(Side.CLIENT)
     private void closeGui() {
-        final GuiScreen screen = Minecraft.getMinecraft().currentScreen;
+        final Minecraft mc = Minecraft.getMinecraft();
+        if (mc == null) {
+            return;
+        }
+
+        final GuiScreen screen = mc.currentScreen;
         if (screen instanceof GuiModuleTerminal) {
             final GuiModuleTerminal gui = (GuiModuleTerminal) screen;
             if (gui.isFor(this)) {
-                Minecraft.getMinecraft().displayGuiScreen(null);
+                mc.displayGuiScreen(null);
             }
         }
     }
@@ -489,8 +495,7 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
             do {
                 line.append(' ');
             }
-            while (line.length() % TAB_WIDTH != 0 &&
-                   line.length() < MAX_COLUMNS);
+            while (line.length() % TAB_WIDTH != 0 && line.length() < MAX_COLUMNS);
         }
     }
 

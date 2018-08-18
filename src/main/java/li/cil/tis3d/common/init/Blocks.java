@@ -36,13 +36,13 @@ public final class Blocks {
         final Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(API.MOD_ID, name));
         assert item != null;
         GameRegistry.addRecipe(new ShapedOreRecipe(
-                new ItemStack(item, count),
-                "IRI",
-                "RSR",
-                "IRI",
-                'I', "ingotIron",
-                'R', "dustRedstone",
-                'S', specialIngredient));
+            new ItemStack(item, count),
+            "IRI",
+            "RSR",
+            "IRI",
+            'I', "ingotIron",
+            'R', "dustRedstone",
+            'S', specialIngredient));
     }
 
     private Blocks() {

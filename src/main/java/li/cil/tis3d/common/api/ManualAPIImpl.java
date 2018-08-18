@@ -190,7 +190,12 @@ public final class ManualAPIImpl implements ManualAPI {
 
     @Override
     public void navigate(final String path) {
-        final GuiScreen screen = Minecraft.getMinecraft().currentScreen;
+        final Minecraft mc = Minecraft.getMinecraft();
+        if (mc == null) {
+            return;
+        }
+
+        final GuiScreen screen = mc.currentScreen;
         if (screen instanceof GuiManual) {
             ((GuiManual) screen).pushPage(path);
         } else {

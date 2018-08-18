@@ -196,6 +196,7 @@ public interface Module {
      * @param enabled      whether the module is currently enabled.
      * @param partialTicks the partial time elapsed in this tick.
      */
+    // TODO In 1.13, pass along TileEntityRendererDispatcher so we don't have to fetch info that's in there statically.
     @SideOnly(Side.CLIENT)
     void render(final boolean enabled, final float partialTicks);
 

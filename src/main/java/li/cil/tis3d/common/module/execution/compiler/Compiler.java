@@ -97,7 +97,7 @@ public final class Compiler {
      * @param matcher the matcher for the line to parse.
      * @param defines the map with defines to add results to.
      */
-    private static void parseDefine(Matcher matcher, Map<String, String> defines) {
+    private static void parseDefine(final Matcher matcher, final Map<String, String> defines) {
         final String key = matcher.group("key");
         if (key == null) {
             return;
@@ -127,8 +127,8 @@ public final class Compiler {
      * @param matcher the matcher for the line to parse.
      * @param defines the map with defines to remove results from.
      */
-    private static void parseUndefine(Matcher matcher, Map<String, String> defines) {
-        String key = matcher.group("key");
+    private static void parseUndefine(final Matcher matcher, final Map<String, String> defines) {
+        final String key = matcher.group("key");
         if (key == null) {
             return;
         }
@@ -166,7 +166,7 @@ public final class Compiler {
      * @param validators list of validators instruction emitters may add to.
      * @throws ParseException if there was a syntax error.
      */
-    private static void parseInstruction(final Matcher matcher, final MachineState state, final int lineNumber, Map<String, String> defines, final List<Validator> validators) throws ParseException {
+    private static void parseInstruction(final Matcher matcher, final MachineState state, final int lineNumber, final Map<String, String> defines, final List<Validator> validators) throws ParseException {
         final String name = matcher.group("name");
         if (name == null) {
             return;
@@ -174,7 +174,7 @@ public final class Compiler {
 
         // Got an instruction, process arguments and instantiate it.
         final Instruction instruction = EMITTER_MAP.getOrDefault(name, EMITTER_MISSING).
-                compile(matcher, lineNumber, defines, validators);
+            compile(matcher, lineNumber, defines, validators);
 
         // Remember line numbers for debugging.
         state.lineNumbers.put(state.instructions.size(), lineNumber);

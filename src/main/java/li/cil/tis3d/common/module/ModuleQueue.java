@@ -114,7 +114,8 @@ public final class ModuleQueue extends AbstractModuleRotatable {
         RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_QUEUE));
 
         // Render detailed state when player is close.
-        if (!isEmpty() && Minecraft.getMinecraft().player.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
+        final Minecraft mc = Minecraft.getMinecraft();
+        if (!isEmpty() && mc != null && mc.player != null && mc.player.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
             drawState();
         }
     }

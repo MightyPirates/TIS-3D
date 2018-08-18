@@ -30,16 +30,16 @@ public final class MachineImpl implements Machine {
         this.state = new MachineState();
         this.module = module;
         this.interfaces = ImmutableMap.<Target, TargetInterface>builder().
-                put(Target.ACC, new TargetInterfaceAcc(this)).
-                put(Target.BAK, new TargetInterfaceBak(this)).
-                put(Target.NIL, new TargetInterfaceNil(this)).
-                put(Target.LEFT, new TargetInterfaceSide(this, module, face, Port.LEFT)).
-                put(Target.RIGHT, new TargetInterfaceSide(this, module, face, Port.RIGHT)).
-                put(Target.UP, new TargetInterfaceSide(this, module, face, Port.UP)).
-                put(Target.DOWN, new TargetInterfaceSide(this, module, face, Port.DOWN)).
-                put(Target.ANY, new TargetInterfaceAny(this, module, face)).
-                put(Target.LAST, new TargetInterfaceLast(this, module, face)).
-                build();
+            put(Target.ACC, new TargetInterfaceAcc(this)).
+            put(Target.BAK, new TargetInterfaceBak(this)).
+            put(Target.NIL, new TargetInterfaceNil(this)).
+            put(Target.LEFT, new TargetInterfaceSide(this, module, face, Port.LEFT)).
+            put(Target.RIGHT, new TargetInterfaceSide(this, module, face, Port.RIGHT)).
+            put(Target.UP, new TargetInterfaceSide(this, module, face, Port.UP)).
+            put(Target.DOWN, new TargetInterfaceSide(this, module, face, Port.DOWN)).
+            put(Target.ANY, new TargetInterfaceAny(this, module, face)).
+            put(Target.LAST, new TargetInterfaceLast(this, module, face)).
+            build();
     }
 
     /**

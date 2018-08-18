@@ -158,7 +158,8 @@ public final class ModuleSequencer extends AbstractModuleRotatable {
 
         GlStateManager.depthMask(true);
 
-        if (Minecraft.getMinecraft().player.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
+        final Minecraft mc = Minecraft.getMinecraft();
+        if (mc != null && mc.player != null && mc.player.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
             // Draw configuration of sequencer.
             GlStateManager.color(0.8f, 0.85f, 0.875f, enabled ? 1 : 0.5f);
             for (int col = 0; col < COL_COUNT; col++) {

@@ -9,8 +9,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public final class CallbacksMinecraft {
-    public static int getInput(final Redstone module) {
+final class CallbacksMinecraft {
+    static int getInput(final Redstone module) {
         final Face face = module.getFace();
         final EnumFacing facing = Face.toEnumFacing(face);
         final World world = module.getCasing().getCasingWorld();

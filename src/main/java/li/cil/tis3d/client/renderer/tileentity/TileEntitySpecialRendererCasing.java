@@ -131,6 +131,7 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
 
                 final RayTraceResult hit = rendererDispatcher.cameraHitResult;
                 final BlockPos pos = hit.getBlockPos();
+                assert pos != null : "rendererDispatcher.cameraHitResult.getBlockPos() is null even though it was non-null in isObserverLookingAt";
                 final Vec3d uv = TransformUtil.hitToUV(face, hit.hitVec.subtract(new Vec3d(pos)));
                 lookingAtPort = Port.fromUVQuadrant(uv);
             } else {
@@ -199,7 +200,7 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
         }
 
         final int brightness = getWorld().getCombinedLight(
-                casing.getPosition().offset(Face.toEnumFacing(face)), 0);
+            casing.getPosition().offset(Face.toEnumFacing(face)), 0);
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, brightness % 65536, brightness / 65536);
 
         try {
@@ -215,7 +216,7 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
     }
 
     private boolean isObserverHoldingKey() {
-        for (ItemStack stack : rendererDispatcher.entity.getHeldEquipment()) {
+        for (final ItemStack stack : rendererDispatcher.entity.getHeldEquipment()) {
             if (Items.isKey(stack)) {
                 return true;
             }
@@ -231,10 +232,10 @@ public final class TileEntitySpecialRendererCasing extends TileEntitySpecialRend
     private boolean isObserverLookingAt(final BlockPos pos, final Face face) {
         final RayTraceResult hit = rendererDispatcher.cameraHitResult;
         return hit != null &&
-                hit.typeOfHit == RayTraceResult.Type.BLOCK &&
-                hit.sideHit != null &&
-                Face.fromEnumFacing(hit.sideHit) == face &&
-                hit.getBlockPos() != null &&
-                Objects.equals(hit.getBlockPos(), pos);
+            hit.typeOfHit == RayTraceResult.Type.BLOCK &&
+            hit.sideHit != null &&
+            Face.fromEnumFacing(hit.sideHit) == face &&
+            hit.getBlockPos() != null &&
+            Objects.equals(hit.getBlockPos(), pos);
     }
 }
