@@ -80,7 +80,7 @@ public final class MachineState {
      * Finishes an execution cycle, ensuring values of the state are valid ones and
      * returning whether the internal state changed since the last call to this method.
      *
-     * @return <c>true</c> if the internal state had changed since the last call.
+     * @return <code>true</code> if the internal state had changed since the last call.
      */
     public boolean finishCycle() {
         // Check this before wrapping program counter because this also determines the run
