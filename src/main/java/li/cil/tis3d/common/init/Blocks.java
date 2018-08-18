@@ -26,8 +26,8 @@ public final class Blocks {
 
     public static List<Block> getAllBlocks() {
         return Arrays.asList(
-                casing,
-                controller
+            casing,
+            controller
         );
     }
 
@@ -42,11 +42,11 @@ public final class Blocks {
 
     private static void registerBlock(final IForgeRegistry<Block> registry, final Block block, final String name, final Class<? extends TileEntity> tileEntity) {
         registry.register(block.
-                setHardness(5).
-                setResistance(10).
-                setUnlocalizedName(API.MOD_ID + "." + name).
-                setCreativeTab(API.creativeTab).
-                setRegistryName(name));
+            setHardness(5).
+            setResistance(10).
+            setUnlocalizedName(API.MOD_ID + "." + name).
+            setCreativeTab(API.creativeTab).
+            setRegistryName(name));
 
         GameRegistry.registerTileEntity(tileEntity, API.MOD_ID + ": " + name);
     }

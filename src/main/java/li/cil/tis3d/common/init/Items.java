@@ -3,11 +3,7 @@ package li.cil.tis3d.common.init;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.Settings;
-import li.cil.tis3d.common.item.ItemBookCode;
-import li.cil.tis3d.common.item.ItemBookManual;
-import li.cil.tis3d.common.item.ItemKey;
-import li.cil.tis3d.common.item.ItemModule;
-import li.cil.tis3d.common.item.ItemModuleReadOnlyMemory;
+import li.cil.tis3d.common.item.*;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -16,12 +12,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Manages setup, registration and lookup of items.
@@ -48,13 +39,13 @@ public final class Items {
     public static List<Item> getAllItems() {
         final List<Item> result = new ArrayList<>(modules.values());
         result.addAll(Arrays.asList(
-                bookCode,
-                bookManual,
-                key,
-                keyCreative,
-                prism,
-                Item.getItemFromBlock(Blocks.casing),
-                Item.getItemFromBlock(Blocks.controller)
+            bookCode,
+            bookManual,
+            key,
+            keyCreative,
+            prism,
+            Item.getItemFromBlock(Blocks.casing),
+            Item.getItemFromBlock(Blocks.controller)
         ));
         return result;
     }
@@ -111,9 +102,9 @@ public final class Items {
 
     private static Item registerItem(final IForgeRegistry<Item> registry, final Item item, final String name) {
         registry.register(item.
-                setUnlocalizedName(API.MOD_ID + "." + name).
-                setCreativeTab(API.creativeTab).
-                setRegistryName(name));
+            setUnlocalizedName(API.MOD_ID + "." + name).
+            setCreativeTab(API.creativeTab).
+            setRegistryName(name));
         return item;
     }
 

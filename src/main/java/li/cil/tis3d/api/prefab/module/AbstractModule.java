@@ -74,9 +74,9 @@ public abstract class AbstractModule implements Module {
     protected boolean isPlayerLookingAt() {
         final RayTraceResult hit = Minecraft.getMinecraft().objectMouseOver;
         return hit != null &&
-                hit.typeOfHit == RayTraceResult.Type.BLOCK &&
-                getCasing().getPosition().equals(hit.getBlockPos()) &&
-                hit.sideHit == Face.toEnumFacing(getFace());
+            hit.typeOfHit == RayTraceResult.Type.BLOCK &&
+            getCasing().getPosition().equals(hit.getBlockPos()) &&
+            hit.sideHit == Face.toEnumFacing(getFace());
     }
 
     /**
