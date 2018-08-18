@@ -61,10 +61,10 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
     }
 
     private static final ResourceLocation[] STATE_LOCATIONS = new ResourceLocation[]{
-            TextureLoader.LOCATION_OVERLAY_MODULE_EXECUTION_IDLE,
-            TextureLoader.LOCATION_OVERLAY_MODULE_EXECUTION_ERROR,
-            TextureLoader.LOCATION_OVERLAY_MODULE_EXECUTION_RUNNING,
-            TextureLoader.LOCATION_OVERLAY_MODULE_EXECUTION_WAITING
+        TextureLoader.LOCATION_OVERLAY_MODULE_EXECUTION_IDLE,
+        TextureLoader.LOCATION_OVERLAY_MODULE_EXECUTION_ERROR,
+        TextureLoader.LOCATION_OVERLAY_MODULE_EXECUTION_RUNNING,
+        TextureLoader.LOCATION_OVERLAY_MODULE_EXECUTION_WAITING
     };
 
     // NBT tag names.
@@ -128,6 +128,13 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         state = State.IDLE;
 
         sendPartialState();
+    }
+
+    @Override
+    public void onBeforeWriteComplete(final Port port) {
+        if (compileError == null) {
+            machine.onBeforeWriteComplete(port);
+        }
     }
 
     @Override
@@ -236,7 +243,8 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
 
         // Render detailed state when player is close.
         final MachineState machineState = getState();
-        if (machineState.code != null && Minecraft.getMinecraft().player.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
+        final Minecraft mc = Minecraft.getMinecraft();
+        if (machineState.code != null && mc != null && mc.player != null && mc.player.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
             renderState(machineState);
         }
     }
@@ -331,9 +339,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         data.writeShort(getState().acc);
         data.writeShort(getState().bak);
         data.writeBoolean(getState().last.isPresent());
-        if (getState().last.isPresent()) {
-            data.writeByte((byte) getState().last.get().ordinal());
-        }
+        getState().last.ifPresent(port -> data.writeByte((byte) port.ordinal()));
         data.writeByte(state.ordinal());
 
         getCasing().sendData(getFace(), data, DATA_TYPE_INCREMENTAL);
@@ -468,8 +474,8 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
     }
 
     private static final List<SourceCodeProvider> providers = new ArrayList<>(Arrays.asList(
-            new SourceCodeProviderVanilla(),
-            new SourceCodeProviderBookCode()
+        new SourceCodeProviderVanilla(),
+        new SourceCodeProviderBookCode()
     ));
 
     @Nullable

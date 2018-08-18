@@ -7,5 +7,5 @@ import li.cil.tis3d.api.module.traits.BundledRedstone;
  */
 @FunctionalInterface
 public interface BundledRedstoneInputProvider {
-    int getBundledInput(BundledRedstone module, int channel);
+    int getBundledInput(final BundledRedstone module, final int channel);
 }

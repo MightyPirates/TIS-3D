@@ -22,7 +22,7 @@ public final class InstructionEmitterTargetOrImmediate extends AbstractInstructi
     @Override
     public Instruction compile(final Matcher matcher, final int lineNumber, final Map<String, String> defines, final List<Validator> validators) throws ParseException {
         final Object src = checkTargetOrNumber(checkArg(lineNumber, matcher, "arg1", "name"),
-                lineNumber, defines, matcher.start("arg1"), matcher.end("arg1"));
+            lineNumber, defines, matcher.start("arg1"), matcher.end("arg1"));
         checkExcess(lineNumber, matcher, "arg2");
 
         if (src instanceof Target) {

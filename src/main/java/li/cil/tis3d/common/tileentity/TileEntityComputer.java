@@ -38,22 +38,22 @@ abstract class TileEntityComputer extends TileEntity implements PipeHost {
 
     static {
         FACE_MAPPING = new Face[][]{
-                {Face.X_POS, Face.X_NEG, Face.Z_NEG, Face.Z_POS}, // Y_NEG
-                {Face.X_POS, Face.X_NEG, Face.Z_POS, Face.Z_NEG}, // Y_POS
-                {Face.X_POS, Face.X_NEG, Face.Y_POS, Face.Y_NEG}, // Z_NEG
-                {Face.X_NEG, Face.X_POS, Face.Y_POS, Face.Y_NEG}, // Z_POS
-                {Face.Z_NEG, Face.Z_POS, Face.Y_POS, Face.Y_NEG}, // X_NEG
-                {Face.Z_POS, Face.Z_NEG, Face.Y_POS, Face.Y_NEG}  // X_POS
-                //    LEFT        RIGHT       UP          DOWN
+            {Face.X_POS, Face.X_NEG, Face.Z_NEG, Face.Z_POS}, // Y_NEG
+            {Face.X_POS, Face.X_NEG, Face.Z_POS, Face.Z_NEG}, // Y_POS
+            {Face.X_POS, Face.X_NEG, Face.Y_POS, Face.Y_NEG}, // Z_NEG
+            {Face.X_NEG, Face.X_POS, Face.Y_POS, Face.Y_NEG}, // Z_POS
+            {Face.Z_NEG, Face.Z_POS, Face.Y_POS, Face.Y_NEG}, // X_NEG
+            {Face.Z_POS, Face.Z_NEG, Face.Y_POS, Face.Y_NEG}  // X_POS
+            //    LEFT        RIGHT       UP          DOWN
         };
         PORT_MAPPING = new Port[][]{
-                {Port.DOWN,  Port.DOWN,  Port.DOWN,  Port.DOWN},   // Y_NEG
-                {Port.UP,    Port.UP,    Port.UP,    Port.UP},     // Y_POS
-                {Port.RIGHT, Port.LEFT,  Port.DOWN,  Port.UP},     // Z_NEG
-                {Port.RIGHT, Port.LEFT,  Port.UP,    Port.DOWN},   // Z_POS
-                {Port.RIGHT, Port.LEFT,  Port.RIGHT, Port.RIGHT},  // X_NEG
-                {Port.RIGHT, Port.LEFT,  Port.LEFT,  Port.LEFT}    // X_POS
-                //    LEFT        RIGHT       UP          DOWN
+            {Port.DOWN, Port.DOWN, Port.DOWN, Port.DOWN},   // Y_NEG
+            {Port.UP, Port.UP, Port.UP, Port.UP},     // Y_POS
+            {Port.RIGHT, Port.LEFT, Port.DOWN, Port.UP},     // Z_NEG
+            {Port.RIGHT, Port.LEFT, Port.UP, Port.DOWN},   // Z_POS
+            {Port.RIGHT, Port.LEFT, Port.RIGHT, Port.RIGHT},  // X_NEG
+            {Port.RIGHT, Port.LEFT, Port.LEFT, Port.LEFT}    // X_POS
+            //    LEFT        RIGHT       UP          DOWN
         };
     }
 
@@ -130,10 +130,6 @@ abstract class TileEntityComputer extends TileEntity implements PipeHost {
     @Override
     public BlockPos getPipeHostPosition() {
         return getPos();
-    }
-
-    @Override
-    public void onWriteComplete(final Face sendingFace, final Port sendingPort) {
     }
 
     // --------------------------------------------------------------------- //

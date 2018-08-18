@@ -13,5 +13,9 @@ public interface PipeHost {
 
     BlockPos getPipeHostPosition();
 
-    void onWriteComplete(Face sendingFace, Port sendingPort);
+    default void onBeforeWriteComplete(final Face sendingFace, final Port sendingPort) {
+    }
+
+    default void onWriteComplete(final Face sendingFace, final Port sendingPort) {
+    }
 }

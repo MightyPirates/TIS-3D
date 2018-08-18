@@ -376,6 +376,9 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
 
         // Just in case...
         final BlockPos pos = hit.getBlockPos();
+        if (pos == null) {
+            return;
+        }
         if (!world.isBlockLoaded(pos)) {
             return;
         }

@@ -7,5 +7,5 @@ import li.cil.tis3d.api.module.traits.Redstone;
  */
 @FunctionalInterface
 public interface RedstoneInputProvider {
-    int getInput(Redstone module);
+    int getInput(final Redstone module);
 }

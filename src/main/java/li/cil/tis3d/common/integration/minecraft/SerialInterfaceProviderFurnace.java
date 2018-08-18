@@ -80,7 +80,7 @@ public final class SerialInterfaceProviderFurnace implements SerialInterfaceProv
         private final TileEntityFurnace furnace;
         private Mode mode = Mode.PercentageFuel;
 
-        public SerialInterfaceFurnace(final TileEntityFurnace furnace) {
+        SerialInterfaceFurnace(final TileEntityFurnace furnace) {
             this.furnace = furnace;
         }
 

@@ -15,7 +15,7 @@ public final class InstructionMove extends AbstractInstructionMove {
     }
 
     @Override
-    protected void doStep(final Machine machine) {
+    public void step(final Machine machine) {
         final TargetInterface sourceInterface = machine.getInterface(source);
         final TargetInterface destinationInterface = machine.getInterface(destination);
 

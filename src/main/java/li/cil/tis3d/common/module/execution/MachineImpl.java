@@ -30,16 +30,16 @@ public final class MachineImpl implements Machine {
         this.state = new MachineState();
         this.module = module;
         this.interfaces = ImmutableMap.<Target, TargetInterface>builder().
-                put(Target.ACC, new TargetInterfaceAcc(this)).
-                put(Target.BAK, new TargetInterfaceBak(this)).
-                put(Target.NIL, new TargetInterfaceNil(this)).
-                put(Target.LEFT, new TargetInterfaceSide(this, module, face, Port.LEFT)).
-                put(Target.RIGHT, new TargetInterfaceSide(this, module, face, Port.RIGHT)).
-                put(Target.UP, new TargetInterfaceSide(this, module, face, Port.UP)).
-                put(Target.DOWN, new TargetInterfaceSide(this, module, face, Port.DOWN)).
-                put(Target.ANY, new TargetInterfaceAny(this, module, face)).
-                put(Target.LAST, new TargetInterfaceLast(this, module, face)).
-                build();
+            put(Target.ACC, new TargetInterfaceAcc(this)).
+            put(Target.BAK, new TargetInterfaceBak(this)).
+            put(Target.NIL, new TargetInterfaceNil(this)).
+            put(Target.LEFT, new TargetInterfaceSide(this, module, face, Port.LEFT)).
+            put(Target.RIGHT, new TargetInterfaceSide(this, module, face, Port.RIGHT)).
+            put(Target.UP, new TargetInterfaceSide(this, module, face, Port.UP)).
+            put(Target.DOWN, new TargetInterfaceSide(this, module, face, Port.DOWN)).
+            put(Target.ANY, new TargetInterfaceAny(this, module, face)).
+            put(Target.LAST, new TargetInterfaceLast(this, module, face)).
+            build();
     }
 
     /**
@@ -49,17 +49,25 @@ public final class MachineImpl implements Machine {
      * @return <tt>true</tt> if the current instruction changed (even if it's the same again).
      */
     public boolean step() {
-        final int pc = state.pc;
         final Instruction instruction = getInstruction();
         if (instruction != null) {
             instruction.step(this);
         }
 
-        final boolean stateChanged = state.pc != pc;
+        return state.finishCycle();
+    }
 
-        state.validate();
-
-        return stateChanged;
+    /**
+     * Inform the active instruction that a write operation will be completed.
+     *
+     * @param port the port on which the write operation will be completed.
+     * @see li.cil.tis3d.api.module.Module#onBeforeWriteComplete(Port)
+     */
+    public void onBeforeWriteComplete(final Port port) {
+        final Instruction instruction = getInstruction();
+        if (instruction != null) {
+            instruction.onBeforeWriteComplete(this, port);
+        }
     }
 
     /**

@@ -72,12 +72,12 @@ public final class BlockCasing extends Block {
         }
         final TileEntityCasing casing = (TileEntityCasing) tileEntity;
         return state.
-                withProperty(MODULE_X_NEG, casing.getModule(Face.X_NEG) != null).
-                withProperty(MODULE_X_POS, casing.getModule(Face.X_POS) != null).
-                withProperty(MODULE_Y_NEG, casing.getModule(Face.Y_NEG) != null).
-                withProperty(MODULE_Y_POS, casing.getModule(Face.Y_POS) != null).
-                withProperty(MODULE_Z_NEG, casing.getModule(Face.Z_NEG) != null).
-                withProperty(MODULE_Z_POS, casing.getModule(Face.Z_POS) != null);
+            withProperty(MODULE_X_NEG, casing.getModule(Face.X_NEG) != null).
+            withProperty(MODULE_X_POS, casing.getModule(Face.X_POS) != null).
+            withProperty(MODULE_Y_NEG, casing.getModule(Face.Y_NEG) != null).
+            withProperty(MODULE_Y_POS, casing.getModule(Face.Y_POS) != null).
+            withProperty(MODULE_Z_NEG, casing.getModule(Face.Z_NEG) != null).
+            withProperty(MODULE_Z_POS, casing.getModule(Face.Z_POS) != null);
     }
 
     // --------------------------------------------------------------------- //

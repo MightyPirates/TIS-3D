@@ -101,9 +101,9 @@ public final class Raytracing {
         final int endPosY = MathHelper.floor(end.y);
         final int endPosZ = MathHelper.floor(end.z);
 
-        final int stepX = endPosX > startPosX ? 1 : endPosX < startPosX ? -1 : 0;
-        final int stepY = endPosY > startPosY ? 1 : endPosY < startPosY ? -1 : 0;
-        final int stepZ = endPosZ > startPosZ ? 1 : endPosZ < startPosZ ? -1 : 0;
+        final int stepX = Integer.compare(endPosX, startPosX);
+        final int stepY = Integer.compare(endPosY, startPosY);
+        final int stepZ = Integer.compare(endPosZ, startPosZ);
 
         // Planes for each axis that we will next cross.
         final int gxp = startPosX + (endPosX > startPosX ? 1 : 0);

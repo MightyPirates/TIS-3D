@@ -225,13 +225,13 @@ public final class Document {
     }
 
     private static final PatternMapping[] SEGMENT_TYPES = new PatternMapping[]{
-            new PatternMapping("^(#+)\\s(.*)", Document::HeaderSegment), // headers: # ...
-            new PatternMapping("(`)(.*?)\\1", Document::CodeSegment), // code: `...`
-            new PatternMapping("!\\[([^\\[]*)\\]\\(([^\\)]+)\\)", Document::ImageSegment), // images: ![...](...)
-            new PatternMapping("\\[([^\\[]+)\\]\\(([^\\)]+)\\)", Document::LinkSegment), // links: [...](...)
-            new PatternMapping("(\\*\\*|__)(\\S.*?\\S|$)\\1", Document::BoldSegment), // bold: **...** | __...__
-            new PatternMapping("(\\*|_)(\\S.*?\\S|$)\\1", Document::ItalicSegment), // italic: *...* | _..._
-            new PatternMapping("~~(\\S.*?\\S|$)~~", Document::StrikethroughSegment) // strikethrough: ~~...~~
+        new PatternMapping("^(#+)\\s(.*)", Document::HeaderSegment), // headers: # ...
+        new PatternMapping("(`)(.*?)\\1", Document::CodeSegment), // code: `...`
+        new PatternMapping("!\\[([^\\[]*)\\]\\(([^\\)]+)\\)", Document::ImageSegment), // images: ![...](...)
+        new PatternMapping("\\[([^\\[]+)\\]\\(([^\\)]+)\\)", Document::LinkSegment), // links: [...](...)
+        new PatternMapping("(\\*\\*|__)(\\S.*?\\S|$)\\1", Document::BoldSegment), // bold: **...** | __...__
+        new PatternMapping("(\\*|_)(\\S.*?\\S|$)\\1", Document::ItalicSegment), // italic: *...* | _..._
+        new PatternMapping("~~(\\S.*?\\S|$)~~", Document::StrikethroughSegment) // strikethrough: ~~...~~
     };
 
     private static final class PatternMapping {

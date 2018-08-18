@@ -8,7 +8,7 @@ public final class InstructionLastRotateRight implements Instruction {
     public static final InstructionLastRotateRight INSTANCE = new InstructionLastRotateRight();
 
     @Override
-    public void step(Machine machine) {
+    public void step(final Machine machine) {
         final MachineState state = machine.getState();
         state.last = state.last.map(p -> p.rotated(1));
         state.pc++;

@@ -212,9 +212,9 @@ public final class Network {
 
             final Position that = (Position) obj;
             return world.provider.getDimension() == that.world.provider.getDimension() &&
-                   Float.compare(that.x, x) == 0 &&
-                   Float.compare(that.y, y) == 0 &&
-                   Float.compare(that.z, z) == 0;
+                Float.compare(that.x, x) == 0 &&
+                Float.compare(that.y, y) == 0 &&
+                Float.compare(that.z, z) == 0;
 
         }
 
