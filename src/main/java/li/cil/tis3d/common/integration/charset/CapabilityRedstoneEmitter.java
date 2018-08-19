@@ -47,7 +47,7 @@ public final class CapabilityRedstoneEmitter {
         @Override
         public <T> T getCapability(final Capability<T> capability, @Nullable final EnumFacing facing) {
             if (hasCapability(capability, facing)) {
-                return (T) this;
+                return (T) this.emitters[facing.ordinal()];
             }
             return null;
         }
