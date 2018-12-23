@@ -562,13 +562,13 @@ public final class TileEntityCasing extends TileEntityComputer implements Infrar
     private void sendCasingLockedState() {
         final Packet packet = PacketRegistry.SERVER.wrap(new MessageCasingLockedState(this, isLocked()));
         PacketServerHelper.forEachWatching(world, pos, (player) -> player.networkHandler.sendPacket(packet));
-        getWorld().playSound(null, getPos(), SoundEvents.ENTITY_IRON_GOLEM_ATTACK, SoundCategory.BLOCK, 0.3f, isLocked() ? 0.5f : 0.6f);
+        getWorld().playSound(null, getPos(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCK, 0.3f, isLocked() ? 0.5f : 0.6f);
     }
 
     private void sendReceivingPipeLockedState(final Face face, final Port port) {
         final Packet packet = PacketRegistry.SERVER.wrap(new MessageReceivingPipeLockedState(this, face, port, isReceivingPipeLocked(face, port)));
         PacketServerHelper.forEachWatching(world, pos, (player) -> player.networkHandler.sendPacket(packet));
-        getWorld().playSound(null, getPos(), SoundEvents.ENTITY_IRON_GOLEM_ATTACK, SoundCategory.BLOCK, 0.3f, isReceivingPipeLocked(face, port) ? 0.5f : 0.6f);
+        getWorld().playSound(null, getPos(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCK, 0.3f, isReceivingPipeLocked(face, port) ? 0.5f : 0.6f);
     }
 
     private static void decompressClosed(final byte[] compressed, final boolean[][] decompressed) {
