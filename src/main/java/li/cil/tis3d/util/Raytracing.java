@@ -1,14 +1,14 @@
 package li.cil.tis3d.util;
 
-import javax.annotation.Nullable;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+
+import javax.annotation.Nullable;
 
 /**
  * Custom ray-tracing implementation for ray-block tests, to allow custom
@@ -36,7 +36,7 @@ public final class Raytracing {
         final BlockState state = world.getBlockState(position);
         final Block block = state.getBlock();
         if (state.getCollisionShape(world, position) != null && block.canCollideWith(state)) {
-        	return Block.rayTrace(state, world, position, start, end);
+            return Block.rayTrace(state, world, position, start, end);
         }
         return null;
     }
@@ -54,12 +54,12 @@ public final class Raytracing {
     public static HitResult intersectIgnoringTransparent(final World world, final BlockPos position, final Vec3d start, final Vec3d end) {
         final BlockState state = world.getBlockState(position);
         final Block block = state.getBlock();
-        if (!state.getMaterial().isReplaceable() || !state.getMaterial().isLiquid()) {
+        if (!state.getMaterial().method_15804()) {
             return null;
         }
-	    if (state.getCollisionShape(world, position) != null && block.canCollideWith(state)) {
-		    return Block.rayTrace(state, world, position, start, end);
-	    }
+        if (state.getCollisionShape(world, position) != null && block.canCollideWith(state)) {
+            return Block.rayTrace(state, world, position, start, end);
+        }
         return null;
     }
 
