@@ -1,8 +1,18 @@
-plugins {
-    id 'fabric-loom' version '0.2.0-SNAPSHOT'
-//  id "com.matthewprenger.cursegradle" version "1.0.9"
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            name = 'Fabric'
+            url = 'https://maven.fabricmc.net/'
+        }
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath "net.fabricmc:fabric-loom:0.2.0-SNAPSHOT"
+    }
 }
 
+apply plugin: 'fabric-loom'
 apply plugin: 'java'
 apply plugin: 'maven-publish'
 
