@@ -1,10 +1,9 @@
 package li.cil.tis3d.common.network.message;
 
-import io.netty.buffer.ByteBuf;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
-import li.cil.tis3d.common.tileentity.TileEntityCasing;
-import pl.asie.protocharset.rift.network.SendNetwork;
+import li.cil.tis3d.common.block.entity.TileEntityCasing;
+import li.cil.tis3d.charset.SendNetwork;
 
 public final class MessageReceivingPipeLockedState extends AbstractMessageWithLocation {
     @SendNetwork public Face face;

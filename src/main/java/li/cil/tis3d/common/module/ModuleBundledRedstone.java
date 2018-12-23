@@ -1,5 +1,6 @@
 package li.cil.tis3d.common.module;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.machine.Casing;
@@ -10,15 +11,12 @@ import li.cil.tis3d.api.module.traits.BundledRedstone;
 import li.cil.tis3d.api.module.traits.BundledRedstoneOutputChangedEvent;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.renderer.TextureLoader;
+import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.util.ColorUtils;
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.World;
-
-import org.dimdev.riftloader.RiftLoader;
 
 import java.util.Arrays;
 
@@ -77,11 +75,11 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
             stepInput(port);
         }
 
-        if (scheduledNeighborUpdate && world.getTotalWorldTime() > lastStep) {
+        if (scheduledNeighborUpdate && world.getTime() > lastStep) {
             notifyNeighbors();
         }
 
-        lastStep = world.getTotalWorldTime();
+        lastStep = world.getTime();
     }
 
     @Override
@@ -91,7 +89,8 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
         channel = 0;
 
         final BundledRedstoneOutputChangedEvent event = new BundledRedstoneOutputChangedEvent(this, -1);
-	    RiftLoader.instance.getListeners(BundledRedstoneOutputChangedEvent.Listener.class).forEach((l) -> l.onBundledRedstoneOutputChanged(event));
+        // TODO
+	    //RiftLoader.instance.getListeners(BundledRedstoneOutputChangedEvent.Listener.class).forEach((l) -> l.onBundledRedstoneOutputChanged(event));
         //MinecraftForge.EVENT_BUS.post(event);
 
         sendData();
@@ -121,7 +120,7 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
 
 
     @Override
-    public void render(final TileEntityRendererDispatcher rendererDispatcher, final float partialTicks) {
+    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
         if (!isVisible()) {
             return;
         }
@@ -130,7 +129,7 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
         RenderUtil.ignoreLighting();
 
         // Draw base overlay.
-        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_BUNDLED_REDSTONE));
+        RenderUtil.drawQuad(RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_BUNDLED_REDSTONE));
 
         if (!getCasing().isEnabled()) {
             return;
@@ -143,15 +142,15 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
         renderBar(input, RIGHT_U0);
 
         // Draw active channel indicator.
-        GlStateManager.disableTexture2D();
+        GlStateManager.disableTexture();
         final int color = ColorUtils.getColorByIndex(channel);
-        GlStateManager.color(ColorUtils.getRed(color), ColorUtils.getGreen(color), ColorUtils.getBlue(color));
+        GlStateManager.color3f(ColorUtils.getRed(color), ColorUtils.getGreen(color), ColorUtils.getBlue(color));
         RenderUtil.drawUntexturedQuad(7 / 16f, 7 / 16f, 2 / 16f, 2 / 16f);
-        GlStateManager.enableTexture2D();
+        GlStateManager.enableTexture();
     }
 
     @Override
-    public void readFromNBT(final NBTTagCompound nbt) {
+    public void readFromNBT(final CompoundTag nbt) {
         super.readFromNBT(nbt);
 
         final int[] outputNbt = nbt.getIntArray(TAG_OUTPUT);
@@ -168,22 +167,22 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
     }
 
     @Override
-    public void writeToNBT(final NBTTagCompound nbt) {
+    public void writeToNBT(final CompoundTag nbt) {
         super.writeToNBT(nbt);
 
         final int[] outputNbt = new int[output.length];
         for (int i = 0; i < output.length; i++) {
             outputNbt[i] = output[i];
         }
-        nbt.setIntArray(TAG_OUTPUT, outputNbt);
+        nbt.putIntArray(TAG_OUTPUT, outputNbt);
 
         final int[] inputNbt = new int[input.length];
         for (int i = 0; i < input.length; i++) {
             inputNbt[i] = input[i];
         }
-        nbt.setIntArray(TAG_INPUT, inputNbt);
+        nbt.putIntArray(TAG_INPUT, inputNbt);
 
-        nbt.setShort(TAG_CHANNEL, channel);
+        nbt.putShort(TAG_CHANNEL, channel);
     }
 
     // --------------------------------------------------------------------- //
@@ -198,7 +197,7 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
     public void setBundledRedstoneInput(final int channel, final short value) {
         // We never call this on the client side, but other might...
         final World world = getCasing().getCasingWorld();
-        if (world.isRemote) {
+        if (world.isClient) {
             return;
         }
 
@@ -304,7 +303,8 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
 
         // Notify bundled redstone APIs.
         final BundledRedstoneOutputChangedEvent event = new BundledRedstoneOutputChangedEvent(this, channel);
-	    RiftLoader.instance.getListeners(BundledRedstoneOutputChangedEvent.Listener.class).forEach((l) -> l.onBundledRedstoneOutputChanged(event));
+        // TODO
+	    //RiftLoader.instance.getListeners(BundledRedstoneOutputChangedEvent.Listener.class).forEach((l) -> l.onBundledRedstoneOutputChanged(event));
 	    //MinecraftForge.EVENT_BUS.post(event);
 
         sendData();
@@ -318,7 +318,7 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
 
         scheduledNeighborUpdate = false;
         final Block blockType = world.getBlockState(getCasing().getPosition()).getBlock();
-        world.notifyNeighborsOfStateChange(getCasing().getPosition(), blockType);
+        world.updateNeighborsAlways(getCasing().getPosition(), blockType);
     }
 
     /**
@@ -338,17 +338,17 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
 
 
     private void renderBar(final short[] values, final float u) {
-        GlStateManager.disableTexture2D();
+        GlStateManager.disableTexture();
         for (int channel = 0; channel < values.length; channel++) {
             if (values[channel] > 0) {
                 final int color = ColorUtils.getColorByIndex(channel);
-                GlStateManager.color(ColorUtils.getRed(color), ColorUtils.getGreen(color), ColorUtils.getBlue(color));
+                GlStateManager.color3f(ColorUtils.getRed(color), ColorUtils.getGreen(color), ColorUtils.getBlue(color));
 
                 final float u0 = u + (channel & 1) * V_STEP;
                 final float v0 = SHARED_V0 + (channel >> 1) * V_STEP;
                 RenderUtil.drawUntexturedQuad(u0, v0, V_STEP, V_STEP);
             }
         }
-        GlStateManager.enableTexture2D();
+        GlStateManager.enableTexture();
     }
 }

@@ -1,10 +1,10 @@
 package li.cil.tis3d.client.manual.segment.render;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.tis3d.api.manual.ImageRenderer;
 import li.cil.tis3d.api.util.RenderUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.item.ItemStack;
 
 public final class ItemStackImageRenderer implements ImageRenderer {
@@ -31,15 +31,15 @@ public final class ItemStackImageRenderer implements ImageRenderer {
 
     @Override
     public void render(final int mouseX, final int mouseY) {
-        final Minecraft mc = Minecraft.getMinecraft();
+        final MinecraftClient mc = MinecraftClient.getInstance();
         final int index = (int) (System.currentTimeMillis() % (CYCLE_SPEED * stacks.length)) / CYCLE_SPEED;
         final ItemStack stack = stacks[index];
 
-        GlStateManager.scale(getWidth() / 16f, getHeight() / 16f, getWidth() / 16f);
+        GlStateManager.scalef(getWidth() / 16f, getHeight() / 16f, getWidth() / 16f);
         GlStateManager.enableRescaleNormal();
         RenderUtil.ignoreLighting();
-        RenderHelper.enableGUIStandardItemLighting();
-        mc.getRenderItem().renderItemAndEffectIntoGUI(stack, 0, 0);
-        RenderHelper.disableStandardItemLighting();
+        GuiLighting.enableForItems();
+        mc.getItemRenderer().renderItemAndGlowInGui(stack, 0, 0);
+        GuiLighting.disable();
     }
 }

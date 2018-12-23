@@ -1,6 +1,5 @@
 package li.cil.tis3d.api.infrared;
 
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 
 /**

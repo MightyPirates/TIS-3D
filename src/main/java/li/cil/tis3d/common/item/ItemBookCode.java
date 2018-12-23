@@ -5,29 +5,23 @@ import li.cil.tis3d.client.gui.GuiHandlerClient;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.gui.GuiHandlerCommon;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiScreen;
 import li.cil.tis3d.util.FontRendererUtils;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.item.TooltipOptions;
+import net.minecraft.client.resource.language.I18n;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BookItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBook;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.text.TextComponent;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
-
-
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,9 +29,9 @@ import java.util.stream.Collectors;
 /**
  * The code book, utility book for coding ASM programs for execution modules.
  */
-public final class ItemBookCode extends ItemBook {
-    public ItemBookCode(Item.Builder builder) {
-        super(builder.maxStackSize(1));
+public final class ItemBookCode extends BookItem {
+    public ItemBookCode(Item.Settings builder) {
+        super(builder.stackSize(1));
     }
 
     // --------------------------------------------------------------------- //
@@ -45,24 +39,24 @@ public final class ItemBookCode extends ItemBook {
 
 
     @Override
-    public void addInformation(final ItemStack stack, @Nullable final World world, final List<ITextComponent> tooltip, final ITooltipFlag flag) {
-        super.addInformation(stack, world, tooltip, flag);
-        final String info = I18n.format(Constants.TOOLTIP_BOOK_CODE);
+    public void buildTooltip(final ItemStack stack, @Nullable final World world, final List<TextComponent> tooltip, final TooltipOptions flag) {
+        super.buildTooltip(stack, world, tooltip, flag);
+        final String info = I18n.translate(Constants.TOOLTIP_BOOK_CODE);
         FontRendererUtils.addStringToTooltip(info, tooltip);
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(final World world, final EntityPlayer player, final EnumHand hand) {
-        if (world.isRemote) {
+    public TypedActionResult<ItemStack> use(final World world, final PlayerEntity player, final Hand hand) {
+        if (world.isClient) {
             openForClient(player);
         }
-        return new ActionResult(EnumActionResult.SUCCESS, player.getHeldItem(hand));
+        return new TypedActionResult(ActionResult.SUCCESS, player.getStackInHand(hand));
     }
 
-    private void openForClient(final EntityPlayer player) {
-        GuiScreen screen = GuiHandlerClient.getClientGuiElement(GuiHandlerCommon.GuiId.BOOK_CODE, player.getEntityWorld(), player);
+    private void openForClient(final PlayerEntity player) {
+        Gui screen = GuiHandlerClient.getClientGuiElement(GuiHandlerCommon.GuiId.BOOK_CODE, player.getEntityWorld(), player);
         if (screen != null) {
-            Minecraft.getMinecraft().displayGuiScreen(screen);
+            MinecraftClient.getInstance().openGui(screen);
         }
     }
 
@@ -76,12 +70,12 @@ public final class ItemBookCode extends ItemBook {
     // ItemBook
 
     @Override
-    public boolean isEnchantable(final ItemStack stack) {
+    public boolean isTool(final ItemStack stack) {
         return false;
     }
 
     @Override
-    public int getItemEnchantability() {
+    public int getEnchantability() {
         return 0;
     }
 
@@ -274,15 +268,15 @@ public final class ItemBookCode extends ItemBook {
          *
          * @param nbt the tag to load the data from.
          */
-        public void readFromNBT(final NBTTagCompound nbt) {
+        public void readFromNBT(final CompoundTag nbt) {
             pages.clear();
 
-            final NBTTagList pagesNbt = nbt.getTagList(TAG_PAGES, Constants.NBT.TAG_STRING);
+            final ListTag pagesNbt = nbt.getList(TAG_PAGES, Constants.NBT.TAG_STRING);
             for (int index = 0; index < pagesNbt.size(); index++) {
-                pages.add(Arrays.asList(Constants.PATTERN_LINES.split(pagesNbt.getStringTagAt(index))));
+                pages.add(Arrays.asList(Constants.PATTERN_LINES.split(pagesNbt.getString(index))));
             }
 
-            selectedPage = nbt.getInteger(TAG_SELECTED);
+            selectedPage = nbt.getInt(TAG_SELECTED);
             validateSelectedPage();
         }
 
@@ -291,20 +285,20 @@ public final class ItemBookCode extends ItemBook {
          *
          * @param nbt the tag to save the data to.
          */
-        public void writeToNBT(final NBTTagCompound nbt) {
-            final NBTTagList pagesNbt = new NBTTagList();
+        public void writeToNBT(final CompoundTag nbt) {
+            final ListTag pagesNbt = new ListTag();
             int removed = 0;
             for (int index = 0; index < pages.size(); index++) {
                 final List<String> program = pages.get(index);
                 if (program.size() > 1 || program.get(0).length() > 0) {
-                    pagesNbt.add(new NBTTagString(String.join("\n", program)));
+                    pagesNbt.add(new StringTag(String.join("\n", program)));
                 } else if (index < selectedPage) {
                     removed++;
                 }
             }
-            nbt.setTag(TAG_PAGES, pagesNbt);
+            nbt.put(TAG_PAGES, pagesNbt);
 
-            nbt.setInteger(TAG_SELECTED, selectedPage - removed);
+            nbt.putInt(TAG_SELECTED, selectedPage - removed);
         }
 
         // --------------------------------------------------------------------- //
@@ -333,7 +327,7 @@ public final class ItemBookCode extends ItemBook {
          * @param nbt the tag to load the data from.
          * @return the data loaded from the tag.
          */
-        public static Data loadFromNBT(@Nullable final NBTTagCompound nbt) {
+        public static Data loadFromNBT(@Nullable final CompoundTag nbt) {
             final Data data = new Data();
             if (nbt != null) {
                 data.readFromNBT(nbt);
@@ -348,7 +342,7 @@ public final class ItemBookCode extends ItemBook {
          * @return the data loaded from the stack.
          */
         public static Data loadFromStack(final ItemStack stack) {
-            return loadFromNBT(stack.getTagCompound());
+            return loadFromNBT(stack.getTag());
         }
 
         /**
@@ -358,9 +352,9 @@ public final class ItemBookCode extends ItemBook {
          * @param data  the data to save to the item stack.
          */
         public static void saveToStack(final ItemStack stack, final Data data) {
-            NBTTagCompound nbt = stack.getTagCompound();
+            CompoundTag nbt = stack.getTag();
             if (nbt == null) {
-                stack.setTagCompound(nbt = new NBTTagCompound());
+                stack.setTag(nbt = new CompoundTag());
             }
             data.writeToNBT(nbt);
         }

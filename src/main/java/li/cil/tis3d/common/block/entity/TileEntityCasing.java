@@ -1,4 +1,4 @@
-package li.cil.tis3d.common.tileentity;
+package li.cil.tis3d.common.block.entity;
 
 import li.cil.tis3d.api.infrared.InfraredReceiver;
 import li.cil.tis3d.api.infrared.InfraredReceiverTile;
@@ -11,8 +11,6 @@ import li.cil.tis3d.api.module.traits.BlockChangeAware;
 import li.cil.tis3d.api.module.traits.BundledRedstone;
 import li.cil.tis3d.api.module.traits.Redstone;
 import li.cil.tis3d.common.Settings;
-import li.cil.tis3d.common.block.BlockCasing;
-import li.cil.tis3d.common.init.Blocks;
 import li.cil.tis3d.common.integration.redstone.RedstoneIntegration;
 import li.cil.tis3d.common.inventory.InventoryCasing;
 import li.cil.tis3d.common.inventory.SidedInventoryProxy;
@@ -23,22 +21,19 @@ import li.cil.tis3d.common.network.message.MessageCasingEnabledState;
 import li.cil.tis3d.common.network.message.MessageCasingLockedState;
 import li.cil.tis3d.common.network.message.MessageReceivingPipeLockedState;
 import li.cil.tis3d.util.InventoryUtils;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.SoundCategory;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import pl.asie.protocharset.rift.network.PacketRegistry;
-import pl.asie.protocharset.rift.network.PacketServerHelper;
+import net.minecraft.util.math.Direction;
+import li.cil.tis3d.charset.PacketRegistry;
+import li.cil.tis3d.charset.PacketServerHelper;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -57,7 +52,7 @@ import java.util.*;
  * controller (transitively) connected to their casing.
  */
 public final class TileEntityCasing extends TileEntityComputer implements InfraredReceiverTile, SidedInventoryProxy, CasingProxy {
-    public static TileEntityType<TileEntityCasing> TYPE;
+    public static BlockEntityType<TileEntityCasing> TYPE;
 
     // --------------------------------------------------------------------- //
     // Persisted data
@@ -165,7 +160,7 @@ public final class TileEntityCasing extends TileEntityComputer implements Infrar
     }
 
     public void scheduleScan() {
-        if (getWorld().isRemote) {
+        if (getWorld().isClient) {
             return;
         }
         if (getController() != null) {
@@ -262,7 +257,7 @@ public final class TileEntityCasing extends TileEntityComputer implements Infrar
 
         // Ensure there are no modules installed between two casings.
         if (hasNeighbor(face)) {
-            InventoryUtils.drop(getWorld(), getPos(), this, face.ordinal(), getInventoryStackLimit(), Face.toEnumFacing(face));
+            InventoryUtils.drop(getWorld(), getPos(), this, face.ordinal(), getInvMaxStackAmount(), Face.toEnumFacing(face));
         }
 
         if (neighbor instanceof TileEntityController) {
@@ -299,20 +294,20 @@ public final class TileEntityCasing extends TileEntityComputer implements Infrar
     // IInventory
 
     @Override
-    public boolean isUsableByPlayer(final EntityPlayer player) {
-        if (getWorld().getTileEntity(pos) != this) {
+    public boolean canPlayerUseInv(final PlayerEntity player) {
+        if (world.getBlockEntity(pos) != this) {
             return false;
         }
 
         final double maxDistance = 64;
-        return player.getDistanceSqToCenter(pos) <= maxDistance;
+        return player.squaredDistanceToCenter(pos) <= maxDistance * maxDistance;
     }
 
     // --------------------------------------------------------------------- //
     // SidedInventoryProxy
 
     @Override
-    public ISidedInventory getInventory() {
+    public SidedInventory getInventory() {
         return inventory;
     }
 
@@ -331,7 +326,7 @@ public final class TileEntityCasing extends TileEntityComputer implements Infrar
     public void invalidate() {
         super.invalidate();
 
-        if (!getWorld().isRemote) {
+        if (!getWorld().isClient) {
             onDisabled();
         }
         dispose();
@@ -387,7 +382,7 @@ public final class TileEntityCasing extends TileEntityComputer implements Infrar
     } */
 
     @Override
-    public double getMaxRenderDistanceSquared() {
+    public double getSquaredRenderDistance() {
         return Network.RANGE_HIGH * Network.RANGE_HIGH;
     }
 
@@ -400,50 +395,50 @@ public final class TileEntityCasing extends TileEntityComputer implements Infrar
     }
 
     @Override
-    protected void readFromNBTForClient(final NBTTagCompound nbt) {
+    protected void readFromNBTForClient(final CompoundTag nbt) {
         super.readFromNBTForClient(nbt);
 
         isEnabled = nbt.getBoolean(TAG_ENABLED);
-	    getWorld().notifyBlockUpdate(getPos(), getBlockState(), getBlockState(), 2);
+	    getWorld().updateListeners(getPos(), getCachedState(), getCachedState(), 2);
     }
 
     @Override
-    protected void writeToNBTForClient(final NBTTagCompound nbt) {
+    protected void writeToNBTForClient(final CompoundTag nbt) {
         super.writeToNBTForClient(nbt);
 
-        nbt.setBoolean(TAG_ENABLED, isEnabled);
+        nbt.putBoolean(TAG_ENABLED, isEnabled);
     }
 
     @Override
-    protected void readFromNBTCommon(final NBTTagCompound nbt) {
+    protected void readFromNBTCommon(final CompoundTag nbt) {
         super.readFromNBTCommon(nbt);
 
         decompressClosed(nbt.getByteArray(TAG_LOCKED), locked);
 
-        final NBTTagCompound inventoryNbt = nbt.getCompoundTag(TAG_INVENTORY);
+        final CompoundTag inventoryNbt = nbt.getCompound(TAG_INVENTORY);
         inventory.readFromNBT(inventoryNbt);
 
-        final NBTTagCompound casingNbt = nbt.getCompoundTag(TAG_CASING);
+        final CompoundTag casingNbt = nbt.getCompound(TAG_CASING);
         casing.readFromNBT(casingNbt);
     }
 
     @Override
-    protected void writeToNBTCommon(final NBTTagCompound nbt) {
+    protected void writeToNBTCommon(final CompoundTag nbt) {
         super.writeToNBTCommon(nbt);
 
-        nbt.setByteArray(TAG_LOCKED, compressClosed(locked));
+        nbt.putByteArray(TAG_LOCKED, compressClosed(locked));
 
         // Needed on the client also, for picking and for actually instantiating
         // the installed modules on the client side (to find the provider).
-        final NBTTagCompound inventoryNbt = new NBTTagCompound();
+        final CompoundTag inventoryNbt = new CompoundTag();
         inventory.writeToNBT(inventoryNbt);
-        nbt.setTag(TAG_INVENTORY, inventoryNbt);
+        nbt.put(TAG_INVENTORY, inventoryNbt);
 
         // Needed on the client also, to allow initializing client side modules
         // immediately after creation.
-        final NBTTagCompound casingNbt = new NBTTagCompound();
+        final CompoundTag casingNbt = new CompoundTag();
         casing.writeToNBT(casingNbt);
-        nbt.setTag(TAG_CASING, casingNbt);
+        nbt.put(TAG_CASING, casingNbt);
     }
 
     // --------------------------------------------------------------------- //
@@ -470,8 +465,8 @@ public final class TileEntityCasing extends TileEntityComputer implements Infrar
      * @param moduleData the original state of the module on the server, if present.
      */
 
-    public void setStackAndModuleClient(final int slot, final ItemStack stack, final NBTTagCompound moduleData) {
-        inventory.setInventorySlotContents(slot, stack);
+    public void setStackAndModuleClient(final int slot, final ItemStack stack, final CompoundTag moduleData) {
+        inventory.setInvStack(slot, stack);
         final Module module = casing.getModule(Face.VALUES[slot]);
         if (module != null) {
             module.readFromNBT(moduleData);
@@ -507,9 +502,9 @@ public final class TileEntityCasing extends TileEntityComputer implements Infrar
     @Nullable
     private TileEntityController findController() {
         // List of processed tile entities to avoid loops.
-        final Set<TileEntity> processed = new HashSet<>();
+        final Set<BlockEntity> processed = new HashSet<>();
         // List of pending tile entities that still need to be scanned.
-        final Queue<TileEntity> queue = new ArrayDeque<>();
+        final Queue<BlockEntity> queue = new ArrayDeque<>();
 
         // Number of casings we encountered for optional early exit.
         int casings = 0;
@@ -518,7 +513,7 @@ public final class TileEntityCasing extends TileEntityComputer implements Infrar
         processed.add(this);
         queue.add(this);
         while (!queue.isEmpty()) {
-            final TileEntity tileEntity = queue.remove();
+            final BlockEntity tileEntity = queue.remove();
             if (tileEntity.isInvalid()) {
                 continue;
             }
@@ -554,7 +549,7 @@ public final class TileEntityCasing extends TileEntityComputer implements Infrar
     private void sendState() {
         final MessageCasingEnabledState message = new MessageCasingEnabledState(this, isEnabled);
         final Packet packet = PacketRegistry.SERVER.wrap(message);
-        PacketServerHelper.forEachWatching(world, pos, (player) -> player.connection.sendPacket(packet));
+        PacketServerHelper.forEachWatching(world, pos, (player) -> player.networkHandler.sendPacket(packet));
     }
 
     private void dispose() {
@@ -566,14 +561,14 @@ public final class TileEntityCasing extends TileEntityComputer implements Infrar
 
     private void sendCasingLockedState() {
         final Packet packet = PacketRegistry.SERVER.wrap(new MessageCasingLockedState(this, isLocked()));
-        PacketServerHelper.forEachWatching(world, pos, (player) -> player.connection.sendPacket(packet));
-        getWorld().playSound(null, getPos(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3f, isLocked() ? 0.5f : 0.6f);
+        PacketServerHelper.forEachWatching(world, pos, (player) -> player.networkHandler.sendPacket(packet));
+        getWorld().playSound(null, getPos(), SoundEvents.ENTITY_IRON_GOLEM_ATTACK, SoundCategory.BLOCK, 0.3f, isLocked() ? 0.5f : 0.6f);
     }
 
     private void sendReceivingPipeLockedState(final Face face, final Port port) {
         final Packet packet = PacketRegistry.SERVER.wrap(new MessageReceivingPipeLockedState(this, face, port, isReceivingPipeLocked(face, port)));
-        PacketServerHelper.forEachWatching(world, pos, (player) -> player.connection.sendPacket(packet));
-        getWorld().playSound(null, getPos(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3f, isReceivingPipeLocked(face, port) ? 0.5f : 0.6f);
+        PacketServerHelper.forEachWatching(world, pos, (player) -> player.networkHandler.sendPacket(packet));
+        getWorld().playSound(null, getPos(), SoundEvents.ENTITY_IRON_GOLEM_ATTACK, SoundCategory.BLOCK, 0.3f, isReceivingPipeLocked(face, port) ? 0.5f : 0.6f);
     }
 
     private static void decompressClosed(final byte[] compressed, final boolean[][] decompressed) {
@@ -614,7 +609,7 @@ public final class TileEntityCasing extends TileEntityComputer implements Infrar
 
     @Nullable
     @Override
-    public InfraredReceiver getInfraredReceiver(EnumFacing facing) {
+    public InfraredReceiver getInfraredReceiver(Direction facing) {
         if (getModule(Face.fromEnumFacing(facing)) instanceof InfraredReceiver) {
             return (InfraredReceiver) getModule(Face.fromEnumFacing(facing));
         } else {

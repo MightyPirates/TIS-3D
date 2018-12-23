@@ -9,13 +9,12 @@ import li.cil.tis3d.client.gui.GuiManual;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.gui.GuiHandlerCommon;
 import li.cil.tis3d.common.network.message.MessageOpenGUI;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -179,16 +178,16 @@ public final class ManualAPIImpl implements ManualAPI {
     }
 
     @Override
-    public void openFor(final EntityPlayer player) {
-        if (player.getEntityWorld().isRemote) {
+    public void openFor(final PlayerEntity player) {
+        if (player.getEntityWorld().isClient) {
             openForClient(player);
         }
     }
 
-    private void openForClient(final EntityPlayer player) {
-        GuiScreen screen = GuiHandlerClient.getClientGuiElement(GuiHandlerCommon.GuiId.BOOK_MANUAL, player.getEntityWorld(), player);
+    private void openForClient(final PlayerEntity player) {
+        Gui screen = GuiHandlerClient.getClientGuiElement(GuiHandlerCommon.GuiId.BOOK_MANUAL, player.getEntityWorld(), player);
         if (screen != null) {
-            Minecraft.getMinecraft().displayGuiScreen(screen);
+            MinecraftClient.getInstance().openGui(screen);
         }
     }
 
@@ -200,12 +199,12 @@ public final class ManualAPIImpl implements ManualAPI {
 
     @Override
     public void navigate(final String path) {
-        final Minecraft mc = Minecraft.getMinecraft();
+        final MinecraftClient mc = MinecraftClient.getInstance();
         if (mc == null) {
             return;
         }
 
-        final GuiScreen screen = mc.currentScreen;
+        final Gui screen = mc.currentGui;
         if (screen instanceof GuiManual) {
             ((GuiManual) screen).pushPage(path);
         } else {

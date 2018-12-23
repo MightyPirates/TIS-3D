@@ -1,6 +1,6 @@
 package li.cil.tis3d.api.machine;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 
 /**
@@ -85,7 +85,7 @@ public enum Port {
      * @param facing the facing to convert.
      * @return the {@link Port} representing that facing.
      */
-    public static Port fromEnumFacing(final EnumFacing facing) {
+    public static Port fromEnumFacing(final Direction facing) {
         return HORIZONTAL[facing.ordinal()];
     }
 

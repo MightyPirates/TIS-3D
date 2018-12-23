@@ -1,6 +1,7 @@
 package li.cil.tis3d.client.gui;
 
-import li.cil.tis3d.client.renderer.TextureLoader;
+import li.cil.tis3d.charset.PacketRegistry;
+import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.init.Items;
@@ -8,24 +9,18 @@ import li.cil.tis3d.common.item.ItemBookCode;
 import li.cil.tis3d.common.module.execution.MachineState;
 import li.cil.tis3d.common.module.execution.compiler.Compiler;
 import li.cil.tis3d.common.module.execution.compiler.ParseException;
-import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageBookCodeData;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.client.util.InputMappings;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumHand;
-
-
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.FontRenderer;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.resource.language.I18n;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Hand;
 import org.lwjgl.glfw.GLFW;
-import pl.asie.protocharset.rift.network.PacketRegistry;
+import com.mojang.blaze3d.platform.GlStateManager;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -33,7 +28,7 @@ import java.util.stream.Collectors;
  * GUI for the code book, used to write and manage ASM programs.
  */
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-public final class GuiBookCode extends GuiScreen {
+public final class GuiBookCode extends Gui {
     private static final int GUI_WIDTH = 148;
     private static final int GUI_HEIGHT = 230;
     private static final int BUTTON_PAGE_CHANGE_PREV_X = 8;
@@ -60,7 +55,7 @@ public final class GuiBookCode extends GuiScreen {
     private ButtonChangePage buttonPreviousPage;
     private ButtonDeletePage buttonDeletePage;
 
-    private final EntityPlayer player;
+    private final PlayerEntity player;
     private final ItemBookCode.Data data;
     private final List<StringBuilder> lines = new ArrayList<>();
 
@@ -72,9 +67,9 @@ public final class GuiBookCode extends GuiScreen {
 
     // --------------------------------------------------------------------- //
 
-    GuiBookCode(final EntityPlayer player) {
+    GuiBookCode(final PlayerEntity player) {
         this.player = player;
-        this.data = ItemBookCode.Data.loadFromStack(player.getHeldItem(EnumHand.MAIN_HAND));
+        this.data = ItemBookCode.Data.loadFromStack(player.getStackInHand(Hand.MAIN));
 
         rebuildLines();
     }
@@ -83,8 +78,8 @@ public final class GuiBookCode extends GuiScreen {
     // GuiScreen
 
     @Override
-    public void initGui() {
-        super.initGui();
+    public void onInitialized() {
+        super.onInitialized();
 
         guiX = (width - GUI_WIDTH) / 2;
         guiY = 2;
@@ -98,31 +93,31 @@ public final class GuiBookCode extends GuiScreen {
     }
 
     @Override
-    public void onGuiClosed() {
-        super.onGuiClosed();
+    public void onClosed() {
+        super.onClosed();
 
         // Write changes back to our data tag.
         saveProgram();
 
         // Save any changes made and send them to the server.
-        final NBTTagCompound nbt = new NBTTagCompound();
+        final CompoundTag nbt = new CompoundTag();
         data.writeToNBT(nbt);
-        Minecraft.getMinecraft().getConnection().sendPacket(PacketRegistry.CLIENT.wrap(new MessageBookCodeData(nbt)));
+        MinecraftClient.getInstance().getNetworkHandler().sendPacket(PacketRegistry.CLIENT.wrap(new MessageBookCodeData(nbt)));
 
         // TODO Keyboard.enableRepeatEvents(false);
     }
 
     @Override
-    public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
-        if (!player.isEntityAlive() || !Items.isBookCode(player.getHeldItem(EnumHand.MAIN_HAND))) {
-            Minecraft.getMinecraft().displayGuiScreen(null);
+    public void draw(final int mouseX, final int mouseY, final float partialTicks) {
+        if (!player.isValid() || !Items.isBookCode(player.getStackInHand(Hand.MAIN))) {
+            MinecraftClient.getInstance().setCrashReport(null);
             return;
         }
 
         // Background.
-        GlStateManager.color(1, 1, 1, 1);
-        Minecraft.getMinecraft().getTextureManager().bindTexture(TextureLoader.LOCATION_GUI_BOOK_CODE_BACKGROUND);
-        drawTexturedModalRect(guiX, guiY, 0, 0, GUI_WIDTH, GUI_HEIGHT);
+        GlStateManager.color4f(1, 1, 1, 1);
+        MinecraftClient.getInstance().getTextureManager().bindTexture(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
+        drawTexturedRect(guiX, guiY, 0, 0, GUI_WIDTH, GUI_HEIGHT);
 
         // Check page change button availability.
         buttonPreviousPage.visible = data.getSelectedPage() > 0 && data.getPageCount() > 0;
@@ -130,14 +125,14 @@ public final class GuiBookCode extends GuiScreen {
             (data.getSelectedPage() == data.getPageCount() - 1 && isCurrentProgramNonEmpty());
         buttonDeletePage.visible = data.getPageCount() > 1 || isCurrentProgramNonEmpty();
 
-        super.drawScreen(mouseX, mouseY, partialTicks);
+        super.draw(mouseX, mouseY, partialTicks);
 
         // Draw current program.
         drawProgram(mouseX, mouseY);
 
         // Draw page number.
         final String pageInfo = String.format("%d/%d", data.getSelectedPage() + 1, data.getPageCount());
-        getFontRenderer().drawString(pageInfo, guiX + PAGE_NUMBER_X - getFontRenderer().getStringWidth(pageInfo) / 2, guiY + PAGE_NUMBER_Y, COLOR_CODE);
+        getFontRenderer().draw(pageInfo, guiX + PAGE_NUMBER_X - getFontRenderer().getStringWidth(pageInfo) / 2, guiY + PAGE_NUMBER_Y, COLOR_CODE);
     }
 
     @Override
@@ -189,7 +184,7 @@ public final class GuiBookCode extends GuiScreen {
 
         if (keyCode == GLFW.GLFW_KEY_LEFT) {
             if (column > 0 || line > 0) {
-                if (isShiftKeyDown()) {
+                if (isShiftPressed()) {
                     selectionEnd = selectionEnd - 1;
                 } else {
                     selectionStart = selectionEnd = selectionEnd - 1;
@@ -197,7 +192,7 @@ public final class GuiBookCode extends GuiScreen {
             }
         } else if (keyCode == GLFW.GLFW_KEY_RIGHT) {
             if (column < lines.get(line).length() || line < lines.size() - 1) {
-                if (isShiftKeyDown()) {
+                if (isShiftPressed()) {
                     selectionEnd = selectionEnd + 1;
                 } else {
                     selectionStart = selectionEnd = selectionEnd + 1;
@@ -212,7 +207,7 @@ public final class GuiBookCode extends GuiScreen {
                 final int prevColumn = xToColumn(x, prevLine);
                 final int index = positionToIndex(prevLine, prevColumn);
 
-                if (isShiftKeyDown()) {
+                if (isShiftPressed()) {
                     selectionEnd = index;
                 } else {
                     selectionStart = selectionEnd = index;
@@ -227,7 +222,7 @@ public final class GuiBookCode extends GuiScreen {
                 final int nextColumn = xToColumn(x, nextLine);
                 final int index = positionToIndex(nextLine, nextColumn);
 
-                if (isShiftKeyDown()) {
+                if (isShiftPressed()) {
                     selectionEnd = index;
                 } else {
                     selectionStart = selectionEnd = index;
@@ -235,21 +230,21 @@ public final class GuiBookCode extends GuiScreen {
             }
         } else if (keyCode == GLFW.GLFW_KEY_HOME) {
             final int currLine = indexToLine(selectionEnd);
-            if (isShiftKeyDown()) {
+            if (isShiftPressed()) {
                 selectionEnd = positionToIndex(currLine, 0);
             } else {
                 selectionStart = selectionEnd = positionToIndex(currLine, 0);
             }
         } else if (keyCode == GLFW.GLFW_KEY_END) {
             final int currLine = indexToLine(selectionEnd);
-            if (isShiftKeyDown()) {
+            if (isShiftPressed()) {
                 selectionEnd = positionToIndex(currLine, lines.get(currLine).length());
             } else {
                 selectionStart = selectionEnd = positionToIndex(currLine, lines.get(currLine).length());
             }
         } else if (keyCode == GLFW.GLFW_KEY_DELETE) {
             if (!deleteSelection()) {
-                if (isShiftKeyDown()) {
+                if (isShiftPressed()) {
                     if (lines.size() > 1) {
                         lines.remove(line);
                     } else {
@@ -303,21 +298,21 @@ public final class GuiBookCode extends GuiScreen {
             }
 
             recompile();
-        } else if (isCtrlKeyDown()) {
+        } else if (isControlPressed()) {
             if (keyCode == GLFW.GLFW_KEY_A) {
                 selectionStart = 0;
                 selectionEnd = positionToIndex(Integer.MAX_VALUE, Integer.MAX_VALUE);
             } else if (keyCode == GLFW.GLFW_KEY_C) {
-                Minecraft.getMinecraft().keyboardListener.setClipboardString(selectionToString());
+                MinecraftClient.getInstance().keyboard.setClipboard(selectionToString());
             } else if (keyCode == GLFW.GLFW_KEY_X) {
-                Minecraft.getMinecraft().keyboardListener.setClipboardString(selectionToString());
+                MinecraftClient.getInstance().keyboard.setClipboard(selectionToString());
                 deleteSelection();
 
                 recompile();
             } else if (keyCode == GLFW.GLFW_KEY_V) {
                 deleteSelection();
 
-                final String[] pastedLines = Constants.PATTERN_LINES.split(Minecraft.getMinecraft().keyboardListener.getClipboardString());
+                final String[] pastedLines = Constants.PATTERN_LINES.split(MinecraftClient.getInstance().keyboard.getClipboard());
                 if (!isValidPaste(pastedLines)) {
                     return true;
                 }
@@ -367,7 +362,7 @@ public final class GuiBookCode extends GuiScreen {
     }
 
     @Override
-    public boolean doesGuiPauseGame() {
+    public boolean isPauseScreen() {
         return false;
     }
 
@@ -413,7 +408,7 @@ public final class GuiBookCode extends GuiScreen {
     }
 
     private int cursorToLine(final int y) {
-        return Math.max(0, Math.min(Math.min(lines.size() - 1, Constants.MAX_LINES_PER_PAGE), (y - guiY - CODE_POS_Y) / getFontRenderer().FONT_HEIGHT));
+        return Math.max(0, Math.min(Math.min(lines.size() - 1, Constants.MAX_LINES_PER_PAGE), (y - guiY - CODE_POS_Y) / getFontRenderer().fontHeight));
     }
 
     private int cursorToColumn(final int x, final int y) {
@@ -422,7 +417,7 @@ public final class GuiBookCode extends GuiScreen {
 
     private int xToColumn(final int x, final int line) {
         final int relX = Math.max(0, x - guiX - CODE_POS_X);
-        return getFontRenderer().trimStringToWidth(lines.get(line).toString(), relX).length();
+        return getFontRenderer().method_1714(lines.get(line).toString(), relX).length();
     }
 
     private int columnToX(final int line, final int column) {
@@ -462,7 +457,7 @@ public final class GuiBookCode extends GuiScreen {
 
     private boolean isInCodeArea(final int mouseX, final int mouseY) {
         return mouseX >= guiX + CODE_POS_X - CODE_MARGIN && mouseX <= guiX + CODE_POS_X + CODE_WIDTH + CODE_MARGIN &&
-            mouseY >= guiY + CODE_POS_Y - CODE_MARGIN && mouseY <= guiY + CODE_POS_Y + getFontRenderer().FONT_HEIGHT * Constants.MAX_LINES_PER_PAGE + CODE_MARGIN;
+            mouseY >= guiY + CODE_POS_Y - CODE_MARGIN && mouseY <= guiY + CODE_POS_Y + getFontRenderer().fontHeight * Constants.MAX_LINES_PER_PAGE + CODE_MARGIN;
     }
 
     private boolean isCurrentProgramNonEmpty() {
@@ -570,7 +565,7 @@ public final class GuiBookCode extends GuiScreen {
         for (int lineNumber = 0; lineNumber < lines.size(); lineNumber++) {
             final StringBuilder line = lines.get(lineNumber);
             final int end = position + line.length();
-            final int offsetY = lineNumber * getFontRenderer().FONT_HEIGHT;
+            final int offsetY = lineNumber * getFontRenderer().fontHeight;
             final int lineX = guiX + CODE_POS_X;
             final int lineY = guiY + CODE_POS_Y + offsetY;
             if (selectionStart != selectionEnd && intersectsSelection(position, end)) {
@@ -582,20 +577,20 @@ public final class GuiBookCode extends GuiScreen {
                 final int selected = Math.min(line.length() - prefix, getSelectionEnd() - (position + prefix));
 
                 final String prefixText = line.substring(0, prefix);
-                getFontRenderer().drawString(prefixText, currX, lineY, COLOR_CODE);
+                getFontRenderer().draw(prefixText, currX, lineY, COLOR_CODE);
                 currX += getFontRenderer().getStringWidth(prefixText);
 
                 final String selectedText = line.substring(prefix, prefix + selected);
                 final int selectedWidth = getFontRenderer().getStringWidth(selectedText);
-                drawRect(currX - 1, lineY - 1, currX + selectedWidth, lineY + getFontRenderer().FONT_HEIGHT - 1, COLOR_SELECTION);
-                getFontRenderer().drawString(selectedText, currX, lineY, COLOR_CODE_SELECTED);
+                drawRect(currX - 1, lineY - 1, currX + selectedWidth, lineY + getFontRenderer().fontHeight - 1, COLOR_SELECTION);
+                getFontRenderer().draw(selectedText, currX, lineY, COLOR_CODE_SELECTED);
                 currX += selectedWidth;
 
                 final String postfixString = line.substring(prefix + selected);
-                getFontRenderer().drawString(postfixString, currX, lineY, COLOR_CODE);
+                getFontRenderer().draw(postfixString, currX, lineY, COLOR_CODE);
             } else {
                 // No selection here, just draw the line. Get it? "draw the line"?
-                getFontRenderer().drawString(line.toString(), lineX, lineY, COLOR_CODE);
+                getFontRenderer().draw(line.toString(), lineX, lineY, COLOR_CODE);
             }
 
             position += line.length() + 1;
@@ -620,25 +615,25 @@ public final class GuiBookCode extends GuiScreen {
                 startX = columnToX(localLineNumber, exception.getStart());
                 rawEndX = columnToX(localLineNumber, exception.getEnd());
             }
-            final int startY = guiY + CODE_POS_Y + localLineNumber * getFontRenderer().FONT_HEIGHT - 1;
+            final int startY = guiY + CODE_POS_Y + localLineNumber * getFontRenderer().fontHeight - 1;
             final int endX = Math.max(rawEndX, startX + getFontRenderer().getStringWidth(" "));
 
-            drawRect(startX - 1, startY + getFontRenderer().FONT_HEIGHT - 1, endX, startY + getFontRenderer().FONT_HEIGHT, 0xFFFF3333);
+            drawRect(startX - 1, startY + getFontRenderer().fontHeight - 1, endX, startY + getFontRenderer().fontHeight, 0xFFFF3333);
 
             // Draw selection position in text.
             drawTextCursor();
 
             // Part two of error handling, draw tooltip, *on top* of blinking cursor.
-            if (mouseX >= startX && mouseX <= endX && mouseY >= startY && mouseY <= startY + getFontRenderer().FONT_HEIGHT) {
+            if (mouseX >= startX && mouseX <= endX && mouseY >= startY && mouseY <= startY + getFontRenderer().fontHeight) {
                 final List<String> tooltip = new ArrayList<>();
                 if (isErrorOnPreviousPage) {
-                    tooltip.add(I18n.format(Constants.MESSAGE_ERROR_ON_PREVIOUS_PAGE));
+                    tooltip.add(I18n.translate(Constants.MESSAGE_ERROR_ON_PREVIOUS_PAGE));
                 } else if (isErrorOnNextPage) {
-                    tooltip.add(I18n.format(Constants.MESSAGE_ERROR_ON_NEXT_PAGE));
+                    tooltip.add(I18n.translate(Constants.MESSAGE_ERROR_ON_NEXT_PAGE));
                 }
-                tooltip.addAll(Arrays.asList(Constants.PATTERN_LINES.split(I18n.format(exception.getMessage())))
+                tooltip.addAll(Arrays.asList(Constants.PATTERN_LINES.split(I18n.translate(exception.getMessage())))
                 );
-                drawHoveringText(tooltip, mouseX, mouseY);
+                drawTooltip(tooltip, mouseX, mouseY);
                 GlStateManager.disableLighting();
             }
         } else {
@@ -653,9 +648,9 @@ public final class GuiBookCode extends GuiScreen {
             final int column = indexToColumn(selectionEnd);
             final StringBuilder sb = lines.get(line);
             final int x = guiX + CODE_POS_X + getFontRenderer().getStringWidth(sb.substring(0, column)) - 1;
-            final int y = guiY + CODE_POS_Y + line * getFontRenderer().FONT_HEIGHT - 1;
-            drawRect(x + 1, y + 1, x + 2 + 1, y + getFontRenderer().FONT_HEIGHT + 1, 0xCC333333);
-            drawRect(x, y, x + 2, y + getFontRenderer().FONT_HEIGHT, COLOR_CODE_SELECTED);
+            final int y = guiY + CODE_POS_Y + line * getFontRenderer().fontHeight - 1;
+            drawRect(x + 1, y + 1, x + 2 + 1, y + getFontRenderer().fontHeight + 1, 0xCC333333);
+            drawRect(x, y, x + 2, y + getFontRenderer().fontHeight, COLOR_CODE_SELECTED);
         }
     }
 
@@ -666,7 +661,7 @@ public final class GuiBookCode extends GuiScreen {
         Next
     }
 
-    private class ButtonChangePage extends GuiButton {
+    private class ButtonChangePage extends ButtonWidget {
         private static final int TEXTURE_X = 110;
         private static final int TEXTURE_Y = 231;
         private static final int BUTTON_WIDTH = 23;
@@ -680,7 +675,7 @@ public final class GuiBookCode extends GuiScreen {
         }
 
         @Override
-        public void mousePressed(double p_mouseClicked_1_, double p_mouseClicked_3_) {
+        public void onPressed(double p_mouseClicked_1_, double p_mouseClicked_3_) {
             if (type == PageChangeType.Next) {
                 changePage(1);
             } else if (type == PageChangeType.Previous) {
@@ -689,21 +684,21 @@ public final class GuiBookCode extends GuiScreen {
         }
 
         @Override
-        public void drawButton(final int mouseX, final int mouseY, final float partialTicks) {
+        public void draw(final int mouseX, final int mouseY, final float partialTicks) {
             if (!visible) {
                 return;
             }
 
             final boolean isHovered = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            mc.getTextureManager().bindTexture(TextureLoader.LOCATION_GUI_BOOK_CODE_BACKGROUND);
+            GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+            client.getTextureManager().bindTexture(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
             final int offsetX = isHovered ? BUTTON_WIDTH : 0;
             final int offsetY = type == PageChangeType.Previous ? BUTTON_HEIGHT : 0;
-            drawTexturedModalRect(x, y, TEXTURE_X + offsetX, TEXTURE_Y + offsetY, BUTTON_WIDTH, BUTTON_HEIGHT);
+            drawTexturedRect(x, y, TEXTURE_X + offsetX, TEXTURE_Y + offsetY, BUTTON_WIDTH, BUTTON_HEIGHT);
         }
     }
 
-    private class ButtonDeletePage extends GuiButton {
+    private class ButtonDeletePage extends ButtonWidget {
         private static final int TEXTURE_X = 158;
         private static final int TEXTURE_Y = 231;
         private static final int BUTTON_WIDTH = 14;
@@ -714,22 +709,22 @@ public final class GuiBookCode extends GuiScreen {
         }
 
         @Override
-        public void mousePressed(double p_mouseClicked_1_, double p_mouseClicked_3_) {
+        public void onPressed(double p_mouseClicked_1_, double p_mouseClicked_3_) {
             data.removePage(data.getSelectedPage());
             rebuildLines();
         }
 
         @Override
-        public void drawButton(final int mouseX, final int mouseY, final float partialTicks) {
+        public void draw(final int mouseX, final int mouseY, final float partialTicks) {
             if (!visible) {
                 return;
             }
 
             final boolean isHovered = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            mc.getTextureManager().bindTexture(TextureLoader.LOCATION_GUI_BOOK_CODE_BACKGROUND);
+            GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+            client.getTextureManager().bindTexture(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
             final int offsetX = isHovered ? BUTTON_WIDTH : 0;
-            drawTexturedModalRect(x, y, TEXTURE_X + offsetX, TEXTURE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+            drawTexturedRect(x, y, TEXTURE_X + offsetX, TEXTURE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
         }
     }
 }

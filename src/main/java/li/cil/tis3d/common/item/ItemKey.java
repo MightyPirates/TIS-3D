@@ -3,18 +3,12 @@ package li.cil.tis3d.common.item;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.util.FontRendererUtils;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.client.item.TooltipOptions;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.text.TextComponent;
 import net.minecraft.world.World;
-
-
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,23 +17,23 @@ import java.util.stream.Collectors;
  * Base item for all keys.
  */
 public final class ItemKey extends Item {
-    public ItemKey(Item.Builder builder) {
-        super(builder.maxStackSize(1));
+    public ItemKey(Item.Settings builder) {
+        super(builder.stackSize(1));
     }
 
     // --------------------------------------------------------------------- //
     // Item
 
     @Override
-    public boolean getShareTag() {
+    public boolean requiresClientSync() {
         return false;
     }
 
 
     @Override
-    public void addInformation(final ItemStack stack, @Nullable final World world, final List<ITextComponent> tooltip, final ITooltipFlag flag) {
-        super.addInformation(stack, world, tooltip, flag);
-        final String info = I18n.format(Constants.TOOLTIP_KEY);
+    public void buildTooltip(final ItemStack stack, @Nullable final World world, final List<TextComponent> tooltip, final TooltipOptions flag) {
+        super.buildTooltip(stack, world, tooltip, flag);
+        final String info = I18n.translate(Constants.TOOLTIP_KEY);
         FontRendererUtils.addStringToTooltip(info, tooltip);
     }
 
@@ -50,7 +44,7 @@ public final class ItemKey extends Item {
     } */
 
     @Override
-    public boolean isEnchantable(final ItemStack stack) {
+    public boolean isTool(final ItemStack stack) {
         return false;
     }
 }

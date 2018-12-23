@@ -1,10 +1,9 @@
 package li.cil.tis3d.api.detail;
 
 import li.cil.tis3d.api.serial.SerialInterfaceProvider;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-
 import javax.annotation.Nullable;
 
 /**
@@ -32,5 +31,5 @@ public interface SerialAPI {
      * @return the first provider supporting the item stack, or <tt>null</tt>.
      */
     @Nullable
-    SerialInterfaceProvider getProviderFor(final World world, final BlockPos position, final EnumFacing side);
+    SerialInterfaceProvider getProviderFor(final World world, final BlockPos position, final Direction side);
 }

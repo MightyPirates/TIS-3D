@@ -1,7 +1,7 @@
 package li.cil.tis3d.common.network.message;
 
 import li.cil.tis3d.api.machine.Casing;
-import pl.asie.protocharset.rift.network.SendNetwork;
+import li.cil.tis3d.charset.SendNetwork;
 
 public final class MessageCasingLockedState extends AbstractMessageWithLocation {
     @SendNetwork public boolean isLocked;

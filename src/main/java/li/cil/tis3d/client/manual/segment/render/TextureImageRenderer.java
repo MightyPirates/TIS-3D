@@ -1,36 +1,40 @@
 package li.cil.tis3d.client.manual.segment.render;
 
 import li.cil.tis3d.api.manual.ImageRenderer;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.texture.*;
-import net.minecraft.resources.IResource;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.texture.AbstractTexture;
+import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.texture.Texture;
+import net.minecraft.client.texture.TextureManager;
+import net.minecraft.resource.Resource;
+import net.minecraft.resource.ResourceManager;
+import net.minecraft.util.Identifier;
 import org.lwjgl.opengl.GL11;
 
 import javax.imageio.ImageIO;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.platform.TextureUtil;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 
 public class TextureImageRenderer implements ImageRenderer {
-    private final ResourceLocation location;
+    private final Identifier location;
     private final ImageTexture texture;
 
-    public TextureImageRenderer(final ResourceLocation location) {
+    public TextureImageRenderer(final Identifier location) {
         this.location = location;
 
-        final TextureManager manager = Minecraft.getMinecraft().getTextureManager();
-        final ITextureObject image = manager.getTexture(location);
+        final TextureManager manager = MinecraftClient.getInstance().getTextureManager();
+        final Texture image = manager.getTexture(location);
         if (image instanceof ImageTexture) {
             this.texture = (ImageTexture) image;
         } else {
-            if (image != null && image.getGlTextureId() != -1) {
-                TextureUtil.deleteTexture(image.getGlTextureId());
+            if (image != null && image.getGlId() != -1) {
+                TextureUtil.releaseTextureId(image.getGlId());
             }
             this.texture = new ImageTexture(location);
-            manager.loadTexture(location, texture);
+            manager.registerTexture(location, texture);
         }
     }
 
@@ -46,8 +50,8 @@ public class TextureImageRenderer implements ImageRenderer {
 
     @Override
     public void render(final int mouseX, final int mouseY) {
-        Minecraft.getMinecraft().getTextureManager().bindTexture(location);
-        GlStateManager.color(1, 1, 1, 1);
+        MinecraftClient.getInstance().getTextureManager().bindTexture(location);
+        GlStateManager.color4f(1, 1, 1, 1);
         GL11.glBegin(GL11.GL_QUADS);
         GL11.glTexCoord2f(0, 0);
         GL11.glVertex2f(0, 0);
@@ -61,24 +65,24 @@ public class TextureImageRenderer implements ImageRenderer {
     }
 
     private static class ImageTexture extends AbstractTexture {
-        private final ResourceLocation location;
+        private final Identifier location;
         private int width = 0;
         private int height = 0;
 
-        ImageTexture(final ResourceLocation location) {
+        ImageTexture(final Identifier location) {
             this.location = location;
         }
 
         @Override
-        public void loadTexture(final IResourceManager manager) throws IOException {
-            deleteGlTexture();
+        public void load(final ResourceManager manager) throws IOException {
+            this.clearGlId();
 
-            final IResource resource = manager.getResource(location);
+            final Resource resource = manager.getResource(location);
             try (InputStream is = resource.getInputStream()) {
-                final NativeImage bi = NativeImage.func_195713_a(is);
+                final NativeImage bi = NativeImage.fromInputStream(is);
 
-                TextureUtil.allocateTexture(this.getGlTextureId(), bi.getWidth(), bi.getHeight());
-                bi.func_195697_a(0, 0, 0, false);
+                TextureUtil.prepareImage(this.getGlId(), bi.getWidth(), bi.getHeight());
+                bi.upload(0, 0, 0, false);
 
                 width = bi.getWidth();
                 height = bi.getHeight();

@@ -3,12 +3,6 @@ package li.cil.tis3d.common.capabilities;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.infrared.InfraredPacket;
 import li.cil.tis3d.api.infrared.InfraredReceiver;
-import net.minecraft.entity.Entity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.RayTraceResult;
-
 import javax.annotation.Nullable;
 
 public final class CapabilityInfraredReceiver {

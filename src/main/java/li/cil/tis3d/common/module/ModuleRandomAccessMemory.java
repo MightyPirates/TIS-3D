@@ -1,5 +1,6 @@
 package li.cil.tis3d.common.module;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.machine.Casing;
@@ -11,15 +12,11 @@ import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ItemModuleReadOnlyMemory;
 import li.cil.tis3d.util.EnumUtils;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumHand;
-
-
-
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Hand;
 import java.util.Arrays;
 
 /**
@@ -117,8 +114,8 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
     }
 
     @Override
-    public boolean onActivate(final EntityPlayer player, final EnumHand hand, final float hitX, final float hitY, final float hitZ) {
-        final ItemStack heldItem = player.getHeldItem(hand);
+    public boolean onActivate(final PlayerEntity player, final Hand hand, final float hitX, final float hitY, final float hitZ) {
+        final ItemStack heldItem = player.getStackInHand(hand);
         if (!Items.isModuleReadOnlyMemory(heldItem)) {
             return false;
         }
@@ -128,7 +125,7 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
             return false;
         }
 
-        if (!getCasing().getCasingWorld().isRemote) {
+        if (!getCasing().getCasingWorld().isClient) {
             if (isReading) {
                 ItemModuleReadOnlyMemory.saveToStack(heldItem, memory);
             } else {
@@ -158,7 +155,7 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
 
 
     @Override
-    public void render(final TileEntityRendererDispatcher rendererDispatcher, final float partialTicks) {
+    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
         if (!getCasing().isEnabled() || !isVisible()) {
             return;
         }
@@ -166,7 +163,7 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
         rotateForRendering();
         RenderUtil.ignoreLighting();
         GlStateManager.enableBlend();
-        GlStateManager.disableTexture2D();
+        GlStateManager.disableTexture();
 
         final int cells = 4;
         final int cellSize = MEMORY_SIZE / (cells * cells);
@@ -182,12 +179,12 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
             }
         }
 
-        GlStateManager.enableTexture2D();
+        GlStateManager.enableTexture();
         GlStateManager.disableBlend();
     }
 
     @Override
-    public void readFromNBT(final NBTTagCompound nbt) {
+    public void readFromNBT(final CompoundTag nbt) {
         super.readFromNBT(nbt);
 
         load(nbt.getByteArray(TAG_MEMORY));
@@ -196,11 +193,11 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
     }
 
     @Override
-    public void writeToNBT(final NBTTagCompound nbt) {
+    public void writeToNBT(final CompoundTag nbt) {
         super.writeToNBT(nbt);
 
-        nbt.setByteArray(TAG_MEMORY, memory.clone());
-        nbt.setByte(TAG_ADDRESS, address);
+        nbt.putByteArray(TAG_MEMORY, memory.clone());
+        nbt.putByte(TAG_ADDRESS, address);
         EnumUtils.writeToNBT(state, TAG_STATE, nbt);
     }
 
@@ -227,7 +224,7 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
      */
 
     protected void setCellColor(final float brightness) {
-        GlStateManager.color(0.4f, 1f, 1f, brightness);
+        GlStateManager.color4f(0.4f, 1f, 1f, brightness);
     }
 
     // --------------------------------------------------------------------- //

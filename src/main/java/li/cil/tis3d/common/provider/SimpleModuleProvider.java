@@ -6,16 +6,15 @@ import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.ModuleProvider;
 import li.cil.tis3d.common.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-
+import net.minecraft.util.Identifier;
 import javax.annotation.Nullable;
 import java.util.function.BiFunction;
 
 public final class SimpleModuleProvider<T extends Module> implements ModuleProvider {
-    private final ResourceLocation moduleName;
+    private final Identifier moduleName;
     private final BiFunction<Casing, Face, T> moduleConstructor;
 
-    public SimpleModuleProvider(final ResourceLocation moduleName, final BiFunction<Casing, Face, T> moduleConstructor) {
+    public SimpleModuleProvider(final Identifier moduleName, final BiFunction<Casing, Face, T> moduleConstructor) {
         this.moduleName = moduleName;
         this.moduleConstructor = moduleConstructor;
     }

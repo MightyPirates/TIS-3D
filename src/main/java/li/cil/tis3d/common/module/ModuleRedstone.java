@@ -9,11 +9,11 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.traits.Redstone;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.renderer.TextureLoader;
+import li.cil.tis3d.client.init.Textures;
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.World;
 
 public final class ModuleRedstone extends AbstractModuleRotatable implements Redstone {
@@ -73,11 +73,11 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
             stepInput(port);
         }
 
-        if (scheduledNeighborUpdate && world.getTotalWorldTime() > lastStep) {
+        if (scheduledNeighborUpdate && world.getTime() > lastStep) {
             notifyNeighbors();
         }
 
-        lastStep = world.getTotalWorldTime();
+        lastStep = world.getTime();
     }
 
     @Override
@@ -109,18 +109,18 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
 
 
     @Override
-    public void render(final TileEntityRendererDispatcher rendererDispatcher, final float partialTicks) {
+    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
         rotateForRendering();
         RenderUtil.ignoreLighting();
 
         // Draw base overlay.
-        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_REDSTONE));
+        RenderUtil.drawQuad(RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_REDSTONE));
 
         if (!getCasing().isEnabled()) {
             return;
         }
 
-        final TextureAtlasSprite barsSprite = RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_REDSTONE_BARS);
+        final Sprite barsSprite = RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_REDSTONE_BARS);
 
         // Draw output bar.
         final float relativeOutput = output / 15f;
@@ -136,7 +136,7 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
     }
 
     @Override
-    public void readFromNBT(final NBTTagCompound nbt) {
+    public void readFromNBT(final CompoundTag nbt) {
         super.readFromNBT(nbt);
 
         output = (short) Math.max(0, Math.min(15, nbt.getShort(TAG_OUTPUT)));
@@ -144,11 +144,11 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
     }
 
     @Override
-    public void writeToNBT(final NBTTagCompound nbt) {
+    public void writeToNBT(final CompoundTag nbt) {
         super.writeToNBT(nbt);
 
-        nbt.setInteger(TAG_OUTPUT, output);
-        nbt.setInteger(TAG_INPUT, input);
+        nbt.putInt(TAG_OUTPUT, output);
+        nbt.putInt(TAG_INPUT, input);
     }
 
     // --------------------------------------------------------------------- //
@@ -163,7 +163,7 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
     public void setRedstoneInput(final short value) {
         // We never call this on the client side, but other might...
         final World world = getCasing().getCasingWorld();
-        if (world.isRemote) {
+        if (world.isClient) {
             return;
         }
 
@@ -242,7 +242,7 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
 
         scheduledNeighborUpdate = false;
         final Block blockType = world.getBlockState(getCasing().getPosition()).getBlock();
-        world.notifyNeighborsOfStateChange(getCasing().getPosition(), blockType);
+        world.updateNeighborsAlways(getCasing().getPosition(), blockType);
     }
 
     /**

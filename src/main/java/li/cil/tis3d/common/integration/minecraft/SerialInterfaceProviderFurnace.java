@@ -4,10 +4,10 @@ import li.cil.tis3d.api.serial.SerialInterface;
 import li.cil.tis3d.api.serial.SerialInterfaceProvider;
 import li.cil.tis3d.api.serial.SerialProtocolDocumentationReference;
 import li.cil.tis3d.util.EnumUtils;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntityFurnace;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public final class SerialInterfaceProviderFurnace implements SerialInterfaceProvider {
@@ -15,13 +15,13 @@ public final class SerialInterfaceProviderFurnace implements SerialInterfaceProv
     // SerialInterfaceProvider
 
     @Override
-    public boolean worksWith(final World world, final BlockPos position, final EnumFacing side) {
-        return world.getTileEntity(position) instanceof TileEntityFurnace;
+    public boolean worksWith(final World world, final BlockPos position, final Direction side) {
+        return world.getBlockEntity(position) instanceof AbstractFurnaceBlockEntity;
     }
 
     @Override
-    public SerialInterface interfaceFor(final World world, final BlockPos position, final EnumFacing side) {
-        final TileEntityFurnace furnace = (TileEntityFurnace) world.getTileEntity(position);
+    public SerialInterface interfaceFor(final World world, final BlockPos position, final Direction side) {
+        final AbstractFurnaceBlockEntity furnace = (AbstractFurnaceBlockEntity) world.getBlockEntity(position);
         if (furnace == null) {
             throw new IllegalArgumentException("Provided location does not contain a furnace. Check via worksWith first.");
         }
@@ -34,7 +34,7 @@ public final class SerialInterfaceProviderFurnace implements SerialInterfaceProv
     }
 
     @Override
-    public boolean isValid(final World world, final BlockPos position, final EnumFacing side, final SerialInterface serialInterface) {
+    public boolean isValid(final World world, final BlockPos position, final Direction side, final SerialInterface serialInterface) {
         return serialInterface instanceof SerialInterfaceFurnace;
     }
 
@@ -67,8 +67,8 @@ public final class SerialInterfaceProviderFurnace implements SerialInterfaceProv
              */
             TotalSmeltTicks;
 
-            public int get(final TileEntityFurnace furnace) {
-                return furnace.getField(ordinal());
+            public int get(final AbstractFurnaceBlockEntity furnace) {
+                return furnace.getInvProperty(ordinal());
             }
         }
 
@@ -77,10 +77,10 @@ public final class SerialInterfaceProviderFurnace implements SerialInterfaceProv
             PercentageProgress
         }
 
-        private final TileEntityFurnace furnace;
+        private final AbstractFurnaceBlockEntity furnace;
         private Mode mode = Mode.PercentageFuel;
 
-        SerialInterfaceFurnace(final TileEntityFurnace furnace) {
+        SerialInterfaceFurnace(final AbstractFurnaceBlockEntity furnace) {
             this.furnace = furnace;
         }
 
@@ -134,12 +134,12 @@ public final class SerialInterfaceProviderFurnace implements SerialInterfaceProv
         }
 
         @Override
-        public void readFromNBT(final NBTTagCompound nbt) {
+        public void readFromNBT(final CompoundTag nbt) {
             mode = EnumUtils.readFromNBT(SerialInterfaceFurnace.Mode.class, TAG_MODE, nbt);
         }
 
         @Override
-        public void writeToNBT(final NBTTagCompound nbt) {
+        public void writeToNBT(final CompoundTag nbt) {
             EnumUtils.writeToNBT(mode, TAG_MODE, nbt);
         }
     }

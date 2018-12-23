@@ -4,11 +4,11 @@ import io.netty.buffer.ByteBuf;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumHand;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Hand;
 
 /**
  * A module that can be installed in a TIS-3D {@link Casing}.
@@ -150,7 +150,7 @@ public interface Module {
      * @param hitZ   the relative z position that was clicked.
      * @return <tt>true</tt> if the click was handled, <tt>false</tt> otherwise.
      */
-    boolean onActivate(final EntityPlayer player, final EnumHand hand, final float hitX, final float hitY, final float hitZ);
+    boolean onActivate(final PlayerEntity player, final Hand hand, final float hitX, final float hitY, final float hitZ);
 
     /**
      * Called with NBT data sent from the remote instance of the module.
@@ -163,7 +163,7 @@ public interface Module {
      * @see Casing#sendData(Face, NBTTagCompound, byte)
      * @see Casing#sendData(Face, NBTTagCompound)
      */
-    void onData(final NBTTagCompound nbt);
+    void onData(final CompoundTag nbt);
 
     /**
      * Called with data sent from the remote instance of the module.
@@ -195,7 +195,7 @@ public interface Module {
      * @param rendererDispatcher the render context of the tile entity the module sits in.
      * @param partialTicks       the partial time elapsed in this tick.
      */
-    void render(final TileEntityRendererDispatcher rendererDispatcher, final float partialTicks);
+    void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks);
 
     // --------------------------------------------------------------------- //
 
@@ -204,12 +204,12 @@ public interface Module {
      *
      * @param nbt the tag to load the state from.
      */
-    void readFromNBT(final NBTTagCompound nbt);
+    void readFromNBT(final CompoundTag nbt);
 
     /**
      * Save the state of the module to the specified NBT compound.
      *
      * @param nbt the tag to save the state to.
      */
-    void writeToNBT(final NBTTagCompound nbt);
+    void writeToNBT(final CompoundTag nbt);
 }

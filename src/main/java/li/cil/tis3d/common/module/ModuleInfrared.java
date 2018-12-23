@@ -9,17 +9,16 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModule;
 import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.renderer.TextureLoader;
+import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.common.Settings;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagIntArray;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.IntArrayTag;
+import net.minecraft.util.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-
 import java.util.Deque;
 import java.util.LinkedList;
 
@@ -58,7 +57,7 @@ public final class ModuleInfrared extends AbstractModule implements /* ICapabili
         stepOutput();
         stepInput();
 
-        lastStep = world.getTotalWorldTime();
+        lastStep = world.getTime();
     }
 
     @Override
@@ -88,18 +87,18 @@ public final class ModuleInfrared extends AbstractModule implements /* ICapabili
 
 
     @Override
-    public void render(final TileEntityRendererDispatcher rendererDispatcher, final float partialTicks) {
+    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
         if (!getCasing().isEnabled()) {
             return;
         }
 
         RenderUtil.ignoreLighting();
 
-        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_INFRARED));
+        RenderUtil.drawQuad(RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_INFRARED));
     }
 
     @Override
-    public void readFromNBT(final NBTTagCompound nbt) {
+    public void readFromNBT(final CompoundTag nbt) {
         super.readFromNBT(nbt);
 
         receiveQueue.clear();
@@ -110,7 +109,7 @@ public final class ModuleInfrared extends AbstractModule implements /* ICapabili
     }
 
     @Override
-    public void writeToNBT(final NBTTagCompound nbt) {
+    public void writeToNBT(final CompoundTag nbt) {
         super.writeToNBT(nbt);
 
         final int[] receiveQueueArray = new int[receiveQueue.size()];
@@ -118,8 +117,8 @@ public final class ModuleInfrared extends AbstractModule implements /* ICapabili
         for (final int value : receiveQueue) {
             receiveQueueArray[i++] = value;
         }
-        final NBTTagIntArray receiveQueueNbt = new NBTTagIntArray(receiveQueueArray);
-        nbt.setTag(TAG_RECEIVE_QUEUE, receiveQueueNbt);
+        final IntArrayTag receiveQueueNbt = new IntArrayTag(receiveQueueArray);
+        nbt.put(TAG_RECEIVE_QUEUE, receiveQueueNbt);
     }
 
     // --------------------------------------------------------------------- //
@@ -146,13 +145,13 @@ public final class ModuleInfrared extends AbstractModule implements /* ICapabili
     // InfraredReceiver
 
     @Override
-    public void onInfraredPacket(final InfraredPacket packet, final RayTraceResult hit) {
+    public void onInfraredPacket(final InfraredPacket packet, final HitResult hit) {
         if (!getCasing().isEnabled()) {
             return;
         }
 
         final World world = getCasing().getCasingWorld();
-        if (world.isRemote) {
+        if (world.isClient) {
             return;
         }
 
@@ -194,7 +193,7 @@ public final class ModuleInfrared extends AbstractModule implements /* ICapabili
             if (receivingPipe.canTransfer()) {
                 // Don't actually read more values if we already sent a packet this tick.
                 final World world = getCasing().getCasingWorld();
-                if (world.getTotalWorldTime() > lastStep) {
+                if (world.getTime() > lastStep) {
                     emitInfraredPacket(receivingPipe.read());
                 }
             }
@@ -207,12 +206,12 @@ public final class ModuleInfrared extends AbstractModule implements /* ICapabili
      * @param value the value to transmit.
      */
     private void emitInfraredPacket(final short value) {
-        final EnumFacing facing = Face.toEnumFacing(getFace());
+        final Direction facing = Face.toEnumFacing(getFace());
         final BlockPos blockPos = getCasing().getPosition().offset(facing);
 
         final World world = getCasing().getCasingWorld();
         final Vec3d position = new Vec3d(blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5);
-        final Vec3d direction = new Vec3d(facing.getXOffset(), facing.getYOffset(), facing.getZOffset());
+        final Vec3d direction = new Vec3d(facing.getOffsetX(), facing.getOffsetY(), facing.getOffsetZ());
 
         InfraredAPI.sendPacket(world, position, direction, value);
     }

@@ -1,7 +1,7 @@
 package li.cil.tis3d.common.network.message;
 
 import li.cil.tis3d.common.gui.GuiHandlerCommon;
-import pl.asie.protocharset.rift.network.SendNetwork;
+import li.cil.tis3d.charset.SendNetwork;
 
 public class MessageOpenGUI extends AbstractMessage {
 	@SendNetwork

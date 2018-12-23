@@ -2,9 +2,8 @@ package li.cil.tis3d.client.manual.segment;
 
 import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.common.api.ManualAPIImpl;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.text.TextComponentString;
-
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.text.StringTextComponent;
 import java.net.URI;
 import java.util.Optional;
 
@@ -93,7 +92,7 @@ public final class LinkSegment extends TextSegment implements InteractiveSegment
             final Object instance = desktop.getMethod("getDesktop").invoke(null);
             desktop.getMethod("browse", URI.class).invoke(instance, new URI(url));
         } catch (final Throwable t) {
-            Minecraft.getMinecraft().player.sendMessage(new TextComponentString(t.toString()));
+            MinecraftClient.getInstance().player.appendCommandFeedback(new StringTextComponent(t.toString()));
         }
     }
 

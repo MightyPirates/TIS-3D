@@ -7,20 +7,20 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.util.TransformUtil;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Material;
+import net.minecraft.block.BlockState;
+import net.minecraft.client.render.block.BlockRenderLayer;
+import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumHand;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Hand;
+import net.minecraft.util.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
-
+import net.minecraft.world.chunk.WorldChunk;
 import javax.annotation.Nullable;
 
 /**
@@ -69,12 +69,12 @@ public abstract class AbstractModule implements Module {
      *
      * @return <tt>true</tt> if the player is looking at the module, <tt>false</tt> otherwise.
      */
-    protected boolean isObserverLookingAt(final TileEntityRendererDispatcher rendererDispatcher) {
-        final RayTraceResult hit = rendererDispatcher.cameraHitResult;
+    protected boolean isObserverLookingAt(final BlockEntityRenderDispatcher rendererDispatcher) {
+        final HitResult hit = rendererDispatcher.hitResult;
         return hit != null &&
-            hit.typeOfHit == RayTraceResult.Type.BLOCK &&
+            hit.type == HitResult.Type.BLOCK &&
             getCasing().getPosition().equals(hit.getBlockPos()) &&
-            hit.sideHit == Face.toEnumFacing(getFace());
+            hit.side == Face.toEnumFacing(getFace());
     }
 
     /**
@@ -90,15 +90,15 @@ public abstract class AbstractModule implements Module {
      * @return the UV coordinate the player is looking at as the X and Y components.
      */
     @Nullable
-    protected Vec3d getObserverLookAt(final TileEntityRendererDispatcher rendererDispatcher) {
-        final RayTraceResult hit = rendererDispatcher.cameraHitResult;
+    protected Vec3d getObserverLookAt(final BlockEntityRenderDispatcher rendererDispatcher) {
+        final HitResult hit = rendererDispatcher.hitResult;
         if (hit != null &&
-            hit.typeOfHit == RayTraceResult.Type.BLOCK &&
+            hit.type == HitResult.Type.BLOCK &&
             getCasing().getPosition().equals(hit.getBlockPos()) &&
-            hit.sideHit == Face.toEnumFacing(getFace())) {
-            return new Vec3d(hit.hitVec.x - hit.getBlockPos().getX(),
-                hit.hitVec.y - hit.getBlockPos().getY(),
-                hit.hitVec.z - hit.getBlockPos().getZ());
+            hit.side == Face.toEnumFacing(getFace())) {
+            return new Vec3d(hit.pos.x - hit.getBlockPos().getX(),
+                hit.pos.y - hit.getBlockPos().getY(),
+                hit.pos.z - hit.getBlockPos().getZ());
         } else {
             return null;
         }
@@ -116,8 +116,8 @@ public abstract class AbstractModule implements Module {
      *
      * @param hitPos the hit position to project.
      * @return the projected UV coordinate, with the Z component being 0.
-     * @see #getObserverLookAt(TileEntityRendererDispatcher)
-     * @see Module#onActivate(EntityPlayer, EnumHand, float, float, float)
+     * @see #getObserverLookAt(BlockEntityRenderDispatcher)
+     * @see Module#onActivate(PlayerEntity, Hand, float, float, float)
      */
     protected Vec3d hitToUV(final Vec3d hitPos) {
         return TransformUtil.hitToUV(getFace(), hitPos);
@@ -140,16 +140,16 @@ public abstract class AbstractModule implements Module {
             return false;
         }
 
-        final Chunk chunk = world.getChunk(neighborPos);
-        if (chunk.isEmpty()) {
+        final WorldChunk chunk = world.getChunk(neighborPos);
+        if (chunk.method_12223()) {
             // If the neighbor chunk is empty, we must assume we're visible.
             return true;
         }
 
         // Otherwise check if the neighboring block blocks visibility to our face.
-        // TODO: Can this be done better? It probably can.
-        final IBlockState neighborState = world.getBlockState(neighborPos);
-        return neighborState.getMaterial() == Material.AIR || !neighborState.isFullCube() || neighborState.getBlock().getRenderLayer() != BlockRenderLayer.SOLID;
+        // TODO: Can this be done better? It probably can. Especially in 1.14
+        final BlockState neighborState = world.getBlockState(neighborPos);
+        return neighborState.isAir() || !neighborState.isFullBoundsCubeForCulling() || neighborState.getBlock().getRenderLayer() != BlockRenderLayer.SOLID;
     }
 
     // --------------------------------------------------------------------- //
@@ -198,12 +198,12 @@ public abstract class AbstractModule implements Module {
     }
 
     @Override
-    public boolean onActivate(final EntityPlayer player, final EnumHand hand, final float hitX, final float hitY, final float hitZ) {
+    public boolean onActivate(final PlayerEntity player, final Hand hand, final float hitX, final float hitY, final float hitZ) {
         return false;
     }
 
     @Override
-    public void onData(final NBTTagCompound nbt) {
+    public void onData(final CompoundTag nbt) {
     }
 
     @Override
@@ -211,14 +211,14 @@ public abstract class AbstractModule implements Module {
     }
 
     @Override
-    public void render(final TileEntityRendererDispatcher rendererDispatcher, final float partialTicks) {
+    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
     }
 
     @Override
-    public void readFromNBT(final NBTTagCompound nbt) {
+    public void readFromNBT(final CompoundTag nbt) {
     }
 
     @Override
-    public void writeToNBT(final NBTTagCompound nbt) {
+    public void writeToNBT(final CompoundTag nbt) {
     }
 }

@@ -2,15 +2,15 @@ package li.cil.tis3d.client.network.handler;
 
 import li.cil.tis3d.common.network.handler.AbstractMessageHandlerWithLocation;
 import li.cil.tis3d.common.network.message.MessageReceivingPipeLockedState;
-import li.cil.tis3d.common.tileentity.TileEntityCasing;
-import net.minecraft.tileentity.TileEntity;
-import pl.asie.protocharset.rift.network.NetworkContext;
+import li.cil.tis3d.common.block.entity.TileEntityCasing;
+import net.minecraft.block.entity.BlockEntity;
+import li.cil.tis3d.charset.NetworkContext;
 
 
 public final class MessageHandlerReceivingPipeLockedState extends AbstractMessageHandlerWithLocation<MessageReceivingPipeLockedState> {
     @Override
     protected void onMessageSynchronized(final MessageReceivingPipeLockedState message, final NetworkContext context) {
-        final TileEntity tileEntity = getTileEntity(message, context);
+        final BlockEntity tileEntity = getTileEntity(message, context);
         if (!(tileEntity instanceof TileEntityCasing)) {
             return;
         }

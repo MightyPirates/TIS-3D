@@ -15,23 +15,20 @@ import li.cil.tis3d.common.network.handler.MessageHandlerCasingData;
 import li.cil.tis3d.common.network.handler.MessageHandlerModuleReadOnlyMemoryDataServer;
 import li.cil.tis3d.common.network.message.*;
 import li.cil.tis3d.util.Side;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.particles.BlockParticleData;
-import net.minecraft.particles.RedstoneParticleData;
+import net.minecraft.block.BlockState;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtIo;
+import net.minecraft.particle.DustParticleParameters;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import org.dimdev.rift.listener.ServerTickable;
-import org.dimdev.rift.listener.client.ClientTickable;
-import pl.asie.protocharset.rift.network.*;
+import net.minecraft.world.dimension.Dimension;
+import net.minecraft.world.dimension.DimensionType;
+import li.cil.tis3d.charset.*;
 
 
 import java.io.IOException;
@@ -46,7 +43,7 @@ import java.util.function.BiConsumer;
  * casings are active and nearby players. Throttling is applied to particle
  * effect emission and module packets where possible.
  */
-public final class Network implements PacketAdderClient, PacketAdderServer, ClientTickable, ServerTickable {
+public final class Network {
     public static final Network INSTANCE = new Network();
     public static Map<Class<?>, BiConsumer<Packet, NetworkContext>> HANDLER_MAP_CLIENT = new HashMap<>();
     public static Map<Class<?>, BiConsumer<Packet, NetworkContext>> HANDLER_MAP_SERVER = new HashMap<>();
@@ -78,13 +75,12 @@ public final class Network implements PacketAdderClient, PacketAdderServer, Clie
             } else {
                 HANDLER_MAP_SERVER.put(cl, mh::onMessage);
             }
-            registry.register(new ResourceLocation("tis3d", cl.getSimpleName().toLowerCase(Locale.ROOT)), cl, false);
+            registry.register(new Identifier("tis3d", cl.getSimpleName().toLowerCase(Locale.ROOT)), cl, false);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    @Override
     public void registerClientPackets(PacketRegistry packetRegistry) {
         registerMessage(packetRegistry, MessageHandlerCasingData.class, MessageCasingData.class, Messages.CasingDataClient.ordinal(), Side.CLIENT);
         registerMessage(packetRegistry, MessageHandlerCasingEnabledState.class, MessageCasingEnabledState.class, Messages.CasingEnabledState.ordinal(), Side.CLIENT);
@@ -96,7 +92,6 @@ public final class Network implements PacketAdderClient, PacketAdderServer, Clie
         registerMessage(packetRegistry, MessageHandlerModuleReadOnlyMemoryDataClient.class, MessageModuleReadOnlyMemoryData.class, Messages.ReadOnlyMemoryData.ordinal(), Side.CLIENT);
     }
 
-    @Override
     public void registerServerPackets(PacketRegistry packetRegistry) {
         registerMessage(packetRegistry, MessageHandlerBookCodeData.class, MessageBookCodeData.class, Messages.BookCodeData.ordinal(), Side.SERVER);
         registerMessage(packetRegistry, MessageHandlerCasingData.class, MessageCasingData.class, Messages.CasingDataServer.ordinal(), Side.SERVER);
@@ -108,7 +103,7 @@ public final class Network implements PacketAdderClient, PacketAdderServer, Clie
 
     // --------------------------------------------------------------------- //
 
-    public static void sendModuleData(final Casing casing, final Face face, final NBTTagCompound data, final byte type) {
+    public static void sendModuleData(final Casing casing, final Face face, final CompoundTag data, final byte type) {
         getQueueFor(casing).queueData(face, data, type);
     }
 
@@ -119,8 +114,8 @@ public final class Network implements PacketAdderClient, PacketAdderServer, Clie
     public static void sendPipeEffect(final World world, final double x, final double y, final double z) {
         final BlockPos position = new BlockPos(x, y, z);
         if (!world.isBlockLoaded(position)) {
-            final IBlockState state = world.getBlockState(position);
-            if (state.isFullCube()) {
+            final BlockState state = world.getBlockState(position);
+            if (state.isFullBoundsCubeForCulling()) {
                 // Skip particle emission when inside a block where they aren't visible anyway.
                 return;
             }
@@ -132,13 +127,11 @@ public final class Network implements PacketAdderClient, PacketAdderServer, Clie
     // --------------------------------------------------------------------- //
     // Message flushing
 
-    @Override
     public void serverTick(MinecraftServer server) {
         flushCasingQueues(Side.SERVER);
         flushParticleQueue();
     }
 
-    @Override
     public void clientTick() {
         flushCasingQueues(Side.CLIENT);
     }
@@ -195,8 +188,8 @@ public final class Network implements PacketAdderClient, PacketAdderServer, Clie
         }
 
         private void sendMessage() {
-            if (((WorldServer) world).spawnParticle(
-                new RedstoneParticleData(1f, 0.2f, 0, 1f),
+            if (((ServerWorld) world).method_14199(
+                new DustParticleParameters(1f, 0.2f, 0, 1f),
                 x, y, z, 1, 0, 0, 0, 0
             ) > 0) {
                 particlesSent++;
@@ -213,7 +206,7 @@ public final class Network implements PacketAdderClient, PacketAdderServer, Clie
             }
 
             final Position that = (Position) obj;
-            return world.provider.getDimensionType() == that.world.provider.getDimensionType() &&
+            return world.dimension.getType() == that.world.dimension.getType() &&
                 Float.compare(that.x, x) == 0 &&
                 Float.compare(that.y, y) == 0 &&
                 Float.compare(that.z, z) == 0;
@@ -222,7 +215,7 @@ public final class Network implements PacketAdderClient, PacketAdderServer, Clie
 
         @Override
         public int hashCode() {
-            int result = world.provider.getDimensionType().getId();
+            int result = world.dimension.getType().getRawId();
             result = 31 * result + (x != +0.0f ? Float.floatToIntBits(x) : 0);
             result = 31 * result + (y != +0.0f ? Float.floatToIntBits(y) : 0);
             result = 31 * result + (z != +0.0f ? Float.floatToIntBits(z) : 0);
@@ -295,7 +288,7 @@ public final class Network implements PacketAdderClient, PacketAdderServer, Clie
 
     private static CasingSendQueue getQueueFor(final Casing casing) {
         final World world = casing.getCasingWorld();
-        final Side side = world.isRemote ? Side.CLIENT : Side.SERVER;
+        final Side side = world.isClient ? Side.CLIENT : Side.SERVER;
         final Map<Casing, CasingSendQueue> queues = getQueues(side);
         CasingSendQueue queue = queues.get(casing);
         if (queue == null) {
@@ -353,7 +346,7 @@ public final class Network implements PacketAdderClient, PacketAdderServer, Clie
             }
         }
 
-        private void queueData(final Face face, final NBTTagCompound data, final byte type) {
+        private void queueData(final Face face, final CompoundTag data, final byte type) {
             moduleQueues[face.ordinal()].queueData(data, type);
         }
 
@@ -368,18 +361,18 @@ public final class Network implements PacketAdderClient, PacketAdderServer, Clie
          */
         private void flush(final Casing casing) {
             final World world = casing.getCasingWorld();
-            final Side side = world.isRemote ? Side.CLIENT : Side.SERVER;
+            final Side side = world.isClient ? Side.CLIENT : Side.SERVER;
             final ByteBuf data = Unpooled.buffer();
             collectData(data);
             if (data.readableBytes() > 0) {
                 final MessageCasingData message = new MessageCasingData(casing, data);
                 final boolean[] didSend = new boolean[1];
                 if (side == Side.CLIENT) {
-                    Minecraft.getMinecraft().getConnection().sendPacket(PacketRegistry.CLIENT.wrap(message));
+                    MinecraftClient.getInstance().getNetworkHandler().sendPacket(PacketRegistry.CLIENT.wrap(message));
                     didSend[0] = true;
                 } else {
                     PacketServerHelper.forEachWatching(casing.getCasingWorld(), casing.getPosition(), (player) -> {
-                        player.connection.sendPacket(PacketRegistry.SERVER.wrap(message));
+                        player.networkHandler.sendPacket(PacketRegistry.SERVER.wrap(message));
                         didSend[0] = true;
                     });
                 }
@@ -414,7 +407,7 @@ public final class Network implements PacketAdderClient, PacketAdderServer, Clie
          * @param data the data to enqueue.
          * @param type the type of the data.
          */
-        private void queueData(final NBTTagCompound data, final byte type) {
+        private void queueData(final CompoundTag data, final byte type) {
             sendQueue.add(new QueueEntryNBT(type, data));
         }
 
@@ -486,9 +479,9 @@ public final class Network implements PacketAdderClient, PacketAdderServer, Clie
          * Queue entry for pending NBT data.
          */
         private static final class QueueEntryNBT extends QueueEntry {
-            public final NBTTagCompound data;
+            public final CompoundTag data;
 
-            private QueueEntryNBT(final byte type, final NBTTagCompound data) {
+            private QueueEntryNBT(final byte type, final CompoundTag data) {
                 super(type);
                 this.data = data;
             }
@@ -498,7 +491,7 @@ public final class Network implements PacketAdderClient, PacketAdderServer, Clie
                 final ByteBuf data = Unpooled.buffer();
                 final ByteBufOutputStream bos = new ByteBufOutputStream(data);
                 try {
-                    CompressedStreamTools.writeCompressed(this.data, bos);
+                    NbtIo.writeCompressed(this.data, bos);
                     if (data.readableBytes() > 0) {
                         buffer.writeBoolean(true);
                         buffer.writeShort(data.readableBytes());
@@ -542,11 +535,11 @@ public final class Network implements PacketAdderClient, PacketAdderServer, Clie
      *
      * @return <tt>true</tt> if there are nearby players; <tt>false</tt> otherwise.
      */
-    private static boolean areAnyPlayersNear(final MinecraftServer server, final int dimension, final double x, final double y, final double z, final double range) {
+    private static boolean areAnyPlayersNear(final MinecraftServer server, final DimensionType dimension, final double x, final double y, final double z, final double range) {
         double sqRange = range * range;
 
-        for (final EntityPlayerMP player : server.getPlayerList().getPlayers()) {
-            if (player.dimension == dimension && player.connection != null && player.getDistanceSq(x, y, z) < sqRange) {
+        for (final ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+            if (player.dimension == dimension && player.networkHandler != null && player.squaredDistanceTo(x, y, z) < sqRange) {
                 return true;
             }
         }

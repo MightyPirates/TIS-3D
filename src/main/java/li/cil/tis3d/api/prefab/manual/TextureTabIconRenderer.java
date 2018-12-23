@@ -1,11 +1,11 @@
 package li.cil.tis3d.api.prefab.manual;
 
 import li.cil.tis3d.api.manual.TabIconRenderer;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormats;
+import net.minecraft.util.Identifier;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -13,23 +13,23 @@ import org.lwjgl.opengl.GL11;
  */
 @SuppressWarnings("UnusedDeclaration")
 public class TextureTabIconRenderer implements TabIconRenderer {
-    private final ResourceLocation location;
+    private final Identifier location;
 
-    public TextureTabIconRenderer(final ResourceLocation location) {
+    public TextureTabIconRenderer(final Identifier location) {
         this.location = location;
     }
 
     @Override
 
     public void render() {
-        Minecraft.getMinecraft().getTextureManager().bindTexture(location);
+        MinecraftClient.getInstance().getTextureManager().bindTexture(location);
         final Tessellator t = Tessellator.getInstance();
-        final BufferBuilder b = t.getBuffer();
-        b.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-        b.pos(0, 16, 0).tex(0, 1).endVertex();
-        b.pos(16, 16, 0).tex(1, 1).endVertex();
-        b.pos(16, 0, 0).tex(1, 0).endVertex();
-        b.pos(0, 0, 0).tex(0, 0).endVertex();
+        final BufferBuilder b = t.getBufferBuilder();
+        b.begin(GL11.GL_QUADS, VertexFormats.POSITION_UV);
+        b.vertex(0, 16, 0).texture(0, 1).next();
+        b.vertex(16, 16, 0).texture(1, 1).next();
+        b.vertex(16, 0, 0).texture(1, 0).next();
+        b.vertex(0, 0, 0).texture(0, 0).next();
         t.draw();
     }
 }

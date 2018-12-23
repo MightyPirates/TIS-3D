@@ -1,22 +1,19 @@
 package li.cil.tis3d.client.gui;
 
 import li.cil.tis3d.api.FontRendererAPI;
-import li.cil.tis3d.client.renderer.TextureLoader;
+import li.cil.tis3d.charset.PacketRegistry;
+import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.module.ModuleRandomAccessMemory;
-import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageModuleReadOnlyMemoryData;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumHand;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Hand;
 import org.lwjgl.glfw.GLFW;
-import pl.asie.protocharset.rift.network.PacketRegistry;
+import com.mojang.blaze3d.platform.GlStateManager;
 
-import java.io.IOException;
-
-public final class GuiModuleMemory extends GuiScreen {
+public final class GuiModuleMemory extends Gui {
     private static final int GUI_WIDTH = 190;
     private static final int GUI_HEIGHT = 130;
 
@@ -26,7 +23,7 @@ public final class GuiModuleMemory extends GuiScreen {
     private static final int CELL_HEIGHT = 7;
     private static final String LABEL_INITIALIZING = "INITIALIZING...";
 
-    private final EntityPlayer player;
+    private final PlayerEntity player;
     private final byte[] data = new byte[ModuleRandomAccessMemory.MEMORY_SIZE];
 
     private int guiX = 0;
@@ -36,7 +33,7 @@ public final class GuiModuleMemory extends GuiScreen {
     private boolean receivedData;
     private long initTime;
 
-    GuiModuleMemory(final EntityPlayer player) {
+    GuiModuleMemory(final PlayerEntity player) {
         this.player = player;
     }
 
@@ -50,8 +47,8 @@ public final class GuiModuleMemory extends GuiScreen {
     // GuiScreen
 
     @Override
-    public void initGui() {
-        super.initGui();
+    public void onInitialized() {
+        super.onInitialized();
         guiX = (width - GUI_WIDTH) / 2;
         guiY = (height - GUI_HEIGHT) / 2;
 
@@ -59,30 +56,30 @@ public final class GuiModuleMemory extends GuiScreen {
     }
 
     @Override
-    public void onGuiClosed() {
-        super.onGuiClosed();
+    public void onClosed() {
+        super.onClosed();
 
         // Only send to server if our data is actually based on the old server
         // data to avoid erasing ROM when closing UI again too quickly.
         if (receivedData) {
             // Save any changes made and send them to the server.
-            Minecraft.getMinecraft().getConnection().sendPacket(PacketRegistry.CLIENT.wrap(new MessageModuleReadOnlyMemoryData(data)));
+            MinecraftClient.getInstance().getNetworkHandler().sendPacket(PacketRegistry.CLIENT.wrap(new MessageModuleReadOnlyMemoryData(data)));
         }
 
         // TODO Keyboard.enableRepeatEvents(false);
     }
 
     @Override
-    public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
-        if (!player.isEntityAlive() || !Items.isModuleReadOnlyMemory(player.getHeldItem(EnumHand.MAIN_HAND))) {
-            mc.displayGuiScreen(null);
+    public void draw(final int mouseX, final int mouseY, final float partialTicks) {
+        if (!player.isValid() || !Items.isModuleReadOnlyMemory(player.getStackInHand(Hand.MAIN))) {
+            client.openGui(null);
             return;
         }
 
         // Background.
-        GlStateManager.color(1, 1, 1, 1);
-        mc.getTextureManager().bindTexture(TextureLoader.LOCATION_GUI_MEMORY);
-        drawTexturedModalRect(guiX, guiY, 0, 0, GUI_WIDTH, GUI_HEIGHT);
+        GlStateManager.color4f(1, 1, 1, 1);
+        client.getTextureManager().bindTexture(Textures.LOCATION_GUI_MEMORY);
+        drawTexturedRect(guiX, guiY, 0, 0, GUI_WIDTH, GUI_HEIGHT);
 
         // Draw row and column headers.
         drawHeaders();
@@ -206,7 +203,7 @@ public final class GuiModuleMemory extends GuiScreen {
     }
 
     @Override
-    public boolean doesGuiPauseGame() {
+    public boolean isPauseScreen() {
         return false;
     }
 
@@ -231,23 +228,23 @@ public final class GuiModuleMemory extends GuiScreen {
     }
 
     private void drawHeaders() {
-        GlStateManager.color(0.25f, 0.25f, 0.25f, 1);
+        GlStateManager.color4f(0.25f, 0.25f, 0.25f, 1);
 
         // Columns headers (top).
         GlStateManager.pushMatrix();
-        GlStateManager.translate(guiX + GRID_LEFT + 3, guiY + 6, 0);
+        GlStateManager.translatef(guiX + GRID_LEFT + 3, guiY + 6, 0);
         for (int col = 0; col < 16; col++) {
             FontRendererAPI.drawString(String.format("%X", col));
-            GlStateManager.translate(CELL_WIDTH, 0, 0);
+            GlStateManager.translatef(CELL_WIDTH, 0, 0);
         }
         GlStateManager.popMatrix();
 
         // Row headers (left).
         GlStateManager.pushMatrix();
-        GlStateManager.translate(guiX + 7, guiY + 14, 0);
+        GlStateManager.translatef(guiX + 7, guiY + 14, 0);
         for (int row = 0; row < 16; row++) {
             FontRendererAPI.drawString(String.format("0X%X0", row));
-            GlStateManager.translate(0, CELL_HEIGHT, 0);
+            GlStateManager.translatef(0, CELL_HEIGHT, 0);
         }
         GlStateManager.popMatrix();
     }
@@ -258,32 +255,32 @@ public final class GuiModuleMemory extends GuiScreen {
             return;
         }
 
-        GlStateManager.color(1, 1, 1, 1 - sinceInitialized / 0.5f);
+        GlStateManager.color4f(1, 1, 1, 1 - sinceInitialized / 0.5f);
         GlStateManager.enableBlend();
 
         final int labelWidth = FontRendererAPI.getCharWidth() * LABEL_INITIALIZING.length();
 
         GlStateManager.pushMatrix();
-        GlStateManager.translate(guiX + GRID_LEFT + 3 + 7 * CELL_WIDTH - labelWidth / 2, guiY + GRID_TOP + 1 + 7 * CELL_HEIGHT, 0);
+        GlStateManager.translatef(guiX + GRID_LEFT + 3 + 7 * CELL_WIDTH - labelWidth / 2, guiY + GRID_TOP + 1 + 7 * CELL_HEIGHT, 0);
         FontRendererAPI.drawString(LABEL_INITIALIZING);
         GlStateManager.popMatrix();
     }
 
     private void drawMemory() {
-        GlStateManager.color(1, 1, 1, 1);
+        GlStateManager.color4f(1, 1, 1, 1);
 
         final int visibleCells = (int) (System.currentTimeMillis() - initTime);
 
         GlStateManager.pushMatrix();
-        GlStateManager.translate(guiX + GRID_LEFT + 1, guiY + GRID_TOP + 1, 0);
+        GlStateManager.translatef(guiX + GRID_LEFT + 1, guiY + GRID_TOP + 1, 0);
         for (int i = 0, count = Math.min(visibleCells, data.length); i < count; i++) {
             FontRendererAPI.drawString(String.format("%02X", data[i]));
 
             final int col = i & 0x0F;
             if (col < 0x0F) {
-                GlStateManager.translate(CELL_WIDTH, 0, 0);
+                GlStateManager.translatef(CELL_WIDTH, 0, 0);
             } else {
-                GlStateManager.translate(-CELL_WIDTH * 0x0F, CELL_HEIGHT, 0);
+                GlStateManager.translatef(-CELL_WIDTH * 0x0F, CELL_HEIGHT, 0);
             }
         }
         GlStateManager.popMatrix();
@@ -302,11 +299,11 @@ public final class GuiModuleMemory extends GuiScreen {
         final int y = guiY + GRID_TOP + CELL_HEIGHT * row - 1;
 
         GlStateManager.pushMatrix();
-        GlStateManager.translate(x, y, 0);
+        GlStateManager.translatef(x, y, 0);
 
-        mc.getTextureManager().bindTexture(TextureLoader.LOCATION_GUI_MEMORY);
-        final int vPos = (int) (mc.world.getTotalWorldTime() % 16) * 8;
-        drawTexturedModalRect(0, 0, 256 - (CELL_WIDTH + 1), vPos, 11, 8);
+        client.getTextureManager().bindTexture(Textures.LOCATION_GUI_MEMORY);
+        final int vPos = (int) (client.world.getTime() % 16) * 8;
+        drawTexturedRect(0, 0, 256 - (CELL_WIDTH + 1), vPos, 11, 8);
 
         GlStateManager.popMatrix();
     }

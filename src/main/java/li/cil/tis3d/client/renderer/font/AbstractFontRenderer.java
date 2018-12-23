@@ -1,13 +1,13 @@
 package li.cil.tis3d.client.renderer.font;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormats;
+import net.minecraft.util.Identifier;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -40,11 +40,11 @@ public abstract class AbstractFontRenderer implements FontRenderer {
         GlStateManager.pushMatrix();
         GlStateManager.depthMask(false);
 
-        Minecraft.getMinecraft().getTextureManager().bindTexture(getTextureLocation());
+        MinecraftClient.getInstance().getTextureManager().bindTexture(getTextureLocation());
 
         final Tessellator tessellator = Tessellator.getInstance();
-        final BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+        final BufferBuilder buffer = tessellator.getBufferBuilder();
+        buffer.begin(GL11.GL_QUADS, VertexFormats.POSITION_UV);
 
         float tx = 0f;
         final int end = Math.min(maxChars, value.length());
@@ -64,7 +64,7 @@ public abstract class AbstractFontRenderer implements FontRenderer {
 
     abstract protected CharSequence getCharacters();
 
-    abstract protected ResourceLocation getTextureLocation();
+    abstract protected Identifier getTextureLocation();
 
     abstract protected int getResolution();
 
@@ -85,10 +85,10 @@ public abstract class AbstractFontRenderer implements FontRenderer {
         final float u = column * U_STEP;
         final float v = row * V_STEP;
 
-        buffer.pos(x, getCharHeight(), 0).tex(u, v + V_SIZE).endVertex();
-        buffer.pos(x + getCharWidth(), getCharHeight(), 0).tex(u + U_SIZE, v + V_SIZE).endVertex();
-        buffer.pos(x + getCharWidth(), 0, 0).tex(u + U_SIZE, v).endVertex();
-        buffer.pos(x, 0, 0).tex(u, v).endVertex();
+        buffer.vertex(x, getCharHeight(), 0).texture(u, v + V_SIZE).next();
+        buffer.vertex(x + getCharWidth(), getCharHeight(), 0).texture(u + U_SIZE, v + V_SIZE).next();
+        buffer.vertex(x + getCharWidth(), 0, 0).texture(u + U_SIZE, v).next();
+        buffer.vertex(x, 0, 0).texture(u, v).next();
     }
 
     private int getCharIndex(final char ch) {

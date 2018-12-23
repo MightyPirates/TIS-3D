@@ -1,14 +1,14 @@
 package li.cil.tis3d.common.event;
 
 import li.cil.tis3d.common.entity.EntityInfraredPacket;
+import net.fabricmc.fabric.events.TickEvent;
 import net.minecraft.server.MinecraftServer;
-import org.dimdev.rift.listener.ServerTickable;
-import pl.asie.protocharset.rift.listeners.BootstrapListener;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * Makes sure infrared packets die once their lifetime expires.
@@ -17,8 +17,8 @@ import java.util.Set;
  * fact that entities do not update while inside the one-chunk wide border
  * of loaded chunks around the overall area of loaded chunks.
  */
-public final class TickHandlerInfraredPacket implements BootstrapListener, ServerTickable {
-    public static TickHandlerInfraredPacket INSTANCE;
+public final class TickHandlerInfraredPacket {
+    public static TickHandlerInfraredPacket INSTANCE = new TickHandlerInfraredPacket();
 
     // --------------------------------------------------------------------- //
 
@@ -40,24 +40,6 @@ public final class TickHandlerInfraredPacket implements BootstrapListener, Serve
 
     // --------------------------------------------------------------------- //
 
- /*   @SubscribeEvent
-    public void onServerTick(final TickEvent.ServerTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) {
-            return;
-        }
-
-        livePackets.addAll(pendingAdds);
-        pendingAdds.clear();
-
-        livePackets.removeAll(pendingRemovals);
-        pendingRemovals.clear();
-
-        livePackets.forEach(EntityInfraredPacket::updateLifetime);
-    } */
-
-    // --------------------------------------------------------------------- //
-
-    @Override
     public void serverTick(MinecraftServer server) {
         livePackets.addAll(pendingAdds);
         pendingAdds.clear();
@@ -66,10 +48,5 @@ public final class TickHandlerInfraredPacket implements BootstrapListener, Serve
         pendingRemovals.clear();
 
         livePackets.forEach(EntityInfraredPacket::updateLifetime);
-    }
-
-    @Override
-    public void afterBootstrap() {
-        INSTANCE = this;
     }
 }

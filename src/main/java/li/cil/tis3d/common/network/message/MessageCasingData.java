@@ -3,7 +3,7 @@ package li.cil.tis3d.common.network.message;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.machine.Casing;
-import pl.asie.protocharset.rift.network.SendNetwork;
+import li.cil.tis3d.charset.SendNetwork;
 
 public final class MessageCasingData extends AbstractMessageWithLocation {
     // TODO

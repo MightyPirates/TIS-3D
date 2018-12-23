@@ -7,8 +7,7 @@ import li.cil.tis3d.common.module.execution.compiler.Compiler;
 import li.cil.tis3d.common.module.execution.compiler.ParseException;
 import li.cil.tis3d.common.module.execution.instruction.Instruction;
 import li.cil.tis3d.util.EnumUtils;
-import net.minecraft.nbt.NBTTagCompound;
-
+import net.minecraft.nbt.CompoundTag;
 import java.util.*;
 
 /**
@@ -124,8 +123,8 @@ public final class MachineState {
 
     // --------------------------------------------------------------------- //
 
-    public void readFromNBT(final NBTTagCompound nbt) {
-        if (nbt.hasKey(TAG_CODE)) {
+    public void readFromNBT(final CompoundTag nbt) {
+        if (nbt.containsKey(TAG_CODE)) {
             try {
                 Compiler.compile(Arrays.asList(Constants.PATTERN_LINES.split(nbt.getString(TAG_CODE))), this);
             } catch (final ParseException ignored) {
@@ -135,26 +134,26 @@ public final class MachineState {
             }
         }
 
-        pc = nbt.getInteger(TAG_PC);
+        pc = nbt.getInt(TAG_PC);
         acc = nbt.getShort(TAG_ACC);
         bak = nbt.getShort(TAG_BAK);
-        if (nbt.hasKey(TAG_LAST)) {
+        if (nbt.containsKey(TAG_LAST)) {
             last = Optional.of(EnumUtils.readFromNBT(Port.class, TAG_LAST, nbt));
         } else {
             last = Optional.empty();
         }
-        pcPrev = nbt.getInteger(TAG_PC_PREV);
+        pcPrev = nbt.getInt(TAG_PC_PREV);
     }
 
-    public void writeToNBT(final NBTTagCompound nbt) {
-        nbt.setInteger(TAG_PC, pc);
-        nbt.setShort(TAG_ACC, acc);
-        nbt.setShort(TAG_BAK, bak);
+    public void writeToNBT(final CompoundTag nbt) {
+        nbt.putInt(TAG_PC, pc);
+        nbt.putShort(TAG_ACC, acc);
+        nbt.putShort(TAG_BAK, bak);
         last.ifPresent(port -> EnumUtils.writeToNBT(port, TAG_LAST, nbt));
-        nbt.setInteger(TAG_PC_PREV, pcPrev);
+        nbt.putInt(TAG_PC_PREV, pcPrev);
 
         if (code != null) {
-            nbt.setString(TAG_CODE, String.join("\n", (CharSequence[]) code));
+            nbt.putString(TAG_CODE, String.join("\n", (CharSequence[]) code));
         }
     }
 }

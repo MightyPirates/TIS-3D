@@ -1,24 +1,22 @@
-package li.cil.tis3d.common.tileentity;
+package li.cil.tis3d.common.block.entity;
 
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.HaltAndCatchFireException;
 import li.cil.tis3d.common.Settings;
-import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageHaltAndCatchFire;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.particle.ParticleManager;
-import net.minecraft.init.Particles;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
-import net.minecraft.util.SoundCategory;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.block.BlockState;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-import pl.asie.protocharset.rift.network.PacketRegistry;
-import pl.asie.protocharset.rift.network.PacketServerHelper;
+import li.cil.tis3d.charset.PacketRegistry;
+import li.cil.tis3d.charset.PacketServerHelper;
 
 import java.util.*;
 
@@ -32,8 +30,8 @@ import java.util.*;
  * Controllers have no real state. They are active when powered by a redstone
  * signal, and can be reset by right-clicking them.
  */
-public final class TileEntityController extends TileEntityComputer implements ITickable {
-    public static TileEntityType<TileEntityController> TYPE;
+public final class TileEntityController extends TileEntityComputer implements Tickable {
+    public static BlockEntityType<TileEntityController> TYPE;
 
     // --------------------------------------------------------------------- //
     // Computed data
@@ -172,7 +170,7 @@ public final class TileEntityController extends TileEntityComputer implements IT
     public void forceStep() {
         if (state == ControllerState.RUNNING) {
             forceStep = true;
-            getWorld().playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.BLOCK_STONE_BUTTON_CLICK_ON, SoundCategory.BLOCKS, 0.2f, 0.8f + getWorld().rand.nextFloat() * 0.1f);
+            getWorld().playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.ENTITY_SLIME_HURT, SoundCategory.BLOCK, 0.2f, 0.8f + getWorld().random.nextFloat() * 0.1f);
         }
     }
 
@@ -180,12 +178,12 @@ public final class TileEntityController extends TileEntityComputer implements IT
      * Reset the controller, pause for a moment and catch fire.
      */
     public void haltAndCatchFire() {
-        if (!getWorld().isRemote) {
+        if (!getWorld().isClient) {
             state = ControllerState.READY;
             casings.forEach(TileEntityCasing::onDisabled);
             final MessageHaltAndCatchFire message = new MessageHaltAndCatchFire(getWorld(), getPos());
             PacketServerHelper.forEachWatching(getWorld(), getPos(), (player) -> {
-                player.connection.sendPacket(PacketRegistry.SERVER.wrap(message));
+                player.networkHandler.sendPacket(PacketRegistry.SERVER.wrap(message));
             });
         }
         hcfCooldown = COOLDOWN_HCF;
@@ -198,7 +196,7 @@ public final class TileEntityController extends TileEntityComputer implements IT
     public void invalidate() {
         super.invalidate();
 
-        if (getWorld().isRemote) {
+        if (getWorld().isClient) {
             return;
         }
 
@@ -230,59 +228,59 @@ public final class TileEntityController extends TileEntityComputer implements IT
     // TileEntityComputer
 
     @Override
-    protected void readFromNBTForServer(final NBTTagCompound nbt) {
+    protected void readFromNBTForServer(final CompoundTag nbt) {
         super.readFromNBTForServer(nbt);
 
-        hcfCooldown = nbt.getInteger(TAG_HCF_COOLDOWN);
+        hcfCooldown = nbt.getInt(TAG_HCF_COOLDOWN);
     }
 
     @Override
-    protected void writeToNBTForServer(final NBTTagCompound nbt) {
+    protected void writeToNBTForServer(final CompoundTag nbt) {
         super.writeToNBTForServer(nbt);
 
-        nbt.setInteger(TAG_HCF_COOLDOWN, hcfCooldown);
+        nbt.putInt(TAG_HCF_COOLDOWN, hcfCooldown);
     }
 
     @Override
-    protected void readFromNBTForClient(final NBTTagCompound nbt) {
+    protected void readFromNBTForClient(final CompoundTag nbt) {
         super.readFromNBTForClient(nbt);
 
         state = ControllerState.VALUES[nbt.getByte(TAG_STATE) & 0xFF];
     }
 
     @Override
-    protected void writeToNBTForClient(final NBTTagCompound nbt) {
+    protected void writeToNBTForClient(final CompoundTag nbt) {
         super.writeToNBTForClient(nbt);
 
-        nbt.setByte(TAG_STATE, (byte) state.ordinal());
+        nbt.putByte(TAG_STATE, (byte) state.ordinal());
     }
 
     // --------------------------------------------------------------------- //
     // ITickable
 
     @Override
-    public void update() {
+    public void tick() {
         final World world = getWorld();
 
         // Only update multi-block and casings on the server.
-        if (world.isRemote) {
+        if (world.isClient) {
             if (hcfCooldown > 0) {
                 --hcfCooldown;
 
                 // Spawn some fire particles! No actual fire, that'd be... problematic.
-                for (final EnumFacing facing : EnumFacing.values()) {
+                for (final Direction facing : Direction.values()) {
                     final BlockPos neighborPos = getPos().offset(facing);
-                    final IBlockState neighborState = world.getBlockState(neighborPos);
-                    if (neighborState.isFullCube()) {
+                    final BlockState neighborState = world.getBlockState(neighborPos);
+                    if (neighborState.isFullBoundsCubeForCulling()) {
                         continue;
                     }
-                    if (world.rand.nextFloat() > 0.25f) {
+                    if (world.random.nextFloat() > 0.25f) {
                         continue;
                     }
-                    final float ox = neighborPos.getX() + world.rand.nextFloat();
-                    final float oy = neighborPos.getY() + world.rand.nextFloat();
-                    final float oz = neighborPos.getZ() + world.rand.nextFloat();
-                    world.spawnParticle(Particles.FLAME, ox, oy, oz, 0, 0, 0);
+                    final float ox = neighborPos.getX() + world.random.nextFloat();
+                    final float oy = neighborPos.getY() + world.random.nextFloat();
+                    final float oz = neighborPos.getZ() + world.random.nextFloat();
+                    world.addParticle(ParticleTypes.FLAME, ox, oy, oz, 0, 0, 0);
                 }
             }
 
@@ -290,8 +288,8 @@ public final class TileEntityController extends TileEntityComputer implements IT
         }
 
         if (state != lastSentState) {
-            final IBlockState blockState = world.getBlockState(getPos());
-            world.notifyBlockUpdate(getPipeHostPosition(), blockState, blockState, 2);
+            final BlockState blockState = world.getBlockState(getPos());
+            world.updateListeners(getPipeHostPosition(), blockState, blockState, 2);
             lastSentState = state;
         }
 
@@ -332,7 +330,7 @@ public final class TileEntityController extends TileEntityComputer implements IT
             forceStep = forceStep && power == 1;
 
             // Are we powered?
-            if (!world.isBlockPowered(getPos())) {
+            if (!world.isReceivingRedstonePower(getPos())) {
                 // Nope, fall back to ready state, disable modules.
                 state = ControllerState.READY;
                 casings.forEach(TileEntityCasing::onDisabled);
@@ -350,7 +348,7 @@ public final class TileEntityController extends TileEntityComputer implements IT
                     if (power < 15) {
                         // Stepping slower than 100%.
                         final int delay = 15 - power;
-                        if (world.getTotalWorldTime() % delay == 0 || forceStep) {
+                        if (world.getTime() % delay == 0 || forceStep) {
                             step();
                         }
                     } else {
@@ -398,14 +396,14 @@ public final class TileEntityController extends TileEntityComputer implements IT
      * @param queue      the list of pending tile entities.
      * @return <tt>true</tt> if all neighbors could be checked, <tt>false</tt> otherwise.
      */
-    static boolean addNeighbors(final World world, final TileEntity tileEntity, final Set<TileEntity> processed, final Queue<TileEntity> queue) {
-        for (final EnumFacing facing : EnumFacing.values()) {
+    static boolean addNeighbors(final World world, final BlockEntity tileEntity, final Set<BlockEntity> processed, final Queue<BlockEntity> queue) {
+        for (final Direction facing : Direction.values()) {
             final BlockPos neighborPos = tileEntity.getPos().offset(facing);
             if (!world.isBlockLoaded(neighborPos)) {
                 return false;
             }
 
-            final TileEntity neighborTileEntity = world.getTileEntity(neighborPos);
+            final BlockEntity neighborTileEntity = world.getBlockEntity(neighborPos);
             if (neighborTileEntity == null) {
                 continue;
             }
@@ -427,9 +425,9 @@ public final class TileEntityController extends TileEntityComputer implements IT
      */
     private void scan() {
         // List of processed tile entities to avoid loops.
-        final Set<TileEntity> processed = new HashSet<>();
+        final Set<BlockEntity> processed = new HashSet<>();
         // List of pending tile entities that still need to be scanned.
-        final Queue<TileEntity> queue = new ArrayDeque<>();
+        final Queue<BlockEntity> queue = new ArrayDeque<>();
         // List of new found casings.
         final List<TileEntityCasing> newCasings = new ArrayList<>(Settings.maxCasingsPerController);
 
@@ -437,7 +435,7 @@ public final class TileEntityController extends TileEntityComputer implements IT
         processed.add(this);
         queue.add(this);
         while (!queue.isEmpty()) {
-            final TileEntity tileEntity = queue.remove();
+            final BlockEntity tileEntity = queue.remove();
 
             // Check what we have. We only add controllers and casings to this list,
             // so we can skip the type check in the else branch.
@@ -511,8 +509,8 @@ public final class TileEntityController extends TileEntityComputer implements IT
      */
     private int computePower() {
         int acc = 0;
-        for (final EnumFacing facing : EnumFacing.values()) {
-            acc += Math.max(0, Math.min(15, getWorld().getRedstonePower(getPos().offset(facing), facing)));
+        for (final Direction facing : Direction.values()) {
+            acc += Math.max(0, Math.min(15, getWorld().getEmittedRedstonePower(getPos().offset(facing), facing)));
         }
         return acc;
     }

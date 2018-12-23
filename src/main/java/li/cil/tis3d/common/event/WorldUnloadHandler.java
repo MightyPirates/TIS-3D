@@ -1,9 +1,5 @@
 package li.cil.tis3d.common.event;
 
-import li.cil.tis3d.common.machine.CasingImpl;
-import li.cil.tis3d.common.tileentity.TileEntityCasing;
-import net.minecraft.tileentity.TileEntity;
-
 // TODO
 public final class WorldUnloadHandler {
     public static final WorldUnloadHandler INSTANCE = new WorldUnloadHandler();

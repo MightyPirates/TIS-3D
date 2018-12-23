@@ -1,5 +1,6 @@
 package li.cil.tis3d.common.module;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.machine.Casing;
@@ -10,24 +11,22 @@ import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.gui.GuiHandlerClient;
 import li.cil.tis3d.client.gui.GuiModuleTerminal;
-import li.cil.tis3d.client.renderer.TextureLoader;
+import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.client.renderer.font.FontRenderer;
 import li.cil.tis3d.client.renderer.font.FontRendererNormal;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.gui.GuiHandlerCommon;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.SoundCategory;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Hand;
 import net.minecraft.world.World;
-
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
@@ -118,12 +117,12 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
         stepInput();
 
         final World world = getCasing().getCasingWorld();
-        if (sendBuffer != null && world.getTotalWorldTime() > lastSendTick) {
+        if (sendBuffer != null && world.getTime() > lastSendTick) {
             getCasing().sendData(getFace(), sendBuffer);
             sendBuffer = null;
         }
 
-        lastSendTick = world.getTotalWorldTime();
+        lastSendTick = world.getTime();
     }
 
     @Override
@@ -138,7 +137,7 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
 
     @Override
     public void onDisposed() {
-        if (getCasing().getCasingWorld().isRemote) {
+        if (getCasing().getCasingWorld().isClient) {
             closeGui();
         }
     }
@@ -168,7 +167,7 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
     }
 
     @Override
-    public boolean onActivate(final EntityPlayer player, final EnumHand hand, final float hitX, final float hitY, final float hitZ) {
+    public boolean onActivate(final PlayerEntity player, final Hand hand, final float hitX, final float hitY, final float hitZ) {
         if (player.isSneaking()) {
             return false;
         }
@@ -180,23 +179,23 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
         }
 
         final World world = player.getEntityWorld();
-        if (world.isRemote) {
+        if (world.isClient) {
             openForClient(player);
         }
 
         return true;
     }
 
-	private void openForClient(final EntityPlayer player) {
-		GuiScreen screen = GuiHandlerClient.getClientGuiElement(GuiHandlerCommon.GuiId.MODULE_TERMINAL, player.getEntityWorld(), player);
+	private void openForClient(final PlayerEntity player) {
+		Gui screen = GuiHandlerClient.getClientGuiElement(GuiHandlerCommon.GuiId.MODULE_TERMINAL, player.getEntityWorld(), player);
 		if (screen != null) {
-			Minecraft.getMinecraft().displayGuiScreen(screen);
+			MinecraftClient.getInstance().openGui(screen);
 		}
 	}
 
     @Override
     public void onData(final ByteBuf data) {
-        if (getCasing().getCasingWorld().isRemote) {
+        if (getCasing().getCasingWorld().isClient) {
             // Server -> Client can be input state or output.
             switch (data.readByte()) {
                 case PACKET_INPUT:
@@ -227,7 +226,7 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
 
 
     @Override
-    public void render(final TileEntityRendererDispatcher rendererDispatcher, final float partialTicks) {
+    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
         if (!getCasing().isEnabled() || !isVisible()) {
             return;
         }
@@ -236,25 +235,25 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
         RenderUtil.ignoreLighting();
         GlStateManager.enableBlend();
 
-        if (rendererDispatcher.entity.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
+        if (rendererDispatcher.cameraEntity.squaredDistanceToCenter(getCasing().getPosition()) < 64) {
             // Player is close, render actual terminal text.
             renderText();
         } else {
             // Player too far away for details, draw static overlay.
-            RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_TERMINAL));
+            RenderUtil.drawQuad(RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_TERMINAL));
         }
 
         GlStateManager.disableBlend();
     }
 
     @Override
-    public void readFromNBT(final NBTTagCompound nbt) {
+    public void readFromNBT(final CompoundTag nbt) {
         super.readFromNBT(nbt);
 
-        final NBTTagList lines = nbt.getTagList(TAG_DISPLAY, Constants.NBT.TAG_STRING);
+        final ListTag lines = nbt.getList(TAG_DISPLAY, Constants.NBT.TAG_STRING);
         display.clear();
         for (int tagIndex = 0; tagIndex < lines.size(); tagIndex++) {
-            display.add(new StringBuilder(lines.getStringTagAt(tagIndex)));
+            display.add(new StringBuilder(lines.getString(tagIndex)));
         }
 
         output.setLength(0);
@@ -263,16 +262,16 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
     }
 
     @Override
-    public void writeToNBT(final NBTTagCompound nbt) {
+    public void writeToNBT(final CompoundTag nbt) {
         super.writeToNBT(nbt);
 
-        final NBTTagList lines = new NBTTagList();
+        final ListTag lines = new ListTag();
         for (final StringBuilder line : display) {
-            lines.add(new NBTTagString(line.toString()));
+            lines.add(new StringTag(line.toString()));
         }
-        nbt.setTag(TAG_DISPLAY, lines);
+        nbt.put(TAG_DISPLAY, lines);
 
-        nbt.setString(TAG_OUTPUT, output.toString());
+        nbt.putString(TAG_OUTPUT, output.toString());
     }
 
     // --------------------------------------------------------------------- //
@@ -308,19 +307,19 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
 
 
     private void renderText() {
-        GlStateManager.translate(2f / 16f, 2f / 16f, 0);
-        GlStateManager.scale(1 / 512f, 1 / 512f, 1);
+        GlStateManager.translatef(2f / 16f, 2f / 16f, 0);
+        GlStateManager.scalef(1 / 512f, 1 / 512f, 1);
 
         final FontRenderer fontRenderer = FontRendererNormal.INSTANCE;
 
         final int totalWidth = 12 * 32;
         final int textWidth = MAX_COLUMNS * fontRenderer.getCharWidth();
         final float offsetX = (totalWidth - textWidth) / 2f;
-        GlStateManager.translate(offsetX, 10f, 0);
+        GlStateManager.translatef(offsetX, 10f, 0);
 
         renderDisplay(fontRenderer);
 
-        GlStateManager.translate(0, (MAX_ROWS - display.size()) * fontRenderer.getCharHeight() + 4, 0);
+        GlStateManager.translatef(0, (MAX_ROWS - display.size()) * fontRenderer.getCharHeight() + 4, 0);
 
         renderInput(fontRenderer, textWidth);
     }
@@ -328,52 +327,52 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
     private void renderDisplay(final FontRenderer fontRenderer) {
         for (final StringBuilder line : display) {
             fontRenderer.drawString(line);
-            GlStateManager.translate(0, fontRenderer.getCharHeight(), 0);
+            GlStateManager.translatef(0, fontRenderer.getCharHeight(), 0);
         }
     }
 
     private void renderInput(final FontRenderer fontRenderer, final int textWidth) {
         if (!isInputEnabled) {
-            GlStateManager.color(0.5f, 0.5f, 0.5f, 1f);
+            GlStateManager.color4f(0.5f, 0.5f, 0.5f, 1f);
         }
 
-        GlStateManager.disableTexture2D();
+        GlStateManager.disableTexture();
         GlStateManager.depthMask(false);
 
         RenderUtil.drawUntexturedQuad(-4, 0, textWidth + 8, 24);
-        GlStateManager.color(0.1f, 0.1f, 0.1f, 1f);
+        GlStateManager.color4f(0.1f, 0.1f, 0.1f, 1f);
         RenderUtil.drawUntexturedQuad(-2, 2, textWidth + 4, 20);
         if (!isInputEnabled) {
-            GlStateManager.color(0.5f, 0.5f, 0.5f, 1f);
+            GlStateManager.color4f(0.5f, 0.5f, 0.5f, 1f);
         } else {
-            GlStateManager.color(1f, 1f, 1f, 1f);
+            GlStateManager.color4f(1f, 1f, 1f, 1f);
         }
 
-        GlStateManager.enableTexture2D();
-        GlStateManager.translate(0, 4, 0);
+        GlStateManager.enableTexture();
+        GlStateManager.translatef(0, 4, 0);
 
         fontRenderer.drawString(input);
 
         if (isInputEnabled && input.length() < MAX_COLUMNS && System.currentTimeMillis() % 800 > 400) {
-            GlStateManager.color(1f, 1f, 1f, 1f);
-            GlStateManager.disableTexture2D();
+            GlStateManager.color4f(1f, 1f, 1f, 1f);
+            GlStateManager.disableTexture();
             RenderUtil.drawUntexturedQuad(input.length() * fontRenderer.getCharWidth(), 0, fontRenderer.getCharWidth(), fontRenderer.getCharHeight());
-            GlStateManager.enableTexture2D();
+            GlStateManager.enableTexture();
         }
     }
 
 
     private void closeGui() {
-        final Minecraft mc = Minecraft.getMinecraft();
+        final MinecraftClient mc = MinecraftClient.getInstance();
         if (mc == null) {
             return;
         }
 
-        final GuiScreen screen = mc.currentScreen;
+        final Gui screen = mc.currentGui;
         if (screen instanceof GuiModuleTerminal) {
             final GuiModuleTerminal gui = (GuiModuleTerminal) screen;
             if (gui.isFor(this)) {
-                mc.displayGuiScreen(null);
+                mc.setCrashReport(null);
             }
         }
     }
@@ -484,8 +483,8 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
 
     private void bell() {
         final World world = getCasing().getCasingWorld();
-        if (!world.isRemote) {
-            world.playSound(null, getCasing().getPosition(), SoundEvents.BLOCK_NOTE_BLOCK_PLING, SoundCategory.BLOCKS, 0.3f, 2f);
+        if (!world.isClient) {
+            world.playSound(null, getCasing().getPosition(), SoundEvents.ENTITY_MINECART_INSIDE, SoundCategory.BLOCK, 0.3f, 2f);
         }
     }
 

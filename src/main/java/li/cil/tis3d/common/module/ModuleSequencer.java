@@ -1,5 +1,6 @@
 package li.cil.tis3d.common.module;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.machine.Casing;
@@ -8,13 +9,12 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.renderer.TextureLoader;
+import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.util.Side;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumHand;
+import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -91,7 +91,7 @@ public final class ModuleSequencer extends AbstractModuleRotatable {
     }
 
     @Override
-    public boolean onActivate(final EntityPlayer player, final EnumHand hand, final float hitX, final float hitY, final float hitZ) {
+    public boolean onActivate(final PlayerEntity player, final Hand hand, final float hitX, final float hitY, final float hitZ) {
         if (player.isSneaking()) {
             return false;
         }
@@ -100,7 +100,7 @@ public final class ModuleSequencer extends AbstractModuleRotatable {
         // hit position resolution (MC sends this to the server at a super
         // low resolution for some reason).
         final World world = getCasing().getCasingWorld();
-        if (world.isRemote) {
+        if (world.isClient) {
             final Vec3d uv = hitToUV(new Vec3d(hitX, hitY, hitZ));
             final int col = uvToCol((float) uv.x);
             final int row = uvToRow((float) uv.y);
@@ -115,7 +115,7 @@ public final class ModuleSequencer extends AbstractModuleRotatable {
 
     @Override
     public void onData(final ByteBuf data) {
-        if (getCasing().getCasingWorld().isRemote) {
+        if (getCasing().getCasingWorld().isClient) {
             if (data.readBoolean()) {
                 decodeConfiguration(data.readLong(), configuration);
             } else {
@@ -129,7 +129,7 @@ public final class ModuleSequencer extends AbstractModuleRotatable {
 
 
     @Override
-    public void render(final TileEntityRendererDispatcher rendererDispatcher, final float partialTicks) {
+    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
         if (!isVisible()) {
             return;
         }
@@ -138,7 +138,7 @@ public final class ModuleSequencer extends AbstractModuleRotatable {
         RenderUtil.ignoreLighting();
         GlStateManager.enableBlend();
 
-        GlStateManager.disableTexture2D();
+        GlStateManager.disableTexture();
         GlStateManager.depthMask(false);
 
         final boolean enabled = getCasing().isEnabled();
@@ -146,21 +146,21 @@ public final class ModuleSequencer extends AbstractModuleRotatable {
             // Draw bar in background indicating current position in sequence.
             final float barU0 = BAR_U0 + BAR_STEP_U * position;
             final float brightness = 0.75f + 0.25f * (delay == 0 ? 1 : (1 - (delay - stepsRemaining) / (float) delay));
-            GlStateManager.color(0.2f, 0.3f, 0.35f, brightness);
+            GlStateManager.color4f(0.2f, 0.3f, 0.35f, brightness);
             RenderUtil.drawUntexturedQuad(barU0, BAR_V0, BAR_SIZE_U, BAR_SIZE_V);
         }
 
         // Draw base grid of sequencer entries.
-        GlStateManager.enableTexture2D();
-        GlStateManager.color(1, 1, 1, enabled ? 1 : 0.5f);
-        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_SEQUENCER));
-        GlStateManager.disableTexture2D();
+        GlStateManager.enableTexture();
+        GlStateManager.color4f(1, 1, 1, enabled ? 1 : 0.5f);
+        RenderUtil.drawQuad(RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_SEQUENCER));
+        GlStateManager.disableTexture();
 
         GlStateManager.depthMask(true);
 
-        if (rendererDispatcher.entity.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
+        if (rendererDispatcher.cameraEntity.squaredDistanceToCenter(getCasing().getPosition()) < 64) {
             // Draw configuration of sequencer.
-            GlStateManager.color(0.8f, 0.85f, 0.875f, enabled ? 1 : 0.5f);
+            GlStateManager.color4f(0.8f, 0.85f, 0.875f, enabled ? 1 : 0.5f);
             for (int col = 0; col < COL_COUNT; col++) {
                 for (int row = 0; row < ROW_COUNT; row++) {
                     if (configuration[col][row]) {
@@ -179,7 +179,7 @@ public final class ModuleSequencer extends AbstractModuleRotatable {
             final int col = uvToCol((float) uv.x);
             final int row = uvToRow((float) uv.y);
             if (col >= 0 && row >= 0) {
-                GlStateManager.color(0.7f, 0.8f, 0.9f, 0.5f);
+                GlStateManager.color4f(0.7f, 0.8f, 0.9f, 0.5f);
                 final float u = CELLS_OUTER_U0 + col * CELLS_OUTER_STEP_U;
                 final float v = CELLS_OUTER_V0 + row * CELLS_OUTER_STEP_V;
                 RenderUtil.drawUntexturedQuad(u, v, CELLS_OUTER_SIZE_U, CELLS_OUTER_SIZE_V);
@@ -190,25 +190,25 @@ public final class ModuleSequencer extends AbstractModuleRotatable {
     }
 
     @Override
-    public void readFromNBT(final NBTTagCompound nbt) {
+    public void readFromNBT(final CompoundTag nbt) {
         super.readFromNBT(nbt);
 
         decodeConfiguration(nbt.getLong(TAG_CONFIGURATION), configuration);
-        position = Math.min(Math.max(nbt.getInteger(TAG_POSITION), 0), COL_COUNT - 1);
-        delay = Math.min(Math.max(nbt.getInteger(TAG_DELAY), 0), 0xFFFF);
-        stepsRemaining = Math.min(Math.max(nbt.getInteger(TAG_STEPS_REMAINING), 0), 0xFFFF);
+        position = Math.min(Math.max(nbt.getInt(TAG_POSITION), 0), COL_COUNT - 1);
+        delay = Math.min(Math.max(nbt.getInt(TAG_DELAY), 0), 0xFFFF);
+        stepsRemaining = Math.min(Math.max(nbt.getInt(TAG_STEPS_REMAINING), 0), 0xFFFF);
 
         initializeOutput();
     }
 
     @Override
-    public void writeToNBT(final NBTTagCompound nbt) {
+    public void writeToNBT(final CompoundTag nbt) {
         super.writeToNBT(nbt);
 
-        nbt.setLong(TAG_CONFIGURATION, encodeConfiguration(configuration));
-        nbt.setInteger(TAG_POSITION, position);
-        nbt.setInteger(TAG_DELAY, delay);
-        nbt.setInteger(TAG_STEPS_REMAINING, stepsRemaining);
+        nbt.putLong(TAG_CONFIGURATION, encodeConfiguration(configuration));
+        nbt.putInt(TAG_POSITION, position);
+        nbt.putInt(TAG_DELAY, delay);
+        nbt.putInt(TAG_STEPS_REMAINING, stepsRemaining);
     }
 
     // --------------------------------------------------------------------- //

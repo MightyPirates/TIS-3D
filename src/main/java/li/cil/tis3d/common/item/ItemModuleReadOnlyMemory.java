@@ -4,21 +4,16 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.client.gui.GuiHandlerClient;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.gui.GuiHandlerCommon;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
-import pl.asie.protocharset.lib.inventory.InteractionObjectItemStack;
 
 import javax.annotation.Nullable;
 
@@ -26,27 +21,27 @@ public class ItemModuleReadOnlyMemory extends ItemModule {
     private static final String TAG_DATA = "data";
     private static final byte[] EMPTY_DATA = new byte[0];
 
-    public ItemModuleReadOnlyMemory(Item.Builder builder) {
-        super(builder.maxStackSize(1));
+    public ItemModuleReadOnlyMemory(Item.Settings builder) {
+        super(builder.stackSize(1));
     }
 
     // --------------------------------------------------------------------- //
     // Item
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(final World world, final EntityPlayer player, final EnumHand hand) {
-        if (world.isRemote) {
+    public TypedActionResult<ItemStack> use(final World world, final PlayerEntity player, final Hand hand) {
+        if (world.isClient) {
             openForClient(player);
         } else {
             GuiHandlerCommon.sendModuleMemory(player);
         }
-        return new ActionResult(EnumActionResult.SUCCESS, player.getHeldItem(hand));
+        return new TypedActionResult(ActionResult.SUCCESS, player.getStackInHand(hand));
     }
 
-    private void openForClient(final EntityPlayer player) {
-        GuiScreen screen = GuiHandlerClient.getClientGuiElement(GuiHandlerCommon.GuiId.MODULE_MEMORY, player.getEntityWorld(), player);
+    private void openForClient(final PlayerEntity player) {
+        Gui screen = GuiHandlerClient.getClientGuiElement(GuiHandlerCommon.GuiId.MODULE_MEMORY, player.getEntityWorld(), player);
         if (screen != null) {
-            Minecraft.getMinecraft().displayGuiScreen(screen);
+            MinecraftClient.getInstance().openGui(screen);
         }
     }
 
@@ -64,7 +59,7 @@ public class ItemModuleReadOnlyMemory extends ItemModule {
      * @param nbt the tag to load the data from.
      * @return the data loaded from the tag.
      */
-    public static byte[] loadFromNBT(@Nullable final NBTTagCompound nbt) {
+    public static byte[] loadFromNBT(@Nullable final CompoundTag nbt) {
         if (nbt != null) {
             return nbt.getByteArray(TAG_DATA);
         }
@@ -78,7 +73,7 @@ public class ItemModuleReadOnlyMemory extends ItemModule {
      * @return the data loaded from the stack.
      */
     public static byte[] loadFromStack(final ItemStack stack) {
-        return loadFromNBT(stack.getTagCompound());
+        return loadFromNBT(stack.getTag());
     }
 
     /**
@@ -88,10 +83,10 @@ public class ItemModuleReadOnlyMemory extends ItemModule {
      * @param data  the data to save to the item stack.
      */
     public static void saveToStack(final ItemStack stack, final byte[] data) {
-        NBTTagCompound nbt = stack.getTagCompound();
+        CompoundTag nbt = stack.getTag();
         if (nbt == null) {
-            stack.setTagCompound(nbt = new NBTTagCompound());
+            stack.setTag(nbt = new CompoundTag());
         }
-        nbt.setByteArray(TAG_DATA, data);
+        nbt.putByteArray(TAG_DATA, data);
     }
 }

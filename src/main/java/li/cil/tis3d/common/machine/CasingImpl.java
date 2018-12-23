@@ -12,14 +12,13 @@ import li.cil.tis3d.api.module.traits.Redstone;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.network.Network;
-import li.cil.tis3d.common.tileentity.TileEntityCasing;
-import li.cil.tis3d.common.tileentity.TileEntityController;
+import li.cil.tis3d.common.block.entity.TileEntityCasing;
+import li.cil.tis3d.common.block.entity.TileEntityController;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
 import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.UUID;
@@ -138,7 +137,7 @@ public final class CasingImpl implements Casing {
 
         // End-of-life notification for module if it was active.
         final Module oldModule = getModule(face);
-        if (tileEntity.isEnabled() && oldModule != null && !getCasingWorld().isRemote) {
+        if (tileEntity.isEnabled() && oldModule != null && !getCasingWorld().isClient) {
             oldModule.onDisabled();
         }
 
@@ -150,9 +149,9 @@ public final class CasingImpl implements Casing {
 
         // Reset redstone output if the previous module was redstone capable.
         if (hadRedstone) {
-            if (!getCasingWorld().isRemote) {
+            if (!getCasingWorld().isClient) {
                 tileEntity.markDirty();
-                getCasingWorld().notifyNeighborsOfStateChange(getPosition(), tileEntity.getBlockState().getBlock());
+                getCasingWorld().updateNeighborsAlways(getPosition(), tileEntity.getCachedState().getBlock());
             }
         }
 
@@ -167,7 +166,7 @@ public final class CasingImpl implements Casing {
         }
 
         // Activate the module if the controller is active.
-        if (tileEntity.isEnabled() && module != null && !getCasingWorld().isRemote) {
+        if (tileEntity.isEnabled() && module != null && !getCasingWorld().isClient) {
             module.onEnabled();
         }
 
@@ -237,9 +236,9 @@ public final class CasingImpl implements Casing {
      *
      * @param nbt the data to load.
      */
-    public void readFromNBT(final NBTTagCompound nbt) {
-        for (int index = 0; index < tileEntity.getSizeInventory(); index++) {
-            final ItemStack stack = tileEntity.getStackInSlot(index);
+    public void readFromNBT(final CompoundTag nbt) {
+        for (int index = 0; index < tileEntity.getInvSize(); index++) {
+            final ItemStack stack = tileEntity.getInvStack(index);
             if (stack.isEmpty()) {
                 if (modules[index] != null) {
                     modules[index].onDisposed();
@@ -262,15 +261,15 @@ public final class CasingImpl implements Casing {
             modules[index] = module;
         }
 
-        final NBTTagList modulesNbt = nbt.getTagList(TAG_MODULES, Constants.NBT.TAG_COMPOUND);
+        final ListTag modulesNbt = nbt.getList(TAG_MODULES, Constants.NBT.TAG_COMPOUND);
         final int moduleCount = Math.min(modulesNbt.size(), modules.length);
         for (int i = 0; i < moduleCount; i++) {
             if (modules[i] != null) {
-                modules[i].readFromNBT(modulesNbt.getCompoundTagAt(i));
+                modules[i].readFromNBT(modulesNbt.getCompoundTag(i));
             }
         }
 
-        if (nbt.hasKey(TAG_KEY_MS) && nbt.hasKey(TAG_KEY_LS)) {
+        if (nbt.containsKey(TAG_KEY_MS) && nbt.containsKey(TAG_KEY_LS)) {
             lock = new UUID(nbt.getLong(TAG_KEY_MS), nbt.getLong(TAG_KEY_LS));
         } else {
             lock = null;
@@ -282,20 +281,20 @@ public final class CasingImpl implements Casing {
      *
      * @param nbt the tag to write the data to.
      */
-    public void writeToNBT(final NBTTagCompound nbt) {
-        final NBTTagList modulesNbt = new NBTTagList();
+    public void writeToNBT(final CompoundTag nbt) {
+        final ListTag modulesNbt = new ListTag();
         for (final Module module : modules) {
-            final NBTTagCompound moduleNbt = new NBTTagCompound();
+            final CompoundTag moduleNbt = new CompoundTag();
             if (module != null) {
                 module.writeToNBT(moduleNbt);
             }
             modulesNbt.add(moduleNbt);
         }
-        nbt.setTag(TAG_MODULES, modulesNbt);
+        nbt.put(TAG_MODULES, modulesNbt);
 
         if (lock != null) {
-            nbt.setLong(TAG_KEY_MS, lock.getMostSignificantBits());
-            nbt.setLong(TAG_KEY_LS, lock.getLeastSignificantBits());
+            nbt.putLong(TAG_KEY_MS, lock.getMostSignificantBits());
+            nbt.putLong(TAG_KEY_LS, lock.getLeastSignificantBits());
         }
     }
 
@@ -344,12 +343,12 @@ public final class CasingImpl implements Casing {
     }
 
     @Override
-    public void sendData(final Face face, final NBTTagCompound data, final byte type) {
+    public void sendData(final Face face, final CompoundTag data, final byte type) {
         Network.sendModuleData(this, face, data, type);
     }
 
     @Override
-    public void sendData(final Face face, final NBTTagCompound data) {
+    public void sendData(final Face face, final CompoundTag data) {
         sendData(face, data, (byte) -1);
     }
 
@@ -372,11 +371,11 @@ public final class CasingImpl implements Casing {
      * @return the key, if present.
      */
     private static Optional<UUID> getKeyFromStack(final ItemStack stack) {
-        final NBTTagCompound nbt = stack.getTagCompound();
+        final CompoundTag nbt = stack.getTag();
         if (nbt == null) {
             return Optional.empty();
         }
-        if (!nbt.hasKey(TAG_KEY_MS) || !nbt.hasKey(TAG_KEY_LS)) {
+        if (!nbt.containsKey(TAG_KEY_MS) || !nbt.containsKey(TAG_KEY_LS)) {
             return Optional.empty();
         }
         return Optional.of(new UUID(nbt.getLong(TAG_KEY_MS), nbt.getLong(TAG_KEY_LS)));
@@ -389,11 +388,11 @@ public final class CasingImpl implements Casing {
      * @param key   the key to store on the stack.
      */
     private static void setKeyForStack(final ItemStack stack, final UUID key) {
-        NBTTagCompound nbt = stack.getTagCompound();
+        CompoundTag nbt = stack.getTag();
         if (nbt == null) {
-            stack.setTagCompound(nbt = new NBTTagCompound());
+            stack.setTag(nbt = new CompoundTag());
         }
-        nbt.setLong(TAG_KEY_MS, key.getMostSignificantBits());
-        nbt.setLong(TAG_KEY_LS, key.getLeastSignificantBits());
+        nbt.putLong(TAG_KEY_MS, key.getMostSignificantBits());
+        nbt.putLong(TAG_KEY_LS, key.getLeastSignificantBits());
     }
 }

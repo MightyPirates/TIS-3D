@@ -1,24 +1,9 @@
-buildscript {
-    repositories {
-        jcenter()
-        maven { url = "https://www.dimdev.org/maven" }
-        maven { url = "http://files.minecraftforge.net/maven" }
-        maven { url 'http://repo.spongepowered.org/maven' }
-        maven { url "https://plugins.gradle.org/m2/" }
-    }
-    dependencies {
-        classpath 'org.dimdev:ForgeGradle:2.3-SNAPSHOT'
-        classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
-    }
-}
-
 plugins {
-    id "com.matthewprenger.cursegradle" version "1.0.9"
+    id 'fabric-loom' version '0.2.0-SNAPSHOT'
+//  id "com.matthewprenger.cursegradle" version "1.0.9"
 }
 
-apply plugin: 'net.minecraftforge.gradle.tweaker-client'
 apply plugin: 'java'
-apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'maven-publish'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -58,43 +43,30 @@ ext.simpleVersion = version
 version = "MC${config.minecraft.version}-Rift-${project.version}"
 
 minecraft {
-    version = "${config.minecraft.version}"
-    runDir = "run"
-    tweakClass = 'org.dimdev.riftloader.launch.RiftLoaderClientTweaker'
-    mappings = config.minecraft.mappings
-    replace "@VERSION@", project.simpleVersion
 }
 
 repositories {
     mavenCentral()
-    maven { url 'https://www.dimdev.org/maven/' }
     ivy {
         artifactPattern "http://asie.pl/javadeps/proto/[module]-[revision](-[classifier]).[ext]"
     }
 }
 
 dependencies {
-    implementation 'org.dimdev:rift:1.0.4-51:dev'
+    minecraft "com.mojang:minecraft:18w50a"
+    mappings "net.fabricmc:yarn:18w50a.64"
+    modCompile "net.fabricmc:fabric-loader:0.3.0.74"
+
+    // Fabric API. This is technically optional, but you probably want it anyway.
+    modCompile "net.fabricmc:fabric:0.1.2.63"
+
     compile name: "Jankson", version: "0.0.3"
     compile name: "JanksonShadowed", version: "0.0.3"
-    compile name: "ProtoCharset", version: "0.0.3-0817-deobf"
-}
-
-mixin {
-    defaultObfuscationEnv notch
-    add sourceSets.main, 'mixins.tis3d.refmap.json'
+    compile 'com.google.code.findbugs:jsr305:3.0.2'
 }
 
 processResources {
     inputs.property "version", project.simpleVersion
-    inputs.property "mcversion", project.minecraft.version
-    from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
-        expand 'version':project.simpleVersion, 'mcversion':project.minecraft.version, 'fversion':config.forge.version
-    }
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
-    }
 }
 
 task apiJar(type: Jar) {
@@ -129,22 +101,21 @@ publishing {
     }
 }
 
-curseforge {
-    apiKey = project.hasProperty("curseForgeApiKey") ? project.curseForgeApiKey : ""
-    project {
-        id = config.curse.project.id
-        releaseType = config.curse.project.releaseType
-        changelogType = "markdown"
-        changelog = file("changelog.md")
-        addGameVersion config.minecraft.version
-        addGameVersion "Java 8"
-
-        relations {
-            requiredLibrary 'rift'
-            requiredLibrary 'protocharset'
-        }
-    }
-}
+//curseforge {
+//    apiKey = project.hasProperty("curseForgeApiKey") ? project.curseForgeApiKey : ""
+//    project {
+//        id = config.curse.project.id
+//        releaseType = config.curse.project.releaseType
+//        changelogType = "markdown"
+//        changelog = file("changelog.md")
+//        addGameVersion config.minecraft.version
+//        addGameVersion "Java 8"
+//
+//        relations {
+//            requiredLibrary 'fabric'
+//        }
+//    }
+//}
 
 // this is needed for IntelliJ so we don't have to copy over the assets manually every time
 idea {

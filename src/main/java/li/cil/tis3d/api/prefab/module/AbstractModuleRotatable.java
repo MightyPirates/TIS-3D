@@ -1,13 +1,13 @@
 package li.cil.tis3d.api.prefab.module;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.traits.Rotatable;
 import li.cil.tis3d.api.util.TransformUtil;
 import li.cil.tis3d.util.EnumUtils;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.Vec3d;
 
 /**
@@ -46,9 +46,9 @@ public abstract class AbstractModuleRotatable extends AbstractModule implements 
      */
     protected void rotateForRendering() {
         final int rotation = Port.ROTATION[getFacing().ordinal()];
-        GlStateManager.translate(0.5f, 0.5f, 0);
-        GlStateManager.rotate(90 * rotation, 0, 0, Face.toEnumFacing(getFace()).getYOffset());
-        GlStateManager.translate(-0.5f, -0.5f, 0);
+        GlStateManager.translatef(0.5f, 0.5f, 0);
+        GlStateManager.rotatef(90 * rotation, 0, 0, Face.toEnumFacing(getFace()).getOffsetY());
+        GlStateManager.translatef(-0.5f, -0.5f, 0);
     }
 
     // --------------------------------------------------------------------- //
@@ -63,13 +63,13 @@ public abstract class AbstractModuleRotatable extends AbstractModule implements 
     // Module
 
     @Override
-    public void readFromNBT(final NBTTagCompound nbt) {
+    public void readFromNBT(final CompoundTag nbt) {
         super.readFromNBT(nbt);
         facing = EnumUtils.readFromNBT(Port.class, TAG_FACING, nbt);
     }
 
     @Override
-    public void writeToNBT(final NBTTagCompound nbt) {
+    public void writeToNBT(final CompoundTag nbt) {
         super.writeToNBT(nbt);
         EnumUtils.writeToNBT(facing, TAG_FACING, nbt);
     }

@@ -1,13 +1,12 @@
 package li.cil.tis3d.util;
 
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-
 import javax.annotation.Nullable;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.world.World;
 import java.util.Random;
 
 /**
@@ -26,8 +25,8 @@ public final class InventoryUtils {
      * @return the entity representing the dropped item stack, or <tt>null</tt> if the stack was null or empty.
      */
     @Nullable
-    public static EntityItem drop(final World world, final BlockPos pos, final IInventory inventory, final int index, final int count, final EnumFacing towards) {
-        final ItemStack stack = inventory.decrStackSize(index, count);
+    public static ItemEntity drop(final World world, final BlockPos pos, final Inventory inventory, final int index, final int count, final Direction towards) {
+        final ItemStack stack = inventory.takeInvStack(index, count);
         return spawnStackInWorld(world, pos, stack, towards);
     }
 
@@ -41,16 +40,16 @@ public final class InventoryUtils {
      * @return the entity representing the dropped item stack, or <tt>null</tt> if the stack was null or empty.
      */
     @Nullable
-    public static EntityItem spawnStackInWorld(final World world, final BlockPos pos, final ItemStack stack, final EnumFacing towards) {
+    public static ItemEntity spawnStackInWorld(final World world, final BlockPos pos, final ItemStack stack, final Direction towards) {
         if (stack.isEmpty()) {
             return null;
         }
 
-        final Random rng = world.rand;
+        final Random rng = world.random;
 
-        final double ox = towards.getXOffset();
-        final double oy = towards.getYOffset();
-        final double oz = towards.getZOffset();
+        final double ox = towards.getOffsetX();
+        final double oy = towards.getOffsetY();
+        final double oz = towards.getOffsetZ();
         final double tx = 0.1 * (rng.nextDouble() - 0.5) + ox * 0.65;
         final double ty = 0.1 * (rng.nextDouble() - 0.5) + oy * 0.75 + (ox + oz) * 0.25;
         final double tz = 0.1 * (rng.nextDouble() - 0.5) + oz * 0.65;
@@ -58,11 +57,11 @@ public final class InventoryUtils {
         final double py = pos.getY() + 0.5 + ty;
         final double pz = pos.getZ() + 0.5 + tz;
 
-        final EntityItem entity = new EntityItem(world, px, py, pz, stack.copy());
+        final ItemEntity entity = new ItemEntity(world, px, py, pz, stack.copy());
 
-        entity.motionX = 0.0125 * (rng.nextDouble() - 0.5) + ox * 0.03;
-        entity.motionY = 0.0125 * (rng.nextDouble() - 0.5) + oy * 0.08 + (ox + oz) * 0.03;
-        entity.motionZ = 0.0125 * (rng.nextDouble() - 0.5) + oz * 0.03;
+        entity.velocityX = 0.0125 * (rng.nextDouble() - 0.5) + ox * 0.03;
+        entity.velocityY = 0.0125 * (rng.nextDouble() - 0.5) + oy * 0.08 + (ox + oz) * 0.03;
+        entity.velocityZ = 0.0125 * (rng.nextDouble() - 0.5) + oz * 0.03;
         entity.setPickupDelay(15);
         world.spawnEntity(entity);
 

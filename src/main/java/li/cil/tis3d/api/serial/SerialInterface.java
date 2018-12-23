@@ -1,6 +1,6 @@
 package li.cil.tis3d.api.serial;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 /**
  * Provides serial input and output on an arbitrary block position.
@@ -101,7 +101,7 @@ public interface SerialInterface {
      *
      * @param nbt the tag to write the interface's state to.
      */
-    void writeToNBT(final NBTTagCompound nbt);
+    void writeToNBT(final CompoundTag nbt);
 
     /**
      * Called when a serial port module is created and an earlier interface had
@@ -115,5 +115,5 @@ public interface SerialInterface {
      *
      * @param nbt the tag to restore the interface's state from.
      */
-    void readFromNBT(final NBTTagCompound nbt);
+    void readFromNBT(final CompoundTag nbt);
 }

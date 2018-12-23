@@ -2,10 +2,7 @@ package li.cil.tis3d.api.module.traits;
 
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.module.Module;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 /**
  * Modules implementing this interface will be notified when the block adjacent

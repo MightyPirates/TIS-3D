@@ -4,9 +4,8 @@ import io.netty.buffer.ByteBuf;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.common.TIS3D;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.PacketBuffer;
-import pl.asie.protocharset.rift.network.SendNetwork;
+import net.minecraft.nbt.CompoundTag;
+import li.cil.tis3d.charset.SendNetwork;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -14,9 +13,9 @@ import java.io.IOException;
 public final class MessageCasingInventory extends AbstractMessageWithLocation {
     @SendNetwork public int slot;
     @SendNetwork public ItemStack stack;
-    @SendNetwork public NBTTagCompound moduleData;
+    @SendNetwork public CompoundTag moduleData;
 
-    public MessageCasingInventory(final Casing casing, final int slot, final ItemStack stack, @Nullable final NBTTagCompound moduleData) {
+    public MessageCasingInventory(final Casing casing, final int slot, final ItemStack stack, @Nullable final CompoundTag moduleData) {
         super(casing.getCasingWorld(), casing.getPosition());
         this.slot = slot;
         this.stack = stack;
@@ -37,7 +36,7 @@ public final class MessageCasingInventory extends AbstractMessageWithLocation {
         return stack;
     }
 
-    public NBTTagCompound getModuleData() {
-        return moduleData != null ? moduleData : new NBTTagCompound();
+    public CompoundTag getModuleData() {
+        return moduleData != null ? moduleData : new CompoundTag();
     }
 }

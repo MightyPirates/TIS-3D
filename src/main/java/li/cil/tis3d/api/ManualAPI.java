@@ -1,11 +1,10 @@
 package li.cil.tis3d.api;
 
 import li.cil.tis3d.api.manual.*;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
 import javax.annotation.Nullable;
 
 /**
@@ -163,7 +162,7 @@ public final class ManualAPI {
      *
      * @param player the player to open the manual for.
      */
-    public static void openFor(final EntityPlayer player) {
+    public static void openFor(final PlayerEntity player) {
         if (API.manualAPI != null) {
             API.manualAPI.openFor(player);
         }

@@ -1,10 +1,9 @@
 package li.cil.tis3d.client.manual.segment;
 
 import li.cil.tis3d.client.manual.Document;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
-
+import net.minecraft.client.font.FontRenderer;
 import javax.annotation.Nullable;
+import com.mojang.blaze3d.platform.GlStateManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -53,12 +52,12 @@ public class TextSegment extends BasicTextSegment {
                 final int cy = currentY;
                 hovered = interactive.flatMap(segment -> segment.checkHovered(mouseX, mouseY, cx, cy, stringWidth(part, renderer), (int) (Document.lineHeight(renderer) * scale)));
             }
-            GlStateManager.color(0f, 0f, 0f, 1);
+            GlStateManager.color4f(0f, 0f, 0f, 1);
             GlStateManager.pushMatrix();
-            GlStateManager.translate(currentX, currentY, 0);
-            GlStateManager.scale(scale, scale, scale);
-            GlStateManager.translate(-currentX, -currentY, 0);
-            renderer.drawString(format + part, currentX, currentY, color);
+            GlStateManager.translatef(currentX, currentY, 0);
+            GlStateManager.scalef(scale, scale, scale);
+            GlStateManager.translatef(-currentX, -currentY, 0);
+            renderer.draw(format + part, currentX, currentY, color);
             GlStateManager.popMatrix();
             currentX = x + wrapIndent;
             currentY += lineHeight(renderer);

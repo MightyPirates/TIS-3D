@@ -1,11 +1,11 @@
 package li.cil.tis3d.client.gui;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.module.ModuleTerminal;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.EnumHand;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.util.Hand;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
@@ -13,7 +13,7 @@ import org.lwjgl.opengl.GL11;
  * Invisible GUI for the terminal module, purely used to grab keyboard input.
  */
 
-public final class GuiModuleTerminal extends GuiScreen {
+public final class GuiModuleTerminal extends Gui {
     private final ModuleTerminal module;
 
     GuiModuleTerminal(final ModuleTerminal module) {
@@ -25,20 +25,20 @@ public final class GuiModuleTerminal extends GuiScreen {
     }
 
     @Override
-    public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
-        GlStateManager.disableTexture2D();
+    public void draw(final int mouseX, final int mouseY, final float partialTicks) {
+        GlStateManager.disableTexture();
 
         // To be on the safe side (see manual.Document#render).
-        GlStateManager.disableAlpha();
+        GlStateManager.disableAlphaTest();
 
-        GlStateManager.color(1, 1, 1, 1);
-        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT);
-        GlStateManager.enableDepth();
+        GlStateManager.color4f(1, 1, 1, 1);
+        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT, false);
+        GlStateManager.enableDepthTest();
         GlStateManager.depthFunc(GL11.GL_LEQUAL);
         GlStateManager.depthMask(true);
         GlStateManager.colorMask(false, false, false, false);
         GlStateManager.pushMatrix();
-        GlStateManager.translate(0, 0, 500);
+        GlStateManager.translatef(0, 0, 500);
 
         RenderUtil.drawUntexturedQuad(8, 8, width - 16, height - 16);
 
@@ -48,7 +48,7 @@ public final class GuiModuleTerminal extends GuiScreen {
 
         RenderUtil.drawUntexturedQuad(4, 4, width - 8, height - 8);
 
-        GlStateManager.enableTexture2D();
+        GlStateManager.enableTexture();
     }
 
     @Override
@@ -87,23 +87,23 @@ public final class GuiModuleTerminal extends GuiScreen {
         module.writeToInput(chr);
 
         if (Settings.animateTypingHand) {
-            mc.player.swingArm(EnumHand.MAIN_HAND);
+            client.player.swingHand(Hand.MAIN);
         }
         return true;
     }
 
     @Override
-    public void initGui() {
+    public void onInitialized() {
         // TODO Keyboard.enableRepeatEvents(true);
     }
 
     @Override
-    public void onGuiClosed() {
+    public void onClosed() {
         // TODO Keyboard.enableRepeatEvents(false);
     }
 
     @Override
-    public boolean doesGuiPauseGame() {
+    public boolean isPauseScreen() {
         return false;
     }
 

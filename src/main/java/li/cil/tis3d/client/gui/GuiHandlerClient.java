@@ -6,17 +6,13 @@ import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.common.gui.GuiHandlerCommon;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.module.ModuleTerminal;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.IInteractionObject;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Hand;
+import net.minecraft.util.HitResult;
 import net.minecraft.world.World;
-import org.dimdev.rift.listener.client.GameGuiAdder;
 
 import javax.annotation.Nullable;
 
@@ -24,7 +20,7 @@ import javax.annotation.Nullable;
  * GUI handler for the client side - which is, still, all we need.
  */
 public final class GuiHandlerClient extends GuiHandlerCommon {
-    public static GuiScreen getClientGuiElement(GuiId id, World world, EntityPlayer player) {
+    public static Gui getClientGuiElement(GuiId id, World world, PlayerEntity player) {
         switch (id) {
             case BOOK_CODE:
                 return getGuiBookCode(player);
@@ -41,8 +37,8 @@ public final class GuiHandlerClient extends GuiHandlerCommon {
     // --------------------------------------------------------------------- //
 
     @Nullable
-    private static GuiScreen getGuiBookCode(final EntityPlayer player) {
-        if (!Items.isBookCode(player.getHeldItem(EnumHand.MAIN_HAND))) {
+    private static Gui getGuiBookCode(final PlayerEntity player) {
+        if (!Items.isBookCode(player.getStackInHand(Hand.MAIN))) {
             return null;
         }
 
@@ -50,19 +46,19 @@ public final class GuiHandlerClient extends GuiHandlerCommon {
     }
 
     @Nullable
-    private static GuiScreen getGuiModuleTerminal(final World world) {
-        final RayTraceResult hit = Minecraft.getMinecraft().objectMouseOver;
-        if (hit == null || hit.typeOfHit != RayTraceResult.Type.BLOCK) {
+    private static Gui getGuiModuleTerminal(final World world) {
+        final HitResult hit = MinecraftClient.getInstance().hitResult;
+        if (hit == null || hit.type != HitResult.Type.BLOCK) {
             return null;
         }
 
-        final TileEntity tileEntity = world.getTileEntity(hit.getBlockPos());
+        final BlockEntity tileEntity = world.getBlockEntity(hit.getBlockPos());
         if (!(tileEntity instanceof Casing)) {
             return null;
         }
 
         final Casing casing = (Casing) tileEntity;
-        final Module module = casing.getModule(Face.fromEnumFacing(hit.sideHit));
+        final Module module = casing.getModule(Face.fromEnumFacing(hit.side));
         if (!(module instanceof ModuleTerminal)) {
             return null;
         }
@@ -71,8 +67,8 @@ public final class GuiHandlerClient extends GuiHandlerCommon {
     }
 
     @Nullable
-    private static GuiScreen getGuiModuleMemory(final EntityPlayer player) {
-        if (!Items.isModuleReadOnlyMemory(player.getHeldItem(EnumHand.MAIN_HAND))) {
+    private static Gui getGuiModuleMemory(final PlayerEntity player) {
+        if (!Items.isModuleReadOnlyMemory(player.getStackInHand(Hand.MAIN))) {
             return null;
         }
 

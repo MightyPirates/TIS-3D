@@ -4,7 +4,6 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.ModuleProvider;
 import net.minecraft.item.ItemStack;
-
 import javax.annotation.Nullable;
 
 /**

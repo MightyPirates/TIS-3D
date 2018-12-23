@@ -1,22 +1,21 @@
 package li.cil.tis3d.common.module;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModule;
 import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.renderer.TextureLoader;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.init.Particles;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
+import li.cil.tis3d.client.init.Textures;
+import net.minecraft.block.enums.Instrument;
+import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 
 /**
  * The audio module, emitting sounds like none other.
@@ -24,16 +23,6 @@ import net.minecraft.world.WorldServer;
 public final class ModuleAudio extends AbstractModule {
     // --------------------------------------------------------------------- //
     // Computed data
-
-    /**
-     * Resolve instrument ID to sound event used for instrument.
-     */
-    private static final SoundEvent[] INSTRUMENTS = new SoundEvent[]{SoundEvents.BLOCK_NOTE_BLOCK_HARP, SoundEvents.BLOCK_NOTE_BLOCK_BASEDRUM, SoundEvents.BLOCK_NOTE_BLOCK_SNARE, SoundEvents.BLOCK_NOTE_BLOCK_HAT, SoundEvents.BLOCK_NOTE_BLOCK_BASS, SoundEvents.BLOCK_NOTE_BLOCK_FLUTE, SoundEvents.BLOCK_NOTE_BLOCK_BELL, SoundEvents.BLOCK_NOTE_BLOCK_GUITAR, SoundEvents.BLOCK_NOTE_BLOCK_CHIME, SoundEvents.BLOCK_NOTE_BLOCK_XYLOPHONE};
-
-    // TODO
-    /* static {
-        assert INSTRUMENTS.length == NoteBlockEvent.Instrument.values().length;
-    } */
 
     /**
      * The last tick we made a sound. Used to avoid emitting multiple sounds
@@ -57,19 +46,19 @@ public final class ModuleAudio extends AbstractModule {
 
         stepInput();
 
-        lastStep = world.getTotalWorldTime();
+        lastStep = world.getTime();
     }
 
 
     @Override
-    public void render(final TileEntityRendererDispatcher rendererDispatcher, final float partialTicks) {
+    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
         if (!getCasing().isEnabled()) {
             return;
         }
 
         GlStateManager.enableBlend();
 
-        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_AUDIO));
+        RenderUtil.drawQuad(RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_AUDIO));
 
         GlStateManager.disableBlend();
     }
@@ -89,7 +78,7 @@ public final class ModuleAudio extends AbstractModule {
             if (receivingPipe.canTransfer()) {
                 // Don't actually read more values if we already sent a packet this tick.
                 final World world = getCasing().getCasingWorld();
-                if (world.getTotalWorldTime() > lastStep) {
+                if (world.getTime() > lastStep) {
                     playNote(receivingPipe.read());
                 }
             }
@@ -115,23 +104,23 @@ public final class ModuleAudio extends AbstractModule {
         final World world = getCasing().getCasingWorld();
         final BlockPos pos = getCasing().getPosition();
         // TODO
-        if (instrumentId >= INSTRUMENTS.length) instrumentId = 0;
+        if (instrumentId >= Instrument.values().length) instrumentId = 0;
         /* final NoteBlockEvent.Play event = new NoteBlockEvent.Play(world, pos, world.getBlockState(pos), noteId, instrumentId);
         if (!MinecraftForge.EVENT_BUS.post(event)) { */
             // Not cancelled, get pitch, sound effect name.
             final int note = /* event.getVanillaNoteId(); */ noteId;
             final float pitch = (float) Math.pow(2, (note - 12) / 12.0);
-            final SoundEvent sound = INSTRUMENTS[/* event.getInstrument().ordinal() */ instrumentId];
+            final Instrument instrument = Instrument.values()[instrumentId];
 
             // Offset to have the actual origin be in front of the module.
-            final EnumFacing facing = Face.toEnumFacing(getFace());
-            final double x = pos.getX() + 0.5 + facing.getXOffset() * 0.6;
-            final double y = pos.getY() + 0.5 + facing.getYOffset() * 0.6;
-            final double z = pos.getZ() + 0.5 + facing.getZOffset() * 0.6;
+            final Direction facing = Face.toEnumFacing(getFace());
+            final double x = pos.getX() + 0.5 + facing.getOffsetX() * 0.6;
+            final double y = pos.getY() + 0.5 + facing.getOffsetY() * 0.6;
+            final double z = pos.getZ() + 0.5 + facing.getOffsetZ() * 0.6;
 
             // Let there be sound!
-            world.playSound(null, x, y, z, sound, SoundCategory.BLOCKS, volume, pitch);
-            ((WorldServer) world).spawnParticle(Particles.NOTE, x, y, z, 1, 0, 0, 0, 0);
+            world.playSound(null, x, y, z, instrument.getSound(), SoundCategory.BLOCK, volume, pitch);
+            ((ServerWorld) world).method_14199(ParticleTypes.NOTE, x, y, z, 1, 0, 0, 0, 0);
         /* } */
     }
 }

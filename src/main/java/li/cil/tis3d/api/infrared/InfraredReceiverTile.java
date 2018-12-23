@@ -1,9 +1,8 @@
 package li.cil.tis3d.api.infrared;
 
-import net.minecraft.util.EnumFacing;
-
 import javax.annotation.Nullable;
+import net.minecraft.util.math.Direction;
 
 public interface InfraredReceiverTile {
-	@Nullable InfraredReceiver getInfraredReceiver(EnumFacing facing);
+	@Nullable InfraredReceiver getInfraredReceiver(Direction facing);
 }

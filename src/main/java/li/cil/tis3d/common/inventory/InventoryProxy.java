@@ -1,46 +1,46 @@
 package li.cil.tis3d.common.inventory;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.text.TextComponent;
 
-public interface InventoryProxy extends IInventory {
-    IInventory getInventory();
+public interface InventoryProxy extends Inventory {
+    Inventory getInventory();
 
     @Override
-    default int getSizeInventory() {
-        return getInventory().getSizeInventory();
+    default int getInvSize() {
+        return getInventory().getInvSize();
     }
 
     @Override
-    default boolean isEmpty() {
-        return getInventory().isEmpty();
+    default boolean isInvEmpty() {
+        return getInventory().isInvEmpty();
     }
 
     @Override
-    default ItemStack getStackInSlot(final int slot) {
-        return getInventory().getStackInSlot(slot);
+    default ItemStack getInvStack(final int slot) {
+        return getInventory().getInvStack(slot);
     }
 
     @Override
-    default ItemStack decrStackSize(final int slot, final int count) {
-        return getInventory().decrStackSize(slot, count);
+    default ItemStack takeInvStack(final int slot, final int count) {
+        return getInventory().takeInvStack(slot, count);
     }
 
     @Override
-    default ItemStack removeStackFromSlot(final int slot) {
-        return getInventory().removeStackFromSlot(slot);
+    default ItemStack removeInvStack(final int slot) {
+        return getInventory().removeInvStack(slot);
     }
 
     @Override
-    default void setInventorySlotContents(final int slot, final ItemStack stack) {
-        getInventory().setInventorySlotContents(slot, stack);
+    default void setInvStack(final int slot, final ItemStack stack) {
+        getInventory().setInvStack(slot, stack);
     }
 
     @Override
-    default int getInventoryStackLimit() {
-        return getInventory().getInventoryStackLimit();
+    default int getInvMaxStackAmount() {
+        return getInventory().getInvMaxStackAmount();
     }
 
     @Override
@@ -49,52 +49,52 @@ public interface InventoryProxy extends IInventory {
     }
 
     @Override
-    default boolean isUsableByPlayer(final EntityPlayer player) {
-        return getInventory().isUsableByPlayer(player);
+    default boolean canPlayerUseInv(final PlayerEntity player) {
+        return getInventory().canPlayerUseInv(player);
     }
 
     @Override
-    default void openInventory(final EntityPlayer player) {
-        getInventory().openInventory(player);
+    default void onInvOpen(final PlayerEntity player) {
+        getInventory().onInvOpen(player);
     }
 
     @Override
-    default void closeInventory(final EntityPlayer player) {
-        getInventory().closeInventory(player);
+    default void onInvClose(final PlayerEntity player) {
+        getInventory().onInvClose(player);
     }
 
     @Override
-    default boolean isItemValidForSlot(final int slot, final ItemStack stack) {
-        return getInventory().isItemValidForSlot(slot, stack);
+    default boolean isValidInvStack(final int slot, final ItemStack stack) {
+        return getInventory().isValidInvStack(slot, stack);
     }
 
     @Override
-    default int getField(final int index) {
-        return getInventory().getField(index);
+    default int getInvProperty(final int index) {
+        return getInventory().getInvProperty(index);
     }
 
     @Override
-    default void setField(final int index, final int value) {
-        getInventory().setField(index, value);
+    default void setInvProperty(final int index, final int value) {
+        getInventory().setInvProperty(index, value);
     }
 
     @Override
-    default int getFieldCount() {
-        return getInventory().getFieldCount();
+    default int getInvPropertyCount() {
+        return getInventory().getInvPropertyCount();
     }
 
     @Override
-    default void clear() {
-        getInventory().clear();
+    default void clearInv() {
+        getInventory().clearInv();
     }
 
     @Override
-    default ITextComponent getName() {
+    default TextComponent getName() {
         return getInventory().getName();
     }
 
     @Override
-    default ITextComponent getCustomName() {
+    default TextComponent getCustomName() {
         return getInventory().getCustomName();
     }
 
@@ -104,17 +104,17 @@ public interface InventoryProxy extends IInventory {
     }
 
     @Override
-    default ITextComponent getDisplayName() {
+    default TextComponent getDisplayName() {
         return getInventory().getDisplayName();
     }
 
     @Override
-    default int getWidth() {
-        return getInventory().getWidth();
+    default int getInvWidth() {
+        return getInventory().getInvWidth();
     }
 
     @Override
-    default int getHeight() {
-        return getInventory().getHeight();
+    default int getInvHeight() {
+        return getInventory().getInvHeight();
     }
 }

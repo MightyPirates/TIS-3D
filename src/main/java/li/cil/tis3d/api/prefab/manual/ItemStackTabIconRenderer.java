@@ -1,10 +1,10 @@
 package li.cil.tis3d.api.prefab.manual;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.tis3d.api.manual.TabIconRenderer;
 import li.cil.tis3d.api.util.RenderUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.item.ItemStack;
 
 /**
@@ -22,8 +22,8 @@ public class ItemStackTabIconRenderer implements TabIconRenderer {
     public void render() {
         GlStateManager.enableRescaleNormal();
         RenderUtil.ignoreLighting();
-        RenderHelper.enableGUIStandardItemLighting();
-        Minecraft.getMinecraft().getRenderItem().renderItemAndEffectIntoGUI(stack, 0, 0);
-        RenderHelper.disableStandardItemLighting();
+        GuiLighting.enableForItems();
+        MinecraftClient.getInstance().getItemRenderer().renderItemAndGlowInGui(stack, 0, 0);
+        GuiLighting.disable();
     }
 }

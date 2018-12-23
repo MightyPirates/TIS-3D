@@ -1,16 +1,16 @@
 package li.cil.tis3d.common.network.message;
 
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
-import pl.asie.protocharset.rift.network.NetworkContext;
-import pl.asie.protocharset.rift.network.Packet;
-import pl.asie.protocharset.rift.network.SendNetwork;
+import li.cil.tis3d.charset.NetworkContext;
+import li.cil.tis3d.charset.Packet;
+import li.cil.tis3d.charset.SendNetwork;
+import net.minecraft.world.dimension.DimensionType;
 
 public abstract class AbstractMessageWithDimension extends AbstractMessage {
-    @SendNetwork public int dimension;
+    @SendNetwork public DimensionType dimension;
 
     AbstractMessageWithDimension(final World world) {
-        this.dimension = world.provider.getDimensionType().getId();
+        this.dimension = world.dimension.getType();
     }
 
     AbstractMessageWithDimension() {
@@ -18,7 +18,7 @@ public abstract class AbstractMessageWithDimension extends AbstractMessage {
 
     // --------------------------------------------------------------------- //
 
-    public int getDimension() {
+    public DimensionType getDimension() {
         return dimension;
     }
 }

@@ -1,25 +1,25 @@
 package li.cil.tis3d.common.inventory;
 
-import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Direction;
 
-public interface SidedInventoryProxy extends InventoryProxy, ISidedInventory {
+public interface SidedInventoryProxy extends InventoryProxy, SidedInventory {
     @Override
-    ISidedInventory getInventory();
+    SidedInventory getInventory();
 
     @Override
-    default int[] getSlotsForFace(final EnumFacing facing) {
-        return getInventory().getSlotsForFace(facing);
+    default int[] getInvAvailableSlots(final Direction facing) {
+        return getInventory().getInvAvailableSlots(facing);
     }
 
     @Override
-    default boolean canInsertItem(final int slot, final ItemStack stack, final EnumFacing facing) {
-        return getInventory().canInsertItem(slot, stack, facing);
+    default boolean canInsertInvStack(final int slot, final ItemStack stack, final Direction facing) {
+        return getInventory().canInsertInvStack(slot, stack, facing);
     }
 
     @Override
-    default boolean canExtractItem(final int slot, final ItemStack stack, final EnumFacing facing) {
-        return getInventory().canExtractItem(slot, stack, facing);
+    default boolean canExtractInvStack(final int slot, final ItemStack stack, final Direction facing) {
+        return getInventory().canExtractInvStack(slot, stack, facing);
     }
 }

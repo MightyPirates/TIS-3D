@@ -1,33 +1,31 @@
 package li.cil.tis3d.client.gui;
 
 import li.cil.tis3d.api.ManualAPI;
+import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.client.manual.Document;
 import li.cil.tis3d.client.manual.segment.InteractiveSegment;
 import li.cil.tis3d.client.manual.segment.Segment;
-import li.cil.tis3d.client.renderer.TextureLoader;
 import li.cil.tis3d.common.api.ManualAPIImpl;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.FontRenderer;
+import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.resource.language.I18n;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-
 import org.lwjgl.opengl.GL11;
+import com.mojang.blaze3d.platform.GlStateManager;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Optional;
 
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 
-public final class GuiManual extends GuiScreen {
+public final class GuiManual extends Gui {
     private static final int documentMaxWidth = 220;
     private static final int documentMaxHeight = 176;
     private static final int scrollPosX = 250;
@@ -63,10 +61,10 @@ public final class GuiManual extends GuiScreen {
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
+    public void onInitialized() {
+        super.onInitialized();
 
-        final ScaledResolution screenSize = new ScaledResolution(mc.mainWindow.getWidth(), mc.mainWindow.getHeight());
+        final ScaledResolution screenSize = new ScaledResolution(client.window.getScaledWidth(), client.window.getScaledHeight());
         final ScaledResolution guiSize = new ScaledResolution(windowWidth, windowHeight);
         final int midX = screenSize.scaledWidth / 2;
         final int midY = screenSize.scaledHeight / 2;
@@ -78,15 +76,15 @@ public final class GuiManual extends GuiScreen {
         for (int i = 0; i < ManualAPIImpl.getTabs().size() && i < maxTabsPerSide; i++) {
             final int x = guiLeft + tabPosX;
             final int y = guiTop + tabPosY + i * (tabHeight - tabOverlap);
-            this.addButton(new ImageButton(i, x, y, tabWidth, tabHeight - tabOverlap - 1, TextureLoader.LOCATION_GUI_MANUAL_TAB) {
+            this.addButton(new ImageButton(i, x, y, tabWidth, tabHeight - tabOverlap - 1, Textures.LOCATION_GUI_MANUAL_TAB) {
                 @Override
-                public void mousePressed(double p_mouseClicked_1_, double p_mouseClicked_3_) {
+                public void onPressed(double p_mouseClicked_1_, double p_mouseClicked_3_) {
                     ManualAPI.navigate(ManualAPIImpl.getTabs().get(id).path);
                 }
             }.setImageHeight(tabHeight).setVerticalImageOffset(-tabOverlap / 2));
         }
 
-        scrollButton = new ImageButton(-1, guiLeft + scrollPosX, guiTop + scrollPosY, 26, 13, TextureLoader.LOCATION_GUI_MANUAL_SCROLL) {
+        scrollButton = new ImageButton(-1, guiLeft + scrollPosX, guiTop + scrollPosY, 26, 13, Textures.LOCATION_GUI_MANUAL_SCROLL) {
             @Override
             public boolean mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_, int p_mouseClicked_5_) {
                 return false; // Handled in parent mouseClicked
@@ -98,22 +96,22 @@ public final class GuiManual extends GuiScreen {
     }
 
     @Override
-    public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
+    public void draw(final int mouseX, final int mouseY, final float partialTicks) {
         GlStateManager.enableBlend();
 
-        super.drawScreen(mouseX, mouseY, partialTicks);
+        super.draw(mouseX, mouseY, partialTicks);
 
-        mc.getTextureManager().bindTexture(TextureLoader.LOCATION_GUI_MANUAL_BACKGROUND);
-        Gui.drawModalRectWithCustomSizedTexture(guiLeft, guiTop, 0, 0, xSize, ySize, windowWidth, windowHeight);
+        client.getTextureManager().bindTexture(Textures.LOCATION_GUI_MANUAL_BACKGROUND);
+        Drawable.drawTexturedRect(guiLeft, guiTop, 0, 0, xSize, ySize, windowWidth, windowHeight);
 
         scrollButton.enabled = canScroll();
         scrollButton.hoverOverride = isDragging;
 
         for (int i = 0; i < ManualAPIImpl.getTabs().size() && i < maxTabsPerSide; i++) {
             final ManualAPIImpl.Tab tab = ManualAPIImpl.getTabs().get(i);
-            final ImageButton button = (ImageButton) buttonList.get(i);
+            final ImageButton button = (ImageButton) buttons.get(i);
             GlStateManager.pushMatrix();
-            GlStateManager.translate(button.x + 30, button.y + 4 - tabOverlap / 2, zLevel);
+            GlStateManager.translatef(button.x + 30, button.y + 4 - tabOverlap / 2, (int) zOffset);
             tab.renderer.render();
             GlStateManager.popMatrix();
         }
@@ -121,21 +119,21 @@ public final class GuiManual extends GuiScreen {
         currentSegment = Document.render(document, guiLeft + 16, guiTop + 48, documentMaxWidth, documentMaxHeight, offset(), getFontRenderer(), mouseX, mouseY);
 
         if (!isDragging) {
-            currentSegment.ifPresent(s -> s.tooltip().ifPresent(t -> drawHoveringText(Collections.singletonList(I18n.format(t)), mouseX, mouseY)));
+            currentSegment.ifPresent(s -> s.tooltip().ifPresent(t -> drawTooltip(Collections.singletonList(I18n.translate(t)), mouseX, mouseY)));
 
             for (int i = 0; i < ManualAPIImpl.getTabs().size() && i < maxTabsPerSide; i++) {
                 final ManualAPIImpl.Tab tab = ManualAPIImpl.getTabs().get(i);
-                final ImageButton button = (ImageButton) buttonList.get(i);
+                final ImageButton button = (ImageButton) buttons.get(i);
                 if (mouseX > button.x && mouseX < button.x + button.getWidth() && mouseY > button.y && mouseY < button.y + button.getHeight()) {
                     if (tab.tooltip != null) {
-                        drawHoveringText(Collections.singletonList(I18n.format(tab.tooltip)), mouseX, mouseY);
+                        drawTooltip(Collections.singletonList(I18n.translate(tab.tooltip)), mouseX, mouseY);
                     }
                 }
             }
         }
 
         if (canScroll() && (isCoordinateOverScrollBar(mouseX - guiLeft, mouseY - guiTop) || isDragging)) {
-            drawHoveringText(Collections.singletonList(100 * offset() / maxOffset() + "%"), guiLeft + scrollPosX + scrollWidth, scrollButton.y + scrollButton.getHeight() + 1);
+            drawTooltip(Collections.singletonList(100 * offset() / maxOffset() + "%"), guiLeft + scrollPosX + scrollWidth, scrollButton.y + scrollButton.getHeight() + 1);
         }
     }
 
@@ -149,11 +147,11 @@ public final class GuiManual extends GuiScreen {
 
     @Override
     public boolean keyPressed(int code, int scancode, int mods) {
-        if (mc.gameSettings.keyBindJump.func_197976_a(code, scancode)) {
+        if (client.options.keyJump.matches(code, scancode)) {
             popPage();
             return true;
-        } else if (mc.gameSettings.keyBindInventory.func_197976_a(code, scancode)) {
-            mc.player.closeScreen();
+        } else if (client.options.keyInventory.matches(code, scancode)) {
+            client.player.closeGui();
             return true;
         } else {
             return super.keyPressed(code, scancode, mods);
@@ -210,7 +208,7 @@ public final class GuiManual extends GuiScreen {
     }
 
     @Override
-    public boolean doesGuiPauseGame() {
+    public boolean isPauseScreen() {
         return false;
     }
 
@@ -244,7 +242,7 @@ public final class GuiManual extends GuiScreen {
             ManualAPIImpl.popPath();
             refreshPage();
         } else {
-            mc.player.closeScreen();
+            client.player.closeGui();
         }
     }
 
@@ -271,13 +269,13 @@ public final class GuiManual extends GuiScreen {
             y >= scrollPosY && y < scrollPosY + scrollHeight;
     }
 
-    private static class ImageButton extends GuiButton {
-        private final ResourceLocation image;
+    private static class ImageButton extends ButtonWidget {
+        private final Identifier image;
         private boolean hoverOverride = false;
         private int verticalImageOffset = 0;
         private int imageHeightOverride = 0;
 
-        ImageButton(final int id, final int x, final int y, final int w, final int h, final ResourceLocation image) {
+        ImageButton(final int id, final int x, final int y, final int w, final int h, final Identifier image) {
             super(id, x, y, w, h, "");
             this.image = image;
         }
@@ -301,10 +299,10 @@ public final class GuiManual extends GuiScreen {
         }
 
         @Override
-        public void drawButton(final int mouseX, final int mouseY, final float partialTicks) {
+        public void draw(final int mouseX, final int mouseY, final float partialTicks) {
             if (visible) {
-                Minecraft.getMinecraft().getTextureManager().bindTexture(image);
-                GlStateManager.color(1, 1, 1, 1);
+                MinecraftClient.getInstance().getTextureManager().bindTexture(image);
+                GlStateManager.color4f(1, 1, 1, 1);
 
                 hovered = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
 
@@ -315,16 +313,16 @@ public final class GuiManual extends GuiScreen {
 
                 final double u0 = 0;
                 final double u1 = u0 + 1;
-                final double v0 = (hoverOverride || getHoverState(hovered) == 2) ? 0.5 : 0;
+                final double v0 = (hoverOverride || isHovered()) ? 0.5 : 0;
                 final double v1 = v0 + 0.5;
 
                 final Tessellator t = Tessellator.getInstance();
-                final BufferBuilder b = t.getBuffer();
-                b.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-                b.pos(x0, y1, zLevel).tex(u0, v1).endVertex();
-                b.pos(x1, y1, zLevel).tex(u1, v1).endVertex();
-                b.pos(x1, y0, zLevel).tex(u1, v0).endVertex();
-                b.pos(x0, y0, zLevel).tex(u0, v0).endVertex();
+                final BufferBuilder b = t.getBufferBuilder();
+                b.begin(GL11.GL_QUADS, VertexFormats.POSITION_UV);
+                b.vertex(x0, y1, zOffset).texture(u0, v1).next();
+                b.vertex(x1, y1, zOffset).texture(u1, v1).next();
+                b.vertex(x1, y0, zOffset).texture(u1, v0).next();
+                b.vertex(x0, y0, zOffset).texture(u0, v0).next();
                 t.draw();
             }
         }
@@ -336,7 +334,7 @@ public final class GuiManual extends GuiScreen {
 
         ScaledResolution(final int width, final int height) {
             int scaleFactor = 1;
-            int guiScale = Minecraft.getMinecraft().gameSettings.guiScale;
+            int guiScale = MinecraftClient.getInstance().options.guiScale;
 
             if (guiScale == 0) {
                 guiScale = 1000;
@@ -346,7 +344,7 @@ public final class GuiManual extends GuiScreen {
                 ++scaleFactor;
             }
 
-            if (Minecraft.getMinecraft().getForceUnicodeFont() && scaleFactor % 2 != 0 && scaleFactor != 1) {
+            if (MinecraftClient.getInstance().forcesUnicodeFont() && scaleFactor % 2 != 0 && scaleFactor != 1) {
                 --scaleFactor;
             }
 

@@ -1,7 +1,7 @@
 package li.cil.tis3d.common.network.message;
 
 import io.netty.buffer.ByteBuf;
-import pl.asie.protocharset.rift.network.SendNetwork;
+import li.cil.tis3d.charset.SendNetwork;
 
 public final class MessageModuleReadOnlyMemoryData extends AbstractMessage {
     @SendNetwork public byte[] data;

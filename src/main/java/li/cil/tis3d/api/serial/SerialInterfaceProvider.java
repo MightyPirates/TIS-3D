@@ -1,10 +1,9 @@
 package li.cil.tis3d.api.serial;
 
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-
 import javax.annotation.Nullable;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.world.World;
 
 /**
  * Creates a serial interface instance for a specified block position.
@@ -21,7 +20,7 @@ public interface SerialInterfaceProvider {
      * @param side     the side of the position in question.
      * @return whether a {@link SerialInterface} can be provided for the position.
      */
-    boolean worksWith(final World world, final BlockPos position, final EnumFacing side);
+    boolean worksWith(final World world, final BlockPos position, final Direction side);
 
     /**
      * Creates a new serial interface instance for the specified position.
@@ -32,7 +31,7 @@ public interface SerialInterfaceProvider {
      * @return the interface to use for communicating with the position.
      */
     @Nullable
-    SerialInterface interfaceFor(final World world, final BlockPos position, final EnumFacing side);
+    SerialInterface interfaceFor(final World world, final BlockPos position, final Direction side);
 
     /**
      * A reference to a manual entry describing the protocol used by the
@@ -76,5 +75,5 @@ public interface SerialInterfaceProvider {
      * @param serialInterface the interface to validate.
      * @return <tt>true</tt> if the interface is still valid, <tt>false</tt> if a new one should be created.
      */
-    boolean isValid(final World world, final BlockPos position, final EnumFacing side, final SerialInterface serialInterface);
+    boolean isValid(final World world, final BlockPos position, final Direction side, final SerialInterface serialInterface);
 }

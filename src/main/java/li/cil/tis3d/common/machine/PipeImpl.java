@@ -7,7 +7,7 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.util.EnumUtils;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockPos;
 
 /**
@@ -113,16 +113,16 @@ public final class PipeImpl implements Pipe {
         }
     }
 
-    public void readFromNBT(final NBTTagCompound nbt) {
+    public void readFromNBT(final CompoundTag nbt) {
         readState = EnumUtils.readFromNBT(State.class, TAG_READ_STATE, nbt);
         writeState = EnumUtils.readFromNBT(State.class, TAG_WRITE_STATE, nbt);
         value = nbt.getShort(TAG_VALUE);
     }
 
-    public void writeToNBT(final NBTTagCompound nbt) {
+    public void writeToNBT(final CompoundTag nbt) {
         EnumUtils.writeToNBT(readState, TAG_READ_STATE, nbt);
         EnumUtils.writeToNBT(writeState, TAG_WRITE_STATE, nbt);
-        nbt.setShort(TAG_VALUE, value);
+        nbt.putShort(TAG_VALUE, value);
     }
 
     private void finishTransfer() {
@@ -211,9 +211,9 @@ public final class PipeImpl implements Pipe {
 
     private void sendEffect() {
         final BlockPos position = host.getPipeHostPosition();
-        final double ox = Face.toEnumFacing(receivingFace).getXOffset() + Face.toEnumFacing(sendingFace).getXOffset();
-        final double oy = Face.toEnumFacing(receivingFace).getYOffset() + Face.toEnumFacing(sendingFace).getYOffset();
-        final double oz = Face.toEnumFacing(receivingFace).getZOffset() + Face.toEnumFacing(sendingFace).getZOffset();
+        final double ox = Face.toEnumFacing(receivingFace).getOffsetX() + Face.toEnumFacing(sendingFace).getOffsetX();
+        final double oy = Face.toEnumFacing(receivingFace).getOffsetY() + Face.toEnumFacing(sendingFace).getOffsetY();
+        final double oz = Face.toEnumFacing(receivingFace).getOffsetZ() + Face.toEnumFacing(sendingFace).getOffsetZ();
         final double x = ox * 0.55 + position.getX() + 0.5;
         final double y = oy * 0.55 + position.getY() + 0.5;
         final double z = oz * 0.55 + position.getZ() + 0.5;

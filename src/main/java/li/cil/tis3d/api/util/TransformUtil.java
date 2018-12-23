@@ -2,7 +2,6 @@ package li.cil.tis3d.api.util;
 
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.Vec3d;
 
 /**

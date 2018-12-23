@@ -9,20 +9,22 @@ import li.cil.tis3d.common.item.ItemBookManual;
 import li.cil.tis3d.common.item.ItemKey;
 import li.cil.tis3d.common.item.ItemModule;
 import li.cil.tis3d.common.item.ItemModuleReadOnlyMemory;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.events.PlayerInteractionEvent;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.item.block.BlockItem;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.HitResult;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import org.dimdev.rift.listener.ItemAdder;
-import pl.asie.protocharset.rift.listeners.RightClickListener;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -30,18 +32,18 @@ import java.util.*;
 /**
  * Manages setup, registration and lookup of items.
  */
-public final class Items implements ItemAdder, RightClickListener {
-    private static final Map<ResourceLocation, Item> modules = new HashMap<>();
+public final class Items implements ModInitializer {
+    private static final Map<Identifier, Item> modules = new HashMap<>();
 
     public static Item bookCode = null;
     public static Item bookManual = null;
     public static Item key = null;
     public static Item keyCreative = null;
     public static Item prism = null;
-    public static ItemBlock casing = null;
-    public static ItemBlock controller = null;
+    public static BlockItem casing = null;
+    public static BlockItem controller = null;
 
-    public static Map<ResourceLocation, Item> getModules() {
+    public static Map<Identifier, Item> getModules() {
         return modules;
     }
 
@@ -60,24 +62,20 @@ public final class Items implements ItemAdder, RightClickListener {
     }
 
     // TODO: This is a doesSneakBypassUse hack.
-    @Override
-    public EnumActionResult onRightClick(EntityPlayer entityPlayer, World world, EnumHand enumHand, RayTraceResult rayTraceResult) {
-        if (!entityPlayer.isSneaking() || rayTraceResult.typeOfHit != RayTraceResult.Type.BLOCK) {
-            return EnumActionResult.PASS;
+    public ActionResult onRightClick(PlayerEntity entityPlayer, World world, Hand enumHand, BlockPos pos, Direction direction, float hitX, float hitY, float hitZ) {
+        if (!entityPlayer.isSneaking()) {
+            return ActionResult.PASS;
         }
 
-        ItemStack stack = entityPlayer.getHeldItem(enumHand);
+        ItemStack stack = entityPlayer.getStackInHand(enumHand);
         if (stack.getItem() instanceof ItemBookCode || stack.getItem() instanceof ItemKey || stack.getItem() instanceof ItemModuleReadOnlyMemory) {
-            IBlockState state = world.getBlockState(rayTraceResult.getBlockPos());
+            BlockState state = world.getBlockState(pos);
             if (state.getBlock() instanceof BlockCasing) {
-                return state.onBlockActivated(world, rayTraceResult.getBlockPos(), entityPlayer, enumHand, rayTraceResult.sideHit,
-                    (float) rayTraceResult.hitVec.x - rayTraceResult.getBlockPos().getX(),
-                    (float) rayTraceResult.hitVec.y - rayTraceResult.getBlockPos().getY(),
-                    (float) rayTraceResult.hitVec.z - rayTraceResult.getBlockPos().getZ()) ? EnumActionResult.SUCCESS : EnumActionResult.PASS;
+                return state.activate(world, pos, entityPlayer, enumHand, direction, hitX, hitY, hitZ) ? ActionResult.SUCCESS : ActionResult.PASS;
             }
         }
 
-        return EnumActionResult.PASS;
+        return ActionResult.PASS;
     }
 
     // --------------------------------------------------------------------- //
@@ -108,46 +106,50 @@ public final class Items implements ItemAdder, RightClickListener {
 
     // --------------------------------------------------------------------- //
 
-
-    @Override
     public void registerItems() {
-        for (final ResourceLocation moduleName : Constants.MODULES) {
+        for (final Identifier moduleName : Constants.MODULES) {
             final Item module = registerModule(moduleName);
             if (module != null) {
                 modules.put(moduleName, module);
             }
         }
 
-        registerItem(bookCode = new ItemBookCode(new Item.Builder().group(ItemGroup.REDSTONE)), Constants.NAME_ITEM_BOOK_CODE);
-        registerItem(bookManual = new ItemBookManual(new Item.Builder().group(ItemGroup.REDSTONE)), Constants.NAME_ITEM_BOOK_MANUAL);
+        registerItem(bookCode = new ItemBookCode(new Item.Settings().itemGroup(ItemGroup.REDSTONE)), Constants.NAME_ITEM_BOOK_CODE);
+        registerItem(bookManual = new ItemBookManual(new Item.Settings().itemGroup(ItemGroup.REDSTONE)), Constants.NAME_ITEM_BOOK_MANUAL);
 
-        registerItem(key = new ItemKey(new Item.Builder().group(ItemGroup.REDSTONE)), Constants.NAME_ITEM_KEY);
-        registerItem(keyCreative = new ItemKey(new Item.Builder().group(ItemGroup.REDSTONE)), Constants.NAME_ITEM_KEY_CREATIVE);
-        registerItem(prism = new Item(new Item.Builder().group(ItemGroup.REDSTONE)), Constants.NAME_ITEM_PRISM);
+        registerItem(key = new ItemKey(new Item.Settings().itemGroup(ItemGroup.REDSTONE)), Constants.NAME_ITEM_KEY);
+        registerItem(keyCreative = new ItemKey(new Item.Settings().itemGroup(ItemGroup.REDSTONE)), Constants.NAME_ITEM_KEY_CREATIVE);
+        registerItem(prism = new Item(new Item.Settings().itemGroup(ItemGroup.REDSTONE)), Constants.NAME_ITEM_PRISM);
 
-        Item.registerItemBlock(casing = new ItemBlock(Blocks.casing, new Item.Builder().group(ItemGroup.REDSTONE)));
-        Item.registerItemBlock(controller = new ItemBlock(Blocks.controller, new Item.Builder().group(ItemGroup.REDSTONE)));
+        Registry.ITEM.register(Registry.BLOCK.getId(Blocks.casing), casing = new BlockItem(Blocks.casing, new Item.Settings().itemGroup(ItemGroup.REDSTONE)));
+        Registry.ITEM.register(Registry.BLOCK.getId(Blocks.controller), controller = new BlockItem(Blocks.controller, new Item.Settings().itemGroup(ItemGroup.REDSTONE)));
     }
 
     // --------------------------------------------------------------------- //
 
-    private static Item registerItem(final Item item, final ResourceLocation name) {
-        Item.registerItem(name, item);
+    private static Item registerItem(final Item item, final Identifier name) {
+        Registry.ITEM.register(name, item);
         return item;
     }
 
     @Nullable
-    private static Item registerModule(final ResourceLocation name) {
+    private static Item registerModule(final Identifier name) {
         Settings.load();
         if (Settings.disabledModules.contains(name)) {
             return null;
         }
 
         if (Objects.equals(name, Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY)) {
-            return registerItem(new ItemModuleReadOnlyMemory(new Item.Builder().group(ItemGroup.REDSTONE)), name);
+            return registerItem(new ItemModuleReadOnlyMemory(new Item.Settings().itemGroup(ItemGroup.REDSTONE)), name);
         } else {
-            return registerItem(new ItemModule(new Item.Builder().group(ItemGroup.REDSTONE)), name);
+            return registerItem(new ItemModule(new Item.Settings().itemGroup(ItemGroup.REDSTONE)), name);
         }
+    }
+
+    @Override
+    public void onInitialize() {
+        registerItems();
+        PlayerInteractionEvent.INTERACT_BLOCK.register(this::onRightClick);
     }
 
     // --------------------------------------------------------------------- //

@@ -2,8 +2,7 @@ package li.cil.tis3d.client.manual.segment;
 
 import com.google.common.collect.ImmutableSet;
 import li.cil.tis3d.client.manual.Document;
-import net.minecraft.client.gui.FontRenderer;
-
+import net.minecraft.client.font.FontRenderer;
 import java.util.Set;
 
 abstract class BasicTextSegment extends AbstractSegment implements Segment {

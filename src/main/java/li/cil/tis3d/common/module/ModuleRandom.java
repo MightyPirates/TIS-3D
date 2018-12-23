@@ -6,11 +6,10 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModule;
 import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.renderer.TextureLoader;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import li.cil.tis3d.client.init.Textures;
+import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.world.World;
-
+import com.mojang.blaze3d.platform.GlStateManager;
 import java.util.Random;
 
 public final class ModuleRandom extends AbstractModule {
@@ -39,7 +38,7 @@ public final class ModuleRandom extends AbstractModule {
 
 
     @Override
-    public void render(final TileEntityRendererDispatcher rendererDispatcher, final float partialTicks) {
+    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
         if (!getCasing().isEnabled()) {
             return;
         }
@@ -47,7 +46,7 @@ public final class ModuleRandom extends AbstractModule {
         RenderUtil.ignoreLighting();
         GlStateManager.enableBlend();
 
-        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_RANDOM));
+        RenderUtil.drawQuad(RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_RANDOM));
 
         GlStateManager.disableBlend();
     }
@@ -63,7 +62,7 @@ public final class ModuleRandom extends AbstractModule {
         final Pipe sendingPipe = getCasing().getSendingPipe(getFace(), port);
         if (!sendingPipe.isWriting()) {
             final World world = getCasing().getCasingWorld();
-            final Random random = world.rand;
+            final Random random = world.random;
             final short value = (short) random.nextInt(0xFFFF + 1);
             sendingPipe.beginWrite(value);
         }

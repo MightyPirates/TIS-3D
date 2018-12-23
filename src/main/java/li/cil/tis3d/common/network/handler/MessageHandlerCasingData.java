@@ -6,18 +6,18 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.network.message.MessageCasingData;
-import li.cil.tis3d.common.tileentity.TileEntityCasing;
-import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import pl.asie.protocharset.rift.network.NetworkContext;
+import li.cil.tis3d.common.block.entity.TileEntityCasing;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtIo;
+import li.cil.tis3d.charset.NetworkContext;
 
 import java.io.IOException;
 
 public final class MessageHandlerCasingData extends AbstractMessageHandlerWithLocation<MessageCasingData> {
     @Override
     protected void onMessageSynchronized(final MessageCasingData message, final NetworkContext context) {
-        final TileEntity tileEntity = getTileEntity(message, context);
+        final BlockEntity tileEntity = getTileEntity(message, context);
         if (!(tileEntity instanceof TileEntityCasing)) {
             return;
         }
@@ -35,7 +35,7 @@ public final class MessageHandlerCasingData extends AbstractMessageHandlerWithLo
                     if (isNbt) {
                         try {
                             final ByteBufInputStream bis = new ByteBufInputStream(packet);
-                            final NBTTagCompound nbt = CompressedStreamTools.readCompressed(bis);
+                            final CompoundTag nbt = NbtIo.readCompressed(bis);
                             module.onData(nbt);
                         } catch (final IOException e) {
                             TIS3D.getLog().warn("Invalid packet received.", e);

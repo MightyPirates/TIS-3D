@@ -1,5 +1,6 @@
 package li.cil.tis3d.common.module;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.machine.Casing;
@@ -8,13 +9,12 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.renderer.TextureLoader;
+import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.client.renderer.font.FontRenderer;
 import li.cil.tis3d.client.renderer.font.FontRendererNormal;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.nbt.CompoundTag;
 
 
 
@@ -61,7 +61,7 @@ public final class ModuleTimer extends AbstractModuleRotatable {
     @Override
     public void step() {
         if (!hasElapsed) {
-            final long worldTime = getCasing().getCasingWorld().getTotalWorldTime();
+            final long worldTime = getCasing().getCasingWorld().getTime();
             if (worldTime >= timer) {
                 hasElapsed = true;
             }
@@ -94,7 +94,7 @@ public final class ModuleTimer extends AbstractModuleRotatable {
 
 
     @Override
-    public void render(final TileEntityRendererDispatcher rendererDispatcher, final float partialTicks) {
+    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
         if (!getCasing().isEnabled()) {
             return;
         }
@@ -102,12 +102,12 @@ public final class ModuleTimer extends AbstractModuleRotatable {
         rotateForRendering();
         RenderUtil.ignoreLighting();
 
-        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_TIMER));
+        RenderUtil.drawQuad(RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_TIMER));
 
         // Render detailed state when player is close.
-        if (!hasElapsed && rendererDispatcher.entity.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
-            final Minecraft mc = Minecraft.getMinecraft();
-            final long worldTime = mc != null && mc.world != null ? mc.world.getTotalWorldTime() : 0;
+        if (!hasElapsed && rendererDispatcher.cameraEntity.squaredDistanceToCenter(getCasing().getPosition()) < 64) {
+            final MinecraftClient mc = MinecraftClient.getInstance();
+            final long worldTime = mc != null && mc.world != null ? mc.world.getTime() : 0;
             final float remaining = (float) (timer - worldTime) - partialTicks;
             if (remaining <= 0) {
                 hasElapsed = true;
@@ -118,17 +118,17 @@ public final class ModuleTimer extends AbstractModuleRotatable {
     }
 
     @Override
-    public void readFromNBT(final NBTTagCompound nbt) {
+    public void readFromNBT(final CompoundTag nbt) {
         super.readFromNBT(nbt);
 
         timer = nbt.getLong(TAG_TIMER);
     }
 
     @Override
-    public void writeToNBT(final NBTTagCompound nbt) {
+    public void writeToNBT(final CompoundTag nbt) {
         super.writeToNBT(nbt);
 
-        nbt.setLong(TAG_TIMER, timer);
+        nbt.putLong(TAG_TIMER, timer);
     }
 
     // --------------------------------------------------------------------- //
@@ -139,7 +139,7 @@ public final class ModuleTimer extends AbstractModuleRotatable {
      * @param value the value to set the timer to.
      */
     private void setTimer(final short value) {
-        final long worldTime = getCasing().getCasingWorld().getTotalWorldTime();
+        final long worldTime = getCasing().getCasingWorld().getTime();
         timer = worldTime + (value & 0xFFFF);
         hasElapsed = timer == worldTime;
 
@@ -206,9 +206,9 @@ public final class ModuleTimer extends AbstractModuleRotatable {
         final int width = time.length() * fontRenderer.getCharWidth();
         final int height = fontRenderer.getCharHeight();
 
-        GlStateManager.translate(0.5f, 0.5f, 0);
-        GlStateManager.scale(1 / 80f, 1 / 80f, 1);
-        GlStateManager.translate(-width / 2f + 1, -height / 2f + 1, 0);
+        GlStateManager.translatef(0.5f, 0.5f, 0);
+        GlStateManager.scalef(1 / 80f, 1 / 80f, 1);
+        GlStateManager.translatef(-width / 2f + 1, -height / 2f + 1, 0);
         fontRenderer.drawString(time);
     }
 }

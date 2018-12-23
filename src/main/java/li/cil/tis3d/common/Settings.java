@@ -2,13 +2,12 @@ package li.cil.tis3d.common;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
+import net.fabricmc.loader.FabricLoader;
 import pl.asie.protocharset.lib.repack.blue.endless.jankson.Jankson;
 import pl.asie.protocharset.lib.repack.blue.endless.jankson.JsonObject;
 import pl.asie.protocharset.lib.repack.blue.endless.jankson.JsonPrimitive;
 import pl.asie.protocharset.lib.repack.blue.endless.jankson.impl.SyntaxError;
-import net.minecraft.launchwrapper.Launch;
-import net.minecraft.util.ResourceLocation;
-
+import net.minecraft.util.Identifier;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
@@ -101,7 +100,7 @@ public final class Settings {
     public static void load() {
         if (loaded) return;
         loaded = true;
-        File configDir = new File(Launch.minecraftHome, "config");
+        File configDir = FabricLoader.INSTANCE.getConfigDirectory();
         if (!configDir.exists()) configDir.mkdir();
         File configFile = new File(configDir, "tis3d.hjson");
 
@@ -119,7 +118,7 @@ public final class Settings {
         // Rebuild list of disabled modules.
         disabledModules.clear();
 
-        for (final ResourceLocation module : Constants.MODULES) {
+        for (final Identifier module : Constants.MODULES) {
             final String name;
             if (module.getPath().startsWith("module_")) {
                 name = module.getPath().substring(7, 8).toLowerCase(Locale.ROOT) + module.getPath().substring(8);

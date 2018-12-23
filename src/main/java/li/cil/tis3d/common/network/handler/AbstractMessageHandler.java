@@ -1,10 +1,11 @@
 package li.cil.tis3d.common.network.handler;
 
-import net.minecraft.world.World;
-import pl.asie.protocharset.rift.network.NetworkContext;
-import pl.asie.protocharset.rift.network.Packet;
+import li.cil.tis3d.charset.NetworkContext;
+import li.cil.tis3d.charset.Packet;
 
 import javax.annotation.Nullable;
+import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 
 public abstract class AbstractMessageHandler<T extends Packet> {
     @Nullable
@@ -19,7 +20,7 @@ public abstract class AbstractMessageHandler<T extends Packet> {
     // --------------------------------------------------------------------- //
 
     @Nullable
-    protected World getWorld(final int dimension, final NetworkContext context) {
+    protected World getWorld(final DimensionType dimension, final NetworkContext context) {
         return context.getWorld(dimension).orElse(null);
     }
 }

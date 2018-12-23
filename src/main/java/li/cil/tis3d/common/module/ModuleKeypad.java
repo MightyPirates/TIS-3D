@@ -6,17 +6,16 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.renderer.TextureLoader;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.SoundCategory;
+import li.cil.tis3d.client.init.Textures;
+import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-
+import com.mojang.blaze3d.platform.GlStateManager;
 import java.util.Optional;
 
 public final class ModuleKeypad extends AbstractModuleRotatable {
@@ -72,7 +71,7 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
             value = Optional.empty();
 
             // Tell clients we can input again.
-            getCasing().sendData(getFace(), new NBTTagCompound(), DATA_TYPE_VALUE);
+            getCasing().sendData(getFace(), new CompoundTag(), DATA_TYPE_VALUE);
         }
     }
 
@@ -89,11 +88,11 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
     @Override
     public void onWriteComplete(final Port port) {
         // Tell clients we can input again.
-        getCasing().sendData(getFace(), new NBTTagCompound(), DATA_TYPE_VALUE);
+        getCasing().sendData(getFace(), new CompoundTag(), DATA_TYPE_VALUE);
     }
 
     @Override
-    public boolean onActivate(final EntityPlayer player, final EnumHand hand, final float hitX, final float hitY, final float hitZ) {
+    public boolean onActivate(final PlayerEntity player, final Hand hand, final float hitX, final float hitY, final float hitZ) {
         if (player.isSneaking()) {
             return false;
         }
@@ -113,7 +112,7 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
         // hit position resolution (MC sends this to the server at a super
         // low resolution for some reason).
         final World world = getCasing().getCasingWorld();
-        if (world.isRemote) {
+        if (world.isClient) {
             final Vec3d uv = hitToUV(new Vec3d(hitX, hitY, hitZ));
             final int button = uvToButton((float) uv.x, (float) uv.y);
             if (button == -1) {
@@ -122,8 +121,8 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
             }
             final short number = buttonToNumber(button);
 
-            final NBTTagCompound nbt = new NBTTagCompound();
-            nbt.setShort(TAG_VALUE, number);
+            final CompoundTag nbt = new CompoundTag();
+            nbt.putShort(TAG_VALUE, number);
             getCasing().sendData(getFace(), nbt, DATA_TYPE_VALUE);
         }
 
@@ -131,27 +130,27 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
     }
 
     @Override
-    public void onData(final NBTTagCompound nbt) {
+    public void onData(final CompoundTag nbt) {
         final World world = getCasing().getCasingWorld();
-        if (world.isRemote) {
+        if (world.isClient) {
             // Got state on which key is currently 'pressed'.
-            if (nbt.hasKey(TAG_VALUE)) {
+            if (nbt.containsKey(TAG_VALUE)) {
                 value = Optional.of(nbt.getShort(TAG_VALUE));
             } else {
                 value = Optional.empty();
             }
-        } else if (!value.isPresent() && nbt.hasKey(TAG_VALUE)) {
+        } else if (!value.isPresent() && nbt.containsKey(TAG_VALUE)) {
             // Got an input and don't have one yet.
             final short newValue = nbt.getShort(TAG_VALUE);
             value = Optional.of(newValue);
             getCasing().sendData(getFace(), nbt, DATA_TYPE_VALUE);
-            getCasing().getCasingWorld().playSound(null, getCasing().getPosition(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3f, VALUE_TO_PITCH[newValue]);
+            getCasing().getCasingWorld().playSound(null, getCasing().getPosition(), SoundEvents.ENTITY_IRON_GOLEM_ATTACK, SoundCategory.BLOCK, 0.3f, VALUE_TO_PITCH[newValue]);
         }
     }
 
 
     @Override
-    public void render(final TileEntityRendererDispatcher rendererDispatcher, final float partialTicks) {
+    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
         if (!getCasing().isEnabled() || !isVisible()) {
             return;
         }
@@ -162,9 +161,9 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
 
         // Draw base texture. Draw half transparent while writing current value,
         // i.e. while no input is possible.
-        value.ifPresent(unused -> GlStateManager.color(1, 1, 1, 0.5f));
+        value.ifPresent(unused -> GlStateManager.color4f(1, 1, 1, 0.5f));
         GlStateManager.depthMask(false);
-        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_KEYPAD));
+        RenderUtil.drawQuad(RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_KEYPAD));
         GlStateManager.depthMask(true);
 
         // Draw overlay for hovered button if we can currently input a value.
@@ -183,19 +182,19 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
     }
 
     @Override
-    public void readFromNBT(final NBTTagCompound nbt) {
+    public void readFromNBT(final CompoundTag nbt) {
         super.readFromNBT(nbt);
 
-        if (nbt.hasKey(TAG_VALUE)) {
+        if (nbt.containsKey(TAG_VALUE)) {
             value = Optional.of(nbt.getShort(TAG_VALUE));
         }
     }
 
     @Override
-    public void writeToNBT(final NBTTagCompound nbt) {
+    public void writeToNBT(final CompoundTag nbt) {
         super.writeToNBT(nbt);
 
-        value.ifPresent(x -> nbt.setShort(TAG_VALUE, x));
+        value.ifPresent(x -> nbt.putShort(TAG_VALUE, x));
     }
 
     // --------------------------------------------------------------------- //
@@ -269,9 +268,9 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
         final float y = KEYS_V0 + row * KEYS_STEP_V;
         final float w = buttonToNumber(button) == 0 ? (KEYS_SIZE_U + KEYS_STEP_U) : KEYS_SIZE_U;
         final float h = row == 3 ? KEYS_SIZE_V_LAST : KEYS_SIZE_V;
-        GlStateManager.disableTexture2D();
-        GlStateManager.color(1, 1, 1, 0.5f);
+        GlStateManager.disableTexture();
+        GlStateManager.color4f(1, 1, 1, 0.5f);
         RenderUtil.drawUntexturedQuad(x, y, w, h);
-        GlStateManager.enableTexture2D();
+        GlStateManager.enableTexture();
     }
 }

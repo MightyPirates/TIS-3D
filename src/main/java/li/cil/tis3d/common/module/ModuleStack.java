@@ -1,5 +1,6 @@
 package li.cil.tis3d.common.module;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.FontRendererAPI;
@@ -9,10 +10,9 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.renderer.TextureLoader;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.nbt.NBTTagCompound;
+import li.cil.tis3d.client.init.Textures;
+import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -97,7 +97,7 @@ public final class ModuleStack extends AbstractModuleRotatable {
 
 
     @Override
-    public void render(final TileEntityRendererDispatcher rendererDispatcher, final float partialTicks) {
+    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
         if (!getCasing().isEnabled()) {
             return;
         }
@@ -105,16 +105,16 @@ public final class ModuleStack extends AbstractModuleRotatable {
         rotateForRendering();
         RenderUtil.ignoreLighting();
 
-        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_STACK));
+        RenderUtil.drawQuad(RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_STACK));
 
         // Render detailed state when player is close.
-        if (!isEmpty() && rendererDispatcher.entity.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
+        if (!isEmpty() && rendererDispatcher.cameraEntity.squaredDistanceToCenter(getCasing().getPosition()) < 64) {
             drawState();
         }
     }
 
     @Override
-    public void readFromNBT(final NBTTagCompound nbt) {
+    public void readFromNBT(final CompoundTag nbt) {
         super.readFromNBT(nbt);
 
         final int[] stackNbt = nbt.getIntArray(TAG_STACK);
@@ -123,20 +123,20 @@ public final class ModuleStack extends AbstractModuleRotatable {
             stack[i] = (short) stackNbt[i];
         }
 
-        top = MathHelper.clamp(nbt.getInteger(TAG_TOP), -1, STACK_SIZE - 1);
+        top = MathHelper.clamp(nbt.getInt(TAG_TOP), -1, STACK_SIZE - 1);
     }
 
     @Override
-    public void writeToNBT(final NBTTagCompound nbt) {
+    public void writeToNBT(final CompoundTag nbt) {
         super.writeToNBT(nbt);
 
         final int[] stackNbt = new int[stack.length];
         for (int i = 0; i < stack.length; i++) {
             stackNbt[i] = stack[i];
         }
-        nbt.setIntArray(TAG_STACK, stackNbt);
+        nbt.putIntArray(TAG_STACK, stackNbt);
 
-        nbt.setInteger(TAG_TOP, top);
+        nbt.putInt(TAG_TOP, top);
     }
 
     // --------------------------------------------------------------------- //
@@ -246,16 +246,16 @@ public final class ModuleStack extends AbstractModuleRotatable {
 
     private void drawState() {
         // Offset to start drawing at top left of inner area, slightly inset.
-        GlStateManager.translate(3 / 16f, 5 / 16f, 0);
-        GlStateManager.scale(1 / 128f, 1 / 128f, 1);
-        GlStateManager.translate(4.5f, 14.5f, 0);
-        GlStateManager.color(1f, 1f, 1f, 1f);
+        GlStateManager.translatef(3 / 16f, 5 / 16f, 0);
+        GlStateManager.scalef(1 / 128f, 1 / 128f, 1);
+        GlStateManager.translatef(4.5f, 14.5f, 0);
+        GlStateManager.color4f(1f, 1f, 1f, 1f);
 
         for (int i = 0; i <= top; i++) {
             FontRendererAPI.drawString(String.format("%4X", stack[i]));
-            GlStateManager.translate(0, FontRendererAPI.getCharHeight() + 1, 0);
+            GlStateManager.translatef(0, FontRendererAPI.getCharHeight() + 1, 0);
             if ((i + 1) % 4 == 0) {
-                GlStateManager.translate((FontRendererAPI.getCharWidth() + 1) * 5, (FontRendererAPI.getCharHeight() + 1) * -4, 0);
+                GlStateManager.translatef((FontRendererAPI.getCharWidth() + 1) * 5, (FontRendererAPI.getCharHeight() + 1) * -4, 0);
             }
         }
     }

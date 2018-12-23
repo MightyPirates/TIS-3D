@@ -3,7 +3,6 @@ package li.cil.tis3d.api.module;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import net.minecraft.item.ItemStack;
-
 import javax.annotation.Nullable;
 
 /**

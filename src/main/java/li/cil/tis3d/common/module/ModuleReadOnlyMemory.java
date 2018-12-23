@@ -1,10 +1,10 @@
 package li.cil.tis3d.common.module;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.common.item.ItemModuleReadOnlyMemory;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 
 
@@ -58,6 +58,6 @@ public final class ModuleReadOnlyMemory extends ModuleRandomAccessMemory {
 
     @Override
     protected void setCellColor(final float brightness) {
-        GlStateManager.color(0.4f, 1, 0.4f, brightness);
+        GlStateManager.color4f(0.4f, 1, 0.4f, brightness);
     }
 }

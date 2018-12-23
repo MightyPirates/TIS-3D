@@ -5,24 +5,23 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.api.util.TransformUtil;
-import li.cil.tis3d.client.renderer.TextureLoader;
+import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.init.Items;
-import li.cil.tis3d.common.tileentity.TileEntityCasing;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
+import li.cil.tis3d.common.block.entity.TileEntityCasing;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.block.entity.BlockEntityRenderer;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import org.lwjgl.opengl.GL11;
-
+import com.mojang.blaze3d.platform.GLX;
+import com.mojang.blaze3d.platform.GlStateManager;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -33,7 +32,7 @@ import java.util.Set;
  * also so as not to spam the model registry with potentially a gazillion
  * block states for static individual texturing).
  */
-public final class TileEntitySpecialRendererCasing extends TileEntityRenderer<TileEntityCasing> {
+public final class TileEntitySpecialRendererCasing extends BlockEntityRenderer<TileEntityCasing> {
     private final static Set<Class<?>> BLACKLIST = new HashSet<>();
 
     @Override
@@ -43,9 +42,9 @@ public final class TileEntitySpecialRendererCasing extends TileEntityRenderer<Ti
         final double dz = z + 0.5;
 
         GlStateManager.pushMatrix();
-        GlStateManager.translate(dx, dy, dz);
+        GlStateManager.translated(dx, dy, dz);
 
-        RenderHelper.disableStandardItemLighting();
+        GuiLighting.disable();
 
         // Render all modules, adjust GL state to allow easily rendering an
         // overlay in (0, 0, 0) to (1, 1, 0).
@@ -55,63 +54,63 @@ public final class TileEntitySpecialRendererCasing extends TileEntityRenderer<Ti
             }
 
             GlStateManager.pushMatrix();
-            GlStateManager.pushAttrib();
+            GlStateManager.pushLightingAttributes();
 
             setupMatrix(face);
 
             ensureSanity();
-            Minecraft.getMinecraft().getTextureMapBlocks().setBlurMipmap(false, false);
+            MinecraftClient.getInstance().getSpriteAtlas().pushFilter(false, false);
 
             if (!isObserverHoldingKey() || !drawConfigOverlay(casing, face)) {
                 drawModuleOverlay(casing, face, partialTicks);
             }
 
-            Minecraft.getMinecraft().getTextureMapBlocks().restoreLastBlurMipmap();
-            GlStateManager.popAttrib();
+            MinecraftClient.getInstance().getSpriteAtlas().popFilter();
+            GlStateManager.popAttributes();
             GlStateManager.popMatrix();
         }
 
-        RenderHelper.enableStandardItemLighting();
+        GuiLighting.enable();
 
         GlStateManager.popMatrix();
     }
 
     private boolean isRenderingBackFace(final Face face, final double dx, final double dy, final double dz) {
-        final EnumFacing facing = Face.toEnumFacing(face.getOpposite());
-        final double dotProduct = facing.getXOffset() * dx + facing.getYOffset() * (dy - rendererDispatcher.entity.getEyeHeight()) + facing.getZOffset() * dz;
+        final Direction facing = Face.toEnumFacing(face.getOpposite());
+        final double dotProduct = facing.getOffsetX() * dx + facing.getOffsetY() * (dy - renderManager.cameraEntity.getEyeHeight()) + facing.getOffsetZ() * dz;
         return dotProduct < 0;
     }
 
     private void setupMatrix(final Face face) {
         switch (face) {
             case Y_NEG:
-                GlStateManager.rotate(-90, 1, 0, 0);
+                GlStateManager.rotatef(-90, 1, 0, 0);
                 break;
             case Y_POS:
-                GlStateManager.rotate(90, 1, 0, 0);
+                GlStateManager.rotatef(90, 1, 0, 0);
                 break;
             case Z_NEG:
-                GlStateManager.rotate(0, 0, 1, 0);
+                GlStateManager.rotatef(0, 0, 1, 0);
                 break;
             case Z_POS:
-                GlStateManager.rotate(180, 0, 1, 0);
+                GlStateManager.rotatef(180, 0, 1, 0);
                 break;
             case X_NEG:
-                GlStateManager.rotate(90, 0, 1, 0);
+                GlStateManager.rotatef(90, 0, 1, 0);
                 break;
             case X_POS:
-                GlStateManager.rotate(-90, 0, 1, 0);
+                GlStateManager.rotatef(-90, 0, 1, 0);
                 break;
         }
 
-        GlStateManager.translate(0.5, 0.5, -0.505);
-        GlStateManager.scale(-1, -1, 1);
+        GlStateManager.translated(0.5, 0.5, -0.505);
+        GlStateManager.scaled(-1, -1, 1);
     }
 
     private void ensureSanity() {
-        GlStateManager.enableTexture2D();
-        RenderUtil.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-        GlStateManager.color(1, 1, 1, 1);
+        GlStateManager.enableTexture();
+        RenderUtil.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+        GlStateManager.color4f(1, 1, 1, 1);
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         RenderUtil.ignoreLighting();
     }
@@ -123,22 +122,22 @@ public final class TileEntitySpecialRendererCasing extends TileEntityRenderer<Ti
         }
 
         if (isObserverSneaking() && !casing.isLocked()) {
-            final TextureAtlasSprite closedSprite;
-            final TextureAtlasSprite openSprite;
+            final Sprite closedSprite;
+            final Sprite openSprite;
 
             final Port lookingAtPort;
             final boolean isLookingAt = isObserverLookingAt(casing.getPos(), face);
             if (isLookingAt) {
-                closedSprite = RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_CASING_PORT_CLOSED);
-                openSprite = RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_CASING_PORT_OPEN);
+                closedSprite = RenderUtil.getSprite(Textures.LOCATION_OVERLAY_CASING_PORT_CLOSED);
+                openSprite = RenderUtil.getSprite(Textures.LOCATION_OVERLAY_CASING_PORT_OPEN);
 
-                final RayTraceResult hit = rendererDispatcher.cameraHitResult;
+                final HitResult hit = renderManager.hitResult;
                 final BlockPos pos = hit.getBlockPos();
-                assert pos != null : "rendererDispatcher.cameraHitResult.getBlockPos() is null even though it was non-null in isObserverLookingAt";
-                final Vec3d uv = TransformUtil.hitToUV(face, hit.hitVec.subtract(new Vec3d(pos)));
+                assert pos != null : "renderManager.hitResult.getBlockPos() is null even though it was non-null in isObserverLookingAt";
+                final Vec3d uv = TransformUtil.hitToUV(face, hit.pos.subtract(new Vec3d(pos)));
                 lookingAtPort = Port.fromUVQuadrant(uv);
             } else {
-                closedSprite = RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_CASING_PORT_CLOSED_SMALL);
+                closedSprite = RenderUtil.getSprite(Textures.LOCATION_OVERLAY_CASING_PORT_CLOSED_SMALL);
                 openSprite = null;
 
                 lookingAtPort = null;
@@ -147,28 +146,28 @@ public final class TileEntitySpecialRendererCasing extends TileEntityRenderer<Ti
             GlStateManager.pushMatrix();
             for (final Port port : Port.CLOCKWISE) {
                 final boolean isClosed = casing.isReceivingPipeLocked(face, port);
-                final TextureAtlasSprite sprite = isClosed ? closedSprite : openSprite;
+                final Sprite sprite = isClosed ? closedSprite : openSprite;
                 if (sprite != null) {
                     RenderUtil.drawQuad(sprite);
                 }
 
                 if (port == lookingAtPort) {
-                    RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_CASING_PORT_HIGHLIGHT));
+                    RenderUtil.drawQuad(RenderUtil.getSprite(Textures.LOCATION_OVERLAY_CASING_PORT_HIGHLIGHT));
                 }
 
-                GlStateManager.translate(0.5f, 0.5f, 0.5f);
-                GlStateManager.rotate(90, 0, 0, 1);
-                GlStateManager.translate(-0.5f, -0.5f, -0.5f);
+                GlStateManager.translatef(0.5f, 0.5f, 0.5f);
+                GlStateManager.rotatef(90, 0, 0, 1);
+                GlStateManager.translatef(-0.5f, -0.5f, -0.5f);
             }
             GlStateManager.popMatrix();
 
             return isLookingAt;
         } else {
-            final TextureAtlasSprite sprite;
+            final Sprite sprite;
             if (casing.isLocked()) {
-                sprite = RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_CASING_LOCKED);
+                sprite = RenderUtil.getSprite(Textures.LOCATION_OVERLAY_CASING_LOCKED);
             } else {
-                sprite = RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_CASING_UNLOCKED);
+                sprite = RenderUtil.getSprite(Textures.LOCATION_OVERLAY_CASING_UNLOCKED);
             }
 
             RenderUtil.drawQuad(sprite);
@@ -178,19 +177,19 @@ public final class TileEntitySpecialRendererCasing extends TileEntityRenderer<Ti
     }
 
     private void drawModuleOverlay(final TileEntityCasing casing, final Face face, final float partialTicks) {
-        final TextureAtlasSprite closedSprite = RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_CASING_PORT_CLOSED_SMALL);
+        final Sprite closedSprite = RenderUtil.getSprite(Textures.LOCATION_OVERLAY_CASING_PORT_CLOSED_SMALL);
 
         GlStateManager.pushMatrix();
-        GlStateManager.translate(0, 0, -0.005);
+        GlStateManager.translated(0, 0, -0.005);
         for (final Port port : Port.CLOCKWISE) {
             final boolean isClosed = casing.isReceivingPipeLocked(face, port);
             if (isClosed) {
                 RenderUtil.drawQuad(closedSprite);
             }
 
-            GlStateManager.translate(0.5f, 0.5f, 0.5f);
-            GlStateManager.rotate(90, 0, 0, 1);
-            GlStateManager.translate(-0.5f, -0.5f, -0.5f);
+            GlStateManager.translatef(0.5f, 0.5f, 0.5f);
+            GlStateManager.rotatef(90, 0, 0, 1);
+            GlStateManager.translatef(-0.5f, -0.5f, -0.5f);
         }
         GlStateManager.popMatrix();
 
@@ -202,12 +201,12 @@ public final class TileEntitySpecialRendererCasing extends TileEntityRenderer<Ti
             return;
         }
 
-        final int brightness = getWorld().getCombinedLight(
+        final int brightness = getWorld().getLightmapIndex(
             casing.getPosition().offset(Face.toEnumFacing(face)), 0);
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, brightness % 65536, brightness / 65536);
+        GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, brightness % 65536, brightness / 65536);
 
         try {
-            module.render(rendererDispatcher, partialTicks);
+            module.render(renderManager, partialTicks);
         } catch (final Exception e) {
             BLACKLIST.add(module.getClass());
             TIS3D.getLog().error("A module threw an exception while rendering, won't render again!", e);
@@ -215,11 +214,11 @@ public final class TileEntitySpecialRendererCasing extends TileEntityRenderer<Ti
     }
 
     private boolean isObserverKindaClose(final TileEntityCasing casing) {
-        return rendererDispatcher.entity.getDistanceSqToCenter(casing.getPos()) < 16 * 16;
+        return renderManager.cameraEntity.squaredDistanceToCenter(casing.getPos()) < 16 * 16;
     }
 
     private boolean isObserverHoldingKey() {
-        for (final ItemStack stack : rendererDispatcher.entity.getHeldEquipment()) {
+        for (final ItemStack stack : renderManager.cameraEntity.getItemsEquipped()) {
             if (Items.isKey(stack)) {
                 return true;
             }
@@ -229,15 +228,15 @@ public final class TileEntitySpecialRendererCasing extends TileEntityRenderer<Ti
     }
 
     private boolean isObserverSneaking() {
-        return rendererDispatcher.entity.isSneaking();
+        return renderManager.cameraEntity.isSneaking();
     }
 
     private boolean isObserverLookingAt(final BlockPos pos, final Face face) {
-        final RayTraceResult hit = rendererDispatcher.cameraHitResult;
+        final HitResult hit = renderManager.hitResult;
         return hit != null &&
-            hit.typeOfHit == RayTraceResult.Type.BLOCK &&
-            hit.sideHit != null &&
-            Face.fromEnumFacing(hit.sideHit) == face &&
+            hit.type == HitResult.Type.BLOCK &&
+            hit.side != null &&
+            Face.fromEnumFacing(hit.side) == face &&
             hit.getBlockPos() != null &&
             Objects.equals(hit.getBlockPos(), pos);
     }

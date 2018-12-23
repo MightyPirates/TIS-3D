@@ -1,5 +1,7 @@
 package li.cil.tis3d.common.module;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.platform.TextureUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.machine.Casing;
@@ -10,12 +12,9 @@ import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.util.ColorUtils;
 import li.cil.tis3d.util.EnumUtils;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.texture.NativeImage;
-import net.minecraft.client.renderer.texture.TextureUtil;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.nbt.NBTTagCompound;
-
+import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.client.texture.NativeImage;
+import net.minecraft.nbt.CompoundTag;
 import java.util.Arrays;
 
 public final class ModuleDisplay extends AbstractModuleRotatable {
@@ -129,7 +128,7 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
 
 
     @Override
-    public void render(final TileEntityRendererDispatcher rendererDispatcher, final float partialTicks) {
+    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
         if (!getCasing().isEnabled()) {
             return;
         }
@@ -142,7 +141,7 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
     }
 
     @Override
-    public void readFromNBT(final NBTTagCompound nbt) {
+    public void readFromNBT(final CompoundTag nbt) {
         super.readFromNBT(nbt);
 
         final int[] imageNbt = nbt.getIntArray(TAG_IMAGE);
@@ -156,12 +155,12 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
     }
 
     @Override
-    public void writeToNBT(final NBTTagCompound nbt) {
+    public void writeToNBT(final CompoundTag nbt) {
         super.writeToNBT(nbt);
 
-        nbt.setIntArray(TAG_IMAGE, image);
+        nbt.putIntArray(TAG_IMAGE, image);
         EnumUtils.writeToNBT(state, TAG_STATE, nbt);
-        nbt.setByteArray(TAG_DRAW_CALL, drawCall.clone());
+        nbt.putByteArray(TAG_DRAW_CALL, drawCall.clone());
     }
 
     // --------------------------------------------------------------------- //
@@ -230,9 +229,9 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
      */
     private int getGlTextureId() {
         if (glTextureId == 0) {
-            glTextureId = GlStateManager.generateTexture();
+            glTextureId = GlStateManager.genTexture();
             nativeImage = new NativeImage(RESOLUTION, RESOLUTION, false);
-            TextureUtil.allocateTexture(glTextureId, RESOLUTION, RESOLUTION);
+            TextureUtil.prepareImage(glTextureId, RESOLUTION, RESOLUTION);
             imageDirty = true;
         }
         if (imageDirty) {
@@ -245,7 +244,7 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
             }
 
             GlStateManager.bindTexture(glTextureId);
-            ((NativeImage) nativeImage).func_195697_a(0, 0, 0, false);
+            ((NativeImage) nativeImage).upload(0, 0, 0, false);
         }
         return glTextureId;
     }
@@ -255,7 +254,7 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
      */
     private void deleteTexture() {
         if (glTextureId != 0) {
-            TextureUtil.deleteTexture(glTextureId);
+            TextureUtil.releaseTextureId(glTextureId);
             glTextureId = 0;
         }
         if (nativeImage != null) {
