@@ -3,11 +3,12 @@ package li.cil.tis3d.common;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import net.fabricmc.loader.FabricLoader;
+import net.minecraft.util.Identifier;
 import pl.asie.protocharset.lib.repack.blue.endless.jankson.Jankson;
 import pl.asie.protocharset.lib.repack.blue.endless.jankson.JsonObject;
 import pl.asie.protocharset.lib.repack.blue.endless.jankson.JsonPrimitive;
 import pl.asie.protocharset.lib.repack.blue.endless.jankson.impl.SyntaxError;
-import net.minecraft.util.Identifier;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
@@ -65,8 +66,6 @@ public final class Settings {
 
     // --------------------------------------------------------------------- //
 
-    private static final String CONFIG_VERSION = "1";
-
     private static final String CATEGORY_NETWORK = "network.";
     private static final String CATEGORY_CONTROLLER = "controller.";
     private static final String CATEGORY_MODULE = "module.";
@@ -100,6 +99,7 @@ public final class Settings {
     public static void load() {
         if (loaded) return;
         loaded = true;
+
         File configDir = FabricLoader.INSTANCE.getConfigDirectory();
         if (!configDir.exists()) configDir.mkdir();
         File configFile = new File(configDir, "tis3d.hjson");
@@ -126,9 +126,9 @@ public final class Settings {
                 name = module.getPath().substring(0, 1).toLowerCase(Locale.ROOT) + module.getPath().substring(1);
             }
             config.recursiveGet(JsonObject.class, "module").putDefault(name, new JsonObject(), null);
-            config.recursiveGet(JsonObject.class, CATEGORY_MODULE + name).putDefault("enabled", new JsonPrimitive(true), COMMENT_MODULE_ENABLED);
+            config.recursiveGet(JsonObject.class, CATEGORY_MODULE + name).putDefault(NAME_MODULE_ENABLED, new JsonPrimitive(true), COMMENT_MODULE_ENABLED);
 
-            boolean enabled = config.recursiveGet(JsonObject.class, CATEGORY_MODULE + name).get(Boolean.class, "enabled");
+            boolean enabled = config.recursiveGet(JsonObject.class, CATEGORY_MODULE + name).get(Boolean.class, NAME_MODULE_ENABLED);
             if (!enabled) {
                 disabledModules.add(name);
             }
@@ -152,79 +152,10 @@ public final class Settings {
 
         try {
             Files.write(config.toJson(true, true), configFile, Charsets.UTF_8);
-        } catch (Exception var8) {
-            var8.printStackTrace();
-        }
-
-        // TODO
-        /* final Configuration config = new Configuration(configFile, CONFIG_VERSION);
-
-        config.load();
-
-        upgradeConfig(config);
-
-        maxPacketsPerTick = config.getInt(NAME_MAX_PACKETS_PER_TICK, CATEGORY_NETWORK,
-            maxPacketsPerTick, 1, 500, COMMENT_MAX_PACKETS_PER_TICK);
-        maxParticlesPerTick = config.getInt(NAME_MAX_PARTICLES_PER_TICK, CATEGORY_NETWORK,
-            maxParticlesPerTick, 1, 500, COMMENT_MAX_PARTICLES_PER_TICK);
-
-        maxCasingsPerController = config.getInt(NAME_MAX_CASINGS_PER_CONTROLLER, CATEGORY_CONTROLLER,
-            maxCasingsPerController, 1, 512, COMMENT_MAX_CASINGS_PER_CONTROLLER);
-
-        maxLinesPerProgram = config.getInt(NAME_MAX_LINES_PER_PROGRAM, CATEGORY_MODULE_EXECUTION,
-            maxLinesPerProgram, 1, 200, COMMENT_MAX_LINES_PER_PROGRAM);
-        maxColumnsPerLine = config.getInt(NAME_MAX_COLUMNS_PER_LINE, CATEGORY_MODULE_EXECUTION,
-            maxColumnsPerLine, 1, 80, COMMENT_MAX_COLUMNS_PER_LINE);
-        maxInfraredQueueLength = config.getInt(NAME_MAX_QUEUE_LENGTH, CATEGORY_MODULE_INFRARED,
-            maxInfraredQueueLength, 1, 64, COMMENT_MAX_QUEUE_LENGTH);
-        animateTypingHand = config.getBoolean(NAME_ANIMATE_TYPING, CATEGORY_MODULE_TERMINAL,
-            animateTypingHand, COMMENT_ANIMATE_TYPING);
-
-        // Rebuild list of disabled modules.
-        disabledModules.clear();
-        // Strip module and first letter from internal name, lowercase first letter.
-        final int prefixLength = "module_*".length();
-        for (final String module : Constants.MODULES) {
-            final String name = String.valueOf(module.charAt(prefixLength - 1)).toLowerCase(Locale.US) + module.substring(prefixLength);
-            checkModule(config, CATEGORY_MODULE + "." + name, module);
-        }
-
-        if (config.hasChanged()) {
-            config.save();
-        } */
-    }
-
-/*    private static void upgradeConfig(final Configuration config) {
-        final String loadedVersion = config.getLoadedConfigVersion();
-        int loadedVersionInt;
-        try {
-            loadedVersionInt = Integer.parseInt(loadedVersion);
-        } catch (final NumberFormatException e) {
-            loadedVersionInt = 0;
-        }
-
-        // Incremental upgrade logic: fall through starting at old version.
-        switch (loadedVersionInt) {
-            case 0:
-                config.get(CATEGORY_MODULE_EXECUTION, NAME_MAX_LINES_PER_PROGRAM, maxLinesPerProgram,
-                    COMMENT_MAX_LINES_PER_PROGRAM, 1, 200).set(40);
-
-                for (final String module : Constants.MODULES) {
-                    final String moduleName = module.substring("module_".length());
-                    final String oldModuleName = moduleName.replace("_", "");
-                    config.removeCategory(config.getCategory(CATEGORY_MODULE + "._" + moduleName));
-                    config.removeCategory(config.getCategory(CATEGORY_MODULE + "." + oldModuleName));
-                }
-            default:
-                break;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
-
-    private static void checkModule(final Configuration config, final String path, final String name) {
-        if (!config.getBoolean(NAME_MODULE_ENABLED, path, true, COMMENT_MODULE_ENABLED)) {
-            disabledModules.add(name);
-        }
-    } */
 
     // --------------------------------------------------------------------- //
 
