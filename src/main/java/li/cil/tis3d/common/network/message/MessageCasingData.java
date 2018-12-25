@@ -24,6 +24,4 @@ public final class MessageCasingData extends AbstractMessageWithLocation {
     public ByteBuf getData() {
         return Unpooled.wrappedBuffer(data);
     }
-
-    // --------------------------------------------------------------------- //
 }

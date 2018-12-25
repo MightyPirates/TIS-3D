@@ -28,7 +28,4 @@ public final class MessageBookCodeData extends AbstractMessage {
     public Hand getHand() {
         return hand;
     }
-
-    // --------------------------------------------------------------------- //
-    // IMessage
 }
