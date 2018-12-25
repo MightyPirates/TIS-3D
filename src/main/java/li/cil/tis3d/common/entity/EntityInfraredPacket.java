@@ -3,11 +3,11 @@ package li.cil.tis3d.common.entity;
 import li.cil.tis3d.api.infrared.InfraredPacket;
 import li.cil.tis3d.api.infrared.InfraredReceiver;
 import li.cil.tis3d.common.event.TickHandlerInfraredPacket;
+import li.cil.tis3d.common.init.Entities;
 import li.cil.tis3d.util.Raytracing;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -28,8 +28,6 @@ import java.util.List;
  * Represents a single value in transmission, sent by an {@link li.cil.tis3d.common.module.ModuleInfrared}.
  */
 public final class EntityInfraredPacket extends Entity implements InfraredPacket {
-    public static EntityType<EntityInfraredPacket> TYPE;
-
     // --------------------------------------------------------------------- //
     // Computed data
 
@@ -67,7 +65,7 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
     private short value;
 
     public EntityInfraredPacket(final World world) {
-        super(TYPE, world);
+        super(Entities.infraredPacket, world);
         fireImmune = true;
         setSize(0.25f, 0.25f);
     }

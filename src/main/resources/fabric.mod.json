@@ -4,17 +4,10 @@
     "version": "1.6.0",
     "side": "universal",
     "initializers": [
-        "li.cil.tis3d.client.init.Events",
-        "li.cil.tis3d.client.init.Manual",
+        "li.cil.tis3d.client.init.BootstrapClient",
         "li.cil.tis3d.client.init.Packets",
-        "li.cil.tis3d.client.init.Renderers",
-        "li.cil.tis3d.client.init.Textures",
-        "li.cil.tis3d.common.init.Blocks",
-        "li.cil.tis3d.common.init.Entities",
-        "li.cil.tis3d.common.init.Events",
-        "li.cil.tis3d.common.init.Items",
-        "li.cil.tis3d.common.init.Packets",
-        "li.cil.tis3d.common.TIS3D"
+        "li.cil.tis3d.common.init.BootstrapCommon",
+        "li.cil.tis3d.common.init.Packets"
     ],
     "mixins": {
         "client": "tis3d.client.json",

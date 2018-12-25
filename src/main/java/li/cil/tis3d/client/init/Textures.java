@@ -1,12 +1,10 @@
 package li.cil.tis3d.client.init;
 
 import li.cil.tis3d.api.API;
-import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.client.texture.SpriteRegistry;
-import net.fabricmc.fabric.events.client.SpriteEvent;
 import net.minecraft.util.Identifier;
 
-public final class Textures implements ClientModInitializer {
+public final class Textures {
     public static final Identifier LOCATION_GUI_BOOK_CODE_BACKGROUND = new Identifier(API.MOD_ID, "textures/gui/book_code.png");
     public static final Identifier LOCATION_GUI_MANUAL_BACKGROUND = new Identifier(API.MOD_ID, "textures/gui/manual.png");
     public static final Identifier LOCATION_GUI_MANUAL_TAB = new Identifier(API.MOD_ID, "textures/gui/manual_tab.png");
@@ -38,9 +36,7 @@ public final class Textures implements ClientModInitializer {
     public static final Identifier LOCATION_OVERLAY_MODULE_TERMINAL = new Identifier(API.MOD_ID, "block/overlay/module_terminal");
     public static final Identifier LOCATION_OVERLAY_MODULE_TIMER = new Identifier(API.MOD_ID, "block/overlay/module_timer");
 
-    public static final Textures INSTANCE = new Textures();
-
-    public void loadTextureLocations(SpriteRegistry registry) {
+    static void registerSprites(SpriteRegistry registry) {
         registry.register(LOCATION_OVERLAY_CASING_LOCKED);
         registry.register(LOCATION_OVERLAY_CASING_UNLOCKED);
         registry.register(LOCATION_OVERLAY_CASING_PORT_CLOSED);
@@ -69,10 +65,5 @@ public final class Textures implements ClientModInitializer {
     // --------------------------------------------------------------------- //
 
     public Textures() {
-    }
-
-    @Override
-    public void onInitializeClient() {
-        SpriteEvent.PROVIDE.register(this::loadTextureLocations);
     }
 }

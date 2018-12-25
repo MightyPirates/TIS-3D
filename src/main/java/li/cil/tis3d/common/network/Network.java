@@ -127,7 +127,7 @@ public final class Network {
     // --------------------------------------------------------------------- //
     // Message flushing
 
-    public void serverTick(MinecraftServer server) {
+    public void serverTick() {
         flushCasingQueues(Side.SERVER);
         flushParticleQueue();
     }

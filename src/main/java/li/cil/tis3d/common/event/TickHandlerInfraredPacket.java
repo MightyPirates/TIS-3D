@@ -1,7 +1,6 @@
 package li.cil.tis3d.common.event;
 
 import li.cil.tis3d.common.entity.EntityInfraredPacket;
-import net.minecraft.server.MinecraftServer;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -38,7 +37,7 @@ public final class TickHandlerInfraredPacket {
 
     // --------------------------------------------------------------------- //
 
-    public void serverTick(MinecraftServer server) {
+    public void serverTick() {
         livePackets.addAll(pendingAdds);
         pendingAdds.clear();
 
