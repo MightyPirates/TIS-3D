@@ -10,6 +10,7 @@ import li.cil.tis3d.common.integration.Integration;
 import li.cil.tis3d.common.module.*;
 import li.cil.tis3d.common.provider.SimpleModuleProvider;
 import net.fabricmc.api.ModInitializer;
+import net.minecraft.item.ItemGroup;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -41,7 +42,7 @@ public final class TIS3D implements ModInitializer {
         // Settings.load(event.getSuggestedConfigurationFile());
 
         // Initialize API.
-        API.creativeTab = new CreativeTab();
+        API.creativeTab = ItemGroup.REDSTONE;
 
         API.fontRendererAPI = new FontRendererAPIImpl();
         API.infraredAPI = new InfraredAPIImpl();

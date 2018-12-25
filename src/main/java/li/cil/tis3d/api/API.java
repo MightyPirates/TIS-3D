@@ -1,6 +1,6 @@
 package li.cil.tis3d.api;
 
-import li.cil.tis3d.common.api.CreativeTab;
+import net.minecraft.item.ItemGroup;
 
 /**
  * Glue / actual references for the TIS-3D API.
@@ -18,7 +18,7 @@ public final class API {
 
     // --------------------------------------------------------------------- //
 
-    public static CreativeTab creativeTab;
+    public static ItemGroup creativeTab;
 
     // Set in TIS-3D pre-init, prefer using static entry point classes instead.
     public static li.cil.tis3d.api.detail.FontRendererAPI fontRendererAPI;
