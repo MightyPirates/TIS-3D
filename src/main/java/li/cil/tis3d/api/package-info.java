@@ -13,7 +13,6 @@
  * can interact with the casing and other modules.
  */
 @ParametersAreNonnullByDefault
-
 package li.cil.tis3d.api;
 
 import javax.annotation.ParametersAreNonnullByDefault;
