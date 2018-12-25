@@ -377,7 +377,7 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
         if (screen instanceof GuiModuleTerminal) {
             final GuiModuleTerminal gui = (GuiModuleTerminal) screen;
             if (gui.isFor(this)) {
-                mc.setCrashReport(null);
+                mc.openGui(null);
             }
         }
     }
