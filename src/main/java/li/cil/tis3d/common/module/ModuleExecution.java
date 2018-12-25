@@ -147,7 +147,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         final ItemStack heldItem = player.getStackInHand(hand);
 
         // Vanilla book? If so, make that a code book.
-        if (heldItem.getItem() == net.minecraft.item.Items.field_8744) {
+        if (heldItem.getItem() == net.minecraft.item.Items.BOOK) {
             if (!player.getEntityWorld().isClient) {
                 if (!player.abilities.creativeMode) {
                     heldItem.split(1);
