@@ -3,7 +3,8 @@
     "package": "li.cil.tis3d.common.mixin",
     "compatibilityLevel": "JAVA_8",
     "mixins": [
-        "CasingInfraredReceiverMixin"
+        "CasingInfraredReceiverMixin",
+        "ChunkUnloadMixin"
     ],
     "injectors": {
         "defaultRequire": 1

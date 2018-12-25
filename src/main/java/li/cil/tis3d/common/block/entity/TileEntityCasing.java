@@ -83,6 +83,15 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
         super(TYPE);
     }
 
+    @Override
+    public void onChunkUnload() {
+        super.onChunkUnload();
+
+        dispose();
+    }
+
+    // --------------------------------------------------------------------- //
+
     /**
      * Actual state tracking implementation of enabled state, used in {@link CasingImpl#isEnabled()}.
      *
@@ -333,14 +342,6 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
         }
         dispose();
     }
-
-    // TODO
-    /* @Override
-    public void onChunkUnload() {
-        super.onChunkUnload();
-
-        dispose();
-    } */
 
     @Override
     public double getSquaredRenderDistance() {

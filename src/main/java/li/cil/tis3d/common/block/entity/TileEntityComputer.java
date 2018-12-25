@@ -17,7 +17,7 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
-abstract class TileEntityComputer extends BlockEntity implements PipeHost {
+public abstract class TileEntityComputer extends BlockEntity implements PipeHost {
     // --------------------------------------------------------------------- //
     // Persisted data.
 
@@ -73,6 +73,13 @@ abstract class TileEntityComputer extends BlockEntity implements PipeHost {
                 pipeOverride[pipeIndex] = pipes[pipeIndex] = new PipeImpl(this, face, mapFace(face, port), mapPort(face, port));
             }
         }
+    }
+
+    /**
+     * Called when the chunk this block entity sits in is unloaded to allow disposing
+     * state or notifying (still loaded) neighbors and such.
+     */
+    public void onChunkUnload() {
     }
 
     /**

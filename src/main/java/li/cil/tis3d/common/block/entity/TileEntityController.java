@@ -144,6 +144,18 @@ public final class TileEntityController extends TileEntityComputer implements Ti
         super(TYPE);
     }
 
+    @Override
+    public void onChunkUnload() {
+        super.onChunkUnload();
+
+        // Just unset from our casings, do *not* disable them to keep their state.
+        for (final TileEntityCasing casing : casings) {
+            casing.setController(null);
+        }
+    }
+
+    // --------------------------------------------------------------------- //
+
     /**
      * Get the current state of the controller.
      *
@@ -213,17 +225,6 @@ public final class TileEntityController extends TileEntityComputer implements Ti
         }
         casings.clear();
     }
-
-    // TODO
-    /* @Override
-    public void onChunkUnload() {
-        super.onChunkUnload();
-
-        // Just unset from our casings, do *not* disable them to keep their state.
-        for (final TileEntityCasing casing : casings) {
-            casing.setController(null);
-        }
-    } */
 
     // --------------------------------------------------------------------- //
     // TileEntityComputer
