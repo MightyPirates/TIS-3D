@@ -94,33 +94,27 @@ public final class ModuleAudio extends AbstractModule {
         final int noteId = (value & 0xFF00) >>> 8;
         final int volume = Math.min(4, (value & 0x00F0) >>> 4);
         int instrumentId = value & 0x000F;
+        if (instrumentId >= Instrument.values().length) instrumentId = 0;
 
         // Skip mute sounds.
         if (volume < 1) {
             return;
         }
 
-        // Send event to check if the sound may be played / should be modulated.
-        final World world = getCasing().getCasingWorld();
+        // Get pitch, sound effect name.
+        final float pitch = (float) Math.pow(2, (noteId - 12) / 12.0);
+        final Instrument instrument = Instrument.values()[instrumentId];
+
+        // Offset to have the actual origin be in front of the module.
+        final Direction facing = Face.toEnumFacing(getFace());
         final BlockPos pos = getCasing().getPosition();
-        // TODO
-        if (instrumentId >= Instrument.values().length) instrumentId = 0;
-        /* final NoteBlockEvent.Play event = new NoteBlockEvent.Play(world, pos, world.getBlockState(pos), noteId, instrumentId);
-        if (!MinecraftForge.EVENT_BUS.post(event)) { */
-            // Not cancelled, get pitch, sound effect name.
-            final int note = /* event.getVanillaNoteId(); */ noteId;
-            final float pitch = (float) Math.pow(2, (note - 12) / 12.0);
-            final Instrument instrument = Instrument.values()[instrumentId];
+        final double x = pos.getX() + 0.5 + facing.getOffsetX() * 0.6;
+        final double y = pos.getY() + 0.5 + facing.getOffsetY() * 0.6;
+        final double z = pos.getZ() + 0.5 + facing.getOffsetZ() * 0.6;
 
-            // Offset to have the actual origin be in front of the module.
-            final Direction facing = Face.toEnumFacing(getFace());
-            final double x = pos.getX() + 0.5 + facing.getOffsetX() * 0.6;
-            final double y = pos.getY() + 0.5 + facing.getOffsetY() * 0.6;
-            final double z = pos.getZ() + 0.5 + facing.getOffsetZ() * 0.6;
-
-            // Let there be sound!
-            world.playSound(null, x, y, z, instrument.getSound(), SoundCategory.BLOCK, volume, pitch);
-            ((ServerWorld) world).method_14199(ParticleTypes.NOTE, x, y, z, 1, 0, 0, 0, 0);
-        /* } */
+        // Let there be sound!
+        final World world = getCasing().getCasingWorld();
+        world.playSound(null, x, y, z, instrument.getSound(), SoundCategory.BLOCK, volume, pitch);
+        ((ServerWorld) world).method_14199(ParticleTypes.NOTE, x, y, z, 1, 0, 0, 0, 0);
     }
 }
