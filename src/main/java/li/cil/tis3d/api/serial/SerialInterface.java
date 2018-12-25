@@ -97,7 +97,7 @@ public interface SerialInterface {
 
     /**
      * Called when the serial port module is saved, allows storing state of the
-     * serial interface to be restored using {@link #readFromNBT(NBTTagCompound)}.
+     * serial interface to be restored using {@link #readFromNBT(CompoundTag)}.
      *
      * @param nbt the tag to write the interface's state to.
      */

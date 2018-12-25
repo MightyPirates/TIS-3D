@@ -1,6 +1,7 @@
 package li.cil.tis3d.api.infrared;
 
 import li.cil.tis3d.api.machine.Casing;
+import net.minecraft.block.Material;
 import net.minecraft.util.HitResult;
 
 /**
@@ -17,14 +18,13 @@ import net.minecraft.util.HitResult;
  * Things checked for capabilities of this type are:
  * <ul>
  * <li>{@link net.minecraft.entity.Entity}</li>
- * <li>{@link net.minecraft.tileentity.TileEntity}</li>
+ * <li>{@link net.minecraft.block.entity.BlockEntity}</li>
  * </ul>
  * <p>
  * For compatibility, entities and tile entities implementing this interface will have
  * the corresponding capability attached automatically.
  * <p>
- * Note that for non-opaque blocks, defined as <tt>!{@link Material#blocksMovement()} ||
- * !{@link Material#isOpaque()}</tt> this will
+ * Note that for non-opaque blocks, defined as <tt>!{@link Material#method_15804()}</tt> this will
  * never be called, as they will be skipped when performing a collision check!
  */
 public interface InfraredReceiver {

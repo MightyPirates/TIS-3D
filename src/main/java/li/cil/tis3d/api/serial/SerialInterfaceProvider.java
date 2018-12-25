@@ -1,9 +1,10 @@
 package li.cil.tis3d.api.serial;
 
-import javax.annotation.Nullable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+
+import javax.annotation.Nullable;
 
 /**
  * Creates a serial interface instance for a specified block position.
@@ -66,7 +67,7 @@ public interface SerialInterfaceProvider {
      * <p>
      * Generally this this should return <tt>false</tt> if the interface is not
      * once provided by this provider, or more generally, if it is the same kind
-     * of serial interface that would be created via {@link #interfaceFor(World, BlockPos, EnumFacing)},
+     * of serial interface that would be created via {@link #interfaceFor(World, BlockPos, Direction)},
      * otherwise this should return <tt>true</tt>.
      *
      * @param world           the world containing the position.

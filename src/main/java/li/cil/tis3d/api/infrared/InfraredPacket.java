@@ -1,5 +1,6 @@
 package li.cil.tis3d.api.infrared;
 
+import net.minecraft.util.HitResult;
 import net.minecraft.util.math.Vec3d;
 
 /**
@@ -36,7 +37,7 @@ public interface InfraredPacket {
      * a packet's lifetime.
      * <p>
      * When changing the direction of a packet, you may want to set the new
-     * position to the hit position (passed to {@link InfraredReceiver#onInfraredPacket(InfraredPacket, RayTraceResult)}).
+     * position to the hit position (passed to {@link InfraredReceiver#onInfraredPacket(InfraredPacket, HitResult)}).
      * Any changes to the position will be taken into account automatically,
      * so that packets do not travel further due to this than they otherwise
      * would. Note that you cannot move a packet further than it would travel

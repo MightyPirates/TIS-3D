@@ -2,9 +2,12 @@ package li.cil.tis3d.api.machine;
 
 import io.netty.buffer.ByteBuf;
 import li.cil.tis3d.api.module.Module;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
 import javax.annotation.Nullable;
 
 /**
@@ -44,7 +47,7 @@ public interface Casing {
      * at a signal strength one.
      * <p>
      * This is useful for contextual behavior in modules while rendering or in
-     * the activation callback {@link Module#onActivate(EntityPlayer, EnumHand, float, float, float)}.
+     * the activation callback {@link Module#onActivate(PlayerEntity, Hand, float, float, float)}.
      *
      * @return whether the casing is currently enabled.
      */
@@ -55,7 +58,7 @@ public interface Casing {
      * <p>
      * Casings can be locked, preventing players to remove modules from the
      * casing or add modules to the casing. Some modules may choose to also
-     * ignore {@link Module#onActivate(EntityPlayer, EnumHand, float, float, float)}
+     * ignore {@link Module#onActivate(PlayerEntity, Hand, float, float, float)}
      * calls while their casing is locks (such as the execution module to
      * prevent reprogramming).
      *
