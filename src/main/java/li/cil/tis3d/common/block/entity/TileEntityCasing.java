@@ -157,6 +157,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
     }
 
     public void scheduleScan() {
+        assert getWorld() != null;
         if (getWorld().isClient) {
             return;
         }
@@ -254,6 +255,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
 
         // Ensure there are no modules installed between two casings.
         if (hasNeighbor(face)) {
+            assert getWorld() != null;
             InventoryUtils.drop(getWorld(), getPos(), this, face.ordinal(), getInvMaxStackAmount(), Face.toEnumFacing(face));
         }
 
@@ -323,6 +325,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
     public void invalidate() {
         super.invalidate();
 
+        assert getWorld() != null;
         if (!getWorld().isClient) {
             onDisabled();
         }
@@ -355,6 +358,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
         super.readFromNBTForClient(nbt);
 
         isEnabled = nbt.getBoolean(TAG_ENABLED);
+        assert getWorld() != null;
         getWorld().updateListeners(getPos(), getCachedState(), getCachedState(), 2);
     }
 
@@ -488,6 +492,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
                 }
 
                 // Keep looking...
+                assert getWorld() != null;
                 if (!TileEntityController.addNeighbors(getWorld(), tileEntity, processed, queue)) {
                     // Hit end of loaded area, so scheduling would just result in
                     // error again anyway. Do *not* disable casings, keep last
@@ -518,12 +523,14 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
     private void sendCasingLockedState() {
         final Packet packet = PacketRegistry.SERVER.wrap(new MessageCasingLockedState(this, isLocked()));
         PacketServerHelper.forEachWatching(world, pos, (player) -> player.networkHandler.sendPacket(packet));
+        assert getWorld() != null;
         getWorld().playSound(null, getPos(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCK, 0.3f, isLocked() ? 0.5f : 0.6f);
     }
 
     private void sendReceivingPipeLockedState(final Face face, final Port port) {
         final Packet packet = PacketRegistry.SERVER.wrap(new MessageReceivingPipeLockedState(this, face, port, isReceivingPipeLocked(face, port)));
         PacketServerHelper.forEachWatching(world, pos, (player) -> player.networkHandler.sendPacket(packet));
+        assert getWorld() != null;
         getWorld().playSound(null, getPos(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCK, 0.3f, isReceivingPipeLocked(face, port) ? 0.5f : 0.6f);
     }
 

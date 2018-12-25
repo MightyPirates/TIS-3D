@@ -174,6 +174,7 @@ abstract class TileEntityComputer extends BlockEntity implements PipeHost {
         // our tile entity.
         for (final Direction facing : Direction.values()) {
             final BlockPos neighborPos = getPos().offset(facing);
+            assert getWorld() != null;
             if (getWorld().isBlockLoaded(neighborPos)) {
                 // If we have a casing, set it as our neighbor.
                 final BlockEntity tileEntity = getWorld().getBlockEntity(neighborPos);

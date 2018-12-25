@@ -170,6 +170,7 @@ public final class TileEntityController extends TileEntityComputer implements Ti
     public void forceStep() {
         if (state == ControllerState.RUNNING) {
             forceStep = true;
+            assert getWorld() != null;
             getWorld().playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.BLOCK_STONE_BUTTON_CLICK_ON, SoundCategory.BLOCK, 0.2f, 0.8f + getWorld().random.nextFloat() * 0.1f);
         }
     }
@@ -178,13 +179,12 @@ public final class TileEntityController extends TileEntityComputer implements Ti
      * Reset the controller, pause for a moment and catch fire.
      */
     public void haltAndCatchFire() {
+        assert getWorld() != null;
         if (!getWorld().isClient) {
             state = ControllerState.READY;
             casings.forEach(TileEntityCasing::onDisabled);
             final MessageHaltAndCatchFire message = new MessageHaltAndCatchFire(getWorld(), getPos());
-            PacketServerHelper.forEachWatching(getWorld(), getPos(), (player) -> {
-                player.networkHandler.sendPacket(PacketRegistry.SERVER.wrap(message));
-            });
+            PacketServerHelper.forEachWatching(getWorld(), getPos(), (player) -> player.networkHandler.sendPacket(PacketRegistry.SERVER.wrap(message)));
         }
         hcfCooldown = COOLDOWN_HCF;
     }
@@ -196,6 +196,7 @@ public final class TileEntityController extends TileEntityComputer implements Ti
     public void invalidate() {
         super.invalidate();
 
+        assert getWorld() != null;
         if (getWorld().isClient) {
             return;
         }
@@ -260,6 +261,7 @@ public final class TileEntityController extends TileEntityComputer implements Ti
 
     @Override
     public void tick() {
+        assert getWorld() != null;
         final World world = getWorld();
 
         // Only update multi-block and casings on the server.
@@ -442,6 +444,7 @@ public final class TileEntityController extends TileEntityComputer implements Ti
             if (tileEntity instanceof TileEntityController) {
                 if (tileEntity == this) {
                     // Special case: first iteration, add the neighbors.
+                    assert getWorld() != null;
                     if (!addNeighbors(getWorld(), tileEntity, processed, queue)) {
                         clear(ControllerState.INCOMPLETE);
                         return;
@@ -461,6 +464,7 @@ public final class TileEntityController extends TileEntityComputer implements Ti
                 // Register as the controller with the casing and add neighbors.
                 final TileEntityCasing casing = (TileEntityCasing) tileEntity;
                 newCasings.add(casing);
+                assert getWorld() != null;
                 addNeighbors(getWorld(), casing, processed, queue);
             }
         }
@@ -510,6 +514,7 @@ public final class TileEntityController extends TileEntityComputer implements Ti
     private int computePower() {
         int acc = 0;
         for (final Direction facing : Direction.values()) {
+            assert getWorld() != null;
             acc += Math.max(0, Math.min(15, getWorld().getEmittedRedstonePower(getPos().offset(facing), facing)));
         }
         return acc;
