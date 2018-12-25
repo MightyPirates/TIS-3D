@@ -4,10 +4,9 @@ import com.google.common.base.Strings;
 import com.google.common.io.Files;
 import li.cil.tis3d.api.detail.ManualAPI;
 import li.cil.tis3d.api.manual.*;
-import li.cil.tis3d.client.gui.GuiHandlerClient;
+import li.cil.tis3d.client.gui.GuiHandler;
 import li.cil.tis3d.client.gui.GuiManual;
 import li.cil.tis3d.common.TIS3D;
-import li.cil.tis3d.common.gui.GuiHandlerCommon;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.entity.player.PlayerEntity;
@@ -178,14 +177,7 @@ public final class ManualAPIImpl implements ManualAPI {
     @Override
     public void openFor(final PlayerEntity player) {
         if (player.getEntityWorld().isClient) {
-            openForClient(player);
-        }
-    }
-
-    private void openForClient(final PlayerEntity player) {
-        Gui screen = GuiHandlerClient.getClientGuiElement(GuiHandlerCommon.GuiId.BOOK_MANUAL, player.getEntityWorld(), player);
-        if (screen != null) {
-            MinecraftClient.getInstance().openGui(screen);
+            GuiHandler.openManualGui();
         }
     }
 

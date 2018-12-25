@@ -38,10 +38,6 @@ public final class BootstrapClient implements ClientModInitializer {
         BlockEntityRendererRegistry.INSTANCE.register(TileEntityCasing.class, new TileEntitySpecialRendererCasing());
         BlockEntityRendererRegistry.INSTANCE.register(TileEntityController.class, new TileEntitySpecialRendererController());
 
-        // Register GUI handler for fancy GUIs in our almost GUI-less mod!
-        // TODO
-        //NetworkRegistry.INSTANCE.registerGuiHandler(TIS3D.instance, new GuiHandlerCommon());
-
         // Add default manual providers for client side stuff.
         ManualAPI.addProvider("", new TextureImageProvider());
         ManualAPI.addProvider("item", new ItemImageProvider());

@@ -24,6 +24,7 @@ public final class GuiModuleMemory extends Gui {
     private static final String LABEL_INITIALIZING = "INITIALIZING...";
 
     private final PlayerEntity player;
+    private final Hand hand;
     private final byte[] data = new byte[ModuleRandomAccessMemory.MEMORY_SIZE];
 
     private int guiX = 0;
@@ -33,8 +34,9 @@ public final class GuiModuleMemory extends Gui {
     private boolean receivedData;
     private long initTime;
 
-    GuiModuleMemory(final PlayerEntity player) {
+    GuiModuleMemory(final PlayerEntity player, final Hand hand) {
         this.player = player;
+        this.hand = hand;
     }
 
     public void setData(final byte[] data) {
@@ -63,7 +65,7 @@ public final class GuiModuleMemory extends Gui {
         // data to avoid erasing ROM when closing UI again too quickly.
         if (receivedData) {
             // Save any changes made and send them to the server.
-            MinecraftClient.getInstance().getNetworkHandler().sendPacket(PacketRegistry.CLIENT.wrap(new MessageModuleReadOnlyMemoryData(data)));
+            MinecraftClient.getInstance().getNetworkHandler().sendPacket(PacketRegistry.CLIENT.wrap(new MessageModuleReadOnlyMemoryData(data, hand)));
         }
 
         client.keyboard.enableRepeatEvents(false);
@@ -71,7 +73,7 @@ public final class GuiModuleMemory extends Gui {
 
     @Override
     public void draw(final int mouseX, final int mouseY, final float partialTicks) {
-        if (!player.isValid() || !Items.isModuleReadOnlyMemory(player.getStackInHand(Hand.MAIN))) {
+        if (!player.isValid() || !Items.isModuleReadOnlyMemory(player.getStackInHand(hand))) {
             client.openGui(null);
             return;
         }

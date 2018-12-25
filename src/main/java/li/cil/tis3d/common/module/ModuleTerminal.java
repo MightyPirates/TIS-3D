@@ -9,7 +9,7 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.gui.GuiHandlerClient;
+import li.cil.tis3d.client.gui.GuiHandler;
 import li.cil.tis3d.client.gui.GuiModuleTerminal;
 import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.client.renderer.font.FontRenderer;
@@ -182,18 +182,10 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
 
         final World world = player.getEntityWorld();
         if (world.isClient) {
-            openForClient(player);
+            GuiHandler.openTerminalGui(this);
         }
 
         return true;
-    }
-
-    @Environment(EnvType.CLIENT)
-    private void openForClient(final PlayerEntity player) {
-        Gui screen = GuiHandlerClient.getClientGuiElement(GuiHandlerCommon.GuiId.MODULE_TERMINAL, player.getEntityWorld(), player);
-        if (screen != null) {
-            MinecraftClient.getInstance().openGui(screen);
-        }
     }
 
     @Override

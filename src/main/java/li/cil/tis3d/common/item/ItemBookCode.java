@@ -1,13 +1,11 @@
 package li.cil.tis3d.common.item;
 
-import li.cil.tis3d.client.gui.GuiHandlerClient;
+import li.cil.tis3d.client.gui.GuiHandler;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.block.BlockCasing;
 import li.cil.tis3d.util.FontRendererUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.item.TooltipOptions;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.entity.player.PlayerEntity;
@@ -49,16 +47,9 @@ public final class ItemBookCode extends BookItem {
     @Override
     public TypedActionResult<ItemStack> use(final World world, final PlayerEntity player, final Hand hand) {
         if (world.isClient) {
-            openForClient(player);
+            GuiHandler.openCodeBookGui(player, hand);
         }
         return new TypedActionResult<>(ActionResult.SUCCESS, player.getStackInHand(hand));
-    }
-
-    private void openForClient(final PlayerEntity player) {
-        Gui screen = GuiHandlerClient.getClientGuiElement(GuiHandlerClient.GuiId.BOOK_CODE, player.getEntityWorld(), player);
-        if (screen != null) {
-            MinecraftClient.getInstance().openGui(screen);
-        }
     }
 
     @Override

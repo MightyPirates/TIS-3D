@@ -1,12 +1,10 @@
 package li.cil.tis3d.common.item;
 
 import li.cil.tis3d.charset.PacketRegistry;
-import li.cil.tis3d.client.gui.GuiHandlerClient;
+import li.cil.tis3d.client.gui.GuiHandler;
 import li.cil.tis3d.common.block.BlockCasing;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.network.message.MessageModuleReadOnlyMemoryData;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -34,7 +32,7 @@ public class ItemModuleReadOnlyMemory extends ItemModule {
     @Override
     public TypedActionResult<ItemStack> use(final World world, final PlayerEntity player, final Hand hand) {
         if (world.isClient) {
-            openForClient(player);
+            GuiHandler.openReadOnlyMemoryGui(player, hand);
         } else {
             sendModuleMemory(player, hand);
         }
@@ -44,13 +42,6 @@ public class ItemModuleReadOnlyMemory extends ItemModule {
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
         return BlockCasing.activate(context) ? ActionResult.SUCCESS : super.useOnBlock(context);
-    }
-
-    private static void openForClient(final PlayerEntity player) {
-        Gui screen = GuiHandlerClient.getClientGuiElement(GuiHandlerClient.GuiId.MODULE_MEMORY, player.getEntityWorld(), player);
-        if (screen != null) {
-            MinecraftClient.getInstance().openGui(screen);
-        }
     }
 
     private static void sendModuleMemory(final PlayerEntity player, final Hand hand) {
@@ -63,7 +54,7 @@ public class ItemModuleReadOnlyMemory extends ItemModule {
             return;
         }
 
-        MessageModuleReadOnlyMemoryData data = new MessageModuleReadOnlyMemoryData(ItemModuleReadOnlyMemory.loadFromStack(heldItem));
+        MessageModuleReadOnlyMemoryData data = new MessageModuleReadOnlyMemoryData(ItemModuleReadOnlyMemory.loadFromStack(heldItem), hand);
         ((ServerPlayerEntity) player).networkHandler.sendPacket(PacketRegistry.SERVER.wrap(data));
     }
 

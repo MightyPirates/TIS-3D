@@ -59,6 +59,7 @@ public final class GuiBookCode extends Gui {
     private ButtonDeletePage buttonDeletePage;
 
     private final PlayerEntity player;
+    private final Hand hand;
     private final ItemBookCode.Data data;
     private final List<StringBuilder> lines = new ArrayList<>();
 
@@ -70,9 +71,10 @@ public final class GuiBookCode extends Gui {
 
     // --------------------------------------------------------------------- //
 
-    GuiBookCode(final PlayerEntity player) {
+    GuiBookCode(final PlayerEntity player, final Hand hand) {
         this.player = player;
-        this.data = ItemBookCode.Data.loadFromStack(player.getStackInHand(Hand.MAIN));
+        this.hand = hand;
+        this.data = ItemBookCode.Data.loadFromStack(player.getStackInHand(hand));
 
         rebuildLines();
     }
@@ -105,14 +107,14 @@ public final class GuiBookCode extends Gui {
         // Save any changes made and send them to the server.
         final CompoundTag nbt = new CompoundTag();
         data.writeToNBT(nbt);
-        MinecraftClient.getInstance().getNetworkHandler().sendPacket(PacketRegistry.CLIENT.wrap(new MessageBookCodeData(nbt)));
+        MinecraftClient.getInstance().getNetworkHandler().sendPacket(PacketRegistry.CLIENT.wrap(new MessageBookCodeData(nbt, hand)));
 
         client.keyboard.enableRepeatEvents(false);
     }
 
     @Override
     public void draw(final int mouseX, final int mouseY, final float partialTicks) {
-        if (!player.isValid() || !Items.isBookCode(player.getStackInHand(Hand.MAIN))) {
+        if (!player.isValid() || !Items.isBookCode(player.getStackInHand(hand))) {
             MinecraftClient.getInstance().setCrashReport(null);
             return;
         }

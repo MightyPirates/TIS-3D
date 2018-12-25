@@ -13,7 +13,7 @@ public final class MessageHandlerModuleReadOnlyMemoryDataServer extends Abstract
     protected void onMessageSynchronized(final MessageModuleReadOnlyMemoryData message, final NetworkContext context) {
         final PlayerEntity player = context.getPlayer();
         if (player != null) {
-            final ItemStack stack = player.getStackInHand(Hand.MAIN);
+            final ItemStack stack = player.getStackInHand(message.getHand());
             if (Items.isModuleReadOnlyMemory(stack)) {
                 ItemModuleReadOnlyMemory.saveToStack(stack, message.getData());
             }
