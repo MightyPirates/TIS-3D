@@ -1,0 +1,21 @@
+{
+    "replace": false,
+    "values": [
+        "tis3d:module_audio",
+        "tis3d:module_bundled_redstone",
+        "tis3d:module_display",
+        "tis3d:module_execution",
+        "tis3d:module_infrared",
+        "tis3d:module_keypad",
+        "tis3d:module_queue",
+        "tis3d:module_random",
+        "tis3d:module_random_access_memory",
+        "tis3d:module_read_only_memory",
+        "tis3d:module_redstone",
+        "tis3d:module_sequencer",
+        "tis3d:module_serial_port",
+        "tis3d:module_stack",
+        "tis3d:module_terminal",
+        "tis3d:module_timer"
+    ]
+}
