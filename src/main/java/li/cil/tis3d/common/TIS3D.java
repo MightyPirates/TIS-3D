@@ -50,10 +50,6 @@ public final class TIS3D implements ModInitializer {
         API.moduleAPI = new ModuleAPIImpl();
         API.serialAPI = SerialAPIImpl.INSTANCE;
 
-        // Initialize capabilities.
-        // TODO
-        // CapabilityInfraredReceiver.register();
-
         // Register GUI handler for fancy GUIs in our almost GUI-less mod!
         // TODO
         //NetworkRegistry.INSTANCE.registerGuiHandler(TIS3D.instance, new GuiHandlerCommon());

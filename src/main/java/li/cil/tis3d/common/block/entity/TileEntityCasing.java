@@ -1,7 +1,5 @@
 package li.cil.tis3d.common.block.entity;
 
-import li.cil.tis3d.api.infrared.InfraredReceiver;
-import li.cil.tis3d.api.infrared.InfraredReceiverTile;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
@@ -33,7 +31,6 @@ import net.minecraft.network.Packet;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -51,7 +48,7 @@ import java.util.*;
  * Casings do not tick. The modules installed in them are driven by a
  * controller (transitively) connected to their casing.
  */
-public final class TileEntityCasing extends TileEntityComputer implements InfraredReceiverTile, SidedInventoryProxy, CasingProxy {
+public final class TileEntityCasing extends TileEntityComputer implements SidedInventoryProxy, CasingProxy {
     public static BlockEntityType<TileEntityCasing> TYPE;
 
     // --------------------------------------------------------------------- //
@@ -340,47 +337,6 @@ public final class TileEntityCasing extends TileEntityComputer implements Infrar
         dispose();
     } */
 
-    // TODO
-    /* @Override
-    public boolean hasCapability(final Capability<?> capability, @Nullable final EnumFacing facing) {
-        if (super.hasCapability(capability, facing)) {
-            return true;
-        }
-
-        if (facing == null) {
-            return false;
-        }
-
-        final Module module = getModule(Face.fromEnumFacing(facing));
-        if (module instanceof ICapabilityProvider) {
-            final ICapabilityProvider capabilityProvider = (ICapabilityProvider) module;
-            return capabilityProvider.hasCapability(capability, facing);
-        }
-
-        return false;
-    }
-
-    @Nullable
-    @Override
-    public <T> T getCapability(final Capability<T> capability, @Nullable final EnumFacing facing) {
-        final T instance = super.getCapability(capability, facing);
-        if (instance != null) {
-            return instance;
-        }
-
-        if (facing == null) {
-            return null;
-        }
-
-        final Module module = getModule(Face.fromEnumFacing(facing));
-        if (module instanceof ICapabilityProvider) {
-            final ICapabilityProvider capabilityProvider = (ICapabilityProvider) module;
-            return capabilityProvider.getCapability(capability, facing);
-        }
-
-        return null;
-    } */
-
     @Override
     public double getSquaredRenderDistance() {
         return Network.RANGE_HIGH * Network.RANGE_HIGH;
@@ -605,16 +561,6 @@ public final class TileEntityCasing extends TileEntityComputer implements Infrar
             compressed[i >> 1] |= (byte) c;
         }
         return compressed;
-    }
-
-    @Nullable
-    @Override
-    public InfraredReceiver getInfraredReceiver(Direction facing) {
-        if (getModule(Face.fromEnumFacing(facing)) instanceof InfraredReceiver) {
-            return (InfraredReceiver) getModule(Face.fromEnumFacing(facing));
-        } else {
-            return null;
-        }
     }
 
     // --------------------------------------------------------------------- //

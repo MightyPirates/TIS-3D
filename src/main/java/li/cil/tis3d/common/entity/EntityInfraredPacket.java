@@ -2,7 +2,6 @@ package li.cil.tis3d.common.entity;
 
 import li.cil.tis3d.api.infrared.InfraredPacket;
 import li.cil.tis3d.api.infrared.InfraredReceiver;
-import li.cil.tis3d.api.infrared.InfraredReceiverTile;
 import li.cil.tis3d.common.event.TickHandlerInfraredPacket;
 import li.cil.tis3d.util.Raytracing;
 import net.minecraft.block.Block;
@@ -382,10 +381,8 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
         invalidate();
 
         // Next up, notify receiver, if any.
-        if (block instanceof InfraredReceiver) {
-            ((InfraredReceiver) block).onInfraredPacket(this, hit);
-        }
-        onCapabilityProviderCollision(hit, world.getBlockEntity(pos));
+        onInfraredReceiverCollision(hit, block);
+        onInfraredReceiverCollision(hit, world.getBlockEntity(pos));
     }
 
     private void onEntityCollision(final HitResult hit) {
@@ -393,30 +390,12 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
         invalidate();
 
         // Next up, notify receiver, if any.
-        onCapabilityProviderCollision(hit, hit.entity);
+        onInfraredReceiverCollision(hit, hit.entity);
     }
 
-    private void onCapabilityProviderCollision(final HitResult hit, @Nullable final Object provider) {
-        if (provider instanceof InfraredReceiverTile) {
-            final InfraredReceiver capability = ((InfraredReceiverTile) provider).getInfraredReceiver(hit.side);
-            if (capability != null) {
-                capability.onInfraredPacket(this, hit);
-            }
-
-            // TODO Capabilities.
-			/* final InfraredReceiver capability = provider.getCapability(CapabilityInfraredReceiver.INFRARED_RECEIVER_CAPABILITY, hit.sideHit);
-			if (capability != null) {
-				capability.onInfraredPacket(this, hit);
-			} */
+    private void onInfraredReceiverCollision(final HitResult hit, @Nullable final Object provider) {
+        if (provider instanceof InfraredReceiver) {
+            ((InfraredReceiver) provider).onInfraredPacket(this, hit);
         }
     }
-
-    /* private void onCapabilityProviderCollision(final RayTraceResult hit, @Nullable final ICapabilityProvider provider) {
-        if (provider != null) {
-            final InfraredReceiver capability = provider.getCapability(CapabilityInfraredReceiver.INFRARED_RECEIVER_CAPABILITY, hit.sideHit);
-            if (capability != null) {
-                capability.onInfraredPacket(this, hit);
-            }
-        }
-    } */
 }

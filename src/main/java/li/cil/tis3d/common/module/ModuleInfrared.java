@@ -23,7 +23,7 @@ import net.minecraft.world.World;
 import java.util.Deque;
 import java.util.LinkedList;
 
-public final class ModuleInfrared extends AbstractModule implements /* ICapabilityProvider, */InfraredReceiver {
+public final class ModuleInfrared extends AbstractModule implements InfraredReceiver {
     // --------------------------------------------------------------------- //
     // Persisted data
 
@@ -121,26 +121,6 @@ public final class ModuleInfrared extends AbstractModule implements /* ICapabili
         final IntArrayTag receiveQueueNbt = new IntArrayTag(receiveQueueArray);
         nbt.put(TAG_RECEIVE_QUEUE, receiveQueueNbt);
     }
-
-    // --------------------------------------------------------------------- //
-    // ICapabilityProvider
-
-    // TODO Capabilities.
-    /* @Override
-    public boolean hasCapability(@Nonnull final Capability<?> capability, @Nullable final EnumFacing facing) {
-        return capability == CapabilityInfraredReceiver.INFRARED_RECEIVER_CAPABILITY;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Nullable
-    @Override
-    public <T> T getCapability(@Nonnull final Capability<T> capability, @Nullable final EnumFacing facing) {
-        if (capability == CapabilityInfraredReceiver.INFRARED_RECEIVER_CAPABILITY) {
-            return (T) this;
-        }
-
-        return null;
-    } */
 
     // --------------------------------------------------------------------- //
     // InfraredReceiver

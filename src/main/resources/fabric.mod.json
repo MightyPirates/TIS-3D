@@ -17,6 +17,7 @@
         "li.cil.tis3d.common.TIS3D"
     ],
     "mixins": {
-        "client": "tis3d.client.json"
+        "client": "tis3d.client.json",
+        "common": "tis3d.common.json"
     }
 }

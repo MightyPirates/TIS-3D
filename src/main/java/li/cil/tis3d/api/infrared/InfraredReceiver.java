@@ -6,23 +6,15 @@ import net.minecraft.util.HitResult;
 
 /**
  * When implemented this will be used let the instance handle a received
- * infrared packet. If the collided with block or packet does not implement
+ * infrared packet. If the collided with block or entity does not implement
  * this interface, the packet will simply die.
  * <p>
- * Things checked for this interface are:
+ * Things checked for this interface by default are:
  * <ul>
  * <li>{@link net.minecraft.block.Block}</li>
+ * <li>{@link net.minecraft.block.entity.BlockEntity}</li>
  * <li>{@link li.cil.tis3d.api.module.Module} in {@link Casing}.</li>
  * </ul>
- * <p>
- * Things checked for capabilities of this type are:
- * <ul>
- * <li>{@link net.minecraft.entity.Entity}</li>
- * <li>{@link net.minecraft.block.entity.BlockEntity}</li>
- * </ul>
- * <p>
- * For compatibility, entities and tile entities implementing this interface will have
- * the corresponding capability attached automatically.
  * <p>
  * Note that for non-opaque blocks, defined as <tt>!{@link Material#method_15804()}</tt> this will
  * never be called, as they will be skipped when performing a collision check!
