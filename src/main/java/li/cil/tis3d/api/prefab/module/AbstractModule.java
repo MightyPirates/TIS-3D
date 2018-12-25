@@ -8,9 +8,6 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.util.TransformUtil;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Material;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.render.block.BlockRenderLayer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -21,6 +18,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.WorldChunk;
+
 import javax.annotation.Nullable;
 
 /**
@@ -147,9 +145,8 @@ public abstract class AbstractModule implements Module {
         }
 
         // Otherwise check if the neighboring block blocks visibility to our face.
-        // TODO: Can this be done better? It probably can. Especially in 1.14
         final BlockState neighborState = world.getBlockState(neighborPos);
-        return neighborState.isAir() || !neighborState.isFullBoundsCubeForCulling() || neighborState.getBlock().getRenderLayer() != BlockRenderLayer.SOLID;
+        return !neighborState.getMaterial().method_15804();
     }
 
     // --------------------------------------------------------------------- //
