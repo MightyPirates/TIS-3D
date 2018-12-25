@@ -12,10 +12,11 @@ import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.client.renderer.font.FontRenderer;
 import li.cil.tis3d.client.renderer.font.FontRendererNormal;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.nbt.CompoundTag;
-
 
 /**
  * The timer module can be used to wait for a specific amount of game time.
@@ -91,7 +92,7 @@ public final class ModuleTimer extends AbstractModuleRotatable {
         hasElapsed = false; // Recompute in render().
     }
 
-
+    @Environment(EnvType.CLIENT)
     @Override
     public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
         if (!getCasing().isEnabled()) {
@@ -189,7 +190,7 @@ public final class ModuleTimer extends AbstractModuleRotatable {
         getCasing().sendData(getFace(), data, DATA_TYPE_UPDATE);
     }
 
-
+    @Environment(EnvType.CLIENT)
     private void drawState(final float remaining) {
         final float milliseconds = remaining * 50f; // One tick is 50ms.
         final float seconds = milliseconds / 1000f;

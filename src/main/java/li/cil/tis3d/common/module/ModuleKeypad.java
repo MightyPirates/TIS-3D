@@ -8,6 +8,8 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.init.Textures;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -149,7 +151,7 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
         }
     }
 
-
+    @Environment(EnvType.CLIENT)
     @Override
     public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
         if (!getCasing().isEnabled() || !isVisible()) {
@@ -262,6 +264,7 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
         return (short) ((button + 1) % 10);
     }
 
+    @Environment(EnvType.CLIENT)
     private void drawButtonOverlay(final int button) {
         final int column = button % 3;
         final int row = button / 3;

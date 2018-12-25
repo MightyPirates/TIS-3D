@@ -15,7 +15,8 @@ import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.client.renderer.font.FontRenderer;
 import li.cil.tis3d.client.renderer.font.FontRendererNormal;
 import li.cil.tis3d.common.Constants;
-import li.cil.tis3d.common.gui.GuiHandlerCommon;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
@@ -187,6 +188,7 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
         return true;
     }
 
+    @Environment(EnvType.CLIENT)
     private void openForClient(final PlayerEntity player) {
         Gui screen = GuiHandlerClient.getClientGuiElement(GuiHandlerCommon.GuiId.MODULE_TERMINAL, player.getEntityWorld(), player);
         if (screen != null) {
@@ -225,7 +227,7 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
         }
     }
 
-
+    @Environment(EnvType.CLIENT)
     @Override
     public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
         if (!getCasing().isEnabled() || !isVisible()) {
@@ -306,7 +308,7 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
     // --------------------------------------------------------------------- //
     // Rendering
 
-
+    @Environment(EnvType.CLIENT)
     private void renderText() {
         GlStateManager.translatef(2f / 16f, 2f / 16f, 0);
         GlStateManager.scalef(1 / 512f, 1 / 512f, 1);
@@ -325,6 +327,7 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
         renderInput(fontRenderer, textWidth);
     }
 
+    @Environment(EnvType.CLIENT)
     private void renderDisplay(final FontRenderer fontRenderer) {
         for (final StringBuilder line : display) {
             fontRenderer.drawString(line);
@@ -332,6 +335,7 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
         }
     }
 
+    @Environment(EnvType.CLIENT)
     private void renderInput(final FontRenderer fontRenderer, final int textWidth) {
         if (!isInputEnabled) {
             GlStateManager.color4f(0.5f, 0.5f, 0.5f, 1f);
@@ -362,7 +366,7 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
         }
     }
 
-
+    @Environment(EnvType.CLIENT)
     private void closeGui() {
         final MinecraftClient mc = MinecraftClient.getInstance();
         if (mc == null) {

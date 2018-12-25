@@ -1,6 +1,8 @@
 package li.cil.tis3d.api.util;
 
 import com.mojang.blaze3d.platform.GLX;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
@@ -18,7 +20,7 @@ public final class RenderUtil {
      *
      * @param location the location of the texture to bind.
      */
-
+    @Environment(EnvType.CLIENT)
     public static void bindTexture(final Identifier location) {
         MinecraftClient.getInstance().getTextureManager().bindTexture(location);
     }
@@ -30,7 +32,7 @@ public final class RenderUtil {
      * @param location the location of the texture to get the sprite for.
      * @return the sprite of the texture in the block atlas; <code>missingno</code> if not found.
      */
-
+    @Environment(EnvType.CLIENT)
     public static Sprite getSprite(final Identifier location) {
         return MinecraftClient.getInstance().getSpriteAtlas().getSprite(location.toString());
     }
@@ -43,7 +45,7 @@ public final class RenderUtil {
      * @param w the width of the quad.
      * @param h the height of the quad.
      */
-
+    @Environment(EnvType.CLIENT)
     public static void drawUntexturedQuad(final float x, final float y, final float w, final float h) {
         final Tessellator tessellator = Tessellator.getInstance();
         final BufferBuilder buffer = tessellator.getBufferBuilder();
@@ -67,7 +69,7 @@ public final class RenderUtil {
      * @param u1 upper u texture coordinate.
      * @param v1 upper v texture coordinate.
      */
-
+    @Environment(EnvType.CLIENT)
     public static void drawQuad(final float x, final float y, final float w, final float h, final float u0, final float v0, final float u1, final float v1) {
         final Tessellator tessellator = Tessellator.getInstance();
         final BufferBuilder buffer = tessellator.getBufferBuilder();
@@ -87,7 +89,7 @@ public final class RenderUtil {
      * @param u1 upper u texture coordinate.
      * @param v1 upper v texture coordinate.
      */
-
+    @Environment(EnvType.CLIENT)
     public static void drawQuad(final float u0, final float v0, final float u1, final float v1) {
         drawQuad(0, 0, 1, 1, u0, v0, u1, v1);
     }
@@ -95,7 +97,7 @@ public final class RenderUtil {
     /**
      * Draw a full one-by-one quad.
      */
-
+    @Environment(EnvType.CLIENT)
     public static void drawQuad() {
         drawQuad(0, 0, 1, 1);
     }
@@ -115,7 +117,7 @@ public final class RenderUtil {
      * @param u1     upper u texture coordinate.
      * @param v1     upper v texture coordinate.
      */
-
+    @Environment(EnvType.CLIENT)
     public static void drawQuad(final Sprite sprite, final float x, final float y, final float w, final float h, final float u0, final float v0, final float u1, final float v1) {
         drawQuad(x, y, w, h, sprite.getU(u0 * 16), sprite.getV(v0 * 16), sprite.getU(u1 * 16), sprite.getV(v1 * 16));
     }
@@ -131,7 +133,7 @@ public final class RenderUtil {
      * @param u1     upper u texture coordinate.
      * @param v1     upper v texture coordinate.
      */
-
+    @Environment(EnvType.CLIENT)
     public static void drawQuad(final Sprite sprite, final float u0, final float v0, final float u1, final float v1) {
         drawQuad(sprite, 0, 0, 1, 1, u0, v0, u1, v1);
     }
@@ -141,7 +143,7 @@ public final class RenderUtil {
      *
      * @param sprite the sprite to render.
      */
-
+    @Environment(EnvType.CLIENT)
     public static void drawQuad(final Sprite sprite) {
         drawQuad(sprite, 0, 0, 1, 1);
     }
@@ -151,7 +153,7 @@ public final class RenderUtil {
      * full brightness, regardless of environment brightness. Useful for rendering
      * overlays that should be emissive to also be visible in the dark.
      */
-
+    @Environment(EnvType.CLIENT)
     public static void ignoreLighting() {
         GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, 240, 240);
     }

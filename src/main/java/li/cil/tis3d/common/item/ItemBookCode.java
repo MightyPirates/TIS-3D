@@ -4,6 +4,8 @@ import li.cil.tis3d.client.gui.GuiHandlerClient;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.block.BlockCasing;
 import li.cil.tis3d.util.FontRendererUtils;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.item.TooltipOptions;
@@ -36,6 +38,7 @@ public final class ItemBookCode extends BookItem {
     // --------------------------------------------------------------------- //
     // Item
 
+    @Environment(EnvType.CLIENT)
     @Override
     public void buildTooltip(final ItemStack stack, @Nullable final World world, final List<TextComponent> tooltip, final TooltipOptions flag) {
         super.buildTooltip(stack, world, tooltip, flag);

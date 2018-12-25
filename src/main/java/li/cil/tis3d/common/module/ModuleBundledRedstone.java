@@ -14,6 +14,8 @@ import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.util.ColorUtils;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.nbt.CompoundTag;
@@ -117,7 +119,7 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
         channel = data.readShort();
     }
 
-
+    @Environment(EnvType.CLIENT)
     @Override
     public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
         if (!isVisible()) {
@@ -333,7 +335,7 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
         getCasing().sendData(getFace(), data, DATA_TYPE_UPDATE);
     }
 
-
+    @Environment(EnvType.CLIENT)
     private void renderBar(final short[] values, final float u) {
         GlStateManager.disableTexture();
         for (int channel = 0; channel < values.length; channel++) {

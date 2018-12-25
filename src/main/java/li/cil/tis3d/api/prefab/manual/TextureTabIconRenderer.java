@@ -1,6 +1,8 @@
 package li.cil.tis3d.api.prefab.manual;
 
 import li.cil.tis3d.api.manual.TabIconRenderer;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
@@ -19,8 +21,8 @@ public class TextureTabIconRenderer implements TabIconRenderer {
         this.location = location;
     }
 
+    @Environment(EnvType.CLIENT)
     @Override
-
     public void render() {
         MinecraftClient.getInstance().getTextureManager().bindTexture(location);
         final Tessellator t = Tessellator.getInstance();

@@ -5,6 +5,8 @@ import li.cil.tis3d.api.infrared.InfraredReceiver;
 import li.cil.tis3d.common.event.TickHandlerInfraredPacket;
 import li.cil.tis3d.common.init.Entities;
 import li.cil.tis3d.util.Raytracing;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -182,6 +184,7 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
         return true;
     }
 
+    @Environment(EnvType.CLIENT)
     @Override
     public boolean shouldRenderAtDistance(final double distance) {
         return false;

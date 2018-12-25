@@ -7,6 +7,8 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.util.TransformUtil;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.entity.player.PlayerEntity;
@@ -67,6 +69,7 @@ public abstract class AbstractModule implements Module {
      *
      * @return <tt>true</tt> if the player is looking at the module, <tt>false</tt> otherwise.
      */
+    @Environment(EnvType.CLIENT)
     protected boolean isObserverLookingAt(final BlockEntityRenderDispatcher rendererDispatcher) {
         final HitResult hit = rendererDispatcher.hitResult;
         return hit != null &&
@@ -87,6 +90,7 @@ public abstract class AbstractModule implements Module {
      *
      * @return the UV coordinate the player is looking at as the X and Y components.
      */
+    @Environment(EnvType.CLIENT)
     @Nullable
     protected Vec3d getObserverLookAt(final BlockEntityRenderDispatcher rendererDispatcher) {
         final HitResult hit = rendererDispatcher.hitResult;
@@ -207,6 +211,7 @@ public abstract class AbstractModule implements Module {
     public void onData(final ByteBuf data) {
     }
 
+    @Environment(EnvType.CLIENT)
     @Override
     public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
     }

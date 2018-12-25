@@ -11,6 +11,8 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.init.Textures;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.MathHelper;
@@ -95,7 +97,7 @@ public final class ModuleStack extends AbstractModuleRotatable {
         }
     }
 
-
+    @Environment(EnvType.CLIENT)
     @Override
     public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
         if (!getCasing().isEnabled()) {
@@ -243,7 +245,7 @@ public final class ModuleStack extends AbstractModuleRotatable {
         getCasing().sendData(getFace(), data, DATA_TYPE_UPDATE);
     }
 
-
+    @Environment(EnvType.CLIENT)
     private void drawState() {
         // Offset to start drawing at top left of inner area, slightly inset.
         GlStateManager.translatef(3 / 16f, 5 / 16f, 0);

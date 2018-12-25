@@ -3,6 +3,8 @@ package li.cil.tis3d.common.item;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.block.BlockCasing;
 import li.cil.tis3d.util.FontRendererUtils;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.item.TooltipOptions;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.item.Item;
@@ -31,7 +33,7 @@ public final class ItemKey extends Item {
         return false;
     }
 
-
+    @Environment(EnvType.CLIENT)
     @Override
     public void buildTooltip(final ItemStack stack, @Nullable final World world, final List<TextComponent> tooltip, final TooltipOptions flag) {
         super.buildTooltip(stack, world, tooltip, flag);

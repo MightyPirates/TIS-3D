@@ -12,6 +12,8 @@ import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ItemModuleReadOnlyMemory;
 import li.cil.tis3d.util.EnumUtils;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -154,7 +156,7 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
         }
     }
 
-
+    @Environment(EnvType.CLIENT)
     @Override
     public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
         if (!getCasing().isEnabled() || !isVisible()) {
@@ -223,7 +225,7 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
      *
      * @param brightness the brightness the cell is rendered at (the alpha).
      */
-
+    @Environment(EnvType.CLIENT)
     protected void setCellColor(final float brightness) {
         GlStateManager.color4f(0.4f, 1f, 1f, brightness);
     }

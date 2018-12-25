@@ -1,6 +1,5 @@
 package li.cil.tis3d.client.manual.segment;
 
-
 import com.mojang.realmsclient.gui.ChatFormatting;
 
 public final class BoldSegment extends TextSegment {

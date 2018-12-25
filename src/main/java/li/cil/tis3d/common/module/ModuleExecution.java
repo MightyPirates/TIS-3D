@@ -19,6 +19,8 @@ import li.cil.tis3d.common.module.execution.MachineState;
 import li.cil.tis3d.common.module.execution.compiler.Compiler;
 import li.cil.tis3d.common.module.execution.compiler.ParseException;
 import li.cil.tis3d.util.EnumUtils;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
@@ -226,6 +228,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         state = State.values()[data.readByte()];
     }
 
+    @Environment(EnvType.CLIENT)
     @Override
     public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
         if ((!getCasing().isEnabled() || !isVisible()) && !isObserverLookingAt(rendererDispatcher)) {
@@ -341,7 +344,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         getCasing().sendData(getFace(), data, DATA_TYPE_INCREMENTAL);
     }
 
-
+    @Environment(EnvType.CLIENT)
     private void renderState(final MachineState machineState) {
         // Offset to start drawing at top left of inner area, slightly inset.
         GlStateManager.translatef(3.5f / 16f, 3.5f / 16f, 0);
@@ -400,7 +403,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
      *
      * @param height the height of the line to draw.
      */
-
+    @Environment(EnvType.CLIENT)
     private static void drawLine(final int height) {
         GlStateManager.depthMask(false);
         GlStateManager.disableTexture();

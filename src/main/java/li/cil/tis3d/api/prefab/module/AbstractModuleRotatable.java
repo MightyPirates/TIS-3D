@@ -7,6 +7,8 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.traits.Rotatable;
 import li.cil.tis3d.api.util.TransformUtil;
 import li.cil.tis3d.util.EnumUtils;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.Vec3d;
 
@@ -44,6 +46,7 @@ public abstract class AbstractModuleRotatable extends AbstractModule implements 
     /**
      * Apply the module's rotation to the OpenGL state.
      */
+    @Environment(EnvType.CLIENT)
     protected void rotateForRendering() {
         final int rotation = Port.ROTATION[getFacing().ordinal()];
         GlStateManager.translatef(0.5f, 0.5f, 0);

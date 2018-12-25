@@ -14,6 +14,8 @@ import li.cil.tis3d.common.block.entity.TileEntityCasing;
 import li.cil.tis3d.common.block.entity.TileEntityController;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.network.Network;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -174,7 +176,7 @@ public final class CasingImpl implements Casing {
         tileEntity.markDirty();
     }
 
-
+    @Environment(EnvType.CLIENT)
     public void setLocked(final boolean locked) {
         if (locked) {
             lock = UUID.randomUUID();

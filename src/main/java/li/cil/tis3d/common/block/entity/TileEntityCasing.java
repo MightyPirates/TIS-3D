@@ -21,6 +21,8 @@ import li.cil.tis3d.common.network.message.MessageCasingEnabledState;
 import li.cil.tis3d.common.network.message.MessageCasingLockedState;
 import li.cil.tis3d.common.network.message.MessageReceivingPipeLockedState;
 import li.cil.tis3d.util.InventoryUtils;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -410,7 +412,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
      *
      * @param locked the new locked state of the case.
      */
-
+    @Environment(EnvType.CLIENT)
     public void setCasingLockedClient(final boolean locked) {
         casing.setLocked(locked);
     }
@@ -424,7 +426,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
      * @param stack      the new item stack in that slot, if any.
      * @param moduleData the original state of the module on the server, if present.
      */
-
+    @Environment(EnvType.CLIENT)
     public void setStackAndModuleClient(final int slot, final ItemStack stack, final CompoundTag moduleData) {
         inventory.setInvStack(slot, stack);
         final Module module = casing.getModule(Face.VALUES[slot]);
@@ -439,7 +441,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
      *
      * @param value the new enabled state of this casing.
      */
-
+    @Environment(EnvType.CLIENT)
     public void setEnabledClient(final boolean value) {
         isEnabled = value;
     }
@@ -452,7 +454,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
      * @param port  the port to set the locked state of.
      * @param value the new enabled state of this casing.
      */
-
+    @Environment(EnvType.CLIENT)
     public void setReceivingPipeLockedClient(final Face face, final Port port, final boolean value) {
         locked[face.ordinal()][port.ordinal()] = value;
     }

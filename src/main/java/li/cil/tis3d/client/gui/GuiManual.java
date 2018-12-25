@@ -7,6 +7,8 @@ import li.cil.tis3d.client.manual.Document;
 import li.cil.tis3d.client.manual.segment.InteractiveSegment;
 import li.cil.tis3d.client.manual.segment.Segment;
 import li.cil.tis3d.common.api.ManualAPIImpl;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.FontRenderer;
 import net.minecraft.client.gui.Drawable;
@@ -24,6 +26,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+@Environment(EnvType.CLIENT)
 public final class GuiManual extends Gui {
     private static final int documentMaxWidth = 220;
     private static final int documentMaxHeight = 176;

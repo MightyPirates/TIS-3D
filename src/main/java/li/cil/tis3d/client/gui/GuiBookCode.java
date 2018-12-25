@@ -11,6 +11,8 @@ import li.cil.tis3d.common.module.execution.MachineState;
 import li.cil.tis3d.common.module.execution.compiler.Compiler;
 import li.cil.tis3d.common.module.execution.compiler.ParseException;
 import li.cil.tis3d.common.network.message.MessageBookCodeData;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -28,6 +30,7 @@ import java.util.stream.Collectors;
  * GUI for the code book, used to write and manage ASM programs.
  */
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+@Environment(EnvType.CLIENT)
 public final class GuiBookCode extends Gui {
     private static final int GUI_WIDTH = 148;
     private static final int GUI_HEIGHT = 230;
@@ -527,7 +530,6 @@ public final class GuiBookCode extends Gui {
                 return false; // Invalid paste, a line is too long.
             }
         }
-
 
         return true;
     }
