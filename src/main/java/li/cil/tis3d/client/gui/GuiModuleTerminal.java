@@ -12,7 +12,6 @@ import org.lwjgl.opengl.GL11;
 /**
  * Invisible GUI for the terminal module, purely used to grab keyboard input.
  */
-
 public final class GuiModuleTerminal extends Gui {
     private final ModuleTerminal module;
 
@@ -106,11 +105,4 @@ public final class GuiModuleTerminal extends Gui {
     public boolean isPauseScreen() {
         return false;
     }
-
-    // TODO
-    /* @SubscribeEvent
-    public void handleRenderGameOverlay(final RenderGameOverlayEvent.Pre event) {
-        event.setCanceled(true);
-        mc.entityRenderer.setupOverlayRendering();
-    } */
 }
