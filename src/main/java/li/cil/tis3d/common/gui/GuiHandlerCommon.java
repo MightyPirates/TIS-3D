@@ -1,5 +1,6 @@
 package li.cil.tis3d.common.gui;
 
+import li.cil.tis3d.charset.PacketRegistry;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ItemModuleReadOnlyMemory;
 import li.cil.tis3d.common.network.message.MessageModuleReadOnlyMemoryData;
@@ -7,7 +8,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
-import li.cil.tis3d.charset.PacketRegistry;
 
 /**
  * GUI handler for the client side - which is, still, all we need.

@@ -1,9 +1,10 @@
 package li.cil.tis3d.api.manual;
 
-import javax.annotation.Nullable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
+import javax.annotation.Nullable;
 
 /**
  * Allows providing paths for item stacks and blocks in the world.

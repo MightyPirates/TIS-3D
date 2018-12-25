@@ -6,7 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.text.TextComponent;
-import javax.annotation.Nullable;
+
 import java.util.Arrays;
 
 /**
@@ -61,7 +61,7 @@ public class Inventory implements net.minecraft.inventory.Inventory {
         return name;
     }
 
-	// --------------------------------------------------------------------- //
+    // --------------------------------------------------------------------- //
     // Inventory
 
     @Override

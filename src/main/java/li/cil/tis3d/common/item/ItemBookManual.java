@@ -15,17 +15,17 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
+
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * The manual!
  */
 public final class ItemBookManual extends BookItem {
-	public ItemBookManual(Item.Settings builder) {
-		super(builder);
-	}
+    public ItemBookManual(Item.Settings builder) {
+        super(builder);
+    }
 
     public static boolean tryOpenManual(final World world, final PlayerEntity player, @Nullable final String path) {
         if (path == null) {
@@ -43,7 +43,6 @@ public final class ItemBookManual extends BookItem {
 
     // --------------------------------------------------------------------- //
     // Item
-
 
     @Override
     public void buildTooltip(final ItemStack stack, @Nullable final World world, final List<TextComponent> tooltip, final TooltipOptions flag) {
@@ -65,7 +64,7 @@ public final class ItemBookManual extends BookItem {
             }
             ManualAPI.openFor(player);
         }
-        return new TypedActionResult(ActionResult.SUCCESS, player.getStackInHand(hand));
+        return new TypedActionResult<>(ActionResult.SUCCESS, player.getStackInHand(hand));
     }
 
     // --------------------------------------------------------------------- //

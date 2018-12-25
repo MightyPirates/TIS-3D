@@ -6,33 +6,30 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.traits.Redstone;
 import li.cil.tis3d.api.util.TransformUtil;
+import li.cil.tis3d.common.block.entity.TileEntityCasing;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ItemBookManual;
-import li.cil.tis3d.common.block.entity.TileEntityCasing;
 import li.cil.tis3d.util.InventoryUtils;
 import li.cil.tis3d.util.WorldUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.block.piston.PistonHandler;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.container.Container;
-import net.minecraft.state.StateFactory;
-import net.minecraft.world.BlockView;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sortme.ItemScatterer;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import javax.annotation.Nullable;
 
 /**
  * Block for the module casings.
@@ -88,11 +85,11 @@ public final class BlockCasing extends Block implements BlockEntityProvider {
     @Override
     public ItemStack getPickStack(BlockView view, BlockPos pos, BlockState state) {
         // Allow picking modules installed in the casing.
-        // TODO
-/*        final TileEntity tileEntity = view.getTileEntity(pos);
+        // TODO Need to know side we're picking to return proper module item.
+/*        final BlockEntity tileEntity = view.getBlockEntity(pos);
         if (tileEntity instanceof TileEntityCasing) {
             final TileEntityCasing casing = (TileEntityCasing) tileEntity;
-            final ItemStack stack = casing.getStackInSlot(target.sideHit.ordinal());
+            final ItemStack stack = casing.getInvStack(target.sideHit.ordinal());
             if (!stack.isEmpty()) {
                 return stack.copy();
             }
@@ -102,13 +99,13 @@ public final class BlockCasing extends Block implements BlockEntityProvider {
 
     // --------------------------------------------------------------------- //
     // Common
-    
-    @Nullable
+
     @Override
     public BlockEntity createBlockEntity(BlockView view) {
         return new TileEntityCasing();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean activate(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final Direction side, final float hitX, final float hitY, final float hitZ) {
         if (world.isBlockLoaded(pos)) {
@@ -165,7 +162,7 @@ public final class BlockCasing extends Block implements BlockEntityProvider {
                         if (entity != null) {
                             entity.resetPickupDelay();
                             entity.onPlayerCollision(player);
-                            world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.ENTITY_PARROT_IMITATE_EVOKER, SoundCategory.BLOCK, 0.2f, 0.8f + world.random.nextFloat() * 0.1f);
+                            world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.BLOCK_PISTON_CONTRACT, SoundCategory.BLOCK, 0.2f, 0.8f + world.random.nextFloat() * 0.1f);
                         }
                     }
                     return true;
@@ -185,7 +182,7 @@ public final class BlockCasing extends Block implements BlockEntityProvider {
                             } else {
                                 casing.setInvStack(side.ordinal(), insertedStack);
                             }
-                            world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.ENTITY_PARROT_IMITATE_GHAST, SoundCategory.BLOCK, 0.2f, 0.8f + world.random.nextFloat() * 0.1f);
+                            world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.BLOCK_PISTON_EXTEND, SoundCategory.BLOCK, 0.2f, 0.8f + world.random.nextFloat() * 0.1f);
                         }
                         return true;
                     }
@@ -196,12 +193,13 @@ public final class BlockCasing extends Block implements BlockEntityProvider {
         return super.activate(state, world, pos, player, hand, side, hitX, hitY, hitZ);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean flag) {
         if (state.getBlock() != newState.getBlock()) {
-            final BlockEntity tileentity = world.getBlockEntity(pos);
-            if (tileentity instanceof TileEntityCasing) {
-                ItemScatterer.spawn(world, pos, (TileEntityCasing) tileentity);
+            final BlockEntity blockEntity = world.getBlockEntity(pos);
+            if (blockEntity instanceof TileEntityCasing) {
+                ItemScatterer.spawn(world, pos, (TileEntityCasing) blockEntity);
                 world.updateHorizontalAdjacent(pos, this);
             }
             world.removeBlockEntity(pos);
@@ -227,9 +225,9 @@ public final class BlockCasing extends Block implements BlockEntityProvider {
     @SuppressWarnings("deprecation")
     @Override
     public int getWeakRedstonePower(final BlockState blockState, final BlockView world, final BlockPos pos, final Direction side) {
-        final BlockEntity tileentity = world.getBlockEntity(pos);
-        if (tileentity instanceof TileEntityCasing) {
-            final TileEntityCasing casing = (TileEntityCasing) tileentity;
+        final BlockEntity blockEntity = world.getBlockEntity(pos);
+        if (blockEntity instanceof TileEntityCasing) {
+            final TileEntityCasing casing = (TileEntityCasing) blockEntity;
             final Module module = casing.getModule(Face.fromEnumFacing(side.getOpposite()));
             if (module instanceof Redstone) {
                 return ((Redstone) module).getRedstoneOutput();

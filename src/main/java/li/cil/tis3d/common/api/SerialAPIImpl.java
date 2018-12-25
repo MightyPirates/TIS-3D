@@ -6,10 +6,12 @@ import li.cil.tis3d.api.manual.ContentProvider;
 import li.cil.tis3d.api.prefab.manual.ResourceContentProvider;
 import li.cil.tis3d.api.serial.SerialInterfaceProvider;
 import li.cil.tis3d.api.serial.SerialProtocolDocumentationReference;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -99,9 +101,7 @@ public final class SerialAPIImpl implements SerialAPI {
         @Override
         @Nullable
         public Iterable<String> getContent(final String path) {
-            // TODO
-            // final String language = FMLCommonHandler.instance().getCurrentLanguage();
-            final String language = "en_us";
+            final String language = MinecraftClient.getInstance().getLanguageManager().getLanguage().getCode();
             final String localizedProtocolsPath = PATTERN_LANGUAGE_KEY.matcher(SERIAL_PROTOCOLS_PATH).replaceAll(language);
             if (localizedProtocolsPath.equals(path)) {
                 final String localizedTemplatePath = PATTERN_LANGUAGE_KEY.matcher(SERIAL_PROTOCOLS_TEMPLATE).replaceAll(language);

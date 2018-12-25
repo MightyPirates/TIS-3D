@@ -8,13 +8,13 @@ import li.cil.tis3d.client.gui.GuiHandlerClient;
 import li.cil.tis3d.client.gui.GuiManual;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.gui.GuiHandlerCommon;
-import li.cil.tis3d.common.network.message.MessageOpenGUI;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -147,9 +147,7 @@ public final class ManualAPIImpl implements ManualAPI {
     @Nullable
     public Iterable<String> contentFor(final String path) {
         final String cleanPath = Files.simplifyPath(path);
-        // TODO
-        // final String language = FMLCommonHandler.instance().getCurrentLanguage();
-        final String language = "en_us";
+        final String language = MinecraftClient.getInstance().getLanguageManager().getLanguage().getCode();
         final Optional<Iterable<String>> result = contentForWithRedirects(PATTERN_LANGUAGE_KEY.matcher(cleanPath).replaceAll(language));
         if (result.isPresent()) {
             return result.get();

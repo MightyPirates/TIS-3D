@@ -1,19 +1,19 @@
 package li.cil.tis3d.common.network.message;
 
-import io.netty.buffer.ByteBuf;
 import li.cil.tis3d.api.machine.Casing;
-import li.cil.tis3d.common.TIS3D;
+import li.cil.tis3d.charset.SendNetwork;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import li.cil.tis3d.charset.SendNetwork;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
 
 public final class MessageCasingInventory extends AbstractMessageWithLocation {
-    @SendNetwork public int slot;
-    @SendNetwork public ItemStack stack;
-    @SendNetwork public CompoundTag moduleData;
+    @SendNetwork
+    public int slot;
+    @SendNetwork
+    public ItemStack stack;
+    @SendNetwork
+    public CompoundTag moduleData;
 
     public MessageCasingInventory(final Casing casing, final int slot, final ItemStack stack, @Nullable final CompoundTag moduleData) {
         super(casing.getCasingWorld(), casing.getPosition());

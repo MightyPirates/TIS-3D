@@ -89,8 +89,8 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
         channel = 0;
 
         final BundledRedstoneOutputChangedEvent event = new BundledRedstoneOutputChangedEvent(this, -1);
-        // TODO
-	    //RiftLoader.instance.getListeners(BundledRedstoneOutputChangedEvent.Listener.class).forEach((l) -> l.onBundledRedstoneOutputChanged(event));
+        // TODO Needs some common event bus to dispatch BundledRedstoneOutputChangedEvent.
+        //RiftLoader.instance.getListeners(BundledRedstoneOutputChangedEvent.Listener.class).forEach((l) -> l.onBundledRedstoneOutputChanged(event));
         //MinecraftForge.EVENT_BUS.post(event);
 
         sendData();
@@ -303,9 +303,9 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
 
         // Notify bundled redstone APIs.
         final BundledRedstoneOutputChangedEvent event = new BundledRedstoneOutputChangedEvent(this, channel);
-        // TODO
-	    //RiftLoader.instance.getListeners(BundledRedstoneOutputChangedEvent.Listener.class).forEach((l) -> l.onBundledRedstoneOutputChanged(event));
-	    //MinecraftForge.EVENT_BUS.post(event);
+        // TODO Needs some common event bus to dispatch BundledRedstoneOutputChangedEvent.
+        //RiftLoader.instance.getListeners(BundledRedstoneOutputChangedEvent.Listener.class).forEach((l) -> l.onBundledRedstoneOutputChanged(event));
+        //MinecraftForge.EVENT_BUS.post(event);
 
         sendData();
     }

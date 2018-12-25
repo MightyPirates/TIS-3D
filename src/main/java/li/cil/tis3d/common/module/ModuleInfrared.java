@@ -19,6 +19,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+
 import java.util.Deque;
 import java.util.LinkedList;
 
@@ -124,7 +125,7 @@ public final class ModuleInfrared extends AbstractModule implements /* ICapabili
     // --------------------------------------------------------------------- //
     // ICapabilityProvider
 
-    // TODO
+    // TODO Capabilities.
     /* @Override
     public boolean hasCapability(@Nonnull final Capability<?> capability, @Nullable final EnumFacing facing) {
         return capability == CapabilityInfraredReceiver.INFRARED_RECEIVER_CAPABILITY;

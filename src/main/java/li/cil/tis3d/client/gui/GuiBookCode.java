@@ -1,5 +1,6 @@
 package li.cil.tis3d.client.gui;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.tis3d.charset.PacketRegistry;
 import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.common.Constants;
@@ -19,7 +20,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Hand;
 import org.lwjgl.glfw.GLFW;
-import com.mojang.blaze3d.platform.GlStateManager;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -340,25 +340,25 @@ public final class GuiBookCode extends Gui {
 
     @Override
     public boolean charTyped(char chr, int code) {
-		if (super.charTyped(chr, code)) {
-			return true;
-		} else if (Character.isISOControl(chr)) {
-			return false;
-		}
+        if (super.charTyped(chr, code)) {
+            return true;
+        } else if (Character.isISOControl(chr)) {
+            return false;
+        }
 
-	    deleteSelection();
+        deleteSelection();
 
-	    final int line = indexToLine(getSelectionStart());
-	    final int column = indexToColumn(getSelectionStart());
+        final int line = indexToLine(getSelectionStart());
+        final int column = indexToColumn(getSelectionStart());
 
-	    if (lines.get(line).length() < Settings.maxColumnsPerLine) {
-		    lines.get(line).insert(column, String.valueOf(chr).toUpperCase(Locale.US));
-		    selectionStart = selectionEnd = selectionEnd + 1;
-	    }
+        if (lines.get(line).length() < Settings.maxColumnsPerLine) {
+            lines.get(line).insert(column, String.valueOf(chr).toUpperCase(Locale.US));
+            selectionStart = selectionEnd = selectionEnd + 1;
+        }
 
-	    recompile();
+        recompile();
 
-	    return true;
+        return true;
     }
 
     @Override

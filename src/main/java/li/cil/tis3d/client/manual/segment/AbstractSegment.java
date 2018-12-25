@@ -1,7 +1,8 @@
 package li.cil.tis3d.client.manual.segment;
 
-import javax.annotation.Nullable;
 import net.minecraft.client.font.FontRenderer;
+
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.regex.Pattern;

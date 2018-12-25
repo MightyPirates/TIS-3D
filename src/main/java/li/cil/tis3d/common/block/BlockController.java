@@ -1,20 +1,19 @@
 package li.cil.tis3d.common.block;
 
-import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.block.entity.TileEntityController;
+import li.cil.tis3d.common.init.Items;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.BlockState;
-import net.minecraft.world.BlockView;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import javax.annotation.Nullable;
 
 /**
  * Block for the controller driving the casings.
@@ -27,6 +26,12 @@ public final class BlockController extends Block implements BlockEntityProvider 
     // --------------------------------------------------------------------- //
     // Common
 
+    @Override
+    public BlockEntity createBlockEntity(BlockView view) {
+        return new TileEntityController();
+    }
+
+    @SuppressWarnings("deprecation")
     @Override
     public boolean activate(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final Direction side, final float hitX, final float hitY, final float hitZ) {
         final ItemStack heldItem = player.getStackInHand(hand);
@@ -62,6 +67,7 @@ public final class BlockController extends Block implements BlockEntityProvider 
         return super.activate(state, world, pos, player, hand, side, hitX, hitY, hitZ);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean flag) {
         if (state.getBlock() != newState.getBlock()) {
@@ -102,11 +108,5 @@ public final class BlockController extends Block implements BlockEntityProvider 
             controller.checkNeighbors();
         }
         super.neighborUpdate(state, world, pos, neighborBlock, neighborPos);
-    }
-
-    @Nullable
-    @Override
-    public BlockEntity createBlockEntity(BlockView view) {
-        return new TileEntityController();
     }
 }

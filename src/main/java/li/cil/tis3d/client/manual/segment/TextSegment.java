@@ -1,9 +1,10 @@
 package li.cil.tis3d.client.manual.segment;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.tis3d.client.manual.Document;
 import net.minecraft.client.font.FontRenderer;
+
 import javax.annotation.Nullable;
-import com.mojang.blaze3d.platform.GlStateManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

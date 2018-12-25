@@ -2,6 +2,7 @@ package li.cil.tis3d.api.util;
 
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 
 /**
@@ -43,10 +44,9 @@ public final class TransformUtil {
      * @param facing the rotation of the block.
      * @param hitPos the hit position to project, in block local coordinates.
      * @return the projected UV coordinate, with the Z component being 0.
-     * @see Face#fromEnumFacing(EnumFacing)
-     * @see Port#fromEnumFacing(EnumFacing)
+     * @see Face#fromEnumFacing(Direction)
+     * @see Port#fromEnumFacing(Direction)
      */
-    @SuppressWarnings("SuspiciousNameCombination")
     public static Vec3d hitToUV(final Face face, final Port facing, final Vec3d hitPos) {
         final Vec3d uv = hitToUV(face, hitPos);
         switch (face) {

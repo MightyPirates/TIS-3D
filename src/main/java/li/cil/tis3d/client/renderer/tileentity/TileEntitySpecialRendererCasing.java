@@ -1,5 +1,7 @@
 package li.cil.tis3d.client.renderer.tileentity;
 
+import com.mojang.blaze3d.platform.GLX;
+import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
@@ -7,8 +9,8 @@ import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.api.util.TransformUtil;
 import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.common.TIS3D;
-import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.block.entity.TileEntityCasing;
+import li.cil.tis3d.common.init.Items;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
@@ -20,8 +22,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import org.lwjgl.opengl.GL11;
-import com.mojang.blaze3d.platform.GLX;
-import com.mojang.blaze3d.platform.GlStateManager;
+
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;

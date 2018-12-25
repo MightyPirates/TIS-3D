@@ -4,6 +4,7 @@ import com.google.common.base.Charsets;
 import li.cil.tis3d.api.manual.ContentProvider;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Identifier;
+
 import javax.annotation.Nullable;
 import java.io.BufferedReader;
 import java.io.IOException;

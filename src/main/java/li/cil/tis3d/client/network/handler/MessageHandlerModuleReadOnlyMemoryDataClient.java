@@ -1,12 +1,11 @@
 package li.cil.tis3d.client.network.handler;
 
+import li.cil.tis3d.charset.NetworkContext;
 import li.cil.tis3d.client.gui.GuiModuleMemory;
 import li.cil.tis3d.common.network.handler.AbstractMessageHandler;
 import li.cil.tis3d.common.network.message.MessageModuleReadOnlyMemoryData;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Gui;
-import li.cil.tis3d.charset.NetworkContext;
-
 
 public final class MessageHandlerModuleReadOnlyMemoryDataClient extends AbstractMessageHandler<MessageModuleReadOnlyMemoryData> {
     @Override

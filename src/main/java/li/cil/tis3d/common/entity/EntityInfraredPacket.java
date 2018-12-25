@@ -4,7 +4,6 @@ import li.cil.tis3d.api.infrared.InfraredPacket;
 import li.cil.tis3d.api.infrared.InfraredReceiver;
 import li.cil.tis3d.api.infrared.InfraredReceiverTile;
 import li.cil.tis3d.common.event.TickHandlerInfraredPacket;
-import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.util.Raytracing;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -15,7 +14,6 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.DustParticleParameters;
-import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.HitResult;
@@ -23,7 +21,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -188,23 +185,10 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
         return true;
     }
 
-	// TODO
-/*    @Override
-    public ItemStack getPickedResult(final RayTraceResult hit) {
-        return ItemStack.EMPTY;
-    } */
-
-
     @Override
     public boolean shouldRenderAtDistance(final double distance) {
         return false;
     }
-
-    // TODO
-/*    @Override
-    public boolean shouldRenderInPass(final int pass) {
-        return false;
-    } */
 
     // --------------------------------------------------------------------- //
     // InfraredPacket
@@ -286,8 +270,8 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
         final double zz = z + dz * t;
 
         ((ServerWorld) world).method_14199(
-                new DustParticleParameters(1f, 0.2f, 0 , 1f),
-                xx, yy, zz, 1, 0, 0, 0, 0
+            new DustParticleParameters(1f, 0.2f, 0, 1f),
+            xx, yy, zz, 1, 0, 0, 0, 0
         );
     }
 
@@ -412,20 +396,20 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
         onCapabilityProviderCollision(hit, hit.entity);
     }
 
-	private void onCapabilityProviderCollision(final HitResult hit, @Nullable final Object provider) {
-		if (provider instanceof InfraredReceiverTile) {
+    private void onCapabilityProviderCollision(final HitResult hit, @Nullable final Object provider) {
+        if (provider instanceof InfraredReceiverTile) {
             final InfraredReceiver capability = ((InfraredReceiverTile) provider).getInfraredReceiver(hit.side);
             if (capability != null) {
                 capability.onInfraredPacket(this, hit);
             }
 
-            // TODO
+            // TODO Capabilities.
 			/* final InfraredReceiver capability = provider.getCapability(CapabilityInfraredReceiver.INFRARED_RECEIVER_CAPABILITY, hit.sideHit);
 			if (capability != null) {
 				capability.onInfraredPacket(this, hit);
 			} */
-		}
-	}
+        }
+    }
 
     /* private void onCapabilityProviderCollision(final RayTraceResult hit, @Nullable final ICapabilityProvider provider) {
         if (provider != null) {

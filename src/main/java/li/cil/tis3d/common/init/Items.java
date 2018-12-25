@@ -1,14 +1,9 @@
 package li.cil.tis3d.common.init;
 
-import li.cil.tis3d.api.API;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.block.BlockCasing;
-import li.cil.tis3d.common.item.ItemBookCode;
-import li.cil.tis3d.common.item.ItemBookManual;
-import li.cil.tis3d.common.item.ItemKey;
-import li.cil.tis3d.common.item.ItemModule;
-import li.cil.tis3d.common.item.ItemModuleReadOnlyMemory;
+import li.cil.tis3d.common.item.*;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.events.PlayerInteractionEvent;
 import net.minecraft.block.BlockState;
@@ -19,7 +14,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.block.BlockItem;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.HitResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -61,7 +55,7 @@ public final class Items implements ModInitializer {
         return result;
     }
 
-    // TODO: This is a doesSneakBypassUse hack.
+    // TODO This is a doesSneakBypassUse hack.
     public ActionResult onRightClick(PlayerEntity entityPlayer, World world, Hand enumHand, BlockPos pos, Direction direction, float hitX, float hitY, float hitZ) {
         if (!entityPlayer.isSneaking()) {
             return ActionResult.PASS;

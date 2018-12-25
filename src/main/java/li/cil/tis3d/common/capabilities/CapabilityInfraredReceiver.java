@@ -1,10 +1,5 @@
 package li.cil.tis3d.common.capabilities;
 
-import li.cil.tis3d.api.API;
-import li.cil.tis3d.api.infrared.InfraredPacket;
-import li.cil.tis3d.api.infrared.InfraredReceiver;
-import javax.annotation.Nullable;
-
 public final class CapabilityInfraredReceiver {
     // TODO
 /*    public static final ResourceLocation INFRARED_RECEIVER_LOCATION = new ResourceLocation(API.MOD_ID, "infrared_receiver");

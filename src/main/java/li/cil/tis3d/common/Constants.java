@@ -1,7 +1,9 @@
 package li.cil.tis3d.common;
 
-import java.util.regex.Pattern;
+import li.cil.tis3d.api.API;
 import net.minecraft.util.Identifier;
+
+import java.util.regex.Pattern;
 
 /**
  * Collection of constants used throughout the mod.
@@ -21,32 +23,32 @@ public final class Constants {
     // --------------------------------------------------------------------- //
     // Block, item, entity and container names
 
-    public static final Identifier NAME_BLOCK_CASING = new Identifier("tis3d", "casing");
-    public static final Identifier NAME_BLOCK_CONTROLLER = new Identifier("tis3d", "controller");
+    public static final Identifier NAME_BLOCK_CASING = new Identifier(API.MOD_ID, "casing");
+    public static final Identifier NAME_BLOCK_CONTROLLER = new Identifier(API.MOD_ID, "controller");
 
-    public static final Identifier NAME_ITEM_BOOK_CODE = new Identifier("tis3d", "book_code");
-    public static final Identifier NAME_ITEM_BOOK_MANUAL = new Identifier("tis3d", "book_manual");
-    public static final Identifier NAME_ITEM_KEY = new Identifier("tis3d", "key");
-    public static final Identifier NAME_ITEM_KEY_CREATIVE = new Identifier("tis3d", "key_creative");
-    public static final Identifier NAME_ITEM_MODULE_AUDIO = new Identifier("tis3d", "module_audio");
-    public static final Identifier NAME_ITEM_MODULE_BUNDLED_REDSTONE = new Identifier("tis3d", "module_bundled_redstone");
-    public static final Identifier NAME_ITEM_MODULE_DISPLAY = new Identifier("tis3d", "module_display");
-    public static final Identifier NAME_ITEM_MODULE_EXECUTION = new Identifier("tis3d", "module_execution");
-    public static final Identifier NAME_ITEM_MODULE_INFRARED = new Identifier("tis3d", "module_infrared");
-    public static final Identifier NAME_ITEM_MODULE_KEYPAD = new Identifier("tis3d", "module_keypad");
-    public static final Identifier NAME_ITEM_MODULE_QUEUE = new Identifier("tis3d", "module_queue");
-    public static final Identifier NAME_ITEM_MODULE_RANDOM = new Identifier("tis3d", "module_random");
-    public static final Identifier NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY = new Identifier("tis3d", "module_random_access_memory");
-    public static final Identifier NAME_ITEM_MODULE_READ_ONLY_MEMORY = new Identifier("tis3d", "module_read_only_memory");
-    public static final Identifier NAME_ITEM_MODULE_REDSTONE = new Identifier("tis3d", "module_redstone");
-    public static final Identifier NAME_ITEM_MODULE_SEQUENCER = new Identifier("tis3d", "module_sequencer");
-    public static final Identifier NAME_ITEM_MODULE_SERIAL_PORT = new Identifier("tis3d", "module_serial_port");
-    public static final Identifier NAME_ITEM_MODULE_STACK = new Identifier("tis3d", "module_stack");
-    public static final Identifier NAME_ITEM_MODULE_TERMINAL = new Identifier("tis3d", "module_terminal");
-    public static final Identifier NAME_ITEM_MODULE_TIMER = new Identifier("tis3d", "module_timer");
-    public static final Identifier NAME_ITEM_PRISM = new Identifier("tis3d", "prism");
+    public static final Identifier NAME_ITEM_BOOK_CODE = new Identifier(API.MOD_ID, "book_code");
+    public static final Identifier NAME_ITEM_BOOK_MANUAL = new Identifier(API.MOD_ID, "book_manual");
+    public static final Identifier NAME_ITEM_KEY = new Identifier(API.MOD_ID, "key");
+    public static final Identifier NAME_ITEM_KEY_CREATIVE = new Identifier(API.MOD_ID, "key_creative");
+    public static final Identifier NAME_ITEM_MODULE_AUDIO = new Identifier(API.MOD_ID, "module_audio");
+    public static final Identifier NAME_ITEM_MODULE_BUNDLED_REDSTONE = new Identifier(API.MOD_ID, "module_bundled_redstone");
+    public static final Identifier NAME_ITEM_MODULE_DISPLAY = new Identifier(API.MOD_ID, "module_display");
+    public static final Identifier NAME_ITEM_MODULE_EXECUTION = new Identifier(API.MOD_ID, "module_execution");
+    public static final Identifier NAME_ITEM_MODULE_INFRARED = new Identifier(API.MOD_ID, "module_infrared");
+    public static final Identifier NAME_ITEM_MODULE_KEYPAD = new Identifier(API.MOD_ID, "module_keypad");
+    public static final Identifier NAME_ITEM_MODULE_QUEUE = new Identifier(API.MOD_ID, "module_queue");
+    public static final Identifier NAME_ITEM_MODULE_RANDOM = new Identifier(API.MOD_ID, "module_random");
+    public static final Identifier NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY = new Identifier(API.MOD_ID, "module_random_access_memory");
+    public static final Identifier NAME_ITEM_MODULE_READ_ONLY_MEMORY = new Identifier(API.MOD_ID, "module_read_only_memory");
+    public static final Identifier NAME_ITEM_MODULE_REDSTONE = new Identifier(API.MOD_ID, "module_redstone");
+    public static final Identifier NAME_ITEM_MODULE_SEQUENCER = new Identifier(API.MOD_ID, "module_sequencer");
+    public static final Identifier NAME_ITEM_MODULE_SERIAL_PORT = new Identifier(API.MOD_ID, "module_serial_port");
+    public static final Identifier NAME_ITEM_MODULE_STACK = new Identifier(API.MOD_ID, "module_stack");
+    public static final Identifier NAME_ITEM_MODULE_TERMINAL = new Identifier(API.MOD_ID, "module_terminal");
+    public static final Identifier NAME_ITEM_MODULE_TIMER = new Identifier(API.MOD_ID, "module_timer");
+    public static final Identifier NAME_ITEM_PRISM = new Identifier(API.MOD_ID, "prism");
 
-    public static final String NAME_ENTITY_INFRARED_PACKET = "infrared_packet";
+    public static final Identifier NAME_ENTITY_INFRARED_PACKET = new Identifier(API.MOD_ID, "infrared_packet");
 
     public static final String NAME_INVENTORY_CASING = "container.casing";
 
@@ -102,7 +104,7 @@ public final class Constants {
 
     // --------------------------------------------------------------------- //
 
-    public static final Identifier PACKET = new Identifier("tis3d:wrap");
+    public static final Identifier PACKET = new Identifier(API.MOD_ID, "wrap");
 
     private Constants() {
     }

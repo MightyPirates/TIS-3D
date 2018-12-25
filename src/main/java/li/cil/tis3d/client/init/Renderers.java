@@ -7,6 +7,7 @@ import li.cil.tis3d.common.block.entity.TileEntityController;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.client.render.BlockEntityRendererRegistry;
 
+@SuppressWarnings("unused")
 public class Renderers implements ClientModInitializer {
     @Override
     public void onInitializeClient() {

@@ -1,12 +1,13 @@
 package li.cil.tis3d.util;
 
-import javax.annotation.Nullable;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+
+import javax.annotation.Nullable;
 import java.util.Random;
 
 /**

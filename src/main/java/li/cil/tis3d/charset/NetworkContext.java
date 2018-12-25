@@ -26,31 +26,29 @@ import net.minecraft.util.ThreadTaskQueue;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
-import java.awt.*;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 public class NetworkContext {
     private final PacketContext context;
 
-	public NetworkContext(PacketContext context) {
-	    this.context = context;
-	}
+    public NetworkContext(PacketContext context) {
+        this.context = context;
+    }
 
-	public ThreadTaskQueue getListener() {
-		return context.getTaskQueue();
-	}
+    public ThreadTaskQueue getListener() {
+        return context.getTaskQueue();
+    }
 
-	public PlayerEntity getPlayer() {
-		return context.getPlayer();
-	}
+    public PlayerEntity getPlayer() {
+        return context.getPlayer();
+    }
 
-	public Optional<World> getWorld(DimensionType dimension) {
-		PlayerEntity player = getPlayer();
-		if (player instanceof ServerPlayerEntity) {
-			return Optional.of(player.getServer().getWorld(dimension));
-		} else {
-			return player.getEntityWorld().getDimension().getType() == dimension ? Optional.of(player.getEntityWorld()) : Optional.empty();
-		}
-	}
+    public Optional<World> getWorld(DimensionType dimension) {
+        PlayerEntity player = getPlayer();
+        if (player instanceof ServerPlayerEntity) {
+            return Optional.of(player.getServer().getWorld(dimension));
+        } else {
+            return player.getEntityWorld().getDimension().getType() == dimension ? Optional.of(player.getEntityWorld()) : Optional.empty();
+        }
+    }
 }

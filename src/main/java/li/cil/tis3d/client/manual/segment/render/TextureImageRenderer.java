@@ -1,5 +1,7 @@
 package li.cil.tis3d.client.manual.segment.render;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.platform.TextureUtil;
 import li.cil.tis3d.api.manual.ImageRenderer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.AbstractTexture;
@@ -11,10 +13,6 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import org.lwjgl.opengl.GL11;
 
-import javax.imageio.ImageIO;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.TextureUtil;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 

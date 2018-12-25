@@ -23,84 +23,81 @@ import com.google.common.collect.Maps;
 import io.netty.buffer.Unpooled;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
-import org.apache.logging.log4j.LogManager;
 
-import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 public final class PacketRegistry {
-	public static final PacketRegistry CLIENT = new PacketRegistry();
-	public static final PacketRegistry SERVER = new PacketRegistry();
+    public static final PacketRegistry CLIENT = new PacketRegistry();
+    public static final PacketRegistry SERVER = new PacketRegistry();
 
-	private static final Map<Class, Identifier> classToType = Maps.newIdentityHashMap();
-	private final Map<Identifier, BiConsumer<PacketByteBuf, Object>> packetSerializers = new HashMap<>();
-	private final Map<Identifier, BiConsumer<NetworkContext, PacketByteBuf>> packetTypes = new HashMap<>();
-	private BiFunction<Identifier, PacketByteBuf, net.minecraft.network.Packet> packetFunction;
+    private static final Map<Class, Identifier> classToType = Maps.newIdentityHashMap();
+    private final Map<Identifier, BiConsumer<PacketByteBuf, Object>> packetSerializers = new HashMap<>();
+    private final Map<Identifier, BiConsumer<NetworkContext, PacketByteBuf>> packetTypes = new HashMap<>();
+    private BiFunction<Identifier, PacketByteBuf, net.minecraft.network.Packet> packetFunction;
 
-	private PacketRegistry() {
+    private PacketRegistry() {
 
-	}
+    }
 
-	public net.minecraft.network.Packet wrap(Object p) {
-		PacketByteBuf buffer = new PacketByteBuf(Unpooled.buffer());
-		//noinspection unchecked
-		((BiConsumer<PacketByteBuf, Object>) PacketSerializers.getSerializer(p.getClass())).accept(buffer, p);
-		return wrap(classToType.get(p.getClass()), buffer);
-	}
+    public net.minecraft.network.Packet wrap(Object p) {
+        PacketByteBuf buffer = new PacketByteBuf(Unpooled.buffer());
+        //noinspection unchecked
+        ((BiConsumer<PacketByteBuf, Object>) PacketSerializers.getSerializer(p.getClass())).accept(buffer, p);
+        return wrap(classToType.get(p.getClass()), buffer);
+    }
 
-	public net.minecraft.network.Packet wrap(Identifier location, PacketByteBuf buffer) {
-		return packetFunction.apply(location, buffer);
-	}
+    public net.minecraft.network.Packet wrap(Identifier location, PacketByteBuf buffer) {
+        return packetFunction.apply(location, buffer);
+    }
 
-	private boolean initialized = false;
+    private boolean initialized = false;
 
-	public boolean markInitialized() {
-		if (!initialized) {
-			initialized = true;
-			return true;
-		} else {
-			return false;
-		}
-	}
+    public boolean markInitialized() {
+        if (!initialized) {
+            initialized = true;
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-	public void setPacketFunction(BiFunction<Identifier, PacketByteBuf, net.minecraft.network.Packet> func) {
-		if (packetFunction == null) {
-			packetFunction = func;
-		}
-	}
+    public void setPacketFunction(BiFunction<Identifier, PacketByteBuf, net.minecraft.network.Packet> func) {
+        if (packetFunction == null) {
+            packetFunction = func;
+        }
+    }
 
-	public void register(Identifier location, Class<? extends Packet> type, boolean asynchronous) {
-		if (location.toString().length() > 32767) {
-			throw new RuntimeException("Packet location '" + location + "' longer than maximum allowed! (" + location.toString().length() + " > 32767)");
-		}
+    public void register(Identifier location, Class<? extends Packet> type, boolean asynchronous) {
+        if (location.toString().length() > 32767) {
+            throw new RuntimeException("Packet location '" + location + "' longer than maximum allowed! (" + location.toString().length() + " > 32767)");
+        }
 
-		register(location, (ctx, buffer) -> {
-			Function<PacketByteBuf, ? extends Packet> function = PacketSerializers.getDeserializer(type);
-			Packet packet = function.apply(buffer);
-			if (!asynchronous) {
+        register(location, (ctx, buffer) -> {
+            Function<PacketByteBuf, ? extends Packet> function = PacketSerializers.getDeserializer(type);
+            Packet packet = function.apply(buffer);
+            if (!asynchronous) {
                 ctx.getListener().execute(() -> packet.apply(ctx));
             } else {
-			    packet.apply(ctx);
+                packet.apply(ctx);
             }
-		});
-		classToType.put(type, location);
-	}
+        });
+        classToType.put(type, location);
+    }
 
-	public void register(Identifier location, BiConsumer<NetworkContext, PacketByteBuf> consumer) {
-		packetTypes.put(location, consumer);
-	}
+    public void register(Identifier location, BiConsumer<NetworkContext, PacketByteBuf> consumer) {
+        packetTypes.put(location, consumer);
+    }
 
-	public boolean accepts(Identifier location) {
-		return packetTypes.containsKey(location);
-	}
+    public boolean accepts(Identifier location) {
+        return packetTypes.containsKey(location);
+    }
 
-	public void parse(Identifier location, NetworkContext ctx, PacketByteBuf buffer) {
-		BiConsumer<NetworkContext, PacketByteBuf> entry = packetTypes.get(location);
-		entry.accept(ctx, buffer);
-	}
+    public void parse(Identifier location, NetworkContext ctx, PacketByteBuf buffer) {
+        BiConsumer<NetworkContext, PacketByteBuf> entry = packetTypes.get(location);
+        entry.accept(ctx, buffer);
+    }
 }

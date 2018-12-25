@@ -1,14 +1,12 @@
 package li.cil.tis3d.common.event;
 
 import li.cil.tis3d.common.entity.EntityInfraredPacket;
-import net.fabricmc.fabric.events.TickEvent;
 import net.minecraft.server.MinecraftServer;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
 
 /**
  * Makes sure infrared packets die once their lifetime expires.

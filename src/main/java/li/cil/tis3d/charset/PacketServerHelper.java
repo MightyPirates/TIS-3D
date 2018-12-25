@@ -27,16 +27,16 @@ import net.minecraft.world.World;
 import java.util.function.Consumer;
 
 public final class PacketServerHelper {
-	private PacketServerHelper() {
+    private PacketServerHelper() {
 
-	}
+    }
 
-	public static void forEachWatching(World world, BlockPos pos, Consumer<ServerPlayerEntity> consumer) {
-	    // TODO NORELEASE
-		if (world instanceof ServerWorld) {
-		    world.players.forEach((e) -> {
-		        consumer.accept((ServerPlayerEntity) e);
+    public static void forEachWatching(World world, BlockPos pos, Consumer<ServerPlayerEntity> consumer) {
+        // TODO NORELEASE
+        if (world instanceof ServerWorld) {
+            world.players.forEach((e) -> {
+                consumer.accept((ServerPlayerEntity) e);
             });
-		}
-	}
+        }
+    }
 }

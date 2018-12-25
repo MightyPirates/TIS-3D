@@ -131,7 +131,6 @@ public final class Document {
 
         GlStateManager.pushMatrix();
         GlStateManager.translatef(0, 0, 500);
-        // TODO: Is this correct?
         GL11.glBegin(GL11.GL_QUADS);
         GL11.glVertex2f(0, y);
         GL11.glVertex2f(mc.window.method_4480(), y);

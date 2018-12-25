@@ -4,13 +4,13 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
+import li.cil.tis3d.charset.NetworkContext;
 import li.cil.tis3d.common.TIS3D;
-import li.cil.tis3d.common.network.message.MessageCasingData;
 import li.cil.tis3d.common.block.entity.TileEntityCasing;
+import li.cil.tis3d.common.network.message.MessageCasingData;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
-import li.cil.tis3d.charset.NetworkContext;
 
 import java.io.IOException;
 

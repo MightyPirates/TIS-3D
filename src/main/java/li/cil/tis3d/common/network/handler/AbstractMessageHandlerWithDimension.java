@@ -1,8 +1,8 @@
 package li.cil.tis3d.common.network.handler;
 
+import li.cil.tis3d.charset.NetworkContext;
 import li.cil.tis3d.common.network.message.AbstractMessageWithDimension;
 import net.minecraft.world.World;
-import li.cil.tis3d.charset.NetworkContext;
 
 import javax.annotation.Nullable;
 

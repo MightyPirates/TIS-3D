@@ -14,6 +14,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+
 import javax.annotation.Nullable;
 
 abstract class TileEntityComputer extends BlockEntity implements PipeHost {
@@ -46,12 +47,12 @@ abstract class TileEntityComputer extends BlockEntity implements PipeHost {
             //    LEFT        RIGHT       UP          DOWN
         };
         PORT_MAPPING = new Port[][]{
-            {Port.DOWN, Port.DOWN, Port.DOWN, Port.DOWN},   // Y_NEG
-            {Port.UP, Port.UP, Port.UP, Port.UP},     // Y_POS
-            {Port.RIGHT, Port.LEFT, Port.DOWN, Port.UP},     // Z_NEG
-            {Port.RIGHT, Port.LEFT, Port.UP, Port.DOWN},   // Z_POS
+            {Port.DOWN, Port.DOWN, Port.DOWN, Port.DOWN},     // Y_NEG
+            {Port.UP, Port.UP, Port.UP, Port.UP},             // Y_POS
+            {Port.RIGHT, Port.LEFT, Port.DOWN, Port.UP},      // Z_NEG
+            {Port.RIGHT, Port.LEFT, Port.UP, Port.DOWN},      // Z_POS
             {Port.RIGHT, Port.LEFT, Port.RIGHT, Port.RIGHT},  // X_NEG
-            {Port.RIGHT, Port.LEFT, Port.LEFT, Port.LEFT}    // X_POS
+            {Port.RIGHT, Port.LEFT, Port.LEFT, Port.LEFT}     // X_POS
             //    LEFT        RIGHT       UP          DOWN
         };
     }
@@ -65,7 +66,7 @@ abstract class TileEntityComputer extends BlockEntity implements PipeHost {
     // --------------------------------------------------------------------- //
 
     TileEntityComputer(BlockEntityType type) {
-    	super(type);
+        super(type);
         for (final Face face : Face.VALUES) {
             for (final Port port : Port.VALUES) {
                 final int pipeIndex = pack(face, port);
@@ -139,9 +140,9 @@ abstract class TileEntityComputer extends BlockEntity implements PipeHost {
     public void fromTag(final CompoundTag nbt) {
         super.fromTag(nbt);
         if (nbt.containsKey("_client")) {
-        	readFromNBTForClient(nbt);
+            readFromNBTForClient(nbt);
         } else {
-	        readFromNBTForServer(nbt);
+            readFromNBTForServer(nbt);
         }
     }
 

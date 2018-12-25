@@ -3,6 +3,7 @@ package li.cil.tis3d.api;
 import li.cil.tis3d.api.infrared.InfraredPacket;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+
 import javax.annotation.Nullable;
 
 /**

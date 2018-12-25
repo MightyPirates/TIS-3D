@@ -17,7 +17,6 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.nbt.CompoundTag;
 
 
-
 /**
  * The timer module can be used to wait for a specific amount of game time.
  * It is configured by writing a value to any of its ports, and can be

@@ -10,15 +10,16 @@ import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.ModuleProvider;
 import li.cil.tis3d.api.module.traits.Redstone;
 import li.cil.tis3d.common.Constants;
-import li.cil.tis3d.common.init.Items;
-import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.block.entity.TileEntityCasing;
 import li.cil.tis3d.common.block.entity.TileEntityController;
+import li.cil.tis3d.common.init.Items;
+import li.cil.tis3d.common.network.Network;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
 import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.UUID;

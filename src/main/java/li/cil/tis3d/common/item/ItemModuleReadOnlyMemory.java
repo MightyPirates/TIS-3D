@@ -1,8 +1,6 @@
 package li.cil.tis3d.common.item;
 
-import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.client.gui.GuiHandlerClient;
-import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.gui.GuiHandlerCommon;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Gui;
@@ -45,7 +43,7 @@ public class ItemModuleReadOnlyMemory extends ItemModule {
         }
     }
 
-    // TODO
+    // TODO doesSneakBypassUse
     /* @Override
     public boolean doesSneakBypassUse(final ItemStack stack, final IBlockReader world, final BlockPos pos, final EntityPlayer player) {
         return world.getTileEntity(pos) instanceof Casing;

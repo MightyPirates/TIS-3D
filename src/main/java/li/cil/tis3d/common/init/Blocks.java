@@ -39,8 +39,8 @@ public final class Blocks implements ModInitializer {
     }
 
     public void registerTileEntityTypes() {
-        TileEntityCasing.TYPE = Registry.register(Registry.BLOCK_ENTITY, Constants.NAME_BLOCK_CASING.toString(), BlockEntityType.Builder.create(TileEntityCasing::new).method_11034(null));
-        TileEntityController.TYPE = Registry.register(Registry.BLOCK_ENTITY, Constants.NAME_BLOCK_CONTROLLER.toString(), BlockEntityType.Builder.create(TileEntityController::new).method_11034(null));
+        TileEntityCasing.TYPE = Registry.register(Registry.BLOCK_ENTITY, Constants.NAME_BLOCK_CASING, BlockEntityType.Builder.create(TileEntityCasing::new).method_11034(null));
+        TileEntityController.TYPE = Registry.register(Registry.BLOCK_ENTITY, Constants.NAME_BLOCK_CONTROLLER, BlockEntityType.Builder.create(TileEntityController::new).method_11034(null));
     }
 
     @Override

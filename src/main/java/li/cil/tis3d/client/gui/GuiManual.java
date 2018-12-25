@@ -1,5 +1,6 @@
 package li.cil.tis3d.client.gui;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.client.manual.Document;
@@ -18,13 +19,11 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
-import com.mojang.blaze3d.platform.GlStateManager;
 
 import java.util.Collections;
 import java.util.Optional;
 
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-
 public final class GuiManual extends Gui {
     private static final int documentMaxWidth = 220;
     private static final int documentMaxHeight = 176;
@@ -291,11 +290,11 @@ public final class GuiManual extends Gui {
         }
 
         public int getWidth() {
-        	return width;
+            return width;
         }
 
         public int getHeight() {
-        	return height;
+            return height;
         }
 
         @Override

@@ -1,9 +1,7 @@
 package li.cil.tis3d.common.item;
 
-import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.client.gui.GuiHandlerClient;
 import li.cil.tis3d.common.Constants;
-import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.gui.GuiHandlerCommon;
 import li.cil.tis3d.util.FontRendererUtils;
 import net.minecraft.client.MinecraftClient;
@@ -22,9 +20,9 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
+
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * The code book, utility book for coding ASM programs for execution modules.
@@ -36,7 +34,6 @@ public final class ItemBookCode extends BookItem {
 
     // --------------------------------------------------------------------- //
     // Item
-
 
     @Override
     public void buildTooltip(final ItemStack stack, @Nullable final World world, final List<TextComponent> tooltip, final TooltipOptions flag) {
@@ -50,7 +47,7 @@ public final class ItemBookCode extends BookItem {
         if (world.isClient) {
             openForClient(player);
         }
-        return new TypedActionResult(ActionResult.SUCCESS, player.getStackInHand(hand));
+        return new TypedActionResult<>(ActionResult.SUCCESS, player.getStackInHand(hand));
     }
 
     private void openForClient(final PlayerEntity player) {
@@ -60,7 +57,7 @@ public final class ItemBookCode extends BookItem {
         }
     }
 
-    // TODO
+    // TODO doesSneakBypassUse
     /* @Override
     public boolean doesSneakBypassUse(final ItemStack stack, final IBlockReader world, final BlockPos pos, final EntityPlayer player) {
         return world.getTileEntity(pos) instanceof Casing;

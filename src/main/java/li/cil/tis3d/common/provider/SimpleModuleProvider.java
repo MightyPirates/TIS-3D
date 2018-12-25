@@ -7,6 +7,7 @@ import li.cil.tis3d.api.module.ModuleProvider;
 import li.cil.tis3d.common.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
+
 import javax.annotation.Nullable;
 import java.util.function.BiFunction;
 

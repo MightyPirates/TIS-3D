@@ -27,6 +27,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
+
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
@@ -186,12 +187,12 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
         return true;
     }
 
-	private void openForClient(final PlayerEntity player) {
-		Gui screen = GuiHandlerClient.getClientGuiElement(GuiHandlerCommon.GuiId.MODULE_TERMINAL, player.getEntityWorld(), player);
-		if (screen != null) {
-			MinecraftClient.getInstance().openGui(screen);
-		}
-	}
+    private void openForClient(final PlayerEntity player) {
+        Gui screen = GuiHandlerClient.getClientGuiElement(GuiHandlerCommon.GuiId.MODULE_TERMINAL, player.getEntityWorld(), player);
+        if (screen != null) {
+            MinecraftClient.getInstance().openGui(screen);
+        }
+    }
 
     @Override
     public void onData(final ByteBuf data) {

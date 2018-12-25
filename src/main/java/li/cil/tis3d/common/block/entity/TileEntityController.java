@@ -2,11 +2,13 @@ package li.cil.tis3d.common.block.entity;
 
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.HaltAndCatchFireException;
+import li.cil.tis3d.charset.PacketRegistry;
+import li.cil.tis3d.charset.PacketServerHelper;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.network.message.MessageHaltAndCatchFire;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
@@ -15,8 +17,6 @@ import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-import li.cil.tis3d.charset.PacketRegistry;
-import li.cil.tis3d.charset.PacketServerHelper;
 
 import java.util.*;
 

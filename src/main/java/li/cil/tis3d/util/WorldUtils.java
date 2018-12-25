@@ -1,13 +1,12 @@
 package li.cil.tis3d.util;
 
-import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.world.BlockView;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.ExtendedBlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.WorldChunk;
+
+import javax.annotation.Nullable;
 
 public final class WorldUtils {
     @Nullable

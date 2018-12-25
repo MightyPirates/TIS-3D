@@ -1,10 +1,10 @@
 package li.cil.tis3d.common.network.message;
 
-import io.netty.buffer.ByteBuf;
 import li.cil.tis3d.charset.SendNetwork;
 
 public final class MessageModuleReadOnlyMemoryData extends AbstractMessage {
-    @SendNetwork public byte[] data;
+    @SendNetwork
+    public byte[] data;
 
     public MessageModuleReadOnlyMemoryData(final byte[] data) {
         this.data = data;

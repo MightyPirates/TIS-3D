@@ -1,5 +1,6 @@
 package li.cil.tis3d.client.gui;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.tis3d.api.FontRendererAPI;
 import li.cil.tis3d.charset.PacketRegistry;
 import li.cil.tis3d.client.init.Textures;
@@ -11,7 +12,6 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Hand;
 import org.lwjgl.glfw.GLFW;
-import com.mojang.blaze3d.platform.GlStateManager;
 
 public final class GuiModuleMemory extends Gui {
     private static final int GUI_WIDTH = 190;

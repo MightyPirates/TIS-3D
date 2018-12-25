@@ -4,7 +4,8 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.charset.SendNetwork;
 
 public final class MessageCasingLockedState extends AbstractMessageWithLocation {
-    @SendNetwork public boolean isLocked;
+    @SendNetwork
+    public boolean isLocked;
 
     public MessageCasingLockedState(final Casing casing, final boolean isLocked) {
         super(casing.getCasingWorld(), casing.getPosition());

@@ -17,6 +17,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.Collection;
 
+@SuppressWarnings("unused")
 public class Manual implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
@@ -34,7 +35,7 @@ public class Manual implements ClientModInitializer {
         } else {
             final Collection<Item> allModules = Items.getModules().values();
             if (allModules.isEmpty()) {
-                module = net.minecraft.item.Items.field_8158;
+                module = net.minecraft.item.Items.REDSTONE;
             } else {
                 module = allModules.iterator().next();
             }

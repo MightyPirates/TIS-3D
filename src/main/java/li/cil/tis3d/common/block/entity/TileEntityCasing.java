@@ -10,6 +10,8 @@ import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.traits.BlockChangeAware;
 import li.cil.tis3d.api.module.traits.BundledRedstone;
 import li.cil.tis3d.api.module.traits.Redstone;
+import li.cil.tis3d.charset.PacketRegistry;
+import li.cil.tis3d.charset.PacketServerHelper;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.integration.redstone.RedstoneIntegration;
 import li.cil.tis3d.common.inventory.InventoryCasing;
@@ -32,8 +34,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import li.cil.tis3d.charset.PacketRegistry;
-import li.cil.tis3d.charset.PacketServerHelper;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -399,7 +399,7 @@ public final class TileEntityCasing extends TileEntityComputer implements Infrar
         super.readFromNBTForClient(nbt);
 
         isEnabled = nbt.getBoolean(TAG_ENABLED);
-	    getWorld().updateListeners(getPos(), getCachedState(), getCachedState(), 2);
+        getWorld().updateListeners(getPos(), getCachedState(), getCachedState(), 2);
     }
 
     @Override

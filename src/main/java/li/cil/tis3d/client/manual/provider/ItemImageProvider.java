@@ -1,6 +1,5 @@
 package li.cil.tis3d.client.manual.provider;
 
-import com.google.common.base.Strings;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.manual.ImageProvider;
 import li.cil.tis3d.api.manual.ImageRenderer;

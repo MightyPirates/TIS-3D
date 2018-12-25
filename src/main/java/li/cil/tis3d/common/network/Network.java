@@ -3,9 +3,12 @@ package li.cil.tis3d.common.network;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
-import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
+import li.cil.tis3d.charset.NetworkContext;
+import li.cil.tis3d.charset.Packet;
+import li.cil.tis3d.charset.PacketRegistry;
+import li.cil.tis3d.charset.PacketServerHelper;
 import li.cil.tis3d.client.network.handler.*;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.TIS3D;
@@ -26,10 +29,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
-import li.cil.tis3d.charset.*;
-
 
 import java.io.IOException;
 import java.util.*;

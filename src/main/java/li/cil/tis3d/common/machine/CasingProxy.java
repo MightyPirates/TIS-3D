@@ -9,6 +9,7 @@ import li.cil.tis3d.api.module.Module;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
 import javax.annotation.Nullable;
 
 public interface CasingProxy extends Casing {

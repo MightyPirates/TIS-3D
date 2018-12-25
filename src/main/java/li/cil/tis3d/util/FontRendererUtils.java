@@ -5,6 +5,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.FontRenderer;
 import net.minecraft.text.StringTextComponent;
 import net.minecraft.text.TextComponent;
+
 import java.util.List;
 import java.util.stream.Collectors;
 

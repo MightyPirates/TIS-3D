@@ -6,10 +6,12 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.ModuleProvider;
 import li.cil.tis3d.api.module.traits.Rotatable;
+import li.cil.tis3d.charset.PacketRegistry;
+import li.cil.tis3d.charset.PacketServerHelper;
 import li.cil.tis3d.common.Constants;
+import li.cil.tis3d.common.block.entity.TileEntityCasing;
 import li.cil.tis3d.common.init.Blocks;
 import li.cil.tis3d.common.network.message.MessageCasingInventory;
-import li.cil.tis3d.common.block.entity.TileEntityCasing;
 import net.minecraft.block.BlockState;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
@@ -17,8 +19,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.Direction;
-import li.cil.tis3d.charset.PacketRegistry;
-import li.cil.tis3d.charset.PacketServerHelper;
 
 /**
  * Inventory implementation for casings, having six slots for modules, one per face.
@@ -133,10 +133,10 @@ public final class InventoryCasing extends Inventory implements SidedInventory {
                 moduleData = null;
             }
 
-	        Packet packet = PacketRegistry.SERVER.wrap(new MessageCasingInventory(tileEntity, index, stack, moduleData));
-	        PacketServerHelper.forEachWatching(tileEntity.getCasingWorld(), tileEntity.getPos(), (player) -> {
-	        	player.networkHandler.sendPacket(packet);
-	        });
+            Packet packet = PacketRegistry.SERVER.wrap(new MessageCasingInventory(tileEntity, index, stack, moduleData));
+            PacketServerHelper.forEachWatching(tileEntity.getCasingWorld(), tileEntity.getPos(), (player) -> {
+                player.networkHandler.sendPacket(packet);
+            });
         }
 
         tileEntity.setModule(Face.VALUES[index], module);
@@ -153,10 +153,10 @@ public final class InventoryCasing extends Inventory implements SidedInventory {
                 module.onDisposed();
             }
 
-	        Packet packet = PacketRegistry.SERVER.wrap(new MessageCasingInventory(tileEntity, index, ItemStack.EMPTY, null));
-	        PacketServerHelper.forEachWatching(tileEntity.getCasingWorld(), tileEntity.getPos(), (player) -> {
-		        player.networkHandler.sendPacket(packet);
-	        });
+            Packet packet = PacketRegistry.SERVER.wrap(new MessageCasingInventory(tileEntity, index, ItemStack.EMPTY, null));
+            PacketServerHelper.forEachWatching(tileEntity.getCasingWorld(), tileEntity.getPos(), (player) -> {
+                player.networkHandler.sendPacket(packet);
+            });
         }
     }
 }

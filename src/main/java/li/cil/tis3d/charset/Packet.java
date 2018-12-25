@@ -21,5 +21,5 @@ package li.cil.tis3d.charset;
 
 @FunctionalInterface
 public interface Packet {
-	void apply(NetworkContext context);
+    void apply(NetworkContext context);
 }

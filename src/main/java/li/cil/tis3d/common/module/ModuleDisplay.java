@@ -15,6 +15,7 @@ import li.cil.tis3d.util.EnumUtils;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.nbt.CompoundTag;
+
 import java.util.Arrays;
 
 public final class ModuleDisplay extends AbstractModuleRotatable {
@@ -235,7 +236,6 @@ public final class ModuleDisplay extends AbstractModuleRotatable {
             imageDirty = true;
         }
         if (imageDirty) {
-            // TODO: Can we write more directly?
             int ip = 0;
             for (int iy = 0; iy < RESOLUTION; iy++) {
                 for (int ix = 0; ix < RESOLUTION; ix++, ip++) {

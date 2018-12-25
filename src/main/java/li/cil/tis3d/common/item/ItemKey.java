@@ -1,6 +1,5 @@
 package li.cil.tis3d.common.item;
 
-import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.util.FontRendererUtils;
 import net.minecraft.client.item.TooltipOptions;
@@ -9,9 +8,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.TextComponent;
 import net.minecraft.world.World;
+
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Base item for all keys.
@@ -37,7 +36,7 @@ public final class ItemKey extends Item {
         FontRendererUtils.addStringToTooltip(info, tooltip);
     }
 
-    // TODO
+    // TODO doesSneakBypassUse
     /* @Override
     public boolean doesSneakBypassUse(final ItemStack stack, final IBlockReader world, final BlockPos pos, final EntityPlayer player) {
         return world.getTileEntity(pos) instanceof Casing;

@@ -4,6 +4,7 @@ import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.common.api.ManualAPIImpl;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.StringTextComponent;
+
 import java.net.URI;
 import java.util.Optional;
 

@@ -8,7 +8,6 @@ import li.cil.tis3d.common.item.ItemModuleReadOnlyMemory;
 import net.minecraft.item.ItemStack;
 
 
-
 /**
  * The RAM module can be used to store up to 256 values by address. It runs
  * as a basic state machine with the following states:

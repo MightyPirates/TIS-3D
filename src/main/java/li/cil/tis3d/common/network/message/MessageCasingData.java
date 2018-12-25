@@ -6,8 +6,8 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.charset.SendNetwork;
 
 public final class MessageCasingData extends AbstractMessageWithLocation {
-    // TODO
-    @SendNetwork public byte[] data;
+    @SendNetwork
+    public byte[] data;
 
     public MessageCasingData(final Casing casing, final ByteBuf data) {
         super(casing.getCasingWorld(), casing.getPosition());
