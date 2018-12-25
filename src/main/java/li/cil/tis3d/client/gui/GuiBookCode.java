@@ -89,7 +89,7 @@ public final class GuiBookCode extends Gui {
         this.addButton(buttonNextPage = new ButtonChangePage(ID_BUTTON_PAGE_NEXT, guiX + BUTTON_PAGE_CHANGE_NEXT_X, guiY + BUTTON_PAGE_CHANGE_Y, PageChangeType.Next));
         this.addButton(buttonDeletePage = new ButtonDeletePage(ID_BUTTON_PAGE_DELETE, guiX + BUTTON_PAGE_DELETE_X, guiY + BUTTON_PAGE_DELETE_Y));
 
-        // TODO Keyboard.enableRepeatEvents(true);
+        client.keyboard.enableRepeatEvents(true);
     }
 
     @Override
@@ -104,7 +104,7 @@ public final class GuiBookCode extends Gui {
         data.writeToNBT(nbt);
         MinecraftClient.getInstance().getNetworkHandler().sendPacket(PacketRegistry.CLIENT.wrap(new MessageBookCodeData(nbt)));
 
-        // TODO Keyboard.enableRepeatEvents(false);
+        client.keyboard.enableRepeatEvents(false);
     }
 
     @Override
