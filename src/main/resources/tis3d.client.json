@@ -2,6 +2,7 @@
     "package": "li.cil.tis3d.client.mixin",
     "compatibilityLevel": "JAVA_8",
     "mixins": [
-        "HideHudInTerminalMixin"
+        "HideHudInTerminalMixin",
+        "PickModuleMixin"
     ]
 }

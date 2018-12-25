@@ -82,18 +82,16 @@ public final class BlockCasing extends Block implements BlockEntityProvider {
     // --------------------------------------------------------------------- //
     // Client
 
-    @Override
-    public ItemStack getPickStack(BlockView view, BlockPos pos, BlockState state) {
+    public ItemStack getPickStack(BlockView view, BlockPos pos, Direction side, BlockState state) {
         // Allow picking modules installed in the casing.
-        // TODO Need to know side we're picking to return proper module item.
-/*        final BlockEntity tileEntity = view.getBlockEntity(pos);
+        final BlockEntity tileEntity = view.getBlockEntity(pos);
         if (tileEntity instanceof TileEntityCasing) {
             final TileEntityCasing casing = (TileEntityCasing) tileEntity;
-            final ItemStack stack = casing.getInvStack(target.sideHit.ordinal());
+            final ItemStack stack = casing.getInvStack(side.ordinal());
             if (!stack.isEmpty()) {
                 return stack.copy();
             }
-        } */
+        }
         return super.getPickStack(view, pos, state);
     }
 
