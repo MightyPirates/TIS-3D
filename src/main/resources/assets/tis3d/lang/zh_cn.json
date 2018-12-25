@@ -38,7 +38,7 @@
   "tis3d.manual.warning.missing.block": "方块不可用.",
   "tis3d.manual.warning.missing.image": "未找到图片.",
   "tis3d.manual.warning.missing.item": "物品不可用.",
-  "tis3d.manual.warning.missing.oreDict": "矿石辞典不可用.",
+  "tis3d.manual.warning.missing.tag": "矿石辞典不可用.",
 
   "tis3d.tooltip.book_code": "§7将书使用在已安装的执行模块上来得到拷贝.",
   "tis3d.tooltip.book_manual": "§7将书使用在控制器上来得到拷贝."

@@ -8,7 +8,7 @@ package li.cil.tis3d.api.manual;
  * provider. A renderer will then be used to draw something at the position
  * of the image tag.
  * <p>
- * Built-in image renderers are <tt>item</tt>, <tt>block</tt> and <tt>oredict</tt>.
+ * Built-in image renderers are <tt>item</tt>, <tt>block</tt> and <tt>tag</tt>.
  */
 public interface ImageRenderer {
     /**
