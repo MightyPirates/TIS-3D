@@ -238,7 +238,7 @@ public final class BlockCasing extends Block implements BlockEntityProvider {
 
     @SuppressWarnings("deprecation")
     @Override
-    public boolean isFullBoundsCubeForCulling(final BlockState state) {
+    public boolean emitsRedstonePower(BlockState state) {
         return true;
     }
 
