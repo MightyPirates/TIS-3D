@@ -1,26 +1,26 @@
 {
-  "type": "crafting_shaped",
-  "pattern": [
-    "PPP",
-    "ISI",
-    " R "
-  ],
-  "key": {
-    "P": {
-      "item": "minecraft:glass_pane"
+    "type": "crafting_shaped",
+    "pattern": [
+        "PPP",
+        "ISI",
+        " R "
+    ],
+    "key": {
+        "P": {
+            "item": "minecraft:glass_pane"
+        },
+        "I": {
+            "item": "minecraft:iron_ingot"
+        },
+        "R": {
+            "item": "minecraft:redstone"
+        },
+        "S": {
+            "item": "tis3d:prism"
+        }
     },
-    "I": {
-      "item": "minecraft:iron_ingot"
-    },
-    "R": {
-      "item": "minecraft:redstone"
-    },
-    "S": {
-      "item": "tis3d:prism"
+    "result": {
+        "item": "tis3d:module_display",
+        "count": 2
     }
-  },
-  "result": {
-    "item": "tis3d:module_display",
-    "count": 2
-  }
 }

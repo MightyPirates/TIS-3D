@@ -1,11 +1,11 @@
 {
-  "type": "crafting_shapeless",
-  "ingredients": [
-    {
-      "item": "tis3d:module_queue"
+    "type": "crafting_shapeless",
+    "ingredients": [
+        {
+            "item": "tis3d:module_queue"
+        }
+    ],
+    "result": {
+        "item": "tis3d:module_stack"
     }
-  ],
-  "result": {
-    "item": "tis3d:module_stack"
-  }
 }

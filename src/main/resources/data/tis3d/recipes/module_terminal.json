@@ -1,32 +1,32 @@
 {
-  "type": "crafting_shaped",
-  "pattern": [
-    "KDS",
-    "IQI",
-    " R "
-  ],
-  "key": {
-    "K": {
-      "item": "tis3d:module_keypad"
+    "type": "crafting_shaped",
+    "pattern": [
+        "KDS",
+        "IQI",
+        " R "
+    ],
+    "key": {
+        "K": {
+            "item": "tis3d:module_keypad"
+        },
+        "D": {
+            "item": "tis3d:module_display"
+        },
+        "S": {
+            "item": "tis3d:module_stack"
+        },
+        "Q": {
+            "item": "minecraft:quartz"
+        },
+        "I": {
+            "item": "minecraft:iron_ingot"
+        },
+        "R": {
+            "item": "minecraft:redstone"
+        }
     },
-    "D": {
-      "item": "tis3d:module_display"
-    },
-    "S": {
-      "item": "tis3d:module_stack"
-    },
-    "Q": {
-      "item": "minecraft:quartz"
-    },
-    "I": {
-      "item": "minecraft:iron_ingot"
-    },
-    "R": {
-      "item": "minecraft:redstone"
+    "result": {
+        "item": "tis3d:module_terminal",
+        "count": 2
     }
-  },
-  "result": {
-    "item": "tis3d:module_terminal",
-    "count": 2
-  }
 }

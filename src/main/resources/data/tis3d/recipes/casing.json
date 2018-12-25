@@ -1,23 +1,23 @@
 {
-  "type": "crafting_shaped",
-  "pattern": [
-    "IRI",
-    "RSR",
-    "IRI"
-  ],
-  "key": {
-    "I": {
-      "item": "minecraft:iron_ingot"
+    "type": "crafting_shaped",
+    "pattern": [
+        "IRI",
+        "RSR",
+        "IRI"
+    ],
+    "key": {
+        "I": {
+            "item": "minecraft:iron_ingot"
+        },
+        "R": {
+            "item": "minecraft:redstone"
+        },
+        "S": {
+            "item": "minecraft:iron_block"
+        }
     },
-    "R": {
-      "item": "minecraft:redstone"
-    },
-    "S": {
-      "item": "minecraft:iron_block"
+    "result": {
+        "item": "tis3d:casing",
+        "count": 8
     }
-  },
-  "result": {
-    "item": "tis3d:casing",
-    "count": 8
-  }
 }

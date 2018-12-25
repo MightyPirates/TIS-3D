@@ -1,26 +1,26 @@
 {
-  "type": "crafting_shaped",
-  "pattern": [
-    "PPP",
-    "ISI",
-    " R "
-  ],
-  "key": {
-    "P": {
-      "item": "minecraft:glass_pane"
+    "type": "crafting_shaped",
+    "pattern": [
+        "PPP",
+        "ISI",
+        " R "
+    ],
+    "key": {
+        "P": {
+            "item": "minecraft:glass_pane"
+        },
+        "I": {
+            "item": "minecraft:iron_ingot"
+        },
+        "R": {
+            "item": "minecraft:redstone"
+        },
+        "S": {
+            "item": "minecraft:book"
+        }
     },
-    "I": {
-      "item": "minecraft:iron_ingot"
-    },
-    "R": {
-      "item": "minecraft:redstone"
-    },
-    "S": {
-      "item": "minecraft:book"
+    "result": {
+        "item": "tis3d:module_read_only_memory",
+        "count": 2
     }
-  },
-  "result": {
-    "item": "tis3d:module_read_only_memory",
-    "count": 2
-  }
 }
