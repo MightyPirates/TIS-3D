@@ -19,6 +19,7 @@ import net.minecraft.container.Container;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsageContext;
 import net.minecraft.sortme.ItemScatterer;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -101,6 +102,21 @@ public final class BlockCasing extends Block implements BlockEntityProvider {
     @Override
     public BlockEntity createBlockEntity(BlockView view) {
         return new TileEntityCasing();
+    }
+
+    public static boolean activate(ItemUsageContext context) {
+        if (!context.isPlayerSneaking()) {
+            return false;
+        }
+
+        final BlockState blockState = context.getWorld().getBlockState(context.getPos());
+        if (!(blockState.getBlock() instanceof BlockCasing)) {
+            return false;
+        }
+
+        // TODO Ugly, but context does not pass on hand...
+        final Hand hand = context.getPlayer() != null && context.getPlayer().getStackInHand(Hand.OFF) == context.getItemStack() ? Hand.OFF : Hand.MAIN;
+        return ((BlockCasing) blockState.getBlock()).activate(blockState, context.getWorld(), context.getPos(), context.getPlayer(), hand, context.getFacing(), context.getHitX(), context.getHitY(), context.getHitZ());
     }
 
     @SuppressWarnings("deprecation")

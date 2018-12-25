@@ -1,13 +1,18 @@
 package li.cil.tis3d.common.item;
 
+import li.cil.tis3d.charset.PacketRegistry;
 import li.cil.tis3d.client.gui.GuiHandlerClient;
-import li.cil.tis3d.common.gui.GuiHandlerCommon;
+import li.cil.tis3d.common.block.BlockCasing;
+import li.cil.tis3d.common.init.Items;
+import li.cil.tis3d.common.network.message.MessageModuleReadOnlyMemoryData;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -31,23 +36,36 @@ public class ItemModuleReadOnlyMemory extends ItemModule {
         if (world.isClient) {
             openForClient(player);
         } else {
-            GuiHandlerCommon.sendModuleMemory(player);
+            sendModuleMemory(player, hand);
         }
-        return new TypedActionResult(ActionResult.SUCCESS, player.getStackInHand(hand));
+        return new TypedActionResult<>(ActionResult.SUCCESS, player.getStackInHand(hand));
     }
 
-    private void openForClient(final PlayerEntity player) {
-        Gui screen = GuiHandlerClient.getClientGuiElement(GuiHandlerCommon.GuiId.MODULE_MEMORY, player.getEntityWorld(), player);
+    @Override
+    public ActionResult useOnBlock(ItemUsageContext context) {
+        return BlockCasing.activate(context) ? ActionResult.SUCCESS : super.useOnBlock(context);
+    }
+
+    private static void openForClient(final PlayerEntity player) {
+        Gui screen = GuiHandlerClient.getClientGuiElement(GuiHandlerClient.GuiId.MODULE_MEMORY, player.getEntityWorld(), player);
         if (screen != null) {
             MinecraftClient.getInstance().openGui(screen);
         }
     }
 
-    // TODO doesSneakBypassUse
-    /* @Override
-    public boolean doesSneakBypassUse(final ItemStack stack, final IBlockReader world, final BlockPos pos, final EntityPlayer player) {
-        return world.getTileEntity(pos) instanceof Casing;
-    } */
+    private static void sendModuleMemory(final PlayerEntity player, final Hand hand) {
+        if (!(player instanceof ServerPlayerEntity)) {
+            return;
+        }
+
+        final ItemStack heldItem = player.getStackInHand(hand);
+        if (!Items.isModuleReadOnlyMemory(heldItem)) {
+            return;
+        }
+
+        MessageModuleReadOnlyMemoryData data = new MessageModuleReadOnlyMemoryData(ItemModuleReadOnlyMemory.loadFromStack(heldItem));
+        ((ServerPlayerEntity) player).networkHandler.sendPacket(PacketRegistry.SERVER.wrap(data));
+    }
 
     // --------------------------------------------------------------------- //
 

@@ -1,12 +1,15 @@
 package li.cil.tis3d.common.item;
 
 import li.cil.tis3d.common.Constants;
+import li.cil.tis3d.common.block.BlockCasing;
 import li.cil.tis3d.util.FontRendererUtils;
 import net.minecraft.client.item.TooltipOptions;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsageContext;
 import net.minecraft.text.TextComponent;
+import net.minecraft.util.ActionResult;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -36,11 +39,10 @@ public final class ItemKey extends Item {
         FontRendererUtils.addStringToTooltip(info, tooltip);
     }
 
-    // TODO doesSneakBypassUse
-    /* @Override
-    public boolean doesSneakBypassUse(final ItemStack stack, final IBlockReader world, final BlockPos pos, final EntityPlayer player) {
-        return world.getTileEntity(pos) instanceof Casing;
-    } */
+    @Override
+    public ActionResult useOnBlock(ItemUsageContext context) {
+        return BlockCasing.activate(context) ? ActionResult.SUCCESS : super.useOnBlock(context);
+    }
 
     @Override
     public boolean isTool(final ItemStack stack) {

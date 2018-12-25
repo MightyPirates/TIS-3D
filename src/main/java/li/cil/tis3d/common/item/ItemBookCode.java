@@ -2,7 +2,7 @@ package li.cil.tis3d.common.item;
 
 import li.cil.tis3d.client.gui.GuiHandlerClient;
 import li.cil.tis3d.common.Constants;
-import li.cil.tis3d.common.gui.GuiHandlerCommon;
+import li.cil.tis3d.common.block.BlockCasing;
 import li.cil.tis3d.util.FontRendererUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Gui;
@@ -12,6 +12,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BookItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -51,17 +52,16 @@ public final class ItemBookCode extends BookItem {
     }
 
     private void openForClient(final PlayerEntity player) {
-        Gui screen = GuiHandlerClient.getClientGuiElement(GuiHandlerCommon.GuiId.BOOK_CODE, player.getEntityWorld(), player);
+        Gui screen = GuiHandlerClient.getClientGuiElement(GuiHandlerClient.GuiId.BOOK_CODE, player.getEntityWorld(), player);
         if (screen != null) {
             MinecraftClient.getInstance().openGui(screen);
         }
     }
 
-    // TODO doesSneakBypassUse
-    /* @Override
-    public boolean doesSneakBypassUse(final ItemStack stack, final IBlockReader world, final BlockPos pos, final EntityPlayer player) {
-        return world.getTileEntity(pos) instanceof Casing;
-    } */
+    @Override
+    public ActionResult useOnBlock(ItemUsageContext context) {
+        return BlockCasing.activate(context) ? ActionResult.SUCCESS : super.useOnBlock(context);
+    }
 
     // --------------------------------------------------------------------- //
     // ItemBook

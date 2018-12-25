@@ -8,27 +8,14 @@ import li.cil.tis3d.client.manual.provider.GameRegistryPathProvider;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.api.*;
-import li.cil.tis3d.common.block.BlockCasing;
 import li.cil.tis3d.common.event.TickHandlerInfraredPacket;
 import li.cil.tis3d.common.integration.Integration;
-import li.cil.tis3d.common.item.ItemBookCode;
-import li.cil.tis3d.common.item.ItemKey;
-import li.cil.tis3d.common.item.ItemModuleReadOnlyMemory;
 import li.cil.tis3d.common.module.*;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.provider.SimpleModuleProvider;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.events.PlayerInteractionEvent;
 import net.fabricmc.fabric.events.TickEvent;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
 
 @SuppressWarnings("unused")
 public final class BootstrapCommon implements ModInitializer {
@@ -85,24 +72,5 @@ public final class BootstrapCommon implements ModInitializer {
 
         // Mod integration.
         Integration.init();
-
-        // TODO This is a doesSneakBypassUse hack.
-        PlayerInteractionEvent.INTERACT_BLOCK.register(this::onRightClick);
-    }
-
-    public ActionResult onRightClick(PlayerEntity entityPlayer, World world, Hand enumHand, BlockPos pos, Direction direction, float hitX, float hitY, float hitZ) {
-        if (!entityPlayer.isSneaking()) {
-            return ActionResult.PASS;
-        }
-
-        ItemStack stack = entityPlayer.getStackInHand(enumHand);
-        if (stack.getItem() instanceof ItemBookCode || stack.getItem() instanceof ItemKey || stack.getItem() instanceof ItemModuleReadOnlyMemory) {
-            BlockState state = world.getBlockState(pos);
-            if (state.getBlock() instanceof BlockCasing) {
-                return state.activate(world, pos, entityPlayer, enumHand, direction, hitX, hitY, hitZ) ? ActionResult.SUCCESS : ActionResult.PASS;
-            }
-        }
-
-        return ActionResult.PASS;
     }
 }
