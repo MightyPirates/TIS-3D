@@ -1,7 +1,7 @@
 package li.cil.tis3d.api.module.traits;
 
 /**
- * Dispatch this on the TODO listener bus
+ * Dispatch this using {@link li.cil.tis3d.api.BundledRedstoneAPI#onBundledRedstoneOutputChanged(BundledRedstoneOutputChangedEvent)}
  * when the bundled output of a {@link BundledRedstone} capable module changes.
  * This will then be forwarded to all present bundled redstone APIs to allow
  * reacting to the new values; this means the module should be in a state where
@@ -9,6 +9,7 @@ package li.cil.tis3d.api.module.traits;
  * return the new value.
  */
 public class BundledRedstoneOutputChangedEvent {
+    @FunctionalInterface
     public interface Listener {
         void onBundledRedstoneOutputChanged(BundledRedstoneOutputChangedEvent event);
     }

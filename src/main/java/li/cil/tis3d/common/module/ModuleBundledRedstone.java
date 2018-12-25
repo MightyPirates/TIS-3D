@@ -3,6 +3,7 @@ package li.cil.tis3d.common.module;
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import li.cil.tis3d.api.BundledRedstoneAPI;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
@@ -89,9 +90,7 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
         channel = 0;
 
         final BundledRedstoneOutputChangedEvent event = new BundledRedstoneOutputChangedEvent(this, -1);
-        // TODO Needs some common event bus to dispatch BundledRedstoneOutputChangedEvent.
-        //RiftLoader.instance.getListeners(BundledRedstoneOutputChangedEvent.Listener.class).forEach((l) -> l.onBundledRedstoneOutputChanged(event));
-        //MinecraftForge.EVENT_BUS.post(event);
+        BundledRedstoneAPI.onBundledRedstoneOutputChanged(event);
 
         sendData();
     }
@@ -303,9 +302,7 @@ public final class ModuleBundledRedstone extends AbstractModuleRotatable impleme
 
         // Notify bundled redstone APIs.
         final BundledRedstoneOutputChangedEvent event = new BundledRedstoneOutputChangedEvent(this, channel);
-        // TODO Needs some common event bus to dispatch BundledRedstoneOutputChangedEvent.
-        //RiftLoader.instance.getListeners(BundledRedstoneOutputChangedEvent.Listener.class).forEach((l) -> l.onBundledRedstoneOutputChanged(event));
-        //MinecraftForge.EVENT_BUS.post(event);
+        BundledRedstoneAPI.onBundledRedstoneOutputChanged(event);
 
         sendData();
     }
