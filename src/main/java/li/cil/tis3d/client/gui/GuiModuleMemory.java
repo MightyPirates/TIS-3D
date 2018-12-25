@@ -52,7 +52,7 @@ public final class GuiModuleMemory extends Gui {
         guiX = (width - GUI_WIDTH) / 2;
         guiY = (height - GUI_HEIGHT) / 2;
 
-        // TODO Keyboard.enableRepeatEvents(true);
+        client.keyboard.enableRepeatEvents(true);
     }
 
     @Override
@@ -66,7 +66,7 @@ public final class GuiModuleMemory extends Gui {
             MinecraftClient.getInstance().getNetworkHandler().sendPacket(PacketRegistry.CLIENT.wrap(new MessageModuleReadOnlyMemoryData(data)));
         }
 
-        // TODO Keyboard.enableRepeatEvents(false);
+        client.keyboard.enableRepeatEvents(false);
     }
 
     @Override

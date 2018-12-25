@@ -93,12 +93,12 @@ public final class GuiModuleTerminal extends Gui {
 
     @Override
     public void onInitialized() {
-        // TODO Keyboard.enableRepeatEvents(true);
+        client.keyboard.enableRepeatEvents(true);
     }
 
     @Override
     public void onClosed() {
-        // TODO Keyboard.enableRepeatEvents(false);
+        client.keyboard.enableRepeatEvents(false);
     }
 
     @Override
