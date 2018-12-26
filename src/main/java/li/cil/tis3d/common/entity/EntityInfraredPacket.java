@@ -4,6 +4,7 @@ import li.cil.tis3d.api.infrared.InfraredPacket;
 import li.cil.tis3d.api.infrared.InfraredReceiver;
 import li.cil.tis3d.common.event.TickHandlerInfraredPacket;
 import li.cil.tis3d.common.init.Entities;
+import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.util.Raytracing;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -14,9 +15,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.particle.DustParticleParameters;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
@@ -269,10 +268,7 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
         final double yy = y + dy * t;
         final double zz = z + dz * t;
 
-        ((ServerWorld) world).method_14199(
-            new DustParticleParameters(1f, 0.2f, 0, 1f),
-            xx, yy, zz, 1, 0, 0, 0, 0
-        );
+        Network.INSTANCE.sendRedstoneEffect(world, xx, yy, zz);
     }
 
     @Nullable

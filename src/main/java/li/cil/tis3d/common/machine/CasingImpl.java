@@ -347,7 +347,7 @@ public final class CasingImpl implements Casing {
 
     @Override
     public void sendData(final Face face, final CompoundTag data, final byte type) {
-        Network.sendModuleData(this, face, data, type);
+        Network.INSTANCE.sendModuleData(this, face, data, type);
     }
 
     @Override
@@ -357,7 +357,7 @@ public final class CasingImpl implements Casing {
 
     @Override
     public void sendData(final Face face, final ByteBuf data, final byte type) {
-        Network.sendModuleData(this, face, data, type);
+        Network.INSTANCE.sendModuleData(this, face, data, type);
     }
 
     @Override

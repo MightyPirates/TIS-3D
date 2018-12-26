@@ -33,6 +33,9 @@ public final class BootstrapCommon implements ModInitializer {
         API.moduleAPI = new ModuleAPIImpl();
         API.serialAPI = SerialAPIImpl.INSTANCE;
 
+        // Register network handler.
+        Network.INSTANCE.init();
+
         // Register event handlers.
         TickEvent.SERVER.register(server -> TickHandlerInfraredPacket.INSTANCE.serverTick());
         TickEvent.SERVER.register(server -> Network.INSTANCE.serverTick());

@@ -4,10 +4,10 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
-import li.cil.tis3d.charset.NetworkContext;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.block.entity.TileEntityCasing;
 import li.cil.tis3d.common.network.message.MessageCasingData;
+import net.fabricmc.fabric.networking.PacketContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
@@ -16,7 +16,7 @@ import java.io.IOException;
 
 public final class MessageHandlerCasingData extends AbstractMessageHandlerWithLocation<MessageCasingData> {
     @Override
-    protected void onMessageSynchronized(final MessageCasingData message, final NetworkContext context) {
+    protected void onMessageSynchronized(final MessageCasingData message, final PacketContext context) {
         final BlockEntity tileEntity = getTileEntity(message, context);
         if (!(tileEntity instanceof TileEntityCasing)) {
             return;

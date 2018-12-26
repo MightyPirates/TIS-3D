@@ -1,13 +1,11 @@
 package li.cil.tis3d.common.network.message;
 
-import li.cil.tis3d.charset.SendNetwork;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.util.Hand;
 
 public final class MessageModuleReadOnlyMemoryData extends AbstractMessage {
-    @SendNetwork
-    public byte[] data;
-    @SendNetwork
-    public Hand hand;
+    private byte[] data;
+    private Hand hand;
 
     public MessageModuleReadOnlyMemoryData(final byte[] data, final Hand hand) {
         this.data = data;
@@ -26,5 +24,20 @@ public final class MessageModuleReadOnlyMemoryData extends AbstractMessage {
 
     public Hand getHand() {
         return hand;
+    }
+
+    // --------------------------------------------------------------------- //
+    // AbstractMessage
+
+    @Override
+    public void fromBytes(final ByteBuf buf) {
+        data = new byte[buf.readInt()];
+        buf.readBytes(data);
+    }
+
+    @Override
+    public void toBytes(final ByteBuf buf) {
+        buf.writeInt(data.length);
+        buf.writeBytes(data);
     }
 }

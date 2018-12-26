@@ -6,19 +6,19 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.ModuleProvider;
 import li.cil.tis3d.api.module.traits.Rotatable;
-import li.cil.tis3d.charset.PacketRegistry;
-import li.cil.tis3d.charset.PacketServerHelper;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.block.entity.TileEntityCasing;
 import li.cil.tis3d.common.init.Blocks;
+import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageCasingInventory;
 import net.minecraft.block.BlockState;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.Packet;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.Direction;
+
+import javax.annotation.Nullable;
 
 /**
  * Inventory implementation for casings, having six slots for modules, one per face.
@@ -60,6 +60,7 @@ public final class InventoryCasing extends Inventory implements SidedInventory {
 
     @Override
     public void markDirty() {
+        assert tileEntity.getWorld() != null;
         final BlockState state = tileEntity.getWorld().getBlockState(tileEntity.getPos());
         Blocks.casing.updateBlockState(state, tileEntity.getWorld(), tileEntity.getPos());
         tileEntity.markDirty();
@@ -78,8 +79,8 @@ public final class InventoryCasing extends Inventory implements SidedInventory {
     }
 
     @Override
-    public boolean canInsertInvStack(final int index, final ItemStack stack, final Direction side) {
-        return side.ordinal() == index &&
+    public boolean canInsertInvStack(final int index, final ItemStack stack, @Nullable final Direction side) {
+        return side != null && side.ordinal() == index &&
             getInvStack(index).isEmpty() &&
             tileEntity.getModule(Face.fromEnumFacing(side)) == null && // Handles virtual modules.
             canInstall(stack, Face.fromEnumFacing(side));
@@ -120,7 +121,8 @@ public final class InventoryCasing extends Inventory implements SidedInventory {
             ((Rotatable) module).setFacing(facing);
         }
 
-        if (!tileEntity.getCasingWorld().isClient) {
+        assert tileEntity.getWorld() != null;
+        if (!tileEntity.getWorld().isClient) {
             // Grab module data from newly created module, if any, don't rely on stack.
             // Rationale: module may initialize data from stack while contents of stack
             // are not synchronized to client, or do some fancy server-side only setup
@@ -133,10 +135,8 @@ public final class InventoryCasing extends Inventory implements SidedInventory {
                 moduleData = null;
             }
 
-            Packet packet = PacketRegistry.SERVER.wrap(new MessageCasingInventory(tileEntity, index, stack, moduleData));
-            PacketServerHelper.forEachWatching(tileEntity.getCasingWorld(), tileEntity.getPos(), (player) -> {
-                player.networkHandler.sendPacket(packet);
-            });
+            final MessageCasingInventory message = new MessageCasingInventory(tileEntity, index, stack, moduleData);
+            Network.INSTANCE.sendToClientsNearLocation(message, tileEntity.getWorld(), tileEntity.getPosition(), Network.RANGE_HIGH);
         }
 
         tileEntity.setModule(Face.VALUES[index], module);
@@ -147,16 +147,15 @@ public final class InventoryCasing extends Inventory implements SidedInventory {
         final Face face = Face.VALUES[index];
         final Module module = tileEntity.getModule(face);
         tileEntity.setModule(face, null);
-        if (!tileEntity.getCasingWorld().isClient) {
+        assert tileEntity.getWorld() != null;
+        if (!tileEntity.getWorld().isClient) {
             if (module != null) {
                 module.onUninstalled(getInvStack(index));
                 module.onDisposed();
             }
 
-            Packet packet = PacketRegistry.SERVER.wrap(new MessageCasingInventory(tileEntity, index, ItemStack.EMPTY, null));
-            PacketServerHelper.forEachWatching(tileEntity.getCasingWorld(), tileEntity.getPos(), (player) -> {
-                player.networkHandler.sendPacket(packet);
-            });
+            final MessageCasingInventory message = new MessageCasingInventory(tileEntity, index, ItemStack.EMPTY, null);
+            Network.INSTANCE.sendToClientsNearLocation(message, tileEntity.getWorld(), tileEntity.getPosition(), Network.RANGE_HIGH);
         }
     }
 }

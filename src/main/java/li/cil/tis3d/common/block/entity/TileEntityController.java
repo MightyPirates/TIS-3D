@@ -2,9 +2,8 @@ package li.cil.tis3d.common.block.entity;
 
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.HaltAndCatchFireException;
-import li.cil.tis3d.charset.PacketRegistry;
-import li.cil.tis3d.charset.PacketServerHelper;
 import li.cil.tis3d.common.Settings;
+import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageHaltAndCatchFire;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -196,7 +195,7 @@ public final class TileEntityController extends TileEntityComputer implements Ti
             state = ControllerState.READY;
             casings.forEach(TileEntityCasing::onDisabled);
             final MessageHaltAndCatchFire message = new MessageHaltAndCatchFire(getWorld(), getPos());
-            PacketServerHelper.forEachWatching(getWorld(), getPos(), (player) -> player.networkHandler.sendPacket(PacketRegistry.SERVER.wrap(message)));
+            Network.INSTANCE.sendToClientsNearLocation(message, getWorld(), getPos(), Network.RANGE_MEDIUM);
         }
         hcfCooldown = COOLDOWN_HCF;
     }

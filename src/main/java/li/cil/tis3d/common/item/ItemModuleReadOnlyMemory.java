@@ -1,9 +1,9 @@
 package li.cil.tis3d.common.item;
 
-import li.cil.tis3d.charset.PacketRegistry;
 import li.cil.tis3d.client.gui.GuiHandler;
 import li.cil.tis3d.common.block.BlockCasing;
 import li.cil.tis3d.common.init.Items;
+import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageModuleReadOnlyMemoryData;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -54,8 +54,8 @@ public class ItemModuleReadOnlyMemory extends ItemModule {
             return;
         }
 
-        MessageModuleReadOnlyMemoryData data = new MessageModuleReadOnlyMemoryData(ItemModuleReadOnlyMemory.loadFromStack(heldItem), hand);
-        ((ServerPlayerEntity) player).networkHandler.sendPacket(PacketRegistry.SERVER.wrap(data));
+        MessageModuleReadOnlyMemoryData message = new MessageModuleReadOnlyMemoryData(ItemModuleReadOnlyMemory.loadFromStack(heldItem), hand);
+        Network.INSTANCE.sendToClient(message, player);
     }
 
     // --------------------------------------------------------------------- //

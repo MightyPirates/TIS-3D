@@ -2,12 +2,11 @@ package li.cil.tis3d.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.tis3d.api.FontRendererAPI;
-import li.cil.tis3d.charset.PacketRegistry;
 import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.module.ModuleRandomAccessMemory;
+import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageModuleReadOnlyMemoryData;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Hand;
@@ -65,7 +64,7 @@ public final class GuiModuleMemory extends Gui {
         // data to avoid erasing ROM when closing UI again too quickly.
         if (receivedData) {
             // Save any changes made and send them to the server.
-            MinecraftClient.getInstance().getNetworkHandler().sendPacket(PacketRegistry.CLIENT.wrap(new MessageModuleReadOnlyMemoryData(data, hand)));
+            Network.INSTANCE.sendToServer(new MessageModuleReadOnlyMemoryData(data, hand));
         }
 
         client.keyboard.enableRepeatEvents(false);
@@ -263,7 +262,7 @@ public final class GuiModuleMemory extends Gui {
         final int labelWidth = FontRendererAPI.getCharWidth() * LABEL_INITIALIZING.length();
 
         GlStateManager.pushMatrix();
-        GlStateManager.translatef(guiX + GRID_LEFT + 3 + 7 * CELL_WIDTH - labelWidth / 2, guiY + GRID_TOP + 1 + 7 * CELL_HEIGHT, 0);
+        GlStateManager.translatef((float) (guiX + GRID_LEFT + 3 + 7 * CELL_WIDTH - labelWidth / 2), guiY + GRID_TOP + 1 + 7 * CELL_HEIGHT, 0);
         FontRendererAPI.drawString(LABEL_INITIALIZING);
         GlStateManager.popMatrix();
     }

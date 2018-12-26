@@ -1,7 +1,6 @@
 package li.cil.tis3d.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import li.cil.tis3d.charset.PacketRegistry;
 import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.Settings;
@@ -10,6 +9,7 @@ import li.cil.tis3d.common.item.ItemBookCode;
 import li.cil.tis3d.common.module.execution.MachineState;
 import li.cil.tis3d.common.module.execution.compiler.Compiler;
 import li.cil.tis3d.common.module.execution.compiler.ParseException;
+import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageBookCodeData;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -107,7 +107,7 @@ public final class GuiBookCode extends Gui {
         // Save any changes made and send them to the server.
         final CompoundTag nbt = new CompoundTag();
         data.writeToNBT(nbt);
-        MinecraftClient.getInstance().getNetworkHandler().sendPacket(PacketRegistry.CLIENT.wrap(new MessageBookCodeData(nbt, hand)));
+        Network.INSTANCE.sendToServer(new MessageBookCodeData(nbt, hand));
 
         client.keyboard.enableRepeatEvents(false);
     }

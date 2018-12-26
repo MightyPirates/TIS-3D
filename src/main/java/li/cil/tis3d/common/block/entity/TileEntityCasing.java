@@ -8,8 +8,6 @@ import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.traits.BlockChangeAware;
 import li.cil.tis3d.api.module.traits.BundledRedstone;
 import li.cil.tis3d.api.module.traits.Redstone;
-import li.cil.tis3d.charset.PacketRegistry;
-import li.cil.tis3d.charset.PacketServerHelper;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.integration.redstone.RedstoneIntegration;
 import li.cil.tis3d.common.inventory.InventoryCasing;
@@ -29,7 +27,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.Packet;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -511,9 +508,10 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
     }
 
     private void sendState() {
+        assert getWorld() != null;
         final MessageCasingEnabledState message = new MessageCasingEnabledState(this, isEnabled);
-        final Packet packet = PacketRegistry.SERVER.wrap(message);
-        PacketServerHelper.forEachWatching(world, pos, (player) -> player.networkHandler.sendPacket(packet));
+
+        Network.INSTANCE.sendToClientsInDimension(message, getWorld());
     }
 
     private void dispose() {
@@ -524,16 +522,16 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
     }
 
     private void sendCasingLockedState() {
-        final Packet packet = PacketRegistry.SERVER.wrap(new MessageCasingLockedState(this, isLocked()));
-        PacketServerHelper.forEachWatching(world, pos, (player) -> player.networkHandler.sendPacket(packet));
         assert getWorld() != null;
+        final MessageCasingLockedState message = new MessageCasingLockedState(this, isLocked());
+        Network.INSTANCE.sendToClientsNearLocation(message, getWorld(), getPos(), Network.RANGE_HIGH);
         getWorld().playSound(null, getPos(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCK, 0.3f, isLocked() ? 0.5f : 0.6f);
     }
 
     private void sendReceivingPipeLockedState(final Face face, final Port port) {
-        final Packet packet = PacketRegistry.SERVER.wrap(new MessageReceivingPipeLockedState(this, face, port, isReceivingPipeLocked(face, port)));
-        PacketServerHelper.forEachWatching(world, pos, (player) -> player.networkHandler.sendPacket(packet));
         assert getWorld() != null;
+        final MessageReceivingPipeLockedState message = new MessageReceivingPipeLockedState(this, face, port, isReceivingPipeLocked(face, port));
+        Network.INSTANCE.sendToClientsNearLocation(message, getWorld(), getPos(), Network.RANGE_HIGH);
         getWorld().playSound(null, getPos(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCK, 0.3f, isReceivingPipeLocked(face, port) ? 0.5f : 0.6f);
     }
 

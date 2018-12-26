@@ -5,9 +5,7 @@
     "side": "universal",
     "initializers": [
         "li.cil.tis3d.client.init.BootstrapClient",
-        "li.cil.tis3d.client.init.Packets",
-        "li.cil.tis3d.common.init.BootstrapCommon",
-        "li.cil.tis3d.common.init.Packets"
+        "li.cil.tis3d.common.init.BootstrapCommon"
     ],
     "mixins": {
         "client": "tis3d.client.json",

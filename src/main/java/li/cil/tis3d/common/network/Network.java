@@ -3,12 +3,9 @@ package li.cil.tis3d.common.network;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
+import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
-import li.cil.tis3d.charset.NetworkContext;
-import li.cil.tis3d.charset.Packet;
-import li.cil.tis3d.charset.PacketRegistry;
-import li.cil.tis3d.charset.PacketServerHelper;
 import li.cil.tis3d.client.network.handler.*;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.TIS3D;
@@ -18,99 +15,69 @@ import li.cil.tis3d.common.network.handler.MessageHandlerCasingData;
 import li.cil.tis3d.common.network.handler.MessageHandlerModuleReadOnlyMemoryDataServer;
 import li.cil.tis3d.common.network.message.*;
 import li.cil.tis3d.util.Side;
+import net.fabricmc.fabric.networking.CustomPayloadPacketRegistry;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.packet.CustomPayloadClientPacket;
+import net.minecraft.client.network.packet.ParticleClientPacket;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.network.Packet;
 import net.minecraft.particle.DustParticleParameters;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.network.packet.CustomPayloadServerPacket;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.function.BiConsumer;
 
 /**
  * Central networking hub for TIS-3D.
  * <p>
- * Aside from managing the mod's channel this also has facilities for throttling
- * package throughput to avoid overloading the network when a large number of
- * casings are active and nearby players. Throttling is applied to particle
+ * Aside from providing basic message sending capabilities this also has facilities
+ * for throttling package throughput to avoid overloading the network when a large
+ * number of casings are active and nearby players. Throttling is applied to particle
  * effect emission and module packets where possible.
  */
 public final class Network {
     public static final Network INSTANCE = new Network();
-    public static Map<Class<?>, BiConsumer<Packet, NetworkContext>> HANDLER_MAP_CLIENT = new HashMap<>();
-    public static Map<Class<?>, BiConsumer<Packet, NetworkContext>> HANDLER_MAP_SERVER = new HashMap<>();
 
     public static final int RANGE_HIGH = 48;
     public static final int RANGE_MEDIUM = 32;
     public static final int RANGE_LOW = 16;
 
-    private enum Messages {
-        CasingDataClient,
-        CasingDataServer,
-        ParticleEffects,
-        CasingEnabledState,
-        BookCodeData,
-        HaltAndCatchFire,
-        CasingLockedState,
-        ReceivingPipeLockedState,
-        CasingInventory,
-        ReadOnlyMemoryData,
-    }
+    private Map<Class<AbstractMessage>, Identifier> messageIdCache = new HashMap<>();
 
     // --------------------------------------------------------------------- //
-
-    private void registerMessage(PacketRegistry registry, Class<? extends AbstractMessageHandler> hcl, Class<? extends AbstractMessage> cl, int id, Side side) {
-        try {
-            AbstractMessageHandler mh = hcl.newInstance();
-            if (side == Side.CLIENT) {
-                HANDLER_MAP_CLIENT.put(cl, mh::onMessage);
-            } else {
-                HANDLER_MAP_SERVER.put(cl, mh::onMessage);
-            }
-            registry.register(new Identifier("tis3d", cl.getSimpleName().toLowerCase(Locale.ROOT)), cl, false);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void registerClientPackets(PacketRegistry packetRegistry) {
-        registerMessage(packetRegistry, MessageHandlerCasingData.class, MessageCasingData.class, Messages.CasingDataClient.ordinal(), Side.CLIENT);
-        registerMessage(packetRegistry, MessageHandlerCasingEnabledState.class, MessageCasingEnabledState.class, Messages.CasingEnabledState.ordinal(), Side.CLIENT);
-        registerMessage(packetRegistry, MessageHandlerCasingLockedState.class, MessageCasingLockedState.class, Messages.CasingLockedState.ordinal(), Side.CLIENT);
-        registerMessage(packetRegistry, MessageHandlerCasingInventory.class, MessageCasingInventory.class, Messages.CasingInventory.ordinal(), Side.CLIENT);
-        registerMessage(packetRegistry, MessageHandlerHaltAndCatchFire.class, MessageHaltAndCatchFire.class, Messages.HaltAndCatchFire.ordinal(), Side.CLIENT);
-        registerMessage(packetRegistry, MessageHandlerReceivingPipeLockedState.class, MessageReceivingPipeLockedState.class, Messages.ReceivingPipeLockedState.ordinal(), Side.CLIENT);
-        registerMessage(packetRegistry, MessageHandlerModuleReadOnlyMemoryDataClient.class, MessageModuleReadOnlyMemoryData.class, Messages.ReadOnlyMemoryData.ordinal(), Side.CLIENT);
-    }
-
-    public void registerServerPackets(PacketRegistry packetRegistry) {
-        registerMessage(packetRegistry, MessageHandlerBookCodeData.class, MessageBookCodeData.class, Messages.BookCodeData.ordinal(), Side.SERVER);
-        registerMessage(packetRegistry, MessageHandlerCasingData.class, MessageCasingData.class, Messages.CasingDataServer.ordinal(), Side.SERVER);
-        registerMessage(packetRegistry, MessageHandlerModuleReadOnlyMemoryDataServer.class, MessageModuleReadOnlyMemoryData.class, Messages.ReadOnlyMemoryData.ordinal(), Side.SERVER);
-    }
 
     public void init() {
+        registerMessage(new MessageHandlerBookCodeData(), MessageBookCodeData.class, Side.SERVER);
+        registerMessage(new MessageHandlerCasingData(), MessageCasingData.class, Side.CLIENT);
+        registerMessage(new MessageHandlerCasingData(), MessageCasingData.class, Side.SERVER);
+        registerMessage(new MessageHandlerCasingEnabledState(), MessageCasingEnabledState.class, Side.CLIENT);
+        registerMessage(new MessageHandlerCasingLockedState(), MessageCasingLockedState.class, Side.CLIENT);
+        registerMessage(new MessageHandlerCasingInventory(), MessageCasingInventory.class, Side.CLIENT);
+        registerMessage(new MessageHandlerHaltAndCatchFire(), MessageHaltAndCatchFire.class, Side.CLIENT);
+        registerMessage(new MessageHandlerReceivingPipeLockedState(), MessageReceivingPipeLockedState.class, Side.CLIENT);
+        registerMessage(new MessageHandlerModuleReadOnlyMemoryDataClient(), MessageModuleReadOnlyMemoryData.class, Side.CLIENT);
+        registerMessage(new MessageHandlerModuleReadOnlyMemoryDataServer(), MessageModuleReadOnlyMemoryData.class, Side.SERVER);
     }
 
     // --------------------------------------------------------------------- //
 
-    public static void sendModuleData(final Casing casing, final Face face, final CompoundTag data, final byte type) {
+    public void sendModuleData(final Casing casing, final Face face, final CompoundTag data, final byte type) {
         getQueueFor(casing).queueData(face, data, type);
     }
 
-    public static void sendModuleData(final Casing casing, final Face face, final ByteBuf data, final byte type) {
+    public void sendModuleData(final Casing casing, final Face face, final ByteBuf data, final byte type) {
         getQueueFor(casing).queueData(face, data, type);
     }
 
-    public static void sendPipeEffect(final World world, final double x, final double y, final double z) {
+    public void sendRedstoneEffect(final World world, final double x, final double y, final double z) {
         final BlockPos position = new BlockPos(x, y, z);
         if (!world.isBlockLoaded(position)) {
             final BlockState state = world.getBlockState(position);
@@ -121,6 +88,113 @@ public final class Network {
         }
 
         queueParticleEffect(world, (float) x, (float) y, (float) z);
+    }
+
+    public int sendToClientsInDimension(AbstractMessage message, World world) {
+        if (world.players.isEmpty()) {
+            return 0;
+        }
+
+        final Identifier id = getMessageIdentifier(message.getClass());
+        final PacketByteBuf buffer = serializeMessage(message);
+        final CustomPayloadClientPacket packet = new CustomPayloadClientPacket(id, buffer);
+
+        int sent = 0;
+        for (PlayerEntity player : world.players) {
+            if (player instanceof ServerPlayerEntity) {
+                ((ServerPlayerEntity) player).networkHandler.sendPacket(packet);
+                sent++;
+            }
+        }
+
+        return sent;
+    }
+
+    public int sendToClientsNearLocation(AbstractMessage message, World world, BlockPos pos, int range) {
+        if (world.players.isEmpty()) {
+            return 0;
+        }
+
+        final Identifier id = getMessageIdentifier(message.getClass());
+        final PacketByteBuf buffer = serializeMessage(message);
+        final CustomPayloadClientPacket packet = new CustomPayloadClientPacket(id, buffer);
+
+        return sendToClientsNearLocation(packet, world, pos, range);
+    }
+
+    public void sendToClient(AbstractMessage message, PlayerEntity player) {
+        if (!(player instanceof ServerPlayerEntity)) {
+            return;
+        }
+
+        final Identifier id = getMessageIdentifier(message.getClass());
+        final PacketByteBuf buffer = serializeMessage(message);
+        final CustomPayloadClientPacket packet = new CustomPayloadClientPacket(id, buffer);
+        ((ServerPlayerEntity) player).networkHandler.sendPacket(packet);
+    }
+
+    public void sendToServer(AbstractMessage message) {
+        final Identifier id = getMessageIdentifier(message.getClass());
+        final PacketByteBuf buffer = serializeMessage(message);
+        final CustomPayloadServerPacket packet = new CustomPayloadServerPacket(id, buffer);
+        MinecraftClient.getInstance().getNetworkHandler().sendPacket(packet);
+    }
+
+    private int sendToClientsNearLocation(Packet<?> packet, World world, BlockPos pos, int range) {
+        final int rangeSq = range * range;
+        int sent = 0;
+        for (PlayerEntity player : world.players) {
+            if (player instanceof ServerPlayerEntity) {
+                if (player.squaredDistanceTo(pos) < rangeSq) {
+                    final ServerPlayerEntity networkedPlayer = (ServerPlayerEntity) player;
+                    networkedPlayer.networkHandler.sendPacket(packet);
+                    if (!networkedPlayer.networkHandler.client.isLocal()) {
+                        sent++;
+                    }
+                }
+            }
+        }
+
+        return sent;
+    }
+
+    // --------------------------------------------------------------------- //
+    // Message registration and packaging
+
+    private <TMessage extends AbstractMessage> void registerMessage(AbstractMessageHandler<TMessage> handler, Class<TMessage> messageClass, Side handlerSide) {
+        CustomPayloadPacketRegistry registry;
+        switch (handlerSide) {
+            case CLIENT:
+                registry = CustomPayloadPacketRegistry.CLIENT;
+                break;
+            case SERVER:
+                registry = CustomPayloadPacketRegistry.SERVER;
+                break;
+            default:
+                throw new IndexOutOfBoundsException();
+        }
+
+        final Identifier id = getMessageIdentifier(messageClass);
+        registry.register(id, (context, buffer) -> {
+            try {
+                final TMessage message = messageClass.newInstance();
+                message.fromBytes(buffer);
+                handler.onMessage(message, context);
+            } catch (Exception e) {
+                TIS3D.getLog().error(e);
+            }
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    private <TMessage extends AbstractMessage> Identifier getMessageIdentifier(final Class<TMessage> messageClass) {
+        return messageIdCache.computeIfAbsent((Class<AbstractMessage>) messageClass, clazz -> new Identifier(API.MOD_ID, clazz.getSimpleName().toLowerCase(Locale.ROOT)));
+    }
+
+    private PacketByteBuf serializeMessage(final AbstractMessage message) {
+        final PacketByteBuf buffer = new PacketByteBuf(Unpooled.buffer());
+        message.toBytes(buffer);
+        return buffer;
     }
 
     // --------------------------------------------------------------------- //
@@ -187,10 +261,8 @@ public final class Network {
         }
 
         private void sendMessage() {
-            if (((ServerWorld) world).method_14199(
-                new DustParticleParameters(1f, 0.2f, 0, 1f),
-                x, y, z, 1, 0, 0, 0, 0
-            ) > 0) {
+            ParticleClientPacket packet = new ParticleClientPacket(DustParticleParameters.RED, false, x, y, z, 0, 0, 0, 0, 1);
+            if (Network.INSTANCE.sendToClientsNearLocation(packet, world, new BlockPos(x, y, z), RANGE_LOW) > 0) {
                 particlesSent++;
             }
         }
@@ -365,17 +437,14 @@ public final class Network {
             collectData(data);
             if (data.readableBytes() > 0) {
                 final MessageCasingData message = new MessageCasingData(casing, data);
-                final boolean[] didSend = new boolean[1];
+                final boolean didSend;
                 if (side == Side.CLIENT) {
-                    MinecraftClient.getInstance().getNetworkHandler().sendPacket(PacketRegistry.CLIENT.wrap(message));
-                    didSend[0] = true;
+                    Network.INSTANCE.sendToServer(message);
+                    didSend = true;
                 } else {
-                    PacketServerHelper.forEachWatching(casing.getCasingWorld(), casing.getPosition(), (player) -> {
-                        player.networkHandler.sendPacket(PacketRegistry.SERVER.wrap(message));
-                        didSend[0] = true;
-                    });
+                    didSend = Network.INSTANCE.sendToClientsNearLocation(message, casing.getCasingWorld(), casing.getPosition(), Network.RANGE_HIGH) > 0;
                 }
-                if (didSend[0]) {
+                if (didSend) {
                     incrementPacketsSent(side);
                 }
             }
@@ -526,24 +595,6 @@ public final class Network {
 
     // --------------------------------------------------------------------- //
 
-    /**
-     * Check if there are any players nearby the specified target point.
-     * <p>
-     * Used to determine whether a packet will actually be sent to any
-     * clients.
-     *
-     * @return <tt>true</tt> if there are nearby players; <tt>false</tt> otherwise.
-     */
-    private static boolean areAnyPlayersNear(final MinecraftServer server, final DimensionType dimension, final double x, final double y, final double z, final double range) {
-        double sqRange = range * range;
-
-        for (final ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-            if (player.dimension == dimension && player.networkHandler != null && player.squaredDistanceTo(x, y, z) < sqRange) {
-                return true;
-            }
-        }
-        return false;
+    private Network() {
     }
-
-    // --------------------------------------------------------------------- //
 }
