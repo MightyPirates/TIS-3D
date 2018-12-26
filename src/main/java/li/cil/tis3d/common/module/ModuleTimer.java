@@ -7,11 +7,11 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
-import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
+import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.client.render.font.FontRenderer;
-import li.cil.tis3d.client.render.font.FontRendererNormal;
+import li.cil.tis3d.client.render.font.NormalFontRenderer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -27,7 +27,7 @@ import net.minecraft.nbt.CompoundTag;
  * This module will receive data on all ports and push back a value while the
  * timer is zero.
  */
-public final class ModuleTimer extends AbstractModuleRotatable {
+public final class ModuleTimer extends AbstractModuleWithRotation {
     // --------------------------------------------------------------------- //
     // Persisted data
 
@@ -202,7 +202,7 @@ public final class ModuleTimer extends AbstractModuleRotatable {
         } else {
             time = String.format("%.2f", seconds);
         }
-        final FontRenderer fontRenderer = FontRendererNormal.INSTANCE;
+        final FontRenderer fontRenderer = NormalFontRenderer.INSTANCE;
         final int width = time.length() * fontRenderer.getCharWidth();
         final int height = fontRenderer.getCharHeight();
 

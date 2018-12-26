@@ -10,7 +10,7 @@ import li.cil.tis3d.common.module.execution.MachineState;
 import li.cil.tis3d.common.module.execution.compiler.Compiler;
 import li.cil.tis3d.common.module.execution.compiler.ParseException;
 import li.cil.tis3d.common.network.Network;
-import li.cil.tis3d.common.network.message.MessageBookCodeData;
+import li.cil.tis3d.common.network.message.CodeBookDataMessage;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -107,7 +107,7 @@ public final class CodeBookGui extends Gui {
         // Save any changes made and send them to the server.
         final CompoundTag nbt = new CompoundTag();
         data.writeToNBT(nbt);
-        Network.INSTANCE.sendToServer(new MessageBookCodeData(nbt, hand));
+        Network.INSTANCE.sendToServer(new CodeBookDataMessage(nbt, hand));
 
         client.keyboard.enableRepeatEvents(false);
     }

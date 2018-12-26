@@ -8,7 +8,7 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
-import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
+import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.util.ColorUtils;
 import li.cil.tis3d.util.EnumUtils;
@@ -20,7 +20,7 @@ import net.minecraft.nbt.CompoundTag;
 
 import java.util.Arrays;
 
-public final class ModuleDisplay extends AbstractModuleRotatable {
+public final class ModuleDisplay extends AbstractModuleWithRotation {
     // --------------------------------------------------------------------- //
     // Persisted data
 

@@ -1,27 +1,25 @@
 package li.cil.tis3d.common.network.message;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Hand;
-import net.minecraft.util.PacketByteBuf;
 
-public final class MessageBookCodeData extends AbstractMessage {
-    private CompoundTag nbt;
+public final class ReadOnlyMemoryModuleDataMessage extends AbstractMessage {
+    private byte[] data;
     private Hand hand;
 
-    public MessageBookCodeData(final CompoundTag nbt, final Hand hand) {
-        this.nbt = nbt;
+    public ReadOnlyMemoryModuleDataMessage(final byte[] data, final Hand hand) {
+        this.data = data;
         this.hand = hand;
     }
 
     @SuppressWarnings("unused") // For deserialization.
-    public MessageBookCodeData() {
+    public ReadOnlyMemoryModuleDataMessage() {
     }
 
     // --------------------------------------------------------------------- //
 
-    public CompoundTag getNbt() {
-        return nbt;
+    public byte[] getData() {
+        return data;
     }
 
     public Hand getHand() {
@@ -33,13 +31,13 @@ public final class MessageBookCodeData extends AbstractMessage {
 
     @Override
     public void fromBytes(final ByteBuf buf) {
-        final PacketByteBuf buffer = new PacketByteBuf(buf);
-        nbt = buffer.readCompoundTag();
+        data = new byte[buf.readInt()];
+        buf.readBytes(data);
     }
 
     @Override
     public void toBytes(final ByteBuf buf) {
-        final PacketByteBuf buffer = new PacketByteBuf(buf);
-        buffer.writeCompoundTag(nbt);
+        buf.writeInt(data.length);
+        buf.writeBytes(data);
     }
 }

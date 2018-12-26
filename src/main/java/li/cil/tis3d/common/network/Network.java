@@ -10,9 +10,9 @@ import li.cil.tis3d.client.network.handler.*;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.network.handler.AbstractMessageHandler;
-import li.cil.tis3d.common.network.handler.MessageHandlerBookCodeData;
-import li.cil.tis3d.common.network.handler.MessageHandlerCasingData;
-import li.cil.tis3d.common.network.handler.MessageHandlerModuleReadOnlyMemoryDataServer;
+import li.cil.tis3d.common.network.handler.CodeBookDataMessageHandler;
+import li.cil.tis3d.common.network.handler.CasingDataMessageHandler;
+import li.cil.tis3d.common.network.handler.ReadOnlyMemoryModuleDataServerMessageHandler;
 import li.cil.tis3d.common.network.message.*;
 import li.cil.tis3d.util.Side;
 import net.fabricmc.fabric.networking.CustomPayloadPacketRegistry;
@@ -55,16 +55,16 @@ public final class Network {
     // --------------------------------------------------------------------- //
 
     public void init() {
-        registerMessage(new MessageHandlerBookCodeData(), MessageBookCodeData.class, Side.SERVER);
-        registerMessage(new MessageHandlerCasingData(), MessageCasingData.class, Side.CLIENT);
-        registerMessage(new MessageHandlerCasingData(), MessageCasingData.class, Side.SERVER);
-        registerMessage(new MessageHandlerCasingEnabledState(), MessageCasingEnabledState.class, Side.CLIENT);
-        registerMessage(new MessageHandlerCasingLockedState(), MessageCasingLockedState.class, Side.CLIENT);
-        registerMessage(new MessageHandlerCasingInventory(), MessageCasingInventory.class, Side.CLIENT);
-        registerMessage(new MessageHandlerHaltAndCatchFire(), MessageHaltAndCatchFire.class, Side.CLIENT);
-        registerMessage(new MessageHandlerReceivingPipeLockedState(), MessageReceivingPipeLockedState.class, Side.CLIENT);
-        registerMessage(new MessageHandlerModuleReadOnlyMemoryDataClient(), MessageModuleReadOnlyMemoryData.class, Side.CLIENT);
-        registerMessage(new MessageHandlerModuleReadOnlyMemoryDataServer(), MessageModuleReadOnlyMemoryData.class, Side.SERVER);
+        registerMessage(new CodeBookDataMessageHandler(), CodeBookDataMessage.class, Side.SERVER);
+        registerMessage(new CasingDataMessageHandler(), CasingDataMessage.class, Side.CLIENT);
+        registerMessage(new CasingDataMessageHandler(), CasingDataMessage.class, Side.SERVER);
+        registerMessage(new CasingEnabledStateMessageHandler(), CasingEnabledStateMessage.class, Side.CLIENT);
+        registerMessage(new CasingLockedStateMessageHandler(), CasingLockedStateMessage.class, Side.CLIENT);
+        registerMessage(new CasingInventoryMessageHandler(), CasingInventoryMessage.class, Side.CLIENT);
+        registerMessage(new HaltAndCatchFireMessageHandler(), HaltAndCatchFireMessage.class, Side.CLIENT);
+        registerMessage(new PipeLockedStateMessageHandler(), PipeLockedStateMessage.class, Side.CLIENT);
+        registerMessage(new ReadOnlyMemoryModuleDataClientMessageHandler(), ReadOnlyMemoryModuleDataMessage.class, Side.CLIENT);
+        registerMessage(new ReadOnlyMemoryModuleDataServerMessageHandler(), ReadOnlyMemoryModuleDataMessage.class, Side.SERVER);
     }
 
     // --------------------------------------------------------------------- //
@@ -436,7 +436,7 @@ public final class Network {
             final ByteBuf data = Unpooled.buffer();
             collectData(data);
             if (data.readableBytes() > 0) {
-                final MessageCasingData message = new MessageCasingData(casing, data);
+                final CasingDataMessage message = new CasingDataMessage(casing, data);
                 final boolean didSend;
                 if (side == Side.CLIENT) {
                     Network.INSTANCE.sendToServer(message);

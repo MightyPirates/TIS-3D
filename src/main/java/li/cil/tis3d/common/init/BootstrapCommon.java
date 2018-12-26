@@ -12,7 +12,7 @@ import li.cil.tis3d.common.event.TickHandlerInfraredPacket;
 import li.cil.tis3d.common.integration.Integration;
 import li.cil.tis3d.common.module.*;
 import li.cil.tis3d.common.network.Network;
-import li.cil.tis3d.common.provider.SimpleModuleProvider;
+import li.cil.tis3d.common.module.provider.SimpleModuleProvider;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.events.TickEvent;
 import net.fabricmc.loader.FabricLoader;

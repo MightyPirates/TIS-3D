@@ -1,4 +1,4 @@
-package li.cil.tis3d.common.provider;
+package li.cil.tis3d.common.module.provider;
 
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;

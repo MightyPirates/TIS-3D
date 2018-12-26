@@ -2,6 +2,7 @@ package li.cil.tis3d.common.inventory;
 
 import li.cil.tis3d.common.Constants;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -12,13 +13,13 @@ import java.util.Arrays;
 /**
  * Base implementation of an array based inventory.
  */
-public class Inventory implements net.minecraft.inventory.Inventory {
+public class ArrayInventory implements Inventory {
     private static final String TAG_ITEMS = "inventory";
 
     private final TextComponent name;
     protected final ItemStack[] items;
 
-    public Inventory(final TextComponent name, final int size) {
+    public ArrayInventory(final TextComponent name, final int size) {
         this.name = name;
         Arrays.fill(items = new ItemStack[size], ItemStack.EMPTY);
     }

@@ -10,7 +10,7 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.traits.BundledRedstone;
 import li.cil.tis3d.api.module.traits.BundledRedstoneOutputChangedEvent;
-import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
+import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.util.ColorUtils;
@@ -23,7 +23,7 @@ import net.minecraft.world.World;
 
 import java.util.Arrays;
 
-public final class ModuleBundledRedstone extends AbstractModuleRotatable implements BundledRedstone {
+public final class ModuleBundledRedstone extends AbstractModuleWithRotation implements BundledRedstone {
     // --------------------------------------------------------------------- //
     // Persisted data
 

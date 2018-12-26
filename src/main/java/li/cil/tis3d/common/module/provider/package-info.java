@@ -1,4 +1,4 @@
 @ParametersAreNonnullByDefault
-package li.cil.tis3d.common.provider;
+package li.cil.tis3d.common.module.provider;
 
 import javax.annotation.ParametersAreNonnullByDefault;

@@ -1,7 +1,7 @@
 package li.cil.tis3d.client.manual.segment;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import li.cil.tis3d.client.render.font.FontRendererNormal;
+import li.cil.tis3d.client.render.font.NormalFontRenderer;
 import net.minecraft.client.font.FontRenderer;
 
 import java.util.Optional;
@@ -41,7 +41,7 @@ public final class CodeSegment extends BasicTextSegment {
             GlStateManager.pushMatrix();
             GlStateManager.translatef(currentX, currentY, 0);
             GlStateManager.scalef(FONT_SCALE, FONT_SCALE, FONT_SCALE);
-            FontRendererNormal.INSTANCE.drawString(part.toUpperCase());
+            NormalFontRenderer.INSTANCE.drawString(part.toUpperCase());
             GlStateManager.popMatrix();
             currentX = x + wrapIndent;
             currentY += lineHeight(renderer);
@@ -60,7 +60,7 @@ public final class CodeSegment extends BasicTextSegment {
 
     @Override
     protected int stringWidth(final String s, final FontRenderer renderer) {
-        return (int) (FONT_SCALE * s.length() * (FontRendererNormal.INSTANCE.getCharWidth() + 1));
+        return (int) (FONT_SCALE * s.length() * (NormalFontRenderer.INSTANCE.getCharWidth() + 1));
     }
 
     @Override

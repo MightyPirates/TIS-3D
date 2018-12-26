@@ -7,7 +7,7 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
-import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
+import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.util.Side;
@@ -20,7 +20,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public final class ModuleSequencer extends AbstractModuleRotatable {
+public final class ModuleSequencer extends AbstractModuleWithRotation {
     // --------------------------------------------------------------------- //
     // Persisted data
 

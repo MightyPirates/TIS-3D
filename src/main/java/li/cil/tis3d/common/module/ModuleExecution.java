@@ -8,7 +8,7 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.traits.BlockChangeAware;
-import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
+import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.common.Constants;
@@ -42,7 +42,7 @@ import java.util.*;
 /**
  * The programmable execution module.
  */
-public final class ModuleExecution extends AbstractModuleRotatable implements BlockChangeAware {
+public final class ModuleExecution extends AbstractModuleWithRotation implements BlockChangeAware {
     // --------------------------------------------------------------------- //
     // Persisted data
 

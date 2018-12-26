@@ -10,7 +10,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-public final class SerialInterfaceProviderFurnace implements SerialInterfaceProvider {
+public final class FurnaceSerialInterfaceProvider implements SerialInterfaceProvider {
     // --------------------------------------------------------------------- //
     // SerialInterfaceProvider
 

@@ -7,7 +7,7 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
-import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
+import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ReadOnlyMemoryModuleItem;
@@ -30,7 +30,7 @@ import java.util.Arrays;
  * <li>ACCESS: await either read to retrieve value or write to set value, all ports writing, all ports reading.</li>
  * </ul>
  */
-public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
+public class ModuleRandomAccessMemory extends AbstractModuleWithRotation {
     // --------------------------------------------------------------------- //
     // Persisted data
 

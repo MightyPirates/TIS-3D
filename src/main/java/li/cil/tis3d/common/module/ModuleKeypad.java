@@ -5,7 +5,7 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
-import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
+import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.init.Textures;
 import net.fabricmc.api.EnvType;
@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 
 import java.util.Optional;
 
-public final class ModuleKeypad extends AbstractModuleRotatable {
+public final class ModuleKeypad extends AbstractModuleWithRotation {
     // --------------------------------------------------------------------- //
     // Persisted data
 

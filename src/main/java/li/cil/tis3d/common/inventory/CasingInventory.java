@@ -10,7 +10,7 @@ import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.init.Blocks;
 import li.cil.tis3d.common.network.Network;
-import li.cil.tis3d.common.network.message.MessageCasingInventory;
+import li.cil.tis3d.common.network.message.CasingInventoryMessage;
 import net.minecraft.block.BlockState;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
@@ -23,10 +23,10 @@ import javax.annotation.Nullable;
 /**
  * Inventory implementation for casings, having six slots for modules, one per face.
  */
-public final class InventoryCasing extends Inventory implements SidedInventory {
+public final class CasingInventory extends ArrayInventory implements SidedInventory {
     private final CasingBlockEntity blockEntity;
 
-    public InventoryCasing(final CasingBlockEntity blockEntity) {
+    public CasingInventory(final CasingBlockEntity blockEntity) {
         super(new TranslatableTextComponent(Constants.NAME_INVENTORY_CASING), Face.VALUES.length);
         this.blockEntity = blockEntity;
     }
@@ -135,7 +135,7 @@ public final class InventoryCasing extends Inventory implements SidedInventory {
                 moduleData = null;
             }
 
-            final MessageCasingInventory message = new MessageCasingInventory(blockEntity, index, stack, moduleData);
+            final CasingInventoryMessage message = new CasingInventoryMessage(blockEntity, index, stack, moduleData);
             Network.INSTANCE.sendToClientsNearLocation(message, blockEntity.getWorld(), blockEntity.getPosition(), Network.RANGE_HIGH);
         }
 
@@ -154,7 +154,7 @@ public final class InventoryCasing extends Inventory implements SidedInventory {
                 module.onDisposed();
             }
 
-            final MessageCasingInventory message = new MessageCasingInventory(blockEntity, index, ItemStack.EMPTY, null);
+            final CasingInventoryMessage message = new CasingInventoryMessage(blockEntity, index, ItemStack.EMPTY, null);
             Network.INSTANCE.sendToClientsNearLocation(message, blockEntity.getWorld(), blockEntity.getPosition(), Network.RANGE_HIGH);
         }
     }

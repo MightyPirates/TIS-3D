@@ -6,7 +6,7 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
-import li.cil.tis3d.common.network.message.MessageCasingData;
+import li.cil.tis3d.common.network.message.CasingDataMessage;
 import net.fabricmc.fabric.networking.PacketContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -14,9 +14,9 @@ import net.minecraft.nbt.NbtIo;
 
 import java.io.IOException;
 
-public final class MessageHandlerCasingData extends AbstractMessageHandlerWithLocation<MessageCasingData> {
+public final class CasingDataMessageHandler extends AbstractMessageHandlerWithLocation<CasingDataMessage> {
     @Override
-    protected void onMessageSynchronized(final MessageCasingData message, final PacketContext context) {
+    protected void onMessageSynchronized(final CasingDataMessage message, final PacketContext context) {
         final BlockEntity blockEntity = getBlockEntity(message, context);
         if (!(blockEntity instanceof CasingBlockEntity)) {
             return;

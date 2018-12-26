@@ -4,7 +4,7 @@ import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.HaltAndCatchFireException;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.network.Network;
-import li.cil.tis3d.common.network.message.MessageHaltAndCatchFire;
+import li.cil.tis3d.common.network.message.HaltAndCatchFireMessage;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -184,7 +184,7 @@ public final class ControllerBlockEntity extends AbstractComputerBlockEntity imp
         if (!getWorld().isClient) {
             state = ControllerState.READY;
             casings.forEach(CasingBlockEntity::onDisabled);
-            final MessageHaltAndCatchFire message = new MessageHaltAndCatchFire(getWorld(), getPos());
+            final HaltAndCatchFireMessage message = new HaltAndCatchFireMessage(getWorld(), getPos());
             Network.INSTANCE.sendToClientsNearLocation(message, getWorld(), getPos(), Network.RANGE_MEDIUM);
         }
         hcfCooldown = COOLDOWN_HCF;

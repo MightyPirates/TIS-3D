@@ -4,7 +4,7 @@ import li.cil.tis3d.client.gui.GuiHelper;
 import li.cil.tis3d.common.block.CasingBlock;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.network.Network;
-import li.cil.tis3d.common.network.message.MessageModuleReadOnlyMemoryData;
+import li.cil.tis3d.common.network.message.ReadOnlyMemoryModuleDataMessage;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -54,7 +54,7 @@ public class ReadOnlyMemoryModuleItem extends ModuleItem {
             return;
         }
 
-        MessageModuleReadOnlyMemoryData message = new MessageModuleReadOnlyMemoryData(ReadOnlyMemoryModuleItem.loadFromStack(heldItem), hand);
+        ReadOnlyMemoryModuleDataMessage message = new ReadOnlyMemoryModuleDataMessage(ReadOnlyMemoryModuleItem.loadFromStack(heldItem), hand);
         Network.INSTANCE.sendToClient(message, player);
     }
 

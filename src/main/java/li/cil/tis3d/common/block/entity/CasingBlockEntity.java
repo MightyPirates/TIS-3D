@@ -10,14 +10,14 @@ import li.cil.tis3d.api.module.traits.BundledRedstone;
 import li.cil.tis3d.api.module.traits.Redstone;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.integration.redstone.RedstoneIntegration;
-import li.cil.tis3d.common.inventory.InventoryCasing;
+import li.cil.tis3d.common.inventory.CasingInventory;
 import li.cil.tis3d.common.inventory.SidedInventoryProxy;
 import li.cil.tis3d.common.machine.CasingImpl;
 import li.cil.tis3d.common.machine.CasingProxy;
 import li.cil.tis3d.common.network.Network;
-import li.cil.tis3d.common.network.message.MessageCasingEnabledState;
-import li.cil.tis3d.common.network.message.MessageCasingLockedState;
-import li.cil.tis3d.common.network.message.MessageReceivingPipeLockedState;
+import li.cil.tis3d.common.network.message.CasingEnabledStateMessage;
+import li.cil.tis3d.common.network.message.CasingLockedStateMessage;
+import li.cil.tis3d.common.network.message.PipeLockedStateMessage;
 import li.cil.tis3d.util.InventoryUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -53,7 +53,7 @@ public final class CasingBlockEntity extends AbstractComputerBlockEntity impleme
     // --------------------------------------------------------------------- //
     // Persisted data
 
-    private final InventoryCasing inventory = new InventoryCasing(this);
+    private final CasingInventory inventory = new CasingInventory(this);
     private final CasingImpl casing = new CasingImpl(this);
 
     /**
@@ -509,7 +509,7 @@ public final class CasingBlockEntity extends AbstractComputerBlockEntity impleme
 
     private void sendState() {
         assert getWorld() != null;
-        final MessageCasingEnabledState message = new MessageCasingEnabledState(this, isEnabled);
+        final CasingEnabledStateMessage message = new CasingEnabledStateMessage(this, isEnabled);
 
         Network.INSTANCE.sendToClientsInDimension(message, getWorld());
     }
@@ -523,14 +523,14 @@ public final class CasingBlockEntity extends AbstractComputerBlockEntity impleme
 
     private void sendCasingLockedState() {
         assert getWorld() != null;
-        final MessageCasingLockedState message = new MessageCasingLockedState(this, isLocked());
+        final CasingLockedStateMessage message = new CasingLockedStateMessage(this, isLocked());
         Network.INSTANCE.sendToClientsNearLocation(message, getWorld(), getPos(), Network.RANGE_HIGH);
         getWorld().playSound(null, getPos(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCK, 0.3f, isLocked() ? 0.5f : 0.6f);
     }
 
     private void sendReceivingPipeLockedState(final Face face, final Port port) {
         assert getWorld() != null;
-        final MessageReceivingPipeLockedState message = new MessageReceivingPipeLockedState(this, face, port, isReceivingPipeLocked(face, port));
+        final PipeLockedStateMessage message = new PipeLockedStateMessage(this, face, port, isReceivingPipeLocked(face, port));
         Network.INSTANCE.sendToClientsNearLocation(message, getWorld(), getPos(), Network.RANGE_HIGH);
         getWorld().playSound(null, getPos(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCK, 0.3f, isReceivingPipeLocked(face, port) ? 0.5f : 0.6f);
     }

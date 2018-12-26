@@ -22,7 +22,7 @@ import net.minecraft.util.math.Vec3d;
  * graphical purposes (e.g. the built-in redstone and stack modules do
  * this).
  */
-public abstract class AbstractModuleRotatable extends AbstractModule implements Rotatable {
+public abstract class AbstractModuleWithRotation extends AbstractModule implements Rotatable {
     // --------------------------------------------------------------------- //
     // Persisted data
 
@@ -36,7 +36,7 @@ public abstract class AbstractModuleRotatable extends AbstractModule implements 
 
     // --------------------------------------------------------------------- //
 
-    protected AbstractModuleRotatable(final Casing casing, final Face face) {
+    protected AbstractModuleWithRotation(final Casing casing, final Face face) {
         super(casing, face);
     }
 

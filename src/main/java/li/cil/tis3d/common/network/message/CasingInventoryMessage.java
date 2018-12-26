@@ -8,12 +8,12 @@ import net.minecraft.util.PacketByteBuf;
 
 import javax.annotation.Nullable;
 
-public final class MessageCasingInventory extends AbstractMessageWithLocation {
+public final class CasingInventoryMessage extends AbstractMessageWithLocation {
     private int slot;
     private ItemStack stack;
     private CompoundTag moduleData;
 
-    public MessageCasingInventory(final Casing casing, final int slot, final ItemStack stack, @Nullable final CompoundTag moduleData) {
+    public CasingInventoryMessage(final Casing casing, final int slot, final ItemStack stack, @Nullable final CompoundTag moduleData) {
         super(casing.getCasingWorld(), casing.getPosition());
         this.slot = slot;
         this.stack = stack;
@@ -21,7 +21,7 @@ public final class MessageCasingInventory extends AbstractMessageWithLocation {
     }
 
     @SuppressWarnings("unused") // For deserialization.
-    public MessageCasingInventory() {
+    public CasingInventoryMessage() {
     }
 
     // --------------------------------------------------------------------- //

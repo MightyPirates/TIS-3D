@@ -86,7 +86,7 @@ public abstract class AbstractModule implements Module {
      * <p>
      * Note that this will return the unadjusted X, Y and Z components. To transform this
      * coordinate to a UV coordinate mapped to the module's face, pass this into
-     * {@link #hitToUV}. Note that this method is overridden in {@link AbstractModuleRotatable}
+     * {@link #hitToUV}. Note that this method is overridden in {@link AbstractModuleWithRotation}
      * to also take into account the module's rotation.
      *
      * @param rendererDispatcher the render context.
@@ -115,7 +115,7 @@ public abstract class AbstractModule implements Module {
      * Project a hit position on the surface of a casing to a UV coordinate on
      * the face of this module.
      * <p>
-     * Note that this is also overridden in {@link AbstractModuleRotatable} to
+     * Note that this is also overridden in {@link AbstractModuleWithRotation} to
      * take into account the module's rotation.
      *
      * @param hitPos the hit position to project.

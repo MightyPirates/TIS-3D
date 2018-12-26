@@ -9,7 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-final class CallbacksMinecraft {
+final class MinecraftCallbacks {
     static int getInput(final Redstone module) {
         final Face face = module.getFace();
         final Direction facing = Face.toDirection(face);
@@ -30,6 +30,6 @@ final class CallbacksMinecraft {
 
     // --------------------------------------------------------------------- //
 
-    private CallbacksMinecraft() {
+    private MinecraftCallbacks() {
     }
 }

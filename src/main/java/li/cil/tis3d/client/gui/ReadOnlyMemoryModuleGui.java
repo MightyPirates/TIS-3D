@@ -6,7 +6,7 @@ import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.module.ModuleRandomAccessMemory;
 import li.cil.tis3d.common.network.Network;
-import li.cil.tis3d.common.network.message.MessageModuleReadOnlyMemoryData;
+import li.cil.tis3d.common.network.message.ReadOnlyMemoryModuleDataMessage;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Hand;
@@ -64,7 +64,7 @@ public final class ReadOnlyMemoryModuleGui extends Gui {
         // data to avoid erasing ROM when closing UI again too quickly.
         if (receivedData) {
             // Save any changes made and send them to the server.
-            Network.INSTANCE.sendToServer(new MessageModuleReadOnlyMemoryData(data, hand));
+            Network.INSTANCE.sendToServer(new ReadOnlyMemoryModuleDataMessage(data, hand));
         }
 
         client.keyboard.enableRepeatEvents(false);

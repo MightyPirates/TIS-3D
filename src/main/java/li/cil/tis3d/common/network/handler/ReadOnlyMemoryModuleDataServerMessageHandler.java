@@ -2,14 +2,14 @@ package li.cil.tis3d.common.network.handler;
 
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ReadOnlyMemoryModuleItem;
-import li.cil.tis3d.common.network.message.MessageModuleReadOnlyMemoryData;
+import li.cil.tis3d.common.network.message.ReadOnlyMemoryModuleDataMessage;
 import net.fabricmc.fabric.networking.PacketContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 
-public final class MessageHandlerModuleReadOnlyMemoryDataServer extends AbstractMessageHandler<MessageModuleReadOnlyMemoryData> {
+public final class ReadOnlyMemoryModuleDataServerMessageHandler extends AbstractMessageHandler<ReadOnlyMemoryModuleDataMessage> {
     @Override
-    protected void onMessageSynchronized(final MessageModuleReadOnlyMemoryData message, final PacketContext context) {
+    protected void onMessageSynchronized(final ReadOnlyMemoryModuleDataMessage message, final PacketContext context) {
         final PlayerEntity player = context.getPlayer();
         if (player != null) {
             final ItemStack stack = player.getStackInHand(message.getHand());

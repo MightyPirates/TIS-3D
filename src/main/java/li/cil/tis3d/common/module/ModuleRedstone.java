@@ -7,7 +7,7 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.traits.Redstone;
-import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
+import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.init.Textures;
 import net.fabricmc.api.EnvType;
@@ -18,7 +18,7 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.World;
 
-public final class ModuleRedstone extends AbstractModuleRotatable implements Redstone {
+public final class ModuleRedstone extends AbstractModuleWithRotation implements Redstone {
     // --------------------------------------------------------------------- //
     // Persisted data
 

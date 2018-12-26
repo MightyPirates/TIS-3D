@@ -7,13 +7,13 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
-import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
+import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.gui.GuiHelper;
 import li.cil.tis3d.client.gui.TerminalModuleGui;
 import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.client.render.font.FontRenderer;
-import li.cil.tis3d.client.render.font.FontRendererNormal;
+import li.cil.tis3d.client.render.font.NormalFontRenderer;
 import li.cil.tis3d.common.Constants;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -36,7 +36,7 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 import java.util.LinkedList;
 
-public final class ModuleTerminal extends AbstractModuleRotatable {
+public final class ModuleTerminal extends AbstractModuleWithRotation {
     // --------------------------------------------------------------------- //
     // Persisted data
 
@@ -305,7 +305,7 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
         GlStateManager.translatef(2f / 16f, 2f / 16f, 0);
         GlStateManager.scalef(1 / 512f, 1 / 512f, 1);
 
-        final FontRenderer fontRenderer = FontRendererNormal.INSTANCE;
+        final FontRenderer fontRenderer = NormalFontRenderer.INSTANCE;
 
         final int totalWidth = 12 * 32;
         final int textWidth = MAX_COLUMNS * fontRenderer.getCharWidth();
