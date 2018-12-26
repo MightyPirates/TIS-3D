@@ -28,20 +28,20 @@ import java.util.Optional;
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 @Environment(EnvType.CLIENT)
 public final class GuiManual extends Gui {
-    private static final int documentMaxWidth = 220;
-    private static final int documentMaxHeight = 176;
-    private static final int scrollPosX = 250;
-    private static final int scrollPosY = 48;
-    private static final int scrollWidth = 26;
-    private static final int scrollHeight = 180;
-    private static final int tabPosX = -52;
-    private static final int tabPosY = 40;
-    private static final int tabWidth = 64;
-    private static final int tabHeight = 32;
-    private static final int tabOverlap = 8;
-    private static final int maxTabsPerSide = 7;
-    private static final int windowWidth = 256;
-    private static final int windowHeight = 256;
+    private static final int DOCUMENT_MAX_WIDTH = 220;
+    private static final int DOCUMENT_MAX_HEIGHT = 176;
+    private static final int SCROLL_POS_X = 250;
+    private static final int SCROLL_POS_Y = 48;
+    private static final int SCROLL_WIDTH = 26;
+    private static final int SCROLL_HEIGHT = 180;
+    private static final int TAB_POS_X = -52;
+    private static final int TAB_POS_Y = 40;
+    private static final int TAB_WIDTH = 64;
+    private static final int TAB_HEIGHT = 32;
+    private static final int TAB_OVERLAP = 8;
+    private static final int MAX_TABS_PER_SIDE = 7;
+    private static final int WINDOW_WIDTH = 256;
+    private static final int WINDOW_HEIGHT = 256;
 
     private int guiLeft = 0;
     private int guiTop = 0;
@@ -67,7 +67,7 @@ public final class GuiManual extends Gui {
         super.onInitialized();
 
         final ScaledResolution screenSize = new ScaledResolution(client.window.getScaledWidth(), client.window.getScaledHeight());
-        final ScaledResolution guiSize = new ScaledResolution(windowWidth, windowHeight);
+        final ScaledResolution guiSize = new ScaledResolution(WINDOW_WIDTH, WINDOW_HEIGHT);
         final int midX = screenSize.scaledWidth / 2;
         final int midY = screenSize.scaledHeight / 2;
         guiLeft = midX - guiSize.scaledWidth / 2;
@@ -75,18 +75,18 @@ public final class GuiManual extends Gui {
         xSize = guiSize.scaledWidth;
         ySize = guiSize.scaledHeight;
 
-        for (int i = 0; i < ManualAPIImpl.getTabs().size() && i < maxTabsPerSide; i++) {
-            final int x = guiLeft + tabPosX;
-            final int y = guiTop + tabPosY + i * (tabHeight - tabOverlap);
-            this.addButton(new ImageButton(i, x, y, tabWidth, tabHeight - tabOverlap - 1, Textures.LOCATION_GUI_MANUAL_TAB) {
+        for (int i = 0; i < ManualAPIImpl.getTabs().size() && i < MAX_TABS_PER_SIDE; i++) {
+            final int x = guiLeft + TAB_POS_X;
+            final int y = guiTop + TAB_POS_Y + i * (TAB_HEIGHT - TAB_OVERLAP);
+            this.addButton(new ImageButton(i, x, y, TAB_WIDTH, TAB_HEIGHT - TAB_OVERLAP - 1, Textures.LOCATION_GUI_MANUAL_TAB) {
                 @Override
                 public void onPressed(double p_mouseClicked_1_, double p_mouseClicked_3_) {
                     ManualAPI.navigate(ManualAPIImpl.getTabs().get(id).path);
                 }
-            }.setImageHeight(tabHeight).setVerticalImageOffset(-tabOverlap / 2));
+            }.setImageHeight(TAB_HEIGHT).setVerticalImageOffset(-TAB_OVERLAP / 2));
         }
 
-        scrollButton = new ImageButton(-1, guiLeft + scrollPosX, guiTop + scrollPosY, 26, 13, Textures.LOCATION_GUI_MANUAL_SCROLL) {
+        scrollButton = new ImageButton(-1, guiLeft + SCROLL_POS_X, guiTop + SCROLL_POS_Y, 26, 13, Textures.LOCATION_GUI_MANUAL_SCROLL) {
             @Override
             public boolean mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_, int p_mouseClicked_5_) {
                 return false; // Handled in parent mouseClicked
@@ -104,26 +104,26 @@ public final class GuiManual extends Gui {
         super.draw(mouseX, mouseY, partialTicks);
 
         client.getTextureManager().bindTexture(Textures.LOCATION_GUI_MANUAL_BACKGROUND);
-        Drawable.drawTexturedRect(guiLeft, guiTop, 0, 0, xSize, ySize, windowWidth, windowHeight);
+        Drawable.drawTexturedRect(guiLeft, guiTop, 0, 0, xSize, ySize, WINDOW_WIDTH, WINDOW_HEIGHT);
 
         scrollButton.enabled = canScroll();
         scrollButton.hoverOverride = isDragging;
 
-        for (int i = 0; i < ManualAPIImpl.getTabs().size() && i < maxTabsPerSide; i++) {
+        for (int i = 0; i < ManualAPIImpl.getTabs().size() && i < MAX_TABS_PER_SIDE; i++) {
             final ManualAPIImpl.Tab tab = ManualAPIImpl.getTabs().get(i);
             final ImageButton button = (ImageButton) buttons.get(i);
             GlStateManager.pushMatrix();
-            GlStateManager.translatef(button.x + 30, button.y + 4 - tabOverlap / 2, (int) zOffset);
+            GlStateManager.translatef(button.x + 30, button.y + 4 - TAB_OVERLAP / 2, (int) zOffset);
             tab.renderer.render();
             GlStateManager.popMatrix();
         }
 
-        currentSegment = Document.render(document, guiLeft + 16, guiTop + 48, documentMaxWidth, documentMaxHeight, offset(), getFontRenderer(), mouseX, mouseY);
+        currentSegment = Document.render(document, guiLeft + 16, guiTop + 48, DOCUMENT_MAX_WIDTH, DOCUMENT_MAX_HEIGHT, offset(), getFontRenderer(), mouseX, mouseY);
 
         if (!isDragging) {
             currentSegment.ifPresent(s -> s.tooltip().ifPresent(t -> drawTooltip(Collections.singletonList(I18n.translate(t)), mouseX, mouseY)));
 
-            for (int i = 0; i < ManualAPIImpl.getTabs().size() && i < maxTabsPerSide; i++) {
+            for (int i = 0; i < ManualAPIImpl.getTabs().size() && i < MAX_TABS_PER_SIDE; i++) {
                 final ManualAPIImpl.Tab tab = ManualAPIImpl.getTabs().get(i);
                 final ImageButton button = (ImageButton) buttons.get(i);
                 if (mouseX > button.x && mouseX < button.x + button.getWidth() && mouseY > button.y && mouseY < button.y + button.getHeight()) {
@@ -135,7 +135,7 @@ public final class GuiManual extends Gui {
         }
 
         if (canScroll() && (isCoordinateOverScrollBar(mouseX - guiLeft, mouseY - guiTop) || isDragging)) {
-            drawTooltip(Collections.singletonList(100 * offset() / maxOffset() + "%"), guiLeft + scrollPosX + scrollWidth, scrollButton.y + scrollButton.getHeight() + 1);
+            drawTooltip(Collections.singletonList(100 * offset() / maxOffset() + "%"), guiLeft + SCROLL_POS_X + SCROLL_WIDTH, scrollButton.y + scrollButton.getHeight() + 1);
         }
     }
 
@@ -229,13 +229,13 @@ public final class GuiManual extends Gui {
     }
 
     private int maxOffset() {
-        return documentHeight - documentMaxHeight;
+        return documentHeight - DOCUMENT_MAX_HEIGHT;
     }
 
     private void refreshPage() {
         final Iterable<String> content = ManualAPI.contentFor(ManualAPIImpl.peekPath());
         document = Document.parse(content != null ? content : Collections.singletonList("Document not found: " + ManualAPIImpl.peekPath()));
-        documentHeight = Document.height(document, documentMaxWidth, getFontRenderer());
+        documentHeight = Document.height(document, DOCUMENT_MAX_WIDTH, getFontRenderer());
         scrollTo(offset());
     }
 
@@ -249,7 +249,7 @@ public final class GuiManual extends Gui {
     }
 
     private void scrollMouse(final double mouseY) {
-        scrollTo((int) Math.round((mouseY - guiTop - scrollPosY - 6.5) * maxOffset() / (scrollHeight - 13.0)));
+        scrollTo((int) Math.round((mouseY - guiTop - SCROLL_POS_Y - 6.5) * maxOffset() / (SCROLL_HEIGHT - 13.0)));
     }
 
     private void scroll(double amount) {
@@ -258,17 +258,17 @@ public final class GuiManual extends Gui {
 
     private void scrollTo(final int row) {
         ManualAPIImpl.setOffset(Math.max(0, Math.min(maxOffset(), row)));
-        final int yMin = guiTop + scrollPosY;
+        final int yMin = guiTop + SCROLL_POS_Y;
         if (maxOffset() > 0) {
-            scrollButton.y = yMin + (scrollHeight - 13) * offset() / maxOffset();
+            scrollButton.y = yMin + (SCROLL_HEIGHT - 13) * offset() / maxOffset();
         } else {
             scrollButton.y = yMin;
         }
     }
 
     private boolean isCoordinateOverScrollBar(final int x, final int y) {
-        return x > scrollPosX && x < scrollPosX + scrollWidth &&
-            y >= scrollPosY && y < scrollPosY + scrollHeight;
+        return x > SCROLL_POS_X && x < SCROLL_POS_X + SCROLL_WIDTH &&
+            y >= SCROLL_POS_Y && y < SCROLL_POS_Y + SCROLL_HEIGHT;
     }
 
     private static class ImageButton extends ButtonWidget {

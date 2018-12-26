@@ -1,7 +1,7 @@
 package li.cil.tis3d.common.network.handler;
 
 import li.cil.tis3d.common.init.Items;
-import li.cil.tis3d.common.item.ItemBookCode;
+import li.cil.tis3d.common.item.CodeBookItem;
 import li.cil.tis3d.common.network.message.MessageBookCodeData;
 import net.fabricmc.fabric.networking.PacketContext;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,8 +14,8 @@ public final class MessageHandlerBookCodeData extends AbstractMessageHandler<Mes
         if (player != null) {
             final ItemStack stack = player.getStackInHand(message.getHand());
             if (Items.isBookCode(stack)) {
-                final ItemBookCode.Data data = ItemBookCode.Data.loadFromNBT(message.getNbt());
-                ItemBookCode.Data.saveToStack(stack, data);
+                final CodeBookItem.Data data = CodeBookItem.Data.loadFromNBT(message.getNbt());
+                CodeBookItem.Data.saveToStack(stack, data);
             }
         }
     }

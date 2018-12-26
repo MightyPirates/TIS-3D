@@ -24,8 +24,8 @@ import java.util.List;
 /**
  * The manual!
  */
-public final class ItemBookManual extends BookItem {
-    public ItemBookManual(Item.Settings builder) {
+public final class ManualBookItem extends BookItem {
+    public ManualBookItem(Item.Settings builder) {
         super(builder);
     }
 

@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
-import li.cil.tis3d.common.item.ItemModuleReadOnlyMemory;
+import li.cil.tis3d.common.item.ReadOnlyMemoryModuleItem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemStack;
@@ -29,7 +29,7 @@ public final class ModuleReadOnlyMemory extends ModuleRandomAccessMemory {
     public void onInstalled(final ItemStack stack) {
         super.onInstalled(stack);
 
-        load(ItemModuleReadOnlyMemory.loadFromStack(stack));
+        load(ReadOnlyMemoryModuleItem.loadFromStack(stack));
     }
 
     @Override
@@ -38,7 +38,7 @@ public final class ModuleReadOnlyMemory extends ModuleRandomAccessMemory {
 
         // Write data back to the stack, our data may have changed in
         // the meantime (other ROM programmed into this one).
-        ItemModuleReadOnlyMemory.saveToStack(stack, memory);
+        ReadOnlyMemoryModuleItem.saveToStack(stack, memory);
     }
 
     // --------------------------------------------------------------------- //

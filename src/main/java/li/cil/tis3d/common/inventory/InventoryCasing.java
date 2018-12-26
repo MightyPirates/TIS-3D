@@ -51,7 +51,7 @@ public final class InventoryCasing extends Inventory implements SidedInventory {
     }
 
     // --------------------------------------------------------------------- //
-    // IInventory
+    // Inventory
 
     @Override
     public int getInvMaxStackAmount() {
@@ -71,7 +71,7 @@ public final class InventoryCasing extends Inventory implements SidedInventory {
     }
 
     // --------------------------------------------------------------------- //
-    // ISidedInventory
+    // SidedInventory
 
     @Override
     public int[] getInvAvailableSlots(final Direction side) {

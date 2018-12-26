@@ -1,6 +1,6 @@
 package li.cil.tis3d.common.event;
 
-import li.cil.tis3d.common.entity.EntityInfraredPacket;
+import li.cil.tis3d.common.entity.InfraredPacketEntity;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -19,18 +19,18 @@ public final class TickHandlerInfraredPacket {
 
     // --------------------------------------------------------------------- //
 
-    private final Set<EntityInfraredPacket> livePackets = new HashSet<>();
-    private final List<EntityInfraredPacket> pendingRemovals = new ArrayList<>();
-    private final List<EntityInfraredPacket> pendingAdds = new ArrayList<>();
+    private final Set<InfraredPacketEntity> livePackets = new HashSet<>();
+    private final List<InfraredPacketEntity> pendingRemovals = new ArrayList<>();
+    private final List<InfraredPacketEntity> pendingAdds = new ArrayList<>();
 
     // --------------------------------------------------------------------- //
 
-    public void watchPacket(final EntityInfraredPacket packet) {
+    public void watchPacket(final InfraredPacketEntity packet) {
         pendingRemovals.remove(packet);
         pendingAdds.add(packet);
     }
 
-    public void unwatchPacket(final EntityInfraredPacket packet) {
+    public void unwatchPacket(final InfraredPacketEntity packet) {
         pendingAdds.remove(packet);
         pendingRemovals.add(packet);
     }
@@ -44,6 +44,11 @@ public final class TickHandlerInfraredPacket {
         livePackets.removeAll(pendingRemovals);
         pendingRemovals.clear();
 
-        livePackets.forEach(EntityInfraredPacket::updateLifetime);
+        livePackets.forEach(InfraredPacketEntity::updateLifetime);
+    }
+
+    // --------------------------------------------------------------------- //
+
+    private TickHandlerInfraredPacket() {
     }
 }

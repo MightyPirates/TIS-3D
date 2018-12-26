@@ -4,6 +4,7 @@ import li.cil.tis3d.api.infrared.InfraredPacket;
 import li.cil.tis3d.api.infrared.InfraredReceiver;
 import li.cil.tis3d.common.event.TickHandlerInfraredPacket;
 import li.cil.tis3d.common.init.Entities;
+import li.cil.tis3d.common.module.ModuleInfrared;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.util.Raytracing;
 import net.fabricmc.api.EnvType;
@@ -26,9 +27,9 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * Represents a single value in transmission, sent by an {@link li.cil.tis3d.common.module.ModuleInfrared}.
+ * Represents a single value in transmission, sent by an {@link ModuleInfrared}.
  */
-public final class EntityInfraredPacket extends Entity implements InfraredPacket {
+public final class InfraredPacketEntity extends Entity implements InfraredPacket {
     // --------------------------------------------------------------------- //
     // Computed data
 
@@ -50,7 +51,7 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
     private static final String TAG_LIFETIME = "lifetime";
 
     // Data watcher ids.
-    private static final TrackedData<Integer> DATA_VALUE = DataTracker.registerData(EntityInfraredPacket.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Integer> DATA_VALUE = DataTracker.registerData(InfraredPacketEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
     // --------------------------------------------------------------------- //
     // Persisted data
@@ -65,8 +66,8 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
      */
     private short value;
 
-    public EntityInfraredPacket(final World world) {
-        super(Entities.infraredPacket, world);
+    public InfraredPacketEntity(final World world) {
+        super(Entities.INFRARED_PACKET, world);
         fireImmune = true;
         setSize(0.25f, 0.25f);
     }
@@ -76,7 +77,7 @@ public final class EntityInfraredPacket extends Entity implements InfraredPacket
     /**
      * Sets up the packet's starting position, velocity and value carried.
      * <p>
-     * Called from {@link li.cil.tis3d.common.module.ModuleInfrared} directly
+     * Called from {@link ModuleInfrared} directly
      * after instantiation of a new infrared packet entity.
      *
      * @param start     the position of the block that spawned the packet.

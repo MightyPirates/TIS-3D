@@ -10,7 +10,7 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.common.init.Items;
-import li.cil.tis3d.common.item.ItemModuleReadOnlyMemory;
+import li.cil.tis3d.common.item.ReadOnlyMemoryModuleItem;
 import li.cil.tis3d.util.EnumUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -130,9 +130,9 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
 
         if (!getCasing().getCasingWorld().isClient) {
             if (isReading) {
-                ItemModuleReadOnlyMemory.saveToStack(heldItem, memory);
+                ReadOnlyMemoryModuleItem.saveToStack(heldItem, memory);
             } else {
-                load(ItemModuleReadOnlyMemory.loadFromStack(heldItem));
+                load(ReadOnlyMemoryModuleItem.loadFromStack(heldItem));
                 sendFull();
             }
         }

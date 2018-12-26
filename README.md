@@ -14,7 +14,7 @@ There are two main ways of extending TIS-3D: by adding custom modules, and by ad
 When adding integration with another mod, I strongly ask that you first consider whether this can already be achieved via redstone. If it can, even if it's slightly more complicated, stop right there. If it can't, there are the aforementioned two options, module or protocol.
 
 The general rule of thumb should be this:
-- if you're adding integration for a general *concept*, usually support for some interface implemented by numerous blocks, such as Minecraft's `IInventory`, use a *module*. 
+- if you're adding integration for a general *concept*, usually support for some interface implemented by numerous blocks, such as Minecraft's `Inventory`, use a *module*. 
 - if you're adding integration for one specific *block*, such as Minecraft's command block, use a *protocol* so that the block can be communicated with using the serial port module.
 
 The rationale here being that in the former case the serial protocol is explicitly defined by the *module*, whereas in the latter case the serial protocol is explicitly defined by the *block*. Again, if at all possible, prefer avoiding either of the two and use redstone (and comparators) instead.

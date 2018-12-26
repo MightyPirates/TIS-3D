@@ -13,7 +13,7 @@ import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.init.Items;
-import li.cil.tis3d.common.item.ItemBookCode;
+import li.cil.tis3d.common.item.CodeBookItem;
 import li.cil.tis3d.common.module.execution.MachineImpl;
 import li.cil.tis3d.common.module.execution.MachineState;
 import li.cil.tis3d.common.module.execution.compiler.Compiler;
@@ -168,10 +168,10 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
 
         // Code book? Store current program on it if sneaking.
         if (Items.isBookCode(heldItem) && player.isSneaking()) {
-            final ItemBookCode.Data data = ItemBookCode.Data.loadFromStack(heldItem);
+            final CodeBookItem.Data data = CodeBookItem.Data.loadFromStack(heldItem);
             if (getState().code != null && getState().code.length > 0) {
                 data.addOrSelectProgram(Arrays.asList(getState().code));
-                ItemBookCode.Data.saveToStack(heldItem, data);
+                CodeBookItem.Data.saveToStack(heldItem, data);
             }
 
             return true;
@@ -464,7 +464,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
 
         @Override
         public Iterable<String> codeFor(final ItemStack stack) {
-            final ItemBookCode.Data data = ItemBookCode.Data.loadFromStack(stack);
+            final CodeBookItem.Data data = CodeBookItem.Data.loadFromStack(stack);
             if (data.getPageCount() < 1) {
                 return null;
             }

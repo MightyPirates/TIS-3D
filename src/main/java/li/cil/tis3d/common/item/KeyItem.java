@@ -20,8 +20,8 @@ import java.util.List;
 /**
  * Base item for all keys.
  */
-public final class ItemKey extends Item {
-    public ItemKey(Item.Settings builder) {
+public final class KeyItem extends Item {
+    public KeyItem(Item.Settings builder) {
         super(builder.stackSize(1));
     }
 

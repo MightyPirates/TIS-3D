@@ -28,8 +28,8 @@ import java.util.*;
 /**
  * The code book, utility book for coding ASM programs for execution modules.
  */
-public final class ItemBookCode extends BookItem {
-    public ItemBookCode(Item.Settings builder) {
+public final class CodeBookItem extends BookItem {
+    public CodeBookItem(Item.Settings builder) {
         super(builder.stackSize(1));
     }
 

@@ -18,11 +18,11 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
-public class ItemModuleReadOnlyMemory extends ItemModule {
+public class ReadOnlyMemoryModuleItem extends ModuleItem {
     private static final String TAG_DATA = "data";
     private static final byte[] EMPTY_DATA = new byte[0];
 
-    public ItemModuleReadOnlyMemory(Item.Settings builder) {
+    public ReadOnlyMemoryModuleItem(Item.Settings builder) {
         super(builder.stackSize(1));
     }
 
@@ -54,7 +54,7 @@ public class ItemModuleReadOnlyMemory extends ItemModule {
             return;
         }
 
-        MessageModuleReadOnlyMemoryData message = new MessageModuleReadOnlyMemoryData(ItemModuleReadOnlyMemory.loadFromStack(heldItem), hand);
+        MessageModuleReadOnlyMemoryData message = new MessageModuleReadOnlyMemoryData(ReadOnlyMemoryModuleItem.loadFromStack(heldItem), hand);
         Network.INSTANCE.sendToClient(message, player);
     }
 

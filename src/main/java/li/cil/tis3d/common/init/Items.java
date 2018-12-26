@@ -19,10 +19,10 @@ import java.util.Objects;
  * Manages setup, registration and lookup of items.
  */
 public final class Items {
-    public static final Item BOOK_CODE = new ItemBookCode(new Item.Settings().itemGroup(ItemGroup.REDSTONE));
-    public static final Item BOOK_MANUAL = new ItemBookManual(new Item.Settings().itemGroup(ItemGroup.REDSTONE));
-    public static final Item KEY = new ItemKey(new Item.Settings().itemGroup(ItemGroup.REDSTONE));
-    public static final Item KEY_CREATIVE = new ItemKey(new Item.Settings().itemGroup(ItemGroup.REDSTONE));
+    public static final Item BOOK_CODE = new CodeBookItem(new Item.Settings().itemGroup(ItemGroup.REDSTONE));
+    public static final Item BOOK_MANUAL = new ManualBookItem(new Item.Settings().itemGroup(ItemGroup.REDSTONE));
+    public static final Item KEY = new KeyItem(new Item.Settings().itemGroup(ItemGroup.REDSTONE));
+    public static final Item KEY_CREATIVE = new KeyItem(new Item.Settings().itemGroup(ItemGroup.REDSTONE));
     public static final Item PRISM = new Item(new Item.Settings().itemGroup(ItemGroup.REDSTONE));
     public static final BlockItem CASING = new BlockItem(Blocks.CASING, new Item.Settings().itemGroup(ItemGroup.REDSTONE));
     public static final BlockItem CONTROLLER = new BlockItem(Blocks.CONTROLLER, new Item.Settings().itemGroup(ItemGroup.REDSTONE));
@@ -94,9 +94,9 @@ public final class Items {
         }
 
         if (Objects.equals(identifier, Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY)) {
-            return registerItem(new ItemModuleReadOnlyMemory(new Item.Settings().itemGroup(ItemGroup.REDSTONE)), identifier);
+            return registerItem(new ReadOnlyMemoryModuleItem(new Item.Settings().itemGroup(ItemGroup.REDSTONE)), identifier);
         } else {
-            return registerItem(new ItemModule(new Item.Settings().itemGroup(ItemGroup.REDSTONE)), identifier);
+            return registerItem(new ModuleItem(new Item.Settings().itemGroup(ItemGroup.REDSTONE)), identifier);
         }
     }
 

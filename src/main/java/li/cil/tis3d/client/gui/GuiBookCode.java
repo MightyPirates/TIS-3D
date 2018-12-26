@@ -5,7 +5,7 @@ import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.init.Items;
-import li.cil.tis3d.common.item.ItemBookCode;
+import li.cil.tis3d.common.item.CodeBookItem;
 import li.cil.tis3d.common.module.execution.MachineState;
 import li.cil.tis3d.common.module.execution.compiler.Compiler;
 import li.cil.tis3d.common.module.execution.compiler.ParseException;
@@ -60,7 +60,7 @@ public final class GuiBookCode extends Gui {
 
     private final PlayerEntity player;
     private final Hand hand;
-    private final ItemBookCode.Data data;
+    private final CodeBookItem.Data data;
     private final List<StringBuilder> lines = new ArrayList<>();
 
     private int guiX = 0;
@@ -74,7 +74,7 @@ public final class GuiBookCode extends Gui {
     GuiBookCode(final PlayerEntity player, final Hand hand) {
         this.player = player;
         this.hand = hand;
-        this.data = ItemBookCode.Data.loadFromStack(player.getStackInHand(hand));
+        this.data = CodeBookItem.Data.loadFromStack(player.getStackInHand(hand));
 
         rebuildLines();
     }
