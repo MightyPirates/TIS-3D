@@ -6,7 +6,7 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.traits.Redstone;
 import li.cil.tis3d.api.util.TransformUtil;
-import li.cil.tis3d.common.block.entity.TileEntityCasing;
+import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ItemBookManual;
 import li.cil.tis3d.util.InventoryUtils;
@@ -35,7 +35,7 @@ import net.minecraft.world.World;
 /**
  * Block for the module casings.
  */
-public final class BlockCasing extends Block implements BlockEntityProvider {
+public final class CasingBlock extends Block implements BlockEntityProvider {
     private static final BooleanProperty MODULE_X_NEG = BooleanProperty.create("xneg");
     private static final BooleanProperty MODULE_X_POS = BooleanProperty.create("xpos");
     private static final BooleanProperty MODULE_Y_NEG = BooleanProperty.create("yneg");
@@ -45,7 +45,7 @@ public final class BlockCasing extends Block implements BlockEntityProvider {
 
     // --------------------------------------------------------------------- //
 
-    public BlockCasing(Block.Settings builder) {
+    public CasingBlock(Block.Settings builder) {
         super(builder);
         setDefaultState(getDefaultState().with(MODULE_X_NEG, false).with(MODULE_X_POS, false).with(MODULE_Y_NEG, false).with(MODULE_Y_POS, false).with(MODULE_Z_NEG, false).with(MODULE_Z_POS, false));
     }
@@ -66,11 +66,11 @@ public final class BlockCasing extends Block implements BlockEntityProvider {
     }
 
     public void updateBlockState(final BlockState state, final World world, final BlockPos pos) {
-        final BlockEntity tileEntity = WorldUtils.getTileEntityThreadsafe(world, pos);
-        if (!(tileEntity instanceof TileEntityCasing)) {
+        final BlockEntity blockEntity = WorldUtils.getBlockEntityThreadsafe(world, pos);
+        if (!(blockEntity instanceof CasingBlockEntity)) {
             return;
         }
-        final TileEntityCasing casing = (TileEntityCasing) tileEntity;
+        final CasingBlockEntity casing = (CasingBlockEntity) blockEntity;
         world.setBlockState(pos, state.
             with(MODULE_X_NEG, casing.getModule(Face.X_NEG) != null).
             with(MODULE_X_POS, casing.getModule(Face.X_POS) != null).
@@ -85,9 +85,9 @@ public final class BlockCasing extends Block implements BlockEntityProvider {
 
     public ItemStack getPickStack(BlockView view, BlockPos pos, Direction side, BlockState state) {
         // Allow picking modules installed in the casing.
-        final BlockEntity tileEntity = view.getBlockEntity(pos);
-        if (tileEntity instanceof TileEntityCasing) {
-            final TileEntityCasing casing = (TileEntityCasing) tileEntity;
+        final BlockEntity blockEntity = view.getBlockEntity(pos);
+        if (blockEntity instanceof CasingBlockEntity) {
+            final CasingBlockEntity casing = (CasingBlockEntity) blockEntity;
             final ItemStack stack = casing.getInvStack(side.ordinal());
             if (!stack.isEmpty()) {
                 return stack.copy();
@@ -101,7 +101,7 @@ public final class BlockCasing extends Block implements BlockEntityProvider {
 
     @Override
     public BlockEntity createBlockEntity(BlockView view) {
-        return new TileEntityCasing();
+        return new CasingBlockEntity();
     }
 
     public static boolean activate(ItemUsageContext context) {
@@ -110,22 +110,22 @@ public final class BlockCasing extends Block implements BlockEntityProvider {
         }
 
         final BlockState blockState = context.getWorld().getBlockState(context.getPos());
-        if (!(blockState.getBlock() instanceof BlockCasing)) {
+        if (!(blockState.getBlock() instanceof CasingBlock)) {
             return false;
         }
 
         // TODO Ugly, but context does not pass on hand...
         final Hand hand = context.getPlayer() != null && context.getPlayer().getStackInHand(Hand.OFF) == context.getItemStack() ? Hand.OFF : Hand.MAIN;
-        return ((BlockCasing) blockState.getBlock()).activate(blockState, context.getWorld(), context.getPos(), context.getPlayer(), hand, context.getFacing(), context.getHitX(), context.getHitY(), context.getHitZ());
+        return ((CasingBlock) blockState.getBlock()).activate(blockState, context.getWorld(), context.getPos(), context.getPlayer(), hand, context.getFacing(), context.getHitX(), context.getHitY(), context.getHitZ());
     }
 
     @SuppressWarnings("deprecation")
     @Override
     public boolean activate(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final Direction side, final float hitX, final float hitY, final float hitZ) {
         if (world.isBlockLoaded(pos)) {
-            final BlockEntity tileEntity = world.getBlockEntity(pos);
-            if (tileEntity instanceof TileEntityCasing) {
-                final TileEntityCasing casing = (TileEntityCasing) tileEntity;
+            final BlockEntity blockEntity = world.getBlockEntity(pos);
+            if (blockEntity instanceof CasingBlockEntity) {
+                final CasingBlockEntity casing = (CasingBlockEntity) blockEntity;
                 final ItemStack heldItem = player.getStackInHand(hand);
 
                 // Locking or unlocking the casing or a port?
@@ -212,8 +212,8 @@ public final class BlockCasing extends Block implements BlockEntityProvider {
     public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean flag) {
         if (state.getBlock() != newState.getBlock()) {
             final BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof TileEntityCasing) {
-                ItemScatterer.spawn(world, pos, (TileEntityCasing) blockEntity);
+            if (blockEntity instanceof CasingBlockEntity) {
+                ItemScatterer.spawn(world, pos, (CasingBlockEntity) blockEntity);
                 world.updateHorizontalAdjacent(pos, this);
             }
             world.removeBlockEntity(pos);
@@ -240,8 +240,8 @@ public final class BlockCasing extends Block implements BlockEntityProvider {
     @Override
     public int getWeakRedstonePower(final BlockState blockState, final BlockView world, final BlockPos pos, final Direction side) {
         final BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (blockEntity instanceof TileEntityCasing) {
-            final TileEntityCasing casing = (TileEntityCasing) blockEntity;
+        if (blockEntity instanceof CasingBlockEntity) {
+            final CasingBlockEntity casing = (CasingBlockEntity) blockEntity;
             final Module module = casing.getModule(Face.fromDirection(side.getOpposite()));
             if (module instanceof Redstone) {
                 return ((Redstone) module).getRedstoneOutput();
@@ -262,9 +262,9 @@ public final class BlockCasing extends Block implements BlockEntityProvider {
     @SuppressWarnings("deprecation")
     @Override
     public void neighborUpdate(final BlockState state, final World world, final BlockPos pos, final Block neighborBlock, final BlockPos neighborPos) {
-        final BlockEntity tileEntity = world.getBlockEntity(pos);
-        if (tileEntity instanceof TileEntityCasing) {
-            final TileEntityCasing casing = (TileEntityCasing) tileEntity;
+        final BlockEntity blockEntity = world.getBlockEntity(pos);
+        if (blockEntity instanceof CasingBlockEntity) {
+            final CasingBlockEntity casing = (CasingBlockEntity) blockEntity;
             casing.checkNeighbors();
             casing.notifyModulesOfBlockChange(neighborPos);
             casing.markRedstoneDirty();

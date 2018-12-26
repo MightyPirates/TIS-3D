@@ -1,4 +1,4 @@
-package li.cil.tis3d.client.renderer.font;
+package li.cil.tis3d.client.render.font;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;

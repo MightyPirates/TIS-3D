@@ -1,7 +1,7 @@
 package li.cil.tis3d.common.item;
 
 import li.cil.tis3d.client.gui.GuiHandler;
-import li.cil.tis3d.common.block.BlockCasing;
+import li.cil.tis3d.common.block.CasingBlock;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageModuleReadOnlyMemoryData;
@@ -41,7 +41,7 @@ public class ItemModuleReadOnlyMemory extends ItemModule {
 
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
-        return BlockCasing.activate(context) ? ActionResult.SUCCESS : super.useOnBlock(context);
+        return CasingBlock.activate(context) ? ActionResult.SUCCESS : super.useOnBlock(context);
     }
 
     private static void sendModuleMemory(final PlayerEntity player, final Hand hand) {

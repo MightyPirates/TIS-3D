@@ -29,8 +29,8 @@ import java.util.*;
  * Controllers have no real state. They are active when powered by a redstone
  * signal, and can be reset by right-clicking them.
  */
-public final class TileEntityController extends TileEntityComputer implements Tickable {
-    public static BlockEntityType<TileEntityController> TYPE;
+public final class ControllerBlockEntity extends AbstractComputerBlockEntity implements Tickable {
+    public static BlockEntityType<ControllerBlockEntity> TYPE;
 
     // --------------------------------------------------------------------- //
     // Computed data
@@ -104,7 +104,7 @@ public final class TileEntityController extends TileEntityComputer implements Ti
     /**
      * The list of casings managed by this controller.
      */
-    private final List<TileEntityCasing> casings = new ArrayList<>(Settings.maxCasingsPerController);
+    private final List<CasingBlockEntity> casings = new ArrayList<>(Settings.maxCasingsPerController);
 
     /**
      * The current state of the controller.
@@ -139,18 +139,8 @@ public final class TileEntityController extends TileEntityComputer implements Ti
 
     // --------------------------------------------------------------------- //
 
-    public TileEntityController() {
+    public ControllerBlockEntity() {
         super(TYPE);
-    }
-
-    @Override
-    public void onChunkUnload() {
-        super.onChunkUnload();
-
-        // Just unset from our casings, do *not* disable them to keep their state.
-        for (final TileEntityCasing casing : casings) {
-            casing.setController(null);
-        }
     }
 
     // --------------------------------------------------------------------- //
@@ -193,7 +183,7 @@ public final class TileEntityController extends TileEntityComputer implements Ti
         assert getWorld() != null;
         if (!getWorld().isClient) {
             state = ControllerState.READY;
-            casings.forEach(TileEntityCasing::onDisabled);
+            casings.forEach(CasingBlockEntity::onDisabled);
             final MessageHaltAndCatchFire message = new MessageHaltAndCatchFire(getWorld(), getPos());
             Network.INSTANCE.sendToClientsNearLocation(message, getWorld(), getPos(), Network.RANGE_MEDIUM);
         }
@@ -201,7 +191,7 @@ public final class TileEntityController extends TileEntityComputer implements Ti
     }
 
     // --------------------------------------------------------------------- //
-    // TileEntity
+    // BlockEntity
 
     @Override
     public void invalidate() {
@@ -218,15 +208,25 @@ public final class TileEntityController extends TileEntityComputer implements Ti
         // Also, this is guaranteed to be correct, because we were either the sole
         // controller, thus there is no controller anymore, or there were multiple
         // controllers, in which case they were disabled to start with.
-        casings.forEach(TileEntityCasing::onDisabled);
-        for (final TileEntityCasing casing : casings) {
+        casings.forEach(CasingBlockEntity::onDisabled);
+        for (final CasingBlockEntity casing : casings) {
             casing.setController(null);
         }
         casings.clear();
     }
 
     // --------------------------------------------------------------------- //
-    // TileEntityComputer
+    // ComputerBlockEntity
+
+    @Override
+    public void onChunkUnload() {
+        super.onChunkUnload();
+
+        // Just unset from our casings, do *not* disable them to keep their state.
+        for (final CasingBlockEntity casing : casings) {
+            casing.setController(null);
+        }
+    }
 
     @Override
     protected void readFromNBTForServer(final CompoundTag nbt) {
@@ -323,7 +323,7 @@ public final class TileEntityController extends TileEntityComputer implements Ti
             } else {
                 // Yes, switch to running state and enable modules.
                 state = ControllerState.RUNNING;
-                casings.forEach(TileEntityCasing::onEnabled);
+                casings.forEach(CasingBlockEntity::onEnabled);
             }
         }
 
@@ -335,10 +335,10 @@ public final class TileEntityController extends TileEntityComputer implements Ti
             if (!world.isReceivingRedstonePower(getPos())) {
                 // Nope, fall back to ready state, disable modules.
                 state = ControllerState.READY;
-                casings.forEach(TileEntityCasing::onDisabled);
+                casings.forEach(CasingBlockEntity::onDisabled);
             } else if (power > 1 || forceStep) {
                 // Operating, step all casings redstone input info once.
-                casings.forEach(TileEntityCasing::stepRedstone);
+                casings.forEach(CasingBlockEntity::stepRedstone);
 
                 try {
                     // 0 = off, we never have this or we'd be in the READY state.
@@ -381,7 +381,7 @@ public final class TileEntityController extends TileEntityComputer implements Ti
      * hit. In this case we abort the search and wait, to avoid potentially
      * partially loaded multi-blocks.
      * <p>
-     * Note that this is also used in {@link TileEntityCasing} for the reverse
+     * Note that this is also used in {@link CasingBlockEntity} for the reverse
      * search when trying to notify a controller.
      * <p>
      * <em>Important</em>: we have to pass along a valid world object here
@@ -392,28 +392,28 @@ public final class TileEntityController extends TileEntityComputer implements Ti
      * created tile entities are added to a separate list, and will be added
      * to their chunk and thus get their world set later on).
      *
-     * @param world      the world we're scanning for tile entities in.
-     * @param tileEntity the tile entity to get the neighbors for.
-     * @param processed  the list of processed tile entities.
-     * @param queue      the list of pending tile entities.
+     * @param world       the world we're scanning for tile entities in.
+     * @param blockEntity the tile entity to get the neighbors for.
+     * @param processed   the list of processed tile entities.
+     * @param queue       the list of pending tile entities.
      * @return <tt>true</tt> if all neighbors could be checked, <tt>false</tt> otherwise.
      */
-    static boolean addNeighbors(final World world, final BlockEntity tileEntity, final Set<BlockEntity> processed, final Queue<BlockEntity> queue) {
+    static boolean addNeighbors(final World world, final BlockEntity blockEntity, final Set<BlockEntity> processed, final Queue<BlockEntity> queue) {
         for (final Direction facing : Direction.values()) {
-            final BlockPos neighborPos = tileEntity.getPos().offset(facing);
+            final BlockPos neighborPos = blockEntity.getPos().offset(facing);
             if (!world.isBlockLoaded(neighborPos)) {
                 return false;
             }
 
-            final BlockEntity neighborTileEntity = world.getBlockEntity(neighborPos);
-            if (neighborTileEntity == null) {
+            final BlockEntity neighborBlockEntity = world.getBlockEntity(neighborPos);
+            if (neighborBlockEntity == null) {
                 continue;
             }
-            if (!processed.add(neighborTileEntity)) {
+            if (!processed.add(neighborBlockEntity)) {
                 continue;
             }
-            if (neighborTileEntity instanceof TileEntityController || neighborTileEntity instanceof TileEntityCasing) {
-                queue.add(neighborTileEntity);
+            if (neighborBlockEntity instanceof ControllerBlockEntity || neighborBlockEntity instanceof CasingBlockEntity) {
+                queue.add(neighborBlockEntity);
             }
         }
         return true;
@@ -431,21 +431,21 @@ public final class TileEntityController extends TileEntityComputer implements Ti
         // List of pending tile entities that still need to be scanned.
         final Queue<BlockEntity> queue = new ArrayDeque<>();
         // List of new found casings.
-        final List<TileEntityCasing> newCasings = new ArrayList<>(Settings.maxCasingsPerController);
+        final List<CasingBlockEntity> newCasings = new ArrayList<>(Settings.maxCasingsPerController);
 
         // Start at our location, keep going until there's nothing left to do.
         processed.add(this);
         queue.add(this);
         while (!queue.isEmpty()) {
-            final BlockEntity tileEntity = queue.remove();
+            final BlockEntity blockEntity = queue.remove();
 
             // Check what we have. We only add controllers and casings to this list,
             // so we can skip the type check in the else branch.
-            if (tileEntity instanceof TileEntityController) {
-                if (tileEntity == this) {
+            if (blockEntity instanceof ControllerBlockEntity) {
+                if (blockEntity == this) {
                     // Special case: first iteration, add the neighbors.
                     assert getWorld() != null;
-                    if (!addNeighbors(getWorld(), tileEntity, processed, queue)) {
+                    if (!addNeighbors(getWorld(), blockEntity, processed, queue)) {
                         clear(ControllerState.INCOMPLETE);
                         return;
                     }
@@ -454,7 +454,7 @@ public final class TileEntityController extends TileEntityComputer implements Ti
                     clear(ControllerState.MULTIPLE_CONTROLLERS);
                     return;
                 }
-            } else /* if (tileEntity instanceof TileEntityCasing) */ {
+            } else /* if (blockEntity instanceof CasingBlockEntity) */ {
                 // We only allow a certain number of casings per multi-block.
                 if (newCasings.size() + 1 > Settings.maxCasingsPerController) {
                     clear(ControllerState.TOO_COMPLEX);
@@ -462,7 +462,7 @@ public final class TileEntityController extends TileEntityComputer implements Ti
                 }
 
                 // Register as the controller with the casing and add neighbors.
-                final TileEntityCasing casing = (TileEntityCasing) tileEntity;
+                final CasingBlockEntity casing = (CasingBlockEntity) blockEntity;
                 newCasings.add(casing);
                 assert getWorld() != null;
                 addNeighbors(getWorld(), casing, processed, queue);
@@ -483,7 +483,7 @@ public final class TileEntityController extends TileEntityComputer implements Ti
         // but better safe than sorry).
         casings.removeAll(newCasings);
         casings.forEach(c -> c.setController(null));
-        casings.forEach(TileEntityCasing::scheduleScan);
+        casings.forEach(CasingBlockEntity::scheduleScan);
 
         // Replace old list of casings with the new found ones, now that we're
         // sure we don't have to disable our old ones.
@@ -492,15 +492,15 @@ public final class TileEntityController extends TileEntityComputer implements Ti
         casings.forEach(c -> c.setController(this));
 
         // Ensure our parts know their neighbors.
-        casings.forEach(TileEntityCasing::checkNeighbors);
+        casings.forEach(CasingBlockEntity::checkNeighbors);
         checkNeighbors();
-        casings.forEach(TileEntityComputer::rebuildOverrides);
+        casings.forEach(AbstractComputerBlockEntity::rebuildOverrides);
         rebuildOverrides();
 
         // Sort casings for deterministic order of execution (important when modules
         // write / read from multiple ports but only want to make the data available
         // to the first [e.g. execution module's ANY target]).
-        casings.sort(Comparator.comparing(TileEntityCasing::getPosition));
+        casings.sort(Comparator.comparing(CasingBlockEntity::getPosition));
 
         // All done. Make sure this comes after the checkNeighbors or we get CMEs!
         state = ControllerState.READY;
@@ -524,8 +524,8 @@ public final class TileEntityController extends TileEntityComputer implements Ti
      * Advance all computer parts by one step.
      */
     private void step() {
-        casings.forEach(TileEntityCasing::stepModules);
-        casings.forEach(TileEntityCasing::stepPipes);
+        casings.forEach(CasingBlockEntity::stepModules);
+        casings.forEach(CasingBlockEntity::stepPipes);
         stepPipes();
     }
 
@@ -543,7 +543,7 @@ public final class TileEntityController extends TileEntityComputer implements Ti
         // we want (because it could be the 'two controllers' error, in which
         // case we don't want to reference one of the controllers since that
         // could lead to confusion.
-        for (final TileEntityCasing casing : casings) {
+        for (final CasingBlockEntity casing : casings) {
             casing.setController(null);
         }
 
@@ -551,7 +551,7 @@ public final class TileEntityController extends TileEntityComputer implements Ti
         // incomplete state or rescanning, leave the state as is to avoid
         // unnecessarily resetting the computer.
         if (toState != ControllerState.INCOMPLETE) {
-            casings.forEach(TileEntityCasing::onDisabled);
+            casings.forEach(CasingBlockEntity::onDisabled);
         }
         casings.clear();
 

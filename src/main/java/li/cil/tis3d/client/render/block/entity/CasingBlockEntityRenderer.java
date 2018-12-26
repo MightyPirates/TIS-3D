@@ -1,4 +1,4 @@
-package li.cil.tis3d.client.renderer.tileentity;
+package li.cil.tis3d.client.render.block.entity;
 
 import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -9,7 +9,7 @@ import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.api.util.TransformUtil;
 import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.common.TIS3D;
-import li.cil.tis3d.common.block.entity.TileEntityCasing;
+import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.init.Items;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GuiLighting;
@@ -33,11 +33,11 @@ import java.util.Set;
  * also so as not to spam the model registry with potentially a gazillion
  * block states for static individual texturing).
  */
-public final class TileEntitySpecialRendererCasing extends BlockEntityRenderer<TileEntityCasing> {
+public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingBlockEntity> {
     private final static Set<Class<?>> BLACKLIST = new HashSet<>();
 
     @Override
-    public void render(final TileEntityCasing casing, final double x, final double y, final double z, final float partialTicks, final int destroyStage) {
+    public void render(final CasingBlockEntity casing, final double x, final double y, final double z, final float partialTicks, final int destroyStage) {
         final double dx = x + 0.5;
         final double dy = y + 0.5;
         final double dz = z + 0.5;
@@ -116,7 +116,7 @@ public final class TileEntitySpecialRendererCasing extends BlockEntityRenderer<T
         RenderUtil.ignoreLighting();
     }
 
-    private boolean drawConfigOverlay(final TileEntityCasing casing, final Face face) {
+    private boolean drawConfigOverlay(final CasingBlockEntity casing, final Face face) {
         // Only bother rendering the overlay if the player is nearby.
         if (!isObserverKindaClose(casing)) {
             return false;
@@ -177,7 +177,7 @@ public final class TileEntitySpecialRendererCasing extends BlockEntityRenderer<T
         return true;
     }
 
-    private void drawModuleOverlay(final TileEntityCasing casing, final Face face, final float partialTicks) {
+    private void drawModuleOverlay(final CasingBlockEntity casing, final Face face, final float partialTicks) {
         final Sprite closedSprite = RenderUtil.getSprite(Textures.LOCATION_OVERLAY_CASING_PORT_CLOSED_SMALL);
 
         GlStateManager.pushMatrix();
@@ -214,7 +214,7 @@ public final class TileEntitySpecialRendererCasing extends BlockEntityRenderer<T
         }
     }
 
-    private boolean isObserverKindaClose(final TileEntityCasing casing) {
+    private boolean isObserverKindaClose(final CasingBlockEntity casing) {
         return renderManager.cameraEntity.squaredDistanceToCenter(casing.getPos()) < 16 * 16;
     }
 

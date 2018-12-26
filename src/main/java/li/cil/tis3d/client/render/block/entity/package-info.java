@@ -1,4 +1,4 @@
 @ParametersAreNonnullByDefault
-package li.cil.tis3d.client.renderer.font;
+package li.cil.tis3d.client.render.block.entity;
 
 import javax.annotation.ParametersAreNonnullByDefault;

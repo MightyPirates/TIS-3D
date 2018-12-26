@@ -47,8 +47,8 @@ import java.util.*;
  * Casings do not tick. The modules installed in them are driven by a
  * controller (transitively) connected to their casing.
  */
-public final class TileEntityCasing extends TileEntityComputer implements SidedInventoryProxy, CasingProxy {
-    public static BlockEntityType<TileEntityCasing> TYPE;
+public final class CasingBlockEntity extends AbstractComputerBlockEntity implements SidedInventoryProxy, CasingProxy {
+    public static BlockEntityType<CasingBlockEntity> TYPE;
 
     // --------------------------------------------------------------------- //
     // Persisted data
@@ -70,21 +70,14 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
     private static final String TAG_INVENTORY = "inventory";
     private static final String TAG_LOCKED = "closed"; // backwards compat .-. muh ocd
 
-    private TileEntityController controller;
+    private ControllerBlockEntity controller;
     private boolean isEnabled;
     private boolean redstoneDirty = true;
 
     // --------------------------------------------------------------------- //
 
-    public TileEntityCasing() {
+    public CasingBlockEntity() {
         super(TYPE);
-    }
-
-    @Override
-    public void onChunkUnload() {
-        super.onChunkUnload();
-
-        dispose();
     }
 
     // --------------------------------------------------------------------- //
@@ -156,11 +149,11 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
     // Networking
 
     @Nullable
-    public TileEntityController getController() {
+    public ControllerBlockEntity getController() {
         return controller;
     }
 
-    public void setController(@Nullable final TileEntityController controller) {
+    public void setController(@Nullable final ControllerBlockEntity controller) {
         this.controller = controller;
     }
 
@@ -175,7 +168,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
             // If we don't have a controller there either isn't one, or
             // the controller is in an error state. In the latter case we
             // have ot actively look for a controller and notify it.
-            final TileEntityController controller = findController();
+            final ControllerBlockEntity controller = findController();
             if (controller != null) {
                 controller.scheduleScan();
             }
@@ -258,7 +251,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
     // PipeHost
 
     @Override
-    protected void setNeighbor(final Face face, @Nullable final TileEntityComputer neighbor) {
+    protected void setNeighbor(final Face face, @Nullable final AbstractComputerBlockEntity neighbor) {
         super.setNeighbor(face, neighbor);
 
         // Ensure there are no modules installed between two casings.
@@ -267,7 +260,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
             InventoryUtils.drop(getWorld(), getPos(), this, face.ordinal(), getInvMaxStackAmount(), Face.toDirection(face));
         }
 
-        if (neighbor instanceof TileEntityController) {
+        if (neighbor instanceof ControllerBlockEntity) {
             // If we have a controller and it's not our controller, tell our
             // controller to do a re-scan (because now we have more than one
             // controller, which is invalid). The other one will scan anyway.
@@ -327,7 +320,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
     }
 
     // --------------------------------------------------------------------- //
-    // TileEntity
+    // BlockEntity
 
     @Override
     public void invalidate() {
@@ -346,7 +339,14 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
     }
 
     // --------------------------------------------------------------------- //
-    // TileEntityComputer
+    // ComputerBlockEntity
+
+    @Override
+    public void onChunkUnload() {
+        super.onChunkUnload();
+
+        dispose();
+    }
 
     @Override
     public Pipe getReceivingPipe(final Face face, final Port port) {
@@ -460,7 +460,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
     // --------------------------------------------------------------------- //
 
     @Nullable
-    private TileEntityController findController() {
+    private ControllerBlockEntity findController() {
         // List of processed tile entities to avoid loops.
         final Set<BlockEntity> processed = new HashSet<>();
         // List of pending tile entities that still need to be scanned.
@@ -473,16 +473,16 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
         processed.add(this);
         queue.add(this);
         while (!queue.isEmpty()) {
-            final BlockEntity tileEntity = queue.remove();
-            if (tileEntity.isInvalid()) {
+            final BlockEntity blockEntity = queue.remove();
+            if (blockEntity.isInvalid()) {
                 continue;
             }
 
             // Check what we have. We only add controllers and casings to this list,
             // so we can skip the type check in the else branch.
-            if (tileEntity instanceof TileEntityController) {
-                return (TileEntityController) tileEntity;
-            } else /* if (tileEntity instanceof TileEntityCasing) */ {
+            if (blockEntity instanceof ControllerBlockEntity) {
+                return (ControllerBlockEntity) blockEntity;
+            } else /* if (blockEntity instanceof CasingBlockEntity) */ {
                 // We only allow a certain number of casings per multi-block, so
                 // we can early exit if there are too many (because even if we
                 // notified the controller, it'd enter an error state again anyway).
@@ -493,7 +493,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
 
                 // Keep looking...
                 assert getWorld() != null;
-                if (!TileEntityController.addNeighbors(getWorld(), tileEntity, processed, queue)) {
+                if (!ControllerBlockEntity.addNeighbors(getWorld(), blockEntity, processed, queue)) {
                     // Hit end of loaded area, so scheduling would just result in
                     // error again anyway. Do *not* disable casings, keep last
                     // known valid state when all parts were loaded.

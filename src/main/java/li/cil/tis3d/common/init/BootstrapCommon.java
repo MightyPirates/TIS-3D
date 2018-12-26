@@ -46,7 +46,7 @@ public final class BootstrapCommon implements ModInitializer {
 
         // Register blocks.
         Blocks.registerBlocks();
-        Blocks.registerTileEntityTypes();
+        Blocks.registerBlockEntityTypes();
 
         // Register items.
         Items.registerItems();

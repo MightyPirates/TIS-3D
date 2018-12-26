@@ -1,6 +1,6 @@
 package li.cil.tis3d.common.mixin;
 
-import li.cil.tis3d.common.block.entity.TileEntityComputer;
+import li.cil.tis3d.common.block.entity.AbstractComputerBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
@@ -22,8 +22,8 @@ public abstract class ChunkUnloadMixin {
     private void onBlockEntityChunkUnload(CallbackInfo ci) {
         if (!unloadedBlockEntities.isEmpty()) {
             for (BlockEntity blockEntity : unloadedBlockEntities) {
-                if (blockEntity instanceof TileEntityComputer) {
-                    ((TileEntityComputer) blockEntity).onChunkUnload();
+                if (blockEntity instanceof AbstractComputerBlockEntity) {
+                    ((AbstractComputerBlockEntity) blockEntity).onChunkUnload();
                 }
             }
         }

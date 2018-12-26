@@ -1,6 +1,6 @@
 package li.cil.tis3d.client.mixin;
 
-import li.cil.tis3d.common.block.BlockCasing;
+import li.cil.tis3d.common.block.CasingBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
@@ -20,8 +20,8 @@ public abstract class PickModuleMixin {
 
     @Redirect(method = "doItemPick()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;getPickStack(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Lnet/minecraft/item/ItemStack;"))
     private ItemStack pickModule(final Block block, final BlockView world, final BlockPos pos, final BlockState state) {
-        if (block instanceof BlockCasing) {
-            return ((BlockCasing) block).getPickStack(world, pos, hitResult.side, state);
+        if (block instanceof CasingBlock) {
+            return ((CasingBlock) block).getPickStack(world, pos, hitResult.side, state);
         } else {
             return block.getPickStack(world, pos, state);
         }

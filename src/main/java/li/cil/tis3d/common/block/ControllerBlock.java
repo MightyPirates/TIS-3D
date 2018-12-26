@@ -1,6 +1,6 @@
 package li.cil.tis3d.common.block;
 
-import li.cil.tis3d.common.block.entity.TileEntityController;
+import li.cil.tis3d.common.block.entity.ControllerBlockEntity;
 import li.cil.tis3d.common.init.Items;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
@@ -18,8 +18,8 @@ import net.minecraft.world.World;
 /**
  * Block for the controller driving the casings.
  */
-public final class BlockController extends Block implements BlockEntityProvider {
-    public BlockController(Block.Settings builder) {
+public final class ControllerBlock extends Block implements BlockEntityProvider {
+    public ControllerBlock(Block.Settings builder) {
         super(builder);
     }
 
@@ -28,7 +28,7 @@ public final class BlockController extends Block implements BlockEntityProvider 
 
     @Override
     public BlockEntity createBlockEntity(BlockView view) {
-        return new TileEntityController();
+        return new ControllerBlockEntity();
     }
 
     @SuppressWarnings("deprecation")
@@ -42,7 +42,7 @@ public final class BlockController extends Block implements BlockEntityProvider 
                     if (!player.abilities.creativeMode) {
                         heldItem.split(1);
                     }
-                    final ItemStack bookManual = new ItemStack(Items.bookManual);
+                    final ItemStack bookManual = new ItemStack(Items.BOOK_MANUAL);
                     if (player.inventory.insertStack(bookManual)) {
                         player.containerPlayer.sendContentUpdates();
                     }
@@ -54,9 +54,9 @@ public final class BlockController extends Block implements BlockEntityProvider 
             }
         }
 
-        final BlockEntity tileEntity = world.getBlockEntity(pos);
-        if (tileEntity instanceof TileEntityController) {
-            final TileEntityController controller = (TileEntityController) tileEntity;
+        final BlockEntity blockEntity = world.getBlockEntity(pos);
+        if (blockEntity instanceof ControllerBlockEntity) {
+            final ControllerBlockEntity controller = (ControllerBlockEntity) blockEntity;
 
             if (!world.isClient) {
                 controller.forceStep();
@@ -88,10 +88,10 @@ public final class BlockController extends Block implements BlockEntityProvider 
     @SuppressWarnings("deprecation")
     @Override
     public int getComparatorOutput(final BlockState state, final World world, final BlockPos pos) {
-        final BlockEntity tileEntity = world.getBlockEntity(pos);
-        if (tileEntity instanceof TileEntityController) {
-            final TileEntityController controller = (TileEntityController) tileEntity;
-            return controller.getState() == TileEntityController.ControllerState.READY ? 15 : 0;
+        final BlockEntity blockEntity = world.getBlockEntity(pos);
+        if (blockEntity instanceof ControllerBlockEntity) {
+            final ControllerBlockEntity controller = (ControllerBlockEntity) blockEntity;
+            return controller.getState() == ControllerBlockEntity.ControllerState.READY ? 15 : 0;
         }
         return 0;
     }
@@ -102,9 +102,9 @@ public final class BlockController extends Block implements BlockEntityProvider 
     @SuppressWarnings("deprecation")
     @Override
     public void neighborUpdate(final BlockState state, final World world, final BlockPos pos, final Block neighborBlock, final BlockPos neighborPos) {
-        final BlockEntity tileEntity = world.getBlockEntity(pos);
-        if (tileEntity instanceof TileEntityController) {
-            final TileEntityController controller = (TileEntityController) tileEntity;
+        final BlockEntity blockEntity = world.getBlockEntity(pos);
+        if (blockEntity instanceof ControllerBlockEntity) {
+            final ControllerBlockEntity controller = (ControllerBlockEntity) blockEntity;
             controller.checkNeighbors();
         }
         super.neighborUpdate(state, world, pos, neighborBlock, neighborPos);

@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 
 public abstract class AbstractMessageHandlerWithLocation<T extends AbstractMessageWithLocation> extends AbstractMessageHandlerWithDimension<T> {
     @Nullable
-    protected BlockEntity getTileEntity(final T message, final PacketContext context) {
+    protected BlockEntity getBlockEntity(final T message, final PacketContext context) {
         final World world = getWorld(message, context);
         if (world == null) {
             return null;

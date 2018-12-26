@@ -7,7 +7,7 @@ import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.ModuleProvider;
 import li.cil.tis3d.api.module.traits.Rotatable;
 import li.cil.tis3d.common.Constants;
-import li.cil.tis3d.common.block.entity.TileEntityCasing;
+import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.init.Blocks;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.MessageCasingInventory;
@@ -24,11 +24,11 @@ import javax.annotation.Nullable;
  * Inventory implementation for casings, having six slots for modules, one per face.
  */
 public final class InventoryCasing extends Inventory implements SidedInventory {
-    private final TileEntityCasing tileEntity;
+    private final CasingBlockEntity blockEntity;
 
-    public InventoryCasing(final TileEntityCasing tileEntity) {
+    public InventoryCasing(final CasingBlockEntity blockEntity) {
         super(new TranslatableTextComponent(Constants.NAME_INVENTORY_CASING), Face.VALUES.length);
-        this.tileEntity = tileEntity;
+        this.blockEntity = blockEntity;
     }
 
     // Copy-paste of parent setInventorySlotContents, but allows passing along module facing.
@@ -60,13 +60,13 @@ public final class InventoryCasing extends Inventory implements SidedInventory {
 
     @Override
     public void markDirty() {
-        assert tileEntity.getWorld() != null;
-        final BlockState state = tileEntity.getWorld().getBlockState(tileEntity.getPos());
-        Blocks.casing.updateBlockState(state, tileEntity.getWorld(), tileEntity.getPos());
-        tileEntity.markDirty();
-        if (tileEntity.hasWorld() && tileEntity.getWorld().isClient) {
+        assert blockEntity.getWorld() != null;
+        final BlockState state = blockEntity.getWorld().getBlockState(blockEntity.getPos());
+        Blocks.CASING.updateBlockState(state, blockEntity.getWorld(), blockEntity.getPos());
+        blockEntity.markDirty();
+        if (blockEntity.hasWorld() && blockEntity.getWorld().isClient) {
             // Re-render on client, as module presence changes the block model.
-            tileEntity.getWorld().scheduleBlockRender(tileEntity.getPos());
+            blockEntity.getWorld().scheduleBlockRender(blockEntity.getPos());
         }
     }
 
@@ -82,7 +82,7 @@ public final class InventoryCasing extends Inventory implements SidedInventory {
     public boolean canInsertInvStack(final int index, final ItemStack stack, @Nullable final Direction side) {
         return side != null && side.ordinal() == index &&
             getInvStack(index).isEmpty() &&
-            tileEntity.getModule(Face.fromDirection(side)) == null && // Handles virtual modules.
+            blockEntity.getModule(Face.fromDirection(side)) == null && // Handles virtual modules.
             canInstall(stack, Face.fromDirection(side));
     }
 
@@ -92,7 +92,7 @@ public final class InventoryCasing extends Inventory implements SidedInventory {
     }
 
     private boolean canInstall(final ItemStack stack, final Face face) {
-        return ModuleAPI.getProviderFor(stack, tileEntity, face) != null;
+        return ModuleAPI.getProviderFor(stack, blockEntity, face) != null;
     }
 
     // --------------------------------------------------------------------- //
@@ -110,19 +110,19 @@ public final class InventoryCasing extends Inventory implements SidedInventory {
         }
 
         final Face face = Face.VALUES[index];
-        final ModuleProvider provider = ModuleAPI.getProviderFor(stack, tileEntity, face);
+        final ModuleProvider provider = ModuleAPI.getProviderFor(stack, blockEntity, face);
         if (provider == null) {
             return;
         }
 
-        final Module module = provider.createModule(stack, tileEntity, face);
+        final Module module = provider.createModule(stack, blockEntity, face);
 
         if (module instanceof Rotatable) {
             ((Rotatable) module).setFacing(facing);
         }
 
-        assert tileEntity.getWorld() != null;
-        if (!tileEntity.getWorld().isClient) {
+        assert blockEntity.getWorld() != null;
+        if (!blockEntity.getWorld().isClient) {
             // Grab module data from newly created module, if any, don't rely on stack.
             // Rationale: module may initialize data from stack while contents of stack
             // are not synchronized to client, or do some fancy server-side only setup
@@ -135,27 +135,27 @@ public final class InventoryCasing extends Inventory implements SidedInventory {
                 moduleData = null;
             }
 
-            final MessageCasingInventory message = new MessageCasingInventory(tileEntity, index, stack, moduleData);
-            Network.INSTANCE.sendToClientsNearLocation(message, tileEntity.getWorld(), tileEntity.getPosition(), Network.RANGE_HIGH);
+            final MessageCasingInventory message = new MessageCasingInventory(blockEntity, index, stack, moduleData);
+            Network.INSTANCE.sendToClientsNearLocation(message, blockEntity.getWorld(), blockEntity.getPosition(), Network.RANGE_HIGH);
         }
 
-        tileEntity.setModule(Face.VALUES[index], module);
+        blockEntity.setModule(Face.VALUES[index], module);
     }
 
     @Override
     protected void onItemRemoved(final int index) {
         final Face face = Face.VALUES[index];
-        final Module module = tileEntity.getModule(face);
-        tileEntity.setModule(face, null);
-        assert tileEntity.getWorld() != null;
-        if (!tileEntity.getWorld().isClient) {
+        final Module module = blockEntity.getModule(face);
+        blockEntity.setModule(face, null);
+        assert blockEntity.getWorld() != null;
+        if (!blockEntity.getWorld().isClient) {
             if (module != null) {
                 module.onUninstalled(getInvStack(index));
                 module.onDisposed();
             }
 
-            final MessageCasingInventory message = new MessageCasingInventory(tileEntity, index, ItemStack.EMPTY, null);
-            Network.INSTANCE.sendToClientsNearLocation(message, tileEntity.getWorld(), tileEntity.getPosition(), Network.RANGE_HIGH);
+            final MessageCasingInventory message = new MessageCasingInventory(blockEntity, index, ItemStack.EMPTY, null);
+            Network.INSTANCE.sendToClientsNearLocation(message, blockEntity.getWorld(), blockEntity.getPosition(), Network.RANGE_HIGH);
         }
     }
 }

@@ -1,6 +1,6 @@
 package li.cil.tis3d.client.mixin;
 
-import li.cil.tis3d.common.block.entity.TileEntityCasing;
+import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.machine.CasingImpl;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
@@ -23,10 +23,10 @@ public abstract class WorldUnloadMinecraftClientMixin {
             return;
         }
 
-        for (final BlockEntity tileEntity : world.blockEntities) {
-            if (tileEntity instanceof TileEntityCasing) {
-                final TileEntityCasing tileEntityCasing = (TileEntityCasing) tileEntity;
-                final CasingImpl casing = (CasingImpl) tileEntityCasing.getCasing();
+        for (final BlockEntity blockEntity : world.blockEntities) {
+            if (blockEntity instanceof CasingBlockEntity) {
+                final CasingBlockEntity casingBlockEntity = (CasingBlockEntity) blockEntity;
+                final CasingImpl casing = (CasingImpl) casingBlockEntity.getCasing();
                 casing.onDisposed();
             }
         }

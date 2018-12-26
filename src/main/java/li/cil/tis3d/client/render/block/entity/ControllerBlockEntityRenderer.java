@@ -1,14 +1,14 @@
-package li.cil.tis3d.client.renderer.tileentity;
+package li.cil.tis3d.client.render.block.entity;
 
-import li.cil.tis3d.common.block.entity.TileEntityController;
+import li.cil.tis3d.common.block.entity.ControllerBlockEntity;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.util.HitResult;
 
-public final class TileEntitySpecialRendererController extends BlockEntityRenderer<TileEntityController> {
+public final class ControllerBlockEntityRenderer extends BlockEntityRenderer<ControllerBlockEntity> {
     @Override
-    public void render(final TileEntityController controller, final double x, final double y, final double z, final float partialTicks, final int destroyStage) {
-        final TileEntityController.ControllerState state = controller.getState();
+    public void render(final ControllerBlockEntity controller, final double x, final double y, final double z, final float partialTicks, final int destroyStage) {
+        final ControllerBlockEntity.ControllerState state = controller.getState();
         if (!state.isError) {
             return;
         }

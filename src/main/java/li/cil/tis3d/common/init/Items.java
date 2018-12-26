@@ -19,13 +19,13 @@ import java.util.Objects;
  * Manages setup, registration and lookup of items.
  */
 public final class Items {
-    public static final Item bookCode = new ItemBookCode(new Item.Settings().itemGroup(ItemGroup.REDSTONE));
-    public static final Item bookManual = new ItemBookManual(new Item.Settings().itemGroup(ItemGroup.REDSTONE));
-    public static final Item key = new ItemKey(new Item.Settings().itemGroup(ItemGroup.REDSTONE));
-    public static final Item keyCreative = new ItemKey(new Item.Settings().itemGroup(ItemGroup.REDSTONE));
-    public static final Item prism = new Item(new Item.Settings().itemGroup(ItemGroup.REDSTONE));
-    public static final BlockItem casing = new BlockItem(Blocks.casing, new Item.Settings().itemGroup(ItemGroup.REDSTONE));
-    public static final BlockItem controller = new BlockItem(Blocks.controller, new Item.Settings().itemGroup(ItemGroup.REDSTONE));
+    public static final Item BOOK_CODE = new ItemBookCode(new Item.Settings().itemGroup(ItemGroup.REDSTONE));
+    public static final Item BOOK_MANUAL = new ItemBookManual(new Item.Settings().itemGroup(ItemGroup.REDSTONE));
+    public static final Item KEY = new ItemKey(new Item.Settings().itemGroup(ItemGroup.REDSTONE));
+    public static final Item KEY_CREATIVE = new ItemKey(new Item.Settings().itemGroup(ItemGroup.REDSTONE));
+    public static final Item PRISM = new Item(new Item.Settings().itemGroup(ItemGroup.REDSTONE));
+    public static final BlockItem CASING = new BlockItem(Blocks.CASING, new Item.Settings().itemGroup(ItemGroup.REDSTONE));
+    public static final BlockItem CONTROLLER = new BlockItem(Blocks.CONTROLLER, new Item.Settings().itemGroup(ItemGroup.REDSTONE));
 
     private static final Map<Identifier, Item> modules = new HashMap<>();
 
@@ -40,19 +40,19 @@ public final class Items {
     }
 
     public static boolean isBookCode(final ItemStack stack) {
-        return isItem(stack, bookCode);
+        return isItem(stack, BOOK_CODE);
     }
 
     public static boolean isBookManual(final ItemStack stack) {
-        return isItem(stack, bookManual);
+        return isItem(stack, BOOK_MANUAL);
     }
 
     public static boolean isKey(final ItemStack stack) {
-        return isItem(stack, key) || isKeyCreative(stack);
+        return isItem(stack, KEY) || isKeyCreative(stack);
     }
 
     public static boolean isKeyCreative(final ItemStack stack) {
-        return isItem(stack, keyCreative);
+        return isItem(stack, KEY_CREATIVE);
     }
 
     public static boolean isModuleReadOnlyMemory(final ItemStack stack) {
@@ -69,15 +69,15 @@ public final class Items {
             }
         }
 
-        registerItem(bookCode, Constants.NAME_ITEM_BOOK_CODE);
-        registerItem(bookManual, Constants.NAME_ITEM_BOOK_MANUAL);
+        registerItem(BOOK_CODE, Constants.NAME_ITEM_BOOK_CODE);
+        registerItem(BOOK_MANUAL, Constants.NAME_ITEM_BOOK_MANUAL);
 
-        registerItem(key, Constants.NAME_ITEM_KEY);
-        registerItem(keyCreative, Constants.NAME_ITEM_KEY_CREATIVE);
-        registerItem(prism, Constants.NAME_ITEM_PRISM);
+        registerItem(KEY, Constants.NAME_ITEM_KEY);
+        registerItem(KEY_CREATIVE, Constants.NAME_ITEM_KEY_CREATIVE);
+        registerItem(PRISM, Constants.NAME_ITEM_PRISM);
 
-        Registry.ITEM.register(Registry.BLOCK.getId(Blocks.casing), casing);
-        Registry.ITEM.register(Registry.BLOCK.getId(Blocks.controller), controller);
+        Registry.ITEM.register(Registry.BLOCK.getId(Blocks.CASING), CASING);
+        Registry.ITEM.register(Registry.BLOCK.getId(Blocks.CONTROLLER), CONTROLLER);
     }
 
     // --------------------------------------------------------------------- //
