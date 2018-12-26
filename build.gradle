@@ -50,28 +50,19 @@ else
     version += "+" + getGitRef()
 
 ext.simpleVersion = version
-version = "MC${config.minecraft.version}-Fabric-${project.version}"
+version = "MC${config.minecraft.simpleversion}-Fabric-${project.version}"
 
 minecraft {
 }
 
-repositories {
-    mavenCentral()
-    ivy {
-        artifactPattern "http://asie.pl/javadeps/proto/[module]-[revision](-[classifier]).[ext]"
-    }
-}
-
 dependencies {
-    minecraft "com.mojang:minecraft:18w50a"
-    mappings "net.fabricmc:yarn:18w50a.64"
-    modCompile "net.fabricmc:fabric-loader:0.3.0.74"
+    minecraft config.minecraft.version
+    mappings config.fabric.mappings
+    modCompile config.fabric.loader
 
     // Fabric API. This is technically optional, but you probably want it anyway.
-    modCompile "net.fabricmc:fabric:0.1.2.63"
+    modCompile config.fabric.api
 
-    compile name: "Jankson", version: "0.0.3"
-    compile name: "JanksonShadowed", version: "0.0.3"
     compile 'com.google.code.findbugs:jsr305:3.0.2'
 }
 
@@ -118,7 +109,7 @@ publishing {
 //        releaseType = config.curse.project.releaseType
 //        changelogType = "markdown"
 //        changelog = file("changelog.md")
-//        addGameVersion config.minecraft.version
+//        addGameVersion config.minecraft.simpleversion
 //        addGameVersion "Java 8"
 //
 //        relations {
