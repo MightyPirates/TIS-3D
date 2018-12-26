@@ -2,7 +2,6 @@ package li.cil.tis3d.common;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
-import net.fabricmc.loader.FabricLoader;
 import net.minecraft.util.Identifier;
 import pl.asie.protocharset.lib.repack.blue.endless.jankson.Jankson;
 import pl.asie.protocharset.lib.repack.blue.endless.jankson.JsonObject;
