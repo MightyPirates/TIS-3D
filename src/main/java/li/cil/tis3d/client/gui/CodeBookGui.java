@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  */
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 @Environment(EnvType.CLIENT)
-public final class GuiBookCode extends Gui {
+public final class CodeBookGui extends Gui {
     private static final int GUI_WIDTH = 148;
     private static final int GUI_HEIGHT = 230;
     private static final int BUTTON_PAGE_CHANGE_PREV_X = 8;
@@ -71,7 +71,7 @@ public final class GuiBookCode extends Gui {
 
     // --------------------------------------------------------------------- //
 
-    GuiBookCode(final PlayerEntity player, final Hand hand) {
+    CodeBookGui(final PlayerEntity player, final Hand hand) {
         this.player = player;
         this.hand = hand;
         this.data = CodeBookItem.Data.loadFromStack(player.getStackInHand(hand));

@@ -5,20 +5,20 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Hand;
 
-public final class GuiHandler {
+public final class GuiHelper {
     public static void openManualGui() {
-        MinecraftClient.getInstance().openGui(new GuiManual());
+        MinecraftClient.getInstance().openGui(new ManualGui());
     }
 
     public static void openCodeBookGui(PlayerEntity player, Hand hand) {
-        MinecraftClient.getInstance().openGui(new GuiBookCode(player, hand));
+        MinecraftClient.getInstance().openGui(new CodeBookGui(player, hand));
     }
 
     public static void openTerminalGui(ModuleTerminal terminal) {
-        MinecraftClient.getInstance().openGui(new GuiModuleTerminal(terminal));
+        MinecraftClient.getInstance().openGui(new TerminalModuleGui(terminal));
     }
 
     public static void openReadOnlyMemoryGui(PlayerEntity player, Hand hand) {
-        MinecraftClient.getInstance().openGui(new GuiModuleMemory(player, hand));
+        MinecraftClient.getInstance().openGui(new ReadOnlyMemoryModuleGui(player, hand));
     }
 }

@@ -27,7 +27,7 @@ import java.util.Optional;
 
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 @Environment(EnvType.CLIENT)
-public final class GuiManual extends Gui {
+public final class ManualGui extends Gui {
     private static final int DOCUMENT_MAX_WIDTH = 220;
     private static final int DOCUMENT_MAX_HEIGHT = 176;
     private static final int SCROLL_POS_X = 250;

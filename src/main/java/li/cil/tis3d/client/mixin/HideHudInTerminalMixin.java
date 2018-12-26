@@ -1,6 +1,6 @@
 package li.cil.tis3d.client.mixin;
 
-import li.cil.tis3d.client.gui.GuiModuleTerminal;
+import li.cil.tis3d.client.gui.TerminalModuleGui;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.hud.InGameHud;
@@ -13,6 +13,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public abstract class HideHudInTerminalMixin extends Drawable {
     @Redirect(at = @At(value = "FIELD", target = "Lnet/minecraft/client/settings/GameOptions;field_1842:Z"), method = "draw(F)V")
     private boolean draw(GameOptions options) {
-        return MinecraftClient.getInstance().currentGui instanceof GuiModuleTerminal || options.field_1842;
+        return MinecraftClient.getInstance().currentGui instanceof TerminalModuleGui || options.field_1842;
     }
 }

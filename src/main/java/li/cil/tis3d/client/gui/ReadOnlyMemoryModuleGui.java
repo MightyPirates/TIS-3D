@@ -12,7 +12,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Hand;
 import org.lwjgl.glfw.GLFW;
 
-public final class GuiModuleMemory extends Gui {
+public final class ReadOnlyMemoryModuleGui extends Gui {
     private static final int GUI_WIDTH = 190;
     private static final int GUI_HEIGHT = 130;
 
@@ -33,7 +33,7 @@ public final class GuiModuleMemory extends Gui {
     private boolean receivedData;
     private long initTime;
 
-    GuiModuleMemory(final PlayerEntity player, final Hand hand) {
+    ReadOnlyMemoryModuleGui(final PlayerEntity player, final Hand hand) {
         this.player = player;
         this.hand = hand;
     }

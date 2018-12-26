@@ -1,6 +1,6 @@
 package li.cil.tis3d.common.item;
 
-import li.cil.tis3d.client.gui.GuiHandler;
+import li.cil.tis3d.client.gui.GuiHelper;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.block.CasingBlock;
 import li.cil.tis3d.util.FontRendererUtils;
@@ -47,7 +47,7 @@ public final class CodeBookItem extends BookItem {
     @Override
     public TypedActionResult<ItemStack> use(final World world, final PlayerEntity player, final Hand hand) {
         if (world.isClient) {
-            GuiHandler.openCodeBookGui(player, hand);
+            GuiHelper.openCodeBookGui(player, hand);
         }
         return new TypedActionResult<>(ActionResult.SUCCESS, player.getStackInHand(hand));
     }

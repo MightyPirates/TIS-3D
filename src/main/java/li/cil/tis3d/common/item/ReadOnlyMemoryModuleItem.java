@@ -1,6 +1,6 @@
 package li.cil.tis3d.common.item;
 
-import li.cil.tis3d.client.gui.GuiHandler;
+import li.cil.tis3d.client.gui.GuiHelper;
 import li.cil.tis3d.common.block.CasingBlock;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.network.Network;
@@ -32,7 +32,7 @@ public class ReadOnlyMemoryModuleItem extends ModuleItem {
     @Override
     public TypedActionResult<ItemStack> use(final World world, final PlayerEntity player, final Hand hand) {
         if (world.isClient) {
-            GuiHandler.openReadOnlyMemoryGui(player, hand);
+            GuiHelper.openReadOnlyMemoryGui(player, hand);
         } else {
             sendModuleMemory(player, hand);
         }

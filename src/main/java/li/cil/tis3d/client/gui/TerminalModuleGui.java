@@ -12,10 +12,10 @@ import org.lwjgl.opengl.GL11;
 /**
  * Invisible GUI for the terminal module, purely used to grab keyboard input.
  */
-public final class GuiModuleTerminal extends Gui {
+public final class TerminalModuleGui extends Gui {
     private final ModuleTerminal module;
 
-    GuiModuleTerminal(final ModuleTerminal module) {
+    TerminalModuleGui(final ModuleTerminal module) {
         this.module = module;
     }
 

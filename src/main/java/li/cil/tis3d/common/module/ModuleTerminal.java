@@ -9,8 +9,8 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
 import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.gui.GuiHandler;
-import li.cil.tis3d.client.gui.GuiModuleTerminal;
+import li.cil.tis3d.client.gui.GuiHelper;
+import li.cil.tis3d.client.gui.TerminalModuleGui;
 import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.client.render.font.FontRenderer;
 import li.cil.tis3d.client.render.font.FontRendererNormal;
@@ -182,7 +182,7 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
 
         final World world = player.getEntityWorld();
         if (world.isClient) {
-            GuiHandler.openTerminalGui(this);
+            GuiHelper.openTerminalGui(this);
         }
 
         return true;
@@ -366,8 +366,8 @@ public final class ModuleTerminal extends AbstractModuleRotatable {
         }
 
         final Gui screen = mc.currentGui;
-        if (screen instanceof GuiModuleTerminal) {
-            final GuiModuleTerminal gui = (GuiModuleTerminal) screen;
+        if (screen instanceof TerminalModuleGui) {
+            final TerminalModuleGui gui = (TerminalModuleGui) screen;
             if (gui.isFor(this)) {
                 mc.openGui(null);
             }

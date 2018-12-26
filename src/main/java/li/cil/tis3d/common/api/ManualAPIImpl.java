@@ -4,8 +4,8 @@ import com.google.common.base.Strings;
 import com.google.common.io.Files;
 import li.cil.tis3d.api.detail.ManualAPI;
 import li.cil.tis3d.api.manual.*;
-import li.cil.tis3d.client.gui.GuiHandler;
-import li.cil.tis3d.client.gui.GuiManual;
+import li.cil.tis3d.client.gui.GuiHelper;
+import li.cil.tis3d.client.gui.ManualGui;
 import li.cil.tis3d.common.TIS3D;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Gui;
@@ -177,7 +177,7 @@ public final class ManualAPIImpl implements ManualAPI {
     @Override
     public void openFor(final PlayerEntity player) {
         if (player.getEntityWorld().isClient) {
-            GuiHandler.openManualGui();
+            GuiHelper.openManualGui();
         }
     }
 
@@ -195,8 +195,8 @@ public final class ManualAPIImpl implements ManualAPI {
         }
 
         final Gui screen = mc.currentGui;
-        if (screen instanceof GuiManual) {
-            ((GuiManual) screen).pushPage(path);
+        if (screen instanceof ManualGui) {
+            ((ManualGui) screen).pushPage(path);
         } else {
             history.push(new History(path));
         }
