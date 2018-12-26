@@ -30,16 +30,16 @@ group = config.mod.group
 archivesBaseName = config.mod.name
 
 def getGitRef() {
-  try {
-    def stdout = new ByteArrayOutputStream()
-    exec {
-      commandLine 'git', 'rev-parse', '--short', 'HEAD'
-      standardOutput = stdout
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'rev-parse', '--short', 'HEAD'
+            standardOutput = stdout
+        }
+        return stdout.toString().trim()
+    } catch (Throwable e) {
+        return "unknown"
     }
-    return stdout.toString().trim()
-  } catch (Throwable e) {
-    return "unknown"
-  }
 }
 
 if (System.getenv("PROMOTED_NUMBER") != null)
@@ -53,6 +53,7 @@ ext.simpleVersion = version
 version = "MC${config.minecraft.simpleversion}-Fabric-${project.version}"
 
 minecraft {
+    refmapName = "tis3d.refmap.json"
 }
 
 dependencies {
