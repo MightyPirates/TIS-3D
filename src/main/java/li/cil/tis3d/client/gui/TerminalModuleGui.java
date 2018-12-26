@@ -3,7 +3,7 @@ package li.cil.tis3d.client.gui;
 import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.common.Settings;
-import li.cil.tis3d.common.module.ModuleTerminal;
+import li.cil.tis3d.common.module.TerminalModule;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.util.Hand;
 import org.lwjgl.glfw.GLFW;
@@ -13,13 +13,13 @@ import org.lwjgl.opengl.GL11;
  * Invisible GUI for the terminal module, purely used to grab keyboard input.
  */
 public final class TerminalModuleGui extends Gui {
-    private final ModuleTerminal module;
+    private final TerminalModule module;
 
-    TerminalModuleGui(final ModuleTerminal module) {
+    TerminalModuleGui(final TerminalModule module) {
         this.module = module;
     }
 
-    public boolean isFor(final ModuleTerminal that) {
+    public boolean isFor(final TerminalModule that) {
         return that == module;
     }
 

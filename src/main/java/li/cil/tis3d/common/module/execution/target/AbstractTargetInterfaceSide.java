@@ -3,14 +3,14 @@ package li.cil.tis3d.common.module.execution.target;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
-import li.cil.tis3d.common.module.ModuleExecution;
+import li.cil.tis3d.common.module.ExecutionModule;
 import li.cil.tis3d.common.module.execution.Machine;
 
 abstract class AbstractTargetInterfaceSide extends AbstractTargetInterface {
-    private final ModuleExecution module;
+    private final ExecutionModule module;
     private final Face face;
 
-    protected AbstractTargetInterfaceSide(final Machine machine, final ModuleExecution module, final Face face) {
+    protected AbstractTargetInterfaceSide(final Machine machine, final ExecutionModule module, final Face face) {
         super(machine);
         this.module = module;
         this.face = face;

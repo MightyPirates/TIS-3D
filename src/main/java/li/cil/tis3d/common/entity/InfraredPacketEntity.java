@@ -4,7 +4,7 @@ import li.cil.tis3d.api.infrared.InfraredPacket;
 import li.cil.tis3d.api.infrared.InfraredReceiver;
 import li.cil.tis3d.common.event.TickHandlerInfraredPacket;
 import li.cil.tis3d.common.init.Entities;
-import li.cil.tis3d.common.module.ModuleInfrared;
+import li.cil.tis3d.common.module.InfraredModule;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.util.Raytracing;
 import net.fabricmc.api.EnvType;
@@ -27,7 +27,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * Represents a single value in transmission, sent by an {@link ModuleInfrared}.
+ * Represents a single value in transmission, sent by an {@link InfraredModule}.
  */
 public final class InfraredPacketEntity extends Entity implements InfraredPacket {
     // --------------------------------------------------------------------- //
@@ -77,7 +77,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
     /**
      * Sets up the packet's starting position, velocity and value carried.
      * <p>
-     * Called from {@link ModuleInfrared} directly
+     * Called from {@link InfraredModule} directly
      * after instantiation of a new infrared packet entity.
      *
      * @param start     the position of the block that spawned the packet.

@@ -1,11 +1,12 @@
 package li.cil.tis3d.common.module.execution;
 
 import li.cil.tis3d.api.machine.Pipe;
+import li.cil.tis3d.common.module.ExecutionModule;
 import li.cil.tis3d.common.module.execution.target.Target;
 import li.cil.tis3d.common.module.execution.target.TargetInterface;
 
 /**
- * Interface for the virtual machine used by the {@link li.cil.tis3d.common.module.ModuleExecution}.
+ * Interface for the virtual machine used by the {@link ExecutionModule}.
  * <p>
  * Provided to {@link li.cil.tis3d.common.module.execution.instruction.Instruction}s on top of the
  * state itself for unified data transfer to all valid targets, including virtual ones such as

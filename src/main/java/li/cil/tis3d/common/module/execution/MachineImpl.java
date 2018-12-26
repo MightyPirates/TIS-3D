@@ -3,7 +3,7 @@ package li.cil.tis3d.common.module.execution;
 import com.google.common.collect.ImmutableMap;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
-import li.cil.tis3d.common.module.ModuleExecution;
+import li.cil.tis3d.common.module.ExecutionModule;
 import li.cil.tis3d.common.module.execution.instruction.Instruction;
 import li.cil.tis3d.common.module.execution.target.*;
 
@@ -21,24 +21,24 @@ public final class MachineImpl implements Machine {
     // --------------------------------------------------------------------- //
     // Computed data
 
-    private final ModuleExecution module;
+    private final ExecutionModule module;
     private final Map<Target, TargetInterface> interfaces;
 
     // --------------------------------------------------------------------- //
 
-    public MachineImpl(final ModuleExecution module, final Face face) {
+    public MachineImpl(final ExecutionModule module, final Face face) {
         this.state = new MachineState();
         this.module = module;
         this.interfaces = ImmutableMap.<Target, TargetInterface>builder().
-            put(Target.ACC, new TargetInterfaceAcc(this)).
-            put(Target.BAK, new TargetInterfaceBak(this)).
-            put(Target.NIL, new TargetInterfaceNil(this)).
-            put(Target.LEFT, new TargetInterfaceSide(this, module, face, Port.LEFT)).
-            put(Target.RIGHT, new TargetInterfaceSide(this, module, face, Port.RIGHT)).
-            put(Target.UP, new TargetInterfaceSide(this, module, face, Port.UP)).
-            put(Target.DOWN, new TargetInterfaceSide(this, module, face, Port.DOWN)).
-            put(Target.ANY, new TargetInterfaceAny(this, module, face)).
-            put(Target.LAST, new TargetInterfaceLast(this, module, face)).
+            put(Target.ACC, new AccTargetInterface(this)).
+            put(Target.BAK, new BakTargetInterface(this)).
+            put(Target.NIL, new NilTargetInterface(this)).
+            put(Target.LEFT, new SideTargetInterface(this, module, face, Port.LEFT)).
+            put(Target.RIGHT, new SideTargetInterface(this, module, face, Port.RIGHT)).
+            put(Target.UP, new SideTargetInterface(this, module, face, Port.UP)).
+            put(Target.DOWN, new SideTargetInterface(this, module, face, Port.DOWN)).
+            put(Target.ANY, new AnyTargetInterface(this, module, face)).
+            put(Target.LAST, new LastTargetInterface(this, module, face)).
             build();
     }
 

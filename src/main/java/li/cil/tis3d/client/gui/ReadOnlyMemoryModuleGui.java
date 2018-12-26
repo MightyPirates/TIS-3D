@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.tis3d.api.FontRendererAPI;
 import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.common.init.Items;
-import li.cil.tis3d.common.module.ModuleRandomAccessMemory;
+import li.cil.tis3d.common.module.RandomAccessMemoryModule;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.ReadOnlyMemoryModuleDataMessage;
 import net.minecraft.client.gui.Gui;
@@ -24,7 +24,7 @@ public final class ReadOnlyMemoryModuleGui extends Gui {
 
     private final PlayerEntity player;
     private final Hand hand;
-    private final byte[] data = new byte[ModuleRandomAccessMemory.MEMORY_SIZE];
+    private final byte[] data = new byte[RandomAccessMemoryModule.MEMORY_SIZE];
 
     private int guiX = 0;
     private int guiY = 0;
