@@ -3,6 +3,7 @@ package li.cil.tis3d.common.block.entity;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
+import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.machine.PipeHost;
 import li.cil.tis3d.common.machine.PipeImpl;
 import li.cil.tis3d.util.NBTIds;
@@ -164,7 +165,7 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
     @Nullable
     @Override
     public BlockEntityUpdateClientPacket toUpdatePacket() {
-        return new BlockEntityUpdateClientPacket(getPos(), 0, toInitialChunkDataTag());
+        return new BlockEntityUpdateClientPacket(getPos(), Constants.BLOCK_ENTITY_ACTION_ID, toInitialChunkDataTag());
     }
 
     @Override

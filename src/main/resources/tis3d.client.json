@@ -4,6 +4,7 @@
     "mixins": [
         "HideHudInTerminalMixin",
         "PickModuleMixin",
-        "WorldUnloadMinecraftClientMixin"
+        "WorldUnloadMinecraftClientMixin",
+        "BlockEntityUpdateClientPacketHandlingMixin"
     ]
 }

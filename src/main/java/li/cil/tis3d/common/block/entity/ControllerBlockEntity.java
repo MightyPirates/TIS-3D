@@ -294,7 +294,7 @@ public final class ControllerBlockEntity extends AbstractComputerBlockEntity imp
 
         if (state != lastSentState) {
             final BlockState blockState = world.getBlockState(getPos());
-            world.updateListeners(getPipeHostPosition(), blockState, blockState, 2);
+            world.updateListeners(getPipeHostPosition(), blockState, blockState, 7);
             lastSentState = state;
         }
 
