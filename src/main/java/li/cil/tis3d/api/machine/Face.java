@@ -57,7 +57,7 @@ public enum Face {
      * Convert a facing from our internal format to Forge's format.
      *
      * @param face the face to convert.
-     * @return the {@link EnumFacing} representing that facing.
+     * @return the {@link Direction} representing that facing.
      */
     public static Direction toEnumFacing(final Face face) {
         return Direction.values()[face.ordinal()];

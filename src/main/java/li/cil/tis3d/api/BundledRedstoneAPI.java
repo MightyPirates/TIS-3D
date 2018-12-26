@@ -31,7 +31,7 @@ public final class BundledRedstoneAPI {
      * <p>
      * Depending on the version/context/environment this mod is used in, this event may, in addtion to
      * notifying listeners added via {@link #addListener(BundledRedstoneOutputChangedEvent.Listener)},
-     * <em>additionally</em> be fired on a mod framework's event bus (e.g. <c>MinecraftForge.EVENT_BUS</c>).
+     * <em>additionally</em> be fired on a mod framework's event bus (e.g. <tt>MinecraftForge.EVENT_BUS</tt>).
      *
      * @param event the event to dispatch, holding the module having changed its output and the changed channel.
      */

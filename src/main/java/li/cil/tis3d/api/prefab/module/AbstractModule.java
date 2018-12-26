@@ -67,7 +67,8 @@ public abstract class AbstractModule implements Module {
     /**
      * Utility method for determining whether the player is currently looking at this module.
      *
-     * @return <tt>true</tt> if the player is looking at the module, <tt>false</tt> otherwise.
+     * @param rendererDispatcher the render context.
+     * @return <tt>true</tt> if the observer is looking at the module, <tt>false</tt> otherwise.
      */
     @Environment(EnvType.CLIENT)
     protected boolean isObserverLookingAt(final BlockEntityRenderDispatcher rendererDispatcher) {
@@ -88,7 +89,8 @@ public abstract class AbstractModule implements Module {
      * {@link #hitToUV}. Note that this method is overridden in {@link AbstractModuleRotatable}
      * to also take into account the module's rotation.
      *
-     * @return the UV coordinate the player is looking at as the X and Y components.
+     * @param rendererDispatcher the render context.
+     * @return the UV coordinate the observer is looking at as the X and Y components.
      */
     @Environment(EnvType.CLIENT)
     @Nullable

@@ -73,7 +73,7 @@ public enum Port {
     public static final int[] ROTATION = new int[]{3, 1, 0, 2};
 
     /**
-     * Mapping of {@link EnumFacing}s to a horizontal {@link Port} equivalent.
+     * Mapping of {@link Direction}s to a horizontal {@link Port} equivalent.
      */
     public static final Port[] HORIZONTAL = new Port[]{Port.UP, Port.UP, Port.DOWN, Port.UP, Port.RIGHT, Port.LEFT};
 
