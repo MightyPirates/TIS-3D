@@ -2,6 +2,7 @@ package li.cil.tis3d.common.network.message;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.util.Hand;
+import net.minecraft.util.PacketByteBuf;
 
 public final class ReadOnlyMemoryModuleDataMessage extends AbstractMessage {
     private byte[] data;
@@ -31,13 +32,15 @@ public final class ReadOnlyMemoryModuleDataMessage extends AbstractMessage {
 
     @Override
     public void fromBytes(final ByteBuf buf) {
-        data = new byte[buf.readInt()];
-        buf.readBytes(data);
+        final PacketByteBuf buffer = new PacketByteBuf(buf);
+        data = buffer.readByteArray();
+        hand = buffer.readEnumConstant(Hand.class);
     }
 
     @Override
     public void toBytes(final ByteBuf buf) {
-        buf.writeInt(data.length);
-        buf.writeBytes(data);
+        final PacketByteBuf buffer = new PacketByteBuf(buf);
+        buffer.writeByteArray(data);
+        buffer.writeEnumConstant(hand);
     }
 }

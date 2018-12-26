@@ -35,11 +35,13 @@ public final class CodeBookDataMessage extends AbstractMessage {
     public void fromBytes(final ByteBuf buf) {
         final PacketByteBuf buffer = new PacketByteBuf(buf);
         nbt = buffer.readCompoundTag();
+        hand = buffer.readEnumConstant(Hand.class);
     }
 
     @Override
     public void toBytes(final ByteBuf buf) {
         final PacketByteBuf buffer = new PacketByteBuf(buf);
         buffer.writeCompoundTag(nbt);
+        buffer.writeEnumConstant(hand);
     }
 }
