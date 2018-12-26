@@ -49,7 +49,7 @@ public enum Face {
      * @param facing the facing to convert.
      * @return the {@link Face} representing that facing.
      */
-    public static Face fromEnumFacing(final Direction facing) {
+    public static Face fromDirection(final Direction facing) {
         return VALUES[facing.ordinal()];
     }
 
@@ -59,7 +59,7 @@ public enum Face {
      * @param face the face to convert.
      * @return the {@link Direction} representing that facing.
      */
-    public static Direction toEnumFacing(final Face face) {
+    public static Direction toDirection(final Face face) {
         return Direction.values()[face.ordinal()];
     }
 }

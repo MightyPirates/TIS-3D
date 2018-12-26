@@ -186,13 +186,13 @@ public abstract class TileEntityComputer extends BlockEntity implements PipeHost
                 // If we have a casing, set it as our neighbor.
                 final BlockEntity tileEntity = getWorld().getBlockEntity(neighborPos);
                 if (tileEntity instanceof TileEntityComputer) {
-                    setNeighbor(Face.fromEnumFacing(facing), (TileEntityComputer) tileEntity);
+                    setNeighbor(Face.fromDirection(facing), (TileEntityComputer) tileEntity);
                 } else {
-                    setNeighbor(Face.fromEnumFacing(facing), null);
+                    setNeighbor(Face.fromDirection(facing), null);
                 }
             } else {
                 // Neighbor is in unloaded area.
-                setNeighbor(Face.fromEnumFacing(facing), null);
+                setNeighbor(Face.fromDirection(facing), null);
             }
         }
     }

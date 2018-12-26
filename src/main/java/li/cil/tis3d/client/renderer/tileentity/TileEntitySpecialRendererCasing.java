@@ -77,7 +77,7 @@ public final class TileEntitySpecialRendererCasing extends BlockEntityRenderer<T
     }
 
     private boolean isRenderingBackFace(final Face face, final double dx, final double dy, final double dz) {
-        final Direction facing = Face.toEnumFacing(face.getOpposite());
+        final Direction facing = Face.toDirection(face.getOpposite());
         final double dotProduct = facing.getOffsetX() * dx + facing.getOffsetY() * (dy - renderManager.cameraEntity.getEyeHeight()) + facing.getOffsetZ() * dz;
         return dotProduct < 0;
     }
@@ -203,7 +203,7 @@ public final class TileEntitySpecialRendererCasing extends BlockEntityRenderer<T
         }
 
         final int brightness = getWorld().getLightmapIndex(
-            casing.getPosition().offset(Face.toEnumFacing(face)), 0);
+            casing.getPosition().offset(Face.toDirection(face)), 0);
         GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, brightness % 65536, (float) (brightness / 65536));
 
         try {
@@ -237,7 +237,7 @@ public final class TileEntitySpecialRendererCasing extends BlockEntityRenderer<T
         return hit != null &&
             hit.type == HitResult.Type.BLOCK &&
             hit.side != null &&
-            Face.fromEnumFacing(hit.side) == face &&
+            Face.fromDirection(hit.side) == face &&
             hit.getBlockPos() != null &&
             Objects.equals(hit.getBlockPos(), pos);
     }

@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 final class CallbacksMinecraft {
     static int getInput(final Redstone module) {
         final Face face = module.getFace();
-        final Direction facing = Face.toEnumFacing(face);
+        final Direction facing = Face.toDirection(face);
         final World world = module.getCasing().getCasingWorld();
         final BlockPos inputPos = module.getCasing().getPosition().offset(facing);
         if (!world.isBlockLoaded(inputPos)) {

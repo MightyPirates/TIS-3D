@@ -189,7 +189,7 @@ public final class ModuleInfrared extends AbstractModule implements InfraredRece
      * @param value the value to transmit.
      */
     private void emitInfraredPacket(final short value) {
-        final Direction facing = Face.toEnumFacing(getFace());
+        final Direction facing = Face.toDirection(getFace());
         final BlockPos blockPos = getCasing().getPosition().offset(facing);
 
         final World world = getCasing().getCasingWorld();

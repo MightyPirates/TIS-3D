@@ -137,7 +137,7 @@ public final class BlockCasing extends Block implements BlockEntityProvider {
                             if (!player.isSneaking()) {
                                 casing.lock(heldItem);
                             } else {
-                                final Face face = Face.fromEnumFacing(side);
+                                final Face face = Face.fromDirection(side);
                                 final Vec3d uv = TransformUtil.hitToUV(face, new Vec3d(hitX, hitY, hitZ));
                                 final Port port = Port.fromUVQuadrant(uv);
 
@@ -157,7 +157,7 @@ public final class BlockCasing extends Block implements BlockEntityProvider {
                 }
 
                 // Let the module handle the activation.
-                final Module module = casing.getModule(Face.fromEnumFacing(side));
+                final Module module = casing.getModule(Face.fromDirection(side));
                 if (module != null && module.onActivate(player, hand, hitX, hitY, hitZ)) {
                     return true;
                 }
@@ -191,7 +191,7 @@ public final class BlockCasing extends Block implements BlockEntityProvider {
                                 insertedStack = heldItem.split(1);
                             }
                             if (side.getAxis() == Direction.Axis.Y) {
-                                final Port orientation = Port.fromEnumFacing(player.getHorizontalFacing());
+                                final Port orientation = Port.fromDirection(player.getHorizontalFacing());
                                 casing.setInventorySlotContents(side.ordinal(), insertedStack, orientation);
                             } else {
                                 casing.setInvStack(side.ordinal(), insertedStack);
@@ -242,7 +242,7 @@ public final class BlockCasing extends Block implements BlockEntityProvider {
         final BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof TileEntityCasing) {
             final TileEntityCasing casing = (TileEntityCasing) blockEntity;
-            final Module module = casing.getModule(Face.fromEnumFacing(side.getOpposite()));
+            final Module module = casing.getModule(Face.fromDirection(side.getOpposite()));
             if (module instanceof Redstone) {
                 return ((Redstone) module).getRedstoneOutput();
             }

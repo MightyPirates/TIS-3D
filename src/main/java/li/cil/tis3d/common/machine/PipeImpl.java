@@ -211,9 +211,9 @@ public final class PipeImpl implements Pipe {
 
     private void sendEffect() {
         final BlockPos position = host.getPipeHostPosition();
-        final double ox = Face.toEnumFacing(receivingFace).getOffsetX() + Face.toEnumFacing(sendingFace).getOffsetX();
-        final double oy = Face.toEnumFacing(receivingFace).getOffsetY() + Face.toEnumFacing(sendingFace).getOffsetY();
-        final double oz = Face.toEnumFacing(receivingFace).getOffsetZ() + Face.toEnumFacing(sendingFace).getOffsetZ();
+        final double ox = Face.toDirection(receivingFace).getOffsetX() + Face.toDirection(sendingFace).getOffsetX();
+        final double oy = Face.toDirection(receivingFace).getOffsetY() + Face.toDirection(sendingFace).getOffsetY();
+        final double oz = Face.toDirection(receivingFace).getOffsetZ() + Face.toDirection(sendingFace).getOffsetZ();
         final double x = ox * 0.55 + position.getX() + 0.5;
         final double y = oy * 0.55 + position.getY() + 0.5;
         final double z = oz * 0.55 + position.getZ() + 0.5;

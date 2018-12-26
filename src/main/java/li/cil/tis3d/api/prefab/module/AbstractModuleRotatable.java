@@ -50,7 +50,7 @@ public abstract class AbstractModuleRotatable extends AbstractModule implements 
     protected void rotateForRendering() {
         final int rotation = Port.ROTATION[getFacing().ordinal()];
         GlStateManager.translatef(0.5f, 0.5f, 0);
-        GlStateManager.rotatef(90 * rotation, 0, 0, Face.toEnumFacing(getFace()).getOffsetY());
+        GlStateManager.rotatef(90 * rotation, 0, 0, Face.toDirection(getFace()).getOffsetY());
         GlStateManager.translatef(-0.5f, -0.5f, 0);
     }
 

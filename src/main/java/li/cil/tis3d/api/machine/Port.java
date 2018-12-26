@@ -85,7 +85,7 @@ public enum Port {
      * @param facing the facing to convert.
      * @return the {@link Port} representing that facing.
      */
-    public static Port fromEnumFacing(final Direction facing) {
+    public static Port fromDirection(final Direction facing) {
         return HORIZONTAL[facing.ordinal()];
     }
 

@@ -76,7 +76,7 @@ public abstract class AbstractModule implements Module {
         return hit != null &&
             hit.type == HitResult.Type.BLOCK &&
             getCasing().getPosition().equals(hit.getBlockPos()) &&
-            hit.side == Face.toEnumFacing(getFace());
+            hit.side == Face.toDirection(getFace());
     }
 
     /**
@@ -99,7 +99,7 @@ public abstract class AbstractModule implements Module {
         if (hit != null &&
             hit.type == HitResult.Type.BLOCK &&
             getCasing().getPosition().equals(hit.getBlockPos()) &&
-            hit.side == Face.toEnumFacing(getFace())) {
+            hit.side == Face.toDirection(getFace())) {
             return new Vec3d(hit.pos.x - hit.getBlockPos().getX(),
                 hit.pos.y - hit.getBlockPos().getY(),
                 hit.pos.z - hit.getBlockPos().getZ());
@@ -138,7 +138,7 @@ public abstract class AbstractModule implements Module {
      */
     protected boolean isVisible() {
         final World world = getCasing().getCasingWorld();
-        final BlockPos neighborPos = getCasing().getPosition().offset(Face.toEnumFacing(getFace()));
+        final BlockPos neighborPos = getCasing().getPosition().offset(Face.toDirection(getFace()));
         if (!world.isBlockLoaded(neighborPos)) {
             // If the neighbor isn't loaded, we can assume we're also not visible on that side.
             return false;

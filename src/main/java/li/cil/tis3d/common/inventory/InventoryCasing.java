@@ -82,8 +82,8 @@ public final class InventoryCasing extends Inventory implements SidedInventory {
     public boolean canInsertInvStack(final int index, final ItemStack stack, @Nullable final Direction side) {
         return side != null && side.ordinal() == index &&
             getInvStack(index).isEmpty() &&
-            tileEntity.getModule(Face.fromEnumFacing(side)) == null && // Handles virtual modules.
-            canInstall(stack, Face.fromEnumFacing(side));
+            tileEntity.getModule(Face.fromDirection(side)) == null && // Handles virtual modules.
+            canInstall(stack, Face.fromDirection(side));
     }
 
     @Override

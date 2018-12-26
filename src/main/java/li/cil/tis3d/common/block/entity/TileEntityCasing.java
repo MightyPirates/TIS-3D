@@ -201,7 +201,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
         for (final Face face : Face.VALUES) {
             final Module module = getModule(face);
             if (module instanceof BlockChangeAware) {
-                final BlockPos moduleNeighborPos = getPosition().offset(Face.toEnumFacing(face));
+                final BlockPos moduleNeighborPos = getPosition().offset(Face.toDirection(face));
                 final boolean isModuleNeighbor = Objects.equals(neighborPos, moduleNeighborPos);
                 ((BlockChangeAware) module).onNeighborBlockChange(neighborPos, isModuleNeighbor);
             }
@@ -264,7 +264,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
         // Ensure there are no modules installed between two casings.
         if (hasNeighbor(face)) {
             assert getWorld() != null;
-            InventoryUtils.drop(getWorld(), getPos(), this, face.ordinal(), getInvMaxStackAmount(), Face.toEnumFacing(face));
+            InventoryUtils.drop(getWorld(), getPos(), this, face.ordinal(), getInvMaxStackAmount(), Face.toDirection(face));
         }
 
         if (neighbor instanceof TileEntityController) {

@@ -13,7 +13,7 @@ public abstract class CasingInfraredReceiverMixin implements InfraredReceiver {
     @Override
     public void onInfraredPacket(final InfraredPacket packet, final HitResult hit) {
         final TileEntityCasing self = (TileEntityCasing) (Object) this;
-        final Module module = self.getModule(Face.fromEnumFacing(hit.side));
+        final Module module = self.getModule(Face.fromDirection(hit.side));
         if (module instanceof InfraredReceiver) {
             ((InfraredReceiver) module).onInfraredPacket(packet, hit);
         }

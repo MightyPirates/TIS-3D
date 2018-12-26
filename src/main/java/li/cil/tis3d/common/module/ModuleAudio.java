@@ -108,7 +108,7 @@ public final class ModuleAudio extends AbstractModule {
         final Instrument instrument = Instrument.values()[instrumentId];
 
         // Offset to have the actual origin be in front of the module.
-        final Direction facing = Face.toEnumFacing(getFace());
+        final Direction facing = Face.toDirection(getFace());
         final BlockPos pos = getCasing().getPosition();
         final double x = pos.getX() + 0.5 + facing.getOffsetX() * 0.6;
         final double y = pos.getY() + 0.5 + facing.getOffsetY() * 0.6;
