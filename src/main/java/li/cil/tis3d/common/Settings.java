@@ -1,15 +1,9 @@
 package li.cil.tis3d.common;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
+import li.cil.tis3d.util.SimpleConfig;
 import net.minecraft.util.Identifier;
-import pl.asie.protocharset.lib.repack.blue.endless.jankson.Jankson;
-import pl.asie.protocharset.lib.repack.blue.endless.jankson.JsonObject;
-import pl.asie.protocharset.lib.repack.blue.endless.jankson.JsonPrimitive;
-import pl.asie.protocharset.lib.repack.blue.endless.jankson.impl.SyntaxError;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -61,25 +55,18 @@ public final class Settings {
      * The list of <em>disabled</em> modules. Disabled modules will not be
      * registered with the game. Filled in while loading, for convenience.
      */
-    public static final Set<String> disabledModules = new HashSet<>();
+    public static final Set<Identifier> disabledModules = new HashSet<>();
 
     // --------------------------------------------------------------------- //
 
-    private static final String CATEGORY_NETWORK = "network.";
-    private static final String CATEGORY_CONTROLLER = "controller.";
-    private static final String CATEGORY_MODULE = "module.";
-    private static final String CATEGORY_MODULE_EXECUTION = "module.execution.";
-    private static final String CATEGORY_MODULE_INFRARED = "module.infrared.";
-    private static final String CATEGORY_MODULE_TERMINAL = "module.terminal.";
-
-    private static final String NAME_ANIMATE_TYPING = "animateTyping";
-    private static final String NAME_MAX_PACKETS_PER_TICK = "maxPacketsPerTick";
-    private static final String NAME_MAX_PARTICLES_PER_TICK = "maxParticlesPerTick";
-    private static final String NAME_MAX_CASINGS_PER_CONTROLLER = "maxCasings";
-    private static final String NAME_MAX_LINES_PER_PROGRAM = "maxLinesPerProgram";
-    private static final String NAME_MAX_COLUMNS_PER_LINE = "maxColumnsPerLine";
-    private static final String NAME_MAX_QUEUE_LENGTH = "maxQueueLength";
-    private static final String NAME_MODULE_ENABLED = "enabled";
+    private static final String NAME_ANIMATE_TYPING = "module.terminal.animate_typing";
+    private static final String NAME_MAX_PACKETS_PER_TICK = "network.max_packets_per_tick";
+    private static final String NAME_MAX_PARTICLES_PER_TICK = "network.max_particles_per_tick";
+    private static final String NAME_MAX_CASINGS_PER_CONTROLLER = "controller.max_casings";
+    private static final String NAME_MAX_LINES_PER_PROGRAM = "module.execution.max_lines_per_program";
+    private static final String NAME_MAX_COLUMNS_PER_LINE = "module.execution.max_columns_per_line";
+    private static final String NAME_MAX_QUEUE_LENGTH = "module.infrared.max_queue_length";
+    private static final String NAME_MODULE_ENABLED_PATTERN = "module.%s.enabled";
 
     private static final String COMMENT_ANIMATE_TYPING = "Whether to swing the player's arm while typing on a terminal module.";
     private static final String COMMENT_MAX_PACKETS_PER_TICK = "The maximum number of status packets modules may send per tick. When this is exceeded, throttling kicks in.";
@@ -88,66 +75,42 @@ public final class Settings {
     private static final String COMMENT_MAX_LINES_PER_PROGRAM = "The maximum number of lines an ASM program for an execution node may have.";
     private static final String COMMENT_MAX_COLUMNS_PER_LINE = "The maximum number of columns per line of an ASM program for an execution node may have.";
     private static final String COMMENT_MAX_QUEUE_LENGTH = "The maximum number of infrared packets that can be stored in the receiver's buffer.";
-    private static final String COMMENT_MODULE_ENABLED = "Whether the module is enabled. Disabled modules are not registered, meaning if you disable them later on the items will disappear!";
+    private static final String COMMENT_MODULE_ENABLED_PATTERN = "Whether the %s module is enabled. Disabled modules are not registered, meaning if you disable them later on the items will disappear!";
 
     // --------------------------------------------------------------------- //
 
     @SuppressWarnings("ConstantConditions")
-    public static void load(final File configDir) {
-        if (!configDir.exists()) configDir.mkdir();
-        final File configFile = new File(configDir, "tis3d.hjson");
+    public static void load(final File configFile) {
+        final SimpleConfig config = SimpleConfig.create(configFile);
 
-        JsonObject config;
-        try {
-            config = Jankson.builder().build().load(configFile);
-        } catch (final SyntaxError | IOException var9) {
-            config = new JsonObject();
-        }
 
-        config.putDefault("network", new JsonObject(), null);
-        config.putDefault("controller", new JsonObject(), null);
-        config.putDefault("module", new JsonObject(), null);
+        maxPacketsPerTick = config.getInt(NAME_MAX_PACKETS_PER_TICK, maxPacketsPerTick, 1, 500, COMMENT_MAX_PACKETS_PER_TICK);
+        maxParticlesPerTick = config.getInt(NAME_MAX_PARTICLES_PER_TICK, maxParticlesPerTick, 1, 500, COMMENT_MAX_PARTICLES_PER_TICK);
+        maxCasingsPerController = config.getInt(NAME_MAX_CASINGS_PER_CONTROLLER, maxCasingsPerController, 1, 512, COMMENT_MAX_CASINGS_PER_CONTROLLER);
+        maxLinesPerProgram = config.getInt(NAME_MAX_LINES_PER_PROGRAM, maxLinesPerProgram, 1, 200, COMMENT_MAX_LINES_PER_PROGRAM);
+        maxColumnsPerLine = config.getInt(NAME_MAX_COLUMNS_PER_LINE, maxColumnsPerLine, 1, 80, COMMENT_MAX_COLUMNS_PER_LINE);
+        maxInfraredQueueLength = config.getInt(NAME_MAX_QUEUE_LENGTH, maxInfraredQueueLength, 1, 64, COMMENT_MAX_QUEUE_LENGTH);
+        animateTypingHand = config.getBoolean(NAME_ANIMATE_TYPING, animateTypingHand, COMMENT_ANIMATE_TYPING);
 
         // Rebuild list of disabled modules.
         disabledModules.clear();
 
+        final int prefixLength = "module_*".length();
         for (final Identifier module : Constants.MODULES) {
-            final String name;
-            if (module.getPath().startsWith("module_")) {
-                name = module.getPath().substring(7, 8).toLowerCase(Locale.ROOT) + module.getPath().substring(8);
-            } else {
-                name = module.getPath().substring(0, 1).toLowerCase(Locale.ROOT) + module.getPath().substring(1);
+            final String path = module.getPath();
+            if (!path.startsWith("module_")) {
+                TIS3D.getLog().warn("Module name with bad format, [{}], should start with [module_].", path);
+                continue;
             }
-            config.recursiveGet(JsonObject.class, "module").putDefault(name, new JsonObject(), null);
-            config.recursiveGet(JsonObject.class, CATEGORY_MODULE + name).putDefault(NAME_MODULE_ENABLED, new JsonPrimitive(true), COMMENT_MODULE_ENABLED);
 
-            final boolean enabled = config.recursiveGet(JsonObject.class, CATEGORY_MODULE + name).get(Boolean.class, NAME_MODULE_ENABLED);
-            if (!enabled) {
-                disabledModules.add(name);
+            // Strip module and first letter from internal name, lowercase first letter.
+            final String name = String.valueOf(path.charAt(prefixLength - 1)).toLowerCase(Locale.ROOT) + path.substring(prefixLength);
+            if (!config.getBoolean(String.format(NAME_MODULE_ENABLED_PATTERN, name), true, String.format(COMMENT_MODULE_ENABLED_PATTERN, name))) {
+                disabledModules.add(module);
             }
         }
 
-        config.recursiveGet(JsonObject.class, "network").putDefault(NAME_MAX_PACKETS_PER_TICK, new JsonPrimitive(maxPacketsPerTick), COMMENT_MAX_PACKETS_PER_TICK + " [1-500]");
-        config.recursiveGet(JsonObject.class, "network").putDefault(NAME_MAX_PARTICLES_PER_TICK, new JsonPrimitive(maxParticlesPerTick), COMMENT_MAX_PARTICLES_PER_TICK + " [1-500]");
-        config.recursiveGet(JsonObject.class, "controller").putDefault(NAME_MAX_CASINGS_PER_CONTROLLER, new JsonPrimitive(maxCasingsPerController), COMMENT_MAX_CASINGS_PER_CONTROLLER + " [1-512]");
-        config.recursiveGet(JsonObject.class, "module.execution").putDefault(NAME_MAX_LINES_PER_PROGRAM, new JsonPrimitive(maxLinesPerProgram), COMMENT_MAX_LINES_PER_PROGRAM + " [1-200]");
-        config.recursiveGet(JsonObject.class, "module.execution").putDefault(NAME_MAX_COLUMNS_PER_LINE, new JsonPrimitive(maxColumnsPerLine), COMMENT_MAX_COLUMNS_PER_LINE + " [1-80]");
-        config.recursiveGet(JsonObject.class, "module.infrared").putDefault(NAME_MAX_QUEUE_LENGTH, new JsonPrimitive(maxInfraredQueueLength), COMMENT_MAX_QUEUE_LENGTH + " [1-64]");
-        config.recursiveGet(JsonObject.class, "module.terminal").putDefault(NAME_ANIMATE_TYPING, new JsonPrimitive(animateTypingHand), COMMENT_ANIMATE_TYPING);
-
-        maxPacketsPerTick = config.recursiveGet(Integer.TYPE, CATEGORY_NETWORK + NAME_MAX_PACKETS_PER_TICK);
-        maxParticlesPerTick = config.recursiveGet(Integer.TYPE, CATEGORY_NETWORK + NAME_MAX_PARTICLES_PER_TICK);
-        maxCasingsPerController = config.recursiveGet(Integer.TYPE, CATEGORY_CONTROLLER + NAME_MAX_CASINGS_PER_CONTROLLER);
-        maxLinesPerProgram = config.recursiveGet(Integer.TYPE, CATEGORY_MODULE_EXECUTION + NAME_MAX_LINES_PER_PROGRAM);
-        maxColumnsPerLine = config.recursiveGet(Integer.TYPE, CATEGORY_MODULE_EXECUTION + NAME_MAX_COLUMNS_PER_LINE);
-        maxInfraredQueueLength = config.recursiveGet(Integer.TYPE, CATEGORY_MODULE_INFRARED + NAME_MAX_QUEUE_LENGTH);
-        animateTypingHand = config.recursiveGet(Boolean.TYPE, CATEGORY_MODULE_TERMINAL + NAME_ANIMATE_TYPING);
-
-        try {
-            Files.write(config.toJson(true, true), configFile, Charsets.UTF_8);
-        } catch (final Exception e) {
-            e.printStackTrace();
-        }
+        config.save(configFile);
     }
 
     // --------------------------------------------------------------------- //

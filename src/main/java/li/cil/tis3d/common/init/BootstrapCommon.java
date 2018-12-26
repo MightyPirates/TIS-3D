@@ -18,12 +18,14 @@ import net.fabricmc.fabric.events.TickEvent;
 import net.fabricmc.loader.FabricLoader;
 import net.minecraft.item.ItemGroup;
 
+import java.io.File;
+
 @SuppressWarnings("unused")
 public final class BootstrapCommon implements ModInitializer {
     @Override
     public void onInitialize() {
         // Load our settings first to have all we need for remaining init.
-        Settings.load(FabricLoader.INSTANCE.getConfigDirectory());
+        Settings.load(new File(FabricLoader.INSTANCE.getConfigDirectory(), API.MOD_ID + ".cfg"));
 
         // Initialize API.
         API.creativeTab = ItemGroup.REDSTONE;
