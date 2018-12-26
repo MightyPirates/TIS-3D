@@ -89,7 +89,6 @@ public final class Items {
 
     @Nullable
     private static Item registerModule(final Identifier identifier) {
-        Settings.load();
         if (Settings.disabledModules.contains(identifier.getPath())) {
             return null;
         }

@@ -15,6 +15,7 @@ import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.provider.SimpleModuleProvider;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.events.TickEvent;
+import net.fabricmc.loader.FabricLoader;
 import net.minecraft.item.ItemGroup;
 
 @SuppressWarnings("unused")
@@ -22,7 +23,7 @@ public final class BootstrapCommon implements ModInitializer {
     @Override
     public void onInitialize() {
         // Load our settings first to have all we need for remaining init.
-        Settings.load();
+        Settings.load(FabricLoader.INSTANCE.getConfigDirectory());
 
         // Initialize API.
         API.creativeTab = ItemGroup.REDSTONE;

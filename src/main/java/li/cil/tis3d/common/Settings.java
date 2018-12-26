@@ -93,14 +93,8 @@ public final class Settings {
 
     // --------------------------------------------------------------------- //
 
-    private static boolean loaded;
-
     @SuppressWarnings("ConstantConditions")
-    public static void load() {
-        if (loaded) return;
-        loaded = true;
-
-        File configDir = FabricLoader.INSTANCE.getConfigDirectory();
+    public static void load(File configDir) {
         if (!configDir.exists()) configDir.mkdir();
         File configFile = new File(configDir, "tis3d.hjson");
 
