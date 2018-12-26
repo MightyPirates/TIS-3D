@@ -30,6 +30,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -158,8 +159,8 @@ public final class CasingBlockEntity extends AbstractComputerBlockEntity impleme
     }
 
     public void scheduleScan() {
-        assert getWorld() != null;
-        if (getWorld().isClient) {
+        final World world = Objects.requireNonNull(getWorld());
+        if (world.isClient) {
             return;
         }
         if (getController() != null) {
@@ -196,7 +197,7 @@ public final class CasingBlockEntity extends AbstractComputerBlockEntity impleme
             if (module instanceof BlockChangeAware) {
                 final BlockPos moduleNeighborPos = getPosition().offset(Face.toDirection(face));
                 final boolean isModuleNeighbor = Objects.equals(neighborPos, moduleNeighborPos);
-                ((BlockChangeAware) module).onNeighborBlockChange(neighborPos, isModuleNeighbor);
+                ((BlockChangeAware)module).onNeighborBlockChange(neighborPos, isModuleNeighbor);
             }
         }
     }
@@ -228,15 +229,15 @@ public final class CasingBlockEntity extends AbstractComputerBlockEntity impleme
         for (final Face face : Face.VALUES) {
             final Module module = getCasing().getModule(face);
             if (module instanceof Redstone) {
-                final Redstone redstone = (Redstone) module;
-                final short signal = (short) RedstoneIntegration.INSTANCE.getRedstoneInput(redstone);
+                final Redstone redstone = (Redstone)module;
+                final short signal = (short)RedstoneIntegration.INSTANCE.getRedstoneInput(redstone);
                 redstone.setRedstoneInput(signal);
             }
 
             if (module instanceof BundledRedstone) {
-                final BundledRedstone bundledRedstone = (BundledRedstone) module;
+                final BundledRedstone bundledRedstone = (BundledRedstone)module;
                 for (int channel = 0; channel < 16; channel++) {
-                    final short signal = (short) RedstoneIntegration.INSTANCE.getBundledRedstoneInput(bundledRedstone, channel);
+                    final short signal = (short)RedstoneIntegration.INSTANCE.getBundledRedstoneInput(bundledRedstone, channel);
                     bundledRedstone.setBundledRedstoneInput(channel, signal);
                 }
             }
@@ -254,10 +255,11 @@ public final class CasingBlockEntity extends AbstractComputerBlockEntity impleme
     protected void setNeighbor(final Face face, @Nullable final AbstractComputerBlockEntity neighbor) {
         super.setNeighbor(face, neighbor);
 
+        final World world = Objects.requireNonNull(getWorld());
+
         // Ensure there are no modules installed between two casings.
         if (hasNeighbor(face)) {
-            assert getWorld() != null;
-            InventoryUtils.drop(getWorld(), getPos(), this, face.ordinal(), getInvMaxStackAmount(), Face.toDirection(face));
+            InventoryUtils.drop(world, getPos(), this, face.ordinal(), getInvMaxStackAmount(), Face.toDirection(face));
         }
 
         if (neighbor instanceof ControllerBlockEntity) {
@@ -326,10 +328,12 @@ public final class CasingBlockEntity extends AbstractComputerBlockEntity impleme
     public void invalidate() {
         super.invalidate();
 
-        assert getWorld() != null;
-        if (!getWorld().isClient) {
+        final World world = Objects.requireNonNull(getWorld());
+
+        if (!world.isClient) {
             onDisabled();
         }
+
         dispose();
     }
 
@@ -357,9 +361,10 @@ public final class CasingBlockEntity extends AbstractComputerBlockEntity impleme
     protected void readFromNBTForClient(final CompoundTag nbt) {
         super.readFromNBTForClient(nbt);
 
+        final World world = Objects.requireNonNull(getWorld());
+
         isEnabled = nbt.getBoolean(TAG_ENABLED);
-        assert getWorld() != null;
-        getWorld().updateListeners(getPos(), getCachedState(), getCachedState(), 2);
+        world.updateListeners(getPos(), getCachedState(), getCachedState(), 2);
     }
 
     @Override
@@ -461,6 +466,8 @@ public final class CasingBlockEntity extends AbstractComputerBlockEntity impleme
 
     @Nullable
     private ControllerBlockEntity findController() {
+        final World world = Objects.requireNonNull(getWorld());
+
         // List of processed tile entities to avoid loops.
         final Set<BlockEntity> processed = new HashSet<>();
         // List of pending tile entities that still need to be scanned.
@@ -481,7 +488,7 @@ public final class CasingBlockEntity extends AbstractComputerBlockEntity impleme
             // Check what we have. We only add controllers and casings to this list,
             // so we can skip the type check in the else branch.
             if (blockEntity instanceof ControllerBlockEntity) {
-                return (ControllerBlockEntity) blockEntity;
+                return (ControllerBlockEntity)blockEntity;
             } else /* if (blockEntity instanceof CasingBlockEntity) */ {
                 // We only allow a certain number of casings per multi-block, so
                 // we can early exit if there are too many (because even if we
@@ -492,8 +499,7 @@ public final class CasingBlockEntity extends AbstractComputerBlockEntity impleme
                 }
 
                 // Keep looking...
-                assert getWorld() != null;
-                if (!ControllerBlockEntity.addNeighbors(getWorld(), blockEntity, processed, queue)) {
+                if (!ControllerBlockEntity.addNeighbors(world, blockEntity, processed, queue)) {
                     // Hit end of loaded area, so scheduling would just result in
                     // error again anyway. Do *not* disable casings, keep last
                     // known valid state when all parts were loaded.
@@ -508,10 +514,10 @@ public final class CasingBlockEntity extends AbstractComputerBlockEntity impleme
     }
 
     private void sendState() {
-        assert getWorld() != null;
-        final CasingEnabledStateMessage message = new CasingEnabledStateMessage(this, isEnabled);
+        final World world = Objects.requireNonNull(getWorld());
 
-        Network.INSTANCE.sendToClientsInDimension(message, getWorld());
+        final CasingEnabledStateMessage message = new CasingEnabledStateMessage(this, isEnabled);
+        Network.INSTANCE.sendToClientsInDimension(message, world);
     }
 
     private void dispose() {
@@ -522,17 +528,19 @@ public final class CasingBlockEntity extends AbstractComputerBlockEntity impleme
     }
 
     private void sendCasingLockedState() {
-        assert getWorld() != null;
+        final World world = Objects.requireNonNull(getWorld());
+
         final CasingLockedStateMessage message = new CasingLockedStateMessage(this, isLocked());
-        Network.INSTANCE.sendToClientsNearLocation(message, getWorld(), getPos(), Network.RANGE_HIGH);
-        getWorld().playSound(null, getPos(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCK, 0.3f, isLocked() ? 0.5f : 0.6f);
+        Network.INSTANCE.sendToClientsNearLocation(message, world, getPos(), Network.RANGE_HIGH);
+        world.playSound(null, getPos(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCK, 0.3f, isLocked() ? 0.5f : 0.6f);
     }
 
     private void sendReceivingPipeLockedState(final Face face, final Port port) {
-        assert getWorld() != null;
+        final World world = Objects.requireNonNull(getWorld());
+
         final PipeLockedStateMessage message = new PipeLockedStateMessage(this, face, port, isReceivingPipeLocked(face, port));
-        Network.INSTANCE.sendToClientsNearLocation(message, getWorld(), getPos(), Network.RANGE_HIGH);
-        getWorld().playSound(null, getPos(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCK, 0.3f, isReceivingPipeLocked(face, port) ? 0.5f : 0.6f);
+        Network.INSTANCE.sendToClientsNearLocation(message, world, getPos(), Network.RANGE_HIGH);
+        world.playSound(null, getPos(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCK, 0.3f, isReceivingPipeLocked(face, port) ? 0.5f : 0.6f);
     }
 
     private static void decompressClosed(final byte[] compressed, final boolean[][] decompressed) {
@@ -566,7 +574,7 @@ public final class CasingBlockEntity extends AbstractComputerBlockEntity impleme
             if ((i & 1) == 1) {
                 c <<= 4;
             }
-            compressed[i >> 1] |= (byte) c;
+            compressed[i >> 1] |= (byte)c;
         }
         return compressed;
     }

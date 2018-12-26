@@ -1,6 +1,6 @@
 package li.cil.tis3d.common.inventory;
 
-import li.cil.tis3d.common.Constants;
+import li.cil.tis3d.util.NBTIds;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
@@ -27,7 +27,7 @@ public class ArrayInventory implements Inventory {
     // --------------------------------------------------------------------- //
 
     public void readFromNBT(final CompoundTag nbt) {
-        final ListTag itemList = nbt.getList(TAG_ITEMS, Constants.NBT.TAG_COMPOUND);
+        final ListTag itemList = nbt.getList(TAG_ITEMS, NBTIds.TAG_COMPOUND);
         final int count = Math.min(itemList.size(), items.length);
         for (int index = 0; index < count; index++) {
             items[index] = ItemStack.fromTag(itemList.getCompoundTag(index));
@@ -130,16 +130,14 @@ public class ArrayInventory implements Inventory {
 
     @Override
     public void markDirty() {
-
     }
 
     @Override
-    public boolean canPlayerUseInv(PlayerEntity var1) {
+    public boolean canPlayerUseInv(final PlayerEntity player) {
         return false;
     }
 
     @Override
     public void clearInv() {
-
     }
 }

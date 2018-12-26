@@ -21,8 +21,8 @@ import java.util.List;
  * Base item for all keys.
  */
 public final class KeyItem extends Item {
-    public KeyItem(Item.Settings builder) {
-        super(builder.stackSize(1));
+    public KeyItem(final Item.Settings settings) {
+        super(settings.stackSize(1));
     }
 
     // --------------------------------------------------------------------- //
@@ -42,7 +42,7 @@ public final class KeyItem extends Item {
     }
 
     @Override
-    public ActionResult useOnBlock(ItemUsageContext context) {
+    public ActionResult useOnBlock(final ItemUsageContext context) {
         return CasingBlock.activate(context) ? ActionResult.SUCCESS : super.useOnBlock(context);
     }
 

@@ -36,7 +36,7 @@ public final class Textures {
     public static final Identifier LOCATION_OVERLAY_MODULE_TERMINAL = new Identifier(API.MOD_ID, "block/overlay/module_terminal");
     public static final Identifier LOCATION_OVERLAY_MODULE_TIMER = new Identifier(API.MOD_ID, "block/overlay/module_timer");
 
-    static void registerSprites(SpriteRegistry registry) {
+    static void registerSprites(final SpriteRegistry registry) {
         registry.register(LOCATION_OVERLAY_CASING_LOCKED);
         registry.register(LOCATION_OVERLAY_CASING_UNLOCKED);
         registry.register(LOCATION_OVERLAY_CASING_PORT_CLOSED);

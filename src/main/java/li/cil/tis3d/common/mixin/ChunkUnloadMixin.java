@@ -19,11 +19,11 @@ public abstract class ChunkUnloadMixin {
     private List<BlockEntity> unloadedBlockEntities;
 
     @Inject(method = "updateEntities", at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/util/Profiler;endBegin(Ljava/lang/String;)V", args = {"ldc=blockEntities"}))
-    private void onBlockEntityChunkUnload(CallbackInfo ci) {
+    private void onBlockEntityChunkUnload(final CallbackInfo ci) {
         if (!unloadedBlockEntities.isEmpty()) {
-            for (BlockEntity blockEntity : unloadedBlockEntities) {
+            for (final BlockEntity blockEntity : unloadedBlockEntities) {
                 if (blockEntity instanceof AbstractComputerBlockEntity) {
-                    ((AbstractComputerBlockEntity) blockEntity).onChunkUnload();
+                    ((AbstractComputerBlockEntity)blockEntity).onChunkUnload();
                 }
             }
         }

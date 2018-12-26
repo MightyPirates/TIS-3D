@@ -80,7 +80,7 @@ public final class ManualGui extends Gui {
             final int y = guiTop + TAB_POS_Y + i * (TAB_HEIGHT - TAB_OVERLAP);
             this.addButton(new ImageButton(i, x, y, TAB_WIDTH, TAB_HEIGHT - TAB_OVERLAP - 1, Textures.LOCATION_GUI_MANUAL_TAB) {
                 @Override
-                public void onPressed(double p_mouseClicked_1_, double p_mouseClicked_3_) {
+                public void onPressed(final double x, final double y) {
                     ManualAPI.navigate(ManualAPIImpl.getTabs().get(id).path);
                 }
             }.setImageHeight(TAB_HEIGHT).setVerticalImageOffset(-TAB_OVERLAP / 2));
@@ -88,7 +88,7 @@ public final class ManualGui extends Gui {
 
         scrollButton = new ImageButton(-1, guiLeft + SCROLL_POS_X, guiTop + SCROLL_POS_Y, 26, 13, Textures.LOCATION_GUI_MANUAL_SCROLL) {
             @Override
-            public boolean mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_, int p_mouseClicked_5_) {
+            public boolean mouseClicked(final double x, final double y, final int button) {
                 return false; // Handled in parent mouseClicked
             }
         };
@@ -111,9 +111,9 @@ public final class ManualGui extends Gui {
 
         for (int i = 0; i < ManualAPIImpl.getTabs().size() && i < MAX_TABS_PER_SIDE; i++) {
             final ManualAPIImpl.Tab tab = ManualAPIImpl.getTabs().get(i);
-            final ImageButton button = (ImageButton) buttons.get(i);
+            final ImageButton button = (ImageButton)buttons.get(i);
             GlStateManager.pushMatrix();
-            GlStateManager.translatef(button.x + 30, button.y + 4 - TAB_OVERLAP / 2, (int) zOffset);
+            GlStateManager.translatef(button.x + 30, (float)(button.y + 4 - TAB_OVERLAP / 2), (int)zOffset);
             tab.renderer.render();
             GlStateManager.popMatrix();
         }
@@ -125,7 +125,7 @@ public final class ManualGui extends Gui {
 
             for (int i = 0; i < ManualAPIImpl.getTabs().size() && i < MAX_TABS_PER_SIDE; i++) {
                 final ManualAPIImpl.Tab tab = ManualAPIImpl.getTabs().get(i);
-                final ImageButton button = (ImageButton) buttons.get(i);
+                final ImageButton button = (ImageButton)buttons.get(i);
                 if (mouseX > button.x && mouseX < button.x + button.getWidth() && mouseY > button.y && mouseY < button.y + button.getHeight()) {
                     if (tab.tooltip != null) {
                         drawTooltip(Collections.singletonList(I18n.translate(tab.tooltip)), mouseX, mouseY);
@@ -140,7 +140,7 @@ public final class ManualGui extends Gui {
     }
 
     @Override
-    public boolean mouseScrolled(double value) {
+    public boolean mouseScrolled(final double value) {
         if (value != 0) {
             scroll(-value);
         }
@@ -148,7 +148,7 @@ public final class ManualGui extends Gui {
     }
 
     @Override
-    public boolean keyPressed(int code, int scancode, int mods) {
+    public boolean keyPressed(final int code, final int scancode, final int mods) {
         if (client.options.keyJump.matches(code, scancode)) {
             popPage();
             return true;
@@ -166,8 +166,8 @@ public final class ManualGui extends Gui {
             return true;
         }
 
-        int mouseX = (int) Math.round(mouseXd);
-        int mouseY = (int) Math.round(mouseYd);
+        final int mouseX = (int)Math.round(mouseXd);
+        final int mouseY = (int)Math.round(mouseYd);
 
         if (canScroll() && button == 0 && isCoordinateOverScrollBar(mouseX - guiLeft, mouseY - guiTop)) {
             isDragging = true;
@@ -249,11 +249,11 @@ public final class ManualGui extends Gui {
     }
 
     private void scrollMouse(final double mouseY) {
-        scrollTo((int) Math.round((mouseY - guiTop - SCROLL_POS_Y - 6.5) * maxOffset() / (SCROLL_HEIGHT - 13.0)));
+        scrollTo((int)Math.round((mouseY - guiTop - SCROLL_POS_Y - 6.5) * maxOffset() / (SCROLL_HEIGHT - 13.0)));
     }
 
-    private void scroll(double amount) {
-        scrollTo(offset() + (int) Math.round(Document.lineHeight(getFontRenderer()) * 3 * amount));
+    private void scroll(final double amount) {
+        scrollTo(offset() + (int)Math.round(Document.lineHeight(getFontRenderer()) * 3 * amount));
     }
 
     private void scrollTo(final int row) {
@@ -350,8 +350,8 @@ public final class ManualGui extends Gui {
                 --scaleFactor;
             }
 
-            this.scaledWidth = MathHelper.ceil(width / (double) scaleFactor);
-            this.scaledHeight = MathHelper.ceil(height / (double) scaleFactor);
+            this.scaledWidth = MathHelper.ceil(width / (double)scaleFactor);
+            this.scaledHeight = MathHelper.ceil(height / (double)scaleFactor);
         }
     }
 }

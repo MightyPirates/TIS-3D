@@ -19,6 +19,7 @@ import li.cil.tis3d.common.module.execution.MachineState;
 import li.cil.tis3d.common.module.execution.compiler.Compiler;
 import li.cil.tis3d.common.module.execution.compiler.ParseException;
 import li.cil.tis3d.util.EnumUtils;
+import li.cil.tis3d.util.NBTIds;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.BufferBuilder;
@@ -334,11 +335,11 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
 
         final ByteBuf data = Unpooled.buffer();
 
-        data.writeShort((short) getState().pc);
+        data.writeShort((short)getState().pc);
         data.writeShort(getState().acc);
         data.writeShort(getState().bak);
         data.writeBoolean(getState().last.isPresent());
-        getState().last.ifPresent(port -> data.writeByte((byte) port.ordinal()));
+        getState().last.ifPresent(port -> data.writeByte((byte)port.ordinal()));
         data.writeByte(state.ordinal());
 
         getCasing().sendData(getFace(), data, DATA_TYPE_INCREMENTAL);
@@ -443,7 +444,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
                 return null;
             }
 
-            final ListTag pages = nbt.getList("pages", Constants.NBT.TAG_STRING);
+            final ListTag pages = nbt.getList("pages", NBTIds.TAG_STRING);
             if (pages.size() < 1) {
                 return null;
             }

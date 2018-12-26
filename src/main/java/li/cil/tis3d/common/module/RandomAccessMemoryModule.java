@@ -237,11 +237,11 @@ public class RandomAccessMemoryModule extends AbstractModuleWithRotation {
     }
 
     private void set(final int value) {
-        memory[address & 0xFF] = (byte) value;
+        memory[address & 0xFF] = (byte)value;
     }
 
     private void clear() {
-        Arrays.fill(memory, (byte) 0);
+        Arrays.fill(memory, (byte)0);
     }
 
     /**
@@ -264,10 +264,10 @@ public class RandomAccessMemoryModule extends AbstractModuleWithRotation {
     private void process(final short value) {
         switch (state) {
             case ADDRESS:
-                beginReadWrite((byte) value);
+                beginReadWrite((byte)value);
                 break;
             case ACCESS:
-                finishReading((byte) value);
+                finishReading((byte)value);
                 break;
         }
     }
@@ -285,7 +285,7 @@ public class RandomAccessMemoryModule extends AbstractModuleWithRotation {
         state = State.ACCESS;
 
         // Begin writing the value at that address to all ports.
-        final short value = (short) get();
+        final short value = (short)get();
         for (final Port port : Port.VALUES) {
             getCasing().getSendingPipe(getFace(), port).beginWrite(value);
         }
@@ -336,13 +336,13 @@ public class RandomAccessMemoryModule extends AbstractModuleWithRotation {
         for (int i = offset, end = offset + count; i < end; i++) {
             sum += memory[i] & 0xFF;
         }
-        return sum / (count * (float) 0xFF);
+        return sum / (count * (float)0xFF);
     }
 
     protected final void load(final byte[] data) {
         System.arraycopy(data, 0, memory, 0, Math.min(data.length, memory.length));
         if (data.length < memory.length) {
-            Arrays.fill(memory, data.length, memory.length, (byte) 0);
+            Arrays.fill(memory, data.length, memory.length, (byte)0);
         }
     }
 }

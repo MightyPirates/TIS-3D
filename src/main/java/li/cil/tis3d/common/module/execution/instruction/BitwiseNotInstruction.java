@@ -10,7 +10,7 @@ public final class BitwiseNotInstruction implements Instruction {
     @Override
     public void step(final Machine machine) {
         final MachineState state = machine.getState();
-        state.acc = (short) ~state.acc;
+        state.acc = (short)~state.acc;
         state.pc++;
     }
 

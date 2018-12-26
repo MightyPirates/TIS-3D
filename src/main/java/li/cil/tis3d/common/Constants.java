@@ -9,17 +9,6 @@ import java.util.regex.Pattern;
  * Collection of constants used throughout the mod.
  */
 public final class Constants {
-    public class NBT {
-        public static final int TAG_STRING = 8;
-        public static final int TAG_COMPOUND = 10;
-    }
-
-    // --------------------------------------------------------------------- //
-    // Mod data
-
-    static final String PROXY_CLIENT = "li.cil.tis3d.client.ProxyClient";
-    static final String PROXY_COMMON = "li.cil.tis3d.common.ProxyCommon";
-
     // --------------------------------------------------------------------- //
     // Block, item, entity and container names
 
@@ -103,8 +92,6 @@ public final class Constants {
     public static final String TOOLTIP_KEY = "tis3d.tooltip.key";
 
     // --------------------------------------------------------------------- //
-
-    public static final Identifier PACKET = new Identifier(API.MOD_ID, "wrap");
 
     private Constants() {
     }

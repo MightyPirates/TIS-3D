@@ -26,9 +26,9 @@ public final class TargetOrImmediateInstructionEmitter extends AbstractInstructi
         checkExcess(lineNumber, matcher, "arg2");
 
         if (src instanceof Target) {
-            return constructorTarget.apply((Target) src);
+            return constructorTarget.apply((Target)src);
         } else /* if (src instanceof Integer) */ {
-            return constructorImmediate.apply((Short) src);
+            return constructorImmediate.apply((Short)src);
         }
     }
 }

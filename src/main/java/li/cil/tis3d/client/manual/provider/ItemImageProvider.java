@@ -16,8 +16,7 @@ public final class ItemImageProvider implements ImageProvider {
 
     @Override
     public ImageRenderer getImage(final String data) {
-        final String name = data;
-        final Item item = Registry.ITEM.get(new Identifier(name));
+        final Item item = Registry.ITEM.get(new Identifier(data));
         if (item != Items.AIR) {
             return new ItemStackImageRenderer(new ItemStack(item, 1));
         } else {

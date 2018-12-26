@@ -28,6 +28,7 @@ import java.util.Optional;
  * <p>
  * While it is not full, it will receive data on all ports and push them back.
  */
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public final class SerialPortModule extends AbstractModule implements BlockChangeAware {
     // --------------------------------------------------------------------- //
     // Persisted data
@@ -196,7 +197,7 @@ public final class SerialPortModule extends AbstractModule implements BlockChang
      */
     private void stepOutput() {
         if (serialInterface.map(SerialInterface::canRead).orElse(false)) {
-            final short value = serialInterface.map(SerialInterface::peek).orElse((short) 0);
+            final short value = serialInterface.map(SerialInterface::peek).orElse((short)0);
             if (value != writing) {
                 cancelWrite();
                 writing = value;

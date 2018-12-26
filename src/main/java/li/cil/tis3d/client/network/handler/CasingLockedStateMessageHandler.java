@@ -14,7 +14,7 @@ public final class CasingLockedStateMessageHandler extends AbstractMessageHandle
             return;
         }
 
-        final CasingBlockEntity casing = (CasingBlockEntity) blockEntity;
+        final CasingBlockEntity casing = (CasingBlockEntity)blockEntity;
         casing.setCasingLockedClient(message.isLocked());
     }
 }

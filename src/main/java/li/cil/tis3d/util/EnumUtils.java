@@ -1,7 +1,6 @@
 package li.cil.tis3d.util;
 
 import li.cil.tis3d.api.API;
-import li.cil.tis3d.common.Constants;
 import net.minecraft.nbt.CompoundTag;
 import org.apache.logging.log4j.LogManager;
 
@@ -10,7 +9,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public final class EnumUtils {
     public static <T extends Enum<T>> T readFromNBT(final Class<T> clazz, final String tagName, final CompoundTag nbt) {
-        if (nbt.containsKey(tagName, Constants.NBT.TAG_STRING)) {
+        if (nbt.containsKey(tagName, NBTIds.TAG_STRING)) {
             // Backwards compatibility.
             try {
                 return Enum.valueOf(clazz, nbt.getString(tagName));
@@ -25,7 +24,7 @@ public final class EnumUtils {
     }
 
     public static <T extends Enum<T>> void writeToNBT(final Enum<T> value, final String tagName, final CompoundTag nbt) {
-        nbt.putByte(tagName, (byte) value.ordinal());
+        nbt.putByte(tagName, (byte)value.ordinal());
     }
 
     // --------------------------------------------------------------------- //

@@ -4,6 +4,7 @@ import li.cil.tis3d.client.gui.GuiHelper;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.block.CasingBlock;
 import li.cil.tis3d.util.FontRendererUtils;
+import li.cil.tis3d.util.NBTIds;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.item.TooltipOptions;
@@ -29,8 +30,8 @@ import java.util.*;
  * The code book, utility book for coding ASM programs for execution modules.
  */
 public final class CodeBookItem extends BookItem {
-    public CodeBookItem(Item.Settings builder) {
-        super(builder.stackSize(1));
+    public CodeBookItem(final Item.Settings settings) {
+        super(settings.stackSize(1));
     }
 
     // --------------------------------------------------------------------- //
@@ -53,7 +54,7 @@ public final class CodeBookItem extends BookItem {
     }
 
     @Override
-    public ActionResult useOnBlock(ItemUsageContext context) {
+    public ActionResult useOnBlock(final ItemUsageContext context) {
         return CasingBlock.activate(context) ? ActionResult.SUCCESS : super.useOnBlock(context);
     }
 
@@ -262,7 +263,7 @@ public final class CodeBookItem extends BookItem {
         public void readFromNBT(final CompoundTag nbt) {
             pages.clear();
 
-            final ListTag pagesNbt = nbt.getList(TAG_PAGES, Constants.NBT.TAG_STRING);
+            final ListTag pagesNbt = nbt.getList(TAG_PAGES, NBTIds.TAG_STRING);
             for (int index = 0; index < pagesNbt.size(); index++) {
                 pages.add(Arrays.asList(Constants.PATTERN_LINES.split(pagesNbt.getString(index))));
             }

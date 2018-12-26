@@ -14,6 +14,7 @@ import java.util.*;
 /**
  * Virtual machine state for executing TIS-100 assembly.
  */
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public final class MachineState {
     // --------------------------------------------------------------------- //
     // Persisted data
@@ -154,7 +155,7 @@ public final class MachineState {
         nbt.putInt(TAG_PC_PREV, pcPrev);
 
         if (code != null) {
-            nbt.putString(TAG_CODE, String.join("\n", (CharSequence[]) code));
+            nbt.putString(TAG_CODE, String.join("\n", (CharSequence[])code));
         }
     }
 }

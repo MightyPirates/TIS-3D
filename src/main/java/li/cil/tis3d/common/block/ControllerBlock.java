@@ -19,7 +19,7 @@ import net.minecraft.world.World;
  * Block for the controller driving the casings.
  */
 public final class ControllerBlock extends Block implements BlockEntityProvider {
-    public ControllerBlock(Block.Settings builder) {
+    public ControllerBlock(final Block.Settings builder) {
         super(builder);
     }
 
@@ -27,7 +27,7 @@ public final class ControllerBlock extends Block implements BlockEntityProvider 
     // Common
 
     @Override
-    public BlockEntity createBlockEntity(BlockView view) {
+    public BlockEntity createBlockEntity(final BlockView view) {
         return new ControllerBlockEntity();
     }
 
@@ -56,7 +56,7 @@ public final class ControllerBlock extends Block implements BlockEntityProvider 
 
         final BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof ControllerBlockEntity) {
-            final ControllerBlockEntity controller = (ControllerBlockEntity) blockEntity;
+            final ControllerBlockEntity controller = (ControllerBlockEntity)blockEntity;
 
             if (!world.isClient) {
                 controller.forceStep();
@@ -69,7 +69,7 @@ public final class ControllerBlock extends Block implements BlockEntityProvider 
 
     @SuppressWarnings("deprecation")
     @Override
-    public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean flag) {
+    public void onBlockRemoved(final BlockState state, final World world, final BlockPos pos, final BlockState newState, final boolean flag) {
         if (state.getBlock() != newState.getBlock()) {
             world.removeBlockEntity(pos);
         }
@@ -90,7 +90,7 @@ public final class ControllerBlock extends Block implements BlockEntityProvider 
     public int getComparatorOutput(final BlockState state, final World world, final BlockPos pos) {
         final BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof ControllerBlockEntity) {
-            final ControllerBlockEntity controller = (ControllerBlockEntity) blockEntity;
+            final ControllerBlockEntity controller = (ControllerBlockEntity)blockEntity;
             return controller.getState() == ControllerBlockEntity.ControllerState.READY ? 15 : 0;
         }
         return 0;
@@ -104,7 +104,7 @@ public final class ControllerBlock extends Block implements BlockEntityProvider 
     public void neighborUpdate(final BlockState state, final World world, final BlockPos pos, final Block neighborBlock, final BlockPos neighborPos) {
         final BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof ControllerBlockEntity) {
-            final ControllerBlockEntity controller = (ControllerBlockEntity) blockEntity;
+            final ControllerBlockEntity controller = (ControllerBlockEntity)blockEntity;
             controller.checkNeighbors();
         }
         super.neighborUpdate(state, world, pos, neighborBlock, neighborPos);

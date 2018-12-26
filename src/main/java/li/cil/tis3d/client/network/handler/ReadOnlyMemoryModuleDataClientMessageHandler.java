@@ -15,7 +15,7 @@ public final class ReadOnlyMemoryModuleDataClientMessageHandler extends Abstract
             return;
         }
 
-        final ReadOnlyMemoryModuleGui guiMemory = (ReadOnlyMemoryModuleGui) MinecraftClient.getInstance().currentGui;
+        final ReadOnlyMemoryModuleGui guiMemory = (ReadOnlyMemoryModuleGui)MinecraftClient.getInstance().currentGui;
         guiMemory.setData(message.getData());
     }
 }

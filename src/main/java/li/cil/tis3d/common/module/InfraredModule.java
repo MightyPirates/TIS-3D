@@ -107,7 +107,7 @@ public final class InfraredModule extends AbstractModule implements InfraredRece
         receiveQueue.clear();
         final int[] receiveQueueNbt = nbt.getIntArray(TAG_RECEIVE_QUEUE);
         for (final int value : receiveQueueNbt) {
-            receiveQueue.addLast((short) value);
+            receiveQueue.addLast((short)value);
         }
     }
 

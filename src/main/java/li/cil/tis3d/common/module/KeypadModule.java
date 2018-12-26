@@ -21,6 +21,7 @@ import net.minecraft.world.World;
 
 import java.util.Optional;
 
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public final class KeypadModule extends AbstractModuleWithRotation {
     // --------------------------------------------------------------------- //
     // Persisted data
@@ -117,7 +118,7 @@ public final class KeypadModule extends AbstractModuleWithRotation {
         final World world = getCasing().getCasingWorld();
         if (world.isClient) {
             final Vec3d uv = hitToUV(new Vec3d(hitX, hitY, hitZ));
-            final int button = uvToButton((float) uv.x, (float) uv.y);
+            final int button = uvToButton((float)uv.x, (float)uv.y);
             if (button == -1) {
                 // No button here.
                 return true;
@@ -174,7 +175,7 @@ public final class KeypadModule extends AbstractModuleWithRotation {
             final Vec3d hitPos = getObserverLookAt(rendererDispatcher);
             if (hitPos != null) {
                 final Vec3d uv = hitToUV(hitPos);
-                final int button = uvToButton((float) uv.x, (float) uv.y);
+                final int button = uvToButton((float)uv.x, (float)uv.y);
                 if (button >= 0) {
                     drawButtonOverlay(button);
                 }
@@ -207,10 +208,11 @@ public final class KeypadModule extends AbstractModuleWithRotation {
             return;
         }
 
+        final short v = value.get();
         for (final Port port : Port.VALUES) {
             final Pipe sendingPipe = getCasing().getSendingPipe(getFace(), port);
             if (!sendingPipe.isWriting()) {
-                sendingPipe.beginWrite(value.get());
+                sendingPipe.beginWrite(v);
             }
         }
     }
@@ -261,7 +263,7 @@ public final class KeypadModule extends AbstractModuleWithRotation {
     }
 
     private short buttonToNumber(final int button) {
-        return (short) ((button + 1) % 10);
+        return (short)((button + 1) % 10);
     }
 
     @Environment(EnvType.CLIENT)

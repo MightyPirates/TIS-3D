@@ -104,7 +104,7 @@ public final class AudioModule extends AbstractModule {
         }
 
         // Get pitch, sound effect name.
-        final float pitch = (float) Math.pow(2, (noteId - 12) / 12.0);
+        final float pitch = (float)Math.pow(2, (noteId - 12) / 12.0);
         final Instrument instrument = Instrument.values()[instrumentId];
 
         // Offset to have the actual origin be in front of the module.
@@ -117,6 +117,6 @@ public final class AudioModule extends AbstractModule {
         // Let there be sound!
         final World world = getCasing().getCasingWorld();
         world.playSound(null, x, y, z, instrument.getSound(), SoundCategory.BLOCK, volume, pitch);
-        ((ServerWorld) world).method_14199(ParticleTypes.NOTE, x, y, z, 1, 0, 0, 0, 0);
+        ((ServerWorld)world).method_14199(ParticleTypes.NOTE, x, y, z, 1, 0, 0, 0, 0);
     }
 }

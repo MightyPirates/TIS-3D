@@ -17,8 +17,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * Inventory implementation for casings, having six slots for modules, one per face.
@@ -60,13 +62,14 @@ public final class CasingInventory extends ArrayInventory implements SidedInvent
 
     @Override
     public void markDirty() {
-        assert blockEntity.getWorld() != null;
-        final BlockState state = blockEntity.getWorld().getBlockState(blockEntity.getPos());
-        Blocks.CASING.updateBlockState(state, blockEntity.getWorld(), blockEntity.getPos());
+        final World world = Objects.requireNonNull(blockEntity.getWorld());
+
+        final BlockState state = world.getBlockState(blockEntity.getPos());
+        Blocks.CASING.updateBlockState(state, world, blockEntity.getPos());
         blockEntity.markDirty();
-        if (blockEntity.hasWorld() && blockEntity.getWorld().isClient) {
+        if (world.isClient) {
             // Re-render on client, as module presence changes the block model.
-            blockEntity.getWorld().scheduleBlockRender(blockEntity.getPos());
+            world.scheduleBlockRender(blockEntity.getPos());
         }
     }
 
@@ -104,6 +107,8 @@ public final class CasingInventory extends ArrayInventory implements SidedInvent
     }
 
     private void onItemAdded(final int index, final Port facing) {
+        final World world = Objects.requireNonNull(blockEntity.getWorld());
+
         final ItemStack stack = getInvStack(index);
         if (stack.isEmpty()) {
             return;
@@ -118,11 +123,10 @@ public final class CasingInventory extends ArrayInventory implements SidedInvent
         final Module module = provider.createModule(stack, blockEntity, face);
 
         if (module instanceof Rotatable) {
-            ((Rotatable) module).setFacing(facing);
+            ((Rotatable)module).setFacing(facing);
         }
 
-        assert blockEntity.getWorld() != null;
-        if (!blockEntity.getWorld().isClient) {
+        if (!world.isClient) {
             // Grab module data from newly created module, if any, don't rely on stack.
             // Rationale: module may initialize data from stack while contents of stack
             // are not synchronized to client, or do some fancy server-side only setup
@@ -136,7 +140,7 @@ public final class CasingInventory extends ArrayInventory implements SidedInvent
             }
 
             final CasingInventoryMessage message = new CasingInventoryMessage(blockEntity, index, stack, moduleData);
-            Network.INSTANCE.sendToClientsNearLocation(message, blockEntity.getWorld(), blockEntity.getPosition(), Network.RANGE_HIGH);
+            Network.INSTANCE.sendToClientsNearLocation(message, world, blockEntity.getPosition(), Network.RANGE_HIGH);
         }
 
         blockEntity.setModule(Face.VALUES[index], module);
@@ -144,18 +148,19 @@ public final class CasingInventory extends ArrayInventory implements SidedInvent
 
     @Override
     protected void onItemRemoved(final int index) {
+        final World world = Objects.requireNonNull(blockEntity.getWorld());
+
         final Face face = Face.VALUES[index];
         final Module module = blockEntity.getModule(face);
         blockEntity.setModule(face, null);
-        assert blockEntity.getWorld() != null;
-        if (!blockEntity.getWorld().isClient) {
+        if (!world.isClient) {
             if (module != null) {
                 module.onUninstalled(getInvStack(index));
                 module.onDisposed();
             }
 
             final CasingInventoryMessage message = new CasingInventoryMessage(blockEntity, index, ItemStack.EMPTY, null);
-            Network.INSTANCE.sendToClientsNearLocation(message, blockEntity.getWorld(), blockEntity.getPosition(), Network.RANGE_HIGH);
+            Network.INSTANCE.sendToClientsNearLocation(message, world, blockEntity.getPosition(), Network.RANGE_HIGH);
         }
     }
 }

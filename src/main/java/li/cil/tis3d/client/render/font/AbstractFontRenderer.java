@@ -17,10 +17,10 @@ public abstract class AbstractFontRenderer implements FontRenderer {
     private final Int2IntMap CHAR_MAP;
 
     private final int COLUMNS = getResolution() / (getCharWidth() + getGapU());
-    private final float U_SIZE = getCharWidth() / (float) getResolution();
-    private final float V_SIZE = getCharHeight() / (float) getResolution();
-    private final float U_STEP = (getCharWidth() + getGapU()) / (float) getResolution();
-    private final float V_STEP = (getCharHeight() + getGapV()) / (float) getResolution();
+    private final float U_SIZE = getCharWidth() / (float)getResolution();
+    private final float V_SIZE = getCharHeight() / (float)getResolution();
+    private final float U_STEP = (getCharWidth() + getGapU()) / (float)getResolution();
+    private final float V_STEP = (getCharHeight() + getGapV()) / (float)getResolution();
 
     AbstractFontRenderer() {
         CHAR_MAP = new Int2IntOpenHashMap();

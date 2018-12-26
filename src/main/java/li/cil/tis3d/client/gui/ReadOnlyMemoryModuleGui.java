@@ -105,8 +105,8 @@ public final class ReadOnlyMemoryModuleGui extends Gui {
             return true;
         }
 
-        int mouseX = (int) Math.round(mouseXd);
-        int mouseY = (int) Math.round(mouseYd);
+        final int mouseX = (int)Math.round(mouseXd);
+        final int mouseY = (int)Math.round(mouseYd);
 
         selectCellAt(mouseX, mouseY);
         return true;
@@ -118,15 +118,15 @@ public final class ReadOnlyMemoryModuleGui extends Gui {
             return true;
         }
 
-        int mouseX = (int) Math.round(mouseXd);
-        int mouseY = (int) Math.round(mouseYd);
+        final int mouseX = (int)Math.round(mouseXd);
+        final int mouseY = (int)Math.round(mouseYd);
 
         selectCellAt(mouseX, mouseY);
         return true;
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scancode, int mods) {
+    public boolean keyPressed(final int keyCode, final int scancode, final int mods) {
         if (super.keyPressed(keyCode, scancode, mods)) {
             return true;
         }
@@ -262,7 +262,7 @@ public final class ReadOnlyMemoryModuleGui extends Gui {
         final int labelWidth = FontRendererAPI.getCharWidth() * LABEL_INITIALIZING.length();
 
         GlStateManager.pushMatrix();
-        GlStateManager.translatef((float) (guiX + GRID_LEFT + 3 + 7 * CELL_WIDTH - labelWidth / 2), guiY + GRID_TOP + 1 + 7 * CELL_HEIGHT, 0);
+        GlStateManager.translatef((float)(guiX + GRID_LEFT + 3 + 7 * CELL_WIDTH - labelWidth / 2), guiY + GRID_TOP + 1 + 7 * CELL_HEIGHT, 0);
         FontRendererAPI.drawString(LABEL_INITIALIZING);
         GlStateManager.popMatrix();
     }
@@ -270,7 +270,7 @@ public final class ReadOnlyMemoryModuleGui extends Gui {
     private void drawMemory() {
         GlStateManager.color4f(1, 1, 1, 1);
 
-        final int visibleCells = (int) (System.currentTimeMillis() - initTime);
+        final int visibleCells = (int)(System.currentTimeMillis() - initTime);
 
         GlStateManager.pushMatrix();
         GlStateManager.translatef(guiX + GRID_LEFT + 1, guiY + GRID_TOP + 1, 0);
@@ -288,7 +288,7 @@ public final class ReadOnlyMemoryModuleGui extends Gui {
     }
 
     private void drawSelectionBox() {
-        final int visibleCells = (int) (System.currentTimeMillis() - initTime) * 2;
+        final int visibleCells = (int)(System.currentTimeMillis() - initTime) * 2;
         if (selectedCell > visibleCells) {
             return;
         }
@@ -303,7 +303,7 @@ public final class ReadOnlyMemoryModuleGui extends Gui {
         GlStateManager.translatef(x, y, 0);
 
         client.getTextureManager().bindTexture(Textures.LOCATION_GUI_MEMORY);
-        final int vPos = (int) (client.world.getTime() % 16) * 8;
+        final int vPos = (int)(client.world.getTime() % 16) * 8;
         drawTexturedRect(0, 0, 256 - (CELL_WIDTH + 1), vPos, 11, 8);
 
         GlStateManager.popMatrix();

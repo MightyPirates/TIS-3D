@@ -66,7 +66,7 @@ public final class RandomModule extends AbstractModule {
         if (!sendingPipe.isWriting()) {
             final World world = getCasing().getCasingWorld();
             final Random random = world.random;
-            final short value = (short) random.nextInt(0xFFFF + 1);
+            final short value = (short)random.nextInt(0xFFFF + 1);
             sendingPipe.beginWrite(value);
         }
     }

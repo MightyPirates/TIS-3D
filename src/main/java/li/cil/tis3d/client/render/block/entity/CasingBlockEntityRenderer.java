@@ -204,7 +204,7 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
 
         final int brightness = getWorld().getLightmapIndex(
             casing.getPosition().offset(Face.toDirection(face)), 0);
-        GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, brightness % 65536, (float) (brightness / 65536));
+        GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, brightness % 65536, (float)(brightness / 65536));
 
         try {
             module.render(renderManager, partialTicks);

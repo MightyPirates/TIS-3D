@@ -25,8 +25,8 @@ import java.util.List;
  * The manual!
  */
 public final class ManualBookItem extends BookItem {
-    public ManualBookItem(Item.Settings builder) {
-        super(builder);
+    public ManualBookItem(final Item.Settings settings) {
+        super(settings);
     }
 
     public static boolean tryOpenManual(final World world, final PlayerEntity player, @Nullable final String path) {
@@ -56,7 +56,11 @@ public final class ManualBookItem extends BookItem {
 
     @Override
     public ActionResult useOnBlock(final ItemUsageContext context) {
-        return tryOpenManual(context.getWorld(), context.getPlayer(), ManualAPI.pathFor(context.getWorld(), context.getPos())) ? ActionResult.SUCCESS : ActionResult.PASS;
+        final PlayerEntity player = context.getPlayer();
+        if (player == null) {
+            return super.useOnBlock(context);
+        }
+        return tryOpenManual(context.getWorld(), player, ManualAPI.pathFor(context.getWorld(), context.getPos())) ? ActionResult.SUCCESS : super.useOnBlock(context);
     }
 
     @Override

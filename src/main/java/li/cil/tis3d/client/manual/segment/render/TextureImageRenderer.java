@@ -26,7 +26,7 @@ public class TextureImageRenderer implements ImageRenderer {
         final TextureManager manager = MinecraftClient.getInstance().getTextureManager();
         final Texture image = manager.getTexture(location);
         if (image instanceof ImageTexture) {
-            this.texture = (ImageTexture) image;
+            this.texture = (ImageTexture)image;
         } else {
             if (image != null && image.getGlId() != -1) {
                 TextureUtil.releaseTextureId(image.getGlId());
@@ -76,7 +76,7 @@ public class TextureImageRenderer implements ImageRenderer {
             this.clearGlId();
 
             final Resource resource = manager.getResource(location);
-            try (InputStream is = resource.getInputStream()) {
+            try (final InputStream is = resource.getInputStream()) {
                 final NativeImage bi = NativeImage.fromInputStream(is);
 
                 TextureUtil.prepareImage(this.getGlId(), bi.getWidth(), bi.getHeight());

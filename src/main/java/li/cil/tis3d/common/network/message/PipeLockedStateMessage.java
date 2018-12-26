@@ -5,13 +5,15 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 
+import java.util.Objects;
+
 public final class PipeLockedStateMessage extends AbstractMessageWithLocation {
     public Face face;
     public Port port;
     public boolean isLocked;
 
     public PipeLockedStateMessage(final CasingBlockEntity casing, final Face face, final Port port, final boolean isLocked) {
-        super(casing.getWorld(), casing.getPos());
+        super(Objects.requireNonNull(casing.getWorld()), casing.getPos());
         this.face = face;
         this.port = port;
         this.isLocked = isLocked;
@@ -58,7 +60,7 @@ public final class PipeLockedStateMessage extends AbstractMessageWithLocation {
     public void toBytes(final ByteBuf buf) {
         super.toBytes(buf);
 
-        final byte compressed = (byte) ((face.ordinal() << 3) | (port.ordinal() << 1) | (isLocked ? 1 : 0));
+        final byte compressed = (byte)((face.ordinal() << 3) | (port.ordinal() << 1) | (isLocked ? 1 : 0));
         buf.writeByte(compressed);
     }
 }

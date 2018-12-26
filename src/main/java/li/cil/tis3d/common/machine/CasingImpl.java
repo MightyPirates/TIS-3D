@@ -9,11 +9,11 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.ModuleProvider;
 import li.cil.tis3d.api.module.traits.Redstone;
-import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.block.entity.ControllerBlockEntity;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.network.Network;
+import li.cil.tis3d.util.NBTIds;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemStack;
@@ -23,6 +23,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -264,7 +265,7 @@ public final class CasingImpl implements Casing {
             modules[index] = module;
         }
 
-        final ListTag modulesNbt = nbt.getList(TAG_MODULES, Constants.NBT.TAG_COMPOUND);
+        final ListTag modulesNbt = nbt.getList(TAG_MODULES, NBTIds.TAG_COMPOUND);
         final int moduleCount = Math.min(modulesNbt.size(), modules.length);
         for (int i = 0; i < moduleCount; i++) {
             if (modules[i] != null) {
@@ -306,7 +307,7 @@ public final class CasingImpl implements Casing {
 
     @Override
     public World getCasingWorld() {
-        return blockEntity.getWorld();
+        return Objects.requireNonNull(blockEntity.getWorld());
     }
 
     @Override
@@ -352,7 +353,7 @@ public final class CasingImpl implements Casing {
 
     @Override
     public void sendData(final Face face, final CompoundTag data) {
-        sendData(face, data, (byte) -1);
+        sendData(face, data, (byte)-1);
     }
 
     @Override
@@ -362,7 +363,7 @@ public final class CasingImpl implements Casing {
 
     @Override
     public void sendData(final Face face, final ByteBuf data) {
-        sendData(face, data, (byte) -1);
+        sendData(face, data, (byte)-1);
     }
 
     // --------------------------------------------------------------------- //

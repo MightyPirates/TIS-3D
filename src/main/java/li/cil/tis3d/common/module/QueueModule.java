@@ -126,7 +126,7 @@ public final class QueueModule extends AbstractModuleWithRotation {
         final int[] queueNbt = nbt.getIntArray(TAG_QUEUE);
         final int count = Math.min(queueNbt.length, queue.length);
         for (int i = 0; i < count; i++) {
-            queue[i] = (short) queueNbt[i];
+            queue[i] = (short)queueNbt[i];
         }
 
         head = MathHelper.clamp(nbt.getInt(TAG_HEAD), 0, QUEUE_SIZE - 1);

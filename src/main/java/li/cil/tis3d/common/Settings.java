@@ -93,14 +93,14 @@ public final class Settings {
     // --------------------------------------------------------------------- //
 
     @SuppressWarnings("ConstantConditions")
-    public static void load(File configDir) {
+    public static void load(final File configDir) {
         if (!configDir.exists()) configDir.mkdir();
-        File configFile = new File(configDir, "tis3d.hjson");
+        final File configFile = new File(configDir, "tis3d.hjson");
 
         JsonObject config;
         try {
             config = Jankson.builder().build().load(configFile);
-        } catch (SyntaxError | IOException var9) {
+        } catch (final SyntaxError | IOException var9) {
             config = new JsonObject();
         }
 
@@ -121,7 +121,7 @@ public final class Settings {
             config.recursiveGet(JsonObject.class, "module").putDefault(name, new JsonObject(), null);
             config.recursiveGet(JsonObject.class, CATEGORY_MODULE + name).putDefault(NAME_MODULE_ENABLED, new JsonPrimitive(true), COMMENT_MODULE_ENABLED);
 
-            boolean enabled = config.recursiveGet(JsonObject.class, CATEGORY_MODULE + name).get(Boolean.class, NAME_MODULE_ENABLED);
+            final boolean enabled = config.recursiveGet(JsonObject.class, CATEGORY_MODULE + name).get(Boolean.class, NAME_MODULE_ENABLED);
             if (!enabled) {
                 disabledModules.add(name);
             }
@@ -145,7 +145,7 @@ public final class Settings {
 
         try {
             Files.write(config.toJson(true, true), configFile, Charsets.UTF_8);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }

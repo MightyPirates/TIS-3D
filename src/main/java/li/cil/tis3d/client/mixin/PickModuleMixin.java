@@ -21,7 +21,7 @@ public abstract class PickModuleMixin {
     @Redirect(method = "doItemPick()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;getPickStack(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Lnet/minecraft/item/ItemStack;"))
     private ItemStack pickModule(final Block block, final BlockView world, final BlockPos pos, final BlockState state) {
         if (block instanceof CasingBlock) {
-            return ((CasingBlock) block).getPickStack(world, pos, hitResult.side, state);
+            return ((CasingBlock)block).getPickStack(world, pos, hitResult.side, state);
         } else {
             return block.getPickStack(world, pos, state);
         }

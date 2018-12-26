@@ -13,7 +13,7 @@ public final class AddImmediateInstruction implements Instruction {
     @Override
     public void step(final Machine machine) {
         final MachineState state = machine.getState();
-        state.acc = (short) Math.max(Short.MIN_VALUE, Math.min(Short.MAX_VALUE, state.acc + value));
+        state.acc = (short)Math.max(Short.MIN_VALUE, Math.min(Short.MAX_VALUE, state.acc + value));
         state.pc++;
     }
 

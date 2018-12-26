@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(InGameHud.class)
 public abstract class HideHudInTerminalMixin extends Drawable {
     @Redirect(at = @At(value = "FIELD", target = "Lnet/minecraft/client/settings/GameOptions;field_1842:Z"), method = "draw(F)V")
-    private boolean draw(GameOptions options) {
+    private boolean draw(final GameOptions options) {
         return MinecraftClient.getInstance().currentGui instanceof TerminalModuleGui || options.field_1842;
     }
 }

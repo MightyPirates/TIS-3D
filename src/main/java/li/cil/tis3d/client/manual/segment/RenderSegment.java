@@ -32,7 +32,7 @@ public final class RenderSegment extends AbstractSegment implements InteractiveS
     @Override
     public Optional<String> tooltip() {
         if (imageRenderer instanceof InteractiveImageRenderer) {
-            return Optional.of(((InteractiveImageRenderer) imageRenderer).getTooltip(title));
+            return Optional.of(((InteractiveImageRenderer)imageRenderer).getTooltip(title));
         } else {
             return Optional.of(title);
         }
@@ -41,7 +41,7 @@ public final class RenderSegment extends AbstractSegment implements InteractiveS
     @Override
     public boolean onMouseClick(final int mouseX, final int mouseY) {
         return imageRenderer instanceof InteractiveImageRenderer &&
-            ((InteractiveImageRenderer) imageRenderer).onMouseClick(mouseX - lastX, mouseY - lastY);
+            ((InteractiveImageRenderer)imageRenderer).onMouseClick(mouseX - lastX, mouseY - lastY);
     }
 
     @Override
@@ -106,7 +106,7 @@ public final class RenderSegment extends AbstractSegment implements InteractiveS
     }
 
     private float scale(final int maxWidth) {
-        return Math.min(1f, maxWidth / (float) imageRenderer.getWidth());
+        return Math.min(1f, maxWidth / (float)imageRenderer.getWidth());
     }
 
     private int imageWidth(final int maxWidth) {

@@ -21,9 +21,9 @@ public final class MoveInstructionEmitter extends AbstractInstructionEmitter {
         checkExcess(lineNumber, matcher, "excess");
 
         if (src instanceof Target) {
-            return new MoveInstruction((Target) src, dst);
+            return new MoveInstruction((Target)src, dst);
         } else /* if (src instanceof Integer) */ {
-            return new MoveImmediateInstruction((Short) src, dst);
+            return new MoveImmediateInstruction((Short)src, dst);
         }
     }
 }

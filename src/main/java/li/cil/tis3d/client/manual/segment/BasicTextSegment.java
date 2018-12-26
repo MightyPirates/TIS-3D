@@ -14,7 +14,7 @@ abstract class BasicTextSegment extends AbstractSegment implements Segment {
 
     private String getRootPrefix() {
         if (rootPrefix == null) {
-            final TextSegment segment = (TextSegment) root();
+            final TextSegment segment = (TextSegment)root();
             rootPrefix = segment.text().substring(0, Math.min(2, segment.text().length()));
         }
         return rootPrefix;

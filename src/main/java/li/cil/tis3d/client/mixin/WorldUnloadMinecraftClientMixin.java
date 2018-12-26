@@ -18,15 +18,15 @@ public abstract class WorldUnloadMinecraftClientMixin {
     public ClientWorld world;
 
     @Inject(method = "method_1550", at = @At("HEAD"))
-    private void onBeforeSetWorld(ClientWorld newWorld, Gui gui, CallbackInfo ci) {
+    private void onBeforeSetWorld(final ClientWorld newWorld, final Gui gui, final CallbackInfo ci) {
         if (world == null) {
             return;
         }
 
         for (final BlockEntity blockEntity : world.blockEntities) {
             if (blockEntity instanceof CasingBlockEntity) {
-                final CasingBlockEntity casingBlockEntity = (CasingBlockEntity) blockEntity;
-                final CasingImpl casing = (CasingImpl) casingBlockEntity.getCasing();
+                final CasingBlockEntity casingBlockEntity = (CasingBlockEntity)blockEntity;
+                final CasingImpl casing = (CasingImpl)casingBlockEntity.getCasing();
                 casing.onDisposed();
             }
         }

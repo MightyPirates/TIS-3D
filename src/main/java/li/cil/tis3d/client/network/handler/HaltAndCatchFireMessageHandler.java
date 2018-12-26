@@ -14,7 +14,7 @@ public final class HaltAndCatchFireMessageHandler extends AbstractMessageHandler
             return;
         }
 
-        final ControllerBlockEntity controller = (ControllerBlockEntity) blockEntity;
+        final ControllerBlockEntity controller = (ControllerBlockEntity)blockEntity;
         controller.haltAndCatchFire();
     }
 }

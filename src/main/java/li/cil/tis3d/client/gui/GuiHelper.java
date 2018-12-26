@@ -10,15 +10,15 @@ public final class GuiHelper {
         MinecraftClient.getInstance().openGui(new ManualGui());
     }
 
-    public static void openCodeBookGui(PlayerEntity player, Hand hand) {
+    public static void openCodeBookGui(final PlayerEntity player, final Hand hand) {
         MinecraftClient.getInstance().openGui(new CodeBookGui(player, hand));
     }
 
-    public static void openTerminalGui(TerminalModule terminal) {
+    public static void openTerminalGui(final TerminalModule terminal) {
         MinecraftClient.getInstance().openGui(new TerminalModuleGui(terminal));
     }
 
-    public static void openReadOnlyMemoryGui(PlayerEntity player, Hand hand) {
+    public static void openReadOnlyMemoryGui(final PlayerEntity player, final Hand hand) {
         MinecraftClient.getInstance().openGui(new ReadOnlyMemoryModuleGui(player, hand));
     }
 }

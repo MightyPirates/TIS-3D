@@ -44,7 +44,7 @@ public final class SerialProtocolDocumentationReference {
             return false;
         }
 
-        final SerialProtocolDocumentationReference that = (SerialProtocolDocumentationReference) o;
+        final SerialProtocolDocumentationReference that = (SerialProtocolDocumentationReference)o;
         return name.equals(that.name) && link.equals(that.link);
 
     }

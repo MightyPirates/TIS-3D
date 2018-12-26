@@ -14,7 +14,7 @@ public final class PipeLockedStateMessageHandler extends AbstractMessageHandlerW
             return;
         }
 
-        final CasingBlockEntity casing = (CasingBlockEntity) blockEntity;
+        final CasingBlockEntity casing = (CasingBlockEntity)blockEntity;
         casing.setReceivingPipeLockedClient(message.getFace(), message.getPort(), message.isLocked());
     }
 }

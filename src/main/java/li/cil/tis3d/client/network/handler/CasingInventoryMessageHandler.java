@@ -14,7 +14,7 @@ public final class CasingInventoryMessageHandler extends AbstractMessageHandlerW
             return;
         }
 
-        final CasingBlockEntity casing = (CasingBlockEntity) blockEntity;
+        final CasingBlockEntity casing = (CasingBlockEntity)blockEntity;
         casing.setStackAndModuleClient(message.getSlot(), message.getStack(), message.getModuleData());
     }
 }

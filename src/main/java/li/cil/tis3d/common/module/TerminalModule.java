@@ -14,7 +14,7 @@ import li.cil.tis3d.client.gui.TerminalModuleGui;
 import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.client.render.font.FontRenderer;
 import li.cil.tis3d.client.render.font.NormalFontRenderer;
-import li.cil.tis3d.common.Constants;
+import li.cil.tis3d.util.NBTIds;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -245,7 +245,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
     public void readFromNBT(final CompoundTag nbt) {
         super.readFromNBT(nbt);
 
-        final ListTag lines = nbt.getList(TAG_DISPLAY, Constants.NBT.TAG_STRING);
+        final ListTag lines = nbt.getList(TAG_DISPLAY, NBTIds.TAG_STRING);
         display.clear();
         for (int tagIndex = 0; tagIndex < lines.size(); tagIndex++) {
             display.add(new StringBuilder(lines.getString(tagIndex)));
@@ -367,7 +367,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
 
         final Gui screen = mc.currentGui;
         if (screen instanceof TerminalModuleGui) {
-            final TerminalModuleGui gui = (TerminalModuleGui) screen;
+            final TerminalModuleGui gui = (TerminalModuleGui)screen;
             if (gui.isFor(this)) {
                 mc.openGui(null);
             }
@@ -401,7 +401,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
     private static void writeString(final ByteBuf data, final String value) {
         final byte[] bytes = value.getBytes(UTF_8);
         final int byteCount = Math.min(0xFF, bytes.length);
-        data.writeByte((byte) byteCount);
+        data.writeByte((byte)byteCount);
         data.writeBytes(bytes, 0, byteCount);
     }
 
@@ -419,7 +419,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
         byteBuffer.clear();
         charBuffer.clear();
         decoder.reset();
-        byteBuffer.put((byte) value);
+        byteBuffer.put((byte)value);
         byteBuffer.rewind();
         decoder.decode(byteBuffer, charBuffer, true);
         charBuffer.rewind();
@@ -439,7 +439,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
         encoder.encode(charBuffer, byteBuffer, true);
         byteBuffer.rewind();
         if (byteBuffer.hasRemaining()) {
-            return (short) (byteBuffer.get() & 0xFF);
+            return (short)(byteBuffer.get() & 0xFF);
         } else {
             return 0;
         }

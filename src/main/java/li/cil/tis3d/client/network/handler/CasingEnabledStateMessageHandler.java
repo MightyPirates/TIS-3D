@@ -14,7 +14,7 @@ public final class CasingEnabledStateMessageHandler extends AbstractMessageHandl
             return;
         }
 
-        final CasingBlockEntity casing = (CasingBlockEntity) blockEntity;
+        final CasingBlockEntity casing = (CasingBlockEntity)blockEntity;
         casing.setEnabledClient(message.isEnabled());
     }
 }

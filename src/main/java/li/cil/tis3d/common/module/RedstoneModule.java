@@ -141,8 +141,8 @@ public final class RedstoneModule extends AbstractModuleWithRotation implements 
     public void readFromNBT(final CompoundTag nbt) {
         super.readFromNBT(nbt);
 
-        output = (short) Math.max(0, Math.min(15, nbt.getShort(TAG_OUTPUT)));
-        input = (short) Math.max(0, Math.min(15, nbt.getShort(TAG_INPUT)));
+        output = (short)Math.max(0, Math.min(15, nbt.getShort(TAG_OUTPUT)));
+        input = (short)Math.max(0, Math.min(15, nbt.getShort(TAG_INPUT)));
     }
 
     @Override
@@ -170,7 +170,7 @@ public final class RedstoneModule extends AbstractModuleWithRotation implements 
         }
 
         // Clamp to valid redstone range.
-        final short validatedValue = (short) Math.max(0, Math.min(15, value));
+        final short validatedValue = (short)Math.max(0, Math.min(15, value));
         if (validatedValue == input) {
             return;
         }
@@ -220,7 +220,7 @@ public final class RedstoneModule extends AbstractModuleWithRotation implements 
      */
     private void setRedstoneOutput(final short value) {
         // Clamp to valid redstone range.
-        final short validatedValue = (short) Math.max(0, Math.min(15, value));
+        final short validatedValue = (short)Math.max(0, Math.min(15, value));
         if (validatedValue == output) {
             return;
         }

@@ -15,7 +15,7 @@ import java.util.Set;
  * of loaded chunks around the overall area of loaded chunks.
  */
 public final class TickHandlerInfraredPacket {
-    public static TickHandlerInfraredPacket INSTANCE = new TickHandlerInfraredPacket();
+    public static final TickHandlerInfraredPacket INSTANCE = new TickHandlerInfraredPacket();
 
     // --------------------------------------------------------------------- //
 

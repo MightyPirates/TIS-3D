@@ -169,10 +169,11 @@ public final class ControllerBlockEntity extends AbstractComputerBlockEntity imp
      * cause additional steps when not in the paused step!
      */
     public void forceStep() {
+        final World world = Objects.requireNonNull(getWorld());
+
         if (state == ControllerState.RUNNING) {
             forceStep = true;
-            assert getWorld() != null;
-            getWorld().playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.BLOCK_STONE_BUTTON_CLICK_ON, SoundCategory.BLOCK, 0.2f, 0.8f + getWorld().random.nextFloat() * 0.1f);
+            world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.BLOCK_STONE_BUTTON_CLICK_ON, SoundCategory.BLOCK, 0.2f, 0.8f + world.random.nextFloat() * 0.1f);
         }
     }
 
@@ -180,13 +181,15 @@ public final class ControllerBlockEntity extends AbstractComputerBlockEntity imp
      * Reset the controller, pause for a moment and catch fire.
      */
     public void haltAndCatchFire() {
-        assert getWorld() != null;
-        if (!getWorld().isClient) {
+        final World world = Objects.requireNonNull(getWorld());
+
+        if (!world.isClient) {
             state = ControllerState.READY;
             casings.forEach(CasingBlockEntity::onDisabled);
-            final HaltAndCatchFireMessage message = new HaltAndCatchFireMessage(getWorld(), getPos());
-            Network.INSTANCE.sendToClientsNearLocation(message, getWorld(), getPos(), Network.RANGE_MEDIUM);
+            final HaltAndCatchFireMessage message = new HaltAndCatchFireMessage(world, getPos());
+            Network.INSTANCE.sendToClientsNearLocation(message, world, getPos(), Network.RANGE_MEDIUM);
         }
+
         hcfCooldown = COOLDOWN_HCF;
     }
 
@@ -197,8 +200,9 @@ public final class ControllerBlockEntity extends AbstractComputerBlockEntity imp
     public void invalidate() {
         super.invalidate();
 
-        assert getWorld() != null;
-        if (getWorld().isClient) {
+        final World world = Objects.requireNonNull(getWorld());
+
+        if (world.isClient) {
             return;
         }
 
@@ -253,7 +257,7 @@ public final class ControllerBlockEntity extends AbstractComputerBlockEntity imp
     protected void writeToNBTForClient(final CompoundTag nbt) {
         super.writeToNBTForClient(nbt);
 
-        nbt.putByte(TAG_STATE, (byte) state.ordinal());
+        nbt.putByte(TAG_STATE, (byte)state.ordinal());
     }
 
     // --------------------------------------------------------------------- //
@@ -261,8 +265,7 @@ public final class ControllerBlockEntity extends AbstractComputerBlockEntity imp
 
     @Override
     public void tick() {
-        assert getWorld() != null;
-        final World world = getWorld();
+        final World world = Objects.requireNonNull(getWorld());
 
         // Only update multi-block and casings on the server.
         if (world.isClient) {
@@ -426,6 +429,8 @@ public final class ControllerBlockEntity extends AbstractComputerBlockEntity imp
      * the {@link #casings} field on success.
      */
     private void scan() {
+        final World world = Objects.requireNonNull(getWorld());
+
         // List of processed tile entities to avoid loops.
         final Set<BlockEntity> processed = new HashSet<>();
         // List of pending tile entities that still need to be scanned.
@@ -444,8 +449,7 @@ public final class ControllerBlockEntity extends AbstractComputerBlockEntity imp
             if (blockEntity instanceof ControllerBlockEntity) {
                 if (blockEntity == this) {
                     // Special case: first iteration, add the neighbors.
-                    assert getWorld() != null;
-                    if (!addNeighbors(getWorld(), blockEntity, processed, queue)) {
+                    if (!addNeighbors(world, blockEntity, processed, queue)) {
                         clear(ControllerState.INCOMPLETE);
                         return;
                     }
@@ -462,10 +466,9 @@ public final class ControllerBlockEntity extends AbstractComputerBlockEntity imp
                 }
 
                 // Register as the controller with the casing and add neighbors.
-                final CasingBlockEntity casing = (CasingBlockEntity) blockEntity;
+                final CasingBlockEntity casing = (CasingBlockEntity)blockEntity;
                 newCasings.add(casing);
-                assert getWorld() != null;
-                addNeighbors(getWorld(), casing, processed, queue);
+                addNeighbors(world, casing, processed, queue);
             }
         }
 
@@ -512,10 +515,11 @@ public final class ControllerBlockEntity extends AbstractComputerBlockEntity imp
      * @return the accumulative redstone signal.
      */
     private int computePower() {
+        final World world = Objects.requireNonNull(getWorld());
+
         int acc = 0;
         for (final Direction facing : Direction.values()) {
-            assert getWorld() != null;
-            acc += Math.max(0, Math.min(15, getWorld().getEmittedRedstonePower(getPos().offset(facing), facing)));
+            acc += Math.max(0, Math.min(15, world.getEmittedRedstonePower(getPos().offset(facing), facing)));
         }
         return acc;
     }

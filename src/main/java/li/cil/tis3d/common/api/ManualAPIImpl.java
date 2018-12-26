@@ -196,7 +196,7 @@ public final class ManualAPIImpl implements ManualAPI {
 
         final Gui screen = mc.currentGui;
         if (screen instanceof ManualGui) {
-            ((ManualGui) screen).pushPage(path);
+            ((ManualGui)screen).pushPage(path);
         } else {
             history.push(new History(path));
         }

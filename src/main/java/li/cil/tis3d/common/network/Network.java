@@ -18,6 +18,7 @@ import li.cil.tis3d.util.Side;
 import net.fabricmc.fabric.networking.CustomPayloadPacketRegistry;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.packet.CustomPayloadClientPacket;
 import net.minecraft.client.network.packet.ParticleClientPacket;
 import net.minecraft.entity.player.PlayerEntity;
@@ -50,7 +51,7 @@ public final class Network {
     public static final int RANGE_MEDIUM = 32;
     public static final int RANGE_LOW = 16;
 
-    private Map<Class<AbstractMessage>, Identifier> messageIdCache = new HashMap<>();
+    private final Map<Class<AbstractMessage>, Identifier> messageIdCache = new HashMap<>();
 
     // --------------------------------------------------------------------- //
 
@@ -87,10 +88,10 @@ public final class Network {
             }
         }
 
-        queueParticleEffect(world, (float) x, (float) y, (float) z);
+        queueParticleEffect(world, (float)x, (float)y, (float)z);
     }
 
-    public int sendToClientsInDimension(AbstractMessage message, World world) {
+    public int sendToClientsInDimension(final AbstractMessage message, final World world) {
         if (world.players.isEmpty()) {
             return 0;
         }
@@ -100,9 +101,9 @@ public final class Network {
         final CustomPayloadClientPacket packet = new CustomPayloadClientPacket(id, buffer);
 
         int sent = 0;
-        for (PlayerEntity player : world.players) {
+        for (final PlayerEntity player : world.players) {
             if (player instanceof ServerPlayerEntity) {
-                ((ServerPlayerEntity) player).networkHandler.sendPacket(packet);
+                ((ServerPlayerEntity)player).networkHandler.sendPacket(packet);
                 sent++;
             }
         }
@@ -110,7 +111,7 @@ public final class Network {
         return sent;
     }
 
-    public int sendToClientsNearLocation(AbstractMessage message, World world, BlockPos pos, int range) {
+    public int sendToClientsNearLocation(final AbstractMessage message, final World world, final BlockPos pos, final int range) {
         if (world.players.isEmpty()) {
             return 0;
         }
@@ -122,7 +123,7 @@ public final class Network {
         return sendToClientsNearLocation(packet, world, pos, range);
     }
 
-    public void sendToClient(AbstractMessage message, PlayerEntity player) {
+    public void sendToClient(final AbstractMessage message, final PlayerEntity player) {
         if (!(player instanceof ServerPlayerEntity)) {
             return;
         }
@@ -130,23 +131,24 @@ public final class Network {
         final Identifier id = getMessageIdentifier(message.getClass());
         final PacketByteBuf buffer = serializeMessage(message);
         final CustomPayloadClientPacket packet = new CustomPayloadClientPacket(id, buffer);
-        ((ServerPlayerEntity) player).networkHandler.sendPacket(packet);
+        ((ServerPlayerEntity)player).networkHandler.sendPacket(packet);
     }
 
-    public void sendToServer(AbstractMessage message) {
+    public void sendToServer(final AbstractMessage message) {
         final Identifier id = getMessageIdentifier(message.getClass());
         final PacketByteBuf buffer = serializeMessage(message);
         final CustomPayloadServerPacket packet = new CustomPayloadServerPacket(id, buffer);
-        MinecraftClient.getInstance().getNetworkHandler().sendPacket(packet);
+        final ClientPlayNetworkHandler networkHandler = Objects.requireNonNull(MinecraftClient.getInstance().getNetworkHandler());
+        networkHandler.sendPacket(packet);
     }
 
-    private int sendToClientsNearLocation(Packet<?> packet, World world, BlockPos pos, int range) {
+    private int sendToClientsNearLocation(final Packet<?> packet, final World world, final BlockPos pos, final int range) {
         final int rangeSq = range * range;
         int sent = 0;
-        for (PlayerEntity player : world.players) {
+        for (final PlayerEntity player : world.players) {
             if (player instanceof ServerPlayerEntity) {
                 if (player.squaredDistanceTo(pos) < rangeSq) {
-                    final ServerPlayerEntity networkedPlayer = (ServerPlayerEntity) player;
+                    final ServerPlayerEntity networkedPlayer = (ServerPlayerEntity)player;
                     networkedPlayer.networkHandler.sendPacket(packet);
                     if (!networkedPlayer.networkHandler.client.isLocal()) {
                         sent++;
@@ -161,8 +163,8 @@ public final class Network {
     // --------------------------------------------------------------------- //
     // Message registration and packaging
 
-    private <TMessage extends AbstractMessage> void registerMessage(AbstractMessageHandler<TMessage> handler, Class<TMessage> messageClass, Side handlerSide) {
-        CustomPayloadPacketRegistry registry;
+    private <TMessage extends AbstractMessage> void registerMessage(final AbstractMessageHandler<TMessage> handler, final Class<TMessage> messageClass, final Side handlerSide) {
+        final CustomPayloadPacketRegistry registry;
         switch (handlerSide) {
             case CLIENT:
                 registry = CustomPayloadPacketRegistry.CLIENT;
@@ -180,7 +182,7 @@ public final class Network {
                 final TMessage message = messageClass.newInstance();
                 message.fromBytes(buffer);
                 handler.onMessage(message, context);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 TIS3D.getLog().error(e);
             }
         });
@@ -188,7 +190,7 @@ public final class Network {
 
     @SuppressWarnings("unchecked")
     private <TMessage extends AbstractMessage> Identifier getMessageIdentifier(final Class<TMessage> messageClass) {
-        return messageIdCache.computeIfAbsent((Class<AbstractMessage>) messageClass, clazz -> new Identifier(API.MOD_ID, clazz.getSimpleName().toLowerCase(Locale.ROOT)));
+        return messageIdCache.computeIfAbsent((Class<AbstractMessage>)messageClass, clazz -> new Identifier(API.MOD_ID, clazz.getSimpleName().toLowerCase(Locale.ROOT)));
     }
 
     private PacketByteBuf serializeMessage(final AbstractMessage message) {
@@ -234,7 +236,7 @@ public final class Network {
         particleQueue.forEach(Position::sendMessage);
 
         if (particlesSent > Settings.maxParticlesPerTick) {
-            final int throttle = (int) Math.ceil(particlesSent / (float) Settings.maxParticlesPerTick);
+            final int throttle = (int)Math.ceil(particlesSent / (float)Settings.maxParticlesPerTick);
             particleSendInterval = Math.min(2000, TICK_TIME * throttle);
         } else {
             particleSendInterval = TICK_TIME;
@@ -261,7 +263,7 @@ public final class Network {
         }
 
         private void sendMessage() {
-            ParticleClientPacket packet = new ParticleClientPacket(DustParticleParameters.RED, false, x, y, z, 0, 0, 0, 0, 1);
+            final ParticleClientPacket packet = new ParticleClientPacket(DustParticleParameters.RED, false, x, y, z, 0, 0, 0, 0, 1);
             if (Network.INSTANCE.sendToClientsNearLocation(packet, world, new BlockPos(x, y, z), RANGE_LOW) > 0) {
                 particlesSent++;
             }
@@ -276,7 +278,7 @@ public final class Network {
                 return false;
             }
 
-            final Position that = (Position) obj;
+            final Position that = (Position)obj;
             return world.dimension.getType() == that.world.dimension.getType() &&
                 Float.compare(that.x, x) == 0 &&
                 Float.compare(that.y, y) == 0 &&
@@ -389,7 +391,7 @@ public final class Network {
 
         final int sent = getPacketsSent(side);
         if (sent > Settings.maxPacketsPerTick) {
-            final int throttle = (int) Math.min(40, Math.ceil(sent / (float) Settings.maxPacketsPerTick));
+            final int throttle = (int)Math.min(40, Math.ceil(sent / (float)Settings.maxPacketsPerTick));
             setThrottle(side, throttle);
         }
     }

@@ -122,7 +122,7 @@ public final class StackModule extends AbstractModuleWithRotation {
         final int[] stackNbt = nbt.getIntArray(TAG_STACK);
         final int count = Math.min(stackNbt.length, stack.length);
         for (int i = 0; i < count; i++) {
-            stack[i] = (short) stackNbt[i];
+            stack[i] = (short)stackNbt[i];
         }
 
         top = MathHelper.clamp(nbt.getInt(TAG_TOP), -1, STACK_SIZE - 1);

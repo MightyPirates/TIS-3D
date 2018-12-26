@@ -45,11 +45,11 @@ public final class LinkSegment extends TextSegment implements InteractiveSegment
             hoverColor = ERROR_COLOR_HOVER;
         }
 
-        final int timeSinceHover = (int) (System.currentTimeMillis() - lastHovered);
+        final int timeSinceHover = (int)(System.currentTimeMillis() - lastHovered);
         if (timeSinceHover > FADE_TIME) {
             return Optional.of(color);
         } else {
-            return Optional.of(fadeColor(hoverColor, color, timeSinceHover / (float) FADE_TIME));
+            return Optional.of(fadeColor(hoverColor, color, timeSinceHover / (float)FADE_TIME));
         }
     }
 
@@ -80,9 +80,9 @@ public final class LinkSegment extends TextSegment implements InteractiveSegment
         final int r2 = (c2 >>> 16) & 0xFF;
         final int g2 = (c2 >>> 8) & 0xFF;
         final int b2 = c2 & 0xFF;
-        final int r = (int) (r1 + (r2 - r1) * t);
-        final int g = (int) (g1 + (g2 - g1) * t);
-        final int b = (int) (b1 + (b2 - b1) * t);
+        final int r = (int)(r1 + (r2 - r1) * t);
+        final int g = (int)(g1 + (g2 - g1) * t);
+        final int b = (int)(b1 + (b2 - b1) * t);
         return (r << 16) | (g << 8) | b;
     }
 

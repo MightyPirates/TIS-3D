@@ -87,8 +87,8 @@ public final class BundledRedstoneModule extends AbstractModuleWithRotation impl
 
     @Override
     public void onDisabled() {
-        Arrays.fill(input, (short) 0);
-        Arrays.fill(output, (short) 0);
+        Arrays.fill(input, (short)0);
+        Arrays.fill(output, (short)0);
         channel = 0;
 
         final BundledRedstoneOutputChangedEvent event = new BundledRedstoneOutputChangedEvent(this, -1);
@@ -156,15 +156,15 @@ public final class BundledRedstoneModule extends AbstractModuleWithRotation impl
 
         final int[] outputNbt = nbt.getIntArray(TAG_OUTPUT);
         for (int i = 0; i < outputNbt.length; i++) {
-            output[i] = (short) outputNbt[i];
+            output[i] = (short)outputNbt[i];
         }
 
         final int[] inputNbt = nbt.getIntArray(TAG_INPUT);
         for (int i = 0; i < inputNbt.length; i++) {
-            input[i] = (short) inputNbt[i];
+            input[i] = (short)inputNbt[i];
         }
 
-        channel = (short) Math.max(0, Math.min(input.length - 1, nbt.getShort(TAG_CHANNEL)));
+        channel = (short)Math.max(0, Math.min(input.length - 1, nbt.getShort(TAG_CHANNEL)));
     }
 
     @Override
@@ -255,8 +255,8 @@ public final class BundledRedstoneModule extends AbstractModuleWithRotation impl
      * @param value the value that was read.
      */
     private void process(final int value) {
-        final short hi = (short) ((value & 0xFF00) >>> 8);
-        final short lo = (short) (value & 0xFF);
+        final short hi = (short)((value & 0xFF00) >>> 8);
+        final short lo = (short)(value & 0xFF);
         if (hi == 0xFF) {
             // lo = new output channel
             if (lo < 0 || lo >= input.length) {

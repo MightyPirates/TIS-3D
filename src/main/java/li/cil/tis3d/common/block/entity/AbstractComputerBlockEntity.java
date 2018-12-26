@@ -3,9 +3,9 @@ package li.cil.tis3d.common.block.entity;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
-import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.machine.PipeHost;
 import li.cil.tis3d.common.machine.PipeImpl;
+import li.cil.tis3d.util.NBTIds;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.network.packet.BlockEntityUpdateClientPacket;
@@ -16,6 +16,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 public abstract class AbstractComputerBlockEntity extends BlockEntity implements PipeHost {
     // --------------------------------------------------------------------- //
@@ -65,7 +66,7 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
 
     // --------------------------------------------------------------------- //
 
-    AbstractComputerBlockEntity(BlockEntityType type) {
+    AbstractComputerBlockEntity(final BlockEntityType type) {
         super(type);
         for (final Face face : Face.VALUES) {
             for (final Port port : Port.VALUES) {
@@ -132,12 +133,12 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
 
     @Override
     public World getPipeHostWorld() {
-        return getWorld();
+        return Objects.requireNonNull(getWorld());
     }
 
     @Override
     public BlockPos getPipeHostPosition() {
-        return getPos();
+        return Objects.requireNonNull(getPos());
     }
 
     // --------------------------------------------------------------------- //
@@ -177,16 +178,17 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
     // --------------------------------------------------------------------- //
 
     public void checkNeighbors() {
+        final World world = Objects.requireNonNull(getWorld());
+
         // When a neighbor changed, check all neighbors and register them in
         // our tile entity.
         for (final Direction facing : Direction.values()) {
             final BlockPos neighborPos = getPos().offset(facing);
-            assert getWorld() != null;
-            if (getWorld().isBlockLoaded(neighborPos)) {
+            if (world.isBlockLoaded(neighborPos)) {
                 // If we have a casing, set it as our neighbor.
-                final BlockEntity blockEntity = getWorld().getBlockEntity(neighborPos);
+                final BlockEntity blockEntity = world.getBlockEntity(neighborPos);
                 if (blockEntity instanceof AbstractComputerBlockEntity) {
-                    setNeighbor(Face.fromDirection(facing), (AbstractComputerBlockEntity) blockEntity);
+                    setNeighbor(Face.fromDirection(facing), (AbstractComputerBlockEntity)blockEntity);
                 } else {
                     setNeighbor(Face.fromDirection(facing), null);
                 }
@@ -209,7 +211,7 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
     }
 
     protected void readFromNBTForServer(final CompoundTag nbt) {
-        final ListTag pipesNbt = nbt.getList(TAG_PIPES, Constants.NBT.TAG_COMPOUND);
+        final ListTag pipesNbt = nbt.getList(TAG_PIPES, NBTIds.TAG_COMPOUND);
         final int pipeCount = Math.min(pipesNbt.size(), pipes.length);
         for (int i = 0; i < pipeCount; i++) {
             pipes[i].readFromNBT(pipesNbt.getCompoundTag(i));

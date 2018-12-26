@@ -12,10 +12,10 @@ import org.spongepowered.asm.mixin.Mixin;
 public abstract class CasingInfraredReceiverMixin implements InfraredReceiver {
     @Override
     public void onInfraredPacket(final InfraredPacket packet, final HitResult hit) {
-        final CasingBlockEntity self = (CasingBlockEntity) (Object) this;
+        final CasingBlockEntity self = (CasingBlockEntity)(Object)this;
         final Module module = self.getModule(Face.fromDirection(hit.side));
         if (module instanceof InfraredReceiver) {
-            ((InfraredReceiver) module).onInfraredPacket(packet, hit);
+            ((InfraredReceiver)module).onInfraredPacket(packet, hit);
         }
     }
 }

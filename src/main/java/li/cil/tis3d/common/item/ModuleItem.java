@@ -6,8 +6,8 @@ import net.minecraft.item.Item;
  * Base item for all modules.
  */
 public class ModuleItem extends Item {
-    public ModuleItem(Settings builder) {
-        super(builder);
+    public ModuleItem(final Settings settings) {
+        super(settings);
     }
 
     // --------------------------------------------------------------------- //

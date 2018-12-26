@@ -108,7 +108,7 @@ public final class TimerModule extends AbstractModuleWithRotation {
         if (!hasElapsed && rendererDispatcher.cameraEntity.squaredDistanceToCenter(getCasing().getPosition()) < 64) {
             final MinecraftClient mc = MinecraftClient.getInstance();
             final long worldTime = mc != null && mc.world != null ? mc.world.getTime() : 0;
-            final float remaining = (float) (timer - worldTime) - partialTicks;
+            final float remaining = (float)(timer - worldTime) - partialTicks;
             if (remaining <= 0) {
                 hasElapsed = true;
             } else {
@@ -194,11 +194,11 @@ public final class TimerModule extends AbstractModuleWithRotation {
     private void drawState(final float remaining) {
         final float milliseconds = remaining * 50f; // One tick is 50ms.
         final float seconds = milliseconds / 1000f;
-        final int minutes = (int) (seconds / 60f);
+        final int minutes = (int)(seconds / 60f);
 
         final String time;
         if (minutes > 0) {
-            time = String.format("%d:%02d", minutes, (int) seconds % 60);
+            time = String.format("%d:%02d", minutes, (int)seconds % 60);
         } else {
             time = String.format("%.2f", seconds);
         }

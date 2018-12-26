@@ -393,7 +393,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
 
     private void onInfraredReceiverCollision(final HitResult hit, @Nullable final Object provider) {
         if (provider instanceof InfraredReceiver) {
-            ((InfraredReceiver) provider).onInfraredPacket(this, hit);
+            ((InfraredReceiver)provider).onInfraredPacket(this, hit);
         }
     }
 }

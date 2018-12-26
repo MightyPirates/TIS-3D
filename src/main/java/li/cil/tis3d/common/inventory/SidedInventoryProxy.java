@@ -4,6 +4,8 @@ import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Direction;
 
+import javax.annotation.Nullable;
+
 public interface SidedInventoryProxy extends InventoryProxy, SidedInventory {
     @Override
     SidedInventory getInventory();
@@ -14,7 +16,7 @@ public interface SidedInventoryProxy extends InventoryProxy, SidedInventory {
     }
 
     @Override
-    default boolean canInsertInvStack(final int slot, final ItemStack stack, final Direction facing) {
+    default boolean canInsertInvStack(final int slot, final ItemStack stack, @Nullable final Direction facing) {
         return getInventory().canInsertInvStack(slot, stack, facing);
     }
 

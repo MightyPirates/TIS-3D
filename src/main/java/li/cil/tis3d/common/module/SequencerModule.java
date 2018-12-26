@@ -82,11 +82,6 @@ public final class SequencerModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void onEnabled() {
-        super.onEnabled();
-    }
-
-    @Override
     public void onDisabled() {
         position = -1;
         stepsRemaining = 0;
@@ -104,8 +99,8 @@ public final class SequencerModule extends AbstractModuleWithRotation {
         final World world = getCasing().getCasingWorld();
         if (world.isClient) {
             final Vec3d uv = hitToUV(new Vec3d(hitX, hitY, hitZ));
-            final int col = uvToCol((float) uv.x);
-            final int row = uvToRow((float) uv.y);
+            final int col = uvToCol((float)uv.x);
+            final int row = uvToRow((float)uv.y);
             if (col >= 0 && row >= 0) {
                 configuration[col][row] = !configuration[col][row];
                 sendConfiguration(Side.SERVER);
@@ -147,7 +142,7 @@ public final class SequencerModule extends AbstractModuleWithRotation {
         if (enabled) {
             // Draw bar in background indicating current position in sequence.
             final float barU0 = BAR_U0 + BAR_STEP_U * position;
-            final float brightness = 0.75f + 0.25f * (delay == 0 ? 1 : (1 - (delay - stepsRemaining) / (float) delay));
+            final float brightness = 0.75f + 0.25f * (delay == 0 ? 1 : (1 - (delay - stepsRemaining) / (float)delay));
             GlStateManager.color4f(0.2f, 0.3f, 0.35f, brightness);
             RenderUtil.drawUntexturedQuad(barU0, BAR_V0, BAR_SIZE_U, BAR_SIZE_V);
         }
@@ -178,8 +173,8 @@ public final class SequencerModule extends AbstractModuleWithRotation {
         final Vec3d hitPos = getObserverLookAt(rendererDispatcher);
         if (hitPos != null) {
             final Vec3d uv = hitToUV(hitPos);
-            final int col = uvToCol((float) uv.x);
-            final int row = uvToRow((float) uv.y);
+            final int col = uvToCol((float)uv.x);
+            final int row = uvToRow((float)uv.y);
             if (col >= 0 && row >= 0) {
                 GlStateManager.color4f(0.7f, 0.8f, 0.9f, 0.5f);
                 final float u = CELLS_OUTER_U0 + col * CELLS_OUTER_STEP_U;
@@ -297,7 +292,7 @@ public final class SequencerModule extends AbstractModuleWithRotation {
         }
 
         final float mappedU = (u - CELLS_OUTER_U0) / (CELLS_OUTER_STEP_U * COL_COUNT);
-        return (int) (mappedU * COL_COUNT);
+        return (int)(mappedU * COL_COUNT);
     }
 
     private int uvToRow(final float v) {
@@ -306,6 +301,6 @@ public final class SequencerModule extends AbstractModuleWithRotation {
         }
 
         final float mappedV = (v - CELLS_OUTER_V0) / (CELLS_OUTER_STEP_V * ROW_COUNT);
-        return (int) (mappedV * COL_COUNT);
+        return (int)(mappedV * COL_COUNT);
     }
 }

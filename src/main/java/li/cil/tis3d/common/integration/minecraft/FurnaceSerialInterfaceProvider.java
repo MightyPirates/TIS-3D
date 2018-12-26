@@ -21,7 +21,7 @@ public final class FurnaceSerialInterfaceProvider implements SerialInterfaceProv
 
     @Override
     public SerialInterface interfaceFor(final World world, final BlockPos position, final Direction side) {
-        final AbstractFurnaceBlockEntity furnace = (AbstractFurnaceBlockEntity) world.getBlockEntity(position);
+        final AbstractFurnaceBlockEntity furnace = (AbstractFurnaceBlockEntity)world.getBlockEntity(position);
         if (furnace == null) {
             throw new IllegalArgumentException("Provided location does not contain a furnace. Check via worksWith first.");
         }
@@ -110,18 +110,18 @@ public final class FurnaceSerialInterfaceProvider implements SerialInterfaceProv
                     final int value = FurnaceField.RemainingFuelTicks.get(furnace);
                     final int total = FurnaceField.TotalFuelTicks.get(furnace);
                     if (total > 0) {
-                        return (short) (value * 100 / total);
+                        return (short)(value * 100 / total);
                     }
                 }
                 case PercentageProgress: {
                     final int value = FurnaceField.AccumulatedSmeltTicks.get(furnace);
                     final int total = FurnaceField.TotalSmeltTicks.get(furnace);
                     if (total > 0) {
-                        return (short) (value * 100 / total);
+                        return (short)(value * 100 / total);
                     }
                 }
             }
-            return (short) 0;
+            return (short)0;
         }
 
         @Override

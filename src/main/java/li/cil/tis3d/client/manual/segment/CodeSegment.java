@@ -60,7 +60,7 @@ public final class CodeSegment extends BasicTextSegment {
 
     @Override
     protected int stringWidth(final String s, final FontRenderer renderer) {
-        return (int) (FONT_SCALE * s.length() * (NormalFontRenderer.INSTANCE.getCharWidth() + 1));
+        return (int)(FONT_SCALE * s.length() * (NormalFontRenderer.INSTANCE.getCharWidth() + 1));
     }
 
     @Override

@@ -188,7 +188,7 @@ public final class DisplayModule extends AbstractModuleWithRotation {
      * @param value the value that was read.
      */
     private void process(final short value) {
-        drawCall[state.ordinal()] = (byte) value;
+        drawCall[state.ordinal()] = (byte)value;
         state = state.getNext();
         if (state == State.COLOR) {
             // Draw call completed, apply and send to client.
@@ -241,12 +241,12 @@ public final class DisplayModule extends AbstractModuleWithRotation {
             int ip = 0;
             for (int iy = 0; iy < RESOLUTION; iy++) {
                 for (int ix = 0; ix < RESOLUTION; ix++, ip++) {
-                    ((NativeImage) nativeImage).setPixelRGBA(ix, iy, image[ip]);
+                    ((NativeImage)nativeImage).setPixelRGBA(ix, iy, image[ip]);
                 }
             }
 
             GlStateManager.bindTexture(glTextureId);
-            ((NativeImage) nativeImage).upload(0, 0, 0, false);
+            ((NativeImage)nativeImage).upload(0, 0, 0, false);
         }
         return glTextureId;
     }
@@ -260,7 +260,7 @@ public final class DisplayModule extends AbstractModuleWithRotation {
             glTextureId = 0;
         }
         if (nativeImage != null) {
-            ((NativeImage) nativeImage).close();
+            ((NativeImage)nativeImage).close();
         }
     }
 

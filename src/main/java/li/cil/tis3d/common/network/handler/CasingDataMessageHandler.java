@@ -22,14 +22,14 @@ public final class CasingDataMessageHandler extends AbstractMessageHandlerWithLo
             return;
         }
 
-        final CasingBlockEntity casing = (CasingBlockEntity) blockEntity;
+        final CasingBlockEntity casing = (CasingBlockEntity)blockEntity;
         final ByteBuf data = message.getData();
         while (data.readableBytes() > 0) {
             final Module module = casing.getModule(Face.VALUES[data.readByte()]);
             final ByteBuf moduleData = data.readBytes(data.readShort());
             while (moduleData.readableBytes() > 0) {
                 final boolean isNbt = moduleData.readBoolean();
-                int size = moduleData.readShort();
+                final int size = moduleData.readShort();
                 final ByteBuf packet = moduleData.readBytes(size);
                 if (module != null) {
                     if (isNbt) {

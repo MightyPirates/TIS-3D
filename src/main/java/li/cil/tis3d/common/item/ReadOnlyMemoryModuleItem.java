@@ -22,7 +22,7 @@ public class ReadOnlyMemoryModuleItem extends ModuleItem {
     private static final String TAG_DATA = "data";
     private static final byte[] EMPTY_DATA = new byte[0];
 
-    public ReadOnlyMemoryModuleItem(Item.Settings builder) {
+    public ReadOnlyMemoryModuleItem(final Item.Settings builder) {
         super(builder.stackSize(1));
     }
 
@@ -40,7 +40,7 @@ public class ReadOnlyMemoryModuleItem extends ModuleItem {
     }
 
     @Override
-    public ActionResult useOnBlock(ItemUsageContext context) {
+    public ActionResult useOnBlock(final ItemUsageContext context) {
         return CasingBlock.activate(context) ? ActionResult.SUCCESS : super.useOnBlock(context);
     }
 
@@ -54,7 +54,7 @@ public class ReadOnlyMemoryModuleItem extends ModuleItem {
             return;
         }
 
-        ReadOnlyMemoryModuleDataMessage message = new ReadOnlyMemoryModuleDataMessage(ReadOnlyMemoryModuleItem.loadFromStack(heldItem), hand);
+        final ReadOnlyMemoryModuleDataMessage message = new ReadOnlyMemoryModuleDataMessage(ReadOnlyMemoryModuleItem.loadFromStack(heldItem), hand);
         Network.INSTANCE.sendToClient(message, player);
     }
 

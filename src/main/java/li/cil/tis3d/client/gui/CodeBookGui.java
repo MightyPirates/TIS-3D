@@ -137,7 +137,7 @@ public final class CodeBookGui extends Gui {
 
         // Draw page number.
         final String pageInfo = String.format("%d/%d", data.getSelectedPage() + 1, data.getPageCount());
-        getFontRenderer().draw(pageInfo, guiX + PAGE_NUMBER_X - getFontRenderer().getStringWidth(pageInfo) / 2, guiY + PAGE_NUMBER_Y, COLOR_CODE);
+        getFontRenderer().draw(pageInfo, (float)(guiX + PAGE_NUMBER_X - getFontRenderer().getStringWidth(pageInfo) / 2), guiY + PAGE_NUMBER_Y, COLOR_CODE);
     }
 
     @Override
@@ -146,8 +146,8 @@ public final class CodeBookGui extends Gui {
             return true;
         }
 
-        int mouseX = (int) Math.round(mouseXd);
-        int mouseY = (int) Math.round(mouseYd);
+        final int mouseX = (int)Math.round(mouseXd);
+        final int mouseY = (int)Math.round(mouseYd);
 
         if (isInCodeArea(mouseX, mouseY)) {
             final int line = cursorToLine(mouseY);
@@ -165,8 +165,8 @@ public final class CodeBookGui extends Gui {
             return true;
         }
 
-        int mouseX = (int) Math.round(mouseXd);
-        int mouseY = (int) Math.round(mouseYd);
+        final int mouseX = (int)Math.round(mouseXd);
+        final int mouseY = (int)Math.round(mouseYd);
 
         if (isInCodeArea(mouseX, mouseY)) {
             final int line = cursorToLine(mouseY);
@@ -179,7 +179,7 @@ public final class CodeBookGui extends Gui {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scancode, int mods) {
+    public boolean keyPressed(final int keyCode, final int scancode, final int mods) {
         if (super.keyPressed(keyCode, scancode, mods)) {
             return true;
         }
@@ -344,7 +344,7 @@ public final class CodeBookGui extends Gui {
     }
 
     @Override
-    public boolean charTyped(char chr, int code) {
+    public boolean charTyped(final char chr, final int code) {
         if (super.charTyped(chr, code)) {
             return true;
         } else if (Character.isISOControl(chr)) {
@@ -679,7 +679,7 @@ public final class CodeBookGui extends Gui {
         }
 
         @Override
-        public void onPressed(double p_mouseClicked_1_, double p_mouseClicked_3_) {
+        public void onPressed(final double p_mouseClicked_1_, final double p_mouseClicked_3_) {
             if (type == PageChangeType.Next) {
                 changePage(1);
             } else if (type == PageChangeType.Previous) {
@@ -713,7 +713,7 @@ public final class CodeBookGui extends Gui {
         }
 
         @Override
-        public void onPressed(double p_mouseClicked_1_, double p_mouseClicked_3_) {
+        public void onPressed(final double p_mouseClicked_1_, final double p_mouseClicked_3_) {
             data.removePage(data.getSelectedPage());
             rebuildLines();
         }

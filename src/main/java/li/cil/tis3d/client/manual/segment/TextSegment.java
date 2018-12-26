@@ -51,7 +51,7 @@ public class TextSegment extends BasicTextSegment {
             if (!hovered.isPresent()) {
                 final int cx = currentX;
                 final int cy = currentY;
-                hovered = interactive.flatMap(segment -> segment.checkHovered(mouseX, mouseY, cx, cy, stringWidth(part, renderer), (int) (Document.lineHeight(renderer) * scale)));
+                hovered = interactive.flatMap(segment -> segment.checkHovered(mouseX, mouseY, cx, cy, stringWidth(part, renderer), (int)(Document.lineHeight(renderer) * scale)));
             }
             GlStateManager.color4f(0f, 0f, 0f, 1);
             GlStateManager.pushMatrix();
@@ -101,12 +101,12 @@ public class TextSegment extends BasicTextSegment {
 
     @Override
     protected int lineHeight(final FontRenderer renderer) {
-        return (int) (super.lineHeight(renderer) * resolvedScale());
+        return (int)(super.lineHeight(renderer) * resolvedScale());
     }
 
     @Override
     protected int stringWidth(final String s, final FontRenderer renderer) {
-        return (int) (renderer.getStringWidth(resolvedFormat() + s) * resolvedScale());
+        return (int)(renderer.getStringWidth(resolvedFormat() + s) * resolvedScale());
     }
 
     // ----------------------------------------------------------------------- //
@@ -130,7 +130,7 @@ public class TextSegment extends BasicTextSegment {
     private int parentColor() {
         final Segment parent = parent();
         if (parent instanceof TextSegment) {
-            return ((TextSegment) parent).resolvedColor();
+            return ((TextSegment)parent).resolvedColor();
         } else {
             return 0x333333;
         }
@@ -143,7 +143,7 @@ public class TextSegment extends BasicTextSegment {
     private float parentScale() {
         final Segment parent = parent();
         if (parent instanceof TextSegment) {
-            return scale().orElse(1f) * ((TextSegment) parent).resolvedScale();
+            return scale().orElse(1f) * ((TextSegment)parent).resolvedScale();
         } else {
             return 1f;
         }
@@ -152,7 +152,7 @@ public class TextSegment extends BasicTextSegment {
     private String resolvedFormat() {
         final Segment parent = parent();
         if (parent instanceof TextSegment) {
-            return ((TextSegment) parent).resolvedFormat() + format();
+            return ((TextSegment)parent).resolvedFormat() + format();
         } else {
             return format();
         }
@@ -160,11 +160,11 @@ public class TextSegment extends BasicTextSegment {
 
     private Optional<InteractiveSegment> resolvedInteractive() {
         if (this instanceof InteractiveSegment) {
-            return Optional.of((InteractiveSegment) this);
+            return Optional.of((InteractiveSegment)this);
         } else {
             final Segment parent = parent();
             if (parent instanceof TextSegment) {
-                return ((TextSegment) parent).resolvedInteractive();
+                return ((TextSegment)parent).resolvedInteractive();
             } else {
                 return Optional.empty();
             }

@@ -32,7 +32,7 @@ public final class ItemStackImageRenderer implements ImageRenderer {
     @Override
     public void render(final int mouseX, final int mouseY) {
         final MinecraftClient mc = MinecraftClient.getInstance();
-        final int index = (int) (System.currentTimeMillis() % (CYCLE_SPEED * stacks.length)) / CYCLE_SPEED;
+        final int index = (int)(System.currentTimeMillis() % (CYCLE_SPEED * stacks.length)) / CYCLE_SPEED;
         final ItemStack stack = stacks[index];
 
         GlStateManager.scalef(getWidth() / 16f, getHeight() / 16f, getWidth() / 16f);

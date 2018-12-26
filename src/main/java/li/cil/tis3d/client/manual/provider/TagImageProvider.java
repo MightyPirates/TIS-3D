@@ -13,7 +13,7 @@ public final class TagImageProvider implements ImageProvider {
     private static final String WARNING_TAG_MISSING = API.MOD_ID + ".manual.warning.missing.tag";
 
     @Override
-    public ImageRenderer getImage(String data) {
+    public ImageRenderer getImage(final String data) {
         final ItemStack[] stacks = TagRegistry.item(new Identifier(data)).values().stream().map(ItemStack::new).filter(stack -> !stack.isEmpty()).toArray(ItemStack[]::new);
         if (stacks.length > 0) {
             return new ItemStackImageRenderer(stacks);

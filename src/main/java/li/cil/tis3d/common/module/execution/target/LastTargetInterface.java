@@ -50,7 +50,7 @@ public final class LastTargetInterface extends AbstractTargetInterfaceSide {
 
     @Override
     public short read() {
-        return getState().last.map(this::read).orElse((short) 0);
+        return getState().last.map(this::read).orElse((short)0);
     }
 
     // --------------------------------------------------------------------- //

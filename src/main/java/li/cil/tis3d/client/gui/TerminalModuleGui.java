@@ -51,7 +51,7 @@ public final class TerminalModuleGui extends Gui {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scancode, int mods) {
+    public boolean keyPressed(final int keyCode, final int scancode, final int mods) {
         if (super.keyPressed(keyCode, scancode, mods)) {
             return true;
         }
@@ -70,7 +70,7 @@ public final class TerminalModuleGui extends Gui {
     }
 
     @Override
-    public boolean charTyped(char chr, int code) {
+    public boolean charTyped(final char chr, final int code) {
         if (super.charTyped(chr, code)) {
             return true;
         }
@@ -82,7 +82,7 @@ public final class TerminalModuleGui extends Gui {
         }
     }
 
-    private boolean writeToModule(char chr) {
+    private boolean writeToModule(final char chr) {
         module.writeToInput(chr);
 
         if (Settings.animateTypingHand) {
