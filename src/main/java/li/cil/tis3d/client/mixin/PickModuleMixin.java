@@ -4,26 +4,33 @@ import li.cil.tis3d.common.block.CasingBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockView;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(MinecraftClient.class)
 public abstract class PickModuleMixin {
     @Shadow
     public HitResult hitResult;
 
-    @Redirect(method = "doItemPick()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;getPickStack(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Lnet/minecraft/item/ItemStack;"))
-    private ItemStack pickModule(final Block block, final BlockView world, final BlockPos pos, final BlockState state) {
+    @Shadow
+    public ClientWorld world;
+
+    @ModifyVariable(method = "doItemPick", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isEmpty()Z", ordinal = 0))
+    private ItemStack pickModule(final ItemStack stack) {
+        assert hitResult.type == HitResult.Type.BLOCK;
+        final BlockPos blockPos = hitResult.getBlockPos();
+        final BlockState blockState = world.getBlockState(blockPos);
+        final Block block = blockState.getBlock();
         if (block instanceof CasingBlock) {
-            return ((CasingBlock)block).getPickStack(world, pos, hitResult.side, state);
+            return ((CasingBlock)block).getPickStack(world, blockPos, hitResult.side, blockState);
         } else {
-            return block.getPickStack(world, pos, state);
+            return stack;
         }
     }
 }
