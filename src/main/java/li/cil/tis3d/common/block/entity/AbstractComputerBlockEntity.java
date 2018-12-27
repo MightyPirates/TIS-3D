@@ -9,7 +9,6 @@ import li.cil.tis3d.util.NBTIds;
 import net.fabricmc.fabric.block.entity.ClientSerializable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.client.network.packet.BlockEntityUpdateClientPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.math.BlockPos;
@@ -160,12 +159,6 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
         final CompoundTag nbt = super.toTag(nbtIn);
         writeToNBTForServer(nbt);
         return nbt;
-    }
-
-    @Nullable
-    @Override
-    public BlockEntityUpdateClientPacket toUpdatePacket() {
-        return new BlockEntityUpdateClientPacket(getPos(), 127, toInitialChunkDataTag());
     }
 
     @Override
