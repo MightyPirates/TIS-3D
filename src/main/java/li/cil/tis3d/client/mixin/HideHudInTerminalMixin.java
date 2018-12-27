@@ -4,15 +4,17 @@ import li.cil.tis3d.client.gui.TerminalModuleGui;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.settings.GameOptions;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(InGameHud.class)
 public abstract class HideHudInTerminalMixin extends Drawable {
-    @Redirect(at = @At(value = "FIELD", target = "Lnet/minecraft/client/settings/GameOptions;field_1842:Z"), method = "draw(F)V")
-    private boolean draw(final GameOptions options) {
-        return MinecraftClient.getInstance().currentGui instanceof TerminalModuleGui || options.field_1842;
+    @Inject(method = "draw", at = @At("HEAD"), cancellable = true)
+    private void hideHud(final float tickDelta, final CallbackInfo ci) {
+        if (MinecraftClient.getInstance().currentGui instanceof TerminalModuleGui) {
+            ci.cancel();
+        }
     }
 }
