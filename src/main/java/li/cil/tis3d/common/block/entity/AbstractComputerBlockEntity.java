@@ -3,10 +3,10 @@ package li.cil.tis3d.common.block.entity;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
-import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.machine.PipeHost;
 import li.cil.tis3d.common.machine.PipeImpl;
 import li.cil.tis3d.util.NBTIds;
+import net.fabricmc.fabric.block.entity.ClientSerializable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.network.packet.BlockEntityUpdateClientPacket;
@@ -19,7 +19,7 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-public abstract class AbstractComputerBlockEntity extends BlockEntity implements PipeHost {
+public abstract class AbstractComputerBlockEntity extends BlockEntity implements PipeHost, ClientSerializable {
     // --------------------------------------------------------------------- //
     // Persisted data.
 
@@ -149,7 +149,7 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
     public void fromTag(final CompoundTag nbt) {
         super.fromTag(nbt);
         if (nbt.containsKey("_client")) {
-            readFromNBTForClient(nbt);
+            fromClientTag(nbt);
         } else {
             readFromNBTForServer(nbt);
         }
@@ -165,13 +165,13 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
     @Nullable
     @Override
     public BlockEntityUpdateClientPacket toUpdatePacket() {
-        return new BlockEntityUpdateClientPacket(getPos(), Constants.BLOCK_ENTITY_ACTION_ID, toInitialChunkDataTag());
+        return new BlockEntityUpdateClientPacket(getPos(), 127, toInitialChunkDataTag());
     }
 
     @Override
     public CompoundTag toInitialChunkDataTag() {
         final CompoundTag nbt = super.toInitialChunkDataTag();
-        writeToNBTForClient(nbt);
+        toClientTag(nbt);
         nbt.putBoolean("_client", true);
         return nbt;
     }
@@ -233,12 +233,13 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
         writeToNBTCommon(nbt);
     }
 
-    protected void readFromNBTForClient(final CompoundTag nbt) {
+    public void fromClientTag(final CompoundTag nbt) {
         readFromNBTCommon(nbt);
     }
 
-    protected void writeToNBTForClient(final CompoundTag nbt) {
+    public CompoundTag toClientTag(final CompoundTag nbt) {
         writeToNBTCommon(nbt);
+        return nbt;
     }
 
     protected void readFromNBTCommon(final CompoundTag nbt) {

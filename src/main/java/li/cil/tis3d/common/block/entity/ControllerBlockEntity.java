@@ -247,17 +247,19 @@ public final class ControllerBlockEntity extends AbstractComputerBlockEntity imp
     }
 
     @Override
-    protected void readFromNBTForClient(final CompoundTag nbt) {
-        super.readFromNBTForClient(nbt);
+    public void fromClientTag(final CompoundTag nbt) {
+        super.fromClientTag(nbt);
 
         state = ControllerState.VALUES[nbt.getByte(TAG_STATE) & 0xFF];
     }
 
     @Override
-    protected void writeToNBTForClient(final CompoundTag nbt) {
-        super.writeToNBTForClient(nbt);
+    public CompoundTag toClientTag(final CompoundTag nbt) {
+        super.toClientTag(nbt);
 
         nbt.putByte(TAG_STATE, (byte)state.ordinal());
+
+        return nbt;
     }
 
     // --------------------------------------------------------------------- //

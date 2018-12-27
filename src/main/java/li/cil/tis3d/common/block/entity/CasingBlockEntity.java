@@ -358,8 +358,8 @@ public final class CasingBlockEntity extends AbstractComputerBlockEntity impleme
     }
 
     @Override
-    protected void readFromNBTForClient(final CompoundTag nbt) {
-        super.readFromNBTForClient(nbt);
+    public void fromClientTag(final CompoundTag nbt) {
+        super.fromClientTag(nbt);
 
         final World world = Objects.requireNonNull(getWorld());
 
@@ -368,10 +368,12 @@ public final class CasingBlockEntity extends AbstractComputerBlockEntity impleme
     }
 
     @Override
-    protected void writeToNBTForClient(final CompoundTag nbt) {
-        super.writeToNBTForClient(nbt);
+    public CompoundTag toClientTag(final CompoundTag nbt) {
+        super.toClientTag(nbt);
 
         nbt.putBoolean(TAG_ENABLED, isEnabled);
+
+        return nbt;
     }
 
     @Override

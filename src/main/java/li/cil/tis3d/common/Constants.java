@@ -10,11 +10,6 @@ import java.util.regex.Pattern;
  */
 public final class Constants {
     // --------------------------------------------------------------------- //
-    // BlockEntity update packet action id
-
-    public static final int BLOCK_ENTITY_ACTION_ID = API.MOD_ID.hashCode() & 0xFF;
-
-    // --------------------------------------------------------------------- //
     // Block, item, entity and container names
 
     public static final Identifier NAME_BLOCK_CASING = new Identifier(API.MOD_ID, "casing");
