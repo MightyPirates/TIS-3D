@@ -482,7 +482,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
     private void bell() {
         final World world = getCasing().getCasingWorld();
         if (!world.isClient) {
-            world.playSound(null, getCasing().getPosition(), SoundEvents.ENTITY_MINECART_INSIDE, SoundCategory.BLOCK, 0.3f, 2f);
+            world.playSound(null, getCasing().getPosition(), SoundEvents.BLOCK_NOTE_BLOCK_HARP, SoundCategory.BLOCK, 0.3f, 2f);
         }
     }
 

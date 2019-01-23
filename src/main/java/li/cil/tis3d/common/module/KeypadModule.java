@@ -148,7 +148,7 @@ public final class KeypadModule extends AbstractModuleWithRotation {
             final short newValue = nbt.getShort(TAG_VALUE);
             value = Optional.of(newValue);
             getCasing().sendData(getFace(), nbt, DATA_TYPE_VALUE);
-            getCasing().getCasingWorld().playSound(null, getCasing().getPosition(), SoundEvents.ENTITY_IRON_GOLEM_ATTACK, SoundCategory.BLOCK, 0.3f, VALUE_TO_PITCH[newValue]);
+            getCasing().getCasingWorld().playSound(null, getCasing().getPosition(), SoundEvents.BLOCK_STONE_BUTTON_CLICK_ON, SoundCategory.BLOCK, 0.3f, VALUE_TO_PITCH[newValue]);
         }
     }
 
