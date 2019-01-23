@@ -143,7 +143,7 @@ public abstract class AbstractModule implements Module {
      * @param hitPos the hit position to project.
      * @return the projected UV coordinate, with the Z component being 0.
      * @see #getObserverLookAt(BlockEntityRenderDispatcher)
-     * @see Module#onActivate(PlayerEntity, Hand, float, float, float)
+     * @see Module#onActivate(PlayerEntity, Hand, Vec3d)
      */
     protected Vec3d hitToUV(final Vec3d hitPos) {
         return TransformUtil.hitToUV(getFace(), hitPos);
