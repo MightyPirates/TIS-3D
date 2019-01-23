@@ -34,6 +34,7 @@ import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
@@ -146,7 +147,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
     }
 
     @Override
-    public boolean onActivate(final PlayerEntity player, final Hand hand, final float hitX, final float hitY, final float hitZ) {
+    public boolean onActivate(final PlayerEntity player, final Hand hand, final Vec3d hit) {
         final ItemStack heldItem = player.getStackInHand(hand);
 
         // Vanilla book? If so, make that a code book.

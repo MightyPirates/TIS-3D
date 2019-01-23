@@ -88,7 +88,7 @@ public final class SequencerModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public boolean onActivate(final PlayerEntity player, final Hand hand, final float hitX, final float hitY, final float hitZ) {
+    public boolean onActivate(final PlayerEntity player, final Hand hand, final Vec3d hit) {
         if (player.isSneaking()) {
             return false;
         }
@@ -98,7 +98,7 @@ public final class SequencerModule extends AbstractModuleWithRotation {
         // low resolution for some reason).
         final World world = getCasing().getCasingWorld();
         if (world.isClient) {
-            final Vec3d uv = hitToUV(new Vec3d(hitX, hitY, hitZ));
+            final Vec3d uv = hitToUV(hit);
             final int col = uvToCol((float)uv.x);
             final int row = uvToRow((float)uv.y);
             if (col >= 0 && row >= 0) {

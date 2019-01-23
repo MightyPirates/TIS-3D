@@ -9,9 +9,9 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
@@ -33,7 +33,7 @@ public final class ControllerBlock extends Block implements BlockEntityProvider 
 
     @SuppressWarnings("deprecation")
     @Override
-    public boolean activate(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final Direction side, final float hitX, final float hitY, final float hitZ) {
+    public boolean activate(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockHitResult blockHitResult) {
         final ItemStack heldItem = player.getStackInHand(hand);
         if (!heldItem.isEmpty()) {
             final Item item = heldItem.getItem();
@@ -64,7 +64,8 @@ public final class ControllerBlock extends Block implements BlockEntityProvider 
 
             return true;
         }
-        return super.activate(state, world, pos, player, hand, side, hitX, hitY, hitZ);
+
+        return super.activate(state, world, pos, player, hand, blockHitResult);
     }
 
     @SuppressWarnings("deprecation")

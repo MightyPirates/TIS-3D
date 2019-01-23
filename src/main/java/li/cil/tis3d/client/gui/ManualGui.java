@@ -149,10 +149,10 @@ public final class ManualGui extends Gui {
 
     @Override
     public boolean keyPressed(final int code, final int scancode, final int mods) {
-        if (client.options.keyJump.matches(code, scancode)) {
+        if (client.options.keyJump.matchesKey(code, scancode)) {
             popPage();
             return true;
-        } else if (client.options.keyInventory.matches(code, scancode)) {
+        } else if (client.options.keyInventory.matchesKey(code, scancode)) {
             client.player.closeGui();
             return true;
         } else {

@@ -6,6 +6,7 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.traits.Redstone;
 import li.cil.tis3d.api.util.TransformUtil;
+import li.cil.tis3d.client.inject.ItemUsageContextAccessors;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ManualBookItem;
@@ -25,6 +26,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -116,12 +118,12 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
 
         // TODO Ugly, but context does not pass on hand...
         final Hand hand = context.getPlayer() != null && context.getPlayer().getStackInHand(Hand.OFF) == context.getItemStack() ? Hand.OFF : Hand.MAIN;
-        return ((CasingBlock)blockState.getBlock()).activate(blockState, context.getWorld(), context.getPos(), context.getPlayer(), hand, context.getFacing(), context.getHitX(), context.getHitY(), context.getHitZ());
+        return ((CasingBlock)blockState.getBlock()).activate(blockState, context.getWorld(), context.getPos(), context.getPlayer(), hand, ((ItemUsageContextAccessors)context).getBlockHitResult());
     }
 
     @SuppressWarnings("deprecation")
-    @Override
-    public boolean activate(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final Direction side, final float hitX, final float hitY, final float hitZ) {
+    public boolean activate(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockHitResult blockHitResult) {
+        final Vec3d hit = blockHitResult.getPos().subtract(blockHitResult.getBlockPos().getX(), blockHitResult.getBlockPos().getY(), blockHitResult.getBlockPos().getZ());
         if (world.isBlockLoaded(pos)) {
             final BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof CasingBlockEntity) {
@@ -137,8 +139,8 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
                             if (!player.isSneaking()) {
                                 casing.lock(heldItem);
                             } else {
-                                final Face face = Face.fromDirection(side);
-                                final Vec3d uv = TransformUtil.hitToUV(face, new Vec3d(hitX, hitY, hitZ));
+                                final Face face = Face.fromDirection(blockHitResult.getSide());
+                                final Vec3d uv = TransformUtil.hitToUV(face, hit);
                                 final Port port = Port.fromUVQuadrant(uv);
 
                                 casing.setReceivingPipeLocked(face, port, !casing.isReceivingPipeLocked(face, port));
@@ -150,29 +152,29 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
 
                 // Trying to look something up in the manual?
                 if (Items.isBookManual(heldItem)) {
-                    final ItemStack moduleStack = casing.getInvStack(side.ordinal());
+                    final ItemStack moduleStack = casing.getInvStack(blockHitResult.getSide().ordinal());
                     if (ManualBookItem.tryOpenManual(world, player, ManualAPI.pathFor(moduleStack))) {
                         return true;
                     }
                 }
 
                 // Let the module handle the activation.
-                final Module module = casing.getModule(Face.fromDirection(side));
-                if (module != null && module.onActivate(player, hand, hitX, hitY, hitZ)) {
+                final Module module = casing.getModule(Face.fromDirection(blockHitResult.getSide()));
+                if (module != null && module.onActivate(player, hand, hit)) {
                     return true;
                 }
 
                 // Don't allow changing modules while casing is locked.
                 if (casing.isLocked()) {
-                    return super.activate(state, world, pos, player, hand, side, hitX, hitY, hitZ);
+                    return super.activate(state, world, pos, player, hand, blockHitResult);
                 }
 
                 // Remove old module or install new one.
-                final ItemStack oldModule = casing.getInvStack(side.ordinal());
+                final ItemStack oldModule = casing.getInvStack(blockHitResult.getSide().ordinal());
                 if (!oldModule.isEmpty()) {
                     // Removing a present module from the casing.
                     if (!world.isClient) {
-                        final ItemEntity entity = InventoryUtils.drop(world, pos, casing, side.ordinal(), 1, side);
+                        final ItemEntity entity = InventoryUtils.drop(world, pos, casing, blockHitResult.getSide().ordinal(), 1, blockHitResult.getSide());
                         if (entity != null) {
                             entity.resetPickupDelay();
                             entity.onPlayerCollision(player);
@@ -182,7 +184,7 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
                     return true;
                 } else if (!heldItem.isEmpty()) {
                     // Installing a new module in the casing.
-                    if (casing.canInsertInvStack(side.ordinal(), heldItem, side)) {
+                    if (casing.canInsertInvStack(blockHitResult.getSide().ordinal(), heldItem, blockHitResult.getSide())) {
                         if (!world.isClient) {
                             final ItemStack insertedStack;
                             if (player.abilities.creativeMode) {
@@ -190,11 +192,11 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
                             } else {
                                 insertedStack = heldItem.split(1);
                             }
-                            if (side.getAxis() == Direction.Axis.Y) {
+                            if (blockHitResult.getSide().getAxis() == Direction.Axis.Y) {
                                 final Port orientation = Port.fromDirection(player.getHorizontalFacing());
-                                casing.setInventorySlotContents(side.ordinal(), insertedStack, orientation);
+                                casing.setInventorySlotContents(blockHitResult.getSide().ordinal(), insertedStack, orientation);
                             } else {
-                                casing.setInvStack(side.ordinal(), insertedStack);
+                                casing.setInvStack(blockHitResult.getSide().ordinal(), insertedStack);
                             }
                             world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.BLOCK_PISTON_EXTEND, SoundCategory.BLOCK, 0.2f, 0.8f + world.random.nextFloat() * 0.1f);
                         }
@@ -204,7 +206,7 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
             }
         }
 
-        return super.activate(state, world, pos, player, hand, side, hitX, hitY, hitZ);
+        return super.activate(state, world, pos, player, hand, blockHitResult);
     }
 
     @SuppressWarnings("deprecation")

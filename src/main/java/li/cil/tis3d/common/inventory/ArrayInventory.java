@@ -6,7 +6,6 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.text.TextComponent;
 
 import java.util.Arrays;
 
@@ -16,11 +15,9 @@ import java.util.Arrays;
 public class ArrayInventory implements Inventory {
     private static final String TAG_ITEMS = "inventory";
 
-    private final TextComponent name;
     protected final ItemStack[] items;
 
-    public ArrayInventory(final TextComponent name, final int size) {
-        this.name = name;
+    public ArrayInventory(final int size) {
         Arrays.fill(items = new ItemStack[size], ItemStack.EMPTY);
     }
 
@@ -52,14 +49,6 @@ public class ArrayInventory implements Inventory {
     }
 
     protected void onItemRemoved(final int index) {
-    }
-
-    // --------------------------------------------------------------------- //
-    // Nameable
-
-    @Override
-    public TextComponent getName() {
-        return name;
     }
 
     // --------------------------------------------------------------------- //

@@ -14,11 +14,13 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.WorldChunk;
 
 import javax.annotation.Nullable;
@@ -72,11 +74,23 @@ public abstract class AbstractModule implements Module {
      */
     @Environment(EnvType.CLIENT)
     protected boolean isObserverLookingAt(final BlockEntityRenderDispatcher rendererDispatcher) {
-        final HitResult hit = rendererDispatcher.hitResult;
-        return hit != null &&
-            hit.type == HitResult.Type.BLOCK &&
-            getCasing().getPosition().equals(hit.getBlockPos()) &&
-            hit.side == Face.toDirection(getFace());
+        final HitResult hitResult = rendererDispatcher.hitResult;
+        if (hitResult == null) {
+            return false;
+        }
+        if (hitResult.getType() != HitResult.Type.BLOCK) {
+            return false;
+        }
+
+        final BlockHitResult blockHitResult = (BlockHitResult)hitResult;
+        if (!getCasing().getPosition().equals(blockHitResult.getBlockPos())) {
+            return false;
+        }
+        if (blockHitResult.getSide() != Face.toDirection(getFace())) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -95,17 +109,25 @@ public abstract class AbstractModule implements Module {
     @Environment(EnvType.CLIENT)
     @Nullable
     protected Vec3d getObserverLookAt(final BlockEntityRenderDispatcher rendererDispatcher) {
-        final HitResult hit = rendererDispatcher.hitResult;
-        if (hit != null &&
-            hit.type == HitResult.Type.BLOCK &&
-            getCasing().getPosition().equals(hit.getBlockPos()) &&
-            hit.side == Face.toDirection(getFace())) {
-            return new Vec3d(hit.pos.x - hit.getBlockPos().getX(),
-                hit.pos.y - hit.getBlockPos().getY(),
-                hit.pos.z - hit.getBlockPos().getZ());
-        } else {
+        final HitResult hitResult = rendererDispatcher.hitResult;
+        if (hitResult == null) {
             return null;
         }
+        if (hitResult.getType() != HitResult.Type.BLOCK) {
+            return null;
+        }
+
+        final BlockHitResult blockHitResult = (BlockHitResult)hitResult;
+        if (!getCasing().getPosition().equals(blockHitResult.getBlockPos())) {
+            return null;
+        }
+        if (blockHitResult.getSide() != Face.toDirection(getFace())) {
+            return null;
+        }
+
+        return new Vec3d(hitResult.getPos().x - blockHitResult.getBlockPos().getX(),
+            hitResult.getPos().y - blockHitResult.getBlockPos().getY(),
+            hitResult.getPos().z - blockHitResult.getBlockPos().getZ());
     }
 
     // --------------------------------------------------------------------- //
@@ -144,8 +166,8 @@ public abstract class AbstractModule implements Module {
             return false;
         }
 
-        final WorldChunk chunk = world.getChunk(neighborPos);
-        if (chunk.method_12223()) {
+        final Chunk chunk = world.getChunk(neighborPos);
+        if (chunk instanceof WorldChunk && ((WorldChunk)chunk).isEmpty()) {
             // If the neighbor chunk is empty, we must assume we're visible.
             return true;
         }
@@ -201,7 +223,7 @@ public abstract class AbstractModule implements Module {
     }
 
     @Override
-    public boolean onActivate(final PlayerEntity player, final Hand hand, final float hitX, final float hitY, final float hitZ) {
+    public boolean onActivate(final PlayerEntity player, final Hand hand, final Vec3d hit) {
         return false;
     }
 

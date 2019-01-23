@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 public final class WorldUtils {
     @Nullable
     public static BlockEntity getBlockEntityThreadsafe(final BlockView world, final BlockPos pos) {
-        return world instanceof World ? ((World)world).getChunk(pos).getBlockEntity(pos, WorldChunk.AccessType.GET) : world.getBlockEntity(pos);
+        return world instanceof World ? ((WorldChunk)((World)world).getChunk(pos)).getBlockEntity(pos, WorldChunk.AccessType.GET) : world.getBlockEntity(pos);
     }
 
     private WorldUtils() {

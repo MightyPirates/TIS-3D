@@ -17,6 +17,8 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.util.BlockHitResult;
+import net.minecraft.util.EntityHitResult;
 import net.minecraft.util.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
@@ -25,6 +27,7 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Represents a single value in transmission, sent by an {@link InfraredModule}.
@@ -255,14 +258,14 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
         final double t = random.nextDouble();
 
         final double dx, dy, dz;
-        if (hit == null || hit.pos == null) {
+        if (hit == null || hit.getPos() == null) {
             dx = velocityX;
             dy = velocityY;
             dz = velocityZ;
         } else {
-            dx = hit.pos.x - x;
-            dy = hit.pos.y - y;
-            dz = hit.pos.z - z;
+            dx = hit.getPos().x - x;
+            dy = hit.getPos().y - y;
+            dz = hit.getPos().z - z;
         }
 
         final double xx = x + dx * t;
@@ -274,17 +277,17 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
 
     @Nullable
     private HitResult checkCollisions() {
-        final HitResult hit = checkCollision();
-        if (hit != null) {
+        final HitResult hitResult = checkCollision();
+        if (hitResult != null) {
             // For travel distance adjustment, see below.
             final Vec3d oldPos = getPosVector();
 
-            switch (hit.type) {
+            switch (hitResult.getType()) {
                 case BLOCK:
-                    onBlockCollision(hit);
+                    onBlockCollision((BlockHitResult)hitResult);
                     break;
                 case ENTITY:
-                    onEntityCollision(hit);
+                    onEntityCollision((EntityHitResult)hitResult);
                     break;
                 default:
                     return null;
@@ -299,7 +302,8 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
             y -= velocityY * delta;
             z -= velocityZ * delta;
         }
-        return hit;
+
+        return hitResult;
     }
 
     @Nullable
@@ -315,9 +319,9 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
         final HitResult entityHit = checkEntityCollision(world, start, target);
 
         // If we have both, pick the closer one.
-        if (blockHit != null && blockHit.type != HitResult.Type.NONE &&
-            entityHit != null && entityHit.type != HitResult.Type.NONE) {
-            if (blockHit.pos.squaredDistanceTo(start) < entityHit.pos.squaredDistanceTo(start)) {
+        if (blockHit != null && blockHit.getType() != HitResult.Type.NONE &&
+            entityHit != null && entityHit.getType() != HitResult.Type.NONE) {
+            if (blockHit.getPos().squaredDistanceTo(start) < entityHit.getPos().squaredDistanceTo(start)) {
                 return blockHit;
             } else {
                 return entityHit;
@@ -333,20 +337,18 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
 
     @Nullable
     private HitResult checkEntityCollision(final World world, final Vec3d start, final Vec3d target) {
-        HitResult entityHit = null;
+        EntityHitResult entityHit = null;
         double bestSqrDistance = Double.POSITIVE_INFINITY;
 
         final List<Entity> collisions = world.getEntities(this, getBoundingBox().stretch(velocityX, velocityY, velocityZ), EntityPredicates.EXCEPT_SPECTATOR);
         for (final Entity entity : collisions) {
             if (entity.doesCollide()) {
                 final BoundingBox entityBounds = entity.getBoundingBox();
-                final HitResult hit = entityBounds.rayTrace(start, target);
-                if (hit != null) {
-                    final double sqrDistance = start.squaredDistanceTo(hit.pos);
+                final Optional<Vec3d> hit = entityBounds.rayTrace(start, target);
+                if (hit.isPresent()) {
+                    final double sqrDistance = start.squaredDistanceTo(hit.get());
                     if (sqrDistance < bestSqrDistance) {
-                        hit.entity = entity;
-                        hit.type = HitResult.Type.ENTITY;
-                        entityHit = hit;
+                        entityHit = new EntityHitResult(entity, hit.get());
                         bestSqrDistance = sqrDistance;
                     }
                 }
@@ -356,7 +358,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
         return entityHit;
     }
 
-    private void onBlockCollision(final HitResult hit) {
+    private void onBlockCollision(final BlockHitResult hit) {
         final World world = getEntityWorld();
 
         // Just in case...
@@ -370,7 +372,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
         final Block block = world.getBlockState(pos).getBlock();
 
         // Traveling through a portal?
-        if (hit.type == HitResult.Type.BLOCK && block == Blocks.OAK_TRAPDOOR) {
+        if (block == Blocks.NETHER_PORTAL || block == Blocks.END_PORTAL) {
             setInPortal(pos);
             return;
         }
@@ -383,12 +385,12 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
         onInfraredReceiverCollision(hit, world.getBlockEntity(pos));
     }
 
-    private void onEntityCollision(final HitResult hit) {
+    private void onEntityCollision(final EntityHitResult hit) {
         // First things first, we ded.
         invalidate();
 
         // Next up, notify receiver, if any.
-        onInfraredReceiverCollision(hit, hit.entity);
+        onInfraredReceiverCollision(hit, hit.getEntity());
     }
 
     private void onInfraredReceiverCollision(final HitResult hit, @Nullable final Object provider) {

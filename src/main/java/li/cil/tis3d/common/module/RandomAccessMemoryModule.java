@@ -19,6 +19,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.Vec3d;
 
 import java.util.Arrays;
 
@@ -117,7 +118,7 @@ public class RandomAccessMemoryModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public boolean onActivate(final PlayerEntity player, final Hand hand, final float hitX, final float hitY, final float hitZ) {
+    public boolean onActivate(final PlayerEntity player, final Hand hand, final Vec3d hit) {
         final ItemStack heldItem = player.getStackInHand(hand);
         if (!Items.isModuleReadOnlyMemory(heldItem)) {
             return false;

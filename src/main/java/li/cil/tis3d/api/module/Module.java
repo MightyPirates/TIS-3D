@@ -9,6 +9,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.Vec3d;
 
 /**
  * A module that can be installed in a TIS-3D {@link Casing}.
@@ -145,12 +146,10 @@ public interface Module {
      *
      * @param player the player that clicked the module.
      * @param hand   the hand the player used to activate the module.
-     * @param hitX   the relative x position that was clicked.
-     * @param hitY   the relative y position that was clicked.
-     * @param hitZ   the relative z position that was clicked.
+     * @param hit    the relative hit position that was clicked.
      * @return <tt>true</tt> if the click was handled, <tt>false</tt> otherwise.
      */
-    boolean onActivate(final PlayerEntity player, final Hand hand, final float hitX, final float hitY, final float hitZ);
+    boolean onActivate(final PlayerEntity player, final Hand hand, final Vec3d hit);
 
     /**
      * Called with NBT data sent from the remote instance of the module.

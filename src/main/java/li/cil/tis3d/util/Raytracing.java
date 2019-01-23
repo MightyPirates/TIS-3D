@@ -1,7 +1,7 @@
 package li.cil.tis3d.util;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -32,11 +32,10 @@ public final class Raytracing {
      * @return hit information on the intersect, or <tt>null</tt> if there was none.
      */
     @Nullable
-    public static HitResult intersectIgnoringLiquids(final World world, final BlockPos position, final Vec3d start, final Vec3d end) {
+    public static BlockHitResult intersectIgnoringLiquids(final World world, final BlockPos position, final Vec3d start, final Vec3d end) {
         final BlockState state = world.getBlockState(position);
-        final Block block = state.getBlock();
-        if (state.getCollisionShape(world, position) != null && block.canCollideWith(state)) {
-            return Block.rayTrace(state, world, position, start, end);
+        if (state.getCollisionShape(world, position) != null) {
+            return state.getCollisionShape(world, position).rayTrace(start, end, position);
         }
         return null;
     }
@@ -51,14 +50,13 @@ public final class Raytracing {
      * @return hit information on the intersect, or <tt>null</tt> if there was none.
      */
     @Nullable
-    public static HitResult intersectIgnoringTransparent(final World world, final BlockPos position, final Vec3d start, final Vec3d end) {
+    public static BlockHitResult intersectIgnoringTransparent(final World world, final BlockPos position, final Vec3d start, final Vec3d end) {
         final BlockState state = world.getBlockState(position);
-        final Block block = state.getBlock();
         if (!state.getMaterial().method_15804()) {
             return null;
         }
-        if (state.getCollisionShape(world, position) != null && block.canCollideWith(state)) {
-            return Block.rayTrace(state, world, position, start, end);
+        if (state.getCollisionShape(world, position) != null) {
+            return state.getCollisionShape(world, position).rayTrace(start, end, position);
         }
         return null;
     }
@@ -138,7 +136,7 @@ public final class Raytracing {
             // Check if we're colliding with the block.
             final BlockPos position = new BlockPos(currentPosX, currentPosY, currentPosZ);
             final HitResult hit = callback.intersect(world, position, start, end);
-            if (hit != null && hit.type != HitResult.Type.NONE) {
+            if (hit != null && hit.getType() != HitResult.Type.NONE) {
                 return hit;
             }
 

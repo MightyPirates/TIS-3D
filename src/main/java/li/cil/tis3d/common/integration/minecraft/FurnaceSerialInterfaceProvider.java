@@ -3,6 +3,7 @@ package li.cil.tis3d.common.integration.minecraft;
 import li.cil.tis3d.api.serial.SerialInterface;
 import li.cil.tis3d.api.serial.SerialInterfaceProvider;
 import li.cil.tis3d.api.serial.SerialProtocolDocumentationReference;
+import li.cil.tis3d.common.inject.AbstractFurnaceBlockEntityAccessors;
 import li.cil.tis3d.util.EnumUtils;
 import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -68,7 +69,18 @@ public final class FurnaceSerialInterfaceProvider implements SerialInterfaceProv
             TotalSmeltTicks;
 
             public int get(final AbstractFurnaceBlockEntity furnace) {
-                return furnace.getInvProperty(ordinal());
+                final AbstractFurnaceBlockEntityAccessors accessors = (AbstractFurnaceBlockEntityAccessors)furnace;
+                switch (this) {
+                    case RemainingFuelTicks:
+                        return accessors.getBurnTime();
+                    case TotalFuelTicks:
+                        return accessors.getFuelTime();
+                    case AccumulatedSmeltTicks:
+                        return accessors.getCookTime();
+                    case TotalSmeltTicks:
+                        return accessors.getCookTimeTotal();
+                }
+                return 0;
             }
         }
 

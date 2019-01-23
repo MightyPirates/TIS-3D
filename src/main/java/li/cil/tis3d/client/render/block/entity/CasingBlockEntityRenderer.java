@@ -17,6 +17,7 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -132,10 +133,13 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
                 closedSprite = RenderUtil.getSprite(Textures.LOCATION_OVERLAY_CASING_PORT_CLOSED);
                 openSprite = RenderUtil.getSprite(Textures.LOCATION_OVERLAY_CASING_PORT_OPEN);
 
-                final HitResult hit = renderManager.hitResult;
-                final BlockPos pos = hit.getBlockPos();
+                final HitResult hitResult = renderManager.hitResult;
+                assert hitResult.getType() == HitResult.Type.BLOCK : "renderManager.hitResult.getBlockPos().getType() is not of type BLOCK even though it was in isObserverLookingAt";
+                assert hitResult instanceof BlockHitResult : "renderManager.hitResult.getBlockPos() is not a BlockHitResult even though it was in isObserverLookingAt";
+                final BlockHitResult blockHitResult = (BlockHitResult)hitResult;
+                final BlockPos pos = blockHitResult.getBlockPos();
                 assert pos != null : "renderManager.hitResult.getBlockPos() is null even though it was non-null in isObserverLookingAt";
-                final Vec3d uv = TransformUtil.hitToUV(face, hit.pos.subtract(new Vec3d(pos)));
+                final Vec3d uv = TransformUtil.hitToUV(face, hitResult.getPos().subtract(new Vec3d(pos)));
                 lookingAtPort = Port.fromUVQuadrant(uv);
             } else {
                 closedSprite = RenderUtil.getSprite(Textures.LOCATION_OVERLAY_CASING_PORT_CLOSED_SMALL);
@@ -233,12 +237,25 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
     }
 
     private boolean isObserverLookingAt(final BlockPos pos, final Face face) {
-        final HitResult hit = renderManager.hitResult;
-        return hit != null &&
-            hit.type == HitResult.Type.BLOCK &&
-            hit.side != null &&
-            Face.fromDirection(hit.side) == face &&
-            hit.getBlockPos() != null &&
-            Objects.equals(hit.getBlockPos(), pos);
+        final HitResult hitResult = renderManager.hitResult;
+        if (hitResult == null) {
+            return false;
+        }
+        if (hitResult.getType() != HitResult.Type.BLOCK) {
+            return false;
+        }
+
+        final BlockHitResult blockHitResult = (BlockHitResult)hitResult;
+        if (blockHitResult.getSide() == null) {
+            return false;
+        }
+        if (Face.fromDirection(blockHitResult.getSide()) != face) {
+            return false;
+        }
+        if (blockHitResult.getBlockPos() == null) {
+            return false;
+        }
+
+        return Objects.equals(blockHitResult.getBlockPos(), pos);
     }
 }

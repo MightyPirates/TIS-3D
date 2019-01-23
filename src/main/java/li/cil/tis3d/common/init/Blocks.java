@@ -25,8 +25,8 @@ public final class Blocks {
     }
 
     static void registerBlockEntityTypes() {
-        CasingBlockEntity.TYPE = Registry.register(Registry.BLOCK_ENTITY, Constants.NAME_BLOCK_CASING, BlockEntityType.Builder.create(CasingBlockEntity::new).method_11034(null));
-        ControllerBlockEntity.TYPE = Registry.register(Registry.BLOCK_ENTITY, Constants.NAME_BLOCK_CONTROLLER, BlockEntityType.Builder.create(ControllerBlockEntity::new).method_11034(null));
+        CasingBlockEntity.TYPE = Registry.register(Registry.BLOCK_ENTITY, Constants.NAME_BLOCK_CASING, BlockEntityType.Builder.create(CasingBlockEntity::new).build(null));
+        ControllerBlockEntity.TYPE = Registry.register(Registry.BLOCK_ENTITY, Constants.NAME_BLOCK_CONTROLLER, BlockEntityType.Builder.create(ControllerBlockEntity::new).build(null));
     }
 
     // --------------------------------------------------------------------- //

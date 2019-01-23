@@ -133,12 +133,12 @@ public final class Document {
         GlStateManager.translatef(0, 0, 500);
         GL11.glBegin(GL11.GL_QUADS);
         GL11.glVertex2f(0, y);
-        GL11.glVertex2f(mc.window.method_4480(), y);
-        GL11.glVertex2f(mc.window.method_4480(), 0);
+        GL11.glVertex2f(mc.window.getFramebufferWidth(), y);
+        GL11.glVertex2f(mc.window.getFramebufferWidth(), 0);
         GL11.glVertex2f(0, 0);
-        GL11.glVertex2f(0, mc.window.method_4507());
-        GL11.glVertex2f(mc.window.method_4480(), mc.window.method_4507());
-        GL11.glVertex2f(mc.window.method_4480(), y + maxHeight);
+        GL11.glVertex2f(0, mc.window.getFramebufferHeight());
+        GL11.glVertex2f(mc.window.getFramebufferWidth(), mc.window.getFramebufferHeight());
+        GL11.glVertex2f(mc.window.getFramebufferWidth(), y + maxHeight);
         GL11.glVertex2f(0, y + maxHeight);
         GL11.glEnd();
         GlStateManager.popMatrix();

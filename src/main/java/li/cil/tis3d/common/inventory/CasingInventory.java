@@ -6,7 +6,6 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.ModuleProvider;
 import li.cil.tis3d.api.module.traits.Rotatable;
-import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.init.Blocks;
 import li.cil.tis3d.common.network.Network;
@@ -15,7 +14,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
@@ -29,7 +27,7 @@ public final class CasingInventory extends ArrayInventory implements SidedInvent
     private final CasingBlockEntity blockEntity;
 
     public CasingInventory(final CasingBlockEntity blockEntity) {
-        super(new TranslatableTextComponent(Constants.NAME_INVENTORY_CASING), Face.VALUES.length);
+        super(Face.VALUES.length);
         this.blockEntity = blockEntity;
     }
 

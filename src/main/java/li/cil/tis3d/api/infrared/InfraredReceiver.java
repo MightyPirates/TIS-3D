@@ -11,6 +11,7 @@ import net.minecraft.util.HitResult;
  * <p>
  * Things checked for this interface by default are:
  * <ul>
+ * <li>{@link net.minecraft.entity.Entity}</li>
  * <li>{@link net.minecraft.block.Block}</li>
  * <li>{@link net.minecraft.block.entity.BlockEntity}</li>
  * <li>{@link li.cil.tis3d.api.module.Module} in {@link Casing}.</li>

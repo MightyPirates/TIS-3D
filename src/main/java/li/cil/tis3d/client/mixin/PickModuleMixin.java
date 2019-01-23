@@ -6,6 +6,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.HitResult;
 import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,12 +24,14 @@ public abstract class PickModuleMixin {
 
     @ModifyVariable(method = "doItemPick", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isEmpty()Z", ordinal = 0))
     private ItemStack pickModule(final ItemStack stack) {
-        assert hitResult.type == HitResult.Type.BLOCK;
-        final BlockPos blockPos = hitResult.getBlockPos();
+        assert hitResult.getType() == HitResult.Type.BLOCK;
+        assert hitResult instanceof BlockHitResult;
+        final BlockHitResult blockHitResult = (BlockHitResult)hitResult;
+        final BlockPos blockPos = blockHitResult.getBlockPos();
         final BlockState blockState = world.getBlockState(blockPos);
         final Block block = blockState.getBlock();
         if (block instanceof CasingBlock) {
-            return ((CasingBlock)block).getPickStack(world, blockPos, hitResult.side, blockState);
+            return ((CasingBlock)block).getPickStack(world, blockPos, blockHitResult.getSide(), blockState);
         } else {
             return stack;
         }

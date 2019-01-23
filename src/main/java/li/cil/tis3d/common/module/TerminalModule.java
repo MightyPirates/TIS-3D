@@ -27,6 +27,7 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import java.nio.ByteBuffer;
@@ -169,7 +170,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public boolean onActivate(final PlayerEntity player, final Hand hand, final float hitX, final float hitY, final float hitZ) {
+    public boolean onActivate(final PlayerEntity player, final Hand hand, final Vec3d hit) {
         if (player.isSneaking()) {
             return false;
         }

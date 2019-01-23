@@ -3,6 +3,7 @@
     "compatibilityLevel": "JAVA_8",
     "mixins": [
         "HideHudInTerminalMixin",
+        "ItemUsageContextMixin",
         "PickModuleMixin",
         "WorldUnloadMinecraftClientMixin"
     ]

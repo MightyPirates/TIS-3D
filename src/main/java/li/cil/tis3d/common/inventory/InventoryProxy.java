@@ -3,7 +3,6 @@ package li.cil.tis3d.common.inventory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.TextComponent;
 
 public interface InventoryProxy extends Inventory {
     Inventory getInventory();
@@ -69,52 +68,7 @@ public interface InventoryProxy extends Inventory {
     }
 
     @Override
-    default int getInvProperty(final int index) {
-        return getInventory().getInvProperty(index);
-    }
-
-    @Override
-    default void setInvProperty(final int index, final int value) {
-        getInventory().setInvProperty(index, value);
-    }
-
-    @Override
-    default int getInvPropertyCount() {
-        return getInventory().getInvPropertyCount();
-    }
-
-    @Override
     default void clearInv() {
         getInventory().clearInv();
-    }
-
-    @Override
-    default TextComponent getName() {
-        return getInventory().getName();
-    }
-
-    @Override
-    default TextComponent getCustomName() {
-        return getInventory().getCustomName();
-    }
-
-    @Override
-    default boolean hasCustomName() {
-        return getInventory().hasCustomName();
-    }
-
-    @Override
-    default TextComponent getDisplayName() {
-        return getInventory().getDisplayName();
-    }
-
-    @Override
-    default int getInvWidth() {
-        return getInventory().getInvWidth();
-    }
-
-    @Override
-    default int getInvHeight() {
-        return getInventory().getInvHeight();
     }
 }
