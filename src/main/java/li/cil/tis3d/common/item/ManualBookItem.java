@@ -48,8 +48,8 @@ public final class ManualBookItem extends BookItem {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public void buildTooltip(final ItemStack stack, @Nullable final World world, final List<TextComponent> tooltip, final TooltipOptions flag) {
-        super.buildTooltip(stack, world, tooltip, flag);
+    public void buildTooltip(final ItemStack stack, @Nullable final World world, final List<TextComponent> tooltip, final TooltipOptions options) {
+        super.buildTooltip(stack, world, tooltip, options);
         final String info = I18n.translate(Constants.TOOLTIP_BOOK_MANUAL);
         FontRendererUtils.addStringToTooltip(info, tooltip);
     }

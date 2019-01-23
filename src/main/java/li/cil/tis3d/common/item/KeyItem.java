@@ -35,8 +35,8 @@ public final class KeyItem extends Item {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public void buildTooltip(final ItemStack stack, @Nullable final World world, final List<TextComponent> tooltip, final TooltipOptions flag) {
-        super.buildTooltip(stack, world, tooltip, flag);
+    public void buildTooltip(final ItemStack stack, @Nullable final World world, final List<TextComponent> tooltip, final TooltipOptions options) {
+        super.buildTooltip(stack, world, tooltip, options);
         final String info = I18n.translate(Constants.TOOLTIP_KEY);
         FontRendererUtils.addStringToTooltip(info, tooltip);
     }
