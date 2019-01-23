@@ -1,10 +1,10 @@
 package li.cil.tis3d.common.init;
 
+import li.cil.tis3d.api.API;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.item.*;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.block.BlockItem;
 import net.minecraft.util.Identifier;
@@ -19,13 +19,13 @@ import java.util.Objects;
  * Manages setup, registration and lookup of items.
  */
 public final class Items {
-    public static final Item BOOK_CODE = new CodeBookItem(new Item.Settings().itemGroup(ItemGroup.REDSTONE));
-    public static final Item BOOK_MANUAL = new ManualBookItem(new Item.Settings().itemGroup(ItemGroup.REDSTONE));
-    public static final Item KEY = new KeyItem(new Item.Settings().itemGroup(ItemGroup.REDSTONE));
-    public static final Item KEY_CREATIVE = new KeyItem(new Item.Settings().itemGroup(ItemGroup.REDSTONE));
-    public static final Item PRISM = new Item(new Item.Settings().itemGroup(ItemGroup.REDSTONE));
-    public static final BlockItem CASING = new BlockItem(Blocks.CASING, new Item.Settings().itemGroup(ItemGroup.REDSTONE));
-    public static final BlockItem CONTROLLER = new BlockItem(Blocks.CONTROLLER, new Item.Settings().itemGroup(ItemGroup.REDSTONE));
+    public static final Item BOOK_CODE = new CodeBookItem(new Item.Settings().stackSize(1).itemGroup(API.itemGroup));
+    public static final Item BOOK_MANUAL = new ManualBookItem(new Item.Settings().stackSize(16).itemGroup(API.itemGroup));
+    public static final Item KEY = new KeyItem(new Item.Settings().stackSize(1).itemGroup(API.itemGroup));
+    public static final Item KEY_CREATIVE = new KeyItem(new Item.Settings().stackSize(1).itemGroup(API.itemGroup));
+    public static final Item PRISM = new Item(new Item.Settings().stackSize(32).itemGroup(API.itemGroup));
+    public static final BlockItem CASING = new BlockItem(Blocks.CASING, new Item.Settings().itemGroup(API.itemGroup));
+    public static final BlockItem CONTROLLER = new BlockItem(Blocks.CONTROLLER, new Item.Settings().itemGroup(API.itemGroup));
 
     private static final Map<Identifier, Item> modules = new HashMap<>();
 
@@ -76,27 +76,32 @@ public final class Items {
         registerItem(KEY_CREATIVE, Constants.NAME_ITEM_KEY_CREATIVE);
         registerItem(PRISM, Constants.NAME_ITEM_PRISM);
 
-        Registry.ITEM.register(Registry.BLOCK.getId(Blocks.CASING), CASING);
-        Registry.ITEM.register(Registry.BLOCK.getId(Blocks.CONTROLLER), CONTROLLER);
+        registerItem(CASING, Constants.NAME_BLOCK_CASING);
+        registerItem(CONTROLLER, Constants.NAME_BLOCK_CONTROLLER);
     }
 
     // --------------------------------------------------------------------- //
 
-    private static Item registerItem(final Item item, final Identifier identifier) {
-        Registry.ITEM.register(identifier, item);
-        return item;
+    private static void registerItem(final Item item, final Identifier identifier) {
+        registerItem(item, identifier, true);
     }
 
-    @Nullable
-    private static Item registerModule(final Identifier identifier) {
-        if (Settings.disabledModules.contains(identifier)) {
+    private static Item registerItem(final Item item, final Identifier identifier, final boolean isListed) {
+        Registry.ITEM.register(identifier, item);
+        if (!isListed) {
             return null;
         }
 
+        return item;
+    }
+
+    private static Item registerModule(final Identifier identifier) {
+        final boolean isListed = !Settings.disabledModules.contains(identifier);
+        final Item.Settings settings = isListed ? new Item.Settings().itemGroup(API.itemGroup) : new Item.Settings();
         if (Objects.equals(identifier, Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY)) {
-            return registerItem(new ReadOnlyMemoryModuleItem(new Item.Settings().itemGroup(ItemGroup.REDSTONE)), identifier);
+            return registerItem(new ReadOnlyMemoryModuleItem(settings), identifier, isListed);
         } else {
-            return registerItem(new ModuleItem(new Item.Settings().itemGroup(ItemGroup.REDSTONE)), identifier);
+            return registerItem(new ModuleItem(settings), identifier, isListed);
         }
     }
 

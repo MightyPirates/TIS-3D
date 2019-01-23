@@ -1,5 +1,5 @@
 {
-    "itemGroup.tis3d": "TIS-3D",
+    "itemGroup.tis3d.name": "TIS-3D",
 
     "item.tis3d.book_code": "编码书",
     "item.tis3d.book_manual": "TIS-3D 参考手册",

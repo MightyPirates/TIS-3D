@@ -14,9 +14,9 @@ import li.cil.tis3d.common.module.*;
 import li.cil.tis3d.common.module.provider.SimpleModuleProvider;
 import li.cil.tis3d.common.network.Network;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.events.TickEvent;
 import net.fabricmc.loader.FabricLoader;
-import net.minecraft.item.ItemGroup;
 
 import java.io.File;
 
@@ -28,7 +28,10 @@ public final class BootstrapCommon implements ModInitializer {
         Settings.load(new File(FabricLoader.INSTANCE.getConfigDirectory(), API.MOD_ID + ".cfg"));
 
         // Initialize API.
-        API.creativeTab = ItemGroup.REDSTONE;
+        API.itemGroup = FabricItemGroupBuilder.create(Constants.NAME_ITEM_GROUP).
+            // Gotta be a lambda or items get initialized before item group is set.
+            icon(() -> Items.CONTROLLER.getDefaultStack()).
+            build();
 
         API.fontRendererAPI = new FontRendererAPIImpl();
         API.infraredAPI = new InfraredAPIImpl();

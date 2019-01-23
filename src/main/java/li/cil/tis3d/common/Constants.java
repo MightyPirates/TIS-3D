@@ -39,7 +39,7 @@ public final class Constants {
 
     public static final Identifier NAME_ENTITY_INFRARED_PACKET = new Identifier(API.MOD_ID, "infrared_packet");
 
-    public static final String NAME_INVENTORY_CASING = "container.casing";
+    public static final Identifier NAME_ITEM_GROUP = new Identifier(API.MOD_ID, "name");
 
     public static final Identifier[] MODULES = new Identifier[]{
         NAME_ITEM_MODULE_AUDIO,

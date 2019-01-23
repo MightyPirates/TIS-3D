@@ -11,14 +11,9 @@ public final class API {
      */
     public static final String MOD_ID = "tis3d";
 
-    /**
-     * The current version of the mod.
-     */
-    public static final String MOD_VERSION = "@VERSION@";
-
     // --------------------------------------------------------------------- //
 
-    public static ItemGroup creativeTab;
+    public static ItemGroup itemGroup;
 
     // Set in TIS-3D pre-init, prefer using static entry point classes instead.
     public static li.cil.tis3d.api.detail.FontRendererAPI fontRendererAPI;
