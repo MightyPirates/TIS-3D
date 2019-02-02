@@ -3,8 +3,8 @@ package li.cil.tis3d.client.render.block.entity;
 import li.cil.tis3d.common.block.entity.ControllerBlockEntity;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.util.BlockHitResult;
-import net.minecraft.util.HitResult;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
 
 public final class ControllerBlockEntityRenderer extends BlockEntityRenderer<ControllerBlockEntity> {
     @Override

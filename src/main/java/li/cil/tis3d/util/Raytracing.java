@@ -1,8 +1,8 @@
 package li.cil.tis3d.util;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.util.BlockHitResult;
-import net.minecraft.util.HitResult;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;

@@ -39,7 +39,7 @@ public final class ItemStackImageRenderer implements ImageRenderer {
         GlStateManager.enableRescaleNormal();
         RenderUtil.ignoreLighting();
         GuiLighting.enableForItems();
-        mc.getItemRenderer().renderItemAndGlowInGui(stack, 0, 0);
+        mc.getItemRenderer().renderGuiItemIcon(stack, 0, 0);
         GuiLighting.disable();
     }
 }

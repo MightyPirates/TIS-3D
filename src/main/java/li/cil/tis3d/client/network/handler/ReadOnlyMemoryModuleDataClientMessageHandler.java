@@ -5,17 +5,17 @@ import li.cil.tis3d.common.network.handler.AbstractMessageHandler;
 import li.cil.tis3d.common.network.message.ReadOnlyMemoryModuleDataMessage;
 import net.fabricmc.fabric.networking.PacketContext;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.Screen;
 
 public final class ReadOnlyMemoryModuleDataClientMessageHandler extends AbstractMessageHandler<ReadOnlyMemoryModuleDataMessage> {
     @Override
     protected void onMessageSynchronized(final ReadOnlyMemoryModuleDataMessage message, final PacketContext context) {
-        final Gui guiScreen = MinecraftClient.getInstance().currentGui;
+        final Screen guiScreen = MinecraftClient.getInstance().currentScreen;
         if (!(guiScreen instanceof ReadOnlyMemoryModuleGui)) {
             return;
         }
 
-        final ReadOnlyMemoryModuleGui guiMemory = (ReadOnlyMemoryModuleGui)MinecraftClient.getInstance().currentGui;
+        final ReadOnlyMemoryModuleGui guiMemory = (ReadOnlyMemoryModuleGui)guiScreen;
         guiMemory.setData(message.getData());
     }
 }

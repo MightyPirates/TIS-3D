@@ -26,7 +26,7 @@ public class ItemStackTabIconRenderer implements TabIconRenderer {
         GlStateManager.enableRescaleNormal();
         RenderUtil.ignoreLighting();
         GuiLighting.enableForItems();
-        MinecraftClient.getInstance().getItemRenderer().renderItemAndGlowInGui(stack, 0, 0);
+        MinecraftClient.getInstance().getItemRenderer().renderGuiItemIcon(stack, 0, 0);
         GuiLighting.disable();
     }
 }

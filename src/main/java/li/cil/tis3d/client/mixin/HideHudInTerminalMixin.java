@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class HideHudInTerminalMixin extends Drawable {
     @Inject(method = "draw", at = @At("HEAD"), cancellable = true)
     private void hideHud(final float tickDelta, final CallbackInfo ci) {
-        if (MinecraftClient.getInstance().currentGui instanceof TerminalModuleGui) {
+        if (MinecraftClient.getInstance().currentScreen instanceof TerminalModuleGui) {
             ci.cancel();
         }
     }

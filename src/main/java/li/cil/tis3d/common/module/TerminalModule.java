@@ -18,7 +18,7 @@ import li.cil.tis3d.util.NBTIds;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.Screen;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -366,11 +366,11 @@ public final class TerminalModule extends AbstractModuleWithRotation {
             return;
         }
 
-        final Gui screen = mc.currentGui;
+        final Screen screen = mc.currentScreen;
         if (screen instanceof TerminalModuleGui) {
             final TerminalModuleGui gui = (TerminalModuleGui)screen;
             if (gui.isFor(this)) {
-                mc.openGui(null);
+                mc.openScreen(null);
             }
         }
     }

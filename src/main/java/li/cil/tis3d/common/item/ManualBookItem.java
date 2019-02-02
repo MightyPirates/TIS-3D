@@ -60,7 +60,7 @@ public final class ManualBookItem extends BookItem {
         if (player == null) {
             return super.useOnBlock(context);
         }
-        return tryOpenManual(context.getWorld(), player, ManualAPI.pathFor(context.getWorld(), context.getPos())) ? ActionResult.SUCCESS : super.useOnBlock(context);
+        return tryOpenManual(context.getWorld(), player, ManualAPI.pathFor(context.getWorld(), context.getBlockPos())) ? ActionResult.SUCCESS : super.useOnBlock(context);
     }
 
     @Override

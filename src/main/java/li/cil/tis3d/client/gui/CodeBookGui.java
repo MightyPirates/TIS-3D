@@ -15,7 +15,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.FontRenderer;
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.entity.player.PlayerEntity;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  */
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 @Environment(EnvType.CLIENT)
-public final class CodeBookGui extends Gui {
+public final class CodeBookGui extends Screen {
     private static final int GUI_WIDTH = 148;
     private static final int GUI_HEIGHT = 230;
     private static final int BUTTON_PAGE_CHANGE_PREV_X = 8;

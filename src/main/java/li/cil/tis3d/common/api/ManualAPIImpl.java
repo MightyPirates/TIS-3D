@@ -8,7 +8,7 @@ import li.cil.tis3d.client.gui.GuiHelper;
 import li.cil.tis3d.client.gui.ManualGui;
 import li.cil.tis3d.common.TIS3D;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.Screen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -194,7 +194,7 @@ public final class ManualAPIImpl implements ManualAPI {
             return;
         }
 
-        final Gui screen = mc.currentGui;
+        final Screen screen = mc.currentScreen;
         if (screen instanceof ManualGui) {
             ((ManualGui)screen).pushPage(path);
         } else {

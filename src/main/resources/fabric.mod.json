@@ -2,7 +2,7 @@
     "id": "tis3d",
     "name": "TIS-3D",
     "description": "TIS-100 inspired low-tech computing for Minecraft.",
-    "version": "1.6.0",
+    "version": "1.5.0",
     "side": "universal",
     "initializers": [
         "li.cil.tis3d.client.init.BootstrapClient",

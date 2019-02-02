@@ -26,8 +26,8 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.util.BlockHitResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
@@ -111,14 +111,14 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
             return false;
         }
 
-        final BlockState blockState = context.getWorld().getBlockState(context.getPos());
+        final BlockState blockState = context.getWorld().getBlockState(context.getBlockPos());
         if (!(blockState.getBlock() instanceof CasingBlock)) {
             return false;
         }
 
         // TODO Ugly, but context does not pass on hand...
         final Hand hand = context.getPlayer() != null && context.getPlayer().getStackInHand(Hand.OFF) == context.getItemStack() ? Hand.OFF : Hand.MAIN;
-        return ((CasingBlock)blockState.getBlock()).activate(blockState, context.getWorld(), context.getPos(), context.getPlayer(), hand, ((ItemUsageContextAccessors)context).getBlockHitResult());
+        return ((CasingBlock)blockState.getBlock()).activate(blockState, context.getWorld(), context.getBlockPos(), context.getPlayer(), hand, ((ItemUsageContextAccessors)context).getBlockHitResult());
     }
 
     @SuppressWarnings("deprecation")

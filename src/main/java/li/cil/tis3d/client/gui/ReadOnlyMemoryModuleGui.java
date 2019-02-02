@@ -7,12 +7,12 @@ import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.module.RandomAccessMemoryModule;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.ReadOnlyMemoryModuleDataMessage;
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.Screen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Hand;
 import org.lwjgl.glfw.GLFW;
 
-public final class ReadOnlyMemoryModuleGui extends Gui {
+public final class ReadOnlyMemoryModuleGui extends Screen {
     private static final int GUI_WIDTH = 190;
     private static final int GUI_HEIGHT = 130;
 
@@ -73,7 +73,7 @@ public final class ReadOnlyMemoryModuleGui extends Gui {
     @Override
     public void draw(final int mouseX, final int mouseY, final float partialTicks) {
         if (!player.isValid() || !Items.isModuleReadOnlyMemory(player.getStackInHand(hand))) {
-            client.openGui(null);
+            client.openScreen(null);
             return;
         }
 

@@ -2,7 +2,7 @@ package li.cil.tis3d.api.infrared;
 
 import li.cil.tis3d.api.machine.Casing;
 import net.minecraft.block.Material;
-import net.minecraft.util.HitResult;
+import net.minecraft.util.hit.HitResult;
 
 /**
  * When implemented this will be used let the instance handle a received

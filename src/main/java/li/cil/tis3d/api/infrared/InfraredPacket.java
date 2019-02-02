@@ -1,6 +1,6 @@
 package li.cil.tis3d.api.infrared;
 
-import net.minecraft.util.HitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
 
 /**

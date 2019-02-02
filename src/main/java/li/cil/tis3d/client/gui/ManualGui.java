@@ -12,7 +12,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.FontRenderer;
 import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
@@ -27,7 +27,7 @@ import java.util.Optional;
 
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 @Environment(EnvType.CLIENT)
-public final class ManualGui extends Gui {
+public final class ManualGui extends Screen {
     private static final int DOCUMENT_MAX_WIDTH = 220;
     private static final int DOCUMENT_MAX_HEIGHT = 176;
     private static final int SCROLL_POS_X = 250;

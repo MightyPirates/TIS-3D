@@ -7,18 +7,18 @@ import net.minecraft.util.Hand;
 
 public final class GuiHelper {
     public static void openManualGui() {
-        MinecraftClient.getInstance().openGui(new ManualGui());
+        MinecraftClient.getInstance().openScreen(new ManualGui());
     }
 
     public static void openCodeBookGui(final PlayerEntity player, final Hand hand) {
-        MinecraftClient.getInstance().openGui(new CodeBookGui(player, hand));
+        MinecraftClient.getInstance().openScreen(new CodeBookGui(player, hand));
     }
 
     public static void openTerminalGui(final TerminalModule terminal) {
-        MinecraftClient.getInstance().openGui(new TerminalModuleGui(terminal));
+        MinecraftClient.getInstance().openScreen(new TerminalModuleGui(terminal));
     }
 
     public static void openReadOnlyMemoryGui(final PlayerEntity player, final Hand hand) {
-        MinecraftClient.getInstance().openGui(new ReadOnlyMemoryModuleGui(player, hand));
+        MinecraftClient.getInstance().openScreen(new ReadOnlyMemoryModuleGui(player, hand));
     }
 }

@@ -30,8 +30,8 @@ public final class BootstrapCommon implements ModInitializer {
         // Initialize API.
         API.itemGroup = FabricItemGroupBuilder.create(Constants.NAME_ITEM_GROUP).
             // Gotta be a lambda or items get initialized before item group is set.
-            icon(() -> Items.CONTROLLER.getDefaultStack()).
-            build();
+                icon(() -> Items.CONTROLLER.getDefaultStack()).
+                build();
 
         API.fontRendererAPI = new FontRendererAPIImpl();
         API.infraredAPI = new InfraredAPIImpl();

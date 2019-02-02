@@ -11,15 +11,17 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.network.packet.EntitySpawnClientPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Packet;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.util.BlockHitResult;
-import net.minecraft.util.EntityHitResult;
-import net.minecraft.util.HitResult;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Vec3d;
@@ -69,10 +71,18 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
      */
     private short value;
 
+    // --------------------------------------------------------------------- //
+    // Entity
+
     public InfraredPacketEntity(final World world) {
         super(Entities.INFRARED_PACKET, world);
         fireImmune = true;
         setSize(0.25f, 0.25f);
+    }
+
+    @Override
+    public Packet<?> createSpawnPacket() {
+        return new EntitySpawnClientPacket(this);
     }
 
     // --------------------------------------------------------------------- //

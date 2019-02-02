@@ -24,7 +24,7 @@ final class MinecraftCallbacks {
             return (short)input;
         } else {
             final BlockState state = world.getBlockState(inputPos);
-            return (short)Math.max(input, state.getBlock() == Blocks.REDSTONE_WIRE ? state.get(RedstoneWireBlock.field_11432) : 0);
+            return (short)Math.max(input, state.getBlock() == Blocks.REDSTONE_WIRE ? state.get(RedstoneWireBlock.POWER) : 0);
         }
     }
 
