@@ -15,7 +15,7 @@ import li.cil.tis3d.common.module.provider.SimpleModuleProvider;
 import li.cil.tis3d.common.network.Network;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
-import net.fabricmc.fabric.events.TickEvent;
+import net.fabricmc.fabric.api.event.server.ServerTickCallback;
 import net.fabricmc.loader.FabricLoader;
 
 import java.io.File;
@@ -40,11 +40,11 @@ public final class BootstrapCommon implements ModInitializer {
         API.serialAPI = SerialAPIImpl.INSTANCE;
 
         // Register network handler.
-        Network.INSTANCE.init();
+        Network.INSTANCE.initServer();
 
         // Register event handlers.
-        TickEvent.SERVER.register(server -> TickHandlerInfraredPacket.INSTANCE.serverTick());
-        TickEvent.SERVER.register(server -> Network.INSTANCE.serverTick());
+        ServerTickCallback.EVENT.register(server -> TickHandlerInfraredPacket.INSTANCE.serverTick());
+        ServerTickCallback.EVENT.register(server -> Network.INSTANCE.serverTick());
 
         // Register entities.
         Entities.registerEntities();

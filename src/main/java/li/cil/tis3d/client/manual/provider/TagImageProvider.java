@@ -5,7 +5,7 @@ import li.cil.tis3d.api.manual.ImageProvider;
 import li.cil.tis3d.api.manual.ImageRenderer;
 import li.cil.tis3d.client.manual.segment.render.ItemStackImageRenderer;
 import li.cil.tis3d.client.manual.segment.render.MissingItemRenderer;
-import net.fabricmc.fabric.tags.TagRegistry;
+import net.fabricmc.fabric.api.tag.TagRegistry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 

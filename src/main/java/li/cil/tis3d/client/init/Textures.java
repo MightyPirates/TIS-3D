@@ -1,7 +1,7 @@
 package li.cil.tis3d.client.init;
 
 import li.cil.tis3d.api.API;
-import net.fabricmc.fabric.client.texture.SpriteRegistry;
+import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.minecraft.util.Identifier;
 
 public final class Textures {
@@ -36,7 +36,7 @@ public final class Textures {
     public static final Identifier LOCATION_OVERLAY_MODULE_TERMINAL = new Identifier(API.MOD_ID, "block/overlay/module_terminal");
     public static final Identifier LOCATION_OVERLAY_MODULE_TIMER = new Identifier(API.MOD_ID, "block/overlay/module_timer");
 
-    static void registerSprites(final SpriteRegistry registry) {
+    static void registerSprites(final ClientSpriteRegistryCallback.Registry registry) {
         registry.register(LOCATION_OVERLAY_CASING_LOCKED);
         registry.register(LOCATION_OVERLAY_CASING_UNLOCKED);
         registry.register(LOCATION_OVERLAY_CASING_PORT_CLOSED);

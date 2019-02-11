@@ -15,7 +15,9 @@ import li.cil.tis3d.common.network.handler.CodeBookDataMessageHandler;
 import li.cil.tis3d.common.network.handler.ReadOnlyMemoryModuleDataServerMessageHandler;
 import li.cil.tis3d.common.network.message.*;
 import li.cil.tis3d.util.Side;
-import net.fabricmc.fabric.networking.CustomPayloadPacketRegistry;
+import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
+import net.fabricmc.fabric.api.network.PacketRegistry;
+import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -55,16 +57,19 @@ public final class Network {
 
     // --------------------------------------------------------------------- //
 
-    public void init() {
-        registerMessage(new CodeBookDataMessageHandler(), CodeBookDataMessage.class, Side.SERVER);
+    public void initClient() {
         registerMessage(new CasingDataMessageHandler(), CasingDataMessage.class, Side.CLIENT);
-        registerMessage(new CasingDataMessageHandler(), CasingDataMessage.class, Side.SERVER);
         registerMessage(new CasingEnabledStateMessageHandler(), CasingEnabledStateMessage.class, Side.CLIENT);
         registerMessage(new CasingLockedStateMessageHandler(), CasingLockedStateMessage.class, Side.CLIENT);
         registerMessage(new CasingInventoryMessageHandler(), CasingInventoryMessage.class, Side.CLIENT);
         registerMessage(new HaltAndCatchFireMessageHandler(), HaltAndCatchFireMessage.class, Side.CLIENT);
         registerMessage(new PipeLockedStateMessageHandler(), PipeLockedStateMessage.class, Side.CLIENT);
         registerMessage(new ReadOnlyMemoryModuleDataClientMessageHandler(), ReadOnlyMemoryModuleDataMessage.class, Side.CLIENT);
+    }
+
+    public void initServer() {
+        registerMessage(new CodeBookDataMessageHandler(), CodeBookDataMessage.class, Side.SERVER);
+        registerMessage(new CasingDataMessageHandler(), CasingDataMessage.class, Side.SERVER);
         registerMessage(new ReadOnlyMemoryModuleDataServerMessageHandler(), ReadOnlyMemoryModuleDataMessage.class, Side.SERVER);
     }
 
@@ -164,13 +169,13 @@ public final class Network {
     // Message registration and packaging
 
     private <TMessage extends AbstractMessage> void registerMessage(final AbstractMessageHandler<TMessage> handler, final Class<TMessage> messageClass, final Side handlerSide) {
-        final CustomPayloadPacketRegistry registry;
+        final PacketRegistry registry;
         switch (handlerSide) {
             case CLIENT:
-                registry = CustomPayloadPacketRegistry.CLIENT;
+                registry = ClientSidePacketRegistry.INSTANCE;
                 break;
             case SERVER:
-                registry = CustomPayloadPacketRegistry.SERVER;
+                registry = ServerSidePacketRegistry.INSTANCE;
                 break;
             default:
                 throw new IndexOutOfBoundsException();

@@ -2,7 +2,7 @@ package li.cil.tis3d.common.init;
 
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.entity.InfraredPacketEntity;
-import net.fabricmc.fabric.entity.FabricEntityTypeBuilder;
+import net.fabricmc.fabric.api.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.registry.Registry;

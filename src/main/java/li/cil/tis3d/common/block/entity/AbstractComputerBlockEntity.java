@@ -6,7 +6,7 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.common.machine.PipeHost;
 import li.cil.tis3d.common.machine.PipeImpl;
 import li.cil.tis3d.util.NBTIds;
-import net.fabricmc.fabric.block.entity.ClientSerializable;
+import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.CompoundTag;
@@ -18,7 +18,7 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-public abstract class AbstractComputerBlockEntity extends BlockEntity implements PipeHost, ClientSerializable {
+public abstract class AbstractComputerBlockEntity extends BlockEntity implements PipeHost, BlockEntityClientSerializable {
     // --------------------------------------------------------------------- //
     // Persisted data.
 

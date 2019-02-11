@@ -17,8 +17,17 @@ public abstract class WorldUnloadMinecraftClientMixin {
     @Shadow
     public ClientWorld world;
 
-    @Inject(method = "method_1550", at = @At("HEAD"))
-    private void onBeforeSetWorld(final ClientWorld newWorld, final Screen gui, final CallbackInfo ci) {
+    @Inject(method = "method_1481", at = @At("HEAD"))
+    private void onBeforeSetWorld(final ClientWorld newWorld, final CallbackInfo ci) {
+        tryDisposeCasingBlockEntities();
+    }
+
+    @Inject(method = "method_18096", at = @At("HEAD"))
+    private void onBeforeQuitToMenu(final Screen screen, final CallbackInfo ci) {
+        tryDisposeCasingBlockEntities();
+    }
+
+    private void tryDisposeCasingBlockEntities() {
         if (world == null) {
             return;
         }

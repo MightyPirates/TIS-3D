@@ -3,7 +3,7 @@ package li.cil.tis3d.client.network.handler;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.network.handler.AbstractMessageHandlerWithLocation;
 import li.cil.tis3d.common.network.message.PipeLockedStateMessage;
-import net.fabricmc.fabric.networking.PacketContext;
+import net.fabricmc.fabric.api.network.PacketContext;
 import net.minecraft.block.entity.BlockEntity;
 
 public final class PipeLockedStateMessageHandler extends AbstractMessageHandlerWithLocation<PipeLockedStateMessage> {

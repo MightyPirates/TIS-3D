@@ -17,9 +17,9 @@ import li.cil.tis3d.common.init.Blocks;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.network.Network;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.client.render.BlockEntityRendererRegistry;
-import net.fabricmc.fabric.events.client.ClientTickEvent;
-import net.fabricmc.fabric.events.client.SpriteEvent;
+import net.fabricmc.fabric.api.client.render.BlockEntityRendererRegistry;
+import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
+import net.fabricmc.fabric.api.event.client.ClientTickCallback;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
@@ -30,9 +30,12 @@ import java.util.Collection;
 public final class BootstrapClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
+        // Register network handler.
+        Network.INSTANCE.initClient();
+
         // Register event handlers.
-        ClientTickEvent.CLIENT.register(client -> Network.INSTANCE.clientTick());
-        SpriteEvent.PROVIDE.register(Textures::registerSprites);
+        ClientTickCallback.EVENT.register(client -> Network.INSTANCE.clientTick());
+        ClientSpriteRegistryCallback.registerBlockAtlas((spriteAtlasTexture, registry) -> Textures.registerSprites(registry));
 
         // Set up tile entity renderer for dynamic module content.
         BlockEntityRendererRegistry.INSTANCE.register(CasingBlockEntity.class, new CasingBlockEntityRenderer());
