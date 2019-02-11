@@ -1,6 +1,6 @@
-package li.cil.tis3d.client.mixin;
+package li.cil.tis3d.common.mixin;
 
-import li.cil.tis3d.client.inject.ItemUsageContextAccessors;
+import li.cil.tis3d.common.inject.ItemUsageContextAccessors;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.util.hit.BlockHitResult;
 import org.spongepowered.asm.mixin.Final;

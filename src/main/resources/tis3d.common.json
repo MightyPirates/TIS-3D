@@ -5,7 +5,8 @@
     "mixins": [
         "AbstractFurnaceBlockEntityMixin",
         "CasingInfraredReceiverMixin",
-        "ChunkUnloadMixin"
+        "ChunkUnloadMixin",
+        "ItemUsageContextMixin"
     ],
     "injectors": {
         "defaultRequire": 1

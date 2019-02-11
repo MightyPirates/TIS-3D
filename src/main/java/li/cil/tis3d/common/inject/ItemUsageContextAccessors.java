@@ -1,4 +1,4 @@
-package li.cil.tis3d.client.inject;
+package li.cil.tis3d.common.inject;
 
 import net.minecraft.util.hit.BlockHitResult;
 
