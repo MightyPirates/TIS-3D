@@ -11,6 +11,7 @@ import li.cil.tis3d.client.manual.provider.TextureImageProvider;
 import li.cil.tis3d.client.render.block.entity.CasingBlockEntityRenderer;
 import li.cil.tis3d.client.render.block.entity.ControllerBlockEntityRenderer;
 import li.cil.tis3d.common.Constants;
+import li.cil.tis3d.common.block.CasingBlock;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.block.entity.ControllerBlockEntity;
 import li.cil.tis3d.common.init.Blocks;
@@ -20,9 +21,16 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.render.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.fabricmc.fabric.api.event.client.ClientTickCallback;
+import net.fabricmc.fabric.api.event.client.player.ClientPickBlockCallback;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.BlockPos;
 
 import java.util.Collection;
 
@@ -36,6 +44,7 @@ public final class BootstrapClient implements ClientModInitializer {
         // Register event handlers.
         ClientTickCallback.EVENT.register(client -> Network.INSTANCE.clientTick());
         ClientSpriteRegistryCallback.registerBlockAtlas((spriteAtlasTexture, registry) -> Textures.registerSprites(registry));
+        ClientPickBlockCallback.EVENT.register(BootstrapClient::handlePickBlock);
 
         // Set up tile entity renderer for dynamic module content.
         BlockEntityRendererRegistry.INSTANCE.register(CasingBlockEntity.class, new CasingBlockEntityRenderer());
@@ -66,5 +75,21 @@ public final class BootstrapClient implements ClientModInitializer {
             }
         }
         return module;
+    }
+
+    private static boolean handlePickBlock(final PlayerEntity player, final HitResult hitResult, final ClientPickBlockCallback.Container container) {
+        if (hitResult.getType() != HitResult.Type.BLOCK) {
+            return true;
+        }
+
+        assert hitResult instanceof BlockHitResult;
+        final BlockHitResult blockHitResult = (BlockHitResult)hitResult;
+        final BlockPos blockPos = blockHitResult.getBlockPos();
+        final BlockState blockState = player.getEntityWorld().getBlockState(blockPos);
+        final Block block = blockState.getBlock();
+        if (block instanceof CasingBlock) {
+            container.setStack(((CasingBlock)block).getPickStack(player.getEntityWorld(), blockPos, blockHitResult.getSide(), blockState));
+        }
+        return true;
     }
 }
