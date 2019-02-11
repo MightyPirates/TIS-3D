@@ -1,1 +1,1 @@
-This was built against Minecraft 19w05a and requires Fabric 0.1.5.88.
+This was built against Minecraft 19w06a and requires Fabric 0.2.0.92.
