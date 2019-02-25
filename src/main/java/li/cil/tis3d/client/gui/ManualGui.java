@@ -10,7 +10,7 @@ import li.cil.tis3d.common.api.ManualAPIImpl;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.FontRenderer;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -104,7 +104,7 @@ public final class ManualGui extends Screen {
         super.draw(mouseX, mouseY, partialTicks);
 
         client.getTextureManager().bindTexture(Textures.LOCATION_GUI_MANUAL_BACKGROUND);
-        Drawable.drawTexturedRect(guiLeft, guiTop, 0, 0, xSize, ySize, WINDOW_WIDTH, WINDOW_HEIGHT);
+        drawTexturedRect(guiLeft, guiTop, 0, 0, xSize, ySize, WINDOW_WIDTH, WINDOW_HEIGHT);
 
         scrollButton.enabled = canScroll();
         scrollButton.hoverOverride = isDragging;
@@ -216,7 +216,7 @@ public final class ManualGui extends Screen {
 
     // --------------------------------------------------------------------- //
 
-    private FontRenderer getFontRenderer() {
+    private TextRenderer getFontRenderer() {
         return fontRenderer;
     }
 
@@ -276,10 +276,12 @@ public final class ManualGui extends Screen {
         private boolean hoverOverride = false;
         private int verticalImageOffset = 0;
         private int imageHeightOverride = 0;
+        public final int id;
 
-        ImageButton(final int id, final int x, final int y, final int w, final int h, final Identifier image) {
-            super(id, x, y, w, h, "");
+        ImageButton(final int _id, final int x, final int y, final int w, final int h, final Identifier image) {
+            super(x, y, w, h, "");
             this.image = image;
+            id = _id;
         }
 
         ImageButton setImageHeight(final int height) {
@@ -306,7 +308,7 @@ public final class ManualGui extends Screen {
                 MinecraftClient.getInstance().getTextureManager().bindTexture(image);
                 GlStateManager.color4f(1, 1, 1, 1);
 
-                hovered = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
+                this.hoverOverride = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
 
                 final int x0 = x;
                 final int x1 = x + width;

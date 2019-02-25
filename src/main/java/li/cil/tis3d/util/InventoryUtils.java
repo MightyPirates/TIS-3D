@@ -60,9 +60,9 @@ public final class InventoryUtils {
 
         final ItemEntity entity = new ItemEntity(world, px, py, pz, stack.copy());
 
-        entity.velocityX = 0.0125 * (rng.nextDouble() - 0.5) + ox * 0.03;
-        entity.velocityY = 0.0125 * (rng.nextDouble() - 0.5) + oy * 0.08 + (ox + oz) * 0.03;
-        entity.velocityZ = 0.0125 * (rng.nextDouble() - 0.5) + oz * 0.03;
+        entity.setVelocity(0.0125 * (rng.nextDouble() - 0.5) + ox * 0.03,
+        0.0125 * (rng.nextDouble() - 0.5) + oy * 0.08 + (ox + oz) * 0.03,
+        0.0125 * (rng.nextDouble() - 0.5) + oz * 0.03);
         entity.setPickupDelay(15);
         world.spawnEntity(entity);
 

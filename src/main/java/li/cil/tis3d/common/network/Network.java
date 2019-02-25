@@ -21,15 +21,15 @@ import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.network.packet.CustomPayloadClientPacket;
-import net.minecraft.client.network.packet.ParticleClientPacket;
+import net.minecraft.client.network.packet.CustomPayloadS2CPacket;
+import net.minecraft.client.network.packet.ParticleS2CPacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.network.Packet;
 import net.minecraft.particle.DustParticleParameters;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.network.packet.CustomPayloadServerPacket;
+import net.minecraft.server.network.packet.CustomPayloadC2SPacket;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
@@ -97,16 +97,16 @@ public final class Network {
     }
 
     public int sendToClientsInDimension(final AbstractMessage message, final World world) {
-        if (world.players.isEmpty()) {
+        if (world.method_18456().isEmpty()) {
             return 0;
         }
 
         final Identifier id = getMessageIdentifier(message.getClass());
         final PacketByteBuf buffer = serializeMessage(message);
-        final CustomPayloadClientPacket packet = new CustomPayloadClientPacket(id, buffer);
+        final CustomPayloadS2CPacket packet = new CustomPayloadS2CPacket(id, buffer);
 
         int sent = 0;
-        for (final PlayerEntity player : world.players) {
+        for (final PlayerEntity player : world.method_18456()) {
             if (player instanceof ServerPlayerEntity) {
                 ((ServerPlayerEntity)player).networkHandler.sendPacket(packet);
                 sent++;
@@ -117,13 +117,13 @@ public final class Network {
     }
 
     public int sendToClientsNearLocation(final AbstractMessage message, final World world, final BlockPos pos, final int range) {
-        if (world.players.isEmpty()) {
+        if (world.method_18456().isEmpty()) {
             return 0;
         }
 
         final Identifier id = getMessageIdentifier(message.getClass());
         final PacketByteBuf buffer = serializeMessage(message);
-        final CustomPayloadClientPacket packet = new CustomPayloadClientPacket(id, buffer);
+        final CustomPayloadS2CPacket packet = new CustomPayloadS2CPacket(id, buffer);
 
         return sendToClientsNearLocation(packet, world, pos, range);
     }
@@ -135,14 +135,14 @@ public final class Network {
 
         final Identifier id = getMessageIdentifier(message.getClass());
         final PacketByteBuf buffer = serializeMessage(message);
-        final CustomPayloadClientPacket packet = new CustomPayloadClientPacket(id, buffer);
+        final CustomPayloadS2CPacket packet = new CustomPayloadS2CPacket(id, buffer);
         ((ServerPlayerEntity)player).networkHandler.sendPacket(packet);
     }
 
     public void sendToServer(final AbstractMessage message) {
         final Identifier id = getMessageIdentifier(message.getClass());
         final PacketByteBuf buffer = serializeMessage(message);
-        final CustomPayloadServerPacket packet = new CustomPayloadServerPacket(id, buffer);
+        final CustomPayloadC2SPacket packet = new CustomPayloadC2SPacket(id, buffer);
         final ClientPlayNetworkHandler networkHandler = Objects.requireNonNull(MinecraftClient.getInstance().getNetworkHandler());
         networkHandler.sendPacket(packet);
     }
@@ -150,7 +150,7 @@ public final class Network {
     private int sendToClientsNearLocation(final Packet<?> packet, final World world, final BlockPos pos, final int range) {
         final int rangeSq = range * range;
         int sent = 0;
-        for (final PlayerEntity player : world.players) {
+        for (final PlayerEntity player : world.method_18456()) {
             if (player instanceof ServerPlayerEntity) {
                 if (player.squaredDistanceTo(pos) < rangeSq) {
                     final ServerPlayerEntity networkedPlayer = (ServerPlayerEntity)player;
@@ -268,7 +268,7 @@ public final class Network {
         }
 
         private void sendMessage() {
-            final ParticleClientPacket packet = new ParticleClientPacket(DustParticleParameters.RED, false, x, y, z, 0, 0, 0, 0, 1);
+            final ParticleS2CPacket packet = new ParticleS2CPacket(DustParticleParameters.RED, false, x, y, z, 0, 0, 0, 0, 1);
             if (Network.INSTANCE.sendToClientsNearLocation(packet, world, new BlockPos(x, y, z), RANGE_LOW) > 0) {
                 particlesSent++;
             }

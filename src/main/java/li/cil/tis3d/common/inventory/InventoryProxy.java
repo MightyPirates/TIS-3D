@@ -68,7 +68,7 @@ public interface InventoryProxy extends Inventory {
     }
 
     @Override
-    default void clearInv() {
-        getInventory().clearInv();
+    default void clear() {
+        getInventory().clear();
     }
 }

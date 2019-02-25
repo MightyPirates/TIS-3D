@@ -87,7 +87,7 @@ public final class Items {
     }
 
     private static Item registerItem(final Item item, final Identifier identifier, final boolean isListed) {
-        Registry.ITEM.register(identifier, item);
+        Registry.register(Registry.ITEM, identifier, item);
         if (!isListed) {
             return null;
         }

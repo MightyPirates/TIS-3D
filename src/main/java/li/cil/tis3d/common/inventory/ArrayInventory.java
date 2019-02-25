@@ -127,6 +127,6 @@ public class ArrayInventory implements Inventory {
     }
 
     @Override
-    public void clearInv() {
+    public void clear() {
     }
 }

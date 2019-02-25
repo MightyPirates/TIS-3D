@@ -79,7 +79,7 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
 
     private boolean isRenderingBackFace(final Face face, final double dx, final double dy, final double dz) {
         final Direction facing = Face.toDirection(face.getOpposite());
-        final double dotProduct = facing.getOffsetX() * dx + facing.getOffsetY() * (dy - renderManager.cameraEntity.getEyeHeight()) + facing.getOffsetZ() * dz;
+        final double dotProduct = facing.getOffsetX() * dx + facing.getOffsetY() * (dy - renderManager.cameraEntity.getEyeHeight(renderManager.cameraEntity.getPose())) + facing.getOffsetZ() * dz;
         return dotProduct < 0;
     }
 

@@ -2,7 +2,7 @@ package li.cil.tis3d.client.manual.segment;
 
 import com.google.common.collect.ImmutableSet;
 import li.cil.tis3d.client.manual.Document;
-import net.minecraft.client.font.FontRenderer;
+import net.minecraft.client.font.TextRenderer;
 
 import java.util.Set;
 
@@ -23,7 +23,7 @@ abstract class BasicTextSegment extends AbstractSegment implements Segment {
     // ----------------------------------------------------------------------- //
 
     @Override
-    public int nextX(final int indent, final int maxWidth, final FontRenderer renderer) {
+    public int nextX(final int indent, final int maxWidth, final TextRenderer renderer) {
         if (isLast()) {
             return 0;
         }
@@ -44,7 +44,7 @@ abstract class BasicTextSegment extends AbstractSegment implements Segment {
     }
 
     @Override
-    public int nextY(final int indent, final int maxWidth, final FontRenderer renderer) {
+    public int nextY(final int indent, final int maxWidth, final TextRenderer renderer) {
         int lines = 0;
         String chars = text();
         if (ignoreLeadingWhitespace() && indent == 0) {
@@ -77,13 +77,13 @@ abstract class BasicTextSegment extends AbstractSegment implements Segment {
         return true;
     }
 
-    protected int lineHeight(final FontRenderer renderer) {
+    protected int lineHeight(final TextRenderer renderer) {
         return Document.lineHeight(renderer);
     }
 
-    protected abstract int stringWidth(String s, FontRenderer renderer);
+    protected abstract int stringWidth(String s, TextRenderer renderer);
 
-    protected int maxChars(final String s, final int maxWidth, final int maxLineWidth, final FontRenderer renderer) {
+    protected int maxChars(final String s, final int maxWidth, final int maxLineWidth, final TextRenderer renderer) {
         int pos = -1;
         int lastBreak = -1;
         final int fullWidth = stringWidth(s, renderer);
@@ -113,7 +113,7 @@ abstract class BasicTextSegment extends AbstractSegment implements Segment {
         return pos;
     }
 
-    protected int computeWrapIndent(final FontRenderer renderer) {
+    protected int computeWrapIndent(final TextRenderer renderer) {
         return (LISTS.contains(getRootPrefix())) ? renderer.getStringWidth(getRootPrefix()) : 0;
     }
 

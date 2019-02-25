@@ -8,7 +8,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.util.registry.Registry;
 
 public final class Entities {
-    public static final EntityType<InfraredPacketEntity> INFRARED_PACKET = FabricEntityTypeBuilder.create(EntityCategory.MISC, InfraredPacketEntity::new).disableSummon().build();
+    public static final EntityType<InfraredPacketEntity> INFRARED_PACKET = FabricEntityTypeBuilder.create(EntityCategory.MISC, InfraredPacketEntity::new).disableSummon().size(0.25f, 0.25f).build();
 
     // --------------------------------------------------------------------- //
 

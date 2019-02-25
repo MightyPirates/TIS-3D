@@ -14,7 +14,7 @@ import li.cil.tis3d.common.network.message.CodeBookDataMessage;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.FontRenderer;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
@@ -373,7 +373,7 @@ public final class CodeBookGui extends Screen {
 
     // --------------------------------------------------------------------- //
 
-    private FontRenderer getFontRenderer() {
+    private TextRenderer getFontRenderer() {
         return fontRenderer;
     }
 
@@ -422,7 +422,7 @@ public final class CodeBookGui extends Screen {
 
     private int xToColumn(final int x, final int line) {
         final int relX = Math.max(0, x - guiX - CODE_POS_X);
-        return getFontRenderer().method_1714(lines.get(line).toString(), relX).length();
+        return getFontRenderer().wrapStringToWidth(lines.get(line).toString(), relX).length();
     }
 
     private int columnToX(final int line, final int column) {
@@ -670,12 +670,14 @@ public final class CodeBookGui extends Screen {
         private static final int TEXTURE_Y = 231;
         private static final int BUTTON_WIDTH = 23;
         private static final int BUTTON_HEIGHT = 12;
+        private final int id;
 
         private final PageChangeType type;
 
-        ButtonChangePage(final int buttonId, final int x, final int y, final PageChangeType type) {
-            super(buttonId, x, y, BUTTON_WIDTH, BUTTON_HEIGHT, "");
+        ButtonChangePage(final int _id, final int x, final int y, final PageChangeType type) {
+            super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, "");
             this.type = type;
+            id = _id;
         }
 
         @Override
@@ -707,9 +709,11 @@ public final class CodeBookGui extends Screen {
         private static final int TEXTURE_Y = 231;
         private static final int BUTTON_WIDTH = 14;
         private static final int BUTTON_HEIGHT = 14;
+        private final int id;
 
-        ButtonDeletePage(final int buttonId, final int x, final int y) {
-            super(buttonId, x, y, BUTTON_WIDTH, BUTTON_HEIGHT, "");
+        ButtonDeletePage(final int _id, final int x, final int y) {
+            super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, "");
+            id = _id;
         }
 
         @Override

@@ -11,7 +11,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.network.packet.EntitySpawnClientPacket;
+import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -77,12 +77,11 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
     public InfraredPacketEntity(final World world) {
         super(Entities.INFRARED_PACKET, world);
         fireImmune = true;
-        setSize(0.25f, 0.25f);
     }
 
     @Override
     public Packet<?> createSpawnPacket() {
-        return new EntitySpawnClientPacket(this);
+        return new EntitySpawnS2CPacket(this);
     }
 
     // --------------------------------------------------------------------- //
@@ -99,9 +98,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
      */
     public void configure(final Vec3d start, final Vec3d direction, final short value) {
         setPosition(start.x, start.y, start.z);
-        velocityX = direction.x * TRAVEL_SPEED;
-        velocityY = direction.y * TRAVEL_SPEED;
-        velocityZ = direction.z * TRAVEL_SPEED;
+        this.setVelocity(direction.x * TRAVEL_SPEED, direction.y * TRAVEL_SPEED, direction.z * TRAVEL_SPEED);
         lifetime = DEFAULT_LIFETIME + 1; // First update in next frame.
         this.value = value;
         getDataTracker().set(DATA_VALUE, value & 0xFFFF);
@@ -174,9 +171,9 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
         emitParticles(hit);
 
         // Update position.
-        x += velocityX;
-        y += velocityY;
-        z += velocityZ;
+        x += getVelocity().x;
+        y += getVelocity().y;
+        z += getVelocity().z;
 
         // Update bounding box.
         setPosition(x, y, z);
@@ -218,7 +215,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
 
     @Override
     public Vec3d getPacketDirection() {
-        return new Vec3d(velocityX, velocityY, velocityZ).normalize();
+        return new Vec3d(getVelocity().x, getVelocity().y, getVelocity().z).normalize();
     }
 
     @Override
@@ -248,9 +245,9 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
 
             // Apply new direction.
             final Vec3d velocityVec = direction.normalize();
-            velocityX = velocityVec.x * TRAVEL_SPEED;
-            velocityY = velocityVec.y * TRAVEL_SPEED;
-            velocityZ = velocityVec.z * TRAVEL_SPEED;
+            setVelocity(velocityVec.x * TRAVEL_SPEED,
+            velocityVec.y * TRAVEL_SPEED,
+            velocityVec.z * TRAVEL_SPEED);
         }
     }
 
@@ -269,9 +266,9 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
 
         final double dx, dy, dz;
         if (hit == null || hit.getPos() == null) {
-            dx = velocityX;
-            dy = velocityY;
-            dz = velocityZ;
+            dx = getVelocity().x;
+            dy = getVelocity().y;
+            dz = getVelocity().z;
         } else {
             dx = hit.getPos().x - x;
             dy = hit.getPos().y - y;
@@ -308,9 +305,9 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
             // it was moved around by a packet handler.
             final Vec3d newPos = getPosVector();
             final double delta = newPos.subtract(oldPos).length() / TRAVEL_SPEED;
-            x -= velocityX * delta;
-            y -= velocityY * delta;
-            z -= velocityZ * delta;
+            x -= getVelocity().x * delta;
+            y -= getVelocity().y * delta;
+            z -= getVelocity().z * delta;
         }
 
         return hitResult;
@@ -320,7 +317,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
     private HitResult checkCollision() {
         final World world = getEntityWorld();
         final Vec3d start = new Vec3d(x, y, z);
-        final Vec3d target = start.add(velocityX, velocityY, velocityZ);
+        final Vec3d target = start.add(getVelocity().x, getVelocity().y, getVelocity().z);
 
         // Check for block collisions.
         final HitResult blockHit = Raytracing.raytrace(world, start, target, Raytracing::intersectIgnoringTransparent);
@@ -350,7 +347,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
         EntityHitResult entityHit = null;
         double bestSqrDistance = Double.POSITIVE_INFINITY;
 
-        final List<Entity> collisions = world.getEntities(this, getBoundingBox().stretch(velocityX, velocityY, velocityZ), EntityPredicates.EXCEPT_SPECTATOR);
+        final List<Entity> collisions = world.getEntities(this, getBoundingBox().stretch(getVelocity().x, getVelocity().y, getVelocity().z), EntityPredicates.EXCEPT_SPECTATOR);
         for (final Entity entity : collisions) {
             if (entity.doesCollide()) {
                 final BoundingBox entityBounds = entity.getBoundingBox();
