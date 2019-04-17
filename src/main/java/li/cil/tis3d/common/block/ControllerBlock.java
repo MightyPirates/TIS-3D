@@ -37,14 +37,14 @@ public final class ControllerBlock extends Block implements BlockEntityProvider 
         final ItemStack heldItem = player.getStackInHand(hand);
         if (!heldItem.isEmpty()) {
             final Item item = heldItem.getItem();
-            if (item == net.minecraft.item.Items.field_8744) {
+            if (item == net.minecraft.item.Items.BOOK) {
                 if (!world.isClient) {
                     if (!player.abilities.creativeMode) {
                         heldItem.split(1);
                     }
                     final ItemStack bookManual = new ItemStack(Items.BOOK_MANUAL);
                     if (player.inventory.insertStack(bookManual)) {
-                        player.containerPlayer.sendContentUpdates();
+                        player.playerContainer.sendContentUpdates();
                     }
                     if (bookManual.getAmount() > 0) {
                         player.dropItem(bookManual, false, false);
@@ -102,12 +102,12 @@ public final class ControllerBlock extends Block implements BlockEntityProvider 
 
     @SuppressWarnings("deprecation")
     @Override
-    public void neighborUpdate(final BlockState state, final World world, final BlockPos pos, final Block neighborBlock, final BlockPos neighborPos) {
+    public void neighborUpdate(final BlockState state, final World world, final BlockPos pos, final Block neighborBlock, final BlockPos neighborPos, final boolean isMoved) {
         final BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof ControllerBlockEntity) {
             final ControllerBlockEntity controller = (ControllerBlockEntity)blockEntity;
             controller.checkNeighbors();
         }
-        super.neighborUpdate(state, world, pos, neighborBlock, neighborPos);
+        super.neighborUpdate(state, world, pos, neighborBlock, neighborPos, isMoved);
     }
 }

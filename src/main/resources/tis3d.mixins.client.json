@@ -1,8 +1,12 @@
 {
+    "required": true,
     "package": "li.cil.tis3d.client.mixin",
     "compatibilityLevel": "JAVA_8",
-    "mixins": [
+    "client": [
         "HideHudInTerminalMixin",
         "WorldUnloadMinecraftClientMixin"
-    ]
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
 }

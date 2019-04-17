@@ -231,7 +231,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
         RenderUtil.ignoreLighting();
         GlStateManager.enableBlend();
 
-        if (rendererDispatcher.cameraEntity.squaredDistanceToCenter(getCasing().getPosition()) < 64) {
+        if (rendererDispatcher.cameraEntity.getBlockPos().getSquaredDistance(getCasing().getPosition()) < 64) {
             // Player is close, render actual terminal text.
             renderText();
         } else {
@@ -482,7 +482,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
     private void bell() {
         final World world = getCasing().getCasingWorld();
         if (!world.isClient) {
-            world.playSound(null, getCasing().getPosition(), SoundEvents.BLOCK_NOTE_BLOCK_HARP, SoundCategory.BLOCK, 0.3f, 2f);
+            world.playSound(null, getCasing().getPosition(), SoundEvents.BLOCK_NOTE_BLOCK_HARP, SoundCategory.BLOCKS, 0.3f, 2f);
         }
     }
 

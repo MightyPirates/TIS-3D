@@ -2,7 +2,7 @@ package li.cil.tis3d.client.manual.segment;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.tis3d.client.manual.Document;
-import net.minecraft.client.font.FontRenderer;
+import net.minecraft.client.font.TextRenderer;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ public class TextSegment extends BasicTextSegment {
     }
 
     @Override
-    public Optional<InteractiveSegment> render(final int x, final int y, final int indent, final int maxWidth, final FontRenderer renderer, final int mouseX, final int mouseY) {
+    public Optional<InteractiveSegment> render(final int x, final int y, final int indent, final int maxWidth, final TextRenderer renderer, final int mouseX, final int mouseY) {
         int currentX = x + indent;
         int currentY = y;
         String chars = text;
@@ -100,12 +100,12 @@ public class TextSegment extends BasicTextSegment {
     // ----------------------------------------------------------------------- //
 
     @Override
-    protected int lineHeight(final FontRenderer renderer) {
+    protected int lineHeight(final TextRenderer renderer) {
         return (int)(super.lineHeight(renderer) * resolvedScale());
     }
 
     @Override
-    protected int stringWidth(final String s, final FontRenderer renderer) {
+    protected int stringWidth(final String s, final TextRenderer renderer) {
         return (int)(renderer.getStringWidth(resolvedFormat() + s) * resolvedScale());
     }
 

@@ -127,6 +127,9 @@ public class ArrayInventory implements Inventory {
     }
 
     @Override
-    public void clearInv() {
+    public void clear() {
+        for (int i = 0; i < items.length; i++) {
+            items[i] = ItemStack.EMPTY;
+        }
     }
 }

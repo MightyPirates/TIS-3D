@@ -174,7 +174,7 @@ public abstract class AbstractModule implements Module {
 
         // Otherwise check if the neighboring block blocks visibility to our face.
         final BlockState neighborState = world.getBlockState(neighborPos);
-        return !neighborState.getMaterial().method_15804();
+        return !neighborState.getMaterial().blocksLight();
     }
 
     // --------------------------------------------------------------------- //

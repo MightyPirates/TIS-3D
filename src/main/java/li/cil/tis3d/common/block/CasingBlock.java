@@ -21,12 +21,12 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.sortme.ItemScatterer;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -178,7 +178,7 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
                         if (entity != null) {
                             entity.resetPickupDelay();
                             entity.onPlayerCollision(player);
-                            world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.BLOCK_PISTON_CONTRACT, SoundCategory.BLOCK, 0.2f, 0.8f + world.random.nextFloat() * 0.1f);
+                            world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.BLOCK_PISTON_CONTRACT, SoundCategory.BLOCKS, 0.2f, 0.8f + world.random.nextFloat() * 0.1f);
                         }
                     }
                     return true;
@@ -198,7 +198,7 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
                             } else {
                                 casing.setInvStack(blockHitResult.getSide().ordinal(), insertedStack);
                             }
-                            world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.BLOCK_PISTON_EXTEND, SoundCategory.BLOCK, 0.2f, 0.8f + world.random.nextFloat() * 0.1f);
+                            world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.BLOCK_PISTON_EXTEND, SoundCategory.BLOCKS, 0.2f, 0.8f + world.random.nextFloat() * 0.1f);
                         }
                         return true;
                     }
@@ -211,7 +211,7 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
 
     @SuppressWarnings("deprecation")
     @Override
-    public void onBlockRemoved(final BlockState state, final World world, final BlockPos pos, final BlockState newState, final boolean flag) {
+    public void onBlockRemoved(final BlockState state, final World world, final BlockPos pos, final BlockState newState, final boolean isMoved) {
         if (state.getBlock() != newState.getBlock()) {
             final BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof CasingBlockEntity) {
@@ -220,7 +220,7 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
             }
             world.removeBlockEntity(pos);
         }
-        super.onBlockRemoved(state, world, pos, newState, flag);
+        super.onBlockRemoved(state, world, pos, newState, isMoved);
     }
 
     // --------------------------------------------------------------------- //
@@ -263,7 +263,7 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
 
     @SuppressWarnings("deprecation")
     @Override
-    public void neighborUpdate(final BlockState state, final World world, final BlockPos pos, final Block neighborBlock, final BlockPos neighborPos) {
+    public void neighborUpdate(final BlockState state, final World world, final BlockPos pos, final Block neighborBlock, final BlockPos neighborPos, final boolean isMoved) {
         final BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof CasingBlockEntity) {
             final CasingBlockEntity casing = (CasingBlockEntity)blockEntity;
@@ -271,6 +271,6 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
             casing.notifyModulesOfBlockChange(neighborPos);
             casing.markRedstoneDirty();
         }
-        super.neighborUpdate(state, world, pos, neighborBlock, neighborPos);
+        super.neighborUpdate(state, world, pos, neighborBlock, neighborPos, isMoved);
     }
 }

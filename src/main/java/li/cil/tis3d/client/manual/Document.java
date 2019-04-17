@@ -6,7 +6,7 @@ import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.api.manual.ImageRenderer;
 import li.cil.tis3d.client.manual.segment.*;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.FontRenderer;
+import net.minecraft.client.font.TextRenderer;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -73,7 +73,7 @@ public final class Document {
      * @param renderer the font renderer used.
      * @return the height of the document.
      */
-    public static int height(final Segment document, final int maxWidth, final FontRenderer renderer) {
+    public static int height(final Segment document, final int maxWidth, final TextRenderer renderer) {
         int currentX = 0;
         int currentY = 0;
         Segment segment = document;
@@ -91,7 +91,7 @@ public final class Document {
      * @param renderer the font renderer used.
      * @return the height of a single line.
      */
-    public static int lineHeight(final FontRenderer renderer) {
+    public static int lineHeight(final TextRenderer renderer) {
         return renderer.fontHeight + 1;
     }
 
@@ -110,7 +110,7 @@ public final class Document {
      * @param mouseY    the y position of the mouse.
      * @return the interactive segment being hovered, if any.
      */
-    public static Optional<InteractiveSegment> render(final Segment document, final int x, final int y, final int maxWidth, final int maxHeight, final int yOffset, final FontRenderer renderer, final int mouseX, final int mouseY) {
+    public static Optional<InteractiveSegment> render(final Segment document, final int x, final int y, final int maxWidth, final int maxHeight, final int yOffset, final TextRenderer renderer, final int mouseX, final int mouseY) {
         final MinecraftClient mc = MinecraftClient.getInstance();
 
         GlStateManager.pushLightingAttributes();

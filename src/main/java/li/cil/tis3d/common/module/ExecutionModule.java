@@ -158,7 +158,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
                 }
                 final ItemStack bookCode = new ItemStack(Items.BOOK_CODE);
                 if (player.inventory.insertStack(bookCode)) {
-                    player.containerPlayer.sendContentUpdates();
+                    player.playerContainer.sendContentUpdates();
                 }
                 if (bookCode.getAmount() > 0) {
                     player.dropItem(bookCode, false, false);
@@ -245,7 +245,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
 
         // Render detailed state when player is close.
         final MachineState machineState = getState();
-        if (machineState.code != null && rendererDispatcher.cameraEntity.squaredDistanceToCenter(getCasing().getPosition()) < 64) {
+        if (machineState.code != null && rendererDispatcher.cameraEntity.getBlockPos().getSquaredDistance(getCasing().getPosition()) < 64) {
             renderState(machineState);
         }
     }
@@ -435,7 +435,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
     private static final class SourceCodeProviderVanilla implements SourceCodeProvider {
         @Override
         public boolean worksFor(final ItemStack stack) {
-            return Items.isItem(stack, net.minecraft.item.Items.field_8443) || Items.isItem(stack, net.minecraft.item.Items.field_8230);
+            return Items.isItem(stack, net.minecraft.item.Items.WRITTEN_BOOK) || Items.isItem(stack, net.minecraft.item.Items.WRITABLE_BOOK);
         }
 
         @Override

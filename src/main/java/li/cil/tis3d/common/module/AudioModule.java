@@ -116,7 +116,7 @@ public final class AudioModule extends AbstractModule {
 
         // Let there be sound!
         final World world = getCasing().getCasingWorld();
-        world.playSound(null, x, y, z, instrument.getSound(), SoundCategory.BLOCK, volume, pitch);
-        ((ServerWorld)world).method_14199(ParticleTypes.NOTE, x, y, z, 1, 0, 0, 0, 0);
+        world.playSound(null, x, y, z, instrument.getSound(), SoundCategory.BLOCKS, volume, pitch);
+        ((ServerWorld)world).spawnParticles(ParticleTypes.NOTE, x, y, z, 1, 0, 0, 0, 0);
     }
 }

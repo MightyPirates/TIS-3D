@@ -173,7 +173,7 @@ public final class ControllerBlockEntity extends AbstractComputerBlockEntity imp
 
         if (state == ControllerState.RUNNING) {
             forceStep = true;
-            world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.BLOCK_STONE_BUTTON_CLICK_ON, SoundCategory.BLOCK, 0.2f, 0.8f + world.random.nextFloat() * 0.1f);
+            world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.BLOCK_STONE_BUTTON_CLICK_ON, SoundCategory.BLOCKS, 0.2f, 0.8f + world.random.nextFloat() * 0.1f);
         }
     }
 

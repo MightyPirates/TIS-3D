@@ -30,8 +30,8 @@ public final class ControllerBlockEntityRenderer extends BlockEntityRenderer<Con
             return;
         }
 
-        method_3570(true);
-        method_3567(controller, I18n.translate(state.translateKey), x, y, z, 12);
-        method_3570(false);
+        disableLightmap(true);
+        renderName(controller, I18n.translate(state.translateKey), x, y, z, 12);
+        disableLightmap(false);
     }
 }

@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 
 public abstract class AbstractMessageHandler<T extends AbstractMessage> {
     public void onMessage(final T message, final PacketContext context) {
-        if (context.getTaskQueue().isMainThread()) {
+        if (context.getTaskQueue().isOnThread()) {
             onMessageSynchronized(message, context);
         } else {
             context.getTaskQueue().execute(() -> onMessageSynchronized(message, context));

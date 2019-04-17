@@ -79,7 +79,7 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
 
     private boolean isRenderingBackFace(final Face face, final double dx, final double dy, final double dz) {
         final Direction facing = Face.toDirection(face.getOpposite());
-        final double dotProduct = facing.getOffsetX() * dx + facing.getOffsetY() * (dy - renderManager.cameraEntity.getEyeHeight()) + facing.getOffsetZ() * dz;
+        final double dotProduct = facing.getOffsetX() * dx + facing.getOffsetY() * (dy - renderManager.cameraEntity.getFocusedEntity().getEyeHeight(renderManager.cameraEntity.getFocusedEntity().getPose())) + facing.getOffsetZ() * dz;
         return dotProduct < 0;
     }
 
@@ -219,11 +219,11 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
     }
 
     private boolean isObserverKindaClose(final CasingBlockEntity casing) {
-        return renderManager.cameraEntity.squaredDistanceToCenter(casing.getPos()) < 16 * 16;
+        return renderManager.cameraEntity.getBlockPos().getSquaredDistance(casing.getPos()) < 16 * 16;
     }
 
     private boolean isObserverHoldingKey() {
-        for (final ItemStack stack : renderManager.cameraEntity.getItemsEquipped()) {
+        for (final ItemStack stack : renderManager.cameraEntity.getFocusedEntity().getItemsEquipped()) {
             if (Items.isKey(stack)) {
                 return true;
             }
@@ -233,7 +233,7 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
     }
 
     private boolean isObserverSneaking() {
-        return renderManager.cameraEntity.isSneaking();
+        return renderManager.cameraEntity.getFocusedEntity().isSneaking();
     }
 
     private boolean isObserverLookingAt(final BlockPos pos, final Face face) {

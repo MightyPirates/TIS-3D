@@ -2,7 +2,7 @@ package li.cil.tis3d.util;
 
 import li.cil.tis3d.common.Constants;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.FontRenderer;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.text.StringTextComponent;
 import net.minecraft.text.TextComponent;
 
@@ -25,7 +25,7 @@ public final class FontRendererUtils {
     public static void addStringToTooltip(final String info, final List<TextComponent> tooltip) {
         final MinecraftClient mc = MinecraftClient.getInstance();
         if (mc != null) {
-            final FontRenderer fontRenderer = mc.fontRenderer;
+            final TextRenderer fontRenderer = mc.textRenderer;
             tooltip.addAll(fontRenderer.wrapStringToWidthAsList(info, Constants.MAX_TOOLTIP_WIDTH).stream().map(StringTextComponent::new).collect(Collectors.toList()));
         } else {
             tooltip.add(new StringTextComponent(info));

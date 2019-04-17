@@ -21,7 +21,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.render.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.fabricmc.fabric.api.event.client.ClientTickCallback;
-import net.fabricmc.fabric.api.event.client.player.ClientPickBlockCallback;
+import net.fabricmc.fabric.api.event.client.player.ClientPickBlockGatherCallback;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -44,7 +44,7 @@ public final class BootstrapClient implements ClientModInitializer {
         // Register event handlers.
         ClientTickCallback.EVENT.register(client -> Network.INSTANCE.clientTick());
         ClientSpriteRegistryCallback.registerBlockAtlas((spriteAtlasTexture, registry) -> Textures.registerSprites(registry));
-        ClientPickBlockCallback.EVENT.register(BootstrapClient::handlePickBlock);
+        ClientPickBlockGatherCallback.EVENT.register(BootstrapClient::handlePickBlock);
 
         // Set up tile entity renderer for dynamic module content.
         BlockEntityRendererRegistry.INSTANCE.register(CasingBlockEntity.class, new CasingBlockEntityRenderer());
@@ -77,9 +77,9 @@ public final class BootstrapClient implements ClientModInitializer {
         return module;
     }
 
-    private static boolean handlePickBlock(final PlayerEntity player, final HitResult hitResult, final ClientPickBlockCallback.Container container) {
+    private static ItemStack handlePickBlock(final PlayerEntity player, final HitResult hitResult) {
         if (hitResult.getType() != HitResult.Type.BLOCK) {
-            return true;
+            return ItemStack.EMPTY;
         }
 
         assert hitResult instanceof BlockHitResult;
@@ -88,8 +88,9 @@ public final class BootstrapClient implements ClientModInitializer {
         final BlockState blockState = player.getEntityWorld().getBlockState(blockPos);
         final Block block = blockState.getBlock();
         if (block instanceof CasingBlock) {
-            container.setStack(((CasingBlock)block).getPickStack(player.getEntityWorld(), blockPos, blockHitResult.getSide(), blockState));
+            return (((CasingBlock)block).getPickStack(player.getEntityWorld(), blockPos, blockHitResult.getSide(), blockState));
         }
-        return true;
+
+        return ItemStack.EMPTY;
     }
 }

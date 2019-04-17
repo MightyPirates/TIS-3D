@@ -52,7 +52,7 @@ public final class Raytracing {
     @Nullable
     public static BlockHitResult intersectIgnoringTransparent(final World world, final BlockPos position, final Vec3d start, final Vec3d end) {
         final BlockState state = world.getBlockState(position);
-        if (!state.getMaterial().method_15804()) {
+        if (!state.getMaterial().blocksLight()) {
             return null;
         }
         if (state.getCollisionShape(world, position) != null) {

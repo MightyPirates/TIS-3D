@@ -9,6 +9,7 @@ import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.ReadOnlyMemoryModuleDataMessage;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.StringTextComponent;
 import net.minecraft.util.Hand;
 import org.lwjgl.glfw.GLFW;
 
@@ -34,6 +35,7 @@ public final class ReadOnlyMemoryModuleGui extends Screen {
     private long initTime;
 
     ReadOnlyMemoryModuleGui(final PlayerEntity player, final Hand hand) {
+        super(new StringTextComponent("Read-Only Module"));
         this.player = player;
         this.hand = hand;
     }
@@ -48,17 +50,17 @@ public final class ReadOnlyMemoryModuleGui extends Screen {
     // GuiScreen
 
     @Override
-    public void onInitialized() {
-        super.onInitialized();
+    public void init() {
+        super.init();
         guiX = (width - GUI_WIDTH) / 2;
         guiY = (height - GUI_HEIGHT) / 2;
 
-        client.keyboard.enableRepeatEvents(true);
+        minecraft.keyboard.enableRepeatEvents(true);
     }
 
     @Override
-    public void onClosed() {
-        super.onClosed();
+    public void onClose() {
+        super.onClose();
 
         // Only send to server if our data is actually based on the old server
         // data to avoid erasing ROM when closing UI again too quickly.
@@ -67,20 +69,20 @@ public final class ReadOnlyMemoryModuleGui extends Screen {
             Network.INSTANCE.sendToServer(new ReadOnlyMemoryModuleDataMessage(data, hand));
         }
 
-        client.keyboard.enableRepeatEvents(false);
+        minecraft.keyboard.enableRepeatEvents(false);
     }
 
     @Override
-    public void draw(final int mouseX, final int mouseY, final float partialTicks) {
-        if (!player.isValid() || !Items.isModuleReadOnlyMemory(player.getStackInHand(hand))) {
-            client.openScreen(null);
+    public void render(final int mouseX, final int mouseY, final float partialTicks) {
+        if (player.removed || !Items.isModuleReadOnlyMemory(player.getStackInHand(hand))) {
+            minecraft.openScreen(null);
             return;
         }
 
         // Background.
         GlStateManager.color4f(1, 1, 1, 1);
-        client.getTextureManager().bindTexture(Textures.LOCATION_GUI_MEMORY);
-        drawTexturedRect(guiX, guiY, 0, 0, GUI_WIDTH, GUI_HEIGHT);
+        minecraft.getTextureManager().bindTexture(Textures.LOCATION_GUI_MEMORY);
+        blit(guiX, guiY, 0, 0, GUI_WIDTH, GUI_HEIGHT);
 
         // Draw row and column headers.
         drawHeaders();
@@ -302,9 +304,9 @@ public final class ReadOnlyMemoryModuleGui extends Screen {
         GlStateManager.pushMatrix();
         GlStateManager.translatef(x, y, 0);
 
-        client.getTextureManager().bindTexture(Textures.LOCATION_GUI_MEMORY);
-        final int vPos = (int)(client.world.getTime() % 16) * 8;
-        drawTexturedRect(0, 0, 256 - (CELL_WIDTH + 1), vPos, 11, 8);
+        minecraft.getTextureManager().bindTexture(Textures.LOCATION_GUI_MEMORY);
+        final int vPos = (int)(minecraft.world.getTime() % 16) * 8;
+        blit(0, 0, 256 - (CELL_WIDTH + 1), vPos, 11, 8);
 
         GlStateManager.popMatrix();
     }

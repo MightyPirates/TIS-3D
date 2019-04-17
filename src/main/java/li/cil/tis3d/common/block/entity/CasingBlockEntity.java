@@ -23,6 +23,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
@@ -293,7 +294,7 @@ public final class CasingBlockEntity extends AbstractComputerBlockEntity impleme
     }
 
     // --------------------------------------------------------------------- //
-    // IInventory
+    // Inventory
 
     @Override
     public boolean canPlayerUseInv(final PlayerEntity player) {
@@ -302,7 +303,7 @@ public final class CasingBlockEntity extends AbstractComputerBlockEntity impleme
         }
 
         final double maxDistance = 64;
-        return player.squaredDistanceToCenter(pos) <= maxDistance * maxDistance;
+        return player.squaredDistanceTo(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) <= maxDistance * maxDistance;
     }
 
     // --------------------------------------------------------------------- //
@@ -534,7 +535,7 @@ public final class CasingBlockEntity extends AbstractComputerBlockEntity impleme
 
         final CasingLockedStateMessage message = new CasingLockedStateMessage(this, isLocked());
         Network.INSTANCE.sendToClientsNearLocation(message, world, getPos(), Network.RANGE_HIGH);
-        world.playSound(null, getPos(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCK, 0.3f, isLocked() ? 0.5f : 0.6f);
+        world.playSound(null, getPos(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3f, isLocked() ? 0.5f : 0.6f);
     }
 
     private void sendReceivingPipeLockedState(final Face face, final Port port) {
@@ -542,7 +543,7 @@ public final class CasingBlockEntity extends AbstractComputerBlockEntity impleme
 
         final PipeLockedStateMessage message = new PipeLockedStateMessage(this, face, port, isReceivingPipeLocked(face, port));
         Network.INSTANCE.sendToClientsNearLocation(message, world, getPos(), Network.RANGE_HIGH);
-        world.playSound(null, getPos(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCK, 0.3f, isReceivingPipeLocked(face, port) ? 0.5f : 0.6f);
+        world.playSound(null, getPos(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3f, isReceivingPipeLocked(face, port) ? 0.5f : 0.6f);
     }
 
     private static void decompressClosed(final byte[] compressed, final boolean[][] decompressed) {

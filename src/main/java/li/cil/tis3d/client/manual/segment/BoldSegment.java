@@ -1,6 +1,6 @@
 package li.cil.tis3d.client.manual.segment;
 
-import com.mojang.realmsclient.gui.ChatFormatting;
+import net.minecraft.text.TextFormat;
 
 public final class BoldSegment extends TextSegment {
     public BoldSegment(final Segment parent, final String text) {
@@ -9,7 +9,7 @@ public final class BoldSegment extends TextSegment {
 
     @Override
     protected String format() {
-        return ChatFormatting.BOLD.toString();
+        return TextFormat.BOLD.toString();
     }
 
     @Override

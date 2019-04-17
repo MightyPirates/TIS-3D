@@ -1,18 +1,42 @@
 {
+    "schemaVersion": 1,
     "id": "tis3d",
     "name": "TIS-3D",
     "description": "TIS-100 inspired low-tech computing for Minecraft.",
     "version": "1.5.0",
-    "side": "universal",
-    "initializers": [
-        "li.cil.tis3d.client.init.BootstrapClient",
-        "li.cil.tis3d.common.init.BootstrapCommon"
+
+    "authors": [
+        {
+            "name": "Sangar",
+            "contact": {
+                "twitter": "https://twitter.com/SangarWasTaken"
+            }
+        }
     ],
-    "requires": {
-        "fabric": "*"
+    "contact": {
+        "homepage": "https://minecraft.curseforge.com/projects/tis-3d",
+        "irc": "irc://irc.esper.net:6667/oc",
+        "issues": "https://github.com/MightyPirates/TIS-3D/issues",
+        "sources": "https://github.com/MightyPirates/TIS-3D"
     },
-    "mixins": {
-        "client": "tis3d.client.json",
-        "common": "tis3d.common.json"
-    }
+
+    "license": "MIT",
+    "icon": "assets/tis3d/icon.png",
+
+    "entrypoints": {
+        "main": [
+            "li.cil.tis3d.common.init.BootstrapCommon"
+        ],
+        "client": [
+            "li.cil.tis3d.client.init.BootstrapClient"
+        ]
+    },
+    "requires": {
+        "fabricloader": ">=0.4.1",
+        "fabric": ">=0.2.7"
+    },
+    "mixins": [
+        "tis3d.mixins.common.json",
+        "tis3d.mixins.client.json"
+    ]
 }

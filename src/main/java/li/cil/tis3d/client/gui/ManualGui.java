@@ -10,14 +10,17 @@ import li.cil.tis3d.common.api.ManualAPIImpl;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.FontRenderer;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.text.StringTextComponent;
+import net.minecraft.text.TextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
@@ -55,6 +58,10 @@ public final class ManualGui extends Screen {
 
     private ImageButton scrollButton = null;
 
+    protected ManualGui() {
+        super(new StringTextComponent("Manual"));
+    }
+
     public void pushPage(final String path) {
         if (!ManualAPIImpl.peekPath().equals(path)) {
             ManualAPIImpl.pushPath(path);
@@ -63,10 +70,10 @@ public final class ManualGui extends Screen {
     }
 
     @Override
-    public void onInitialized() {
-        super.onInitialized();
+    public void init() {
+        super.init();
 
-        final ScaledResolution screenSize = new ScaledResolution(client.window.getScaledWidth(), client.window.getScaledHeight());
+        final ScaledResolution screenSize = new ScaledResolution(minecraft.window.getScaledWidth(), minecraft.window.getScaledHeight());
         final ScaledResolution guiSize = new ScaledResolution(WINDOW_WIDTH, WINDOW_HEIGHT);
         final int midX = screenSize.scaledWidth / 2;
         final int midY = screenSize.scaledHeight / 2;
@@ -78,15 +85,15 @@ public final class ManualGui extends Screen {
         for (int i = 0; i < ManualAPIImpl.getTabs().size() && i < MAX_TABS_PER_SIDE; i++) {
             final int x = guiLeft + TAB_POS_X;
             final int y = guiTop + TAB_POS_Y + i * (TAB_HEIGHT - TAB_OVERLAP);
-            this.addButton(new ImageButton(i, x, y, TAB_WIDTH, TAB_HEIGHT - TAB_OVERLAP - 1, Textures.LOCATION_GUI_MANUAL_TAB) {
-                @Override
-                public void onPressed(final double x, final double y) {
-                    ManualAPI.navigate(ManualAPIImpl.getTabs().get(id).path);
-                }
-            }.setImageHeight(TAB_HEIGHT).setVerticalImageOffset(-TAB_OVERLAP / 2));
+            final int id = i;
+            this.addButton(new ImageButton(x, y, TAB_WIDTH, TAB_HEIGHT - TAB_OVERLAP - 1, Textures.LOCATION_GUI_MANUAL_TAB, (button) -> {
+                ManualAPI.navigate(ManualAPIImpl.getTabs().get(id).path);
+            }).setImageHeight(TAB_HEIGHT).setVerticalImageOffset(-TAB_OVERLAP / 2));
         }
 
-        scrollButton = new ImageButton(-1, guiLeft + SCROLL_POS_X, guiTop + SCROLL_POS_Y, 26, 13, Textures.LOCATION_GUI_MANUAL_SCROLL) {
+        scrollButton = new ImageButton(guiLeft + SCROLL_POS_X, guiTop + SCROLL_POS_Y, 26, 13, Textures.LOCATION_GUI_MANUAL_SCROLL, (button) -> {
+            
+        }) {
             @Override
             public boolean mouseClicked(final double x, final double y, final int button) {
                 return false; // Handled in parent mouseClicked
@@ -98,49 +105,49 @@ public final class ManualGui extends Screen {
     }
 
     @Override
-    public void draw(final int mouseX, final int mouseY, final float partialTicks) {
+    public void render(final int mouseX, final int mouseY, final float partialTicks) {
         GlStateManager.enableBlend();
 
-        super.draw(mouseX, mouseY, partialTicks);
+        super.render(mouseX, mouseY, partialTicks);
 
-        client.getTextureManager().bindTexture(Textures.LOCATION_GUI_MANUAL_BACKGROUND);
-        Drawable.drawTexturedRect(guiLeft, guiTop, 0, 0, xSize, ySize, WINDOW_WIDTH, WINDOW_HEIGHT);
+        minecraft.getTextureManager().bindTexture(Textures.LOCATION_GUI_MANUAL_BACKGROUND);
+        DrawableHelper.blit(guiLeft, guiTop, 0, 0, xSize, ySize, WINDOW_WIDTH, WINDOW_HEIGHT);
 
-        scrollButton.enabled = canScroll();
+        scrollButton.active = canScroll();
         scrollButton.hoverOverride = isDragging;
 
         for (int i = 0; i < ManualAPIImpl.getTabs().size() && i < MAX_TABS_PER_SIDE; i++) {
             final ManualAPIImpl.Tab tab = ManualAPIImpl.getTabs().get(i);
             final ImageButton button = (ImageButton)buttons.get(i);
             GlStateManager.pushMatrix();
-            GlStateManager.translatef(button.x + 30, (float)(button.y + 4 - TAB_OVERLAP / 2), (int)zOffset);
+            GlStateManager.translatef(button.x + 30, (float)(button.y + 4 - TAB_OVERLAP / 2), (int)blitOffset);
             tab.renderer.render();
             GlStateManager.popMatrix();
         }
 
-        currentSegment = Document.render(document, guiLeft + 16, guiTop + 48, DOCUMENT_MAX_WIDTH, DOCUMENT_MAX_HEIGHT, offset(), getFontRenderer(), mouseX, mouseY);
+        currentSegment = Document.render(document, guiLeft + 16, guiTop + 48, DOCUMENT_MAX_WIDTH, DOCUMENT_MAX_HEIGHT, offset(), getTextRenderer(), mouseX, mouseY);
 
         if (!isDragging) {
-            currentSegment.ifPresent(s -> s.tooltip().ifPresent(t -> drawTooltip(Collections.singletonList(I18n.translate(t)), mouseX, mouseY)));
+            currentSegment.ifPresent(s -> s.tooltip().ifPresent(t -> renderTooltip(Collections.singletonList(I18n.translate(t)), mouseX, mouseY)));
 
             for (int i = 0; i < ManualAPIImpl.getTabs().size() && i < MAX_TABS_PER_SIDE; i++) {
                 final ManualAPIImpl.Tab tab = ManualAPIImpl.getTabs().get(i);
                 final ImageButton button = (ImageButton)buttons.get(i);
                 if (mouseX > button.x && mouseX < button.x + button.getWidth() && mouseY > button.y && mouseY < button.y + button.getHeight()) {
                     if (tab.tooltip != null) {
-                        drawTooltip(Collections.singletonList(I18n.translate(tab.tooltip)), mouseX, mouseY);
+                        renderTooltip(Collections.singletonList(I18n.translate(tab.tooltip)), mouseX, mouseY);
                     }
                 }
             }
         }
 
         if (canScroll() && (isCoordinateOverScrollBar(mouseX - guiLeft, mouseY - guiTop) || isDragging)) {
-            drawTooltip(Collections.singletonList(100 * offset() / maxOffset() + "%"), guiLeft + SCROLL_POS_X + SCROLL_WIDTH, scrollButton.y + scrollButton.getHeight() + 1);
+            renderTooltip(Collections.singletonList(100 * offset() / maxOffset() + "%"), guiLeft + SCROLL_POS_X + SCROLL_WIDTH, scrollButton.y + scrollButton.getHeight() + 1);
         }
     }
 
     @Override
-    public boolean mouseScrolled(final double value) {
+    public boolean mouseScrolled(final double mx, final double my, final double value) {
         if (value != 0) {
             scroll(-value);
         }
@@ -149,11 +156,11 @@ public final class ManualGui extends Screen {
 
     @Override
     public boolean keyPressed(final int code, final int scancode, final int mods) {
-        if (client.options.keyJump.matchesKey(code, scancode)) {
+        if (minecraft.options.keyJump.matchesKey(code, scancode)) {
             popPage();
             return true;
-        } else if (client.options.keyInventory.matchesKey(code, scancode)) {
-            client.player.closeGui();
+        } else if (minecraft.options.keyInventory.matchesKey(code, scancode)) {
+            minecraft.player.closeScreen();
             return true;
         } else {
             return super.keyPressed(code, scancode, mods);
@@ -216,8 +223,8 @@ public final class ManualGui extends Screen {
 
     // --------------------------------------------------------------------- //
 
-    private FontRenderer getFontRenderer() {
-        return fontRenderer;
+    private TextRenderer getTextRenderer() {
+        return font;
     }
 
     private boolean canScroll() {
@@ -235,7 +242,7 @@ public final class ManualGui extends Screen {
     private void refreshPage() {
         final Iterable<String> content = ManualAPI.contentFor(ManualAPIImpl.peekPath());
         document = Document.parse(content != null ? content : Collections.singletonList("Document not found: " + ManualAPIImpl.peekPath()));
-        documentHeight = Document.height(document, DOCUMENT_MAX_WIDTH, getFontRenderer());
+        documentHeight = Document.height(document, DOCUMENT_MAX_WIDTH, getTextRenderer());
         scrollTo(offset());
     }
 
@@ -244,7 +251,7 @@ public final class ManualGui extends Screen {
             ManualAPIImpl.popPath();
             refreshPage();
         } else {
-            client.player.closeGui();
+            minecraft.player.closeScreen();
         }
     }
 
@@ -253,7 +260,7 @@ public final class ManualGui extends Screen {
     }
 
     private void scroll(final double amount) {
-        scrollTo(offset() + (int)Math.round(Document.lineHeight(getFontRenderer()) * 3 * amount));
+        scrollTo(offset() + (int)Math.round(Document.lineHeight(getTextRenderer()) * 3 * amount));
     }
 
     private void scrollTo(final int row) {
@@ -277,8 +284,8 @@ public final class ManualGui extends Screen {
         private int verticalImageOffset = 0;
         private int imageHeightOverride = 0;
 
-        ImageButton(final int id, final int x, final int y, final int w, final int h, final Identifier image) {
-            super(id, x, y, w, h, "");
+        ImageButton(final int x, final int y, final int w, final int h, final Identifier image, final PressAction action) {
+            super(x, y, w, h, "", action);
             this.image = image;
         }
 
@@ -301,12 +308,12 @@ public final class ManualGui extends Screen {
         }
 
         @Override
-        public void draw(final int mouseX, final int mouseY, final float partialTicks) {
+        public void render(final int mouseX, final int mouseY, final float partialTicks) {
             if (visible) {
                 MinecraftClient.getInstance().getTextureManager().bindTexture(image);
                 GlStateManager.color4f(1, 1, 1, 1);
 
-                hovered = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
+                isHovered = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
 
                 final int x0 = x;
                 final int x1 = x + width;
@@ -321,10 +328,10 @@ public final class ManualGui extends Screen {
                 final Tessellator t = Tessellator.getInstance();
                 final BufferBuilder b = t.getBufferBuilder();
                 b.begin(GL11.GL_QUADS, VertexFormats.POSITION_UV);
-                b.vertex(x0, y1, zOffset).texture(u0, v1).next();
-                b.vertex(x1, y1, zOffset).texture(u1, v1).next();
-                b.vertex(x1, y0, zOffset).texture(u1, v0).next();
-                b.vertex(x0, y0, zOffset).texture(u0, v0).next();
+                b.vertex(x0, y1, blitOffset).texture(u0, v1).next();
+                b.vertex(x1, y1, blitOffset).texture(u1, v1).next();
+                b.vertex(x1, y0, blitOffset).texture(u1, v0).next();
+                b.vertex(x0, y0, blitOffset).texture(u0, v0).next();
                 t.draw();
             }
         }

@@ -1,6 +1,6 @@
 package li.cil.tis3d.client.manual.segment;
 
-import net.minecraft.client.font.FontRenderer;
+import net.minecraft.client.font.TextRenderer;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -38,7 +38,7 @@ public interface Segment {
      * @param renderer the font renderer used.
      * @return the x position of the next segment.
      */
-    int nextX(final int indent, final int maxWidth, final FontRenderer renderer);
+    int nextX(final int indent, final int maxWidth, final TextRenderer renderer);
 
     /**
      * Get the Y coordinate at which to render the next segment.
@@ -54,7 +54,7 @@ public interface Segment {
      * @param renderer the font renderer used.
      * @return the y position of the next segment.
      */
-    int nextY(final int indent, final int maxWidth, final FontRenderer renderer);
+    int nextY(final int indent, final int maxWidth, final TextRenderer renderer);
 
     /**
      * Render the segment at the specified coordinates with the specified
@@ -69,7 +69,7 @@ public interface Segment {
      * @param mouseY   the y mouse position.
      * @return the hovered interactive segment, if any.
      */
-    Optional<InteractiveSegment> render(final int x, final int y, final int indent, final int maxWidth, final FontRenderer renderer, final int mouseX, final int mouseY);
+    Optional<InteractiveSegment> render(final int x, final int y, final int indent, final int maxWidth, final TextRenderer renderer, final int mouseX, final int mouseY);
 
     // ----------------------------------------------------------------------- //
 

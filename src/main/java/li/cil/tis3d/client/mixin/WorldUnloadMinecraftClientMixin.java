@@ -17,17 +17,17 @@ public abstract class WorldUnloadMinecraftClientMixin {
     @Shadow
     public ClientWorld world;
 
-    @Inject(method = "method_1481", at = @At("HEAD"))
-    private void onBeforeSetWorld(final ClientWorld newWorld, final CallbackInfo ci) {
-        tryDisposeCasingBlockEntities();
+    @Inject(method = "joinWorld", at = @At("HEAD"))
+    private void onBeforeJoinWorld(final ClientWorld newWorld, final CallbackInfo ci) {
+        tis3d_tryDisposeCasingBlockEntities();
     }
 
-    @Inject(method = "method_18096", at = @At("HEAD"))
-    private void onBeforeQuitToMenu(final Screen screen, final CallbackInfo ci) {
-        tryDisposeCasingBlockEntities();
+    @Inject(method = "disconnect(Lnet/minecraft/client/gui/Screen;)V", at = @At("HEAD"))
+    private void onBeforeDisconnect(final Screen screen, final CallbackInfo ci) {
+        tis3d_tryDisposeCasingBlockEntities();
     }
 
-    private void tryDisposeCasingBlockEntities() {
+    private void tis3d_tryDisposeCasingBlockEntities() {
         if (world == null) {
             return;
         }

@@ -5,6 +5,7 @@ import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.module.TerminalModule;
 import net.minecraft.client.gui.Screen;
+import net.minecraft.text.StringTextComponent;
 import net.minecraft.util.Hand;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
@@ -16,6 +17,7 @@ public final class TerminalModuleGui extends Screen {
     private final TerminalModule module;
 
     TerminalModuleGui(final TerminalModule module) {
+        super(new StringTextComponent("Terminal"));
         this.module = module;
     }
 
@@ -24,7 +26,7 @@ public final class TerminalModuleGui extends Screen {
     }
 
     @Override
-    public void draw(final int mouseX, final int mouseY, final float partialTicks) {
+    public void render(final int mouseX, final int mouseY, final float partialTicks) {
         GlStateManager.disableTexture();
 
         // To be on the safe side (see manual.Document#render).
@@ -86,19 +88,19 @@ public final class TerminalModuleGui extends Screen {
         module.writeToInput(chr);
 
         if (Settings.animateTypingHand) {
-            client.player.swingHand(Hand.MAIN);
+            minecraft.player.swingHand(Hand.MAIN);
         }
         return true;
     }
 
     @Override
-    public void onInitialized() {
-        client.keyboard.enableRepeatEvents(true);
+    public void init() {
+        minecraft.keyboard.enableRepeatEvents(true);
     }
 
     @Override
-    public void onClosed() {
-        client.keyboard.enableRepeatEvents(false);
+    public void onClose() {
+        minecraft.keyboard.enableRepeatEvents(false);
     }
 
     @Override

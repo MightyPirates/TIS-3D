@@ -4,9 +4,9 @@ import li.cil.tis3d.api.API;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.item.*;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.block.BlockItem;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -87,7 +87,7 @@ public final class Items {
     }
 
     private static Item registerItem(final Item item, final Identifier identifier, final boolean isListed) {
-        Registry.ITEM.register(identifier, item);
+        Registry.register(Registry.ITEM, identifier, item);
         if (!isListed) {
             return null;
         }

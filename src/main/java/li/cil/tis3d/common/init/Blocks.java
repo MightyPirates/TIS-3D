@@ -20,8 +20,8 @@ public final class Blocks {
     // --------------------------------------------------------------------- //
 
     static void registerBlocks() {
-        Registry.BLOCK.register(Constants.NAME_BLOCK_CASING, CASING);
-        Registry.BLOCK.register(Constants.NAME_BLOCK_CONTROLLER, CONTROLLER);
+        Registry.register(Registry.BLOCK, Constants.NAME_BLOCK_CASING, CASING);
+        Registry.register(Registry.BLOCK, Constants.NAME_BLOCK_CONTROLLER, CONTROLLER);
     }
 
     static void registerBlockEntityTypes() {
