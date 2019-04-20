@@ -95,11 +95,13 @@ public final class TerminalModuleGui extends Screen {
 
     @Override
     public void init() {
+        super.init();
         minecraft.keyboard.enableRepeatEvents(true);
     }
 
     @Override
     public void onClose() {
+        super.onClose();
         minecraft.keyboard.enableRepeatEvents(false);
     }
 
