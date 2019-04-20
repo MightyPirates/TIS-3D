@@ -15,6 +15,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
@@ -24,6 +25,7 @@ import net.minecraft.text.StringTextComponent;
 import net.minecraft.util.Hand;
 import org.lwjgl.glfw.GLFW;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -371,6 +373,12 @@ public final class CodeBookGui extends Screen {
     @Override
     public boolean isPauseScreen() {
         return false;
+    }
+
+    @Nullable
+    @Override
+    public Element getFocused() {
+        return null; // We don't want space to trigger buttons, all input is interpreted as text input in this UI.
     }
 
     // --------------------------------------------------------------------- //
