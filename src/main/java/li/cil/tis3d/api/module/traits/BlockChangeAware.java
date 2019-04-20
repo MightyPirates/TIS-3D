@@ -12,7 +12,7 @@ import net.minecraft.world.World;
  * to the module's {@link Casing} changes.
  * <p>
  * Specifically, this is called from the {@link Casing}'s
- * {@link Block#neighborUpdate(BlockState, World, BlockPos, Block, BlockPos)} method.
+ * {@link Block#neighborUpdate(BlockState, World, BlockPos, Block, BlockPos, boolean)} method.
  */
 public interface BlockChangeAware extends Module {
     /**

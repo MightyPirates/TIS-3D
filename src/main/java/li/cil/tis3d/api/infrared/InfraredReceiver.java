@@ -17,7 +17,7 @@ import net.minecraft.util.hit.HitResult;
  * <li>{@link li.cil.tis3d.api.module.Module} in {@link Casing}.</li>
  * </ul>
  * <p>
- * Note that for non-opaque blocks, defined as <tt>!{@link Material#method_15804()}</tt> this will
+ * Note that for non-opaque blocks, defined as <tt>!{@link Material#blocksLight()}</tt> this will
  * never be called, as they will be skipped when performing a collision check!
  */
 public interface InfraredReceiver {
