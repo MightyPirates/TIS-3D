@@ -117,7 +117,7 @@ public final class CodeBookGui extends Screen {
     @Override
     public void render(final int mouseX, final int mouseY, final float partialTicks) {
         if (player.removed || !Items.isBookCode(player.getStackInHand(hand))) {
-            MinecraftClient.getInstance().setCrashReport(null);
+            MinecraftClient.getInstance().openScreen(null);
             return;
         }
 
