@@ -7,6 +7,7 @@ This index lists all of the documented items in TIS-3D. If you're looking for a 
 - [Bundled Redstone Module](module_bundled_redstone.md)
 - [Display Module](module_display.md)
 - [Execution Module](module_execution.md)
+- [Facade Module](module_facade.md)
 - [Infrared Module](module_infrared.md)
 - [Keypad Module](module_keypad.md)
 - [Queue Module](module_queue.md)
