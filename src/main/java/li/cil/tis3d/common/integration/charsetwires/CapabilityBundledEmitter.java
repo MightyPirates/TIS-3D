@@ -47,7 +47,7 @@ public final class CapabilityBundledEmitter {
         @Nullable
         public <T> T getCapability(final Capability<T> capability, @Nullable final EnumFacing facing) {
             if (hasCapability(capability, facing) && facing != null) {
-                return (T) emitters[facing.ordinal()];
+                return (T)emitters[facing.ordinal()];
             }
             return null;
         }
@@ -66,11 +66,11 @@ public final class CapabilityBundledEmitter {
             public byte[] getBundledSignal() {
                 final Module module = tileEntity.getModule(Face.fromEnumFacing(facing));
                 if (module instanceof BundledRedstone) {
-                    final BundledRedstone bundledRedstone = (BundledRedstone) module;
+                    final BundledRedstone bundledRedstone = (BundledRedstone)module;
 
                     final byte[] signal = new byte[16];
                     for (int channel = 0; channel < signal.length; channel++) {
-                        signal[channel] = (byte) bundledRedstone.getBundledRedstoneOutput(channel);
+                        signal[channel] = (byte)bundledRedstone.getBundledRedstoneOutput(channel);
                     }
                     return signal;
                 }
