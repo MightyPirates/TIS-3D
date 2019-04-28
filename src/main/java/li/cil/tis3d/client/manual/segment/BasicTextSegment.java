@@ -84,12 +84,11 @@ abstract class BasicTextSegment extends AbstractSegment implements Segment {
     protected abstract int stringWidth(String s, FontRenderer renderer);
 
     protected int maxChars(final String s, final int maxWidth, final int maxLineWidth, final FontRenderer renderer) {
-        int pos = -1;
+        int pos = 0;
         int lastBreak = -1;
         final int fullWidth = stringWidth(s, renderer);
         while (pos < s.length()) {
-            pos += 1;
-            final int width = stringWidth(s.substring(0, pos), renderer);
+            final int width = stringWidth(s.substring(0, pos + 1), renderer);
             final boolean exceedsLineLength = width >= maxWidth;
             if (exceedsLineLength) {
                 final boolean mayUseFullLine = maxWidth == maxLineWidth;
@@ -104,11 +103,12 @@ abstract class BasicTextSegment extends AbstractSegment implements Segment {
                 if (canFitInLine && !mayUseFullLine) {
                     return 0; // Wrap line, use next line.
                 }
-                return pos - 1; // Gotta split hard.
+                return pos; // Gotta split hard.
             }
-            if (pos < s.length() && BREAKS.contains(s.charAt(pos))) {
+            if (BREAKS.contains(s.charAt(pos))) {
                 lastBreak = pos;
             }
+            pos += 1;
         }
         return pos;
     }
