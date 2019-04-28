@@ -1,1 +1,2 @@
-* Fixed crash when using bundled redstone modules with SimpleLogic Wires (Ciastex).
+* Added Facade Module, allows covering up unused casing slots.
+* Fixed potential crash in manual.
