@@ -1,0 +1,29 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    "PPP",
+    "ISI",
+    " R "
+  ],
+  "key": {
+    "P": {
+      "type": "forge:ore_dict",
+      "ore": "paneGlassColorless"
+    },
+    "I": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIron"
+    },
+    "R": {
+      "type": "forge:ore_dict",
+      "ore": "dustRedstone"
+    },
+    "S": {
+      "item": "minecraft:paper"
+    }
+  },
+  "result": {
+    "item": "tis3d:module_facade",
+    "count": 2
+  }
+}

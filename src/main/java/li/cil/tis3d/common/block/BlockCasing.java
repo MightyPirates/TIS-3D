@@ -4,8 +4,10 @@ import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
+import li.cil.tis3d.api.module.traits.CasingFaceQuadOverride;
 import li.cil.tis3d.api.module.traits.Redstone;
 import li.cil.tis3d.api.util.TransformUtil;
+import li.cil.tis3d.common.block.property.PropertyCasingFaceQuadOverrides;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ItemBookManual;
 import li.cil.tis3d.common.tileentity.TileEntityCasing;
@@ -13,6 +15,7 @@ import li.cil.tis3d.util.InventoryUtils;
 import li.cil.tis3d.util.WorldUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -31,6 +34,9 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.property.ExtendedBlockState;
+import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.common.property.IUnlistedProperty;
 
 /**
  * Block for the module casings.
@@ -54,7 +60,7 @@ public final class BlockCasing extends Block {
 
     @Override
     public BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, MODULE_X_NEG, MODULE_X_POS, MODULE_Y_NEG, MODULE_Y_POS, MODULE_Z_NEG, MODULE_Z_POS);
+        return new ExtendedBlockState(this, new IProperty[]{MODULE_X_NEG, MODULE_X_POS, MODULE_Y_NEG, MODULE_Y_POS, MODULE_Z_NEG, MODULE_Z_POS}, new IUnlistedProperty[]{PropertyCasingFaceQuadOverrides.INSTANCE});
     }
 
     @Override
@@ -77,6 +83,26 @@ public final class BlockCasing extends Block {
             withProperty(MODULE_Y_POS, casing.getModule(Face.Y_POS) != null).
             withProperty(MODULE_Z_NEG, casing.getModule(Face.Z_NEG) != null).
             withProperty(MODULE_Z_POS, casing.getModule(Face.Z_POS) != null);
+    }
+
+    @Override
+    public IBlockState getExtendedState(final IBlockState state, final IBlockAccess world, final BlockPos pos) {
+        final TileEntity tileEntity = world.getTileEntity(pos);
+        if (state instanceof IExtendedBlockState && tileEntity instanceof TileEntityCasing) {
+            final IExtendedBlockState extendedState = (IExtendedBlockState) state;
+            final TileEntityCasing casing = (TileEntityCasing) tileEntity;
+
+            final CasingFaceQuadOverride[] overrides = new CasingFaceQuadOverride[6];
+            for (final Face face : Face.VALUES) {
+                final Module module = casing.getModule(face);
+                if (module instanceof CasingFaceQuadOverride) {
+                    overrides[face.ordinal()] = (CasingFaceQuadOverride) module;
+                }
+            }
+
+            return extendedState.withProperty(PropertyCasingFaceQuadOverrides.INSTANCE, overrides);
+        }
+        return super.getExtendedState(state, world, pos);
     }
 
     // --------------------------------------------------------------------- //
