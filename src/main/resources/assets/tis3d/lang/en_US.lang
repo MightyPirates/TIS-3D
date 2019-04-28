@@ -8,6 +8,7 @@ item.tis3d.module_audio.name=Audio Module
 item.tis3d.module_bundled_redstone.name=Bundled Redstone Module
 item.tis3d.module_display.name=Display Module
 item.tis3d.module_execution.name=Execution Module
+item.tis3d.module_facade.name=Facade Module
 item.tis3d.module_infrared.name=Infrared Module
 item.tis3d.module_keypad.name=Keypad Module
 item.tis3d.module_queue.name=Queue Module
@@ -39,6 +40,8 @@ tis3d.compiler.too_many_lines=Too many lines
 tis3d.controller.status.incomplete=Scan failed to complete
 tis3d.controller.status.multiple_controllers=Multiple controllers
 tis3d.controller.status.too_complex=Too complex
+
+tis3d.facade.invalid_target=This block cannot be used as a facade configuration.
 
 tis3d.manual.home=Home
 tis3d.manual.blocks=Blocks

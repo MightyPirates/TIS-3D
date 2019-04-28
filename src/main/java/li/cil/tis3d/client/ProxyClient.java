@@ -10,6 +10,7 @@ import li.cil.tis3d.client.manual.provider.ItemImageProvider;
 import li.cil.tis3d.client.manual.provider.OreDictImageProvider;
 import li.cil.tis3d.client.manual.provider.TextureImageProvider;
 import li.cil.tis3d.client.renderer.TextureLoader;
+import li.cil.tis3d.client.renderer.block.ModelLoaderCasing;
 import li.cil.tis3d.client.renderer.tileentity.TileEntitySpecialRendererCasing;
 import li.cil.tis3d.client.renderer.tileentity.TileEntitySpecialRendererController;
 import li.cil.tis3d.common.Constants;
@@ -25,6 +26,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
@@ -46,6 +48,8 @@ public final class ProxyClient extends ProxyCommon {
         super.onPreInit(event);
 
         MinecraftForge.EVENT_BUS.register(TextureLoader.INSTANCE);
+
+        ModelLoaderRegistry.registerLoader(ModelLoaderCasing.INSTANCE);
     }
 
     @Override
@@ -89,8 +93,17 @@ public final class ProxyClient extends ProxyCommon {
         for (final Item item : Items.getAllItems()) {
             final ResourceLocation registryName = item.getRegistryName();
             assert registryName != null;
-            final ModelResourceLocation location = new ModelResourceLocation(registryName, "inventory");
+            final ModelResourceLocation location = getModelResourceLocation(registryName);
             ModelLoader.setCustomModelResourceLocation(item, 0, location);
         }
+    }
+
+    private static ModelResourceLocation getModelResourceLocation(final ResourceLocation registryName) {
+        // Remap for casing, use the underlying base model for item rendering.
+        if (registryName.equals(ModelLoaderCasing.LOCATION_CASING)) {
+            return new ModelResourceLocation(ModelLoaderCasing.LOCATION_CASING_BASE, "inventory");
+        }
+
+        return new ModelResourceLocation(registryName, "inventory");
     }
 }

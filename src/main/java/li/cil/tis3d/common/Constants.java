@@ -26,6 +26,7 @@ public final class Constants {
     public static final String NAME_ITEM_MODULE_BUNDLED_REDSTONE = "module_bundled_redstone";
     public static final String NAME_ITEM_MODULE_DISPLAY = "module_display";
     public static final String NAME_ITEM_MODULE_EXECUTION = "module_execution";
+    public static final String NAME_ITEM_MODULE_FACADE = "module_facade";
     public static final String NAME_ITEM_MODULE_INFRARED = "module_infrared";
     public static final String NAME_ITEM_MODULE_KEYPAD = "module_keypad";
     public static final String NAME_ITEM_MODULE_QUEUE = "module_queue";
@@ -49,6 +50,7 @@ public final class Constants {
         NAME_ITEM_MODULE_BUNDLED_REDSTONE,
         NAME_ITEM_MODULE_DISPLAY,
         NAME_ITEM_MODULE_EXECUTION,
+        NAME_ITEM_MODULE_FACADE,
         NAME_ITEM_MODULE_INFRARED,
         NAME_ITEM_MODULE_KEYPAD,
         NAME_ITEM_MODULE_QUEUE,
@@ -64,7 +66,7 @@ public final class Constants {
     };
 
     // --------------------------------------------------------------------- //
-    // Compiler errors
+    // Error messages
 
     public static final String MESSAGE_COMPILE_ERROR = "tis3d.compiler.error";
     public static final String MESSAGE_INVALID_FORMAT = "tis3d.compiler.invalid_format";
@@ -76,6 +78,8 @@ public final class Constants {
     public static final String MESSAGE_PARAMETER_UNDERFLOW = "tis3d.compiler.parameter_underflow";
     public static final String MESSAGE_TOO_MANY_COLUMNS = "tis3d.compiler.too_many_columns";
     public static final String MESSAGE_TOO_MANY_LINES = "tis3d.compiler.too_many_lines";
+
+    public static final String MESSAGE_FACADE_INVALID_TARGET = "tis3d.facade.invalid_target";
 
     // --------------------------------------------------------------------- //
     // Code book
