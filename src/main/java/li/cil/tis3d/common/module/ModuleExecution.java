@@ -154,7 +154,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
                 if (!player.capabilities.isCreativeMode) {
                     heldItem.splitStack(1);
                 }
-                final ItemStack bookCode = new ItemStack(Items.bookCode);
+                final ItemStack bookCode = new ItemStack(Items.BOOK_CODE);
                 if (player.inventory.addItemStackToInventory(bookCode)) {
                     player.inventoryContainer.detectAndSendChanges();
                 }

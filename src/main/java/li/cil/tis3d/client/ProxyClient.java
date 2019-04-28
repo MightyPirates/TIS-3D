@@ -70,7 +70,7 @@ public final class ProxyClient extends ProxyCommon {
         ManualAPI.addProvider("oredict", new OreDictImageProvider());
 
         ManualAPI.addTab(new TextureTabIconRenderer(new ResourceLocation(API.MOD_ID, "textures/gui/manual_home.png")), "tis3d.manual.home", "%LANGUAGE%/index.md");
-        ManualAPI.addTab(new ItemStackTabIconRenderer(new ItemStack(Blocks.controller)), "tis3d.manual.blocks", "%LANGUAGE%/block/index.md");
+        ManualAPI.addTab(new ItemStackTabIconRenderer(new ItemStack(Blocks.CONTROLLER)), "tis3d.manual.blocks", "%LANGUAGE%/block/index.md");
         final Item module;
         if (Items.getModules().containsKey(Constants.NAME_ITEM_MODULE_EXECUTION)) {
             module = Items.getModules().get(Constants.NAME_ITEM_MODULE_EXECUTION);

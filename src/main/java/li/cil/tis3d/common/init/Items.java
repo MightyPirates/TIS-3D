@@ -13,39 +13,45 @@ import net.minecraftforge.registries.IForgeRegistry;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.Supplier;
 
 /**
  * Manages setup, registration and lookup of items.
  */
 @GameRegistry.ObjectHolder(API.MOD_ID)
 public final class Items {
-    private static final Map<String, Item> modules = new HashMap<>();
+    private static final Map<String, Item> MODULES = new HashMap<>();
+    private static final Map<String, Supplier<ItemModule>> ITEM_CONSTRUCTOR_OVERRIDES = new HashMap<>();
 
     @GameRegistry.ObjectHolder(Constants.NAME_ITEM_BOOK_CODE)
-    public static final Item bookCode = null;
+    public static final Item BOOK_CODE = null;
     @GameRegistry.ObjectHolder(Constants.NAME_ITEM_BOOK_MANUAL)
-    public static final Item bookManual = null;
+    public static final Item BOOK_MANUAL = null;
     @GameRegistry.ObjectHolder(Constants.NAME_ITEM_KEY)
-    public static final Item key = null;
+    public static final Item KEY = null;
     @GameRegistry.ObjectHolder(Constants.NAME_ITEM_KEY_CREATIVE)
-    public static final Item keyCreative = null;
+    public static final Item KEY_CREATIVE = null;
     @GameRegistry.ObjectHolder(Constants.NAME_ITEM_PRISM)
-    public static final Item prism = null;
+    public static final Item PRISM = null;
 
     public static Map<String, Item> getModules() {
-        return modules;
+        return MODULES;
+    }
+
+    public static void registerModuleItemOverride(final String moduleName, final Supplier<ItemModule> itemConstructor) {
+        ITEM_CONSTRUCTOR_OVERRIDES.put(moduleName, itemConstructor);
     }
 
     public static List<Item> getAllItems() {
-        final List<Item> result = new ArrayList<>(modules.values());
+        final List<Item> result = new ArrayList<>(MODULES.values());
         result.addAll(Arrays.asList(
-            bookCode,
-            bookManual,
-            key,
-            keyCreative,
-            prism,
-            Item.getItemFromBlock(Blocks.casing),
-            Item.getItemFromBlock(Blocks.controller)
+            BOOK_CODE,
+            BOOK_MANUAL,
+            KEY,
+            KEY_CREATIVE,
+            PRISM,
+            Item.getItemFromBlock(Blocks.CASING),
+            Item.getItemFromBlock(Blocks.CONTROLLER)
         ));
         return result;
     }
@@ -57,23 +63,23 @@ public final class Items {
     }
 
     public static boolean isBookCode(final ItemStack stack) {
-        return isItem(stack, bookCode);
+        return isItem(stack, BOOK_CODE);
     }
 
     public static boolean isBookManual(final ItemStack stack) {
-        return isItem(stack, bookManual);
+        return isItem(stack, BOOK_MANUAL);
     }
 
     public static boolean isKey(final ItemStack stack) {
-        return isItem(stack, key) || isKeyCreative(stack);
+        return isItem(stack, KEY) || isKeyCreative(stack);
     }
 
     public static boolean isKeyCreative(final ItemStack stack) {
-        return isItem(stack, keyCreative);
+        return isItem(stack, KEY_CREATIVE);
     }
 
     public static boolean isModuleReadOnlyMemory(final ItemStack stack) {
-        return isItem(stack, modules.get(Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY));
+        return isItem(stack, MODULES.get(Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY));
     }
 
     // --------------------------------------------------------------------- //
@@ -82,7 +88,7 @@ public final class Items {
         for (final String moduleName : Constants.MODULES) {
             final Item module = registerModule(registry, moduleName);
             if (module != null) {
-                modules.put(moduleName, module);
+                MODULES.put(moduleName, module);
             }
         }
 
@@ -114,11 +120,7 @@ public final class Items {
             return null;
         }
 
-        if (Objects.equals(name, Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY)) {
-            return registerItem(registry, new ItemModuleReadOnlyMemory(), name);
-        } else {
-            return registerItem(registry, new ItemModule(), name);
-        }
+        return registerItem(registry, ITEM_CONSTRUCTOR_OVERRIDES.getOrDefault(name, ItemModule::new).get(), name);
     }
 
     // --------------------------------------------------------------------- //

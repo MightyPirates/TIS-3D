@@ -14,7 +14,7 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
-public class ItemModuleReadOnlyMemory extends ItemModule {
+public final class ItemModuleReadOnlyMemory extends ItemModule {
     private static final String TAG_DATA = "data";
     private static final byte[] EMPTY_DATA = new byte[0];
 

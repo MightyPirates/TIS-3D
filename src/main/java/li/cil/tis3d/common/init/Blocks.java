@@ -21,14 +21,14 @@ import java.util.List;
 @GameRegistry.ObjectHolder(API.MOD_ID)
 public final class Blocks {
     @GameRegistry.ObjectHolder(Constants.NAME_BLOCK_CASING)
-    public static final Block casing = null;
+    public static final Block CASING = null;
     @GameRegistry.ObjectHolder(Constants.NAME_BLOCK_CONTROLLER)
-    public static final Block controller = null;
+    public static final Block CONTROLLER = null;
 
     public static List<Block> getAllBlocks() {
         return Arrays.asList(
-            casing,
-            controller
+            CASING,
+            CONTROLLER
         );
     }
 

@@ -19,6 +19,6 @@ public final class CreativeTab extends CreativeTabs {
     @SideOnly(Side.CLIENT)
     @Override
     public ItemStack createIcon() {
-        return new ItemStack(Item.getItemFromBlock(Blocks.controller));
+        return new ItemStack(Item.getItemFromBlock(Blocks.CONTROLLER));
     }
 }

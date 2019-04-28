@@ -77,7 +77,7 @@ public class TextureImageRenderer implements ImageRenderer {
             deleteGlTexture();
 
             final IResource resource = manager.getResource(location);
-            try (InputStream is = resource.getInputStream()) {
+            try (final InputStream is = resource.getInputStream()) {
                 final BufferedImage bi = ImageIO.read(is);
                 TextureUtil.uploadTextureImageAllocate(getGlTextureId(), bi, false, false);
                 width = bi.getWidth();

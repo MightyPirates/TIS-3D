@@ -15,6 +15,7 @@ import li.cil.tis3d.common.init.Blocks;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.integration.Integration;
 import li.cil.tis3d.common.integration.redstone.RedstoneIntegration;
+import li.cil.tis3d.common.item.ItemModuleReadOnlyMemory;
 import li.cil.tis3d.common.module.*;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.provider.SimpleModuleProvider;
@@ -63,8 +64,8 @@ public class ProxyCommon {
 
     public void onInit(final FMLInitializationEvent event) {
         // Register Ore Dictionary entries.
-        OreDictionary.registerOre("book", Items.bookCode);
-        OreDictionary.registerOre("book", Items.bookManual);
+        OreDictionary.registerOre("book", Items.BOOK_CODE);
+        OreDictionary.registerOre("book", Items.BOOK_MANUAL);
 
         for (final String module : Constants.MODULES) {
             registerModuleOre(module);
@@ -96,7 +97,7 @@ public class ProxyCommon {
         ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_QUEUE, ModuleQueue::new));
         ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_RANDOM, ModuleRandom::new));
         ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY, ModuleRandomAccessMemory::new));
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY, ModuleReadOnlyMemory::new));
+        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY, ModuleReadOnlyMemory::new, ItemModuleReadOnlyMemory::new));
         ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_REDSTONE, ModuleRedstone::new));
         ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_SEQUENCER, ModuleSequencer::new));
         ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_SERIAL_PORT, ModuleSerialPort::new));

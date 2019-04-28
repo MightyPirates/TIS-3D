@@ -45,7 +45,7 @@ public final class BlockController extends Block {
                     if (!player.capabilities.isCreativeMode) {
                         heldItem.splitStack(1);
                     }
-                    final ItemStack bookManual = new ItemStack(Items.bookManual);
+                    final ItemStack bookManual = new ItemStack(Items.BOOK_MANUAL);
                     if (player.inventory.addItemStackToInventory(bookManual)) {
                         player.inventoryContainer.detectAndSendChanges();
                     }
