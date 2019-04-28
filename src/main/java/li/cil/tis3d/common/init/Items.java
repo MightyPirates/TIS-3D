@@ -81,6 +81,7 @@ public final class Items {
         addModuleRecipe(Constants.NAME_ITEM_MODULE_BUNDLED_REDSTONE, net.minecraft.init.Items.COMPARATOR);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_DISPLAY, prism);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_EXECUTION, "ingotGold");
+        addModuleRecipe(Constants.NAME_ITEM_MODULE_FACADE, net.minecraft.init.Items.PAPER, 8);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_INFRARED, net.minecraft.init.Items.SPIDER_EYE);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_KEYPAD, net.minecraft.init.Blocks.STONE_BUTTON);
         addModuleRecipe(Constants.NAME_ITEM_MODULE_RANDOM, net.minecraft.init.Items.ENDER_PEARL);
@@ -130,6 +131,10 @@ public final class Items {
     }
 
     private static void addModuleRecipe(final String name, final Object specialIngredient) {
+        addModuleRecipe(name, specialIngredient, 2);
+    }
+
+    private static void addModuleRecipe(final String name, final Object specialIngredient, final int outputCount) {
         if (Settings.disabledModules.contains(name)) {
             return;
         }
@@ -137,7 +142,7 @@ public final class Items {
         final Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(API.MOD_ID, name));
         assert item != null;
         GameRegistry.addRecipe(new ShapedOreRecipe(
-            new ItemStack(item, 2),
+            new ItemStack(item, outputCount),
             "PPP",
             "ISI",
             " R ",

@@ -10,8 +10,8 @@ import javax.annotation.Nullable;
 public final class BlockStateUtils {
     @SuppressWarnings("deprecation")
     @Nullable
-    public static IBlockState getBlockStateFromItemStack(final ItemStack stack) {
-        if (stack.isEmpty()) {
+    public static IBlockState getBlockStateFromItemStack(@Nullable final ItemStack stack) {
+        if (stack == null || stack.stackSize < 1) {
             return null;
         }
 

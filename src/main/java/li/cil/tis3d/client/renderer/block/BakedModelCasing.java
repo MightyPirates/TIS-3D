@@ -10,10 +10,8 @@ import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.property.IExtendedBlockState;
-import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
-import javax.vecmath.Matrix4f;
 import java.util.List;
 
 public final class BakedModelCasing implements IBakedModel {
@@ -31,7 +29,7 @@ public final class BakedModelCasing implements IBakedModel {
     @Override
     public List<BakedQuad> getQuads(@Nullable final IBlockState state, @Nullable final EnumFacing side, final long rand) {
         if (side != null && state instanceof IExtendedBlockState) {
-            final IExtendedBlockState extendedBlockState = (IExtendedBlockState) state;
+            final IExtendedBlockState extendedBlockState = (IExtendedBlockState)state;
             final CasingFaceQuadOverride[] stateOverrides = extendedBlockState.getValue(PropertyCasingFaceQuadOverrides.INSTANCE);
             if (stateOverrides != null) {
                 final CasingFaceQuadOverride stateOverride = stateOverrides[side.getIndex()];
@@ -73,12 +71,7 @@ public final class BakedModelCasing implements IBakedModel {
     }
 
     @Override
-    public boolean isAmbientOcclusion(final IBlockState state) {
-        return baseModel.isAmbientOcclusion(state);
-    }
-
-    @Override
-    public Pair<? extends IBakedModel, Matrix4f> handlePerspective(final ItemCameraTransforms.TransformType cameraTransformType) {
-        return baseModel.handlePerspective(cameraTransformType);
+    public ItemCameraTransforms getItemCameraTransforms() {
+        return baseModel.getItemCameraTransforms();
     }
 }

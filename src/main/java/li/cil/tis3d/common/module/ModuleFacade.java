@@ -7,6 +7,7 @@ import li.cil.tis3d.api.module.traits.CasingFaceQuadOverride;
 import li.cil.tis3d.api.prefab.module.AbstractModule;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.util.BlockStateUtils;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockModelShapes;
@@ -50,17 +51,16 @@ public final class ModuleFacade extends AbstractModule implements BlockChangeAwa
     // Module
 
     @Override
-    public boolean onActivate(final EntityPlayer player, final EnumHand hand, final float hitX, final float hitY, final float hitZ) {
+    public boolean onActivate(final EntityPlayer player, final EnumHand hand, @Nullable final ItemStack heldItem, final float hitX, final float hitY, final float hitZ) {
         if (getCasing().isLocked()) {
             return false;
         }
 
-        final ItemStack stack = player.getHeldItem(hand);
-        if (stack.isEmpty()) {
+        if (heldItem == null || heldItem.stackSize < 1) {
             return false;
         }
 
-        final IBlockState state = BlockStateUtils.getBlockStateFromItemStack(stack);
+        final IBlockState state = BlockStateUtils.getBlockStateFromItemStack(heldItem);
         if (state == null) {
             return false;
         }
@@ -109,15 +109,14 @@ public final class ModuleFacade extends AbstractModule implements BlockChangeAwa
     // --------------------------------------------------------------------- //
     // BlockChangeAware
 
-    @Override
-    public void onNeighborBlockChange(final BlockPos neighborPos, final boolean isModuleNeighbor) {
-        if (!isModuleNeighbor) {
-            return;
-        }
 
+    @Override
+    public void onNeighborBlockChange(final Block neighborBlock) {
         if (getCasing().isLocked()) {
             return;
         }
+
+        final BlockPos neighborPos = getCasing().getPosition().offset(Face.toEnumFacing(getFace()));
 
         trySetFacadeState(getCasing().getCasingWorld().getBlockState(neighborPos));
     }
