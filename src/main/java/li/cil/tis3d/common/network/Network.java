@@ -27,7 +27,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.network.Packet;
-import net.minecraft.particle.DustParticleParameters;
+import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.packet.CustomPayloadC2SPacket;
 import net.minecraft.util.Identifier;
@@ -269,7 +269,7 @@ public final class Network {
         }
 
         private void sendMessage() {
-            final ParticleS2CPacket packet = new ParticleS2CPacket(DustParticleParameters.RED, false, x, y, z, 0, 0, 0, 0, 1);
+            final ParticleS2CPacket packet = new ParticleS2CPacket(DustParticleEffect.RED, false, x, y, z, 0, 0, 0, 0, 1);
             if (Network.INSTANCE.sendToClientsNearLocation(packet, world, new BlockPos(x, y, z), RANGE_LOW) > 0) {
                 particlesSent++;
             }

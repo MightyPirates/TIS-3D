@@ -12,7 +12,7 @@ import net.minecraft.item.BookItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -48,7 +48,7 @@ public final class ManualBookItem extends BookItem {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public void buildTooltip(final ItemStack stack, @Nullable final World world, final List<TextComponent> tooltip, final TooltipContext options) {
+    public void buildTooltip(final ItemStack stack, @Nullable final World world, final List<Component> tooltip, final TooltipContext options) {
         super.buildTooltip(stack, world, tooltip, options);
         final String info = I18n.translate(Constants.TOOLTIP_BOOK_MANUAL);
         FontRendererUtils.addStringToTooltip(info, tooltip);

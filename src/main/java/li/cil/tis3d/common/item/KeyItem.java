@@ -10,7 +10,7 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.ActionResult;
 import net.minecraft.world.World;
 
@@ -35,7 +35,7 @@ public final class KeyItem extends Item {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public void buildTooltip(final ItemStack stack, @Nullable final World world, final List<TextComponent> tooltip, final TooltipContext options) {
+    public void buildTooltip(final ItemStack stack, @Nullable final World world, final List<Component> tooltip, final TooltipContext options) {
         super.buildTooltip(stack, world, tooltip, options);
         final String info = I18n.translate(Constants.TOOLTIP_KEY);
         FontRendererUtils.addStringToTooltip(info, tooltip);
