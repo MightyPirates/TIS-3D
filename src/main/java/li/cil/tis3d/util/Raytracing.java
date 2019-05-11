@@ -136,7 +136,7 @@ public final class Raytracing {
             // Check if we're colliding with the block.
             final BlockPos position = new BlockPos(currentPosX, currentPosY, currentPosZ);
             final HitResult hit = callback.intersect(world, position, start, end);
-            if (hit != null && hit.getType() != HitResult.Type.NONE) {
+            if (hit != null && hit.getType() != HitResult.Type.MISS) {
                 return hit;
             }
 

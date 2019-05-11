@@ -5,7 +5,7 @@ import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.module.TerminalModule;
 import net.minecraft.client.gui.Screen;
-import net.minecraft.text.StringTextComponent;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Hand;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
@@ -17,7 +17,7 @@ public final class TerminalModuleGui extends Screen {
     private final TerminalModule module;
 
     TerminalModuleGui(final TerminalModule module) {
-        super(new StringTextComponent("Terminal"));
+        super(new TextComponent("Terminal"));
         this.module = module;
     }
 
@@ -88,7 +88,7 @@ public final class TerminalModuleGui extends Screen {
         module.writeToInput(chr);
 
         if (Settings.animateTypingHand) {
-            minecraft.player.swingHand(Hand.MAIN);
+            minecraft.player.swingHand(Hand.MAIN_HAND);
         }
         return true;
     }

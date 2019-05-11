@@ -1,6 +1,6 @@
 package li.cil.tis3d.client.manual.segment;
 
-import net.minecraft.text.TextFormat;
+import net.minecraft.ChatFormat;
 
 public final class ItalicSegment extends TextSegment {
     public ItalicSegment(final Segment parent, final String text) {
@@ -9,7 +9,7 @@ public final class ItalicSegment extends TextSegment {
 
     @Override
     protected String format() {
-        return TextFormat.ITALIC.toString();
+        return ChatFormat.ITALIC.toString();
     }
 
     @Override

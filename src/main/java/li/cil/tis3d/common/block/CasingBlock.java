@@ -57,7 +57,7 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
 
     @Override
     protected void appendProperties(final StateFactory.Builder<Block, BlockState> builder) {
-        builder.with(
+        builder.add(
             MODULE_X_NEG,
             MODULE_X_POS,
             MODULE_Y_NEG,
@@ -117,7 +117,7 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
         }
 
         // TODO Ugly, but context does not pass on hand...
-        final Hand hand = context.getPlayer() != null && context.getPlayer().getStackInHand(Hand.OFF) == context.getItemStack() ? Hand.OFF : Hand.MAIN;
+        final Hand hand = context.getPlayer() != null && context.getPlayer().getStackInHand(Hand.OFF_HAND) == context.getItemStack() ? Hand.OFF_HAND : Hand.MAIN_HAND;
         return ((CasingBlock)blockState.getBlock()).activate(blockState, context.getWorld(), context.getBlockPos(), context.getPlayer(), hand, ((ItemUsageContextAccessors)context).getBlockHitResult());
     }
 

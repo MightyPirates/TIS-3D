@@ -17,7 +17,7 @@ import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.text.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -39,7 +39,7 @@ public final class CodeBookItem extends BookItem {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public void buildTooltip(final ItemStack stack, @Nullable final World world, final List<TextComponent> tooltip, final TooltipContext options) {
+    public void buildTooltip(final ItemStack stack, @Nullable final World world, final List<Component> tooltip, final TooltipContext options) {
         super.buildTooltip(stack, world, tooltip, options);
         final String info = I18n.translate(Constants.TOOLTIP_BOOK_CODE);
         FontRendererUtils.addStringToTooltip(info, tooltip);

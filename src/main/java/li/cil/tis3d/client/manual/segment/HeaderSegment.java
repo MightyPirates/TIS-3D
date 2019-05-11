@@ -1,8 +1,7 @@
 package li.cil.tis3d.client.manual.segment;
 
 import joptsimple.internal.Strings;
-import net.minecraft.text.TextFormat;
-
+import net.minecraft.ChatFormat;
 import java.util.Optional;
 
 public final class HeaderSegment extends TextSegment {
@@ -22,7 +21,7 @@ public final class HeaderSegment extends TextSegment {
 
     @Override
     protected String format() {
-        return TextFormat.UNDERLINE.toString();
+        return ChatFormat.UNDERLINE.toString();
     }
 
     @Override

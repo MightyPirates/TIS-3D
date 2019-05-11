@@ -323,8 +323,8 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
         final HitResult entityHit = checkEntityCollision(world, start, target);
 
         // If we have both, pick the closer one.
-        if (blockHit != null && blockHit.getType() != HitResult.Type.NONE &&
-            entityHit != null && entityHit.getType() != HitResult.Type.NONE) {
+        if (blockHit != null && blockHit.getType() != HitResult.Type.MISS &&
+            entityHit != null && entityHit.getType() != HitResult.Type.MISS) {
             if (blockHit.getPos().squaredDistanceTo(start) < entityHit.getPos().squaredDistanceTo(start)) {
                 return blockHit;
             } else {
