@@ -12,6 +12,10 @@ buildscript {
     }
 }
 
+plugins {
+    id "com.matthewprenger.cursegradle" version "1.1.2"
+}
+
 apply plugin: 'fabric-loom'
 apply plugin: 'java'
 apply plugin: 'maven-publish'
@@ -103,21 +107,28 @@ publishing {
     }
 }
 
-//curseforge {
-//    apiKey = project.hasProperty("curseForgeApiKey") ? project.curseForgeApiKey : ""
-//    project {
-//        id = config.curse.project.id
-//        releaseType = config.curse.project.releaseType
-//        changelogType = "markdown"
-//        changelog = file("changelog.md")
-//        addGameVersion config.minecraft.simpleversion
-//        addGameVersion "Java 8"
-//
-//        relations {
-//            requiredLibrary 'fabric'
-//        }
-//    }
-//}
+curseforge {
+    apiKey = project.hasProperty("curseForgeApiKey") ? project.curseForgeApiKey : ""
+    project {
+        id = config.curse.project.id
+        releaseType = config.curse.project.releaseType
+        changelogType = "markdown"
+        changelog = file("changelog.md")
+        addGameVersion config.minecraft.simpleversion
+        addGameVersion "Java 8"
+
+        relations {
+            requiredLibrary 'fabric'
+        }
+        afterEvaluate {
+            mainArtifact(remapJar.output)
+            uploadTask.dependsOn(remapJar)
+        }
+    }
+    options {
+        forgeGradleIntegration = false
+    }
+}
 
 // this is needed for IntelliJ so we don't have to copy over the assets manually every time
 idea {
