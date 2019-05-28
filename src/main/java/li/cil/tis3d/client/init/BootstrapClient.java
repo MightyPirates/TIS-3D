@@ -24,6 +24,7 @@ import net.fabricmc.fabric.api.event.client.ClientTickCallback;
 import net.fabricmc.fabric.api.event.client.player.ClientPickBlockGatherCallback;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -43,7 +44,7 @@ public final class BootstrapClient implements ClientModInitializer {
 
         // Register event handlers.
         ClientTickCallback.EVENT.register(client -> Network.INSTANCE.clientTick());
-        ClientSpriteRegistryCallback.registerBlockAtlas((spriteAtlasTexture, registry) -> Textures.registerSprites(registry));
+        ClientSpriteRegistryCallback.event(SpriteAtlasTexture.BLOCK_ATLAS_TEX).register((spriteAtlasTexture, registry) -> Textures.registerSprites(registry));
         ClientPickBlockGatherCallback.EVENT.register(BootstrapClient::handlePickBlock);
 
         // Set up tile entity renderer for dynamic module content.

@@ -278,7 +278,7 @@ public final class ControllerBlockEntity extends AbstractComputerBlockEntity imp
                 for (final Direction facing : Direction.values()) {
                     final BlockPos neighborPos = getPos().offset(facing);
                     final BlockState neighborState = world.getBlockState(neighborPos);
-                    if (neighborState.isFullBoundsCubeForCulling()) {
+                    if (neighborState.isOpaque()) {
                         continue;
                     }
                     if (world.random.nextFloat() > 0.25f) {

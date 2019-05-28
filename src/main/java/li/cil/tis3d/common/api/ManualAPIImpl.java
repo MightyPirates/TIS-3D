@@ -8,7 +8,7 @@ import li.cil.tis3d.client.gui.GuiHelper;
 import li.cil.tis3d.client.gui.ManualGui;
 import li.cil.tis3d.common.TIS3D;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;

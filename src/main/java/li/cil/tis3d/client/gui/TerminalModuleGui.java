@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.module.TerminalModule;
-import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Hand;
 import org.lwjgl.glfw.GLFW;

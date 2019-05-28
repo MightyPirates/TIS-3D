@@ -5,7 +5,7 @@ import li.cil.tis3d.common.network.handler.AbstractMessageHandler;
 import li.cil.tis3d.common.network.message.ReadOnlyMemoryModuleDataMessage;
 import net.fabricmc.fabric.api.network.PacketContext;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.screen.Screen;
 
 public final class ReadOnlyMemoryModuleDataClientMessageHandler extends AbstractMessageHandler<ReadOnlyMemoryModuleDataMessage> {
     @Override

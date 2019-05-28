@@ -7,7 +7,7 @@ import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.module.RandomAccessMemoryModule;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.ReadOnlyMemoryModuleDataMessage;
-import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Hand;
