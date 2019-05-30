@@ -1,1 +1,1 @@
-This was built against Minecraft 1.14pre4 and requires Fabric Loader 0.4.1 and Fabric 0.2.7.
+This was built against Minecraft 1.14.2 and requires Fabric Loader 0.4.8 and Fabric 0.3.0.
