@@ -88,6 +88,9 @@ public final class Network {
         final BlockPos position = new BlockPos(x, y, z);
         if (!world.isBlockLoaded(position)) {
             final BlockState state = world.getBlockState(position);
+            // Note: in 1.12 and earlier this was what is now
+            //     Block.isShapeFullCube(state.getCollisionShape(world, position))
+            // But this should work too, for the most part, and is more efficient, so let's leave it at that.
             if (state.isOpaque()) {
                 // Skip particle emission when inside a block where they aren't visible anyway.
                 return;

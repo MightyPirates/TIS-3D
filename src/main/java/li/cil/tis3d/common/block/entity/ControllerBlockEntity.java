@@ -278,6 +278,9 @@ public final class ControllerBlockEntity extends AbstractComputerBlockEntity imp
                 for (final Direction facing : Direction.values()) {
                     final BlockPos neighborPos = getPos().offset(facing);
                     final BlockState neighborState = world.getBlockState(neighborPos);
+                    // Note: in 1.12 and earlier this was what is now
+                    //     Block.isShapeFullCube(neighborState.getCollisionShape(world, neighborPos))
+                    // But this should work too, for the most part, and is more efficient, so let's leave it at that.
                     if (neighborState.isOpaque()) {
                         continue;
                     }
