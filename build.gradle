@@ -116,12 +116,14 @@ curseforge {
         changelog = file("changelog.md")
         addGameVersion config.minecraft.simpleversion
         addGameVersion "Java 8"
+        addGameVersion "Java 9"
+        addGameVersion "Java 10"
 
         relations {
             requiredLibrary 'fabric'
         }
+        mainArtifact(file("${project.buildDir}/libs/${archivesBaseName}-${version}.jar"))
         afterEvaluate {
-            mainArtifact(remapJar.output)
             uploadTask.dependsOn(remapJar)
         }
     }
