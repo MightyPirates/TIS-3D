@@ -9,7 +9,7 @@ import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.ReadOnlyMemoryModuleDataMessage;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.text.LiteralText;
 import net.minecraft.util.Hand;
 import org.lwjgl.glfw.GLFW;
 
@@ -35,7 +35,7 @@ public final class ReadOnlyMemoryModuleGui extends Screen {
     private long initTime;
 
     ReadOnlyMemoryModuleGui(final PlayerEntity player, final Hand hand) {
-        super(new TextComponent("Read-Only Module"));
+        super(new LiteralText("Read-Only Module"));
         this.player = player;
         this.hand = hand;
     }

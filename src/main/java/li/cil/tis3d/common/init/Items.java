@@ -19,13 +19,13 @@ import java.util.Objects;
  * Manages setup, registration and lookup of items.
  */
 public final class Items {
-    public static final Item BOOK_CODE = new CodeBookItem(new Item.Settings().stackSize(1).itemGroup(API.itemGroup));
-    public static final Item BOOK_MANUAL = new ManualBookItem(new Item.Settings().stackSize(16).itemGroup(API.itemGroup));
-    public static final Item KEY = new KeyItem(new Item.Settings().stackSize(1).itemGroup(API.itemGroup));
-    public static final Item KEY_CREATIVE = new KeyItem(new Item.Settings().stackSize(1).itemGroup(API.itemGroup));
-    public static final Item PRISM = new Item(new Item.Settings().stackSize(32).itemGroup(API.itemGroup));
-    public static final BlockItem CASING = new BlockItem(Blocks.CASING, new Item.Settings().itemGroup(API.itemGroup));
-    public static final BlockItem CONTROLLER = new BlockItem(Blocks.CONTROLLER, new Item.Settings().itemGroup(API.itemGroup));
+    public static final Item BOOK_CODE = new CodeBookItem(new Item.Settings().maxCount(1).group(API.itemGroup));
+    public static final Item BOOK_MANUAL = new ManualBookItem(new Item.Settings().maxCount(16).group(API.itemGroup));
+    public static final Item KEY = new KeyItem(new Item.Settings().maxCount(1).group(API.itemGroup));
+    public static final Item KEY_CREATIVE = new KeyItem(new Item.Settings().maxCount(1).group(API.itemGroup));
+    public static final Item PRISM = new Item(new Item.Settings().maxCount(32).group(API.itemGroup));
+    public static final BlockItem CASING = new BlockItem(Blocks.CASING, new Item.Settings().group(API.itemGroup));
+    public static final BlockItem CONTROLLER = new BlockItem(Blocks.CONTROLLER, new Item.Settings().group(API.itemGroup));
 
     private static final Map<Identifier, Item> modules = new HashMap<>();
 
@@ -97,7 +97,7 @@ public final class Items {
 
     private static Item registerModule(final Identifier identifier) {
         final boolean isListed = !Settings.disabledModules.contains(identifier);
-        final Item.Settings settings = isListed ? new Item.Settings().itemGroup(API.itemGroup) : new Item.Settings();
+        final Item.Settings settings = isListed ? new Item.Settings().group(API.itemGroup) : new Item.Settings();
         if (Objects.equals(identifier, Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY)) {
             return registerItem(new ReadOnlyMemoryModuleItem(settings), identifier, isListed);
         } else {

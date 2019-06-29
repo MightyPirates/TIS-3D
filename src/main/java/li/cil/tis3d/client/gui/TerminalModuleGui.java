@@ -5,7 +5,7 @@ import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.module.TerminalModule;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.text.LiteralText;
 import net.minecraft.util.Hand;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
@@ -17,7 +17,7 @@ public final class TerminalModuleGui extends Screen {
     private final TerminalModule module;
 
     TerminalModuleGui(final TerminalModule module) {
-        super(new TextComponent("Terminal"));
+        super(new LiteralText("Terminal"));
         this.module = module;
     }
 

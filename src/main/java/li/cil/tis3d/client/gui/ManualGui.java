@@ -19,7 +19,7 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
@@ -58,7 +58,7 @@ public final class ManualGui extends Screen {
     private ImageButton scrollButton = null;
 
     protected ManualGui() {
-        super(new TextComponent("Manual"));
+        super(new LiteralText("Manual"));
     }
 
     public void pushPage(final String path) {

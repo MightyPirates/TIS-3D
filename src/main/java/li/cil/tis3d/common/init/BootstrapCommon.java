@@ -31,7 +31,7 @@ public final class BootstrapCommon implements ModInitializer {
         //noinspection Convert2MethodRef
         API.itemGroup = FabricItemGroupBuilder.create(Constants.NAME_ITEM_GROUP).
             // Gotta be a lambda or items get initialized before item group is set.
-                icon(() -> Items.CONTROLLER.getDefaultStack()).
+                icon(() -> Items.CONTROLLER.getStackForRender()).
                 build();
 
         API.fontRendererAPI = new FontRendererAPIImpl();

@@ -10,7 +10,7 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.world.World;
 
@@ -22,21 +22,21 @@ import java.util.List;
  */
 public final class KeyItem extends Item {
     public KeyItem(final Item.Settings settings) {
-        super(settings.stackSize(1));
+        super(settings.maxCount(1));
     }
 
     // --------------------------------------------------------------------- //
     // Item
 
     @Override
-    public boolean requiresClientSync() {
+    public boolean shouldSyncTagToClient() {
         return false;
     }
 
     @Environment(EnvType.CLIENT)
     @Override
-    public void buildTooltip(final ItemStack stack, @Nullable final World world, final List<Component> tooltip, final TooltipContext options) {
-        super.buildTooltip(stack, world, tooltip, options);
+    public void appendTooltip(final ItemStack stack, @Nullable final World world, final List<Text> tooltip, final TooltipContext options) {
+        super.appendTooltip(stack, world, tooltip, options);
         final String info = I18n.translate(Constants.TOOLTIP_KEY);
         FontRendererUtils.addStringToTooltip(info, tooltip);
     }
@@ -47,7 +47,7 @@ public final class KeyItem extends Item {
     }
 
     @Override
-    public boolean isTool(final ItemStack stack) {
+    public boolean isEnchantable(final ItemStack stack) {
         return false;
     }
 }

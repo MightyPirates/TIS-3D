@@ -30,7 +30,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -160,7 +160,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
                 if (player.inventory.insertStack(bookCode)) {
                     player.playerContainer.sendContentUpdates();
                 }
-                if (bookCode.getAmount() > 0) {
+                if (bookCode.getCount() > 0) {
                     player.dropItem(bookCode, false, false);
                 }
             }
@@ -313,7 +313,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
             Compiler.compile(code, getState());
         } catch (final ParseException e) {
             compileError = e;
-            player.addChatMessage(new TranslatableComponent(Constants.MESSAGE_COMPILE_ERROR, e.getLineNumber(), e.getStart(), e.getEnd()).append(new TranslatableComponent(e.getMessage())), false);
+            player.addChatMessage(new TranslatableText(Constants.MESSAGE_COMPILE_ERROR, e.getLineNumber(), e.getStart(), e.getEnd()).append(new TranslatableText(e.getMessage())), false);
         }
     }
 

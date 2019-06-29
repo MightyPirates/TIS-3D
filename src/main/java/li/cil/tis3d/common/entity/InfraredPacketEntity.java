@@ -24,7 +24,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -180,7 +180,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
     }
 
     @Override
-    public boolean method_5713() {
+    public boolean checkWaterState() {
         return false;
     }
 
@@ -347,7 +347,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
         final List<Entity> collisions = world.getEntities(this, getBoundingBox().stretch(getVelocity()), EntityPredicates.EXCEPT_SPECTATOR);
         for (final Entity entity : collisions) {
             if (entity.collides()) {
-                final BoundingBox entityBounds = entity.getBoundingBox();
+                final Box entityBounds = entity.getBoundingBox();
                 final Optional<Vec3d> hit = entityBounds.rayTrace(start, target);
                 if (hit.isPresent()) {
                     final double sqrDistance = start.squaredDistanceTo(hit.get());

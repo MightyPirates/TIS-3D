@@ -76,11 +76,11 @@ public class ArrayInventory implements Inventory {
 
     @Override
     public ItemStack takeInvStack(final int index, final int count) {
-        if (items[index].getAmount() <= count) {
+        if (items[index].getCount() <= count) {
             return removeInvStack(index);
         } else {
             final ItemStack stack = items[index].split(count);
-            assert items[index].getAmount() > 0;
+            assert items[index].getCount() > 0;
             markDirty();
             return stack;
         }

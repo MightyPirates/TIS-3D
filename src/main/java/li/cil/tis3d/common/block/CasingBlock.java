@@ -6,7 +6,7 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.traits.Redstone;
 import li.cil.tis3d.api.util.TransformUtil;
-import li.cil.tis3d.common.inject.ItemUsageContextAccessors;
+import li.cil.tis3d.common.mixin.ItemUsageContextAccessors;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ManualBookItem;
@@ -38,12 +38,12 @@ import net.minecraft.world.World;
  * Block for the module casings.
  */
 public final class CasingBlock extends Block implements BlockEntityProvider {
-    private static final BooleanProperty MODULE_X_NEG = BooleanProperty.create("xneg");
-    private static final BooleanProperty MODULE_X_POS = BooleanProperty.create("xpos");
-    private static final BooleanProperty MODULE_Y_NEG = BooleanProperty.create("yneg");
-    private static final BooleanProperty MODULE_Y_POS = BooleanProperty.create("ypos");
-    private static final BooleanProperty MODULE_Z_NEG = BooleanProperty.create("zneg");
-    private static final BooleanProperty MODULE_Z_POS = BooleanProperty.create("zpos");
+    private static final BooleanProperty MODULE_X_NEG = BooleanProperty.of("xneg");
+    private static final BooleanProperty MODULE_X_POS = BooleanProperty.of("xpos");
+    private static final BooleanProperty MODULE_Y_NEG = BooleanProperty.of("yneg");
+    private static final BooleanProperty MODULE_Y_POS = BooleanProperty.of("ypos");
+    private static final BooleanProperty MODULE_Z_NEG = BooleanProperty.of("zneg");
+    private static final BooleanProperty MODULE_Z_POS = BooleanProperty.of("zpos");
 
     // --------------------------------------------------------------------- //
 
@@ -117,7 +117,7 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
         }
 
         // TODO Ugly, but context does not pass on hand...
-        final Hand hand = context.getPlayer() != null && context.getPlayer().getStackInHand(Hand.OFF_HAND) == context.getItemStack() ? Hand.OFF_HAND : Hand.MAIN_HAND;
+        final Hand hand = context.getPlayer() != null && context.getPlayer().getStackInHand(Hand.OFF_HAND) == context.getStack() ? Hand.OFF_HAND : Hand.MAIN_HAND;
         return ((CasingBlock)blockState.getBlock()).activate(blockState, context.getWorld(), context.getBlockPos(), context.getPlayer(), hand, ((ItemUsageContextAccessors)context).getBlockHitResult());
     }
 

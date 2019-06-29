@@ -23,7 +23,7 @@ public class ReadOnlyMemoryModuleItem extends ModuleItem {
     private static final byte[] EMPTY_DATA = new byte[0];
 
     public ReadOnlyMemoryModuleItem(final Item.Settings builder) {
-        super(builder.stackSize(1));
+        super(builder.maxCount(1));
     }
 
     // --------------------------------------------------------------------- //

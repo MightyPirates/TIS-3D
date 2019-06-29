@@ -21,7 +21,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.text.LiteralText;
 import net.minecraft.util.Hand;
 import org.lwjgl.glfw.GLFW;
 
@@ -71,7 +71,7 @@ public final class CodeBookGui extends Screen {
     // --------------------------------------------------------------------- //
 
     CodeBookGui(final PlayerEntity player, final Hand hand) {
-        super(new TextComponent("Code Book"));
+        super(new LiteralText("Code Book"));
         this.player = player;
         this.hand = hand;
         this.data = CodeBookItem.Data.loadFromStack(player.getStackInHand(hand));

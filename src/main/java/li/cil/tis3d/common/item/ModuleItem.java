@@ -14,7 +14,7 @@ public class ModuleItem extends Item {
     // Item
 
     @Override
-    public boolean requiresClientSync() {
+    public boolean shouldSyncTagToClient() {
         return false;
     }
 }

@@ -18,7 +18,7 @@ public final class BlockImageProvider implements ImageProvider {
     @Override
     public ImageRenderer getImage(final String data) {
         final Block block = Registry.BLOCK.get(new Identifier(data));
-        if (Item.getItemFromBlock(block) != Items.AIR) {
+        if (Item.fromBlock(block) != Items.AIR) {
             return new ItemStackImageRenderer(new ItemStack(block, 1));
         } else {
             return new MissingItemRenderer(WARNING_BLOCK_MISSING);

@@ -4,14 +4,14 @@ import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.entity.InfraredPacketEntity;
 import net.fabricmc.fabric.api.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.EntityCategory;
-import net.minecraft.entity.EntitySize;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.registry.Registry;
 
 public final class Entities {
     public static final EntityType<InfraredPacketEntity> INFRARED_PACKET = FabricEntityTypeBuilder.create(
         EntityCategory.MISC, InfraredPacketEntity::new).disableSummon().size(
-            new EntitySize(0.25F, 0.25F, true)
+            new EntityDimensions(0.25F, 0.25F, true)
         ).setImmuneToFire().build();
 
     // --------------------------------------------------------------------- //

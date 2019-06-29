@@ -46,7 +46,7 @@ public final class ControllerBlock extends Block implements BlockEntityProvider 
                     if (player.inventory.insertStack(bookManual)) {
                         player.playerContainer.sendContentUpdates();
                     }
-                    if (bookManual.getAmount() > 0) {
+                    if (bookManual.getCount() > 0) {
                         player.dropItem(bookManual, false, false);
                     }
                 }

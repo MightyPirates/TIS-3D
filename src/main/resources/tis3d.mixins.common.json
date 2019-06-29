@@ -3,10 +3,10 @@
     "package": "li.cil.tis3d.common.mixin",
     "compatibilityLevel": "JAVA_8",
     "mixins": [
-        "AbstractFurnaceBlockEntityMixin",
+        "AbstractFurnaceBlockEntityAccessors",
         "CasingInfraredReceiverMixin",
         "ChunkUnloadMixin",
-        "ItemUsageContextMixin"
+        "ItemUsageContextAccessors"
     ],
     "injectors": {
         "defaultRequire": 1
