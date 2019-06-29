@@ -16,6 +16,7 @@ import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.block.entity.ControllerBlockEntity;
 import li.cil.tis3d.common.init.Blocks;
 import li.cil.tis3d.common.init.Items;
+import li.cil.tis3d.common.module.DisplayModule;
 import li.cil.tis3d.common.network.Network;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.render.BlockEntityRendererRegistry;
@@ -43,6 +44,7 @@ public final class BootstrapClient implements ClientModInitializer {
         Network.INSTANCE.initClient();
 
         // Register event handlers.
+        ClientTickCallback.EVENT.register(client -> DisplayModule.LeakDetector.tick());
         ClientTickCallback.EVENT.register(client -> Network.INSTANCE.clientTick());
         ClientSpriteRegistryCallback.event(SpriteAtlasTexture.BLOCK_ATLAS_TEX).register((spriteAtlasTexture, registry) -> Textures.registerSprites(registry));
         ClientPickBlockGatherCallback.EVENT.register(BootstrapClient::handlePickBlock);

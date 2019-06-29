@@ -4,6 +4,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.TextureUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
@@ -14,13 +16,47 @@ import li.cil.tis3d.util.ColorUtils;
 import li.cil.tis3d.util.EnumUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.nbt.CompoundTag;
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 public final class DisplayModule extends AbstractModuleWithRotation {
+    public static final class LeakDetector {
+        private static final LinkedList<Integer> leakedGlTextureIds = new LinkedList<>();
+        private static final LinkedList<Object> leakedNativeImages = new LinkedList<>();
+
+        private LeakDetector() {
+
+        }
+
+        public static void add(Integer glTextureId, Object image) {
+            if (glTextureId != null) {
+                leakedGlTextureIds.add(glTextureId);
+            }
+
+            if (image != null) {
+                leakedNativeImages.add(image);
+            }
+        }
+
+        public static void tick() {
+            while (!leakedGlTextureIds.isEmpty()) {
+                int glTextureId = leakedGlTextureIds.remove();
+                TextureUtil.releaseTextureId(glTextureId);
+            }
+
+            while (!leakedNativeImages.isEmpty()) {
+                NativeImage nativeImage = (NativeImage) leakedNativeImages.remove();
+                nativeImage.close();
+            }
+        }
+    }
+
     // --------------------------------------------------------------------- //
     // Persisted data
 
@@ -80,7 +116,7 @@ public final class DisplayModule extends AbstractModuleWithRotation {
     /**
      * The ID of the uploaded texture on the GPU (client only).
      */
-    private int glTextureId = 0;
+    private Integer glTextureId = null;
 
     // --------------------------------------------------------------------- //
 
@@ -114,7 +150,7 @@ public final class DisplayModule extends AbstractModuleWithRotation {
 
     @Override
     public void finalize() {
-        deleteTexture();
+        LeakDetector.add(glTextureId, nativeImage);
     }
 
     @Override
@@ -231,7 +267,7 @@ public final class DisplayModule extends AbstractModuleWithRotation {
      * @return the texture ID we're currently using.
      */
     private int getGlTextureId() {
-        if (glTextureId == 0) {
+        if (glTextureId == null) {
             glTextureId = GlStateManager.genTexture();
             nativeImage = new NativeImage(RESOLUTION, RESOLUTION, false);
             TextureUtil.prepareImage(glTextureId, RESOLUTION, RESOLUTION);
@@ -255,12 +291,13 @@ public final class DisplayModule extends AbstractModuleWithRotation {
      * Deletes our texture from the GPU, if we have one.
      */
     private void deleteTexture() {
-        if (glTextureId != 0) {
+        if (glTextureId != null) {
             TextureUtil.releaseTextureId(glTextureId);
-            glTextureId = 0;
+            glTextureId = null;
         }
         if (nativeImage != null) {
-            ((NativeImage)nativeImage).close();
+            ((NativeImage) nativeImage).close();
+            nativeImage = null;
         }
     }
 
