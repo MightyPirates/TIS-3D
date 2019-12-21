@@ -67,19 +67,21 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
         );
     }
 
-    public void updateBlockState(final BlockState state, final World world, final BlockPos pos) {
+    public BlockState updateBlockState(final BlockState state, final World world, final BlockPos pos) {
         final BlockEntity blockEntity = WorldUtils.getBlockEntityThreadsafe(world, pos);
         if (!(blockEntity instanceof CasingBlockEntity)) {
-            return;
+            return state;
         }
         final CasingBlockEntity casing = (CasingBlockEntity)blockEntity;
-        world.setBlockState(pos, state.
+        final BlockState newState = state.
             with(MODULE_X_NEG, casing.getModule(Face.X_NEG) != null).
             with(MODULE_X_POS, casing.getModule(Face.X_POS) != null).
             with(MODULE_Y_NEG, casing.getModule(Face.Y_NEG) != null).
             with(MODULE_Y_POS, casing.getModule(Face.Y_POS) != null).
             with(MODULE_Z_NEG, casing.getModule(Face.Z_NEG) != null).
-            with(MODULE_Z_POS, casing.getModule(Face.Z_POS) != null), 2);
+            with(MODULE_Z_POS, casing.getModule(Face.Z_POS) != null);
+        world.setBlockState(pos, newState, 2);
+        return newState;
     }
 
     // --------------------------------------------------------------------- //

@@ -77,7 +77,7 @@ public class TextureImageRenderer implements ImageRenderer {
 
             final Resource resource = manager.getResource(location);
             try (final InputStream is = resource.getInputStream()) {
-                final NativeImage bi = NativeImage.fromInputStream(is);
+                final NativeImage bi = NativeImage.read(is);
 
                 TextureUtil.prepareImage(this.getGlId(), bi.getWidth(), bi.getHeight());
                 bi.upload(0, 0, 0, false);

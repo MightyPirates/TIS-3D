@@ -4,7 +4,7 @@
     "name": "TIS-3D",
     "description": "TIS-100 inspired low-tech computing for Minecraft.",
     "version": "1.5.0",
-
+    
     "authors": [
         {
             "name": "Sangar",
@@ -19,7 +19,6 @@
         "issues": "https://github.com/MightyPirates/TIS-3D/issues",
         "sources": "https://github.com/MightyPirates/TIS-3D"
     },
-
     "license": "MIT",
     "icon": "assets/tis3d/icon.png",
 
@@ -31,7 +30,8 @@
             "li.cil.tis3d.client.init.BootstrapClient"
         ]
     },
-    "requires": {
+    "depends": {
+        "minecraft": ">=1.14.4 <1.15.0",
         "fabricloader": ">=0.4.1",
         "fabric": ">=0.2.7"
     },

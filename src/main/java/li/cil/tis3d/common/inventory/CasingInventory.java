@@ -63,11 +63,11 @@ public final class CasingInventory extends ArrayInventory implements SidedInvent
         final World world = Objects.requireNonNull(blockEntity.getWorld());
 
         final BlockState state = world.getBlockState(blockEntity.getPos());
-        Blocks.CASING.updateBlockState(state, world, blockEntity.getPos());
+        final BlockState newState = Blocks.CASING.updateBlockState(state, world, blockEntity.getPos());
         blockEntity.markDirty();
         if (world.isClient) {
             // Re-render on client, as module presence changes the block model.
-            world.scheduleBlockRender(blockEntity.getPos());
+            world.scheduleBlockRender(blockEntity.getPos(), state, newState);
         }
     }
 
