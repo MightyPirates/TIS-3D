@@ -33,7 +33,7 @@ public final class ControllerBlock extends Block implements BlockEntityProvider 
 
     @SuppressWarnings("deprecation")
     @Override
-    public boolean activate(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockHitResult blockHitResult) {
+    public boolean onUse(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockHitResult blockHitResult) {
         final ItemStack heldItem = player.getStackInHand(hand);
         if (!heldItem.isEmpty()) {
             final Item item = heldItem.getItem();
@@ -65,7 +65,7 @@ public final class ControllerBlock extends Block implements BlockEntityProvider 
             return true;
         }
 
-        return super.activate(state, world, pos, player, hand, blockHitResult);
+        return super.onUse(state, world, pos, player, hand, blockHitResult);
     }
 
     @SuppressWarnings("deprecation")

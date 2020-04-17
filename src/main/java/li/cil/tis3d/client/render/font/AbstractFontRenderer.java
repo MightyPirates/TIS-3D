@@ -43,8 +43,8 @@ public abstract class AbstractFontRenderer implements FontRenderer {
         MinecraftClient.getInstance().getTextureManager().bindTexture(getTextureLocation());
 
         final Tessellator tessellator = Tessellator.getInstance();
-        final BufferBuilder buffer = tessellator.getBufferBuilder();
-        buffer.begin(GL11.GL_QUADS, VertexFormats.POSITION_UV);
+        final BufferBuilder buffer = tessellator.getBuffer();
+        buffer.begin(GL11.GL_QUADS, VertexFormats.POSITION_TEXTURE);
 
         float tx = 0f;
         final int end = Math.min(maxChars, value.length());

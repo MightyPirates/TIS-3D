@@ -48,7 +48,7 @@ public final class RenderUtil {
     @Environment(EnvType.CLIENT)
     public static void drawUntexturedQuad(final float x, final float y, final float w, final float h) {
         final Tessellator tessellator = Tessellator.getInstance();
-        final BufferBuilder buffer = tessellator.getBufferBuilder();
+        final BufferBuilder buffer = tessellator.getBuffer();
         buffer.begin(GL11.GL_QUADS, VertexFormats.POSITION);
         buffer.vertex(x, y + h, 0).next();
         buffer.vertex(x + w, y + h, 0).next();
@@ -72,8 +72,8 @@ public final class RenderUtil {
     @Environment(EnvType.CLIENT)
     public static void drawQuad(final float x, final float y, final float w, final float h, final float u0, final float v0, final float u1, final float v1) {
         final Tessellator tessellator = Tessellator.getInstance();
-        final BufferBuilder buffer = tessellator.getBufferBuilder();
-        buffer.begin(GL11.GL_QUADS, VertexFormats.POSITION_UV);
+        final BufferBuilder buffer = tessellator.getBuffer();
+        buffer.begin(GL11.GL_QUADS, VertexFormats.POSITION_TEXTURE);
         buffer.vertex(x, y + h, 0).texture(u0, v1).next();
         buffer.vertex(x + w, y + h, 0).texture(u1, v1).next();
         buffer.vertex(x + w, y, 0).texture(u1, v0).next();
@@ -119,7 +119,7 @@ public final class RenderUtil {
      */
     @Environment(EnvType.CLIENT)
     public static void drawQuad(final Sprite sprite, final float x, final float y, final float w, final float h, final float u0, final float v0, final float u1, final float v1) {
-        drawQuad(x, y, w, h, sprite.getU(u0 * 16), sprite.getV(v0 * 16), sprite.getU(u1 * 16), sprite.getV(v1 * 16));
+        drawQuad(x, y, w, h, sprite.getFrameU(u0 * 16), sprite.getFrameV(v0 * 16), sprite.getFrameU(u1 * 16), sprite.getFrameV(v1 * 16));
     }
 
     /**

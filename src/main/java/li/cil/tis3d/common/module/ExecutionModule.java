@@ -245,7 +245,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
 
         // Render detailed state when player is close.
         final MachineState machineState = getState();
-        if (machineState.code != null && rendererDispatcher.cameraEntity.getBlockPos().getSquaredDistance(getCasing().getPosition()) < 64) {
+        if (machineState.code != null && rendererDispatcher.camera.getBlockPos().getSquaredDistance(getCasing().getPosition()) < 64) {
             renderState(machineState);
         }
     }
@@ -258,7 +258,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
         getState().readFromNBT(machineNbt);
         state = EnumUtils.readFromNBT(State.class, TAG_STATE, nbt);
 
-        if (nbt.containsKey(TAG_COMPILE_ERROR)) {
+        if (nbt.contains(TAG_COMPILE_ERROR)) {
             final CompoundTag errorNbt = nbt.getCompound(TAG_COMPILE_ERROR);
             compileError = new ParseException(errorNbt.getString(TAG_MESSAGE), errorNbt.getInt(TAG_LINE_NUMBER), errorNbt.getInt(TAG_START), errorNbt.getInt(TAG_END));
         } else {
@@ -411,7 +411,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
         GlStateManager.disableTexture();
 
         final Tessellator tessellator = Tessellator.getInstance();
-        final BufferBuilder buffer = tessellator.getBufferBuilder();
+        final BufferBuilder buffer = tessellator.getBuffer();
         buffer.begin(GL11.GL_QUADS, VertexFormats.POSITION);
         buffer.vertex(-0.5f, height + 0.5f, 0).next();
         buffer.vertex(71.5f, height + 0.5f, 0).next();
