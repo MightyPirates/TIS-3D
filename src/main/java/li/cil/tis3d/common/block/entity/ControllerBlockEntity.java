@@ -197,8 +197,8 @@ public final class ControllerBlockEntity extends AbstractComputerBlockEntity imp
     // BlockEntity
 
     @Override
-    public void invalidate() {
-        super.invalidate();
+    public void markRemoved() {
+        super.markRemoved();
 
         final World world = Objects.requireNonNull(getWorld());
 

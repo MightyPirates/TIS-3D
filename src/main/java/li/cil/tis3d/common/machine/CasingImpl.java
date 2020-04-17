@@ -269,11 +269,11 @@ public final class CasingImpl implements Casing {
         final int moduleCount = Math.min(modulesNbt.size(), modules.length);
         for (int i = 0; i < moduleCount; i++) {
             if (modules[i] != null) {
-                modules[i].readFromNBT(modulesNbt.getCompoundTag(i));
+                modules[i].readFromNBT(modulesNbt.getCompound(i));
             }
         }
 
-        if (nbt.containsKey(TAG_KEY_MS) && nbt.containsKey(TAG_KEY_LS)) {
+        if (nbt.contains(TAG_KEY_MS) && nbt.contains(TAG_KEY_LS)) {
             lock = new UUID(nbt.getLong(TAG_KEY_MS), nbt.getLong(TAG_KEY_LS));
         } else {
             lock = null;
@@ -379,7 +379,7 @@ public final class CasingImpl implements Casing {
         if (nbt == null) {
             return Optional.empty();
         }
-        if (!nbt.containsKey(TAG_KEY_MS) || !nbt.containsKey(TAG_KEY_LS)) {
+        if (!nbt.contains(TAG_KEY_MS) || !nbt.contains(TAG_KEY_LS)) {
             return Optional.empty();
         }
         return Optional.of(new UUID(nbt.getLong(TAG_KEY_MS), nbt.getLong(TAG_KEY_LS)));

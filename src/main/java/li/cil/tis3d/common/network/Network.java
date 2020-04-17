@@ -21,15 +21,15 @@ import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.network.packet.CustomPayloadS2CPacket;
-import net.minecraft.client.network.packet.ParticleS2CPacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
+import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
+import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.network.packet.CustomPayloadC2SPacket;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
@@ -159,7 +159,7 @@ public final class Network {
                 if (player.squaredDistanceTo(new Vec3d(pos)) < rangeSq) {
                     final ServerPlayerEntity networkedPlayer = (ServerPlayerEntity)player;
                     networkedPlayer.networkHandler.sendPacket(packet);
-                    if (!networkedPlayer.networkHandler.client.isLocal()) {
+                    if (!networkedPlayer.networkHandler.connection.isLocal()) {
                         sent++;
                     }
                 }

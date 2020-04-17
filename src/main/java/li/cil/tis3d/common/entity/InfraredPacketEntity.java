@@ -11,7 +11,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
@@ -19,6 +18,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -97,7 +97,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
      * @param value     the value the packet carries.
      */
     public void configure(final Vec3d start, final Vec3d direction, final short value) {
-        setPosition(start.x, start.y, start.z);
+        updatePosition(start.x, start.y, start.z);
         setVelocity(direction.multiply(TRAVEL_SPEED));
         lifetime = DEFAULT_LIFETIME + 1; // First update in next frame.
         this.value = value;
@@ -176,7 +176,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
         z += getVelocity().z;
 
         // Update bounding box.
-        setPosition(x, y, z);
+        updatePosition(x, y, z);
     }
 
     @Override
@@ -196,7 +196,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
 
     @Environment(EnvType.CLIENT)
     @Override
-    public boolean shouldRenderAtDistance(final double distance) {
+    public boolean shouldRender(final double distance) {
         return false;
     }
 
@@ -377,7 +377,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
 
         // Traveling through a portal?
         if (block == Blocks.NETHER_PORTAL || block == Blocks.END_PORTAL) {
-            setInPortal(pos);
+            setInNetherPortal(pos);
             return;
         }
 

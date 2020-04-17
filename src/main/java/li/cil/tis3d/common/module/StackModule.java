@@ -110,7 +110,7 @@ public final class StackModule extends AbstractModuleWithRotation {
         RenderUtil.drawQuad(RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_STACK));
 
         // Render detailed state when player is close.
-        if (!isEmpty() && rendererDispatcher.cameraEntity.getBlockPos().getSquaredDistance(getCasing().getPosition()) < 64) {
+        if (!isEmpty() && rendererDispatcher.camera.getBlockPos().getSquaredDistance(getCasing().getPosition()) < 64) {
             drawState();
         }
     }

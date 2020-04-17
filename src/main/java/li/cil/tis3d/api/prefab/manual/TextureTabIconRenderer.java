@@ -26,8 +26,8 @@ public class TextureTabIconRenderer implements TabIconRenderer {
     public void render() {
         MinecraftClient.getInstance().getTextureManager().bindTexture(location);
         final Tessellator t = Tessellator.getInstance();
-        final BufferBuilder b = t.getBufferBuilder();
-        b.begin(GL11.GL_QUADS, VertexFormats.POSITION_UV);
+        final BufferBuilder b = t.getBuffer();
+        b.begin(GL11.GL_QUADS, VertexFormats.POSITION_TEXTURE);
         b.vertex(0, 16, 0).texture(0, 1).next();
         b.vertex(16, 16, 0).texture(1, 1).next();
         b.vertex(16, 0, 0).texture(1, 0).next();

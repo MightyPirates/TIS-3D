@@ -67,7 +67,7 @@ public final class CasingInventory extends ArrayInventory implements SidedInvent
         blockEntity.markDirty();
         if (world.isClient) {
             // Re-render on client, as module presence changes the block model.
-            world.scheduleBlockRender(blockEntity.getPos(), state, newState);
+            world.checkBlockRerender(blockEntity.getPos(), state, newState);
         }
     }
 

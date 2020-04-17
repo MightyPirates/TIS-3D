@@ -147,7 +147,7 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
     @Override
     public void fromTag(final CompoundTag nbt) {
         super.fromTag(nbt);
-        if (nbt.containsKey("_client")) {
+        if (nbt.contains("_client")) {
             fromClientTag(nbt);
         } else {
             readFromNBTForServer(nbt);
@@ -208,7 +208,7 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
         final ListTag pipesNbt = nbt.getList(TAG_PIPES, NBTIds.TAG_COMPOUND);
         final int pipeCount = Math.min(pipesNbt.size(), pipes.length);
         for (int i = 0; i < pipeCount; i++) {
-            pipes[i].readFromNBT(pipesNbt.getCompoundTag(i));
+            pipes[i].readFromNBT(pipesNbt.getCompound(i));
         }
 
         readFromNBTCommon(nbt);

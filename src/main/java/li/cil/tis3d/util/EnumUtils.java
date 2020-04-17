@@ -9,7 +9,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public final class EnumUtils {
     public static <T extends Enum<T>> T readFromNBT(final Class<T> clazz, final String tagName, final CompoundTag nbt) {
-        if (nbt.containsKey(tagName, NBTIds.TAG_STRING)) {
+        if (nbt.contains(tagName, NBTIds.TAG_STRING)) {
             // Backwards compatibility.
             try {
                 return Enum.valueOf(clazz, nbt.getString(tagName));
