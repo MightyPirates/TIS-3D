@@ -57,9 +57,9 @@ public final class BootstrapClient implements ClientModInitializer {
         EntityRendererRegistry.INSTANCE.register(Entities.INFRARED_PACKET,
             (dispatcher, context) -> new InvisibleEntityRenderer<InfraredPacketEntity>(dispatcher));
 
-        // Set up tile entity renderer for dynamic module content.
-        //~ BlockEntityRendererRegistry.INSTANCE.register(CasingBlockEntity.class, CasingBlockEntityRenderer::new);
-        //~ BlockEntityRendererRegistry.INSTANCE.register(ControllerBlockEntity.class, ControllerBlockEntityRenderer::new);
+        // Set up block entity renderer for dynamic module content.
+        BlockEntityRendererRegistry.INSTANCE.register(CasingBlockEntity.TYPE, CasingBlockEntityRenderer::new);
+        BlockEntityRendererRegistry.INSTANCE.register(ControllerBlockEntity.TYPE, ControllerBlockEntityRenderer::new);
 
         // Add default manual providers for client side stuff.
         ManualAPI.addProvider("", new TextureImageProvider());
