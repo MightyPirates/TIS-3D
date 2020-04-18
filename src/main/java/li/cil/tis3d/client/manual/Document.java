@@ -131,16 +131,16 @@ public final class Document {
 
         GlStateManager.pushMatrix();
         GlStateManager.translatef(0, 0, 500);
-        GL11.glBegin(GL11.GL_QUADS);
-        GL11.glVertex2f(0, y);
-        GL11.glVertex2f(mc.window.getFramebufferWidth(), y);
-        GL11.glVertex2f(mc.window.getFramebufferWidth(), 0);
-        GL11.glVertex2f(0, 0);
-        GL11.glVertex2f(0, mc.window.getFramebufferHeight());
-        GL11.glVertex2f(mc.window.getFramebufferWidth(), mc.window.getFramebufferHeight());
-        GL11.glVertex2f(mc.window.getFramebufferWidth(), y + maxHeight);
-        GL11.glVertex2f(0, y + maxHeight);
-        GL11.glEnd();
+        //~ GL11.glBegin(GL11.GL_QUADS);
+        //~ GL11.glVertex2f(0, y);
+        //~ GL11.glVertex2f(mc.window.getFramebufferWidth(), y);
+        //~ GL11.glVertex2f(mc.window.getFramebufferWidth(), 0);
+        //~ GL11.glVertex2f(0, 0);
+        //~ GL11.glVertex2f(0, mc.window.getFramebufferHeight());
+        //~ GL11.glVertex2f(mc.window.getFramebufferWidth(), mc.window.getFramebufferHeight());
+        //~ GL11.glVertex2f(mc.window.getFramebufferWidth(), y + maxHeight);
+        //~ GL11.glVertex2f(0, y + maxHeight);
+        //~ GL11.glEnd();
         GlStateManager.popMatrix();
         GlStateManager.colorMask(true, true, true, true);
 

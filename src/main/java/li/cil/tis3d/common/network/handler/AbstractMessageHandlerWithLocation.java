@@ -14,9 +14,9 @@ public abstract class AbstractMessageHandlerWithLocation<T extends AbstractMessa
         if (world == null) {
             return null;
         }
-        if (!world.isBlockLoaded(message.getPosition())) {
-            return null;
-        }
+        //~ if (!world.isBlockLoaded(message.getPosition())) {
+            //~ return null;
+        //~ }
         return world.getBlockEntity(message.getPosition());
     }
 }

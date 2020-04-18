@@ -178,7 +178,8 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
         // our tile entity.
         for (final Direction facing : Direction.values()) {
             final BlockPos neighborPos = getPos().offset(facing);
-            if (world.isBlockLoaded(neighborPos)) {
+            //~ if (world.isBlockLoaded(neighborPos)) {
+            if (true) { // XXX
                 // If we have a casing, set it as our neighbor.
                 final BlockEntity blockEntity = world.getBlockEntity(neighborPos);
                 if (blockEntity instanceof AbstractComputerBlockEntity) {

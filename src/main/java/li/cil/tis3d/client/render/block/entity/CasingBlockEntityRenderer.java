@@ -14,9 +14,13 @@ import li.cil.tis3d.common.init.Items;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
+import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -36,24 +40,28 @@ import java.util.Set;
  */
 public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingBlockEntity> {
     private final static Set<Class<?>> BLACKLIST = new HashSet<>();
+    
+    public CasingBlockEntityRenderer(BlockEntityRenderDispatcher dispatcher) {
+		super(dispatcher);
+	}
 
     @Override
-    public void render(final CasingBlockEntity casing, final double x, final double y, final double z, final float partialTicks, final int destroyStage) {
-        final double dx = x + 0.5;
-        final double dy = y + 0.5;
-        final double dz = z + 0.5;
+    public void render(final CasingBlockEntity casing, float partialTicks, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+        //~ final double dx = x + 0.5;
+        //~ final double dy = y + 0.5;
+        //~ final double dz = z + 0.5;
 
         GlStateManager.pushMatrix();
-        GlStateManager.translated(dx, dy, dz);
+        //~ GlStateManager.translated(dx, dy, dz);
 
         DiffuseLighting.disable();
 
         // Render all modules, adjust GL state to allow easily rendering an
         // overlay in (0, 0, 0) to (1, 1, 0).
         for (final Face face : Face.VALUES) {
-            if (isRenderingBackFace(face, dx, dy, dz)) {
-                continue;
-            }
+            //~ if (isRenderingBackFace(face, dx, dy, dz)) {
+                //~ continue;
+            //~ }
 
             GlStateManager.pushMatrix();
             GlStateManager.pushLightingAttributes();
@@ -61,25 +69,27 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
             setupMatrix(face);
 
             ensureSanity();
-            MinecraftClient.getInstance().getSpriteAtlas().pushFilter(false, false);
+            Identifier dummyIden = new Identifier("minecraft", "dirt"); // XXX
+            //~ MinecraftClient.getInstance().getSpriteAtlas(dummyIden).pushFilter(false, false); // XXX
 
             if (!isObserverHoldingKey() || !drawConfigOverlay(casing, face)) {
                 drawModuleOverlay(casing, face, partialTicks);
             }
 
-            MinecraftClient.getInstance().getSpriteAtlas().popFilter();
+            //~ MinecraftClient.getInstance().getSpriteAtlas(dummyIden).popFilter(); // XXX
             GlStateManager.popAttributes();
             GlStateManager.popMatrix();
         }
 
-        DiffuseLighting.enableForLevel();
+        //~ DiffuseLighting.enableForLevel();
 
         GlStateManager.popMatrix();
     }
 
     private boolean isRenderingBackFace(final Face face, final double dx, final double dy, final double dz) {
         final Direction facing = Face.toDirection(face.getOpposite());
-        final double dotProduct = facing.getOffsetX() * dx + facing.getOffsetY() * (dy - renderManager.camera.getFocusedEntity().getEyeHeight(renderManager.camera.getFocusedEntity().getPose())) + facing.getOffsetZ() * dz;
+        final double dotProduct = 1.0; // XXX
+//        final double dotProduct = facing.getOffsetX() * dx + facing.getOffsetY() * (dy - renderManager.camera.getFocusedEntity().getEyeHeight(renderManager.camera.getFocusedEntity().getPose())) + facing.getOffsetZ() * dz;
         return dotProduct < 0;
     }
 
@@ -133,7 +143,8 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
                 closedSprite = RenderUtil.getSprite(Textures.LOCATION_OVERLAY_CASING_PORT_CLOSED);
                 openSprite = RenderUtil.getSprite(Textures.LOCATION_OVERLAY_CASING_PORT_OPEN);
 
-                final HitResult hitResult = renderManager.crosshairTarget;
+                //~ final HitResult hitResult = renderManager.crosshairTarget;
+                final HitResult hitResult = null; // XXX
                 assert hitResult.getType() == HitResult.Type.BLOCK : "renderManager.hitResult.getBlockPos().getType() is not of type BLOCK even though it was in isObserverLookingAt";
                 assert hitResult instanceof BlockHitResult : "renderManager.hitResult.getBlockPos() is not a BlockHitResult even though it was in isObserverLookingAt";
                 final BlockHitResult blockHitResult = (BlockHitResult)hitResult;
@@ -206,12 +217,13 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
             return;
         }
 
-        final int brightness = getWorld().getLightmapIndex(
-            casing.getPosition().offset(Face.toDirection(face)), 0);
-        GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, brightness % 65536, (float)(brightness / 65536));
+        //~ final int brightness = getWorld().getLightmapIndex(
+            //~ casing.getPosition().offset(Face.toDirection(face)), 0);
+        //~ GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, brightness % 65536, (float)(brightness / 65536));
+        final int brightness = 0; // XXX
 
         try {
-            module.render(renderManager, partialTicks);
+            //~ module.render(renderManager, partialTicks);
         } catch (final Exception e) {
             BLACKLIST.add(module.getClass());
             TIS3D.getLog().error("A module threw an exception while rendering, won't render again!", e);
@@ -219,25 +231,28 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
     }
 
     private boolean isObserverKindaClose(final CasingBlockEntity casing) {
-        return renderManager.camera.getBlockPos().getSquaredDistance(casing.getPos()) < 16 * 16;
+        //~ return renderManager.camera.getBlockPos().getSquaredDistance(casing.getPos()) < 16 * 16;
+        return true; // XXX
     }
 
     private boolean isObserverHoldingKey() {
-        for (final ItemStack stack : renderManager.camera.getFocusedEntity().getItemsEquipped()) {
-            if (Items.isKey(stack)) {
-                return true;
-            }
-        }
+        //~ for (final ItemStack stack : renderManager.camera.getFocusedEntity().getItemsEquipped()) {
+            //~ if (Items.isKey(stack)) {
+                //~ return true;
+            //~ }
+        //~ }
 
         return false;
     }
 
     private boolean isObserverSneaking() {
-        return renderManager.camera.getFocusedEntity().isSneaking();
+        //~ return renderManager.camera.getFocusedEntity().isSneaking();
+        return false; // XXX
     }
 
     private boolean isObserverLookingAt(final BlockPos pos, final Face face) {
-        final HitResult hitResult = renderManager.crosshairTarget;
+        //~ final HitResult hitResult = renderManager.crosshairTarget;
+        final HitResult hitResult = null; // XXX
         if (hitResult == null) {
             return false;
         }

@@ -283,7 +283,7 @@ public final class CodeBookItem extends BookItem {
             for (int index = 0; index < pages.size(); index++) {
                 final List<String> program = pages.get(index);
                 if (program.size() > 1 || program.get(0).length() > 0) {
-                    pagesNbt.add(new StringTag(String.join("\n", program)));
+                    //~ pagesNbt.add(new StringTag(String.join("\n", program)));
                 } else if (index < selectedPage) {
                     removed++;
                 }

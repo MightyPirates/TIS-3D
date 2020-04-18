@@ -1,12 +1,12 @@
 package li.cil.tis3d.client.manual.segment.render;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.TextureUtil;
+//import com.mojang.blaze3d.platform.TextureUtil;
 import li.cil.tis3d.api.manual.ImageRenderer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.Texture;
+//import net.minecraft.client.texture.Texture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
@@ -24,12 +24,14 @@ public class TextureImageRenderer implements ImageRenderer {
         this.location = location;
 
         final TextureManager manager = MinecraftClient.getInstance().getTextureManager();
-        final Texture image = manager.getTexture(location);
+        //~ final Texture image = manager.getTexture(location);
+        final Object image = null;
         if (image instanceof ImageTexture) {
             this.texture = (ImageTexture)image;
         } else {
-            if (image != null && image.getGlId() != -1) {
-                TextureUtil.releaseTextureId(image.getGlId());
+            //~ if (image != null && image.getGlId() != -1) {
+            if (image != null) { // XXX
+                //~ TextureUtil.releaseTextureId(image.getGlId());
             }
             this.texture = new ImageTexture(location);
             manager.registerTexture(location, texture);
@@ -79,7 +81,7 @@ public class TextureImageRenderer implements ImageRenderer {
             try (final InputStream is = resource.getInputStream()) {
                 final NativeImage bi = NativeImage.read(is);
 
-                TextureUtil.prepareImage(this.getGlId(), bi.getWidth(), bi.getHeight());
+                //~ TextureUtil.prepareImage(this.getGlId(), bi.getWidth(), bi.getHeight());
                 bi.upload(0, 0, 0, false);
 
                 width = bi.getWidth();

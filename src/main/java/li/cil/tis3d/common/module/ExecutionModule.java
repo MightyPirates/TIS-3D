@@ -382,16 +382,16 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
             final String line = machineState.code[lineNumber];
             if (lineNumber == currentLine) {
                 if (state == State.WAIT) {
-                    GlStateManager.color3f(0.66f, 0.66f, 0.66f);
+                    //~ GlStateManager.color3f(0.66f, 0.66f, 0.66f);
                 } else if (state == State.ERR || compileError != null && compileError.getLineNumber() == currentLine) {
-                    GlStateManager.color3f(1f, 0f, 0f);
+                    //~ GlStateManager.color3f(1f, 0f, 0f);
                 }
 
                 drawLine(FontRendererAPI.getCharHeight());
 
-                GlStateManager.color3f(0f, 0f, 0f);
+                //~ GlStateManager.color3f(0f, 0f, 0f);
             } else {
-                GlStateManager.color3f(1f, 1f, 1f);
+                //~ GlStateManager.color3f(1f, 1f, 1f);
             }
 
             FontRendererAPI.drawString(line, 18);

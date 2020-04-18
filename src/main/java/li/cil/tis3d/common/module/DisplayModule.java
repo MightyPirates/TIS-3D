@@ -1,7 +1,7 @@
 package li.cil.tis3d.common.module;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.TextureUtil;
+//import com.mojang.blaze3d.platform.TextureUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -47,7 +47,7 @@ public final class DisplayModule extends AbstractModuleWithRotation {
         public static void tick() {
             while (!leakedGlTextureIds.isEmpty()) {
                 int glTextureId = leakedGlTextureIds.remove();
-                TextureUtil.releaseTextureId(glTextureId);
+                //~ TextureUtil.releaseTextureId(glTextureId);
             }
 
             while (!leakedNativeImages.isEmpty()) {
@@ -268,9 +268,9 @@ public final class DisplayModule extends AbstractModuleWithRotation {
      */
     private int getGlTextureId() {
         if (glTextureId == null) {
-            glTextureId = GlStateManager.genTexture();
+            //~ glTextureId = GlStateManager.genTexture();
             nativeImage = new NativeImage(RESOLUTION, RESOLUTION, false);
-            TextureUtil.prepareImage(glTextureId, RESOLUTION, RESOLUTION);
+            //~ TextureUtil.prepareImage(glTextureId, RESOLUTION, RESOLUTION);
             imageDirty = true;
         }
         if (imageDirty) {
@@ -292,7 +292,7 @@ public final class DisplayModule extends AbstractModuleWithRotation {
      */
     private void deleteTexture() {
         if (glTextureId != null) {
-            TextureUtil.releaseTextureId(glTextureId);
+            //~ TextureUtil.releaseTextureId(glTextureId);
             glTextureId = null;
         }
         if (nativeImage != null) {

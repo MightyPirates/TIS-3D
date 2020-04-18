@@ -263,7 +263,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
 
         final ListTag lines = new ListTag();
         for (final StringBuilder line : display) {
-            lines.add(new StringTag(line.toString()));
+            //~ lines.add(new StringTag(line.toString()));
         }
         nbt.put(TAG_DISPLAY, lines);
 

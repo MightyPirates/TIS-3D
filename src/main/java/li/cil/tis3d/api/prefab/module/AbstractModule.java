@@ -161,10 +161,10 @@ public abstract class AbstractModule implements Module {
     protected boolean isVisible() {
         final World world = getCasing().getCasingWorld();
         final BlockPos neighborPos = getCasing().getPosition().offset(Face.toDirection(getFace()));
-        if (!world.isBlockLoaded(neighborPos)) {
+        //~ if (!world.isBlockLoaded(neighborPos)) {
             // If the neighbor isn't loaded, we can assume we're also not visible on that side.
-            return false;
-        }
+            //~ return false;
+        //~ }
 
         final Chunk chunk = world.getChunk(neighborPos);
         if (chunk instanceof WorldChunk && ((WorldChunk)chunk).isEmpty()) {

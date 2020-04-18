@@ -409,9 +409,9 @@ public final class ControllerBlockEntity extends AbstractComputerBlockEntity imp
     static boolean addNeighbors(final World world, final BlockEntity blockEntity, final Set<BlockEntity> processed, final Queue<BlockEntity> queue) {
         for (final Direction facing : Direction.values()) {
             final BlockPos neighborPos = blockEntity.getPos().offset(facing);
-            if (!world.isBlockLoaded(neighborPos)) {
-                return false;
-            }
+            //~ if (!world.isBlockLoaded(neighborPos)) {
+                //~ return false;
+            //~ }
 
             final BlockEntity neighborBlockEntity = world.getBlockEntity(neighborPos);
             if (neighborBlockEntity == null) {

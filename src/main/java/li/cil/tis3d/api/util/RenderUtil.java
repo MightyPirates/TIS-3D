@@ -34,7 +34,9 @@ public final class RenderUtil {
      */
     @Environment(EnvType.CLIENT)
     public static Sprite getSprite(final Identifier location) {
-        return MinecraftClient.getInstance().getSpriteAtlas().getSprite(location.toString());
+		Identifier dummyId = new Identifier("minecraft", "dirt"); // XXX
+        //~ return MinecraftClient.getInstance().getSpriteAtlas(dummyId).getSprite(location.toString());
+        return null; // XXX
     }
 
     /**
@@ -155,7 +157,7 @@ public final class RenderUtil {
      */
     @Environment(EnvType.CLIENT)
     public static void ignoreLighting() {
-        GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, 240, 240);
+        //~ GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, 240, 240);
     }
 
     // --------------------------------------------------------------------- //
