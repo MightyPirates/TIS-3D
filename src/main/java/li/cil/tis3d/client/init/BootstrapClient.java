@@ -50,8 +50,8 @@ public final class BootstrapClient implements ClientModInitializer {
         ClientPickBlockGatherCallback.EVENT.register(BootstrapClient::handlePickBlock);
 
         // Set up tile entity renderer for dynamic module content.
-        //~ BlockEntityRendererRegistry.INSTANCE.register(CasingBlockEntity.class, CasingBlockEntityRenderer::new);
-        //~ BlockEntityRendererRegistry.INSTANCE.register(ControllerBlockEntity.class, ControllerBlockEntityRenderer::new);
+        BlockEntityRendererRegistry.INSTANCE.register(CasingBlockEntity.TYPE, CasingBlockEntityRenderer::new);
+        BlockEntityRendererRegistry.INSTANCE.register(ControllerBlockEntity.TYPE, ControllerBlockEntityRenderer::new);
 
         // Add default manual providers for client side stuff.
         ManualAPI.addProvider("", new TextureImageProvider());
