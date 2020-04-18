@@ -9,6 +9,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -33,7 +34,7 @@ public final class ControllerBlock extends Block implements BlockEntityProvider 
 
     @SuppressWarnings("deprecation")
     @Override
-    public boolean onUse(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockHitResult blockHitResult) {
+    public ActionResult onUse(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockHitResult blockHitResult) {
         final ItemStack heldItem = player.getStackInHand(hand);
         if (!heldItem.isEmpty()) {
             final Item item = heldItem.getItem();
@@ -50,7 +51,7 @@ public final class ControllerBlock extends Block implements BlockEntityProvider 
                         player.dropItem(bookManual, false, false);
                     }
                 }
-                return true;
+                return ActionResult.CONSUME; // XXX
             }
         }
 
@@ -62,7 +63,7 @@ public final class ControllerBlock extends Block implements BlockEntityProvider 
                 controller.forceStep();
             }
 
-            return true;
+            return ActionResult.CONSUME;
         }
 
         return super.onUse(state, world, pos, player, hand, blockHitResult);

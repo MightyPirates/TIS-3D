@@ -86,7 +86,7 @@ public final class Network {
 
     public void sendRedstoneEffect(final World world, final double x, final double y, final double z) {
         final BlockPos position = new BlockPos(x, y, z);
-        if (!world.isBlockLoaded(position)) {
+        //~ if (!world.isBlockLoaded(position)) {
             final BlockState state = world.getBlockState(position);
             // Note: in 1.12 and earlier this was what is now
             //     Block.isShapeFullCube(state.getCollisionShape(world, position))
@@ -95,7 +95,7 @@ public final class Network {
                 // Skip particle emission when inside a block where they aren't visible anyway.
                 return;
             }
-        }
+        //~ }
 
         queueParticleEffect(world, (float)x, (float)y, (float)z);
     }

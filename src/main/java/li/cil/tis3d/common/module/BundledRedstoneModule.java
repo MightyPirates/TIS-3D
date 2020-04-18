@@ -145,7 +145,7 @@ public final class BundledRedstoneModule extends AbstractModuleWithRotation impl
         // Draw active channel indicator.
         GlStateManager.disableTexture();
         final int color = ColorUtils.getColorByIndex(channel);
-        GlStateManager.color3f(ColorUtils.getRed(color), ColorUtils.getGreen(color), ColorUtils.getBlue(color));
+        //~ GlStateManager.color3f(ColorUtils.getRed(color), ColorUtils.getGreen(color), ColorUtils.getBlue(color));
         RenderUtil.drawUntexturedQuad(7 / 16f, 7 / 16f, 2 / 16f, 2 / 16f);
         GlStateManager.enableTexture();
     }
@@ -341,7 +341,7 @@ public final class BundledRedstoneModule extends AbstractModuleWithRotation impl
         for (int channel = 0; channel < values.length; channel++) {
             if (values[channel] > 0) {
                 final int color = ColorUtils.getColorByIndex(channel);
-                GlStateManager.color3f(ColorUtils.getRed(color), ColorUtils.getGreen(color), ColorUtils.getBlue(color));
+                //~ GlStateManager.color3f(ColorUtils.getRed(color), ColorUtils.getGreen(color), ColorUtils.getBlue(color));
 
                 final float u0 = u + (channel & 1) * V_STEP;
                 final float v0 = SHARED_V0 + (channel >> 1) * V_STEP;

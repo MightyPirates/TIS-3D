@@ -36,9 +36,9 @@ public final class GameRegistryPathProvider implements PathProvider {
 
     @Override
     public String pathFor(final World world, final BlockPos pos) {
-        if (!world.isBlockLoaded(pos)) {
-            return null;
-        }
+        //~ if (!world.isBlockLoaded(pos)) {
+            //~ return null;
+        //~ }
         final Block block = world.getBlockState(pos).getBlock();
         final String modId = Registry.BLOCK.getId(block).getNamespace();
         if (API.MOD_ID.equals(modId)) {

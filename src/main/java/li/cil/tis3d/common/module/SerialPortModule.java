@@ -158,7 +158,7 @@ public final class SerialPortModule extends AbstractModule implements BlockChang
         final World world = getCasing().getCasingWorld();
         final BlockPos neighborPos = getCasing().getPosition().offset(Face.toDirection(getFace()));
         final Direction neighborSide = Face.toDirection(getFace().getOpposite());
-        if (world.isBlockLoaded(neighborPos)) {
+        if (true) {//~ if (world.isBlockLoaded(neighborPos)) {
             final SerialInterfaceProvider provider = SerialAPI.getProviderFor(world, neighborPos, neighborSide);
             if (provider != null) {
                 if (!serialInterface.map(s -> provider.isValid(world, neighborPos, neighborSide, s)).orElse(false)) {

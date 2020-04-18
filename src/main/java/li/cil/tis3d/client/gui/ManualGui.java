@@ -72,7 +72,8 @@ public final class ManualGui extends Screen {
     public void init() {
         super.init();
 
-        final ScaledResolution screenSize = new ScaledResolution(minecraft.window.getScaledWidth(), minecraft.window.getScaledHeight());
+        //~ final ScaledResolution screenSize = new ScaledResolution(minecraft.window.getScaledWidth(), minecraft.window.getScaledHeight());
+        final ScaledResolution screenSize = new ScaledResolution(640, 480); // XXX
         final ScaledResolution guiSize = new ScaledResolution(WINDOW_WIDTH, WINDOW_HEIGHT);
         final int midX = screenSize.scaledWidth / 2;
         final int midY = screenSize.scaledHeight / 2;
@@ -119,7 +120,7 @@ public final class ManualGui extends Screen {
             final ManualAPIImpl.Tab tab = ManualAPIImpl.getTabs().get(i);
             final ImageButton button = (ImageButton)buttons.get(i);
             GlStateManager.pushMatrix();
-            GlStateManager.translatef(button.x + 30, (float)(button.y + 4 - TAB_OVERLAP / 2), (int)blitOffset);
+            //~ GlStateManager.translatef(button.x + 30, (float)(button.y + 4 - TAB_OVERLAP / 2), (int)blitOffset);
             tab.renderer.render();
             GlStateManager.popMatrix();
         }
@@ -327,10 +328,10 @@ public final class ManualGui extends Screen {
                 final Tessellator t = Tessellator.getInstance();
                 final BufferBuilder b = t.getBuffer();
                 b.begin(GL11.GL_QUADS, VertexFormats.POSITION_TEXTURE);
-                b.vertex(x0, y1, blitOffset).texture(u0, v1).next();
-                b.vertex(x1, y1, blitOffset).texture(u1, v1).next();
-                b.vertex(x1, y0, blitOffset).texture(u1, v0).next();
-                b.vertex(x0, y0, blitOffset).texture(u0, v0).next();
+                //~ b.vertex(x0, y1, blitOffset).texture(u0, v1).next();
+                //~ b.vertex(x1, y1, blitOffset).texture(u1, v1).next();
+                //~ b.vertex(x1, y0, blitOffset).texture(u1, v0).next();
+                //~ b.vertex(x0, y0, blitOffset).texture(u0, v0).next();
                 t.draw();
             }
         }

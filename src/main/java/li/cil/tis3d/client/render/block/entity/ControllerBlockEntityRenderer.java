@@ -2,19 +2,27 @@ package li.cil.tis3d.client.render.block.entity;
 
 import li.cil.tis3d.common.block.entity.ControllerBlockEntity;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
+import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 
 public final class ControllerBlockEntityRenderer extends BlockEntityRenderer<ControllerBlockEntity> {
+	public ControllerBlockEntityRenderer(BlockEntityRenderDispatcher dispatcher) {
+		super(dispatcher);
+	}
+	
     @Override
-    public void render(final ControllerBlockEntity controller, final double x, final double y, final double z, final float partialTicks, final int destroyStage) {
+    public void render(final ControllerBlockEntity controller, float partialTicks, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         final ControllerBlockEntity.ControllerState state = controller.getState();
         if (!state.isError) {
             return;
         }
 
-        final HitResult hitResult = renderManager.crosshairTarget;
+        //~ final HitResult hitResult = renderManager.crosshairTarget;
+        final HitResult hitResult = null; // XXX
         if (hitResult == null) {
             return;
         }
@@ -30,8 +38,8 @@ public final class ControllerBlockEntityRenderer extends BlockEntityRenderer<Con
             return;
         }
 
-        disableLightmap(true);
-        renderName(controller, I18n.translate(state.translateKey), x, y, z, 12);
-        disableLightmap(false);
+        //~ disableLightmap(true);
+        //~ renderName(controller, I18n.translate(state.translateKey), x, y, z, 12);
+        //~ disableLightmap(false);
     }
 }

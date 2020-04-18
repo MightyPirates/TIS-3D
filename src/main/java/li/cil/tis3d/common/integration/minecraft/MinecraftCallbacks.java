@@ -15,9 +15,9 @@ final class MinecraftCallbacks {
         final Direction facing = Face.toDirection(face);
         final World world = module.getCasing().getCasingWorld();
         final BlockPos inputPos = module.getCasing().getPosition().offset(facing);
-        if (!world.isBlockLoaded(inputPos)) {
-            return 0;
-        }
+        //~ if (!world.isBlockLoaded(inputPos)) {
+            //~ return 0;
+        //~ }
 
         final int input = world.getEmittedRedstonePower(inputPos, facing);
         if (input >= 15) {

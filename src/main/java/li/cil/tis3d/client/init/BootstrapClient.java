@@ -19,7 +19,7 @@ import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.module.DisplayModule;
 import li.cil.tis3d.common.network.Network;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.render.BlockEntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.fabricmc.fabric.api.event.client.ClientTickCallback;
 import net.fabricmc.fabric.api.event.client.player.ClientPickBlockGatherCallback;
@@ -50,8 +50,8 @@ public final class BootstrapClient implements ClientModInitializer {
         ClientPickBlockGatherCallback.EVENT.register(BootstrapClient::handlePickBlock);
 
         // Set up tile entity renderer for dynamic module content.
-        BlockEntityRendererRegistry.INSTANCE.register(CasingBlockEntity.class, new CasingBlockEntityRenderer());
-        BlockEntityRendererRegistry.INSTANCE.register(ControllerBlockEntity.class, new ControllerBlockEntityRenderer());
+        //~ BlockEntityRendererRegistry.INSTANCE.register(CasingBlockEntity.class, CasingBlockEntityRenderer::new);
+        //~ BlockEntityRendererRegistry.INSTANCE.register(ControllerBlockEntity.class, ControllerBlockEntityRenderer::new);
 
         // Add default manual providers for client side stuff.
         ManualAPI.addProvider("", new TextureImageProvider());

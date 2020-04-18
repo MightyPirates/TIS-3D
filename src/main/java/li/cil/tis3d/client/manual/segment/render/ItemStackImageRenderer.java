@@ -38,8 +38,8 @@ public final class ItemStackImageRenderer implements ImageRenderer {
         GlStateManager.scalef(getWidth() / 16f, getHeight() / 16f, getWidth() / 16f);
         GlStateManager.enableRescaleNormal();
         RenderUtil.ignoreLighting();
-        DiffuseLighting.enableForItems();
+        DiffuseLighting.enableGuiDepthLighting();
         mc.getItemRenderer().renderGuiItemIcon(stack, 0, 0);
-        DiffuseLighting.disable();
+        DiffuseLighting.disableGuiDepthLighting();
     }
 }
