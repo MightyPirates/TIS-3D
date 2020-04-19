@@ -128,8 +128,7 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
     @SuppressWarnings("deprecation")
     public ActionResult onUse(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockHitResult blockHitResult) {
         final Vec3d hit = blockHitResult.getPos().subtract(blockHitResult.getBlockPos().getX(), blockHitResult.getBlockPos().getY(), blockHitResult.getBlockPos().getZ());
-        //~ if (world.isBlockLoaded(pos)) {
-        if (true) { // XXX
+        if (WorldUtils.isBlockLoaded(world, pos)) {
             final BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof CasingBlockEntity) {
                 final CasingBlockEntity casing = (CasingBlockEntity)blockEntity;

@@ -6,6 +6,7 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.common.machine.PipeHost;
 import li.cil.tis3d.common.machine.PipeImpl;
 import li.cil.tis3d.util.NBTIds;
+import li.cil.tis3d.util.WorldUtils;
 import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -178,8 +179,7 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
         // our tile entity.
         for (final Direction facing : Direction.values()) {
             final BlockPos neighborPos = getPos().offset(facing);
-            //~ if (world.isBlockLoaded(neighborPos)) {
-            if (true) { // XXX
+            if (WorldUtils.isBlockLoaded(world, neighborPos)) {
                 // If we have a casing, set it as our neighbor.
                 final BlockEntity blockEntity = world.getBlockEntity(neighborPos);
                 if (blockEntity instanceof AbstractComputerBlockEntity) {
