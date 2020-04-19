@@ -11,6 +11,7 @@ import li.cil.tis3d.api.serial.SerialInterface;
 import li.cil.tis3d.api.serial.SerialInterfaceProvider;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.init.Textures;
+import li.cil.tis3d.util.WorldUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
@@ -158,7 +159,7 @@ public final class SerialPortModule extends AbstractModule implements BlockChang
         final World world = getCasing().getCasingWorld();
         final BlockPos neighborPos = getCasing().getPosition().offset(Face.toDirection(getFace()));
         final Direction neighborSide = Face.toDirection(getFace().getOpposite());
-        if (true) {//~ if (world.isBlockLoaded(neighborPos)) {
+        if (WorldUtils.isBlockLoaded(world, neighborPos)) {
             final SerialInterfaceProvider provider = SerialAPI.getProviderFor(world, neighborPos, neighborSide);
             if (provider != null) {
                 if (!serialInterface.map(s -> provider.isValid(world, neighborPos, neighborSide, s)).orElse(false)) {

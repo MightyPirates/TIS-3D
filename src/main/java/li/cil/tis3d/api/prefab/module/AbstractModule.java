@@ -7,6 +7,7 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.util.TransformUtil;
+import li.cil.tis3d.util.WorldUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -161,10 +162,10 @@ public abstract class AbstractModule implements Module {
     protected boolean isVisible() {
         final World world = getCasing().getCasingWorld();
         final BlockPos neighborPos = getCasing().getPosition().offset(Face.toDirection(getFace()));
-        //~ if (!world.isBlockLoaded(neighborPos)) {
+        if (!WorldUtils.isBlockLoaded(world, neighborPos)) {
             // If the neighbor isn't loaded, we can assume we're also not visible on that side.
-            //~ return false;
-        //~ }
+            return false;
+        }
 
         final Chunk chunk = world.getChunk(neighborPos);
         if (chunk instanceof WorldChunk && ((WorldChunk)chunk).isEmpty()) {

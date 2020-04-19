@@ -2,6 +2,7 @@ package li.cil.tis3d.client.manual.provider;
 
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.manual.PathProvider;
+import li.cil.tis3d.util.WorldUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
@@ -36,9 +37,9 @@ public final class GameRegistryPathProvider implements PathProvider {
 
     @Override
     public String pathFor(final World world, final BlockPos pos) {
-        //~ if (!world.isBlockLoaded(pos)) {
-            //~ return null;
-        //~ }
+        if (!WorldUtils.isBlockLoaded(world, pos)) {
+            return null;
+        }
         final Block block = world.getBlockState(pos).getBlock();
         final String modId = Registry.BLOCK.getId(block).getNamespace();
         if (API.MOD_ID.equals(modId)) {

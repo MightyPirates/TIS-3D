@@ -7,6 +7,7 @@ import li.cil.tis3d.common.init.Entities;
 import li.cil.tis3d.common.module.InfraredModule;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.util.Raytracing;
+import li.cil.tis3d.util.WorldUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
@@ -370,9 +371,9 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
         if (pos == null) {
             return;
         }
-        //~ if (!world.isBlockLoaded(pos)) {
-            //~ return;
-        //~ }
+        if (!WorldUtils.isBlockLoaded(world, pos)) {
+            return;
+        }
         final Block block = world.getBlockState(pos).getBlock();
 
         // Traveling through a portal?
