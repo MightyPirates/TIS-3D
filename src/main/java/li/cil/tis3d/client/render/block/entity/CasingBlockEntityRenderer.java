@@ -13,9 +13,10 @@ import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.init.Items;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
@@ -40,7 +41,7 @@ import java.util.Set;
  */
 public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingBlockEntity> {
     private final static Set<Class<?>> BLACKLIST = new HashSet<>();
-    
+
     public CasingBlockEntityRenderer(BlockEntityRenderDispatcher dispatcher) {
 		super(dispatcher);
 	}
@@ -70,14 +71,11 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
             setupMatrix(face);
 
             ensureSanity();
-            Identifier dummyIden = new Identifier("minecraft", "dirt"); // XXX
-            //~ MinecraftClient.getInstance().getSpriteAtlas(dummyIden).pushFilter(false, false); // XXX
 
             if (!isObserverHoldingKey() || !drawConfigOverlay(casing, face)) {
                 drawModuleOverlay(casing, face, partialTicks);
             }
 
-            //~ MinecraftClient.getInstance().getSpriteAtlas(dummyIden).popFilter(); // XXX
             GlStateManager.popAttributes();
             GlStateManager.popMatrix();
         }
