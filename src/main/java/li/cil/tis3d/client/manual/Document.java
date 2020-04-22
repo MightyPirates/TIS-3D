@@ -7,6 +7,7 @@ import li.cil.tis3d.api.manual.ImageRenderer;
 import li.cil.tis3d.client.manual.segment.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.util.Window;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -112,6 +113,7 @@ public final class Document {
      */
     public static Optional<InteractiveSegment> render(final Segment document, final int x, final int y, final int maxWidth, final int maxHeight, final int yOffset, final TextRenderer renderer, final int mouseX, final int mouseY) {
         final MinecraftClient mc = MinecraftClient.getInstance();
+        final Window window = mc.getWindow();
 
         GlStateManager.pushLightingAttributes();
 
@@ -131,16 +133,16 @@ public final class Document {
 
         GlStateManager.pushMatrix();
         GlStateManager.translatef(0, 0, 500);
-        //~ GL11.glBegin(GL11.GL_QUADS);
-        //~ GL11.glVertex2f(0, y);
-        //~ GL11.glVertex2f(mc.window.getFramebufferWidth(), y);
-        //~ GL11.glVertex2f(mc.window.getFramebufferWidth(), 0);
-        //~ GL11.glVertex2f(0, 0);
-        //~ GL11.glVertex2f(0, mc.window.getFramebufferHeight());
-        //~ GL11.glVertex2f(mc.window.getFramebufferWidth(), mc.window.getFramebufferHeight());
-        //~ GL11.glVertex2f(mc.window.getFramebufferWidth(), y + maxHeight);
-        //~ GL11.glVertex2f(0, y + maxHeight);
-        //~ GL11.glEnd();
+        GL11.glBegin(GL11.GL_QUADS);
+        GL11.glVertex2f(0, y);
+        GL11.glVertex2f(window.getFramebufferWidth(), y);
+        GL11.glVertex2f(window.getFramebufferWidth(), 0);
+        GL11.glVertex2f(0, 0);
+        GL11.glVertex2f(0, window.getFramebufferHeight());
+        GL11.glVertex2f(window.getFramebufferWidth(), window.getFramebufferHeight());
+        GL11.glVertex2f(window.getFramebufferWidth(), y + maxHeight);
+        GL11.glVertex2f(0, y + maxHeight);
+        GL11.glEnd();
         GlStateManager.popMatrix();
         GlStateManager.colorMask(true, true, true, true);
 
