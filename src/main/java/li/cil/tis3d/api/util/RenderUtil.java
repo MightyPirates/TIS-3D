@@ -1,6 +1,7 @@
 package li.cil.tis3d.api.util;
 
 import com.mojang.blaze3d.platform.GLX;
+import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -8,6 +9,7 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.util.Identifier;
 import org.lwjgl.opengl.GL11;
 
@@ -34,9 +36,8 @@ public final class RenderUtil {
      */
     @Environment(EnvType.CLIENT)
     public static Sprite getSprite(final Identifier location) {
-		Identifier dummyId = new Identifier("minecraft", "dirt"); // XXX
-        //~ return MinecraftClient.getInstance().getSpriteAtlas(dummyId).getSprite(location.toString());
-        return null; // XXX
+        final MinecraftClient mc = MinecraftClient.getInstance();
+        return mc.getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(location);
     }
 
     /**
