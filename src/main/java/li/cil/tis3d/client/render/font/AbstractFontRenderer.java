@@ -54,6 +54,7 @@ public abstract class AbstractFontRenderer implements FontRenderer {
             tx += getCharWidth() + getGapU();
         }
 
+        GlStateManager.enableBlend();
         tessellator.draw();
 
         GlStateManager.depthMask(true);
