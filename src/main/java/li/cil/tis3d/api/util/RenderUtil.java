@@ -1,6 +1,6 @@
 package li.cil.tis3d.api.util;
 
-import com.mojang.blaze3d.platform.GLX;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -12,6 +12,7 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.util.Identifier;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
 
 /**
  * Utility class for rendering related operations.
@@ -158,7 +159,7 @@ public final class RenderUtil {
      */
     @Environment(EnvType.CLIENT)
     public static void ignoreLighting() {
-        //~ GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, 240, 240);
+        RenderSystem.glMultiTexCoord2f(GL13.GL_TEXTURE1, 240, 240);
     }
 
     // --------------------------------------------------------------------- //
