@@ -19,6 +19,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
+//~ import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
@@ -40,13 +41,20 @@ import java.util.Set;
  */
 public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingBlockEntity> {
     private final static Set<Class<?>> BLACKLIST = new HashSet<>();
-    
+    //~ private final Vector4f translationExtractor = new Vector4f();
+
     public CasingBlockEntityRenderer(BlockEntityRenderDispatcher dispatcher) {
 		super(dispatcher);
 	}
 
     @Override
     public void render(final CasingBlockEntity casing, float partialTicks, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+        //~ translationExtractor.set(0, 0, 0, 1);
+        //~ translationExtractor.transform(matrices.peek().getModel());
+        //~ final double dx = -(translationExtractor.getX());
+        //~ final double dy = -(translationExtractor.getY()-2);
+        //~ final double dz = -(translationExtractor.getZ());
+
         //~ final double dx = x + 0.5;
         //~ final double dy = y + 0.5;
         //~ final double dz = z + 0.5;
@@ -59,6 +67,7 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
         // Render all modules, adjust GL state to allow easily rendering an
         // overlay in (0, 0, 0) to (1, 1, 0).
         for (final Face face : Face.VALUES) {
+            // Fixme: This already wasn't working in 1.14, let's leave it for later
             //~ if (isRenderingBackFace(face, dx, dy, dz)) {
                 //~ continue;
             //~ }
