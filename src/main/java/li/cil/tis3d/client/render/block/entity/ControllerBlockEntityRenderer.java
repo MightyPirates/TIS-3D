@@ -10,10 +10,10 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 
 public final class ControllerBlockEntityRenderer extends BlockEntityRenderer<ControllerBlockEntity> {
-	public ControllerBlockEntityRenderer(BlockEntityRenderDispatcher dispatcher) {
-		super(dispatcher);
-	}
-	
+    public ControllerBlockEntityRenderer(BlockEntityRenderDispatcher dispatcher) {
+        super(dispatcher);
+    }
+
     @Override
     public void render(final ControllerBlockEntity controller, float partialTicks, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         final ControllerBlockEntity.ControllerState state = controller.getState();
