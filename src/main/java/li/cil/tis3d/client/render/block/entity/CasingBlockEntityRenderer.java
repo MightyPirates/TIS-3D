@@ -85,7 +85,7 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
             final BakedModelManager bakedModelManager = MinecraftClient.getInstance().getBakedModelManager();
             bakedModelManager.method_24153(SpriteAtlasTexture.BLOCK_ATLAS_TEX).setFilter(false, false);
 
-            if (!isObserverHoldingKey() /*~|| !drawConfigOverlay(casing, face)*/) {
+            if (!isObserverHoldingKey() || !drawConfigOverlay(casing, face, matrices, vertexConsumers, overlay)) {
                 // XXX light is not the correct lightmap value
                 drawModuleOverlay(casing, face, partialTicks, matrices, vertexConsumers, light, overlay);
             }
@@ -142,11 +142,15 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
         matrices.scale(-1, -1, 1);
     }
 
-    private boolean drawConfigOverlay(final CasingBlockEntity casing, final Face face) {
+    private boolean drawConfigOverlay(final CasingBlockEntity casing, final Face face,
+                                      final MatrixStack matrices, final VertexConsumerProvider vcp,
+                                      final int overlay) {
         // Only bother rendering the overlay if the player is nearby.
         if (!isObserverKindaClose(casing)) {
             return false;
         }
+
+        final VertexConsumer vc = vcp.getBuffer(TexturedRenderLayers.getEntityCutout());
 
         if (isObserverSneaking() && !casing.isLocked()) {
             final Sprite closedSprite;
@@ -173,23 +177,24 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
                 lookingAtPort = null;
             }
 
-            GlStateManager.pushMatrix();
+            matrices.push();
             for (final Port port : Port.CLOCKWISE) {
                 final boolean isClosed = casing.isReceivingPipeLocked(face, port);
                 final Sprite sprite = isClosed ? closedSprite : openSprite;
                 if (sprite != null) {
-                    RenderUtil.drawQuad(sprite);
+                    RenderUtil.drawQuad(sprite, matrices.peek(), vc, RenderUtil.maxLight, overlay);
                 }
 
                 if (port == lookingAtPort) {
-                    RenderUtil.drawQuad(RenderUtil.getSprite(Textures.LOCATION_OVERLAY_CASING_PORT_HIGHLIGHT));
+                    final Sprite highlightSprite = RenderUtil.getSprite(Textures.LOCATION_OVERLAY_CASING_PORT_HIGHLIGHT);
+                    RenderUtil.drawQuad(highlightSprite, matrices.peek(), vc, RenderUtil.maxLight, overlay);
                 }
 
-                GlStateManager.translatef(0.5f, 0.5f, 0.5f);
-                GlStateManager.rotatef(90, 0, 0, 1);
-                GlStateManager.translatef(-0.5f, -0.5f, -0.5f);
+                matrices.translate(0.5f, 0.5f, 0.5f);
+                matrices.multiply(new Quaternion(Vector3f.POSITIVE_Z, 90, true));
+                matrices.translate(-0.5f, -0.5f, -0.5f);
             }
-            GlStateManager.popMatrix();
+            matrices.pop();
 
             return isLookingAt;
         } else {
@@ -200,7 +205,7 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
                 sprite = RenderUtil.getSprite(Textures.LOCATION_OVERLAY_CASING_UNLOCKED);
             }
 
-            RenderUtil.drawQuad(sprite);
+            RenderUtil.drawQuad(sprite, matrices.peek(), vc, RenderUtil.maxLight, overlay);
         }
 
         return true;
