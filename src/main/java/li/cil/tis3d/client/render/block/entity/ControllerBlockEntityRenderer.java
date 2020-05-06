@@ -1,5 +1,6 @@
 package li.cil.tis3d.client.render.block.entity;
 
+import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.common.block.entity.ControllerBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -40,8 +41,8 @@ public final class ControllerBlockEntityRenderer extends BlockEntityRenderer<Con
         final int bg = MinecraftClient.getInstance().options.getTextBackgroundColor(0.25f);
         final TextRenderer textRenderer = dispatcher.getTextRenderer();
         float x = -textRenderer.getStringWidth(str) / 2.0f;
-        textRenderer.draw(str, x, 0, 0x20FFFFFF, false, modMat, vcp, true, bg, 0xF000F0);
-        textRenderer.draw(str, x, 0, -1, false, modMat, vcp, false, 0, 0xF000F0);
+        textRenderer.draw(str, x, 0, 0x20FFFFFF, false, modMat, vcp, true, bg, RenderUtil.maxLight);
+        textRenderer.draw(str, x, 0, -1, false, modMat, vcp, false, 0, RenderUtil.maxLight);
 
         matrices.pop();
     }

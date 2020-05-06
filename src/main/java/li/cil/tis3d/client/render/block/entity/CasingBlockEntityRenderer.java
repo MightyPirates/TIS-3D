@@ -203,8 +203,7 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
         for (final Port port : Port.CLOCKWISE) {
             final boolean isClosed = casing.isReceivingPipeLocked(face, port);
             if (isClosed) {
-                // XXX I don't think this works yet
-                RenderUtil.drawQuad(closedSprite, matrices.peek(), vc, light, overlay);
+                RenderUtil.drawQuad(closedSprite, matrices.peek(), vc, RenderUtil.maxLight, overlay);
             }
 
             matrices.translate(0.5f, 0.5f, 0.5f);
