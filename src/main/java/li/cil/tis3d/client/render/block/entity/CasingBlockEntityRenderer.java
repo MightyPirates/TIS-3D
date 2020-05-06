@@ -1,7 +1,5 @@
 package li.cil.tis3d.client.render.block.entity;
 
-import com.mojang.blaze3d.platform.GLX;
-import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
@@ -12,7 +10,6 @@ import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.init.Items;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
@@ -22,7 +19,6 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.item.ItemStack;
@@ -33,8 +29,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -49,24 +43,15 @@ import java.util.Set;
 public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingBlockEntity> {
     private final static Set<Class<?>> BLACKLIST = new HashSet<>();
 
-    //~ private final Vector4f translationExtractor = new Vector4f();
-
     public CasingBlockEntityRenderer(BlockEntityRenderDispatcher dispatcher) {
 		super(dispatcher);
 	}
 
     @Override
-    public void render(final CasingBlockEntity casing, float partialTicks, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        //~ translationExtractor.set(0, 0, 0, 1);
-        //~ translationExtractor.transform(matrices.peek().getModel());
-        //~ final double dx = -(translationExtractor.getX());
-        //~ final double dy = -(translationExtractor.getY()-2);
-        //~ final double dz = -(translationExtractor.getZ());
-
+    public void render(final CasingBlockEntity casing, float partialTicks, final MatrixStack matrices,
+                       final VertexConsumerProvider vertexConsumers, final int light, final int overlay) {
         matrices.push();
         matrices.translate(0.5, 0.5, 0.5);
-
-        DiffuseLighting.disable();
 
         // Render all modules, adjust GL state to allow easily rendering an
         // overlay in (0, 0, 0) to (1, 1, 0).
@@ -77,8 +62,6 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
             //~ }
 
             matrices.push();
-            GlStateManager.pushLightingAttributes();
-
             setupMatrix(face, matrices);
 
             // No more filter stack, dunno what to do about that
@@ -90,7 +73,6 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
                 drawModuleOverlay(casing, face, partialTicks, matrices, vertexConsumers, light, overlay);
             }
 
-            GlStateManager.popAttributes();
             matrices.pop();
         }
 
