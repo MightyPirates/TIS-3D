@@ -6,6 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexFormats;
@@ -23,6 +24,8 @@ import org.lwjgl.opengl.GL13;
  * Utility class for rendering related operations.
  */
 public final class RenderUtil {
+    public static final int maxLight = LightmapTextureManager.pack(0xF, 0xF);
+
     /**
      * Bind the texture at the specified location to be used for quad rendering.
      *
