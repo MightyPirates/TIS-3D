@@ -11,7 +11,9 @@ import li.cil.tis3d.util.WorldUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -239,6 +241,13 @@ public abstract class AbstractModule implements Module {
     @Environment(EnvType.CLIENT)
     @Override
     public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
+    }
+
+    @Environment(EnvType.CLIENT)
+    @Override
+    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks,
+                       final MatrixStack matrices, final VertexConsumerProvider vcp,
+                       final int light, final int overlay) {
     }
 
     @Override

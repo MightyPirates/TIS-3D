@@ -7,9 +7,14 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.util.math.Matrix3f;
+import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Identifier;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
@@ -150,6 +155,47 @@ public final class RenderUtil {
     @Environment(EnvType.CLIENT)
     public static void drawQuad(final Sprite sprite) {
         drawQuad(sprite, 0, 0, 1, 1);
+    }
+
+    @Environment(EnvType.CLIENT)
+    public static void drawQuad(final MatrixStack.Entry matrices, final VertexConsumer vc,
+                                final float x, final float y, final float w, final float h,
+                                final float u0, final float v0, final float u1, final float v1,
+                                final int l, final int ol) {
+
+        final Matrix4f modMat = matrices.getModel();
+        final Matrix3f normMat = matrices.getNormal();
+        final Vector3f normDir = new Vector3f(0, 0, -1);
+        final int c = 0xFF;
+
+        vc.vertex(modMat, x, y + h, 0).color(c, c, c, c).texture(u0, v1)
+          .overlay(ol).light(l)
+          .normal(normMat, normDir.getX(), normDir.getY(), normDir.getZ())
+          .next();
+
+        vc.vertex(modMat, x + w, y + h, 0).color(c, c, c, c).texture(u1, v1)
+          .overlay(ol).light(l)
+          .normal(normMat, normDir.getX(), normDir.getY(), normDir.getZ())
+          .next();
+
+        vc.vertex(modMat, x + w, y, 0).color(c, c, c, c).texture(u1, v0)
+          .overlay(ol).light(l)
+          .normal(normMat, normDir.getX(), normDir.getY(), normDir.getZ())
+          .next();
+
+        vc.vertex(modMat, x, y, 0).color(c, c, c, c).texture(u0, v0)
+          .overlay(ol).light(l)
+          .normal(normMat, normDir.getX(), normDir.getY(), normDir.getZ())
+          .next();
+    }
+
+    @Environment(EnvType.CLIENT)
+    public static void drawQuad(final Sprite sprite, final MatrixStack.Entry matrices,
+                                final VertexConsumer vc, final int light, final int overlay) {
+        drawQuad(matrices, vc, 0, 0, 1, 1,
+                 sprite.getFrameU(0 * 16), sprite.getFrameV(0 * 16),
+                 sprite.getFrameU(1 * 16), sprite.getFrameV(1 * 16),
+                 light, overlay);
     }
 
     /**
