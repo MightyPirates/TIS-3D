@@ -1,7 +1,5 @@
 package li.cil.tis3d.common.module;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-//import com.mojang.blaze3d.platform.TextureUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -17,9 +15,16 @@ import li.cil.tis3d.util.EnumUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.client.texture.TextureManager;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Identifier;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -66,8 +71,10 @@ public final class DisplayModule extends AbstractModuleWithRotation {
      * current state to newly connected/coming closer clients.
      */
     private final int[] image = new int[RESOLUTION * RESOLUTION];
-    private Object nativeImage;
     private boolean imageDirty = false;
+
+    private NativeImageBackedTexture backingTexture;
+    private Identifier backingTextureId;
 
     /**
      * The current input state, i.e. what value we're currently reading.
@@ -113,11 +120,6 @@ public final class DisplayModule extends AbstractModuleWithRotation {
     // Data packet types.
     private static final byte DATA_TYPE_CLEAR = 0;
 
-    /**
-     * The ID of the uploaded texture on the GPU (client only).
-     */
-    private Integer glTextureId = null;
-
     // --------------------------------------------------------------------- //
 
     public DisplayModule(final Casing casing, final Face face) {
@@ -150,7 +152,7 @@ public final class DisplayModule extends AbstractModuleWithRotation {
 
     @Override
     public void finalize() {
-        LeakDetector.add(glTextureId, nativeImage);
+        //~ LeakDetector.add(glTextureId, nativeImage);
     }
 
     @Override
@@ -167,16 +169,23 @@ public final class DisplayModule extends AbstractModuleWithRotation {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
+    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks,
+                       final MatrixStack matrices, final VertexConsumerProvider vcp,
+                       final int light, final int overlay) {
         if (!getCasing().isEnabled()) {
             return;
         }
 
-        rotateForRendering();
-        RenderUtil.ignoreLighting();
+        matrices.push();
+        rotateForRendering(matrices);
 
-        GlStateManager.bindTexture(getGlTextureId());
-        RenderUtil.drawQuad();
+        final Identifier id = getBackingTextureId();
+        updateBackingTexture();
+
+        final VertexConsumer vc = vcp.getBuffer(RenderLayer.getEntityCutout(id));
+        RenderUtil.drawQuad(matrices.peek(), vc, RenderUtil.maxLight, overlay);
+
+        matrices.pop();
     }
 
     @Override
@@ -262,42 +271,68 @@ public final class DisplayModule extends AbstractModuleWithRotation {
     }
 
     /**
-     * Getter for the ID of the texture on the GPU we're using, creates one if necessary.
-     *
-     * @return the texture ID we're currently using.
+     * Gets the texture backed by our NativeImage, creating it if required
      */
-    private int getGlTextureId() {
-        if (glTextureId == null) {
-            //~ glTextureId = GlStateManager.genTexture();
-            nativeImage = new NativeImage(RESOLUTION, RESOLUTION, false);
-            //~ TextureUtil.prepareImage(glTextureId, RESOLUTION, RESOLUTION);
-            imageDirty = true;
+    private NativeImageBackedTexture getBackingTexture() {
+        if (backingTexture == null) {
+            backingTexture = new NativeImageBackedTexture(RESOLUTION, RESOLUTION, false);
         }
-        if (imageDirty) {
-            int ip = 0;
-            for (int iy = 0; iy < RESOLUTION; iy++) {
-                for (int ix = 0; ix < RESOLUTION; ix++, ip++) {
-                    ((NativeImage)nativeImage).setPixelRgba(ix, iy, image[ip]);
-                }
-            }
 
-            GlStateManager.bindTexture(glTextureId);
-            ((NativeImage)nativeImage).upload(0, 0, 0, false);
+        return backingTexture;
+    }
+
+    /**
+     * Blit the raw image RGBA to @img
+     *
+     * @param img the NativeImage to blit to
+     */
+    private void blitToNativeImage(NativeImage img) {
+        int ip = 0;
+        for (int iy = 0; iy < RESOLUTION; iy++) {
+            for (int ix = 0; ix < RESOLUTION; ix++, ip++) {
+                img.setPixelRgba(ix, iy, image[ip]);
+            }
         }
-        return glTextureId;
+    }
+
+    /**
+     * Check if any image updates happened, and update the
+     * GPU-side texture apporpriately
+     */
+    private void updateBackingTexture() {
+        if (!imageDirty) {
+            return;
+        }
+
+        NativeImageBackedTexture texture = getBackingTexture();
+        blitToNativeImage(texture.getImage());
+        texture.upload();
+
+        imageDirty = false;
+    }
+
+    /**
+     * Gets the identifier associated with our texture, registering it if required
+     */
+    private Identifier getBackingTextureId() {
+        if (backingTextureId == null) {
+            TextureManager texMan = MinecraftClient.getInstance().getTextureManager();
+            backingTextureId = texMan.registerDynamicTexture("tis3d_dispmod", getBackingTexture());
+        }
+
+        return backingTextureId;
     }
 
     /**
      * Deletes our texture from the GPU, if we have one.
      */
     private void deleteTexture() {
-        if (glTextureId != null) {
-            //~ TextureUtil.releaseTextureId(glTextureId);
-            glTextureId = null;
-        }
-        if (nativeImage != null) {
-            ((NativeImage) nativeImage).close();
-            nativeImage = null;
+        // XXX We have no way to remove the reference in the TextureManager
+        // with vanilla codepaths; this soft leak is going to degrade performance
+        // over time. (TODO: Remove reference via mixin)
+        if (backingTexture != null) {
+            // Also closes the associated image
+            backingTexture.close();
         }
     }
 

@@ -9,7 +9,10 @@ import li.cil.tis3d.api.util.TransformUtil;
 import li.cil.tis3d.util.EnumUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 
 /**
@@ -52,6 +55,17 @@ public abstract class AbstractModuleWithRotation extends AbstractModule implemen
         GlStateManager.translatef(0.5f, 0.5f, 0);
         GlStateManager.rotatef(90 * rotation, 0, 0, Face.toDirection(getFace()).getOffsetY());
         GlStateManager.translatef(-0.5f, -0.5f, 0);
+    }
+
+    @Environment(EnvType.CLIENT)
+    protected void rotateForRendering(final MatrixStack matrices) {
+        final int rotDeg = 90 * Port.ROTATION[getFacing().ordinal()];
+        final Vector3f rotAxis = new Vector3f(0, 0, Face.toDirection(getFace()).getOffsetY());
+        final Quaternion rotQ = new Quaternion(rotAxis, rotDeg, true);
+
+        matrices.translate(0.5f, 0.5f, 0);
+        matrices.multiply(rotQ);
+        matrices.translate(-0.5f, -0.5f, 0);
     }
 
     // --------------------------------------------------------------------- //

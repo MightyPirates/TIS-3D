@@ -201,6 +201,12 @@ public final class RenderUtil {
                  light, overlay);
     }
 
+    @Environment(EnvType.CLIENT)
+    public static void drawQuad(final MatrixStack.Entry matrices,
+                                final VertexConsumer vc, final int light, final int overlay) {
+        drawQuad(matrices, vc, 0, 0, 1, 1, 0, 0, 1, 1, light, overlay);
+    }
+
     /**
      * Configure the light map so that whatever is rendered next is rendered at
      * full brightness, regardless of environment brightness. Useful for rendering
