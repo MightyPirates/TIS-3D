@@ -1,6 +1,5 @@
 package li.cil.tis3d.common.module;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.machine.Casing;
@@ -11,10 +10,16 @@ import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ReadOnlyMemoryModuleItem;
+import li.cil.tis3d.util.ColorUtils;
 import li.cil.tis3d.util.EnumUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -159,32 +164,40 @@ public class RandomAccessMemoryModule extends AbstractModuleWithRotation {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
+    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks,
+                       final MatrixStack matrices, final VertexConsumerProvider vcp,
+                       final int light, final int overlay) {
         if (!getCasing().isEnabled() || !isVisible()) {
             return;
         }
 
-        rotateForRendering();
-        RenderUtil.ignoreLighting();
-        GlStateManager.enableBlend();
-        GlStateManager.disableTexture();
+        matrices.push();
+        rotateForRendering(matrices);
+
+        final VertexConsumer vc = vcp.getBuffer(RenderLayer.getTranslucentNoCrumbling());
+        final MatrixStack.Entry mat = matrices.peek();
 
         final int cells = 4;
         final int cellSize = MEMORY_SIZE / (cells * cells);
+        final int cellColor = getCellColor();
+
         for (int y = 0; y < cells; y++) {
             for (int x = 0; x < cells; x++) {
                 final int offset = (y * cells + x) * cellSize;
                 final float brightness = 0.25f + sectorSum(offset, cellSize) * 0.75f;
-                setCellColor(brightness);
 
                 final float u0 = QUADS_U0 + x * QUADS_STEP_U;
                 final float v0 = QUADS_V0 + y * QUADS_STEP_V;
-                RenderUtil.drawUntexturedQuad(u0, v0, QUADS_SIZE_U, QUADS_SIZE_V);
+                RenderUtil.drawColorQuad(mat, vc, u0, v0, QUADS_SIZE_U, QUADS_SIZE_V,
+                                         (int) (0xFF * brightness),
+                                         ColorUtils.getRedU8(cellColor),
+                                         ColorUtils.getGreenU8(cellColor),
+                                         ColorUtils.getBlueU8(cellColor),
+                                         RenderUtil.maxLight, overlay);
             }
         }
 
-        GlStateManager.enableTexture();
-        GlStateManager.disableBlend();
+        matrices.pop();
     }
 
     @Override
@@ -228,7 +241,16 @@ public class RandomAccessMemoryModule extends AbstractModuleWithRotation {
      */
     @Environment(EnvType.CLIENT)
     protected void setCellColor(final float brightness) {
-        GlStateManager.color4f(0.4f, 1f, 1f, brightness);
+    }
+
+    /**
+     * Get the color of the memory cell.
+     *
+     * @return the memory cell color in ARGB.
+     */
+    @Environment(EnvType.CLIENT)
+    protected int getCellColor() {
+        return 0xFF66FFFF;
     }
 
     // --------------------------------------------------------------------- //
