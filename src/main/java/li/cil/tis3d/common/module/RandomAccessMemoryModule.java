@@ -235,15 +235,6 @@ public class RandomAccessMemoryModule extends AbstractModuleWithRotation {
     }
 
     /**
-     * Set the color of the memory cell currently being drawn in the {@link GlStateManager}.
-     *
-     * @param brightness the brightness the cell is rendered at (the alpha).
-     */
-    @Environment(EnvType.CLIENT)
-    protected void setCellColor(final float brightness) {
-    }
-
-    /**
      * Get the color of the memory cell.
      *
      * @return the memory cell color in ARGB.
