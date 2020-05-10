@@ -1,6 +1,5 @@
 package li.cil.tis3d.common.module;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.BundledRedstoneAPI;
@@ -17,7 +16,12 @@ import li.cil.tis3d.util.ColorUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.World;
 
@@ -121,33 +125,41 @@ public final class BundledRedstoneModule extends AbstractModuleWithRotation impl
 
     @Environment(EnvType.CLIENT)
     @Override
-    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
-        if (!isVisible()) {
-            return;
-        }
-
-        rotateForRendering();
-        RenderUtil.ignoreLighting();
+    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks,
+                       final MatrixStack matrices, final VertexConsumerProvider vcp,
+                       final int light, final int overlay) {
+        matrices.push();
+        rotateForRendering(matrices);
 
         // Draw base overlay.
-        RenderUtil.drawQuad(RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_BUNDLED_REDSTONE));
+        final Sprite baseSprite = RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_BUNDLED_REDSTONE);
+        final VertexConsumer vcBase = vcp.getBuffer(RenderLayer.getCutoutMipped());
+        final MatrixStack.Entry mat = matrices.peek();
+
+        RenderUtil.drawQuad(baseSprite, mat, vcBase, RenderUtil.maxLight, overlay);
 
         if (!getCasing().isEnabled()) {
+            matrices.pop();
             return;
         }
 
         // Draw output bar.
-        renderBar(output, LEFT_U0);
+        renderBar(mat, vcBase, overlay, output, LEFT_U0);
 
         // Draw input bar.
-        renderBar(input, RIGHT_U0);
+        renderBar(mat, vcBase, overlay, input, RIGHT_U0);
 
         // Draw active channel indicator.
-        GlStateManager.disableTexture();
         final int color = ColorUtils.getColorByIndex(channel);
-        //~ GlStateManager.color3f(ColorUtils.getRed(color), ColorUtils.getGreen(color), ColorUtils.getBlue(color));
-        RenderUtil.drawUntexturedQuad(7 / 16f, 7 / 16f, 2 / 16f, 2 / 16f);
-        GlStateManager.enableTexture();
+        RenderUtil.drawColorQuad(mat, vcBase,
+                                 7 / 16f, 7 / 16f, 2 / 16f, 2 / 16f,
+                                 0xFF,
+                                 ColorUtils.getRedU8(color),
+                                 ColorUtils.getGreenU8(color),
+                                 ColorUtils.getBlueU8(color),
+                                 RenderUtil.maxLight, overlay);
+
+        matrices.pop();
     }
 
     @Override
@@ -336,18 +348,17 @@ public final class BundledRedstoneModule extends AbstractModuleWithRotation impl
     }
 
     @Environment(EnvType.CLIENT)
-    private void renderBar(final short[] values, final float u) {
-        GlStateManager.disableTexture();
+    private void renderBar(MatrixStack.Entry matrices, VertexConsumer vc, final int overlay,
+                           final short[] values, final float u) {
         for (int channel = 0; channel < values.length; channel++) {
             if (values[channel] > 0) {
                 final int color = ColorUtils.getColorByIndex(channel);
-                //~ GlStateManager.color3f(ColorUtils.getRed(color), ColorUtils.getGreen(color), ColorUtils.getBlue(color));
-
                 final float u0 = u + (channel & 1) * V_STEP;
                 final float v0 = SHARED_V0 + (channel >> 1) * V_STEP;
-                RenderUtil.drawUntexturedQuad(u0, v0, V_STEP, V_STEP);
+
+                RenderUtil.drawColorQuad(matrices, vc, u0, v0, V_STEP, V_STEP,
+                                         color, RenderUtil.maxLight, overlay);
             }
         }
-        GlStateManager.enableTexture();
     }
 }
