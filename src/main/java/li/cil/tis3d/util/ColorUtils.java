@@ -34,6 +34,36 @@ public final class ColorUtils {
     }
 
     /**
+     * Get the red component of an ARGB color as an int in [0, 255].
+     *
+     * @param color the color to get the red component for.
+     * @return the red component as the color in [0, 255].
+     */
+    public static int getRedU8(final int color) {
+        return (color >>> 16) & 0xFF;
+    }
+
+    /**
+     * Get the alpha component of an ARGB color as an int in [0, 255].
+     *
+     * @param color the color to get the green component for.
+     * @return the green component as the color in [0, 255].
+     */
+    public static int getGreenU8(final int color) {
+        return (color >>> 8) & 0xFF;
+    }
+
+    /**
+     * Get the blue component of an ARGB color as an int in [0, 255].
+     *
+     * @param color the color to get the blue component for.
+     * @return the blue component as the color in [0, 255].
+     */
+    public static int getBlueU8(final int color) {
+        return color & 0xFF;
+    }
+
+    /**
      * Get the alpha component of an ARGB color as a float in [0, 1].
      *
      * @param color the color to get the alpha component for.
@@ -51,8 +81,7 @@ public final class ColorUtils {
      * @return the red component as the color in [0, 1].
      */
     public static float getRed(final int color) {
-        final int r = (color >>> 16) & 0xFF;
-        return r / 255f;
+        return getRedU8(color) / 255f;
     }
 
     /**
@@ -62,8 +91,7 @@ public final class ColorUtils {
      * @return the green component as the color in [0, 1].
      */
     public static float getGreen(final int color) {
-        final int r = (color >>> 8) & 0xFF;
-        return r / 255f;
+        return getGreenU8(color) / 255f;
     }
 
     /**
@@ -73,8 +101,7 @@ public final class ColorUtils {
      * @return the blue component as the color in [0, 1].
      */
     public static float getBlue(final int color) {
-        final int r = color & 0xFF;
-        return r / 255f;
+        return getBlueU8(color) / 255f;
     }
 
     // --------------------------------------------------------------------- //
