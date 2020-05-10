@@ -192,13 +192,21 @@ public final class RenderUtil {
           .next();
     }
 
+    public static void drawQuad(final Sprite sprite, final MatrixStack.Entry matrices, final VertexConsumer vc,
+                                final float x, final float y, final float w, final float h,
+                                final float u0, final float v0, final float u1, final float v1,
+                                final int light, final int overlay) {
+        drawQuad(matrices, vc,
+                 x, y, w, h,
+                 sprite.getFrameU(u0 * 16), sprite.getFrameV(v0 * 16),
+                 sprite.getFrameU(u1 * 16), sprite.getFrameV(v1 * 16),
+                 light, overlay);
+    }
+
     @Environment(EnvType.CLIENT)
     public static void drawQuad(final Sprite sprite, final MatrixStack.Entry matrices,
                                 final VertexConsumer vc, final int light, final int overlay) {
-        drawQuad(matrices, vc, 0, 0, 1, 1,
-                 sprite.getFrameU(0 * 16), sprite.getFrameV(0 * 16),
-                 sprite.getFrameU(1 * 16), sprite.getFrameV(1 * 16),
-                 light, overlay);
+        drawQuad(sprite, matrices, vc, 0, 0, 1, 1, 0, 0, 1, 1, light, overlay);
     }
 
     @Environment(EnvType.CLIENT)

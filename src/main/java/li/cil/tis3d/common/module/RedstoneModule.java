@@ -13,8 +13,12 @@ import li.cil.tis3d.client.init.Textures;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.World;
 
@@ -111,14 +115,20 @@ public final class RedstoneModule extends AbstractModuleWithRotation implements 
 
     @Environment(EnvType.CLIENT)
     @Override
-    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
-        rotateForRendering();
-        RenderUtil.ignoreLighting();
+    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks,
+                       final MatrixStack matrices, final VertexConsumerProvider vcp,
+                       final int light, final int overlay) {
+        matrices.push();
+        rotateForRendering(matrices);
 
         // Draw base overlay.
-        RenderUtil.drawQuad(RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_REDSTONE));
+        final Sprite baseSprite = RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_REDSTONE);
+        final VertexConsumer vcBase = vcp.getBuffer(RenderLayer.getCutoutMipped());
+
+        RenderUtil.drawQuad(baseSprite, matrices.peek(), vcBase, RenderUtil.maxLight, overlay);
 
         if (!getCasing().isEnabled()) {
+            matrices.pop();
             return;
         }
 
@@ -128,13 +138,21 @@ public final class RedstoneModule extends AbstractModuleWithRotation implements 
         final float relativeOutput = output / 15f;
         final float heightOutput = relativeOutput * SHARED_H;
         final float v0Output = SHARED_V1 - heightOutput;
-        RenderUtil.drawQuad(barsSprite, LEFT_U0, v0Output, SHARED_W, heightOutput, LEFT_U0, v0Output, LEFT_U1, SHARED_V1);
+        RenderUtil.drawQuad(barsSprite, matrices.peek(), vcBase,
+                            LEFT_U0, v0Output, SHARED_W, heightOutput,
+                            LEFT_U0, v0Output, LEFT_U1, SHARED_V1,
+                            RenderUtil.maxLight, overlay);
 
         // Draw input bar.
         final float relativeInput = input / 15f;
         final float heightInput = relativeInput * SHARED_H;
         final float v0Input = SHARED_V1 - heightInput;
-        RenderUtil.drawQuad(barsSprite, RIGHT_U0, v0Input, SHARED_W, heightInput, RIGHT_U0, v0Input, RIGHT_U1, SHARED_V1);
+        RenderUtil.drawQuad(barsSprite, matrices.peek(), vcBase,
+                            RIGHT_U0, v0Input, SHARED_W, heightInput,
+                            RIGHT_U0, v0Input, RIGHT_U1, SHARED_V1,
+                            RenderUtil.maxLight, overlay);
+
+        matrices.pop();
     }
 
     @Override
