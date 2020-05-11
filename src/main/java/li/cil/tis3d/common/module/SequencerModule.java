@@ -1,6 +1,5 @@
 package li.cil.tis3d.common.module;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.machine.Casing;
@@ -13,7 +12,13 @@ import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.util.Side;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Hand;
@@ -126,44 +131,40 @@ public final class SequencerModule extends AbstractModuleWithRotation {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
+    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks,
+                       final MatrixStack matrices, final VertexConsumerProvider vcp,
+                       final int light, final int overlay) {
         if (!isVisible()) {
             return;
         }
 
-        rotateForRendering();
-        RenderUtil.ignoreLighting();
-        GlStateManager.enableBlend();
+        matrices.push();
+        rotateForRendering(matrices);
 
-        GlStateManager.disableTexture();
-        GlStateManager.depthMask(false);
-
+        final VertexConsumer vc = vcp.getBuffer(RenderLayer.getCutoutMipped());
+        final MatrixStack.Entry mat = matrices.peek();
         final boolean enabled = getCasing().isEnabled();
-        if (enabled) {
-            // Draw bar in background indicating current position in sequence.
-            final float barU0 = BAR_U0 + BAR_STEP_U * position;
-            final float brightness = 0.75f + 0.25f * (delay == 0 ? 1 : (1 - (delay - stepsRemaining) / (float)delay));
-            GlStateManager.color4f(0.2f, 0.3f, 0.35f, brightness);
-            RenderUtil.drawUntexturedQuad(barU0, BAR_V0, BAR_SIZE_U, BAR_SIZE_V);
-        }
+
+        final int numLayers = 3;
+        final float layerBump = 0.005f / numLayers;
 
         // Draw base grid of sequencer entries.
-        GlStateManager.enableTexture();
-        GlStateManager.color4f(1, 1, 1, enabled ? 1 : 0.5f);
-        RenderUtil.drawQuad(RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_SEQUENCER));
-        GlStateManager.disableTexture();
-
-        GlStateManager.depthMask(true);
+        final Sprite baseSprite = RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_SEQUENCER);
+        final int baseBrightness = enabled ? 0xFF : 0x80;
+        RenderUtil.drawQuad(baseSprite, mat, vc,
+                            0xFF, baseBrightness, baseBrightness, baseBrightness,
+                            RenderUtil.maxLight, overlay);
 
         if (rendererDispatcher.camera.getBlockPos().getSquaredDistance(getCasing().getPosition()) < 64) {
-            // Draw configuration of sequencer.
-            GlStateManager.color4f(0.8f, 0.85f, 0.875f, enabled ? 1 : 0.5f);
+            // Draw configuration of sequencer (white squares for set bits).
+            final int confColor = enabled ? 0xFFCCD8DF : 0xFF666C6F;
             for (int col = 0; col < COL_COUNT; col++) {
                 for (int row = 0; row < ROW_COUNT; row++) {
                     if (configuration[col][row]) {
                         final float u0 = CELLS_U0 + CELLS_STEP_U * col;
                         final float v0 = CELLS_V0 + CELLS_STEP_V * row;
-                        RenderUtil.drawUntexturedQuad(u0, v0, CELLS_SIZE_U, CELLS_SIZE_V);
+                        RenderUtil.drawColorQuad(mat, vc, u0, v0, CELLS_SIZE_U, CELLS_SIZE_V,
+                                                 confColor, RenderUtil.maxLight, overlay);
                     }
                 }
             }
@@ -176,14 +177,32 @@ public final class SequencerModule extends AbstractModuleWithRotation {
             final int col = uvToCol((float)uv.x);
             final int row = uvToRow((float)uv.y);
             if (col >= 0 && row >= 0) {
-                GlStateManager.color4f(0.7f, 0.8f, 0.9f, 0.5f);
                 final float u = CELLS_OUTER_U0 + col * CELLS_OUTER_STEP_U;
                 final float v = CELLS_OUTER_V0 + row * CELLS_OUTER_STEP_V;
-                RenderUtil.drawUntexturedQuad(u, v, CELLS_OUTER_SIZE_U, CELLS_OUTER_SIZE_V);
+
+                matrices.translate(0f, 0f, layerBump);
+                RenderUtil.drawColorQuad(mat, vc,
+                                         u, v, CELLS_OUTER_SIZE_U, CELLS_OUTER_SIZE_V,
+                                         enabled ? 0xFF596673 : 0xFF2C3339,
+                                         RenderUtil.maxLight, overlay);
             }
         }
 
-        GlStateManager.disableBlend();
+        if (enabled) {
+            // Draw bar in background indicating current position in sequence.
+            final float barU0 = BAR_U0 + BAR_STEP_U * position;
+            final float brightness = 0.75f + 0.25f * (delay == 0 ? 1 : (1 - (delay - stepsRemaining) / (float)delay));
+            final int barRed   = (int) (0x33 * brightness);
+            final int barGreen = (int) (0x4C * brightness);
+            final int barBlue  = (int) (0x59 * brightness);
+
+            matrices.translate(0f, 0f, layerBump);
+            RenderUtil.drawColorQuad(mat, vc, barU0, BAR_V0, BAR_SIZE_U, BAR_SIZE_V,
+                                     0xFF, barRed, barGreen, barBlue,
+                                     RenderUtil.maxLight, overlay);
+        }
+
+        matrices.pop();
     }
 
     @Override
