@@ -2,6 +2,7 @@ package li.cil.tis3d.common.module;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import java.util.function.BiConsumer;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
@@ -20,6 +21,7 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -29,11 +31,11 @@ import net.minecraft.util.math.MathHelper;
  * <p>
  * While it is not full, it will receive data on all ports and push them back.
  */
-public final class StackModule extends AbstractModuleWithRotation {
+public class StackModule extends AbstractModuleWithRotation {
     // --------------------------------------------------------------------- //
     // Persisted data
 
-    private final short[] stack = new short[STACK_SIZE];
+    protected final short[] values;
     private int top = -1;
 
     // --------------------------------------------------------------------- //
@@ -55,6 +57,27 @@ public final class StackModule extends AbstractModuleWithRotation {
 
     public StackModule(final Casing casing, final Face face) {
         super(casing, face);
+        values = new short[getDataSize()];
+    }
+
+    // Class behavior
+    protected String getValuesTag() {
+        // Backwards compat...
+        return TAG_STACK;
+    }
+
+    protected int getDataSize() {
+        return STACK_SIZE;
+    }
+
+    protected Identifier getBaseTexture() {
+        return Textures.LOCATION_OVERLAY_MODULE_STACK;
+    }
+
+    protected void forEachValue(BiConsumer<Integer,Short> op) {
+        for (int i = 0; i <= top; i++) {
+            op.accept(i, values[i]);
+        }
     }
 
     // --------------------------------------------------------------------- //
@@ -97,8 +120,8 @@ public final class StackModule extends AbstractModuleWithRotation {
     @Override
     public void onData(final ByteBuf data) {
         top = data.readByte();
-        for (int i = 0; i < stack.length; i++) {
-            stack[i] = data.readShort();
+        for (int i = 0; i < values.length; i++) {
+            values[i] = data.readShort();
         }
     }
 
@@ -114,7 +137,7 @@ public final class StackModule extends AbstractModuleWithRotation {
         matrices.push();
         rotateForRendering(matrices);
 
-        final Sprite baseSprite = RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_STACK);
+        final Sprite baseSprite = RenderUtil.getSprite(getBaseTexture());
         final VertexConsumer vc = vcp.getBuffer(RenderLayer.getCutoutMipped());
 
         RenderUtil.drawQuad(baseSprite, matrices.peek(), vc, RenderUtil.maxLight, overlay);
@@ -127,30 +150,38 @@ public final class StackModule extends AbstractModuleWithRotation {
         matrices.pop();
     }
 
+    protected void readFromNBTInternal(final CompoundTag nbt) {
+        top = MathHelper.clamp(nbt.getInt(TAG_TOP), -1, STACK_SIZE - 1);
+    }
+
     @Override
     public void readFromNBT(final CompoundTag nbt) {
         super.readFromNBT(nbt);
 
-        final int[] stackNbt = nbt.getIntArray(TAG_STACK);
-        final int count = Math.min(stackNbt.length, stack.length);
+        final int[] valueNbt = nbt.getIntArray(getValuesTag());
+        final int count = Math.min(valueNbt.length, values.length);
         for (int i = 0; i < count; i++) {
-            stack[i] = (short)stackNbt[i];
+            values[i] = (short)valueNbt[i];
         }
 
-        top = MathHelper.clamp(nbt.getInt(TAG_TOP), -1, STACK_SIZE - 1);
+        readFromNBTInternal(nbt);
+    }
+
+    protected void writeToNBTInternal(final CompoundTag nbt) {
+        nbt.putInt(TAG_TOP, top);
     }
 
     @Override
     public void writeToNBT(final CompoundTag nbt) {
         super.writeToNBT(nbt);
 
-        final int[] stackNbt = new int[stack.length];
-        for (int i = 0; i < stack.length; i++) {
-            stackNbt[i] = stack[i];
+        final int[] valueNbt = new int[values.length];
+        for (int i = 0; i < values.length; i++) {
+            valueNbt[i] = values[i];
         }
-        nbt.putIntArray(TAG_STACK, stackNbt);
+        nbt.putIntArray(getValuesTag(), valueNbt);
 
-        nbt.putInt(TAG_TOP, top);
+        writeToNBTInternal(nbt);
     }
 
     // --------------------------------------------------------------------- //
@@ -160,7 +191,7 @@ public final class StackModule extends AbstractModuleWithRotation {
      *
      * @return <tt>true</tt> if the stack is empty, <tt>false</tt> otherwise.
      */
-    private boolean isEmpty() {
+    protected boolean isEmpty() {
         return top < 0;
     }
 
@@ -169,7 +200,7 @@ public final class StackModule extends AbstractModuleWithRotation {
      *
      * @return <tt>true</tt> if the stack is full, <tt>false</tt> otherwise.
      */
-    private boolean isFull() {
+    protected boolean isFull() {
         return top >= STACK_SIZE - 1;
     }
 
@@ -179,8 +210,8 @@ public final class StackModule extends AbstractModuleWithRotation {
      * @param value the value to store on the stack.
      * @throws ArrayIndexOutOfBoundsException if the stack is full.
      */
-    private void push(final short value) {
-        stack[++top] = value;
+    protected void push(final short value) {
+        values[++top] = value;
 
         sendData();
     }
@@ -192,14 +223,14 @@ public final class StackModule extends AbstractModuleWithRotation {
      * @return the value on top of the stack.
      * @throws ArrayIndexOutOfBoundsException if the stack is empty.
      */
-    private short peek() {
-        return stack[top];
+    protected short peek() {
+        return values[top];
     }
 
     /**
      * Reduces the stack size by one.
      */
-    private void pop() {
+    protected void pop() {
         top = Math.max(-1, top - 1);
 
         sendData();
@@ -208,7 +239,7 @@ public final class StackModule extends AbstractModuleWithRotation {
     /**
      * Update the outputs of the stack, pushing the top value.
      */
-    private void stepOutput() {
+    protected void stepOutput() {
         // Don't try to write if the stack is empty.
         if (isEmpty()) {
             return;
@@ -225,7 +256,7 @@ public final class StackModule extends AbstractModuleWithRotation {
     /**
      * Update the inputs of the stack, pulling values onto the stack.
      */
-    private void stepInput() {
+    protected void stepInput() {
         for (final Port port : Port.VALUES) {
             // Stop reading if the stack is full.
             if (isFull()) {
@@ -248,10 +279,15 @@ public final class StackModule extends AbstractModuleWithRotation {
         }
     }
 
-    private void sendData() {
-        final ByteBuf data = Unpooled.buffer();
+    protected void sendDataInternal(final ByteBuf data) {
         data.writeByte(top);
-        for (final short value : stack) {
+    }
+
+    protected void sendData() {
+        final ByteBuf data = Unpooled.buffer();
+        sendDataInternal(data);
+
+        for (final short value : values) {
             data.writeShort(value);
         }
         getCasing().sendData(getFace(), data, DATA_TYPE_UPDATE);
@@ -270,14 +306,14 @@ public final class StackModule extends AbstractModuleWithRotation {
         final int charWidth = fontRenderer.getCharWidth();
         final int charHeight = fontRenderer.getCharHeight();
 
-        for (int i = 0; i <= top; i++) {
-            final String str = String.format("%4X", stack[i]);
+        forEachValue((i, value) -> {
+            final String str = String.format("%4X", value);
             fontRenderer.drawString(matrices.peek(), vcFont, light, overlay, str);
             matrices.translate(0, charHeight + 1, 0);
 
             if ((i + 1) % 4 == 0) {
                 matrices.translate((charWidth + 1) * 5, (charHeight + 1) * -4, 0);
             }
-        }
+        });
     }
 }
