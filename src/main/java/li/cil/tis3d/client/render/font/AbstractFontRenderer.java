@@ -1,12 +1,17 @@
 package li.cil.tis3d.client.render.font;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import li.cil.tis3d.api.util.RenderUtil;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import org.lwjgl.opengl.GL11;
 
@@ -61,6 +66,38 @@ public abstract class AbstractFontRenderer implements FontRenderer {
         GlStateManager.popMatrix();
     }
 
+    public void drawString(final MatrixStack.Entry matrices, final VertexConsumer vc,
+                           int light, int overlay,
+                           final CharSequence value) {
+        drawString(matrices, vc, light, overlay, value, value.length());
+    }
+
+    public void drawString(final MatrixStack.Entry matrices, final VertexConsumer vc,
+                           int light, int overlay,
+                           final CharSequence value, final int maxChars) {
+        float tx = 0f;
+        final int end = Math.min(maxChars, value.length());
+        for (int i = 0; i < end; i++) {
+            final char ch = value.charAt(i);
+            drawChar(matrices, vc, light, overlay, tx, ch);
+            tx += getCharWidth() + getGapU();
+        }
+    }
+
+    /**
+     * Choose a VertexConsumer appropriate for the given drawing parameters.
+     * The returned instance can be reused for subsequent draw calls.
+     *
+     * @param vcp the provider instance to choose from.
+     * @return the VertexConsumer instance to pass to drawString().
+     */
+    public VertexConsumer chooseVertexConsumer(final VertexConsumerProvider vcp) {
+        // Something is still fishy here, I'm only getting fully lit letters
+        // if lighting is completely disabled. Considering creating a custom
+        // RenderLayer without lighting.
+        return vcp.getBuffer(RenderLayer.getEntityCutout(getTextureLocation()));
+    }
+
     // --------------------------------------------------------------------- //
 
     abstract protected CharSequence getCharacters();
@@ -90,6 +127,25 @@ public abstract class AbstractFontRenderer implements FontRenderer {
         buffer.vertex(x + getCharWidth(), getCharHeight(), 0).texture(u + U_SIZE, v + V_SIZE).next();
         buffer.vertex(x + getCharWidth(), 0, 0).texture(u + U_SIZE, v).next();
         buffer.vertex(x, 0, 0).texture(u, v).next();
+    }
+
+    private void drawChar(final MatrixStack.Entry matrices, final VertexConsumer vc,
+                          final int light, final int overlay,
+                          final float x, final char ch) {
+        if (Character.isWhitespace(ch) || Character.isISOControl(ch)) {
+            return;
+        }
+        final int index = getCharIndex(ch);
+
+        final int column = index % COLUMNS;
+        final int row = index / COLUMNS;
+        final float u = column * U_STEP;
+        final float v = row * V_STEP;
+
+        RenderUtil.drawQuad(matrices, vc,
+                            x, 0, getCharWidth(), getCharHeight(),
+                            u, v, u + U_SIZE, v + V_SIZE,
+                            light, overlay);
     }
 
     private int getCharIndex(final char ch) {
