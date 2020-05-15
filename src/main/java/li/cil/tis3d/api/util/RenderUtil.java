@@ -277,6 +277,20 @@ public final class RenderUtil {
         drawQuad(matrices, vc, x, y, w, h, u0, v0, u1, v1, c, c, c, c, l, ol);
     }
 
+    @Environment(EnvType.CLIENT)
+    public static void drawQuad(final MatrixStack.Entry matrices, final VertexConsumer vc,
+                                final float x, final float y, final float w, final float h,
+                                final float u0, final float v0, final float u1, final float v1,
+                                final int argb, final int l, final int ol) {
+
+        drawQuad(matrices, vc, x, y, w, h, u0, v0, u1, v1,
+                 ColorUtils.getAlphaU8(argb),
+                 ColorUtils.getRedU8(argb),
+                 ColorUtils.getGreenU8(argb),
+                 ColorUtils.getBlueU8(argb),
+                 l, ol);
+    }
+
     public static void drawQuad(final Sprite sprite, final MatrixStack.Entry matrices, final VertexConsumer vc,
                                 final float x, final float y, final float w, final float h,
                                 final float u0, final float v0, final float u1, final float v1,

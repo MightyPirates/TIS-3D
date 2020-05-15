@@ -69,17 +69,29 @@ public abstract class AbstractFontRenderer implements FontRenderer {
     public void drawString(final MatrixStack.Entry matrices, final VertexConsumer vc,
                            int light, int overlay,
                            final CharSequence value) {
-        drawString(matrices, vc, light, overlay, value, value.length());
+        drawString(matrices, vc, light, overlay, 0xFFFFFFFF, value, value.length());
+    }
+
+    public void drawString(final MatrixStack.Entry matrices, final VertexConsumer vc,
+                           int light, int overlay, final int color,
+                           final CharSequence value) {
+        drawString(matrices, vc, light, overlay, color, value, value.length());
     }
 
     public void drawString(final MatrixStack.Entry matrices, final VertexConsumer vc,
                            int light, int overlay,
                            final CharSequence value, final int maxChars) {
+        drawString(matrices, vc, light, overlay, 0xFFFFFFFF, value, maxChars);
+    }
+
+    public void drawString(final MatrixStack.Entry matrices, final VertexConsumer vc,
+                           int light, int overlay, final int color,
+                           final CharSequence value, final int maxChars) {
         float tx = 0f;
         final int end = Math.min(maxChars, value.length());
         for (int i = 0; i < end; i++) {
             final char ch = value.charAt(i);
-            drawChar(matrices, vc, light, overlay, tx, ch);
+            drawChar(matrices, vc, light, overlay, color, tx, ch);
             tx += getCharWidth() + getGapU();
         }
     }
@@ -130,7 +142,7 @@ public abstract class AbstractFontRenderer implements FontRenderer {
     }
 
     private void drawChar(final MatrixStack.Entry matrices, final VertexConsumer vc,
-                          final int light, final int overlay,
+                          final int light, final int overlay, final int color,
                           final float x, final char ch) {
         if (Character.isWhitespace(ch) || Character.isISOControl(ch)) {
             return;
@@ -145,7 +157,7 @@ public abstract class AbstractFontRenderer implements FontRenderer {
         RenderUtil.drawQuad(matrices, vc,
                             x, 0, getCharWidth(), getCharHeight(),
                             u, v, u + U_SIZE, v + V_SIZE,
-                            light, overlay);
+                            color, light, overlay);
     }
 
     private int getCharIndex(final char ch) {
