@@ -34,6 +34,16 @@ public final class ColorUtils {
     }
 
     /**
+     * Get the alpha component of an ARGB color as an int in [0, 255].
+     *
+     * @param color the color to get the blue component for.
+     * @return the blue component as the color in [0, 255].
+     */
+    public static int getAlphaU8(final int color) {
+        return (color >>> 24) & 0xFF;
+    }
+
+    /**
      * Get the red component of an ARGB color as an int in [0, 255].
      *
      * @param color the color to get the red component for.
@@ -70,8 +80,7 @@ public final class ColorUtils {
      * @return the alpha component as the color in [0, 1].
      */
     public static float getAlpha(final int color) {
-        final int r = (color >>> 24) & 0xFF;
-        return r / 255f;
+        return getAlphaU8(color) / 255f;
     }
 
     /**

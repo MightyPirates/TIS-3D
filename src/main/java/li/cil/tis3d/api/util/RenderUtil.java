@@ -3,6 +3,7 @@ package li.cil.tis3d.api.util;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.function.Function;
 import li.cil.tis3d.client.init.Textures;
+import li.cil.tis3d.util.ColorUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
