@@ -1,6 +1,5 @@
 package li.cil.tis3d.common.module;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
@@ -10,7 +9,12 @@ import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.init.Textures;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundCategory;
@@ -154,21 +158,25 @@ public final class KeypadModule extends AbstractModuleWithRotation {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
+    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks,
+                       final MatrixStack matrices, final VertexConsumerProvider vcp,
+                       final int light, final int overlay) {
         if (!getCasing().isEnabled() || !isVisible()) {
             return;
         }
 
-        rotateForRendering();
-        RenderUtil.ignoreLighting();
-        GlStateManager.enableBlend();
+        matrices.push();
+        rotateForRendering(matrices);
 
         // Draw base texture. Draw half transparent while writing current value,
         // i.e. while no input is possible.
-        value.ifPresent(unused -> GlStateManager.color4f(1, 1, 1, 0.5f));
-        GlStateManager.depthMask(false);
-        RenderUtil.drawQuad(RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_KEYPAD));
-        GlStateManager.depthMask(true);
+        final int bright = value.isPresent() ? 0x80 : 0xFF;
+
+        final Sprite baseSprite = RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_KEYPAD);
+        final VertexConsumer vc = vcp.getBuffer(RenderLayer.getCutoutMipped());
+        RenderUtil.drawQuad(baseSprite, matrices.peek(), vc,
+                            0xFF, bright, bright, bright,
+                            RenderUtil.maxLight, overlay);
 
         // Draw overlay for hovered button if we can currently input a value.
         if (!value.isPresent()) {
@@ -177,12 +185,12 @@ public final class KeypadModule extends AbstractModuleWithRotation {
                 final Vec3d uv = hitToUV(hitPos);
                 final int button = uvToButton((float)uv.x, (float)uv.y);
                 if (button >= 0) {
-                    drawButtonOverlay(button);
+                    drawButtonOverlay(matrices, vc, RenderUtil.maxLight, overlay, button);
                 }
             }
         }
 
-        GlStateManager.disableBlend();
+        matrices.pop();
     }
 
     @Override
@@ -267,16 +275,22 @@ public final class KeypadModule extends AbstractModuleWithRotation {
     }
 
     @Environment(EnvType.CLIENT)
-    private void drawButtonOverlay(final int button) {
+    private void drawButtonOverlay(final MatrixStack matrices, final VertexConsumer vcColor,
+                                   final int light, final int overlay,
+                                   final int button) {
         final int column = button % 3;
         final int row = button / 3;
         final float x = KEYS_U0 + column * KEYS_STEP_U;
         final float y = KEYS_V0 + row * KEYS_STEP_V;
         final float w = buttonToNumber(button) == 0 ? (KEYS_SIZE_U + KEYS_STEP_U) : KEYS_SIZE_U;
         final float h = row == 3 ? KEYS_SIZE_V_LAST : KEYS_SIZE_V;
-        GlStateManager.disableTexture();
-        GlStateManager.color4f(1, 1, 1, 0.5f);
-        RenderUtil.drawUntexturedQuad(x, y, w, h);
-        GlStateManager.enableTexture();
+
+        // Thickness of the outline
+        final float delta = 1 / 64f;
+        // Render behind the hovered button
+        matrices.translate(0, 0, 0.005f / 2);
+        RenderUtil.drawColorQuad(matrices.peek(), vcColor,
+                                 x - delta, y - delta, w + 2*delta, h + 2*delta,
+                                 0xFFFFFFFF, light, overlay);
     }
 }
