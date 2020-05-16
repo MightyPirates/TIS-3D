@@ -1,6 +1,7 @@
 package li.cil.tis3d.client.render.font;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import li.cil.tis3d.api.util.RenderLayerAccess;
 import li.cil.tis3d.api.util.RenderUtil;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -26,6 +27,8 @@ public abstract class AbstractFontRenderer implements FontRenderer {
     private final float V_SIZE = getCharHeight() / (float)getResolution();
     private final float U_STEP = (getCharWidth() + getGapU()) / (float)getResolution();
     private final float V_STEP = (getCharHeight() + getGapV()) / (float)getResolution();
+
+    private RenderLayer renderLayer;
 
     AbstractFontRenderer() {
         CHAR_MAP = new Int2IntOpenHashMap();
@@ -104,10 +107,11 @@ public abstract class AbstractFontRenderer implements FontRenderer {
      * @return the VertexConsumer instance to pass to drawString().
      */
     public VertexConsumer chooseVertexConsumer(final VertexConsumerProvider vcp) {
-        // Something is still fishy here, I'm only getting fully lit letters
-        // if lighting is completely disabled. Considering creating a custom
-        // RenderLayer without lighting.
-        return vcp.getBuffer(RenderLayer.getEntityCutout(getTextureLocation()));
+        if (renderLayer == null) {
+            renderLayer = RenderLayerAccess.getCutoutNoDiffLight(getTextureLocation());
+        }
+
+        return vcp.getBuffer(renderLayer);
     }
 
     // --------------------------------------------------------------------- //
