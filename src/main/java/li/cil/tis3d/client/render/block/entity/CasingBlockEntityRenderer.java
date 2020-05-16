@@ -64,10 +64,6 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
             matrices.push();
             setupMatrix(face, matrices);
 
-            // No more filter stack, dunno what to do about that
-            final BakedModelManager bakedModelManager = MinecraftClient.getInstance().getBakedModelManager();
-            bakedModelManager.method_24153(SpriteAtlasTexture.BLOCK_ATLAS_TEX).setFilter(false, false);
-
             if (!isObserverHoldingKey() || !drawConfigOverlay(casing, face, matrices, vertexConsumers, overlay)) {
                 // XXX light is not the correct lightmap value
                 drawModuleOverlay(casing, face, partialTicks, matrices, vertexConsumers, light, overlay);
