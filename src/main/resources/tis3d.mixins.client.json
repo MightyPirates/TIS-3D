@@ -4,7 +4,8 @@
     "compatibilityLevel": "JAVA_8",
     "client": [
         "HideHudInTerminalMixin",
-        "WorldUnloadMinecraftClientMixin"
+        "WorldUnloadMinecraftClientMixin",
+        "TextureManagerMixin"
     ],
     "injectors": {
         "defaultRequire": 1
