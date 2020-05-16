@@ -10,6 +10,7 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderUtil;
+import li.cil.tis3d.client.ext.TextureManagerExt;
 import li.cil.tis3d.util.ColorUtils;
 import li.cil.tis3d.util.EnumUtils;
 import net.fabricmc.api.EnvType;
@@ -327,9 +328,11 @@ public final class DisplayModule extends AbstractModuleWithRotation {
      * Deletes our texture from the GPU, if we have one.
      */
     private void deleteTexture() {
-        // XXX We have no way to remove the reference in the TextureManager
-        // with vanilla codepaths; this soft leak is going to degrade performance
-        // over time. (TODO: Remove reference via mixin)
+        if (backingTextureId != null) {
+            TextureManager texMan = MinecraftClient.getInstance().getTextureManager();
+            TextureManagerExt.from(texMan).unregisterTexture(backingTextureId);
+        }
+
         if (backingTexture != null) {
             // Also closes the associated image
             backingTexture.close();
