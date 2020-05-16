@@ -121,6 +121,9 @@ public final class DisplayModule extends AbstractModuleWithRotation {
     // Data packet types.
     private static final byte DATA_TYPE_CLEAR = 0;
 
+    // Runtime client-side bookkeeping
+    private static int textureIdCounter = 1;
+
     // --------------------------------------------------------------------- //
 
     public DisplayModule(final Casing casing, final Face face) {
@@ -312,13 +315,21 @@ public final class DisplayModule extends AbstractModuleWithRotation {
         imageDirty = false;
     }
 
+    static private Identifier generateDynTextureId() {
+        final int id = textureIdCounter++;
+        return new Identifier("tis3d", "dynamic/dispmod_" + id);
+    }
+
     /**
      * Gets the identifier associated with our texture, registering it if required
      */
     private Identifier getBackingTextureId() {
         if (backingTextureId == null) {
             TextureManager texMan = MinecraftClient.getInstance().getTextureManager();
-            backingTextureId = texMan.registerDynamicTexture("tis3d_dispmod", getBackingTexture());
+            NativeImageBackedTexture tex = getBackingTexture();
+            backingTextureId = generateDynTextureId();
+
+            texMan.registerTexture(backingTextureId, tex);
         }
 
         return backingTextureId;
