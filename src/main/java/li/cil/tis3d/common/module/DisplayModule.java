@@ -9,6 +9,7 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
+import li.cil.tis3d.api.util.RenderLayerAccess;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.ext.TextureManagerExt;
 import li.cil.tis3d.util.ColorUtils;
@@ -76,6 +77,7 @@ public final class DisplayModule extends AbstractModuleWithRotation {
 
     private NativeImageBackedTexture backingTexture;
     private Identifier backingTextureId;
+    private RenderLayer renderLayer;
 
     /**
      * The current input state, i.e. what value we're currently reading.
@@ -183,10 +185,10 @@ public final class DisplayModule extends AbstractModuleWithRotation {
         matrices.push();
         rotateForRendering(matrices);
 
-        final Identifier id = getBackingTextureId();
+        final RenderLayer rl = getRenderLayer();
         updateBackingTexture();
 
-        final VertexConsumer vc = vcp.getBuffer(RenderLayer.getEntityCutout(id));
+        final VertexConsumer vc = vcp.getBuffer(rl);
         RenderUtil.drawQuad(matrices.peek(), vc, RenderUtil.maxLight, overlay);
 
         matrices.pop();
@@ -321,18 +323,20 @@ public final class DisplayModule extends AbstractModuleWithRotation {
     }
 
     /**
-     * Gets the identifier associated with our texture, registering it if required
+     * Gets the render layer associated with our texture, creating it if required
      */
-    private Identifier getBackingTextureId() {
-        if (backingTextureId == null) {
+    private RenderLayer getRenderLayer() {
+        if (renderLayer == null) {
             TextureManager texMan = MinecraftClient.getInstance().getTextureManager();
             NativeImageBackedTexture tex = getBackingTexture();
             backingTextureId = generateDynTextureId();
 
             texMan.registerTexture(backingTextureId, tex);
+
+            renderLayer = RenderLayerAccess.getCutoutNoDiffLight(backingTextureId);
         }
 
-        return backingTextureId;
+        return renderLayer;
     }
 
     /**
