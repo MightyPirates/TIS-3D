@@ -185,19 +185,21 @@ public interface Module {
      * Called to allow the module to render dynamic content on the casing it
      * is installed in.
      * <p>
-     * The render state will be adjusted to take into account the face the
+     * The MatrixStack will be adjusted to take into account the face the
      * module is installed in, i.e. rendering from (0, 0, 0) to (1, 1, 0) will
      * render the full quad of face of the casing the module is installed in.
      * <p>
-     * Note that the <code>enabled</code> is the same as {@link Casing#isEnabled()},
-     * it is merely passed along for backwards compatibility from before the
-     * time that getter existed.
+     * The light value is provided but most modules will want to ignore it
+     * and render at max brightness using {@link li.cil.tis3d.api.util.RenderUtil#maxLight}.
+     *
      *
      * @param rendererDispatcher the render context of the tile entity the module sits in.
      * @param partialTicks       the partial time elapsed in this tick.
+     * @param matrices           the transformation stack
+     * @param vcp                the VertexConsumerProvider to query buffers from
+     * @param light              the block-local light value for rendering; usually ignored in favor of RenderUtil.maxLight
+     * @param overlay            the overlay paramater for rendering
      */
-    void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks);
-
     void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks,
                 final MatrixStack matrices, final VertexConsumerProvider vcp,
                 final int light, final int overlay);
