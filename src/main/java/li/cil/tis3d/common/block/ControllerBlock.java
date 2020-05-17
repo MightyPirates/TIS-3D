@@ -51,7 +51,7 @@ public final class ControllerBlock extends Block implements BlockEntityProvider 
                         player.dropItem(bookManual, false, false);
                     }
                 }
-                return ActionResult.CONSUME; // XXX
+                return ActionResult.SUCCESS;
             }
         }
 
@@ -63,7 +63,7 @@ public final class ControllerBlock extends Block implements BlockEntityProvider 
                 controller.forceStep();
             }
 
-            return ActionResult.CONSUME;
+            return ActionResult.SUCCESS;
         }
 
         return super.onUse(state, world, pos, player, hand, blockHitResult);
