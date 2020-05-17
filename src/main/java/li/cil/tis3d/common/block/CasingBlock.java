@@ -122,7 +122,7 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
         // TODO Ugly, but context does not pass on hand...
         final Hand hand = context.getPlayer() != null && context.getPlayer().getStackInHand(Hand.OFF_HAND) == context.getStack() ? Hand.OFF_HAND : Hand.MAIN_HAND;
         final ActionResult ar = ((CasingBlock)blockState.getBlock()).onUse(blockState, context.getWorld(), context.getBlockPos(), context.getPlayer(), hand, ((ItemUsageContextAccessors)context).getBlockHitResult());
-        return ar == ActionResult.CONSUME;
+        return ar == ActionResult.SUCCESS; // XXX
     }
 
     @SuppressWarnings("deprecation")
@@ -151,21 +151,21 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
                             }
                         }
                     }
-                    return ActionResult.CONSUME; // XXX
+                    return ActionResult.SUCCESS; // XXX
                 }
 
                 // Trying to look something up in the manual?
                 if (Items.isBookManual(heldItem)) {
                     final ItemStack moduleStack = casing.getInvStack(blockHitResult.getSide().ordinal());
                     if (ManualBookItem.tryOpenManual(world, player, ManualAPI.pathFor(moduleStack))) {
-                        return ActionResult.CONSUME; // XXX
+                        return ActionResult.SUCCESS; // XXX
                     }
                 }
 
                 // Let the module handle the activation.
                 final Module module = casing.getModule(Face.fromDirection(blockHitResult.getSide()));
                 if (module != null && module.onActivate(player, hand, hit)) {
-                    return ActionResult.CONSUME; // XXX
+                    return ActionResult.SUCCESS; // XXX
                 }
 
                 // Don't allow changing modules while casing is locked.
@@ -185,7 +185,7 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
                             world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.BLOCK_PISTON_CONTRACT, SoundCategory.BLOCKS, 0.2f, 0.8f + world.random.nextFloat() * 0.1f);
                         }
                     }
-                    return ActionResult.CONSUME; // XXX
+                    return ActionResult.SUCCESS; // XXX
                 } else if (!heldItem.isEmpty()) {
                     // Installing a new module in the casing.
                     if (casing.canInsertInvStack(blockHitResult.getSide().ordinal(), heldItem, blockHitResult.getSide())) {
@@ -204,7 +204,7 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
                             }
                             world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.BLOCK_PISTON_EXTEND, SoundCategory.BLOCKS, 0.2f, 0.8f + world.random.nextFloat() * 0.1f);
                         }
-                        return ActionResult.CONSUME; // XXX
+                        return ActionResult.SUCCESS; // XXX
                     }
                 }
             }
