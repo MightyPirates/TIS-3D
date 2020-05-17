@@ -21,8 +21,7 @@ public final class ControllerBlockEntityRenderer extends BlockEntityRenderer<Con
             return;
         }
 
-        //~ final HitResult hitResult = renderManager.crosshairTarget;
-        final HitResult hitResult = null; // XXX
+        final HitResult hitResult = dispatcher.crosshairTarget;
         if (hitResult == null) {
             return;
         }
