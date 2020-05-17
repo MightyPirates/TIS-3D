@@ -18,6 +18,7 @@ import li.cil.tis3d.common.module.execution.MachineImpl;
 import li.cil.tis3d.common.module.execution.MachineState;
 import li.cil.tis3d.common.module.execution.compiler.Compiler;
 import li.cil.tis3d.common.module.execution.compiler.ParseException;
+import li.cil.tis3d.util.ColorUtils;
 import li.cil.tis3d.util.EnumUtils;
 import li.cil.tis3d.util.NBTIds;
 import net.fabricmc.api.EnvType;
@@ -393,7 +394,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
         final int page = currentLine / maxLines;
         final int offset = page * maxLines;
 
-        int color = 0xFFFFFFFF;
+        int color = ColorUtils.WHITE;
         int currentLineBgColor = color;
         // Some bookkeeping so we can draw the current-line background
         // at the correct y offset later
@@ -413,7 +414,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
 
                 color = 0xFF000000;
             } else {
-                color = 0xFFFFFFFF;
+                color = ColorUtils.WHITE;
             }
 
             fontRenderer.drawString(matrices.peek(), vcFont, light, overlay,
@@ -428,7 +429,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
 
         final VertexConsumer vcColor = vcp.getBuffer(RenderLayer.getSolid());
         drawLine(matrices.peek(), vcColor, light, overlay,
-                 0xFFFFFFFF, 1);
+                 ColorUtils.WHITE, 1);
 
         if (currentLineOffset != -1) {
             // Draw current line marker behind text

@@ -13,6 +13,7 @@ import li.cil.tis3d.client.gui.TerminalModuleGui;
 import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.client.render.font.AbstractFontRenderer;
 import li.cil.tis3d.client.render.font.NormalFontRenderer;
+import li.cil.tis3d.util.ColorUtils;
 import li.cil.tis3d.util.NBTIds;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -347,7 +348,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
                              final VertexConsumerProvider vcp,
                              final int light, final int overlay,
                              final AbstractFontRenderer fontRenderer, final int textWidth) {
-        int color = 0xFFFFFFFF;
+        int color = ColorUtils.WHITE;
 
         matrices.translate(0, 4, 0);
 
