@@ -88,8 +88,7 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
 
     private boolean isRenderingBackFace(final Face face, final double dx, final double dy, final double dz) {
         final Direction facing = Face.toDirection(face.getOpposite());
-        final double dotProduct = 1.0; // XXX
-//        final double dotProduct = facing.getOffsetX() * dx + facing.getOffsetY() * (dy - renderManager.camera.getFocusedEntity().getEyeHeight(renderManager.camera.getFocusedEntity().getPose())) + facing.getOffsetZ() * dz;
+        final double dotProduct = facing.getOffsetX() * dx + facing.getOffsetY() * (dy - dispatcher.camera.getFocusedEntity().getEyeHeight(dispatcher.camera.getFocusedEntity().getPose())) + facing.getOffsetZ() * dz;
         return dotProduct < 0;
     }
 
@@ -143,13 +142,12 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
                 closedSprite = RenderUtil.getSprite(Textures.LOCATION_OVERLAY_CASING_PORT_CLOSED);
                 openSprite = RenderUtil.getSprite(Textures.LOCATION_OVERLAY_CASING_PORT_OPEN);
 
-                //~ final HitResult hitResult = renderManager.crosshairTarget;
-                final HitResult hitResult = null; // XXX
-                assert hitResult.getType() == HitResult.Type.BLOCK : "renderManager.hitResult.getBlockPos().getType() is not of type BLOCK even though it was in isObserverLookingAt";
-                assert hitResult instanceof BlockHitResult : "renderManager.hitResult.getBlockPos() is not a BlockHitResult even though it was in isObserverLookingAt";
+                final HitResult hitResult = dispatcher.crosshairTarget;
+                assert hitResult.getType() == HitResult.Type.BLOCK : "dispatcher.hitResult.getBlockPos().getType() is not of type BLOCK even though it was in isObserverLookingAt";
+                assert hitResult instanceof BlockHitResult : "dispatcher.hitResult.getBlockPos() is not a BlockHitResult even though it was in isObserverLookingAt";
                 final BlockHitResult blockHitResult = (BlockHitResult)hitResult;
                 final BlockPos pos = blockHitResult.getBlockPos();
-                assert pos != null : "renderManager.hitResult.getBlockPos() is null even though it was non-null in isObserverLookingAt";
+                assert pos != null : "dispatcher.hitResult.getBlockPos() is null even though it was non-null in isObserverLookingAt";
                 final Vec3d uv = TransformUtil.hitToUV(face, hitResult.getPos().subtract(new Vec3d(pos)));
                 lookingAtPort = Port.fromUVQuadrant(uv);
             } else {
@@ -223,7 +221,7 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
         final int brightness = 0; // XXX
 
         try {
-            //~ module.render(renderManager, partialTicks);
+            module.render(dispatcher, partialTicks);
         } catch (final Exception e) {
             BLACKLIST.add(module.getClass());
             TIS3D.getLog().error("A module threw an exception while rendering, won't render again!", e);
@@ -231,28 +229,25 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
     }
 
     private boolean isObserverKindaClose(final CasingBlockEntity casing) {
-        //~ return renderManager.camera.getBlockPos().getSquaredDistance(casing.getPos()) < 16 * 16;
-        return true; // XXX
+        return dispatcher.camera.getBlockPos().getSquaredDistance(casing.getPos()) < 16 * 16;
     }
 
     private boolean isObserverHoldingKey() {
-        //~ for (final ItemStack stack : renderManager.camera.getFocusedEntity().getItemsEquipped()) {
-            //~ if (Items.isKey(stack)) {
-                //~ return true;
-            //~ }
-        //~ }
+        for (final ItemStack stack : dispatcher.camera.getFocusedEntity().getItemsEquipped()) {
+            if (Items.isKey(stack)) {
+                return true;
+            }
+        }
 
         return false;
     }
 
     private boolean isObserverSneaking() {
-        //~ return renderManager.camera.getFocusedEntity().isSneaking();
-        return false; // XXX
+        return dispatcher.camera.getFocusedEntity().isSneaking();
     }
 
     private boolean isObserverLookingAt(final BlockPos pos, final Face face) {
-        //~ final HitResult hitResult = renderManager.crosshairTarget;
-        final HitResult hitResult = null; // XXX
+        final HitResult hitResult = dispatcher.crosshairTarget;
         if (hitResult == null) {
             return false;
         }
