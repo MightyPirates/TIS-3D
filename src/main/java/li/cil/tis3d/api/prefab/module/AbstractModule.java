@@ -240,11 +240,6 @@ public abstract class AbstractModule implements Module {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
-    }
-
-    @Environment(EnvType.CLIENT)
-    @Override
     public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks,
                        final MatrixStack matrices, final VertexConsumerProvider vcp,
                        final int light, final int overlay) {

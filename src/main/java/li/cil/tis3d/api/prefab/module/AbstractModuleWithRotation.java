@@ -1,6 +1,5 @@
 package li.cil.tis3d.api.prefab.module;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
@@ -45,17 +44,6 @@ public abstract class AbstractModuleWithRotation extends AbstractModule implemen
 
     // --------------------------------------------------------------------- //
     // Rendering utility
-
-    /**
-     * Apply the module's rotation to the OpenGL state.
-     */
-    @Environment(EnvType.CLIENT)
-    protected void rotateForRendering() {
-        final int rotation = Port.ROTATION[getFacing().ordinal()];
-        GlStateManager.translatef(0.5f, 0.5f, 0);
-        GlStateManager.rotatef(90 * rotation, 0, 0, Face.toDirection(getFace()).getOffsetY());
-        GlStateManager.translatef(-0.5f, -0.5f, 0);
-    }
 
     /**
      * Apply the module's rotation to {@code matrices}.
