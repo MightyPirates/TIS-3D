@@ -7,6 +7,7 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.init.Textures;
+import li.cil.tis3d.util.ColorUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.RenderLayer;
@@ -291,6 +292,6 @@ public final class KeypadModule extends AbstractModuleWithRotation {
         matrices.translate(0, 0, 0.005f / 2);
         RenderUtil.drawColorQuad(matrices.peek(), vcColor,
                                  x - delta, y - delta, w + 2*delta, h + 2*delta,
-                                 0xFFFFFFFF, light, overlay);
+                                 ColorUtils.WHITE, light, overlay);
     }
 }

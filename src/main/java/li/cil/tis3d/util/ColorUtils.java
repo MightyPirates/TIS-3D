@@ -23,6 +23,8 @@ public final class ColorUtils {
         0xFF000000  // 15: Black
     };
 
+    public static final int WHITE = COLORS[0];
+
     /**
      * Get an ARGB color value for the dye color with the specified index.
      *

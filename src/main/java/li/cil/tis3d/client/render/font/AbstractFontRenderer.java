@@ -3,6 +3,7 @@ package li.cil.tis3d.client.render.font;
 import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.tis3d.api.util.RenderLayerAccess;
 import li.cil.tis3d.api.util.RenderUtil;
+import li.cil.tis3d.util.ColorUtils;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.minecraft.client.MinecraftClient;
@@ -72,7 +73,7 @@ public abstract class AbstractFontRenderer implements FontRenderer {
     public void drawString(final MatrixStack.Entry matrices, final VertexConsumer vc,
                            int light, int overlay,
                            final CharSequence value) {
-        drawString(matrices, vc, light, overlay, 0xFFFFFFFF, value, value.length());
+        drawString(matrices, vc, light, overlay, ColorUtils.WHITE, value, value.length());
     }
 
     public void drawString(final MatrixStack.Entry matrices, final VertexConsumer vc,
@@ -84,7 +85,7 @@ public abstract class AbstractFontRenderer implements FontRenderer {
     public void drawString(final MatrixStack.Entry matrices, final VertexConsumer vc,
                            int light, int overlay,
                            final CharSequence value, final int maxChars) {
-        drawString(matrices, vc, light, overlay, 0xFFFFFFFF, value, maxChars);
+        drawString(matrices, vc, light, overlay, ColorUtils.WHITE, value, maxChars);
     }
 
     public void drawString(final MatrixStack.Entry matrices, final VertexConsumer vc,
