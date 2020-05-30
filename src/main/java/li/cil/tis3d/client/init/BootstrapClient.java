@@ -10,16 +10,20 @@ import li.cil.tis3d.client.manual.provider.TagImageProvider;
 import li.cil.tis3d.client.manual.provider.TextureImageProvider;
 import li.cil.tis3d.client.render.block.entity.CasingBlockEntityRenderer;
 import li.cil.tis3d.client.render.block.entity.ControllerBlockEntityRenderer;
+import li.cil.tis3d.client.render.entity.InvisibleEntityRenderer;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.block.CasingBlock;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.block.entity.ControllerBlockEntity;
+import li.cil.tis3d.common.entity.InfraredPacketEntity;
 import li.cil.tis3d.common.init.Blocks;
+import li.cil.tis3d.common.init.Entities;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.module.DisplayModule;
 import li.cil.tis3d.common.network.Network;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.fabricmc.fabric.api.event.client.ClientTickCallback;
 import net.fabricmc.fabric.api.event.client.player.ClientPickBlockGatherCallback;
@@ -48,6 +52,10 @@ public final class BootstrapClient implements ClientModInitializer {
         ClientTickCallback.EVENT.register(client -> Network.INSTANCE.clientTick());
         ClientSpriteRegistryCallback.event(SpriteAtlasTexture.BLOCK_ATLAS_TEX).register((spriteAtlasTexture, registry) -> Textures.registerSprites(registry));
         ClientPickBlockGatherCallback.EVENT.register(BootstrapClient::handlePickBlock);
+
+        // Register entity renderers
+        EntityRendererRegistry.INSTANCE.register(Entities.INFRARED_PACKET,
+            (dispatcher, context) -> new InvisibleEntityRenderer<InfraredPacketEntity>(dispatcher));
 
         // Set up tile entity renderer for dynamic module content.
         //~ BlockEntityRendererRegistry.INSTANCE.register(CasingBlockEntity.class, CasingBlockEntityRenderer::new);
