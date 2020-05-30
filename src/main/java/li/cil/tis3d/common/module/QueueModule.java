@@ -1,6 +1,5 @@
 package li.cil.tis3d.common.module;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.FontRendererAPI;
@@ -11,9 +10,16 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.init.Textures;
+import li.cil.tis3d.client.render.font.AbstractFontRenderer;
+import li.cil.tis3d.client.render.font.SmallFontRenderer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.MathHelper;
 
@@ -103,20 +109,27 @@ public final class QueueModule extends AbstractModuleWithRotation {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
+    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks,
+                       final MatrixStack matrices, final VertexConsumerProvider vcp,
+                       final int light, final int overlay) {
         if (!getCasing().isEnabled()) {
             return;
         }
 
-        rotateForRendering();
-        RenderUtil.ignoreLighting();
+        matrices.push();
+        rotateForRendering(matrices);
 
-        RenderUtil.drawQuad(RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_QUEUE));
+        final Sprite baseSprite = RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_QUEUE);
+        final VertexConsumer vc = vcp.getBuffer(RenderLayer.getCutoutMipped());
+
+        RenderUtil.drawQuad(baseSprite, matrices.peek(), vc, RenderUtil.maxLight, overlay);
 
         // Render detailed state when player is close.
         if (!isEmpty() && rendererDispatcher.camera.getBlockPos().getSquaredDistance(getCasing().getPosition()) < 64) {
-            drawState();
+            drawState(matrices, vcp, RenderUtil.maxLight, overlay);
         }
+
+        matrices.pop();
     }
 
     @Override
@@ -256,18 +269,25 @@ public final class QueueModule extends AbstractModuleWithRotation {
     }
 
     @Environment(EnvType.CLIENT)
-    private void drawState() {
+    private void drawState(final MatrixStack matrices, final VertexConsumerProvider vcp,
+                           final int light, final int overlay) {
         // Offset to start drawing at top left of inner area, slightly inset.
-        GlStateManager.translatef(3 / 16f, 5 / 16f, 0);
-        GlStateManager.scalef(1 / 128f, 1 / 128f, 1);
-        GlStateManager.translatef(4.5f, 14.5f, 0);
-        GlStateManager.color4f(1f, 1f, 1f, 1f);
+        matrices.translate(3 / 16f, 5 / 16f, 0);
+        matrices.scale(1 / 128f, 1 / 128f, 1);
+        matrices.translate(4.5f, 14.5f, 0);
+
+        final AbstractFontRenderer fontRenderer = (AbstractFontRenderer) SmallFontRenderer.INSTANCE;
+        final VertexConsumer vcFont = fontRenderer.chooseVertexConsumer(vcp);
+        final int charWidth = fontRenderer.getCharWidth();
+        final int charHeight = fontRenderer.getCharHeight();
 
         for (int i = tail, j = 0; i != head; i = (i + 1) % QUEUE_SIZE, j++) {
-            FontRendererAPI.drawString(String.format("%4X", queue[i]));
-            GlStateManager.translatef(0, FontRendererAPI.getCharHeight() + 1, 0);
+            final String str = String.format("%4X", queue[i]);
+            fontRenderer.drawString(matrices.peek(), vcFont, light, overlay, str);
+            matrices.translate(0, charHeight + 1, 0);
+
             if ((j + 1) % 4 == 0) {
-                GlStateManager.translatef((FontRendererAPI.getCharWidth() + 1) * 5, (FontRendererAPI.getCharHeight() + 1) * -4, 0);
+                matrices.translate((charWidth + 1) * 5, (charHeight + 1) * -4, 0);
             }
         }
     }
