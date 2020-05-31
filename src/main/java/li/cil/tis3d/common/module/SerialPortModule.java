@@ -14,7 +14,12 @@ import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.util.WorldUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -101,14 +106,18 @@ public final class SerialPortModule extends AbstractModule implements BlockChang
 
     @Environment(EnvType.CLIENT)
     @Override
-    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
+    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks,
+                       final MatrixStack matrices, final VertexConsumerProvider vcp,
+                       final int light, final int overlay) {
         if (!getCasing().isEnabled()) {
             return;
         }
 
-        RenderUtil.ignoreLighting();
+        final VertexConsumer vc = vcp.getBuffer(RenderLayer.getCutoutMipped());
+        final Sprite sprite = RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_SERIAL_PORT);
 
-        RenderUtil.drawQuad(RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_SERIAL_PORT));
+        RenderUtil.drawQuad(sprite, matrices.peek(), vc, 0xF000F0, overlay);
+                            // XXX would be nice to not hardcode the light value here
     }
 
     @Override
