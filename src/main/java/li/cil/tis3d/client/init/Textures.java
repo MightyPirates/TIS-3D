@@ -12,6 +12,7 @@ public final class Textures {
     public static final Identifier LOCATION_GUI_MANUAL_MISSING = new Identifier(API.MOD_ID, "textures/gui/manual_missing.png");
     public static final Identifier LOCATION_GUI_MEMORY = new Identifier(API.MOD_ID, "textures/gui/module_memory.png");
 
+    public static final Identifier LOCATION_OVERLAY_UTIL_WHITE = new Identifier(API.MOD_ID, "block/overlay/util_white");
     public static final Identifier LOCATION_OVERLAY_CASING_LOCKED = new Identifier(API.MOD_ID, "block/overlay/casing_locked");
     public static final Identifier LOCATION_OVERLAY_CASING_UNLOCKED = new Identifier(API.MOD_ID, "block/overlay/casing_unlocked");
     public static final Identifier LOCATION_OVERLAY_CASING_PORT_CLOSED = new Identifier(API.MOD_ID, "block/overlay/casing_port_closed");
@@ -37,6 +38,7 @@ public final class Textures {
     public static final Identifier LOCATION_OVERLAY_MODULE_TIMER = new Identifier(API.MOD_ID, "block/overlay/module_timer");
 
     static void registerSprites(final ClientSpriteRegistryCallback.Registry registry) {
+        registry.register(LOCATION_OVERLAY_UTIL_WHITE);
         registry.register(LOCATION_OVERLAY_CASING_LOCKED);
         registry.register(LOCATION_OVERLAY_CASING_UNLOCKED);
         registry.register(LOCATION_OVERLAY_CASING_PORT_CLOSED);
