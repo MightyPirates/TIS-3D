@@ -59,6 +59,7 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
         // Render all modules, adjust GL state to allow easily rendering an
         // overlay in (0, 0, 0) to (1, 1, 0).
         for (final Face face : Face.VALUES) {
+            // Fixme: This already wasn't working in 1.14, let's leave it for later
             //~ if (isRenderingBackFace(face, dx, dy, dz)) {
                 //~ continue;
             //~ }
