@@ -4,7 +4,9 @@ import io.netty.buffer.ByteBuf;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -195,6 +197,10 @@ public interface Module {
      * @param partialTicks       the partial time elapsed in this tick.
      */
     void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks);
+
+    void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks,
+                final MatrixStack matrices, final VertexConsumerProvider vcp,
+                final int light, final int overlay);
 
     // --------------------------------------------------------------------- //
 

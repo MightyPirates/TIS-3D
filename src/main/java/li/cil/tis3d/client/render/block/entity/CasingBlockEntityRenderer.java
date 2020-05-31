@@ -13,21 +13,28 @@ import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.init.Items;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.TexturedRenderLayers;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -48,14 +55,8 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
 
     @Override
     public void render(final CasingBlockEntity casing, float partialTicks, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        //~ final double dx = x + 0.5;
-        //~ final double dy = y + 0.5;
-        //~ final double dz = z + 0.5;
-
-        GlStateManager.pushMatrix();
-        //~ GlStateManager.translated(dx, dy, dz);
-
-        DiffuseLighting.disable();
+        matrices.push();
+        matrices.translate(0.5, 0.5, 0.5);
 
         // Render all modules, adjust GL state to allow easily rendering an
         // overlay in (0, 0, 0) to (1, 1, 0).
@@ -65,24 +66,21 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
                 //~ continue;
             //~ }
 
-            GlStateManager.pushMatrix();
+            matrices.push();
             GlStateManager.pushLightingAttributes();
 
-            setupMatrix(face);
+            setupMatrix(face, matrices);
 
-            ensureSanity();
-
-            if (!isObserverHoldingKey() || !drawConfigOverlay(casing, face)) {
-                drawModuleOverlay(casing, face, partialTicks);
+            if (!isObserverHoldingKey() /*~|| !drawConfigOverlay(casing, face)*/) {
+                // XXX light is not the correct lightmap value
+                drawModuleOverlay(casing, face, partialTicks, matrices, vertexConsumers, light, overlay);
             }
 
             GlStateManager.popAttributes();
-            GlStateManager.popMatrix();
+            matrices.pop();
         }
 
-        //~ DiffuseLighting.enableForLevel();
-
-        GlStateManager.popMatrix();
+        matrices.pop();
     }
 
     private boolean isRenderingBackFace(final Face face, final double dx, final double dy, final double dz) {
@@ -91,38 +89,43 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
         return dotProduct < 0;
     }
 
-    private void setupMatrix(final Face face) {
+    private void setupMatrix(final Face face, final MatrixStack matrices) {
+        final Vector3f axis;
+        final int degree;
+
         switch (face) {
             case Y_NEG:
-                GlStateManager.rotatef(-90, 1, 0, 0);
+                axis = Vector3f.POSITIVE_X;
+                degree = -90;
                 break;
             case Y_POS:
-                GlStateManager.rotatef(90, 1, 0, 0);
+                axis = Vector3f.POSITIVE_X;
+                degree = 90;
                 break;
             case Z_NEG:
-                GlStateManager.rotatef(0, 0, 1, 0);
+                axis = Vector3f.POSITIVE_Y;
+                degree = 0;
                 break;
             case Z_POS:
-                GlStateManager.rotatef(180, 0, 1, 0);
+                axis = Vector3f.POSITIVE_Y;
+                degree = 180;
                 break;
             case X_NEG:
-                GlStateManager.rotatef(90, 0, 1, 0);
+                axis = Vector3f.POSITIVE_Y;
+                degree = 90;
                 break;
             case X_POS:
-                GlStateManager.rotatef(-90, 0, 1, 0);
+                axis = Vector3f.POSITIVE_Y;
+                degree = -90;
                 break;
+            default:
+                axis = null;
+                throw new RuntimeException("Invalid face");
         }
 
-        GlStateManager.translated(0.5, 0.5, -0.505);
-        GlStateManager.scaled(-1, -1, 1);
-    }
-
-    private void ensureSanity() {
-        GlStateManager.enableTexture();
-        RenderUtil.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-        GlStateManager.color4f(1, 1, 1, 1);
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        RenderUtil.ignoreLighting();
+        matrices.multiply(new Quaternion(axis, degree, true));
+        matrices.translate(0.5f, 0.5f, -0.505f);
+        matrices.scale(-1, -1, 1);
     }
 
     private boolean drawConfigOverlay(final CasingBlockEntity casing, final Face face) {
@@ -189,22 +192,26 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
         return true;
     }
 
-    private void drawModuleOverlay(final CasingBlockEntity casing, final Face face, final float partialTicks) {
+    private void drawModuleOverlay(final CasingBlockEntity casing, final Face face, final float partialTicks,
+                                   final MatrixStack matrices, final VertexConsumerProvider vcp,
+                                   final int light, final int overlay) {
+        final VertexConsumer vc = vcp.getBuffer(TexturedRenderLayers.getEntityCutout());
         final Sprite closedSprite = RenderUtil.getSprite(Textures.LOCATION_OVERLAY_CASING_PORT_CLOSED_SMALL);
 
-        GlStateManager.pushMatrix();
-        GlStateManager.translated(0, 0, -0.005);
+        matrices.push();
+        matrices.translate(0, 0, -0.005f);
         for (final Port port : Port.CLOCKWISE) {
             final boolean isClosed = casing.isReceivingPipeLocked(face, port);
             if (isClosed) {
-                RenderUtil.drawQuad(closedSprite);
+                // XXX I don't think this works yet
+                RenderUtil.drawQuad(closedSprite, matrices.peek(), vc, light, overlay);
             }
 
-            GlStateManager.translatef(0.5f, 0.5f, 0.5f);
-            GlStateManager.rotatef(90, 0, 0, 1);
-            GlStateManager.translatef(-0.5f, -0.5f, -0.5f);
+            matrices.translate(0.5f, 0.5f, 0.5f);
+            matrices.multiply(new Quaternion(Vector3f.POSITIVE_Z, 90, true));
+            matrices.translate(-0.5f, -0.5f, -0.5f);
         }
-        GlStateManager.popMatrix();
+        matrices.pop();
 
         final Module module = casing.getModule(face);
         if (module == null) {
@@ -214,13 +221,8 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
             return;
         }
 
-        //~ final int brightness = getWorld().getLightmapIndex(
-            //~ casing.getPosition().offset(Face.toDirection(face)), 0);
-        //~ GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, brightness % 65536, (float)(brightness / 65536));
-        final int brightness = 0; // XXX
-
         try {
-            module.render(dispatcher, partialTicks);
+            module.render(dispatcher, partialTicks, matrices, vcp, light, overlay);
         } catch (final Exception e) {
             BLACKLIST.add(module.getClass());
             TIS3D.getLog().error("A module threw an exception while rendering, won't render again!", e);
