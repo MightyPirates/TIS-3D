@@ -170,6 +170,7 @@ public final class Document {
         }
         hovered.ifPresent(InteractiveSegment::notifyHover);
 
+        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT, false);
         GlStateManager.popAttributes();
         GlStateManager.bindTexture(0);
 
