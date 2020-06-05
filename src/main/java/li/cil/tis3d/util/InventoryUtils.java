@@ -28,7 +28,7 @@ public final class InventoryUtils {
      */
     @Nullable
     public static ItemEntity drop(final World world, final BlockPos pos, final Inventory inventory, final int index, final int count, final Direction towards) {
-        final ItemStack stack = inventory.takeInvStack(index, count);
+        final ItemStack stack = inventory.removeStack(index, count);
         return spawnStackInWorld(world, pos, stack, towards);
     }
 

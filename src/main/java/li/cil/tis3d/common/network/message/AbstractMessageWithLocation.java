@@ -1,7 +1,7 @@
 package li.cil.tis3d.common.network.message;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 

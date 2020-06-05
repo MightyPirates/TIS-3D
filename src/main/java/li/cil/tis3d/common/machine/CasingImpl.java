@@ -241,8 +241,8 @@ public final class CasingImpl implements Casing {
      * @param nbt the data to load.
      */
     public void readFromNBT(final CompoundTag nbt) {
-        for (int index = 0; index < blockEntity.getInvSize(); index++) {
-            final ItemStack stack = blockEntity.getInvStack(index);
+        for (int index = 0; index < blockEntity.size(); index++) {
+            final ItemStack stack = blockEntity.getStack(index);
             if (stack.isEmpty()) {
                 if (modules[index] != null) {
                     modules[index].onDisposed();

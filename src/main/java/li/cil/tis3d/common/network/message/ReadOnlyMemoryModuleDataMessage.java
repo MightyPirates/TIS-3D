@@ -1,8 +1,8 @@
 package li.cil.tis3d.common.network.message;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Hand;
-import net.minecraft.util.PacketByteBuf;
 
 public final class ReadOnlyMemoryModuleDataMessage extends AbstractMessage {
     private byte[] data;

@@ -55,11 +55,11 @@ public class ArrayInventory implements Inventory {
     // Inventory
 
     @Override
-    public int getInvSize() {
+    public int size() {
         return items.length;
     }
 
-    public boolean isInvEmpty() {
+    public boolean isEmpty() {
         for (final ItemStack stack : items) {
             if (!stack.isEmpty()) {
                 return false;
@@ -70,14 +70,14 @@ public class ArrayInventory implements Inventory {
     }
 
     @Override
-    public ItemStack getInvStack(final int index) {
+    public ItemStack getStack(final int index) {
         return items[index];
     }
 
     @Override
-    public ItemStack takeInvStack(final int index, final int count) {
+    public ItemStack removeStack(final int index, final int count) {
         if (items[index].getCount() <= count) {
-            return removeInvStack(index);
+            return removeStack(index);
         } else {
             final ItemStack stack = items[index].split(count);
             assert items[index].getCount() > 0;
@@ -87,14 +87,14 @@ public class ArrayInventory implements Inventory {
     }
 
     @Override
-    public ItemStack removeInvStack(final int index) {
+    public ItemStack removeStack(final int index) {
         final ItemStack stack = items[index];
-        setInvStack(index, ItemStack.EMPTY);
+        setStack(index, ItemStack.EMPTY);
         return stack;
     }
 
     @Override
-    public void setInvStack(final int index, final ItemStack stack) {
+    public void setStack(final int index, final ItemStack stack) {
         if (items[index] == stack) {
             return;
         }
@@ -113,7 +113,7 @@ public class ArrayInventory implements Inventory {
     }
 
     @Override
-    public int getInvMaxStackAmount() {
+    public int getMaxCountPerStack() {
         return 64;
     }
 
@@ -122,7 +122,7 @@ public class ArrayInventory implements Inventory {
     }
 
     @Override
-    public boolean canPlayerUseInv(final PlayerEntity player) {
+    public boolean canPlayerUse(final PlayerEntity player) {
         return false;
     }
 

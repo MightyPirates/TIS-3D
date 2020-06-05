@@ -61,7 +61,7 @@ public class TextSegment extends BasicTextSegment {
             GlStateManager.translatef(currentX, currentY, 0);
             GlStateManager.scalef(scale, scale, scale);
             GlStateManager.translatef(-currentX, -currentY, 0);
-            renderer.draw(format + part, currentX, currentY, color);
+            //~ renderer.draw(format + part, currentX, currentY, color);
             GlStateManager.popMatrix();
             currentX = x + wrapIndent;
             currentY += lineHeight(renderer);
@@ -109,7 +109,7 @@ public class TextSegment extends BasicTextSegment {
 
     @Override
     protected int stringWidth(final String s, final TextRenderer renderer) {
-        return (int)(renderer.getStringWidth(resolvedFormat() + s) * resolvedScale());
+        return (int)(renderer.getWidth(resolvedFormat() + s) * resolvedScale());
     }
 
     // ----------------------------------------------------------------------- //

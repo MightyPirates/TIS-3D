@@ -183,11 +183,6 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
     }
 
     @Override
-    public boolean checkWaterState() {
-        return false;
-    }
-
-    @Override
     public boolean canFly() {
         return false;
     }
@@ -213,7 +208,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
 
     @Override
     public Vec3d getPacketPosition() {
-        return getPosVector();
+        return getPos();
     }
 
     @Override
@@ -229,7 +224,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
             revive();
 
             // Apply new position.
-            final Vec3d oldPos = getPosVector();
+            final Vec3d oldPos = getPos();
             final Vec3d delta = position.subtract(oldPos);
             final double sqrDelta = delta.dotProduct(delta);
             if (sqrDelta > TRAVEL_SPEED * TRAVEL_SPEED) {
@@ -275,7 +270,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
         final HitResult hitResult = checkCollision();
         if (hitResult != null) {
             // For travel distance adjustment, see below.
-            final Vec3d oldPos = getPosVector();
+            final Vec3d oldPos = getPos();
 
             switch (hitResult.getType()) {
                 case BLOCK:
@@ -291,7 +286,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
             // Offset to compensate position adjustments. This way the total
             // distance the packet travels per tick stays constant, even if
             // it was moved around by a packet handler.
-            final Vec3d curPos = getPosVector();
+            final Vec3d curPos = getPos();
             final double delta = curPos.subtract(oldPos).length() / TRAVEL_SPEED;
 
             setPos(curPos.subtract(getVelocity().multiply(delta)));

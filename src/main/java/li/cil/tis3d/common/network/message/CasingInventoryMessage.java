@@ -4,8 +4,7 @@ import io.netty.buffer.ByteBuf;
 import li.cil.tis3d.api.machine.Casing;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.PacketByteBuf;
-
+import net.minecraft.network.PacketByteBuf;
 import javax.annotation.Nullable;
 
 public final class CasingInventoryMessage extends AbstractMessageWithLocation {

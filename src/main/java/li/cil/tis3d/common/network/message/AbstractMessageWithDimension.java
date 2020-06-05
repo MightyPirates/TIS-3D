@@ -1,7 +1,7 @@
 package li.cil.tis3d.common.network.message;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
@@ -9,7 +9,7 @@ public abstract class AbstractMessageWithDimension extends AbstractMessage {
     private DimensionType dimension;
 
     AbstractMessageWithDimension(final World world) {
-        this.dimension = world.dimension.getType();
+        //~ this.dimension = world.dimension.getType();
     }
 
     AbstractMessageWithDimension() {
@@ -27,12 +27,12 @@ public abstract class AbstractMessageWithDimension extends AbstractMessage {
     @Override
     public void fromBytes(final ByteBuf buf) {
         final PacketByteBuf buffer = new PacketByteBuf(buf);
-        dimension = DimensionType.byRawId(buffer.readVarInt());
+        //~ dimension = DimensionType.byRawId(buffer.readVarInt());
     }
 
     @Override
     public void toBytes(final ByteBuf buf) {
         final PacketByteBuf buffer = new PacketByteBuf(buf);
-        buffer.writeVarInt(dimension.getRawId());
+        //~ buffer.writeVarInt(dimension.getRawId());
     }
 }

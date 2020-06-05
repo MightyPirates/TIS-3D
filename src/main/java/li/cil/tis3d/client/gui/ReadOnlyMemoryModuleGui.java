@@ -58,7 +58,7 @@ public final class ReadOnlyMemoryModuleGui extends Screen {
         guiX = (width - GUI_WIDTH) / 2;
         guiY = (height - GUI_HEIGHT) / 2;
 
-        minecraft.keyboard.enableRepeatEvents(true);
+        client.keyboard.enableRepeatEvents(true);
     }
 
     @Override
@@ -72,20 +72,20 @@ public final class ReadOnlyMemoryModuleGui extends Screen {
             Network.INSTANCE.sendToServer(new ReadOnlyMemoryModuleDataMessage(data, hand));
         }
 
-        minecraft.keyboard.enableRepeatEvents(false);
+        client.keyboard.enableRepeatEvents(false);
     }
 
-    @Override
+    //~ @Override
     public void render(final int mouseX, final int mouseY, final float partialTicks) {
         if (player.removed || !Items.isModuleReadOnlyMemory(player.getStackInHand(hand))) {
-            minecraft.openScreen(null);
+            client.openScreen(null);
             return;
         }
 
         // Background.
         GlStateManager.color4f(1, 1, 1, 1);
-        minecraft.getTextureManager().bindTexture(Textures.LOCATION_GUI_MEMORY);
-        blit(guiX, guiY, 0, 0, GUI_WIDTH, GUI_HEIGHT);
+        client.getTextureManager().bindTexture(Textures.LOCATION_GUI_MEMORY);
+        //~ blit(guiX, guiY, 0, 0, GUI_WIDTH, GUI_HEIGHT);
 
         // Draw row and column headers.
         drawHeaders();
@@ -307,9 +307,9 @@ public final class ReadOnlyMemoryModuleGui extends Screen {
         GlStateManager.pushMatrix();
         GlStateManager.translatef(x, y, 0);
 
-        minecraft.getTextureManager().bindTexture(Textures.LOCATION_GUI_MEMORY);
-        final int vPos = (int)(minecraft.world.getTime() % 16) * 8;
-        blit(0, 0, 256 - (CELL_WIDTH + 1), vPos, 11, 8);
+        client.getTextureManager().bindTexture(Textures.LOCATION_GUI_MEMORY);
+        final int vPos = (int)(client.world.getTime() % 16) * 8;
+        //~ blit(0, 0, 256 - (CELL_WIDTH + 1), vPos, 11, 8);
 
         GlStateManager.popMatrix();
     }

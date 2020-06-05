@@ -75,7 +75,7 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
 
     private boolean isBackFace(final BlockPos blockPos, final Face face) {
         final Vec3d cameraPosition = dispatcher.camera.getPos();
-        final Vec3d blockCenter = new Vec3d(blockPos).add(0.5, 0.5, 0.5);
+        final Vec3d blockCenter = Vec3d.of(blockPos).add(0.5, 0.5, 0.5);
         final Vec3d faceNormal = new Vec3d(Face.toDirection(face).getUnitVector());
         final Vec3d faceCenter = blockCenter.add(faceNormal.multiply(0.5));
         final Vec3d cameraToFaceCenter = faceCenter.subtract(cameraPosition);
@@ -146,7 +146,7 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
                 final BlockHitResult blockHitResult = (BlockHitResult)hitResult;
                 final BlockPos pos = blockHitResult.getBlockPos();
                 assert pos != null : "dispatcher.hitResult.getBlockPos() is null even though it was non-null in isObserverLookingAt";
-                final Vec3d uv = TransformUtil.hitToUV(face, hitResult.getPos().subtract(new Vec3d(pos)));
+                final Vec3d uv = TransformUtil.hitToUV(face, hitResult.getPos().subtract(Vec3d.of(pos)));
                 lookingAtPort = Port.fromUVQuadrant(uv);
             } else {
                 closedSprite = RenderUtil.getSprite(Textures.LOCATION_OVERLAY_CASING_PORT_CLOSED_SMALL);
