@@ -29,7 +29,7 @@ public final class FontRendererUtils {
         final MinecraftClient mc = MinecraftClient.getInstance();
         if (mc != null) {
             final TextRenderer fontRenderer = mc.textRenderer;
-            tooltip.addAll(fontRenderer.wrapStringToWidthAsList(info, Constants.MAX_TOOLTIP_WIDTH).stream().map(LiteralText::new).collect(Collectors.toList()));
+            tooltip.addAll(fontRenderer.wrapLines(info, Constants.MAX_TOOLTIP_WIDTH).stream().map(LiteralText::new).collect(Collectors.toList()));
         } else {
             tooltip.add(new LiteralText(info));
         }

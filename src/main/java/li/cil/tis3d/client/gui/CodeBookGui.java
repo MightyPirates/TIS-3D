@@ -141,7 +141,7 @@ public final class CodeBookGui extends Screen {
 
         // Draw page number.
         final String pageInfo = String.format("%d/%d", data.getSelectedPage() + 1, data.getPageCount());
-        getTextRenderer().draw(pageInfo, (float)(guiX + PAGE_NUMBER_X - getTextRenderer().getStringWidth(pageInfo) / 2), guiY + PAGE_NUMBER_Y, COLOR_CODE);
+        getTextRenderer().draw(pageInfo, (float)(guiX + PAGE_NUMBER_X - getTextRenderer().getWidth(pageInfo) / 2), guiY + PAGE_NUMBER_Y, COLOR_CODE);
     }
 
     @Override
@@ -437,7 +437,7 @@ public final class CodeBookGui extends Screen {
     }
 
     private int columnToX(final int line, final int column) {
-        return guiX + CODE_POS_X + getTextRenderer().getStringWidth(lines.get(line).substring(0, Math.min(column, lines.get(line).length())));
+        return guiX + CODE_POS_X + getTextRenderer().getWidth(lines.get(line).substring(0, Math.min(column, lines.get(line).length())));
     }
 
     private int positionToIndex(final int line, final int column) {
@@ -593,10 +593,10 @@ public final class CodeBookGui extends Screen {
 
                 final String prefixText = line.substring(0, prefix);
                 getTextRenderer().draw(prefixText, currX, lineY, COLOR_CODE);
-                currX += getTextRenderer().getStringWidth(prefixText);
+                currX += getTextRenderer().getWidth(prefixText);
 
                 final String selectedText = line.substring(prefix, prefix + selected);
-                final int selectedWidth = getTextRenderer().getStringWidth(selectedText);
+                final int selectedWidth = getTextRenderer().getWidth(selectedText);
                 fill(currX - 1, lineY - 1, currX + selectedWidth, lineY + getTextRenderer().fontHeight - 1, COLOR_SELECTION);
                 getTextRenderer().draw(selectedText, currX, lineY, COLOR_CODE_SELECTED);
                 currX += selectedWidth;
@@ -631,7 +631,7 @@ public final class CodeBookGui extends Screen {
                 rawEndX = columnToX(localLineNumber, exception.getEnd());
             }
             final int startY = guiY + CODE_POS_Y + localLineNumber * getTextRenderer().fontHeight - 1;
-            final int endX = Math.max(rawEndX, startX + getTextRenderer().getStringWidth(" "));
+            final int endX = Math.max(rawEndX, startX + getTextRenderer().getWidth(" "));
 
             fill(startX - 1, startY + getTextRenderer().fontHeight - 1, endX, startY + getTextRenderer().fontHeight, 0xFFFF3333);
 
@@ -662,7 +662,7 @@ public final class CodeBookGui extends Screen {
             final int line = indexToLine(selectionEnd);
             final int column = indexToColumn(selectionEnd);
             final StringBuilder sb = lines.get(line);
-            final int x = guiX + CODE_POS_X + getTextRenderer().getStringWidth(sb.substring(0, column)) - 1;
+            final int x = guiX + CODE_POS_X + getTextRenderer().getWidth(sb.substring(0, column)) - 1;
             final int y = guiY + CODE_POS_Y + line * getTextRenderer().fontHeight - 1;
             fill(x + 1, y + 1, x + 2 + 1, y + getTextRenderer().fontHeight + 1, 0xCC333333);
             fill(x, y, x + 2, y + getTextRenderer().fontHeight, COLOR_CODE_SELECTED);

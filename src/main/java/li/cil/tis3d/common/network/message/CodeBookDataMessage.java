@@ -2,8 +2,8 @@ package li.cil.tis3d.common.network.message;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Hand;
-import net.minecraft.util.PacketByteBuf;
 
 public final class CodeBookDataMessage extends AbstractMessage {
     private CompoundTag nbt;

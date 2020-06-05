@@ -54,7 +54,7 @@ public final class CasingInventory extends ArrayInventory implements SidedInvent
     // Inventory
 
     @Override
-    public int getInvMaxStackAmount() {
+    public int getMaxCountPerStack() {
         return 1;
     }
 
@@ -67,7 +67,7 @@ public final class CasingInventory extends ArrayInventory implements SidedInvent
         blockEntity.markDirty();
         if (world.isClient) {
             // Re-render on client, as module presence changes the block model.
-            world.checkBlockRerender(blockEntity.getPos(), state, newState);
+            world.scheduleBlockRerenderIfNeeded(blockEntity.getPos(), state, newState);
         }
     }
 
@@ -75,21 +75,21 @@ public final class CasingInventory extends ArrayInventory implements SidedInvent
     // SidedInventory
 
     @Override
-    public int[] getInvAvailableSlots(final Direction side) {
+    public int[] getAvailableSlots(final Direction side) {
         return new int[side.ordinal()];
     }
 
     @Override
-    public boolean canInsertInvStack(final int index, final ItemStack stack, @Nullable final Direction side) {
+    public boolean canInsert(final int index, final ItemStack stack, @Nullable final Direction side) {
         return side != null && side.ordinal() == index &&
-            getInvStack(index).isEmpty() &&
+            getStack(index).isEmpty() &&
             blockEntity.getModule(Face.fromDirection(side)) == null && // Handles virtual modules.
             canInstall(stack, Face.fromDirection(side));
     }
 
     @Override
-    public boolean canExtractInvStack(final int index, final ItemStack stack, final Direction side) {
-        return side.ordinal() == index && stack == getInvStack(index);
+    public boolean canExtract(final int index, final ItemStack stack, final Direction side) {
+        return side.ordinal() == index && stack == getStack(index);
     }
 
     private boolean canInstall(final ItemStack stack, final Face face) {
@@ -107,7 +107,7 @@ public final class CasingInventory extends ArrayInventory implements SidedInvent
     private void onItemAdded(final int index, final Port facing) {
         final World world = Objects.requireNonNull(blockEntity.getWorld());
 
-        final ItemStack stack = getInvStack(index);
+        final ItemStack stack = getStack(index);
         if (stack.isEmpty()) {
             return;
         }
@@ -153,7 +153,7 @@ public final class CasingInventory extends ArrayInventory implements SidedInvent
         blockEntity.setModule(face, null);
         if (!world.isClient) {
             if (module != null) {
-                module.onUninstalled(getInvStack(index));
+                module.onUninstalled(getStack(index));
                 module.onDisposed();
             }
 

@@ -109,7 +109,7 @@ public class TextSegment extends BasicTextSegment {
 
     @Override
     protected int stringWidth(final String s, final TextRenderer renderer) {
-        return (int)(renderer.getStringWidth(resolvedFormat() + s) * resolvedScale());
+        return (int)(renderer.getWidth(resolvedFormat() + s) * resolvedScale());
     }
 
     // ----------------------------------------------------------------------- //

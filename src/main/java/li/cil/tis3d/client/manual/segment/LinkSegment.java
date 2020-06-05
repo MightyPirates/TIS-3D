@@ -95,7 +95,7 @@ public final class LinkSegment extends TextSegment implements InteractiveSegment
             final Object instance = desktop.getMethod("getDesktop").invoke(null);
             desktop.getMethod("browse", URI.class).invoke(instance, new URI(url));
         } catch (final Throwable t) {
-            MinecraftClient.getInstance().player.sendMessage(new LiteralText(t.toString()));
+            MinecraftClient.getInstance().player.sendSystemMessage(new LiteralText(t.toString()));
         }
     }
 

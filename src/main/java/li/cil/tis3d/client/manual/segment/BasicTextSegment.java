@@ -117,7 +117,7 @@ abstract class BasicTextSegment extends AbstractSegment implements Segment {
     }
 
     protected int computeWrapIndent(final TextRenderer renderer) {
-        return (LISTS.contains(getRootPrefix())) ? renderer.getStringWidth(getRootPrefix()) : 0;
+        return (LISTS.contains(getRootPrefix())) ? renderer.getWidth(getRootPrefix()) : 0;
     }
 
     // ----------------------------------------------------------------------- //

@@ -163,7 +163,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
                 }
                 final ItemStack bookCode = new ItemStack(Items.BOOK_CODE);
                 if (player.inventory.insertStack(bookCode)) {
-                    player.playerContainer.sendContentUpdates();
+                    player.playerScreenHandler.sendContentUpdates();
                 }
                 if (bookCode.getCount() > 0) {
                     player.dropItem(bookCode, false, false);
@@ -324,7 +324,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
             Compiler.compile(code, getState());
         } catch (final ParseException e) {
             compileError = e;
-            player.addChatMessage(new TranslatableText(Constants.MESSAGE_COMPILE_ERROR, e.getLineNumber(), e.getStart(), e.getEnd()).append(new TranslatableText(e.getMessage())), false);
+            player.sendMessage(new TranslatableText(Constants.MESSAGE_COMPILE_ERROR, e.getLineNumber(), e.getStart(), e.getEnd()).append(new TranslatableText(e.getMessage())), false);
         }
     }
 
