@@ -224,7 +224,7 @@ public final class ManualGui extends Screen {
     // --------------------------------------------------------------------- //
 
     private TextRenderer getTextRenderer() {
-        return font;
+        return textRenderer;
     }
 
     private boolean canScroll() {

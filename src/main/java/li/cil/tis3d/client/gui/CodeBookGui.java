@@ -385,7 +385,7 @@ public final class CodeBookGui extends Screen {
     // --------------------------------------------------------------------- //
 
     private TextRenderer getTextRenderer() {
-        return font;
+        return textRenderer;
     }
 
     private int getSelectionStart() {
