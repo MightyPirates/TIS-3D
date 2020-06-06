@@ -183,11 +183,6 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
     }
 
     @Override
-    public boolean checkWaterState() {
-        return false;
-    }
-
-    @Override
     public boolean canFly() {
         return false;
     }
