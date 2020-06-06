@@ -231,7 +231,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
         RenderUtil.ignoreLighting();
         GlStateManager.enableBlend();
 
-        if (rendererDispatcher.cameraEntity.getBlockPos().getSquaredDistance(getCasing().getPosition()) < 64) {
+        if (rendererDispatcher.camera.getBlockPos().getSquaredDistance(getCasing().getPosition()) < 64) {
             // Player is close, render actual terminal text.
             renderText();
         } else {

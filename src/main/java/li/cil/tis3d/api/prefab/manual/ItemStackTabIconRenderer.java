@@ -6,7 +6,7 @@ import li.cil.tis3d.api.util.RenderUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.item.ItemStack;
 
 /**
@@ -25,8 +25,8 @@ public class ItemStackTabIconRenderer implements TabIconRenderer {
     public void render() {
         GlStateManager.enableRescaleNormal();
         RenderUtil.ignoreLighting();
-        GuiLighting.enableForItems();
+        DiffuseLighting.enableForItems();
         MinecraftClient.getInstance().getItemRenderer().renderGuiItemIcon(stack, 0, 0);
-        GuiLighting.disable();
+        DiffuseLighting.disable();
     }
 }

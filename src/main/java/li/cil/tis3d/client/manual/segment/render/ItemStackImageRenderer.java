@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.tis3d.api.manual.ImageRenderer;
 import li.cil.tis3d.api.util.RenderUtil;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.item.ItemStack;
 
 public final class ItemStackImageRenderer implements ImageRenderer {
@@ -38,8 +38,8 @@ public final class ItemStackImageRenderer implements ImageRenderer {
         GlStateManager.scalef(getWidth() / 16f, getHeight() / 16f, getWidth() / 16f);
         GlStateManager.enableRescaleNormal();
         RenderUtil.ignoreLighting();
-        GuiLighting.enableForItems();
+        DiffuseLighting.enableForItems();
         mc.getItemRenderer().renderGuiItemIcon(stack, 0, 0);
-        GuiLighting.disable();
+        DiffuseLighting.disable();
     }
 }

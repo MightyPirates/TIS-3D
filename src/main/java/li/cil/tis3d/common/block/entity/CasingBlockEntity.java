@@ -326,8 +326,8 @@ public final class CasingBlockEntity extends AbstractComputerBlockEntity impleme
     // BlockEntity
 
     @Override
-    public void invalidate() {
-        super.invalidate();
+    public void markRemoved() {
+        super.markRemoved();
 
         final World world = Objects.requireNonNull(getWorld());
 
@@ -484,7 +484,7 @@ public final class CasingBlockEntity extends AbstractComputerBlockEntity impleme
         queue.add(this);
         while (!queue.isEmpty()) {
             final BlockEntity blockEntity = queue.remove();
-            if (blockEntity.isInvalid()) {
+            if (blockEntity.isRemoved()) {
                 continue;
             }
 

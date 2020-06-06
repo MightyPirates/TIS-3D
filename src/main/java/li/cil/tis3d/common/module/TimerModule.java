@@ -105,7 +105,7 @@ public final class TimerModule extends AbstractModuleWithRotation {
         RenderUtil.drawQuad(RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_TIMER));
 
         // Render detailed state when player is close.
-        if (!hasElapsed && rendererDispatcher.cameraEntity.getBlockPos().getSquaredDistance(getCasing().getPosition()) < 64) {
+        if (!hasElapsed && rendererDispatcher.camera.getBlockPos().getSquaredDistance(getCasing().getPosition()) < 64) {
             final MinecraftClient mc = MinecraftClient.getInstance();
             final long worldTime = mc != null && mc.world != null ? mc.world.getTime() : 0;
             final float remaining = (float)(timer - worldTime) - partialTicks;

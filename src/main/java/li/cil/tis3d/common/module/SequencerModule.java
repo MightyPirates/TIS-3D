@@ -155,7 +155,7 @@ public final class SequencerModule extends AbstractModuleWithRotation {
 
         GlStateManager.depthMask(true);
 
-        if (rendererDispatcher.cameraEntity.getBlockPos().getSquaredDistance(getCasing().getPosition()) < 64) {
+        if (rendererDispatcher.camera.getBlockPos().getSquaredDistance(getCasing().getPosition()) < 64) {
             // Draw configuration of sequencer.
             GlStateManager.color4f(0.8f, 0.85f, 0.875f, enabled ? 1 : 0.5f);
             for (int col = 0; col < COL_COUNT; col++) {

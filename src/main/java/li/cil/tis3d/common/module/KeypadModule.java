@@ -138,12 +138,12 @@ public final class KeypadModule extends AbstractModuleWithRotation {
         final World world = getCasing().getCasingWorld();
         if (world.isClient) {
             // Got state on which key is currently 'pressed'.
-            if (nbt.containsKey(TAG_VALUE)) {
+            if (nbt.contains(TAG_VALUE)) {
                 value = Optional.of(nbt.getShort(TAG_VALUE));
             } else {
                 value = Optional.empty();
             }
-        } else if (!value.isPresent() && nbt.containsKey(TAG_VALUE)) {
+        } else if (!value.isPresent() && nbt.contains(TAG_VALUE)) {
             // Got an input and don't have one yet.
             final short newValue = nbt.getShort(TAG_VALUE);
             value = Optional.of(newValue);
@@ -189,7 +189,7 @@ public final class KeypadModule extends AbstractModuleWithRotation {
     public void readFromNBT(final CompoundTag nbt) {
         super.readFromNBT(nbt);
 
-        if (nbt.containsKey(TAG_VALUE)) {
+        if (nbt.contains(TAG_VALUE)) {
             value = Optional.of(nbt.getShort(TAG_VALUE));
         }
     }

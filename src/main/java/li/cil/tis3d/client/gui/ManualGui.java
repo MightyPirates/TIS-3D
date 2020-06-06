@@ -325,8 +325,8 @@ public final class ManualGui extends Screen {
                 final double v1 = v0 + 0.5;
 
                 final Tessellator t = Tessellator.getInstance();
-                final BufferBuilder b = t.getBufferBuilder();
-                b.begin(GL11.GL_QUADS, VertexFormats.POSITION_UV);
+                final BufferBuilder b = t.getBuffer();
+                b.begin(GL11.GL_QUADS, VertexFormats.POSITION_TEXTURE);
                 b.vertex(x0, y1, blitOffset).texture(u0, v1).next();
                 b.vertex(x1, y1, blitOffset).texture(u1, v1).next();
                 b.vertex(x1, y0, blitOffset).texture(u1, v0).next();

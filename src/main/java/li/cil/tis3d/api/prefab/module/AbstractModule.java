@@ -74,7 +74,7 @@ public abstract class AbstractModule implements Module {
      */
     @Environment(EnvType.CLIENT)
     protected boolean isObserverLookingAt(final BlockEntityRenderDispatcher rendererDispatcher) {
-        final HitResult hitResult = rendererDispatcher.hitResult;
+        final HitResult hitResult = rendererDispatcher.crosshairTarget;
         if (hitResult == null) {
             return false;
         }
@@ -109,7 +109,7 @@ public abstract class AbstractModule implements Module {
     @Environment(EnvType.CLIENT)
     @Nullable
     protected Vec3d getObserverLookAt(final BlockEntityRenderDispatcher rendererDispatcher) {
-        final HitResult hitResult = rendererDispatcher.hitResult;
+        final HitResult hitResult = rendererDispatcher.crosshairTarget;
         if (hitResult == null) {
             return null;
         }

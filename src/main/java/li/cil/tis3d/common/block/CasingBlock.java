@@ -23,7 +23,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemScatterer;
@@ -56,7 +56,7 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
     // State
 
     @Override
-    protected void appendProperties(final StateFactory.Builder<Block, BlockState> builder) {
+    protected void appendProperties(final StateManager.Builder<Block, BlockState> builder) {
         builder.add(
             MODULE_X_NEG,
             MODULE_X_POS,
@@ -109,7 +109,7 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
     }
 
     public static boolean activate(final ItemUsageContext context) {
-        if (!context.isPlayerSneaking()) {
+        if (!context.shouldCancelInteraction()) {
             return false;
         }
 
