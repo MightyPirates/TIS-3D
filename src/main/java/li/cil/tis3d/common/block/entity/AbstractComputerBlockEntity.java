@@ -8,6 +8,7 @@ import li.cil.tis3d.common.machine.PipeImpl;
 import li.cil.tis3d.util.NBTIds;
 import li.cil.tis3d.util.WorldUtils;
 import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.CompoundTag;
@@ -146,8 +147,8 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
     // BlockEntity
 
     @Override
-    public void fromTag(final CompoundTag nbt) {
-        super.fromTag(nbt);
+    public void fromTag(final BlockState state, final CompoundTag nbt) {
+        super.fromTag(state, nbt);
         if (nbt.contains("_client")) {
             fromClientTag(nbt);
         } else {
