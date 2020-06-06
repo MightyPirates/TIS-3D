@@ -116,7 +116,7 @@ public final class CodeBookGui extends Screen {
         client.keyboard.enableRepeatEvents(false);
     }
 
-    @Override
+    //~ @Override
     public void render(final int mouseX, final int mouseY, final float partialTicks) {
         if (player.removed || !Items.isBookCode(player.getStackInHand(hand))) {
             client.openScreen(null);
@@ -126,7 +126,7 @@ public final class CodeBookGui extends Screen {
         // Background.
         GlStateManager.color4f(1, 1, 1, 1);
         client.getTextureManager().bindTexture(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
-        blit(guiX, guiY, 0, 0, GUI_WIDTH, GUI_HEIGHT);
+        //~ blit(guiX, guiY, 0, 0, GUI_WIDTH, GUI_HEIGHT);
 
         // Check page change button availability.
         buttonPreviousPage.visible = data.getSelectedPage() > 0 && data.getPageCount() > 0;
@@ -134,14 +134,14 @@ public final class CodeBookGui extends Screen {
             (data.getSelectedPage() == data.getPageCount() - 1 && isCurrentProgramNonEmpty());
         buttonDeletePage.visible = data.getPageCount() > 1 || isCurrentProgramNonEmpty();
 
-        super.render(mouseX, mouseY, partialTicks);
+        //~ super.render(mouseX, mouseY, partialTicks);
 
         // Draw current program.
         drawProgram(mouseX, mouseY);
 
         // Draw page number.
         final String pageInfo = String.format("%d/%d", data.getSelectedPage() + 1, data.getPageCount());
-        getTextRenderer().draw(pageInfo, (float)(guiX + PAGE_NUMBER_X - getTextRenderer().getWidth(pageInfo) / 2), guiY + PAGE_NUMBER_Y, COLOR_CODE);
+        //~ getTextRenderer().draw(pageInfo, (float)(guiX + PAGE_NUMBER_X - getTextRenderer().getWidth(pageInfo) / 2), guiY + PAGE_NUMBER_Y, COLOR_CODE);
     }
 
     @Override
@@ -592,20 +592,20 @@ public final class CodeBookGui extends Screen {
                 final int selected = Math.min(line.length() - prefix, getSelectionEnd() - (position + prefix));
 
                 final String prefixText = line.substring(0, prefix);
-                getTextRenderer().draw(prefixText, currX, lineY, COLOR_CODE);
+                //~ getTextRenderer().draw(prefixText, currX, lineY, COLOR_CODE);
                 currX += getTextRenderer().getWidth(prefixText);
 
                 final String selectedText = line.substring(prefix, prefix + selected);
                 final int selectedWidth = getTextRenderer().getWidth(selectedText);
-                fill(currX - 1, lineY - 1, currX + selectedWidth, lineY + getTextRenderer().fontHeight - 1, COLOR_SELECTION);
-                getTextRenderer().draw(selectedText, currX, lineY, COLOR_CODE_SELECTED);
+                //~ fill(currX - 1, lineY - 1, currX + selectedWidth, lineY + getTextRenderer().fontHeight - 1, COLOR_SELECTION);
+                //~ getTextRenderer().draw(selectedText, currX, lineY, COLOR_CODE_SELECTED);
                 currX += selectedWidth;
 
                 final String postfixString = line.substring(prefix + selected);
-                getTextRenderer().draw(postfixString, currX, lineY, COLOR_CODE);
+                //~ getTextRenderer().draw(postfixString, currX, lineY, COLOR_CODE);
             } else {
                 // No selection here, just draw the line. Get it? "draw the line"?
-                getTextRenderer().draw(line.toString(), lineX, lineY, COLOR_CODE);
+                //~ getTextRenderer().draw(line.toString(), lineX, lineY, COLOR_CODE);
             }
 
             position += line.length() + 1;
@@ -633,7 +633,7 @@ public final class CodeBookGui extends Screen {
             final int startY = guiY + CODE_POS_Y + localLineNumber * getTextRenderer().fontHeight - 1;
             final int endX = Math.max(rawEndX, startX + getTextRenderer().getWidth(" "));
 
-            fill(startX - 1, startY + getTextRenderer().fontHeight - 1, endX, startY + getTextRenderer().fontHeight, 0xFFFF3333);
+            //~ fill(startX - 1, startY + getTextRenderer().fontHeight - 1, endX, startY + getTextRenderer().fontHeight, 0xFFFF3333);
 
             // Draw selection position in text.
             drawTextCursor();
@@ -648,7 +648,7 @@ public final class CodeBookGui extends Screen {
                 }
                 tooltip.addAll(Arrays.asList(Constants.PATTERN_LINES.split(I18n.translate(exception.getMessage())))
                 );
-                renderTooltip(tooltip, mouseX, mouseY);
+                //~ renderTooltip(tooltip, mouseX, mouseY);
                 GlStateManager.disableLighting();
             }
         } else {
@@ -664,8 +664,8 @@ public final class CodeBookGui extends Screen {
             final StringBuilder sb = lines.get(line);
             final int x = guiX + CODE_POS_X + getTextRenderer().getWidth(sb.substring(0, column)) - 1;
             final int y = guiY + CODE_POS_Y + line * getTextRenderer().fontHeight - 1;
-            fill(x + 1, y + 1, x + 2 + 1, y + getTextRenderer().fontHeight + 1, 0xCC333333);
-            fill(x, y, x + 2, y + getTextRenderer().fontHeight, COLOR_CODE_SELECTED);
+            //~ fill(x + 1, y + 1, x + 2 + 1, y + getTextRenderer().fontHeight + 1, 0xCC333333);
+            //~ fill(x, y, x + 2, y + getTextRenderer().fontHeight, COLOR_CODE_SELECTED);
         }
     }
 
@@ -700,7 +700,7 @@ public final class CodeBookGui extends Screen {
             client.getTextureManager().bindTexture(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
             final int offsetX = isHovered ? BUTTON_WIDTH : 0;
             final int offsetY = type == PageChangeType.Previous ? BUTTON_HEIGHT : 0;
-            blit(x, y, TEXTURE_X + offsetX, TEXTURE_Y + offsetY, BUTTON_WIDTH, BUTTON_HEIGHT);
+            //~ blit(x, y, TEXTURE_X + offsetX, TEXTURE_Y + offsetY, BUTTON_WIDTH, BUTTON_HEIGHT);
         }
     }
 
@@ -714,7 +714,7 @@ public final class CodeBookGui extends Screen {
             super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, LiteralText.EMPTY, action);
         }
 
-        @Override
+        //~ @Override
         public void render(final int mouseX, final int mouseY, final float partialTicks) {
             if (!visible) {
                 return;
@@ -724,7 +724,7 @@ public final class CodeBookGui extends Screen {
             GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
             client.getTextureManager().bindTexture(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
             final int offsetX = isHovered ? BUTTON_WIDTH : 0;
-            blit(x, y, TEXTURE_X + offsetX, TEXTURE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+            //~ blit(x, y, TEXTURE_X + offsetX, TEXTURE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
         }
     }
 }

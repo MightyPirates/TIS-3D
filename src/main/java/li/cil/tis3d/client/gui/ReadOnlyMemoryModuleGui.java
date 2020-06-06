@@ -75,7 +75,7 @@ public final class ReadOnlyMemoryModuleGui extends Screen {
         client.keyboard.enableRepeatEvents(false);
     }
 
-    @Override
+    //~ @Override
     public void render(final int mouseX, final int mouseY, final float partialTicks) {
         if (player.removed || !Items.isModuleReadOnlyMemory(player.getStackInHand(hand))) {
             client.openScreen(null);
@@ -85,7 +85,7 @@ public final class ReadOnlyMemoryModuleGui extends Screen {
         // Background.
         GlStateManager.color4f(1, 1, 1, 1);
         client.getTextureManager().bindTexture(Textures.LOCATION_GUI_MEMORY);
-        blit(guiX, guiY, 0, 0, GUI_WIDTH, GUI_HEIGHT);
+        //~ blit(guiX, guiY, 0, 0, GUI_WIDTH, GUI_HEIGHT);
 
         // Draw row and column headers.
         drawHeaders();
@@ -309,7 +309,7 @@ public final class ReadOnlyMemoryModuleGui extends Screen {
 
         client.getTextureManager().bindTexture(Textures.LOCATION_GUI_MEMORY);
         final int vPos = (int)(client.world.getTime() % 16) * 8;
-        blit(0, 0, 256 - (CELL_WIDTH + 1), vPos, 11, 8);
+        //~ blit(0, 0, 256 - (CELL_WIDTH + 1), vPos, 11, 8);
 
         GlStateManager.popMatrix();
     }
