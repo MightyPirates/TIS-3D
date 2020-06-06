@@ -286,7 +286,14 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
         // Begin writing the value at that address to all ports.
         final short value = (short) get();
         for (final Port port : Port.VALUES) {
-            getCasing().getSendingPipe(getFace(), port).beginWrite(value);
+            final Pipe sendingPipe = getCasing().getSendingPipe(getFace(), port);
+
+            // Cancel previous writes since we're now potentially on a new address with a new value.
+            if (sendingPipe.isWriting()) {
+                sendingPipe.cancelWrite();
+            }
+
+            sendingPipe.beginWrite(value);
         }
     }
 
