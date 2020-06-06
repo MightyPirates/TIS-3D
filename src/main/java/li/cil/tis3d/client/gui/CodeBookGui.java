@@ -98,7 +98,7 @@ public final class CodeBookGui extends Screen {
             rebuildLines();
         }));
 
-        minecraft.keyboard.enableRepeatEvents(true);
+        client.keyboard.enableRepeatEvents(true);
     }
 
     @Override
@@ -113,19 +113,19 @@ public final class CodeBookGui extends Screen {
         data.writeToNBT(nbt);
         Network.INSTANCE.sendToServer(new CodeBookDataMessage(nbt, hand));
 
-        minecraft.keyboard.enableRepeatEvents(false);
+        client.keyboard.enableRepeatEvents(false);
     }
 
     @Override
     public void render(final int mouseX, final int mouseY, final float partialTicks) {
         if (player.removed || !Items.isBookCode(player.getStackInHand(hand))) {
-            MinecraftClient.getInstance().openScreen(null);
+            client.openScreen(null);
             return;
         }
 
         // Background.
         GlStateManager.color4f(1, 1, 1, 1);
-        MinecraftClient.getInstance().getTextureManager().bindTexture(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
+        client.getTextureManager().bindTexture(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
         blit(guiX, guiY, 0, 0, GUI_WIDTH, GUI_HEIGHT);
 
         // Check page change button availability.
@@ -312,16 +312,16 @@ public final class CodeBookGui extends Screen {
                 selectionStart = 0;
                 selectionEnd = positionToIndex(Integer.MAX_VALUE, Integer.MAX_VALUE);
             } else if (keyCode == GLFW.GLFW_KEY_C) {
-                MinecraftClient.getInstance().keyboard.setClipboard(selectionToString());
+                client.keyboard.setClipboard(selectionToString());
             } else if (keyCode == GLFW.GLFW_KEY_X) {
-                MinecraftClient.getInstance().keyboard.setClipboard(selectionToString());
+                client.keyboard.setClipboard(selectionToString());
                 deleteSelection();
 
                 recompile();
             } else if (keyCode == GLFW.GLFW_KEY_V) {
                 deleteSelection();
 
-                final String[] pastedLines = Constants.PATTERN_LINES.split(MinecraftClient.getInstance().keyboard.getClipboard());
+                final String[] pastedLines = Constants.PATTERN_LINES.split(client.keyboard.getClipboard());
                 if (!isValidPaste(pastedLines)) {
                     return true;
                 }
@@ -689,7 +689,7 @@ public final class CodeBookGui extends Screen {
             this.type = type;
         }
 
-        @Override
+        //~ @Override
         public void render(final int mouseX, final int mouseY, final float partialTicks) {
             if (!visible) {
                 return;
@@ -697,7 +697,7 @@ public final class CodeBookGui extends Screen {
 
             final boolean isHovered = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
             GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-            minecraft.getTextureManager().bindTexture(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
+            client.getTextureManager().bindTexture(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
             final int offsetX = isHovered ? BUTTON_WIDTH : 0;
             final int offsetY = type == PageChangeType.Previous ? BUTTON_HEIGHT : 0;
             blit(x, y, TEXTURE_X + offsetX, TEXTURE_Y + offsetY, BUTTON_WIDTH, BUTTON_HEIGHT);
@@ -722,7 +722,7 @@ public final class CodeBookGui extends Screen {
 
             final boolean isHovered = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
             GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-            minecraft.getTextureManager().bindTexture(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
+            client.getTextureManager().bindTexture(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
             final int offsetX = isHovered ? BUTTON_WIDTH : 0;
             blit(x, y, TEXTURE_X + offsetX, TEXTURE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
         }

@@ -91,7 +91,7 @@ public final class TerminalModuleGui extends Screen {
         module.writeToInput(chr);
 
         if (Settings.animateTypingHand) {
-            minecraft.player.swingHand(Hand.MAIN_HAND);
+            client.player.swingHand(Hand.MAIN_HAND);
         }
         return true;
     }
@@ -99,13 +99,13 @@ public final class TerminalModuleGui extends Screen {
     @Override
     public void init() {
         super.init();
-        minecraft.keyboard.enableRepeatEvents(true);
+        client.keyboard.enableRepeatEvents(true);
     }
 
     @Override
     public void onClose() {
         super.onClose();
-        minecraft.keyboard.enableRepeatEvents(false);
+        client.keyboard.enableRepeatEvents(false);
     }
 
     @Override

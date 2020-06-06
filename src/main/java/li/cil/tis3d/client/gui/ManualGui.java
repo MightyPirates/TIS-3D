@@ -72,7 +72,7 @@ public final class ManualGui extends Screen {
     public void init() {
         super.init();
 
-        final Window window = MinecraftClient.getInstance().getWindow();
+        final Window window = client.getWindow();
         final ScaledResolution screenSize = new ScaledResolution(window.getScaledWidth(), window.getScaledHeight());
         final ScaledResolution guiSize = new ScaledResolution(WINDOW_WIDTH, WINDOW_HEIGHT);
         final int midX = screenSize.scaledWidth / 2;
@@ -110,7 +110,7 @@ public final class ManualGui extends Screen {
 
         super.render(mouseX, mouseY, partialTicks);
 
-        minecraft.getTextureManager().bindTexture(Textures.LOCATION_GUI_MANUAL_BACKGROUND);
+        client.getTextureManager().bindTexture(Textures.LOCATION_GUI_MANUAL_BACKGROUND);
         DrawableHelper.blit(guiLeft, guiTop, 0, 0, xSize, ySize, WINDOW_WIDTH, WINDOW_HEIGHT);
 
         scrollButton.active = canScroll();
@@ -156,11 +156,11 @@ public final class ManualGui extends Screen {
 
     @Override
     public boolean keyPressed(final int code, final int scancode, final int mods) {
-        if (minecraft.options.keyJump.matchesKey(code, scancode)) {
+        if (client.options.keyJump.matchesKey(code, scancode)) {
             popPage();
             return true;
-        } else if (minecraft.options.keyInventory.matchesKey(code, scancode)) {
-            minecraft.player.closeScreen();
+        } else if (client.options.keyInventory.matchesKey(code, scancode)) {
+            client.player.closeScreen();
             return true;
         } else {
             return super.keyPressed(code, scancode, mods);
@@ -251,7 +251,7 @@ public final class ManualGui extends Screen {
             ManualAPIImpl.popPath();
             refreshPage();
         } else {
-            minecraft.player.closeScreen();
+            client.player.closeScreen();
         }
     }
 
