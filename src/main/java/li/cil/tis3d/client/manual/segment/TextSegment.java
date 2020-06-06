@@ -61,7 +61,7 @@ public class TextSegment extends BasicTextSegment {
             GlStateManager.translatef(currentX, currentY, 0);
             GlStateManager.scalef(scale, scale, scale);
             GlStateManager.translatef(-currentX, -currentY, 0);
-            renderer.draw(format + part, currentX, currentY, color);
+            //~ renderer.draw(format + part, currentX, currentY, color);
             GlStateManager.popMatrix();
             currentX = x + wrapIndent;
             currentY += lineHeight(renderer);
