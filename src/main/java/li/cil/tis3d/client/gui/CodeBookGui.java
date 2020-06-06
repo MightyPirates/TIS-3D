@@ -685,7 +685,7 @@ public final class CodeBookGui extends Screen {
         private final PageChangeType type;
 
         ButtonChangePage(final int x, final int y, final PageChangeType type, final PressAction action) {
-            super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, "", action);
+            super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, LiteralText.EMPTY, action);
             this.type = type;
         }
 
@@ -711,7 +711,7 @@ public final class CodeBookGui extends Screen {
         private static final int BUTTON_HEIGHT = 14;
 
         ButtonDeletePage(final int x, final int y, final PressAction action) {
-            super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, "", action);
+            super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, LiteralText.EMPTY, action);
         }
 
         @Override

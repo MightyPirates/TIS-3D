@@ -285,7 +285,7 @@ public final class ManualGui extends Screen {
         private int imageHeightOverride = 0;
 
         ImageButton(final int x, final int y, final int w, final int h, final Identifier image, final PressAction action) {
-            super(x, y, w, h, "", action);
+            super(x, y, w, h, LiteralText.EMPTY, action);
             this.image = image;
         }
 
