@@ -161,7 +161,7 @@ public final class Network {
         int sent = 0;
         for (final PlayerEntity player : world.getPlayers()) {
             if (player instanceof ServerPlayerEntity) {
-                if (player.squaredDistanceTo(new Vec3d(pos)) < rangeSq) {
+                if (player.squaredDistanceTo(Vec3d.of(pos)) < rangeSq) {
                     final ServerPlayerEntity networkedPlayer = (ServerPlayerEntity)player;
                     networkedPlayer.networkHandler.sendPacket(packet);
                     if (!networkedPlayer.networkHandler.connection.isLocal()) {
