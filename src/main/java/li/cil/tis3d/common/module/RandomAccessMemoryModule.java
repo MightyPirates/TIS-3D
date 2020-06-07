@@ -85,6 +85,10 @@ public class RandomAccessMemoryModule extends AbstractModuleWithRotation {
     @Override
     public void step() {
         stepInput();
+
+        if (state == State.ACCESS) {
+            stepOutput();
+        }
     }
 
     @Override
@@ -246,7 +250,7 @@ public class RandomAccessMemoryModule extends AbstractModuleWithRotation {
     }
 
     /**
-     * Update the inputs of the RAM, start reading if we're not already.
+     * Update the inputs of the module, start reading if we're not already.
      */
     private void stepInput() {
         for (final Port port : Port.VALUES) {
@@ -258,6 +262,26 @@ public class RandomAccessMemoryModule extends AbstractModuleWithRotation {
             if (receivingPipe.canTransfer()) {
                 // Handle the input.
                 process(receivingPipe.read());
+            }
+        }
+    }
+
+    /**
+     * Update the output of the module, pushing the currently addressed value.
+     * <p/>
+     * This will be called once when we switch into address mode, but also every tick after that.
+     * Trying to start writing in the following tick is necessary because we may have canceled the
+     * write on some ports due to a value being read (consumed), and the pipe thus being in a
+     * completed state which will only flip into ready again after a step. So we'd either have to
+     * introduce extra steps (don't want) or can do what we do here: just don't start writing right
+     * away and wait for the next update to start writing then.
+     */
+    private void stepOutput() {
+        final short value = (short) get();
+        for (final Port port : Port.VALUES) {
+            final Pipe sendingPipe = getCasing().getSendingPipe(getFace(), port);
+            if (!sendingPipe.isWriting()) {
+                sendingPipe.beginWrite(value);
             }
         }
     }
@@ -286,10 +310,7 @@ public class RandomAccessMemoryModule extends AbstractModuleWithRotation {
         state = State.ACCESS;
 
         // Begin writing the value at that address to all ports.
-        final short value = (short)get();
-        for (final Port port : Port.VALUES) {
-            getCasing().getSendingPipe(getFace(), port).beginWrite(value);
-        }
+        stepOutput();
     }
 
     /**
