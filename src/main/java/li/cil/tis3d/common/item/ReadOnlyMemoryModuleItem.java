@@ -94,6 +94,13 @@ public class ReadOnlyMemoryModuleItem extends ModuleItem {
         if (nbt == null) {
             stack.setTag(nbt = new CompoundTag());
         }
-        nbt.putByteArray(TAG_DATA, data);
+
+        byte[] nbtData = nbt.getByteArray(TAG_DATA);
+        if (nbtData.length != data.length) {
+            nbtData = new byte[data.length];
+        }
+
+        System.arraycopy(data, 0, nbtData, 0, data.length);
+        nbt.putByteArray(TAG_DATA, nbtData);
     }
 }
