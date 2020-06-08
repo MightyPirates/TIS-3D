@@ -23,7 +23,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 
@@ -51,13 +50,11 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
         matrices.push();
         matrices.translate(0.5, 0.5, 0.5);
 
-        // Render all modules, adjust GL state to allow easily rendering an
-        // overlay in (0, 0, 0) to (1, 1, 0).
+        // Render all modules, adjust GL state to allow easily rendering an overlay in (0, 0, 0) to (1, 1, 0).
         for (final Face face : Face.VALUES) {
-            // Fixme: This already wasn't working in 1.14, let's leave it for later
-            //~ if (isRenderingBackFace(face, dx, dy, dz)) {
-            //~ continue;
-            //~ }
+            if (isBackFace(casing.getPos(), face)) {
+                continue;
+            }
 
             matrices.push();
             setupMatrix(face, matrices);
@@ -73,10 +70,13 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
         matrices.pop();
     }
 
-    private boolean isRenderingBackFace(final Face face, final double dx, final double dy, final double dz) {
-        final Direction facing = Face.toDirection(face.getOpposite());
-        final double dotProduct = facing.getOffsetX() * dx + facing.getOffsetY() * (dy - dispatcher.camera.getFocusedEntity().getEyeHeight(dispatcher.camera.getFocusedEntity().getPose())) + facing.getOffsetZ() * dz;
-        return dotProduct < 0;
+    private boolean isBackFace(final BlockPos blockPos, final Face face) {
+        final Vec3d cameraPosition = dispatcher.camera.getPos();
+        final Vec3d blockCenter = new Vec3d(blockPos).add(0.5, 0.5, 0.5);
+        final Vec3d faceNormal = new Vec3d(Face.toDirection(face).getUnitVector());
+        final Vec3d faceCenter = blockCenter.add(faceNormal.multiply(0.5));
+        final Vec3d cameraToFaceCenter = faceCenter.subtract(cameraPosition);
+        return faceNormal.dotProduct(cameraToFaceCenter) > 0;
     }
 
     private void setupMatrix(final Face face, final MatrixStack matrices) {
