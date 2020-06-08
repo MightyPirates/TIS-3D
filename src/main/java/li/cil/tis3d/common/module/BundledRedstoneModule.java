@@ -271,7 +271,7 @@ public final class BundledRedstoneModule extends AbstractModuleWithRotation impl
         final short lo = (short)(value & 0xFF);
         if (hi == 0xFF) {
             // lo = new output channel
-            if (lo < 0 || lo >= input.length) {
+            if (lo >= input.length) {
                 return;
             }
 
@@ -348,7 +348,7 @@ public final class BundledRedstoneModule extends AbstractModuleWithRotation impl
     }
 
     @Environment(EnvType.CLIENT)
-    private void renderBar(MatrixStack.Entry matrices, VertexConsumer vc, final int overlay,
+    private void renderBar(final MatrixStack.Entry matrices, final VertexConsumer vc, final int overlay,
                            final short[] values, final float u) {
         for (int channel = 0; channel < values.length; channel++) {
             if (values[channel] > 0) {

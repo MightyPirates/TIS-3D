@@ -9,20 +9,17 @@ import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.common.TIS3D;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.init.Items;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.RenderLayer;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
-import net.minecraft.client.render.model.BakedModelManager;
+import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -40,15 +37,16 @@ import java.util.Set;
  * also so as not to spam the model registry with potentially a gazillion
  * block states for static individual texturing).
  */
+@Environment(EnvType.CLIENT)
 public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingBlockEntity> {
     private final static Set<Class<?>> BLACKLIST = new HashSet<>();
 
-    public CasingBlockEntityRenderer(BlockEntityRenderDispatcher dispatcher) {
-		super(dispatcher);
-	}
+    public CasingBlockEntityRenderer(final BlockEntityRenderDispatcher dispatcher) {
+        super(dispatcher);
+    }
 
     @Override
-    public void render(final CasingBlockEntity casing, float partialTicks, final MatrixStack matrices,
+    public void render(final CasingBlockEntity casing, final float partialTicks, final MatrixStack matrices,
                        final VertexConsumerProvider vertexConsumers, final int light, final int overlay) {
         matrices.push();
         matrices.translate(0.5, 0.5, 0.5);
@@ -58,7 +56,7 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
         for (final Face face : Face.VALUES) {
             // Fixme: This already wasn't working in 1.14, let's leave it for later
             //~ if (isRenderingBackFace(face, dx, dy, dz)) {
-                //~ continue;
+            //~ continue;
             //~ }
 
             matrices.push();
@@ -111,7 +109,6 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
                 degree = -90;
                 break;
             default:
-                axis = null;
                 throw new RuntimeException("Invalid face");
         }
 

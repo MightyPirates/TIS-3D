@@ -1,8 +1,11 @@
 package li.cil.tis3d.client.render.font;
 
 import li.cil.tis3d.api.API;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
 
+@Environment(EnvType.CLIENT)
 public final class SmallFontRenderer extends AbstractFontRenderer {
     public static final FontRenderer INSTANCE = new SmallFontRenderer();
 

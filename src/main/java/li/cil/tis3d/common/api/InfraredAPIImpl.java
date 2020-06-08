@@ -14,8 +14,10 @@ public final class InfraredAPIImpl implements InfraredAPI {
     @Override
     public InfraredPacket sendPacket(final World world, final Vec3d position, final Vec3d direction, final short value) {
         final InfraredPacketEntity entity = Entities.INFRARED_PACKET.create(world);
-        entity.configure(position, direction.normalize(), value);
-        world.spawnEntity(entity);
+        if (entity != null) {
+            entity.configure(position, direction.normalize(), value);
+            world.spawnEntity(entity);
+        }
         return entity;
     }
 }

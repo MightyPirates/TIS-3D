@@ -4,6 +4,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.module.TerminalModule;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Hand;
@@ -13,6 +15,7 @@ import org.lwjgl.opengl.GL11;
 /**
  * Invisible GUI for the terminal module, purely used to grab keyboard input.
  */
+@Environment(EnvType.CLIENT)
 public final class TerminalModuleGui extends Screen {
     private final TerminalModule module;
 

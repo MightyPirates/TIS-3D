@@ -18,7 +18,6 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
-import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -189,7 +188,7 @@ public class RandomAccessMemoryModule extends AbstractModuleWithRotation {
                 final float u0 = QUADS_U0 + x * QUADS_STEP_U;
                 final float v0 = QUADS_V0 + y * QUADS_STEP_V;
                 RenderUtil.drawColorQuad(mat, vc, u0, v0, QUADS_SIZE_U, QUADS_SIZE_V,
-                                         (int) (0xFF * brightness),
+                                         (int)(0xFF * brightness),
                                          ColorUtils.getRedU8(cellColor),
                                          ColorUtils.getGreenU8(cellColor),
                                          ColorUtils.getBlueU8(cellColor),

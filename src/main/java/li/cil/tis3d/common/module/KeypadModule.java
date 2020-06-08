@@ -291,7 +291,7 @@ public final class KeypadModule extends AbstractModuleWithRotation {
         // Render behind the hovered button
         matrices.translate(0, 0, 0.005f / 2);
         RenderUtil.drawColorQuad(matrices.peek(), vcColor,
-                                 x - delta, y - delta, w + 2*delta, h + 2*delta,
+                                 x - delta, y - delta, w + 2 * delta, h + 2 * delta,
                                  ColorUtils.WHITE, light, overlay);
     }
 }

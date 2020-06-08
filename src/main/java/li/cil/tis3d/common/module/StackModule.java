@@ -265,7 +265,7 @@ public final class StackModule extends AbstractModuleWithRotation {
         matrices.scale(1 / 128f, 1 / 128f, 1);
         matrices.translate(4.5f, 14.5f, 0);
 
-        final AbstractFontRenderer fontRenderer = (AbstractFontRenderer) SmallFontRenderer.INSTANCE;
+        final AbstractFontRenderer fontRenderer = (AbstractFontRenderer)SmallFontRenderer.INSTANCE;
         final VertexConsumer vcFont = fontRenderer.chooseVertexConsumer(vcp);
         final int charWidth = fontRenderer.getCharWidth();
         final int charHeight = fontRenderer.getCharHeight();

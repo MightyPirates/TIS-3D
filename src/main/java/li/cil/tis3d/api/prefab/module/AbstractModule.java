@@ -129,8 +129,8 @@ public abstract class AbstractModule implements Module {
         }
 
         return new Vec3d(hitResult.getPos().x - blockHitResult.getBlockPos().getX(),
-            hitResult.getPos().y - blockHitResult.getBlockPos().getY(),
-            hitResult.getPos().z - blockHitResult.getBlockPos().getZ());
+                         hitResult.getPos().y - blockHitResult.getBlockPos().getY(),
+                         hitResult.getPos().z - blockHitResult.getBlockPos().getZ());
     }
 
     // --------------------------------------------------------------------- //

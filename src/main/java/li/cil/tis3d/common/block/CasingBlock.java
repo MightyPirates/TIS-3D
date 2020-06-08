@@ -6,12 +6,14 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.traits.Redstone;
 import li.cil.tis3d.api.util.TransformUtil;
-import li.cil.tis3d.common.mixin.ItemUsageContextAccessors;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ManualBookItem;
+import li.cil.tis3d.common.mixin.ItemUsageContextAccessors;
 import li.cil.tis3d.util.InventoryUtils;
 import li.cil.tis3d.util.WorldUtils;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -74,13 +76,13 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
             return state;
         }
         final CasingBlockEntity casing = (CasingBlockEntity)blockEntity;
-        final BlockState newState = state.
-            with(MODULE_X_NEG, casing.getModule(Face.X_NEG) != null).
-            with(MODULE_X_POS, casing.getModule(Face.X_POS) != null).
-            with(MODULE_Y_NEG, casing.getModule(Face.Y_NEG) != null).
-            with(MODULE_Y_POS, casing.getModule(Face.Y_POS) != null).
-            with(MODULE_Z_NEG, casing.getModule(Face.Z_NEG) != null).
-            with(MODULE_Z_POS, casing.getModule(Face.Z_POS) != null);
+        final BlockState newState = state
+            .with(MODULE_X_NEG, casing.getModule(Face.X_NEG) != null)
+            .with(MODULE_X_POS, casing.getModule(Face.X_POS) != null)
+            .with(MODULE_Y_NEG, casing.getModule(Face.Y_NEG) != null)
+            .with(MODULE_Y_POS, casing.getModule(Face.Y_POS) != null)
+            .with(MODULE_Z_NEG, casing.getModule(Face.Z_NEG) != null)
+            .with(MODULE_Z_POS, casing.getModule(Face.Z_POS) != null);
         world.setBlockState(pos, newState, 2);
         return newState;
     }
@@ -88,6 +90,7 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
     // --------------------------------------------------------------------- //
     // Client
 
+    @Environment(EnvType.CLIENT)
     public ItemStack getPickStack(final BlockView view, final BlockPos pos, final Direction side, final BlockState state) {
         // Allow picking modules installed in the casing.
         final BlockEntity blockEntity = view.getBlockEntity(pos);

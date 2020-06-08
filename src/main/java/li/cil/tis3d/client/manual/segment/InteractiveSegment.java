@@ -1,5 +1,8 @@
 package li.cil.tis3d.client.manual.segment;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+
 import java.util.Optional;
 
 /**
@@ -10,6 +13,7 @@ import java.util.Optional;
  * segment's tooltip, for example. It should also notice the currently hovered
  * segment when a left-click occurs.
  */
+@Environment(EnvType.CLIENT)
 public interface InteractiveSegment extends Segment {
     /**
      * The tooltip that should be displayed when this segment is being hovered.

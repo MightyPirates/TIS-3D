@@ -1,5 +1,8 @@
 package li.cil.tis3d.api.detail;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+
 /**
  * API entry point for access to the tiny font renderer used on execution
  * modules, for example.
@@ -7,6 +10,7 @@ package li.cil.tis3d.api.detail;
  * Keep in mind that the list of printable characters is very small for this
  * font renderer, due to the small number of characters in the font sheet.
  */
+@Environment(EnvType.CLIENT)
 public interface FontRendererAPI {
     /**
      * Render the specified string.

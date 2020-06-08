@@ -2,36 +2,39 @@ package li.cil.tis3d.client.render.block.entity;
 
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.common.block.entity.ControllerBlockEntity;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 
+@Environment(EnvType.CLIENT)
 public final class ControllerBlockEntityRenderer extends BlockEntityRenderer<ControllerBlockEntity> {
-	public ControllerBlockEntityRenderer(BlockEntityRenderDispatcher dispatcher) {
-		super(dispatcher);
-	}
+    public ControllerBlockEntityRenderer(final BlockEntityRenderDispatcher dispatcher) {
+        super(dispatcher);
+    }
 
     /**
      * Draw the controller state as a floating text label.
      * {@code drawLabel()} was removed in 1.15.
      *
-     * @param state the controller state.
+     * @param state    the controller state.
      * @param matrices the transformation stack.
-     * @param vcp the buffer provider.
+     * @param vcp      the buffer provider.
      */
     private void renderState(final ControllerBlockEntity.ControllerState state,
                              final MatrixStack matrices, final VertexConsumerProvider vcp) {
         final Camera camera = this.dispatcher.camera;
         // I would add a check for distance to camera here, but this seems to happen automatically (?)
-        String str = I18n.translate(state.translateKey);
+        final String str = I18n.translate(state.translateKey);
         matrices.push();
         matrices.translate(0.5f, 1.4f, 0.5f);
         matrices.multiply(camera.getRotation());
@@ -40,7 +43,7 @@ public final class ControllerBlockEntityRenderer extends BlockEntityRenderer<Con
         final Matrix4f modMat = matrices.peek().getModel();
         final int bg = MinecraftClient.getInstance().options.getTextBackgroundColor(0.25f);
         final TextRenderer textRenderer = dispatcher.getTextRenderer();
-        float x = -textRenderer.getStringWidth(str) / 2.0f;
+        final float x = -textRenderer.getStringWidth(str) / 2.0f;
         textRenderer.draw(str, x, 0, 0x20FFFFFF, false, modMat, vcp, true, bg, RenderUtil.maxLight);
         textRenderer.draw(str, x, 0, -1, false, modMat, vcp, false, 0, RenderUtil.maxLight);
 
@@ -48,7 +51,7 @@ public final class ControllerBlockEntityRenderer extends BlockEntityRenderer<Con
     }
 
     @Override
-    public void render(final ControllerBlockEntity controller, float partialTicks, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+    public void render(final ControllerBlockEntity controller, final float partialTicks, final MatrixStack matrices, final VertexConsumerProvider vertexConsumers, final int light, final int overlay) {
         final ControllerBlockEntity.ControllerState state = controller.getState();
         if (!state.isError) {
             return;

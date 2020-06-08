@@ -1,9 +1,12 @@
 package li.cil.tis3d.client.init;
 
 import li.cil.tis3d.api.API;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.minecraft.util.Identifier;
 
+@Environment(EnvType.CLIENT)
 public final class Textures {
     public static final Identifier LOCATION_GUI_BOOK_CODE_BACKGROUND = new Identifier(API.MOD_ID, "textures/gui/book_code.png");
     public static final Identifier LOCATION_GUI_MANUAL_BACKGROUND = new Identifier(API.MOD_ID, "textures/gui/manual.png");

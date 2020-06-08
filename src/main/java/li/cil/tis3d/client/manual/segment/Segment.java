@@ -1,11 +1,14 @@
 package li.cil.tis3d.client.manual.segment;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+@Environment(EnvType.CLIENT)
 public interface Segment {
     /**
      * Parent segment, i.e. the segment this segment was refined from.

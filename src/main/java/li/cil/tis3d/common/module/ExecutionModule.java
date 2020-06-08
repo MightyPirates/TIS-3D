@@ -363,7 +363,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
         matrices.scale(1 / 128f, 1 / 128f, 1);
         matrices.translate(1, 1, 0);
 
-        AbstractFontRenderer fontRenderer = (AbstractFontRenderer) SmallFontRenderer.INSTANCE;
+        final AbstractFontRenderer fontRenderer = (AbstractFontRenderer)SmallFontRenderer.INSTANCE;
         final VertexConsumer vcFont = fontRenderer.chooseVertexConsumer(vcp);
 
         // Draw register info on top.

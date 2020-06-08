@@ -3,7 +3,6 @@ package li.cil.tis3d.common.init;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.api.ModuleAPI;
-import li.cil.tis3d.api.prefab.manual.ResourceContentProvider;
 import li.cil.tis3d.client.manual.provider.GameRegistryPathProvider;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.Settings;
@@ -34,7 +33,6 @@ public final class BootstrapCommon implements ModInitializer {
                 icon(() -> Items.CONTROLLER.getStackForRender()).
                 build();
 
-        API.fontRendererAPI = new FontRendererAPIImpl();
         API.infraredAPI = new InfraredAPIImpl();
         API.manualAPI = ManualAPIImpl.INSTANCE;
         API.moduleAPI = new ModuleAPIImpl();
@@ -77,8 +75,6 @@ public final class BootstrapCommon implements ModInitializer {
 
         // Add default manual providers for server side stuff.
         ManualAPI.addProvider(new GameRegistryPathProvider());
-        ManualAPI.addProvider(new ResourceContentProvider(API.MOD_ID, "doc/"));
-        ManualAPI.addProvider(SerialAPIImpl.INSTANCE.getSerialProtocolContentProvider());
 
         // Mod integration.
         Integration.init();

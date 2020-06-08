@@ -3,10 +3,13 @@ package li.cil.tis3d.client.manual.segment.render;
 import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.tis3d.api.manual.ImageRenderer;
 import li.cil.tis3d.api.util.RenderUtil;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.item.ItemStack;
 
+@Environment(EnvType.CLIENT)
 public final class ItemStackImageRenderer implements ImageRenderer {
     /**
      * How long to show individual stacks, in milliseconds, before switching to the next.

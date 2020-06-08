@@ -1,18 +1,15 @@
 package li.cil.tis3d.client.render.font;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import li.cil.tis3d.api.util.RenderLayerAccess;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.util.ColorUtils;
-import it.unimi.dsi.fastutil.ints.Int2IntMap;
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import org.lwjgl.opengl.GL11;
@@ -20,6 +17,7 @@ import org.lwjgl.opengl.GL11;
 /**
  * Base implementation for texture based font rendering.
  */
+@Environment(EnvType.CLIENT)
 public abstract class AbstractFontRenderer implements FontRenderer {
     private final Int2IntMap CHAR_MAP;
 
@@ -71,25 +69,25 @@ public abstract class AbstractFontRenderer implements FontRenderer {
     }
 
     public void drawString(final MatrixStack.Entry matrices, final VertexConsumer vc,
-                           int light, int overlay,
+                           final int light, final int overlay,
                            final CharSequence value) {
         drawString(matrices, vc, light, overlay, ColorUtils.WHITE, value, value.length());
     }
 
     public void drawString(final MatrixStack.Entry matrices, final VertexConsumer vc,
-                           int light, int overlay, final int color,
+                           final int light, final int overlay, final int color,
                            final CharSequence value) {
         drawString(matrices, vc, light, overlay, color, value, value.length());
     }
 
     public void drawString(final MatrixStack.Entry matrices, final VertexConsumer vc,
-                           int light, int overlay,
+                           final int light, final int overlay,
                            final CharSequence value, final int maxChars) {
         drawString(matrices, vc, light, overlay, ColorUtils.WHITE, value, maxChars);
     }
 
     public void drawString(final MatrixStack.Entry matrices, final VertexConsumer vc,
-                           int light, int overlay, final int color,
+                           final int light, final int overlay, final int color,
                            final CharSequence value, final int maxChars) {
         float tx = 0f;
         final int end = Math.min(maxChars, value.length());

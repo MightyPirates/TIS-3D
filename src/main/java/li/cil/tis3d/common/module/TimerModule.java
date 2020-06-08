@@ -217,7 +217,7 @@ public final class TimerModule extends AbstractModuleWithRotation {
         }
 
         // Not using the generic FontRenderer API here until the API changes are finalized
-        final AbstractFontRenderer fontRenderer = (AbstractFontRenderer) NormalFontRenderer.INSTANCE;
+        final AbstractFontRenderer fontRenderer = (AbstractFontRenderer)NormalFontRenderer.INSTANCE;
         final VertexConsumer vcFont = fontRenderer.chooseVertexConsumer(vcp);
         final int width = time.length() * fontRenderer.getCharWidth();
         final int height = fontRenderer.getCharHeight();

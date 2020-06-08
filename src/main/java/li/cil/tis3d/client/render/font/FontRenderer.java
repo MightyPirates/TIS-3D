@@ -1,8 +1,12 @@
 package li.cil.tis3d.client.render.font;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+
 /**
  * Base interface for font renderers.
  */
+@Environment(EnvType.CLIENT)
 public interface FontRenderer {
     /**
      * Render the specified string.

@@ -2,6 +2,8 @@ package li.cil.tis3d.api.prefab.manual;
 
 import com.google.common.base.Charsets;
 import li.cil.tis3d.api.manual.ContentProvider;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Identifier;
 
@@ -39,6 +41,7 @@ public class ResourceContentProvider implements ContentProvider {
     }
 
     @Override
+    @Environment(EnvType.CLIENT)
     @Nullable
     public Iterable<String> getContent(final String path) {
         final Identifier location = new Identifier(resourceDomain, basePath + (path.startsWith("/") ? path.substring(1) : path));

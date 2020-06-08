@@ -2,7 +2,6 @@ package li.cil.tis3d.common.mixin;
 
 import li.cil.tis3d.common.block.entity.AbstractComputerBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,7 +16,7 @@ import java.util.List;
 public abstract class ChunkUnloadMixin {
     @Shadow
     @Final
-    private List<BlockEntity> unloadedBlockEntities;
+    protected List<BlockEntity> unloadedBlockEntities;
 
     @Inject(method = "tickBlockEntities", at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/util/profiler/Profiler;push(Ljava/lang/String;)V", args = {"ldc=blockEntities"}))
     private void onBlockEntityChunkUnload(final CallbackInfo ci) {

@@ -2,8 +2,6 @@ package li.cil.tis3d.common.module;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
@@ -27,21 +25,20 @@ import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.List;
 
 public final class DisplayModule extends AbstractModuleWithRotation {
+    @Environment(EnvType.CLIENT)
     public static final class LeakDetector {
         private static final LinkedList<NativeImageBackedTexture> leakedTextures = new LinkedList<>();
 
         private LeakDetector() {
-
         }
 
-        public static void add(NativeImageBackedTexture texture) {
+        public static void add(@Nullable final NativeImageBackedTexture texture) {
             if (texture != null) {
                 leakedTextures.add(texture);
             }
@@ -49,7 +46,7 @@ public final class DisplayModule extends AbstractModuleWithRotation {
 
         public static void tick() {
             while (!leakedTextures.isEmpty()) {
-                NativeImageBackedTexture texture = leakedTextures.remove();
+                final NativeImageBackedTexture texture = leakedTextures.remove();
                 texture.close();
             }
         }
@@ -151,11 +148,13 @@ public final class DisplayModule extends AbstractModuleWithRotation {
     @Override
     public void onDisposed() {
         if (getCasing().getCasingWorld().isClient) {
+            //noinspection MethodCallSideOnly Guarded by isClient check.
             deleteTexture();
         }
     }
 
     @Override
+    @Environment(EnvType.CLIENT)
     public void finalize() {
         LeakDetector.add(backingTexture);
     }
@@ -293,7 +292,7 @@ public final class DisplayModule extends AbstractModuleWithRotation {
      * @param img the NativeImage to blit to
      */
     @Environment(EnvType.CLIENT)
-    private void blitToNativeImage(NativeImage img) {
+    private void blitToNativeImage(final NativeImage img) {
         int ip = 0;
         for (int iy = 0; iy < RESOLUTION; iy++) {
             for (int ix = 0; ix < RESOLUTION; ix++, ip++) {
@@ -312,7 +311,7 @@ public final class DisplayModule extends AbstractModuleWithRotation {
             return;
         }
 
-        NativeImageBackedTexture texture = getBackingTexture();
+        final NativeImageBackedTexture texture = getBackingTexture();
         blitToNativeImage(texture.getImage());
         texture.upload();
 
@@ -326,13 +325,13 @@ public final class DisplayModule extends AbstractModuleWithRotation {
     }
 
     /**
-     * Gets the render layer associated with our texture, creating it if required
+     * Gets the render layer associated with our texture, creating it if required.
      */
     @Environment(EnvType.CLIENT)
     private RenderLayer getRenderLayer() {
         if (renderLayer == null) {
-            TextureManager texMan = MinecraftClient.getInstance().getTextureManager();
-            NativeImageBackedTexture tex = getBackingTexture();
+            final TextureManager texMan = MinecraftClient.getInstance().getTextureManager();
+            final NativeImageBackedTexture tex = getBackingTexture();
             backingTextureId = generateDynTextureId();
 
             texMan.registerTexture(backingTextureId, tex);
@@ -349,7 +348,7 @@ public final class DisplayModule extends AbstractModuleWithRotation {
     @Environment(EnvType.CLIENT)
     private void deleteTexture() {
         if (backingTextureId != null) {
-            TextureManager texMan = MinecraftClient.getInstance().getTextureManager();
+            final TextureManager texMan = MinecraftClient.getInstance().getTextureManager();
             TextureManagerExt.from(texMan).unregisterTexture(backingTextureId);
         }
 

@@ -6,6 +6,8 @@ import li.cil.tis3d.api.manual.ContentProvider;
 import li.cil.tis3d.api.prefab.manual.ResourceContentProvider;
 import li.cil.tis3d.api.serial.SerialInterfaceProvider;
 import li.cil.tis3d.api.serial.SerialProtocolDocumentationReference;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.util.math.BlockPos;
@@ -99,6 +101,7 @@ public final class SerialAPIImpl implements SerialAPI {
         // --------------------------------------------------------------------- //
 
         @Override
+        @Environment(EnvType.CLIENT)
         @Nullable
         public Iterable<String> getContent(final String path) {
             final String language = MinecraftClient.getInstance().getLanguageManager().getLanguage().getCode();
@@ -112,17 +115,19 @@ public final class SerialAPIImpl implements SerialAPI {
 
         // --------------------------------------------------------------------- //
 
+        @Environment(EnvType.CLIENT)
         @Nullable
         private Iterable<String> populateTemplate(@Nullable final Iterable<String> template) {
             if (template == null) {
                 return null;
             }
-            return StreamSupport.
-                stream(template.spliterator(), false).
-                flatMap(line -> Arrays.stream(PATTERN_LINE_END.split(PATTERN_LIST.matcher(line).replaceAll(compileLinkList())))).
-                collect(Collectors.toList());
+            return StreamSupport
+                .stream(template.spliterator(), false)
+                .flatMap(line -> Arrays.stream(PATTERN_LINE_END.split(PATTERN_LIST.matcher(line).replaceAll(compileLinkList()))))
+                .collect(Collectors.toList());
         }
 
+        @Environment(EnvType.CLIENT)
         private String compileLinkList() {
             if (cachedList == null) {
                 final StringBuilder sb = new StringBuilder();

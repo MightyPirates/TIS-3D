@@ -1,6 +1,8 @@
 package li.cil.tis3d.api.detail;
 
 import li.cil.tis3d.api.manual.*;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -95,6 +97,7 @@ public interface ManualAPI {
      * @param path the path of the page to get the content of.
      * @return the content of the page, or <tt>null</tt> if none exists.
      */
+    @Environment(EnvType.CLIENT)
     @Nullable
     Iterable<String> contentFor(final String path);
 
@@ -108,6 +111,7 @@ public interface ManualAPI {
      * @param path the path to the image to get the renderer for.
      * @return the custom renderer for that path, or <tt>null</tt> if none exists.
      */
+    @Environment(EnvType.CLIENT)
     @Nullable
     ImageRenderer imageFor(final String path);
 
@@ -121,6 +125,7 @@ public interface ManualAPI {
      *
      * @param player the player to open the manual for.
      */
+    @Environment(EnvType.CLIENT)
     void openFor(final PlayerEntity player);
 
     /**
@@ -133,5 +138,6 @@ public interface ManualAPI {
      *
      * @param path the path to navigate to.
      */
+    @Environment(EnvType.CLIENT)
     void navigate(final String path);
 }

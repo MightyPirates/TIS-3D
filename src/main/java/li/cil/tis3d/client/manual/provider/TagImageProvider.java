@@ -5,10 +5,13 @@ import li.cil.tis3d.api.manual.ImageProvider;
 import li.cil.tis3d.api.manual.ImageRenderer;
 import li.cil.tis3d.client.manual.segment.render.ItemStackImageRenderer;
 import li.cil.tis3d.client.manual.segment.render.MissingItemRenderer;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.tag.TagRegistry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
+@Environment(EnvType.CLIENT)
 public final class TagImageProvider implements ImageProvider {
     private static final String WARNING_TAG_MISSING = API.MOD_ID + ".manual.warning.missing.tag";
 

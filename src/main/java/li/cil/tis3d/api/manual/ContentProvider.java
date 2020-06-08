@@ -1,6 +1,8 @@
 package li.cil.tis3d.api.manual;
 
 import li.cil.tis3d.api.prefab.manual.ResourceContentProvider;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 import javax.annotation.Nullable;
 
@@ -28,6 +30,7 @@ public interface ContentProvider {
      * @param path the path to the manual page we're looking for.
      * @return the content of the document at that path, or <tt>null</tt>.
      */
+    @Environment(EnvType.CLIENT)
     @Nullable
     Iterable<String> getContent(final String path);
 }

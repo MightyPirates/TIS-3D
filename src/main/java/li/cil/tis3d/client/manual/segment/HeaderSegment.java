@@ -1,9 +1,12 @@
 package li.cil.tis3d.client.manual.segment;
 
 import joptsimple.internal.Strings;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.util.Formatting;
 import java.util.Optional;
 
+@Environment(EnvType.CLIENT)
 public final class HeaderSegment extends TextSegment {
     private final int level;
     private final float fontScale;

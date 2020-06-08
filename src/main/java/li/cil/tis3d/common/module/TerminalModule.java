@@ -40,6 +40,7 @@ import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 
 public final class TerminalModule extends AbstractModuleWithRotation {
@@ -91,7 +92,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
     private static final int TAB_WIDTH = 2;
 
     // For string<->byte[] conversion when sending input to server.
-    private static final Charset UTF_8 = Charset.forName("UTF-8");
+    private static final Charset UTF_8 = StandardCharsets.UTF_8;
     // For short<->char conversion when reading/writing from/to ports.
     private static final Charset CP437 = Charset.forName("Cp437");
 
@@ -146,6 +147,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
     @Override
     public void onDisposed() {
         if (getCasing().getCasingWorld().isClient) {
+            //noinspection MethodCallSideOnly Guarded by isClient check.
             closeGui();
         }
     }
@@ -188,6 +190,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
 
         final World world = player.getEntityWorld();
         if (world.isClient) {
+            //noinspection MethodCallSideOnly Guarded by isClient check.
             GuiHelper.openTerminalGui(this);
         }
 
@@ -271,7 +274,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
 
         final ListTag lines = new ListTag();
         for (final StringBuilder line : display) {
-            //~ lines.add(new StringTag(line.toString()));
+            lines.add(StringTag.of(line.toString()));
         }
         nbt.put(TAG_DISPLAY, lines);
 
@@ -315,8 +318,8 @@ public final class TerminalModule extends AbstractModuleWithRotation {
         matrices.translate(2f / 16f, 2f / 16f, 0);
         matrices.scale(1 / 512f, 1 / 512f, 1);
 
-        final AbstractFontRenderer fontRenderer = (AbstractFontRenderer) NormalFontRenderer.INSTANCE;
-        // The order in which these VCs are aquired matters (only the last one is "current")
+        final AbstractFontRenderer fontRenderer = (AbstractFontRenderer)NormalFontRenderer.INSTANCE;
+        // The order in which these VCs are acquired matters (only the last one is "current")
         // thanks Majong :^)
         final VertexConsumer vcFont = fontRenderer.chooseVertexConsumer(vcp);
 

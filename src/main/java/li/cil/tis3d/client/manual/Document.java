@@ -5,6 +5,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.api.manual.ImageRenderer;
 import li.cil.tis3d.client.manual.segment.*;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.util.Window;
@@ -32,6 +34,7 @@ import java.util.regex.Pattern;
  * Formatting is done by accumulating formatting information over the parent
  * nodes, up to the root.
  */
+@Environment(EnvType.CLIENT)
 public final class Document {
     /**
      * Parses a plain text document into a list of segments.

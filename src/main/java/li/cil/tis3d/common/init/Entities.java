@@ -11,8 +11,8 @@ import net.minecraft.util.registry.Registry;
 public final class Entities {
     public static final EntityType<InfraredPacketEntity> INFRARED_PACKET = FabricEntityTypeBuilder.create(
         EntityCategory.MISC, InfraredPacketEntity::new).disableSummon().size(
-            new EntityDimensions(0.25F, 0.25F, true)
-        ).setImmuneToFire().build();
+        new EntityDimensions(0.25F, 0.25F, true)
+    ).setImmuneToFire().build();
 
     // --------------------------------------------------------------------- //
 

@@ -7,12 +7,15 @@ import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.module.RandomAccessMemoryModule;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.ReadOnlyMemoryModuleDataMessage;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Hand;
 import org.lwjgl.glfw.GLFW;
 
+@Environment(EnvType.CLIENT)
 public final class ReadOnlyMemoryModuleGui extends Screen {
     private static final int GUI_WIDTH = 190;
     private static final int GUI_HEIGHT = 130;

@@ -2,6 +2,8 @@ package li.cil.tis3d.client.manual.segment.render;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.tis3d.api.manual.ImageRenderer;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.NativeImage;
@@ -15,6 +17,7 @@ import org.lwjgl.opengl.GL11;
 import java.io.IOException;
 import java.io.InputStream;
 
+@Environment(EnvType.CLIENT)
 public class TextureImageRenderer implements ImageRenderer {
     private final Identifier location;
     private final ImageTexture texture;

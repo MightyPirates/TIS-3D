@@ -1,5 +1,8 @@
 package li.cil.tis3d.api.manual;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+
 import javax.annotation.Nullable;
 
 /**
@@ -9,6 +12,7 @@ import javax.annotation.Nullable;
  * expected to return an image renderer, which essentially represents the
  * area it will render to.
  */
+@Environment(EnvType.CLIENT)
 public interface ImageProvider {
     /**
      * Gets an image renderer for the specified data.

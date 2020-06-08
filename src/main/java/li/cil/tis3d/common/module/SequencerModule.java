@@ -17,7 +17,6 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -192,9 +191,9 @@ public final class SequencerModule extends AbstractModuleWithRotation {
             // Draw bar in background indicating current position in sequence.
             final float barU0 = BAR_U0 + BAR_STEP_U * position;
             final float brightness = 0.75f + 0.25f * (delay == 0 ? 1 : (1 - (delay - stepsRemaining) / (float)delay));
-            final int barRed   = (int) (0x33 * brightness);
-            final int barGreen = (int) (0x4C * brightness);
-            final int barBlue  = (int) (0x59 * brightness);
+            final int barRed = (int)(0x33 * brightness);
+            final int barGreen = (int)(0x4C * brightness);
+            final int barBlue = (int)(0x59 * brightness);
 
             matrices.translate(0f, 0f, layerBump);
             RenderUtil.drawColorQuad(mat, vc, barU0, BAR_V0, BAR_SIZE_U, BAR_SIZE_V,

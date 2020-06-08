@@ -1,5 +1,8 @@
 package li.cil.tis3d.api.manual;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+
 /**
  * Allows implementing advanced image renderers that react to mouse input and
  * specify customized tooltips.
@@ -7,6 +10,7 @@ package li.cil.tis3d.api.manual;
  * This way you can e.g. disable the default tooltip and render a more advanced
  * one, or render a small GUI on a page.
  */
+@Environment(EnvType.CLIENT)
 public interface InteractiveImageRenderer extends ImageRenderer {
     /**
      * Get a custom tooltip for this image renderer.

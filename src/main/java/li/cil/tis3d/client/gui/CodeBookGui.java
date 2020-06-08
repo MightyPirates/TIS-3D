@@ -327,11 +327,12 @@ public final class CodeBookGui extends Screen {
                 }
 
                 lines.get(line).insert(indexToColumn(column), pastedLines[0].toUpperCase(Locale.US));
-                lines.addAll(line + 1, Arrays.stream(pastedLines).
-                    skip(1).
-                    map(l -> l.toUpperCase(Locale.US)).
-                    map(StringBuilder::new).
-                    collect(Collectors.toList()));
+                lines.addAll(line + 1, Arrays
+                    .stream(pastedLines)
+                    .skip(1)
+                    .map(l -> l.toUpperCase(Locale.US))
+                    .map(StringBuilder::new)
+                    .collect(Collectors.toList()));
 
                 selectionStart = selectionEnd = selectionEnd + pastedLines[0].length();
                 for (int i = 1; i < pastedLines.length; i++) {

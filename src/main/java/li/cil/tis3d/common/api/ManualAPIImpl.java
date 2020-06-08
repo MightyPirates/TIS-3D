@@ -7,6 +7,8 @@ import li.cil.tis3d.api.manual.*;
 import li.cil.tis3d.client.gui.GuiHelper;
 import li.cil.tis3d.client.gui.ManualGui;
 import li.cil.tis3d.common.TIS3D;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
@@ -143,6 +145,7 @@ public final class ManualAPIImpl implements ManualAPI {
     }
 
     @Override
+    @Environment(EnvType.CLIENT)
     @Nullable
     public Iterable<String> contentFor(final String path) {
         final String cleanPath = Files.simplifyPath(path);
@@ -155,6 +158,7 @@ public final class ManualAPIImpl implements ManualAPI {
     }
 
     @Override
+    @Environment(EnvType.CLIENT)
     @Nullable
     public ImageRenderer imageFor(final String href) {
         for (int i = imageProviders.size() - 1; i >= 0; i--) {
@@ -175,6 +179,7 @@ public final class ManualAPIImpl implements ManualAPI {
     }
 
     @Override
+    @Environment(EnvType.CLIENT)
     public void openFor(final PlayerEntity player) {
         if (player.getEntityWorld().isClient) {
             GuiHelper.openManualGui();
@@ -188,6 +193,7 @@ public final class ManualAPIImpl implements ManualAPI {
     }
 
     @Override
+    @Environment(EnvType.CLIENT)
     public void navigate(final String path) {
         final MinecraftClient mc = MinecraftClient.getInstance();
         if (mc == null) {
@@ -241,10 +247,12 @@ public final class ManualAPIImpl implements ManualAPI {
         return null;
     }
 
+    @Environment(EnvType.CLIENT)
     private Optional<Iterable<String>> contentForWithRedirects(final String path) {
         return contentForWithRedirects(path, new ArrayList<>());
     }
 
+    @Environment(EnvType.CLIENT)
     private Optional<Iterable<String>> contentForWithRedirects(final String path, final List<String> seen) {
         if (seen.contains(path)) {
             final List<String> message = new ArrayList<>();
@@ -270,6 +278,7 @@ public final class ManualAPIImpl implements ManualAPI {
         return content; // Empty.
     }
 
+    @Environment(EnvType.CLIENT)
     private Optional<Iterable<String>> doContentLookup(final String path) {
         for (final ContentProvider provider : contentProviders) {
             try {

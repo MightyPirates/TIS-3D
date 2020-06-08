@@ -4,12 +4,15 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.tis3d.api.manual.ImageRenderer;
 import li.cil.tis3d.api.manual.InteractiveImageRenderer;
 import li.cil.tis3d.client.manual.Document;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Optional;
 
+@Environment(EnvType.CLIENT)
 public final class RenderSegment extends AbstractSegment implements InteractiveSegment {
     private final Segment parent;
     private final String title;

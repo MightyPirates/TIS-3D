@@ -3,6 +3,7 @@ package li.cil.tis3d.client.init;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.api.prefab.manual.ItemStackTabIconRenderer;
+import li.cil.tis3d.api.prefab.manual.ResourceContentProvider;
 import li.cil.tis3d.api.prefab.manual.TextureTabIconRenderer;
 import li.cil.tis3d.client.manual.provider.BlockImageProvider;
 import li.cil.tis3d.client.manual.provider.ItemImageProvider;
@@ -12,6 +13,8 @@ import li.cil.tis3d.client.render.block.entity.CasingBlockEntityRenderer;
 import li.cil.tis3d.client.render.block.entity.ControllerBlockEntityRenderer;
 import li.cil.tis3d.client.render.entity.InvisibleEntityRenderer;
 import li.cil.tis3d.common.Constants;
+import li.cil.tis3d.common.api.FontRendererAPIImpl;
+import li.cil.tis3d.common.api.SerialAPIImpl;
 import li.cil.tis3d.common.block.CasingBlock;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.block.entity.ControllerBlockEntity;
@@ -22,6 +25,8 @@ import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.module.DisplayModule;
 import li.cil.tis3d.common.network.Network;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
@@ -40,12 +45,15 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.Collection;
 
-@SuppressWarnings("unused")
+@Environment(EnvType.CLIENT)
 public final class BootstrapClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         // Register network handler.
         Network.INSTANCE.initClient();
+
+        // Initialize API.
+        API.fontRendererAPI = new FontRendererAPIImpl();
 
         // Register event handlers.
         ClientTickCallback.EVENT.register(client -> DisplayModule.LeakDetector.tick());
@@ -54,14 +62,15 @@ public final class BootstrapClient implements ClientModInitializer {
         ClientPickBlockGatherCallback.EVENT.register(BootstrapClient::handlePickBlock);
 
         // Register entity renderers
-        EntityRendererRegistry.INSTANCE.register(Entities.INFRARED_PACKET,
-            (dispatcher, context) -> new InvisibleEntityRenderer<InfraredPacketEntity>(dispatcher));
+        EntityRendererRegistry.INSTANCE.register(Entities.INFRARED_PACKET, (dispatcher, context) -> new InvisibleEntityRenderer<InfraredPacketEntity>(dispatcher));
 
         // Set up block entity renderer for dynamic module content.
         BlockEntityRendererRegistry.INSTANCE.register(CasingBlockEntity.TYPE, CasingBlockEntityRenderer::new);
         BlockEntityRendererRegistry.INSTANCE.register(ControllerBlockEntity.TYPE, ControllerBlockEntityRenderer::new);
 
         // Add default manual providers for client side stuff.
+        ManualAPI.addProvider(new ResourceContentProvider(API.MOD_ID, "doc/"));
+        ManualAPI.addProvider(SerialAPIImpl.INSTANCE.getSerialProtocolContentProvider());
         ManualAPI.addProvider("", new TextureImageProvider());
         ManualAPI.addProvider("item", new ItemImageProvider());
         ManualAPI.addProvider("block", new BlockImageProvider());

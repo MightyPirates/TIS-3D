@@ -4,8 +4,8 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.World;
 import net.minecraft.world.chunk.WorldChunk;
 
 import javax.annotation.Nullable;
@@ -20,7 +20,7 @@ public final class WorldUtils {
      * Check whether a block is within a loaded chunk.
      *
      * @param iWorld the world to check in.
-     * @param pos the block position to check at.
+     * @param pos    the block position to check at.
      * @return whether the block is loaded.
      */
     public static boolean isBlockLoaded(final IWorld iWorld, final BlockPos pos) {

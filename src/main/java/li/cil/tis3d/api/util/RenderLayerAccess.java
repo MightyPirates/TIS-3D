@@ -10,6 +10,8 @@ import org.lwjgl.opengl.GL11;
 
 @Environment(EnvType.CLIENT)
 public abstract class RenderLayerAccess extends RenderLayer {
+    private static final String CUTOUT_NO_DIFFUSE_LIGHT_LAYER_NAME = "tis3d/cutout_no_difflight";
+
     /**
      * Not meant to be instantiated.
      */
@@ -26,17 +28,17 @@ public abstract class RenderLayerAccess extends RenderLayer {
      * @return the {@link net.minecraft.client.render.RenderLayer} instance.
      */
     public static RenderLayer getCutoutNoDiffLight(final Identifier texture) {
-        final RenderLayer.MultiPhaseParameters parameters =
-        RenderLayer.MultiPhaseParameters.builder()
-        .texture(new RenderPhase.Texture(texture, false, false))
-        .transparency(NO_TRANSPARENCY)
-        .diffuseLighting(DISABLE_DIFFUSE_LIGHTING)
-        .alpha(ONE_TENTH_ALPHA)
-        .lightmap(ENABLE_LIGHTMAP)
-        .overlay(ENABLE_OVERLAY_COLOR)
-        .build(true);
+        final RenderLayer.MultiPhaseParameters parameters = RenderLayer.MultiPhaseParameters
+            .builder()
+            .texture(new RenderPhase.Texture(texture, false, false))
+            .transparency(NO_TRANSPARENCY)
+            .diffuseLighting(DISABLE_DIFFUSE_LIGHTING)
+            .alpha(ONE_TENTH_ALPHA)
+            .lightmap(ENABLE_LIGHTMAP)
+            .overlay(ENABLE_OVERLAY_COLOR)
+            .build(true);
 
-        return RenderLayer.of("tis3d/cutout_no_difflight",
+        return RenderLayer.of(CUTOUT_NO_DIFFUSE_LIGHT_LAYER_NAME,
                               VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
                               GL11.GL_QUADS, 256, false, false, parameters);
     }

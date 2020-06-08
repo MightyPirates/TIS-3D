@@ -32,6 +32,7 @@ public class ReadOnlyMemoryModuleItem extends ModuleItem {
     @Override
     public TypedActionResult<ItemStack> use(final World world, final PlayerEntity player, final Hand hand) {
         if (world.isClient) {
+            //noinspection MethodCallSideOnly Guarded by isClient check.
             GuiHelper.openReadOnlyMemoryGui(player, hand);
         } else {
             sendModuleMemory(player, hand);

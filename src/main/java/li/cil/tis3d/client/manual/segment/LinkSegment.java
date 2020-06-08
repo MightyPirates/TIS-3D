@@ -2,11 +2,14 @@ package li.cil.tis3d.client.manual.segment;
 
 import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.common.api.ManualAPIImpl;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.LiteralText;
 import java.net.URI;
 import java.util.Optional;
 
+@Environment(EnvType.CLIENT)
 public final class LinkSegment extends TextSegment implements InteractiveSegment {
     private static final int NORMAL_COLOR = 0x333399;
     private static final int NORMAL_COLOR_HOVER = 0x6666CC;

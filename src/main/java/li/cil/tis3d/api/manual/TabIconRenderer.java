@@ -15,6 +15,7 @@ import net.fabricmc.api.Environment;
  * @see ItemStackTabIconRenderer
  * @see TextureTabIconRenderer
  */
+@Environment(EnvType.CLIENT)
 public interface TabIconRenderer {
     /**
      * Called when icon of a tab should be rendered.
@@ -22,6 +23,5 @@ public interface TabIconRenderer {
      * This should render something in a 16x16 area. The OpenGL state has been
      * adjusted so that drawing starts at (0,0,0), and should go to (16,16,0).
      */
-    @Environment(EnvType.CLIENT)
     void render();
 }

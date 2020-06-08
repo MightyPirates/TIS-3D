@@ -4,6 +4,8 @@ import io.netty.buffer.ByteBuf;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.util.math.MatrixStack;
@@ -192,14 +194,14 @@ public interface Module {
      * The light value is provided but most modules will want to ignore it
      * and render at max brightness using {@link li.cil.tis3d.api.util.RenderUtil#maxLight}.
      *
-     *
      * @param rendererDispatcher the render context of the tile entity the module sits in.
      * @param partialTicks       the partial time elapsed in this tick.
      * @param matrices           the transformation stack
      * @param vcp                the VertexConsumerProvider to query buffers from
      * @param light              the block-local light value for rendering; usually ignored in favor of RenderUtil.maxLight
-     * @param overlay            the overlay paramater for rendering
+     * @param overlay            the overlay parameter for rendering
      */
+    @Environment(EnvType.CLIENT)
     void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks,
                 final MatrixStack matrices, final VertexConsumerProvider vcp,
                 final int light, final int overlay);

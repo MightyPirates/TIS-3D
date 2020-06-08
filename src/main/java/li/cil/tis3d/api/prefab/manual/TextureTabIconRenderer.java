@@ -14,6 +14,7 @@ import org.lwjgl.opengl.GL11;
  * Simple implementation of a tab icon renderer using a full texture as its graphic.
  */
 @SuppressWarnings("UnusedDeclaration")
+@Environment(EnvType.CLIENT)
 public class TextureTabIconRenderer implements TabIconRenderer {
     private final Identifier location;
 
@@ -21,7 +22,6 @@ public class TextureTabIconRenderer implements TabIconRenderer {
         this.location = location;
     }
 
-    @Environment(EnvType.CLIENT)
     @Override
     public void render() {
         MinecraftClient.getInstance().getTextureManager().bindTexture(location);

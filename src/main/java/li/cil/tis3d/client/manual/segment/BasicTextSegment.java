@@ -2,10 +2,13 @@ package li.cil.tis3d.client.manual.segment;
 
 import com.google.common.collect.ImmutableSet;
 import li.cil.tis3d.client.manual.Document;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
 
 import java.util.Set;
 
+@Environment(EnvType.CLIENT)
 abstract class BasicTextSegment extends AbstractSegment implements Segment {
     private static final Set<Character> BREAKS = ImmutableSet.of(' ', '.', ',', ':', ';', '!', '?', '_', '=', '-', '+', '*', '/', '\\');
     private static final Set<String> LISTS = ImmutableSet.of("- ", "* ");

@@ -166,6 +166,7 @@ public final class InfraredModule extends AbstractModule implements InfraredRece
         for (final Port port : Port.VALUES) {
             final Pipe sendingPipe = getCasing().getSendingPipe(getFace(), port);
             if (!sendingPipe.isWriting()) {
+                //noinspection ConstantConditions We're never pushing null values.
                 sendingPipe.beginWrite(receiveQueue.peekFirst());
             }
         }

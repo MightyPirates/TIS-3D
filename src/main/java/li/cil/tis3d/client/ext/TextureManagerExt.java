@@ -7,8 +7,8 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public interface TextureManagerExt {
-    public static TextureManagerExt from(final TextureManager self) {
-        return (TextureManagerExt) self;
+    static TextureManagerExt from(final TextureManager self) {
+        return (TextureManagerExt)self;
     }
 
     /**

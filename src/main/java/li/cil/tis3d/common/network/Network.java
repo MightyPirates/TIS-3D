@@ -16,6 +16,8 @@ import li.cil.tis3d.common.network.handler.ReadOnlyMemoryModuleDataServerMessage
 import li.cil.tis3d.common.network.message.*;
 import li.cil.tis3d.util.Side;
 import li.cil.tis3d.util.WorldUtils;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.fabricmc.fabric.api.network.PacketRegistry;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
@@ -59,6 +61,7 @@ public final class Network {
 
     // --------------------------------------------------------------------- //
 
+    @Environment(EnvType.CLIENT)
     public void initClient() {
         registerMessage(new CasingDataMessageHandler(), CasingDataMessage.class, Side.CLIENT);
         registerMessage(new CasingEnabledStateMessageHandler(), CasingEnabledStateMessage.class, Side.CLIENT);
@@ -144,6 +147,7 @@ public final class Network {
         ((ServerPlayerEntity)player).networkHandler.sendPacket(packet);
     }
 
+    @Environment(EnvType.CLIENT)
     public void sendToServer(final AbstractMessage message) {
         final Identifier id = getMessageIdentifier(message.getClass());
         final PacketByteBuf buffer = serializeMessage(message);
@@ -451,6 +455,7 @@ public final class Network {
                 final CasingDataMessage message = new CasingDataMessage(casing, data);
                 final boolean didSend;
                 if (side == Side.CLIENT) {
+                    //noinspection MethodCallSideOnly Guarded by == Side.CLIENT check.
                     Network.INSTANCE.sendToServer(message);
                     didSend = true;
                 } else {

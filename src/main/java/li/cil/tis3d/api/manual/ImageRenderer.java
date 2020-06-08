@@ -1,5 +1,8 @@
 package li.cil.tis3d.api.manual;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+
 /**
  * This allows implementing custom image renderers.
  * <p>
@@ -10,6 +13,7 @@ package li.cil.tis3d.api.manual;
  * <p>
  * Built-in image renderers are <tt>item</tt>, <tt>block</tt> and <tt>tag</tt>.
  */
+@Environment(EnvType.CLIENT)
 public interface ImageRenderer {
     /**
      * The width of the area this renderer uses.

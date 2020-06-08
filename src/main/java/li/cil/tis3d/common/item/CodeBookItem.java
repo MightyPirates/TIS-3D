@@ -48,6 +48,7 @@ public final class CodeBookItem extends BookItem {
     @Override
     public TypedActionResult<ItemStack> use(final World world, final PlayerEntity player, final Hand hand) {
         if (world.isClient) {
+            //noinspection MethodCallSideOnly Guarded by isClient check.
             GuiHelper.openCodeBookGui(player, hand);
         }
         return new TypedActionResult<>(ActionResult.SUCCESS, player.getStackInHand(hand));

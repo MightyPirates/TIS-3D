@@ -1,5 +1,7 @@
 package li.cil.tis3d.client.manual.segment;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
 
 import javax.annotation.Nullable;
@@ -7,6 +9,7 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+@Environment(EnvType.CLIENT)
 abstract class AbstractSegment implements Segment {
     private Segment next;
 

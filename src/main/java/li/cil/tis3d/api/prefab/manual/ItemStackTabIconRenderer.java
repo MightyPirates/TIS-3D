@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
  * Simple implementation of a tab icon renderer using an item stack as its graphic.
  */
 @SuppressWarnings("UnusedDeclaration")
+@Environment(EnvType.CLIENT)
 public class ItemStackTabIconRenderer implements TabIconRenderer {
     private final ItemStack stack;
 

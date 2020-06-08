@@ -30,6 +30,7 @@ public abstract class AbstractMessageHandler<T extends AbstractMessage> {
     protected World getWorld(final DimensionType dimension, final PacketContext context) {
         switch (context.getPacketEnvironment()) {
             case CLIENT:
+                //noinspection MethodCallSideOnly Guarded by CLIENT switch case.
                 return getWorldClient(dimension, context);
             case SERVER:
                 return getWorldServer(dimension, context);

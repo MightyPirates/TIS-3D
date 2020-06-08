@@ -1,16 +1,20 @@
 package li.cil.tis3d.util;
 
 import li.cil.tis3d.common.Constants;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * Utility methods based on the default Minecraft font renderer.
  */
+@Environment(EnvType.CLIENT)
 public final class FontRendererUtils {
     /**
      * Tries to format the specified tooltip string so it does not exceed our maximum tooltip width

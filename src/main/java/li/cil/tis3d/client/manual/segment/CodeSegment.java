@@ -2,10 +2,13 @@ package li.cil.tis3d.client.manual.segment;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.tis3d.client.render.font.NormalFontRenderer;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
 
 import java.util.Optional;
 
+@Environment(EnvType.CLIENT)
 public final class CodeSegment extends BasicTextSegment {
     private static final float FONT_SCALE = 0.5f;
     private static final int OFFSET_Y = 1;

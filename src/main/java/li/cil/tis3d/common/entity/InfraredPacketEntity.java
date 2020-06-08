@@ -3,7 +3,6 @@ package li.cil.tis3d.common.entity;
 import li.cil.tis3d.api.infrared.InfraredPacket;
 import li.cil.tis3d.api.infrared.InfraredReceiver;
 import li.cil.tis3d.common.event.TickHandlerInfraredPacket;
-import li.cil.tis3d.common.init.Entities;
 import li.cil.tis3d.common.module.InfraredModule;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.util.Raytracing;

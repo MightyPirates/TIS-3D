@@ -2,7 +2,6 @@ package li.cil.tis3d.common.module;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import li.cil.tis3d.api.FontRendererAPI;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
@@ -276,7 +275,7 @@ public final class QueueModule extends AbstractModuleWithRotation {
         matrices.scale(1 / 128f, 1 / 128f, 1);
         matrices.translate(4.5f, 14.5f, 0);
 
-        final AbstractFontRenderer fontRenderer = (AbstractFontRenderer) SmallFontRenderer.INSTANCE;
+        final AbstractFontRenderer fontRenderer = (AbstractFontRenderer)SmallFontRenderer.INSTANCE;
         final VertexConsumer vcFont = fontRenderer.chooseVertexConsumer(vcp);
         final int charWidth = fontRenderer.getCharWidth();
         final int charHeight = fontRenderer.getCharHeight();
