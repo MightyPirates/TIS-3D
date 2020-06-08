@@ -14,6 +14,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.texture.Sprite;
@@ -60,8 +61,10 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
             setupMatrix(face, matrices);
 
             if (!isObserverHoldingKey() || !drawConfigOverlay(casing, face, matrices, vertexConsumers, overlay)) {
-                // XXX light is not the correct lightmap value
-                drawModuleOverlay(casing, face, partialTicks, matrices, vertexConsumers, light, overlay);
+                // Grab neighbor lighting for module rendering because the casing itself is opaque and hence fully dark.
+                final BlockPos neighborPos = casing.getPos().offset(Face.toDirection(face));
+                final int neighborLight = WorldRenderer.getLightmapCoordinates(dispatcher.world, neighborPos);
+                drawModuleOverlay(casing, face, partialTicks, matrices, vertexConsumers, neighborLight, overlay);
             }
 
             matrices.pop();

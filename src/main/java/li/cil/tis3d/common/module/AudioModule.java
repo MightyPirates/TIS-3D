@@ -67,7 +67,7 @@ public final class AudioModule extends AbstractModule {
         final Sprite sprite = RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_AUDIO);
         final VertexConsumer vc = vcp.getBuffer(RenderLayer.getTranslucentNoCrumbling());
 
-        RenderUtil.drawQuad(sprite, matrices.peek(), vc, RenderUtil.maxLight, overlay);
+        RenderUtil.drawQuad(sprite, matrices.peek(), vc, light, overlay);
     }
 
     // --------------------------------------------------------------------- //
