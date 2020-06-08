@@ -1,6 +1,7 @@
 package li.cil.tis3d.common.init;
 
 import li.cil.tis3d.api.API;
+import li.cil.tis3d.api.ExtInitializer;
 import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.api.ModuleAPI;
 import li.cil.tis3d.client.manual.provider.GameRegistryPathProvider;
@@ -18,6 +19,7 @@ import net.fabricmc.fabric.api.event.server.ServerTickCallback;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.File;
+import java.util.List;
 
 @SuppressWarnings("unused")
 public final class BootstrapCommon implements ModInitializer {
@@ -78,5 +80,16 @@ public final class BootstrapCommon implements ModInitializer {
 
         // Mod integration.
         Integration.init();
+
+        // Initialize extensions.
+        final String fullEntrypoint =  extensionEntrypoint("main");
+        final List<ExtInitializer> extensions = FabricLoader.getInstance().getEntrypoints(fullEntrypoint, ExtInitializer.class);
+        for (ExtInitializer initializer : extensions) {
+            initializer.onInitialize();
+        }
+    }
+
+    public static String extensionEntrypoint(final String entrypoint) {
+        return API.MOD_ID + ":" + entrypoint;
     }
 }
