@@ -2,6 +2,7 @@ package li.cil.tis3d.client.init;
 
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.ManualAPI;
+import li.cil.tis3d.api.ClientExtInitializer;
 import li.cil.tis3d.api.prefab.manual.ItemStackTabIconRenderer;
 import li.cil.tis3d.api.prefab.manual.ResourceContentProvider;
 import li.cil.tis3d.api.prefab.manual.TextureTabIconRenderer;
@@ -20,6 +21,7 @@ import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.block.entity.ControllerBlockEntity;
 import li.cil.tis3d.common.entity.InfraredPacketEntity;
 import li.cil.tis3d.common.init.Blocks;
+import li.cil.tis3d.common.init.BootstrapCommon;
 import li.cil.tis3d.common.init.Entities;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.module.DisplayModule;
@@ -32,6 +34,7 @@ import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.fabricmc.fabric.api.event.client.ClientTickCallback;
 import net.fabricmc.fabric.api.event.client.player.ClientPickBlockGatherCallback;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.texture.SpriteAtlasTexture;
@@ -44,6 +47,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.Collection;
+import java.util.List;
 
 @Environment(EnvType.CLIENT)
 public final class BootstrapClient implements ClientModInitializer {
@@ -80,6 +84,13 @@ public final class BootstrapClient implements ClientModInitializer {
         ManualAPI.addTab(new ItemStackTabIconRenderer(new ItemStack(Blocks.CONTROLLER)), "tis3d.manual.blocks", "%LANGUAGE%/block/index.md");
         ManualAPI.addTab(new ItemStackTabIconRenderer(new ItemStack(findModuleItem())), "tis3d.manual.items", "%LANGUAGE%/item/index.md");
         ManualAPI.addTab(new TextureTabIconRenderer(new Identifier(API.MOD_ID, "textures/gui/manual_serial_protocols.png")), "tis3d.manual.serial_protocols", "%LANGUAGE%/serial_protocols.md");
+
+        // Initialize extensions.
+        final String fullEntrypoint = BootstrapCommon.extensionEntrypoint("client");
+        final List<ClientExtInitializer> extensions = FabricLoader.getInstance().getEntrypoints(fullEntrypoint, ClientExtInitializer.class);
+        for (ClientExtInitializer initializer : extensions) {
+            initializer.onInitializeClient();
+        }
     }
 
     private static Item findModuleItem() {
