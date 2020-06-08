@@ -1,6 +1,5 @@
 package li.cil.tis3d.common.module;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.machine.Casing;
@@ -10,12 +9,17 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.init.Textures;
-import li.cil.tis3d.client.render.font.FontRenderer;
+import li.cil.tis3d.client.render.font.AbstractFontRenderer;
 import li.cil.tis3d.client.render.font.NormalFontRenderer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.nbt.CompoundTag;
 
 /**
@@ -94,27 +98,34 @@ public final class TimerModule extends AbstractModuleWithRotation {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
+    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks,
+                       final MatrixStack matrices, final VertexConsumerProvider vcp,
+                       final int light, final int overlay) {
         if (!getCasing().isEnabled()) {
             return;
         }
 
-        rotateForRendering();
-        RenderUtil.ignoreLighting();
+        matrices.push();
+        rotateForRendering(matrices);
 
-        RenderUtil.drawQuad(RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_TIMER));
+        final Sprite baseSprite = RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_TIMER);
+        final VertexConsumer vc = vcp.getBuffer(RenderLayer.getCutoutMipped());
+
+        RenderUtil.drawQuad(baseSprite, matrices.peek(), vc, RenderUtil.maxLight, overlay);
 
         // Render detailed state when player is close.
-        if (!hasElapsed && rendererDispatcher.cameraEntity.getBlockPos().getSquaredDistance(getCasing().getPosition()) < 64) {
+        if (!hasElapsed && rendererDispatcher.camera.getBlockPos().getSquaredDistance(getCasing().getPosition()) < 64) {
             final MinecraftClient mc = MinecraftClient.getInstance();
             final long worldTime = mc != null && mc.world != null ? mc.world.getTime() : 0;
             final float remaining = (float)(timer - worldTime) - partialTicks;
             if (remaining <= 0) {
                 hasElapsed = true;
             } else {
-                drawState(remaining);
+                drawState(matrices, vcp, RenderUtil.maxLight, overlay, remaining);
             }
         }
+
+        matrices.pop();
     }
 
     @Override
@@ -191,7 +202,9 @@ public final class TimerModule extends AbstractModuleWithRotation {
     }
 
     @Environment(EnvType.CLIENT)
-    private void drawState(final float remaining) {
+    private void drawState(final MatrixStack matrices, final VertexConsumerProvider vcp,
+                           final int light, final int overlay,
+                           final float remaining) {
         final float milliseconds = remaining * 50f; // One tick is 50ms.
         final float seconds = milliseconds / 1000f;
         final int minutes = (int)(seconds / 60f);
@@ -202,13 +215,16 @@ public final class TimerModule extends AbstractModuleWithRotation {
         } else {
             time = String.format("%.2f", seconds);
         }
-        final FontRenderer fontRenderer = NormalFontRenderer.INSTANCE;
+
+        // Not using the generic FontRenderer API here until the API changes are finalized
+        final AbstractFontRenderer fontRenderer = (AbstractFontRenderer) NormalFontRenderer.INSTANCE;
+        final VertexConsumer vcFont = fontRenderer.chooseVertexConsumer(vcp);
         final int width = time.length() * fontRenderer.getCharWidth();
         final int height = fontRenderer.getCharHeight();
 
-        GlStateManager.translatef(0.5f, 0.5f, 0);
-        GlStateManager.scalef(1 / 80f, 1 / 80f, 1);
-        GlStateManager.translatef(-width / 2f + 1, -height / 2f + 1, 0);
-        fontRenderer.drawString(time);
+        matrices.translate(0.5f, 0.5f, 0);
+        matrices.scale(1 / 80f, 1 / 80f, 1);
+        matrices.translate(-width / 2f + 1, -height / 2f + 1, 0);
+        fontRenderer.drawString(matrices.peek(), vcFont, light, overlay, time);
     }
 }

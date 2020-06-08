@@ -7,11 +7,11 @@ import li.cil.tis3d.common.init.Entities;
 import li.cil.tis3d.common.module.InfraredModule;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.util.Raytracing;
+import li.cil.tis3d.util.WorldUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
@@ -19,6 +19,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -97,7 +98,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
      * @param value     the value the packet carries.
      */
     public void configure(final Vec3d start, final Vec3d direction, final short value) {
-        setPosition(start.x, start.y, start.z);
+        updatePosition(start.x, start.y, start.z);
         setVelocity(direction.multiply(TRAVEL_SPEED));
         lifetime = DEFAULT_LIFETIME + 1; // First update in next frame.
         this.value = value;
@@ -121,6 +122,10 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
         if (!getEntityWorld().isClient) {
             TickHandlerInfraredPacket.INSTANCE.watchPacket(this);
         }
+    }
+
+    private void setPos(final Vec3d pos) {
+        setPos(pos.x, pos.y, pos.z);
     }
 
     // --------------------------------------------------------------------- //
@@ -171,12 +176,11 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
         emitParticles(hit);
 
         // Update position.
-        x += getVelocity().x;
-        y += getVelocity().y;
-        z += getVelocity().z;
+        final Vec3d newPos = getPos().add(getVelocity());
+        setPos(newPos);
 
         // Update bounding box.
-        setPosition(x, y, z);
+        refreshPosition();
     }
 
     @Override
@@ -196,7 +200,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
 
     @Environment(EnvType.CLIENT)
     @Override
-    public boolean shouldRenderAtDistance(final double distance) {
+    public boolean shouldRender(final double distance) {
         return false;
     }
 
@@ -234,13 +238,9 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
                 // the later adjustment of the position to compensate for
                 // manual movement (see `checkCollisions`).
                 final double normalizer = TRAVEL_SPEED * TRAVEL_SPEED / sqrDelta;
-                x = position.x * normalizer;
-                y = position.y * normalizer;
-                z = position.z * normalizer;
+                setPos(position.multiply(normalizer));
             } else {
-                x = position.x;
-                y = position.y;
-                z = position.z;
+                setPos(position);
             }
 
             // Apply new direction.
@@ -260,23 +260,15 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
         }
 
         final double t = random.nextDouble();
-
-        final double dx, dy, dz;
+        final Vec3d d;
         if (hit == null || hit.getPos() == null) {
-            dx = getVelocity().x;
-            dy = getVelocity().y;
-            dz = getVelocity().z;
+            d = getVelocity();
         } else {
-            dx = hit.getPos().x - x;
-            dy = hit.getPos().y - y;
-            dz = hit.getPos().z - z;
+            d = hit.getPos().subtract(getPos());
         }
 
-        final double xx = x + dx * t;
-        final double yy = y + dy * t;
-        final double zz = z + dz * t;
-
-        Network.INSTANCE.sendRedstoneEffect(world, xx, yy, zz);
+        final Vec3d pp = getPos().add(d.multiply(t));
+        Network.INSTANCE.sendRedstoneEffect(world, pp.x, pp.y, pp.z);
     }
 
     @Nullable
@@ -300,11 +292,10 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
             // Offset to compensate position adjustments. This way the total
             // distance the packet travels per tick stays constant, even if
             // it was moved around by a packet handler.
-            final Vec3d newPos = getPosVector();
-            final double delta = newPos.subtract(oldPos).length() / TRAVEL_SPEED;
-            x -= getVelocity().x * delta;
-            y -= getVelocity().y * delta;
-            z -= getVelocity().z * delta;
+            final Vec3d curPos = getPosVector();
+            final double delta = curPos.subtract(oldPos).length() / TRAVEL_SPEED;
+
+            setPos(curPos.subtract(getVelocity().multiply(delta)));
         }
 
         return hitResult;
@@ -313,7 +304,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
     @Nullable
     private HitResult checkCollision() {
         final World world = getEntityWorld();
-        final Vec3d start = new Vec3d(x, y, z);
+        final Vec3d start = getPos();
         final Vec3d target = start.add(getVelocity());
 
         // Check for block collisions.
@@ -370,14 +361,14 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
         if (pos == null) {
             return;
         }
-        if (!world.isBlockLoaded(pos)) {
+        if (!WorldUtils.isBlockLoaded(world, pos)) {
             return;
         }
         final Block block = world.getBlockState(pos).getBlock();
 
         // Traveling through a portal?
         if (block == Blocks.NETHER_PORTAL || block == Blocks.END_PORTAL) {
-            setInPortal(pos);
+            setInNetherPortal(pos);
             return;
         }
 

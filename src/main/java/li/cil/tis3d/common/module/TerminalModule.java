@@ -1,6 +1,5 @@
 package li.cil.tis3d.common.module;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.machine.Casing;
@@ -12,14 +11,20 @@ import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.gui.GuiHelper;
 import li.cil.tis3d.client.gui.TerminalModuleGui;
 import li.cil.tis3d.client.init.Textures;
-import li.cil.tis3d.client.render.font.FontRenderer;
+import li.cil.tis3d.client.render.font.AbstractFontRenderer;
 import li.cil.tis3d.client.render.font.NormalFontRenderer;
+import li.cil.tis3d.util.ColorUtils;
 import li.cil.tis3d.util.NBTIds;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -222,24 +227,27 @@ public final class TerminalModule extends AbstractModuleWithRotation {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
+    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks,
+                       final MatrixStack matrices, final VertexConsumerProvider vcp,
+                       final int light, final int overlay) {
         if (!getCasing().isEnabled() || !isVisible()) {
             return;
         }
 
-        rotateForRendering();
-        RenderUtil.ignoreLighting();
-        GlStateManager.enableBlend();
+        matrices.push();
+        rotateForRendering(matrices);
 
-        if (rendererDispatcher.cameraEntity.getBlockPos().getSquaredDistance(getCasing().getPosition()) < 64) {
+        if (rendererDispatcher.camera.getBlockPos().getSquaredDistance(getCasing().getPosition()) < 64) {
             // Player is close, render actual terminal text.
-            renderText();
+            renderText(matrices, vcp, RenderUtil.maxLight, overlay);
         } else {
             // Player too far away for details, draw static overlay.
-            RenderUtil.drawQuad(RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_TERMINAL));
+            final Sprite baseSprite = RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_TERMINAL);
+            final VertexConsumer vc = vcp.getBuffer(RenderLayer.getCutoutMipped());
+            RenderUtil.drawQuad(baseSprite, matrices.peek(), vc, RenderUtil.maxLight, overlay);
         }
 
-        GlStateManager.disableBlend();
+        matrices.pop();
     }
 
     @Override
@@ -263,7 +271,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
 
         final ListTag lines = new ListTag();
         for (final StringBuilder line : display) {
-            lines.add(new StringTag(line.toString()));
+            //~ lines.add(new StringTag(line.toString()));
         }
         nbt.put(TAG_DISPLAY, lines);
 
@@ -302,61 +310,86 @@ public final class TerminalModule extends AbstractModuleWithRotation {
     // Rendering
 
     @Environment(EnvType.CLIENT)
-    private void renderText() {
-        GlStateManager.translatef(2f / 16f, 2f / 16f, 0);
-        GlStateManager.scalef(1 / 512f, 1 / 512f, 1);
+    private void renderText(final MatrixStack matrices, final VertexConsumerProvider vcp,
+                            final int light, final int overlay) {
+        matrices.translate(2f / 16f, 2f / 16f, 0);
+        matrices.scale(1 / 512f, 1 / 512f, 1);
 
-        final FontRenderer fontRenderer = NormalFontRenderer.INSTANCE;
+        final AbstractFontRenderer fontRenderer = (AbstractFontRenderer) NormalFontRenderer.INSTANCE;
+        // The order in which these VCs are aquired matters (only the last one is "current")
+        // thanks Majong :^)
+        final VertexConsumer vcFont = fontRenderer.chooseVertexConsumer(vcp);
 
+        final int charWidth = fontRenderer.getCharWidth();
+        final int charHeight = fontRenderer.getCharHeight();
         final int totalWidth = 12 * 32;
-        final int textWidth = MAX_COLUMNS * fontRenderer.getCharWidth();
+        final int textWidth = MAX_COLUMNS * charWidth;
         final float offsetX = (totalWidth - textWidth) / 2f;
-        GlStateManager.translatef(offsetX, 10f, 0);
 
-        renderDisplay(fontRenderer);
+        matrices.translate(offsetX, 10f, 0);
+        renderDisplay(matrices, vcFont, light, overlay, fontRenderer);
 
-        GlStateManager.translatef(0, (MAX_ROWS - display.size()) * fontRenderer.getCharHeight() + 4, 0);
-
-        renderInput(fontRenderer, textWidth);
+        matrices.translate(0, (MAX_ROWS - display.size()) * charHeight + 4, 0);
+        renderInput(matrices, vcFont, vcp, light, overlay, fontRenderer, textWidth);
     }
 
     @Environment(EnvType.CLIENT)
-    private void renderDisplay(final FontRenderer fontRenderer) {
+    private void renderDisplay(final MatrixStack matrices, final VertexConsumer vcFont,
+                               final int light, final int overlay,
+                               final AbstractFontRenderer fontRenderer) {
         for (final StringBuilder line : display) {
-            fontRenderer.drawString(line);
-            GlStateManager.translatef(0, fontRenderer.getCharHeight(), 0);
+            fontRenderer.drawString(matrices.peek(), vcFont, light, overlay, line);
+            matrices.translate(0, fontRenderer.getCharHeight(), 0);
         }
     }
 
     @Environment(EnvType.CLIENT)
-    private void renderInput(final FontRenderer fontRenderer, final int textWidth) {
-        if (!isInputEnabled) {
-            GlStateManager.color4f(0.5f, 0.5f, 0.5f, 1f);
-        }
+    private void renderInput(final MatrixStack matrices, final VertexConsumer vcFont,
+                             final VertexConsumerProvider vcp,
+                             final int light, final int overlay,
+                             final AbstractFontRenderer fontRenderer, final int textWidth) {
+        int color = ColorUtils.WHITE;
 
-        GlStateManager.disableTexture();
-        GlStateManager.depthMask(false);
+        matrices.translate(0, 4, 0);
 
-        RenderUtil.drawUntexturedQuad(-4, 0, textWidth + 8, 24);
-        GlStateManager.color4f(0.1f, 0.1f, 0.1f, 1f);
-        RenderUtil.drawUntexturedQuad(-2, 2, textWidth + 4, 20);
-        if (!isInputEnabled) {
-            GlStateManager.color4f(0.5f, 0.5f, 0.5f, 1f);
-        } else {
-            GlStateManager.color4f(1f, 1f, 1f, 1f);
-        }
+        // Draw input buffer
+        fontRenderer.drawString(matrices.peek(), vcFont, light, overlay, input);
 
-        GlStateManager.enableTexture();
-        GlStateManager.translatef(0, 4, 0);
-
-        fontRenderer.drawString(input);
+        final VertexConsumer vcColor = vcp.getBuffer(RenderLayer.getSolid());
 
         if (isInputEnabled && input.length() < MAX_COLUMNS && System.currentTimeMillis() % 800 > 400) {
-            GlStateManager.color4f(1f, 1f, 1f, 1f);
-            GlStateManager.disableTexture();
-            RenderUtil.drawUntexturedQuad(input.length() * fontRenderer.getCharWidth(), 0, fontRenderer.getCharWidth(), fontRenderer.getCharHeight());
-            GlStateManager.enableTexture();
+            final int charWidth = fontRenderer.getCharWidth();
+            final int charHeight = fontRenderer.getCharHeight();
+            // Draw blinking cursor
+            RenderUtil.drawColorQuad(matrices.peek(), vcColor,
+                                     input.length() * charWidth, 0, charWidth, charHeight,
+                                     color, light, overlay);
         }
+
+        if (!isInputEnabled) {
+            color = 0xFF808080;
+        }
+
+        // Draw input outline
+        RenderUtil.drawColorQuad(matrices.peek(), vcColor,
+                                 -4, -4, textWidth + 8, 2,
+                                 color, light, overlay);
+        RenderUtil.drawColorQuad(matrices.peek(), vcColor,
+                                 -4, 18, textWidth + 8, 2,
+                                 color, light, overlay);
+        RenderUtil.drawColorQuad(matrices.peek(), vcColor,
+                                 -4, -4, 2, 24,
+                                 color, light, overlay);
+        RenderUtil.drawColorQuad(matrices.peek(), vcColor,
+                                 textWidth + 2, -4, 2, 24,
+                                 color, light, overlay);
+
+        // Draw input box background
+        final int grey = 0xFF1A1A1A;
+        matrices.translate(0, 0, 0.005f / 2);
+        RenderUtil.drawColorQuad(matrices.peek(), vcColor,
+                                 -4, -4, textWidth + 8, 24,
+                                 grey, light, overlay);
     }
 
     @Environment(EnvType.CLIENT)

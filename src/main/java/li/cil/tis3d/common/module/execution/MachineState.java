@@ -126,7 +126,7 @@ public final class MachineState {
     // --------------------------------------------------------------------- //
 
     public void readFromNBT(final CompoundTag nbt) {
-        if (nbt.containsKey(TAG_CODE)) {
+        if (nbt.contains(TAG_CODE)) {
             try {
                 Compiler.compile(Arrays.asList(Constants.PATTERN_LINES.split(nbt.getString(TAG_CODE))), this);
             } catch (final ParseException ignored) {
@@ -139,7 +139,7 @@ public final class MachineState {
         pc = nbt.getInt(TAG_PC);
         acc = nbt.getShort(TAG_ACC);
         bak = nbt.getShort(TAG_BAK);
-        if (nbt.containsKey(TAG_LAST)) {
+        if (nbt.contains(TAG_LAST)) {
             last = Optional.of(EnumUtils.readFromNBT(Port.class, TAG_LAST, nbt));
         } else {
             last = Optional.empty();

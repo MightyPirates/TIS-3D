@@ -5,6 +5,7 @@ import li.cil.tis3d.api.machine.HaltAndCatchFireException;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.HaltAndCatchFireMessage;
+import li.cil.tis3d.util.WorldUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -197,8 +198,8 @@ public final class ControllerBlockEntity extends AbstractComputerBlockEntity imp
     // BlockEntity
 
     @Override
-    public void invalidate() {
-        super.invalidate();
+    public void markRemoved() {
+        super.markRemoved();
 
         final World world = Objects.requireNonNull(getWorld());
 
@@ -409,7 +410,7 @@ public final class ControllerBlockEntity extends AbstractComputerBlockEntity imp
     static boolean addNeighbors(final World world, final BlockEntity blockEntity, final Set<BlockEntity> processed, final Queue<BlockEntity> queue) {
         for (final Direction facing : Direction.values()) {
             final BlockPos neighborPos = blockEntity.getPos().offset(facing);
-            if (!world.isBlockLoaded(neighborPos)) {
+            if (!WorldUtils.isBlockLoaded(world, neighborPos)) {
                 return false;
             }
 

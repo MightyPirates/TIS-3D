@@ -1,6 +1,5 @@
 package li.cil.tis3d.common.module;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
@@ -10,7 +9,12 @@ import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.init.Textures;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.world.World;
 
 import java.util.Random;
@@ -41,17 +45,17 @@ public final class RandomModule extends AbstractModule {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
+    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks,
+                       final MatrixStack matrices, final VertexConsumerProvider vcp,
+                       final int light, final int overlay) {
         if (!getCasing().isEnabled()) {
             return;
         }
 
-        RenderUtil.ignoreLighting();
-        GlStateManager.enableBlend();
+        final Sprite sprite = RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_RANDOM);
+        final VertexConsumer vc = vcp.getBuffer(RenderLayer.getTranslucentNoCrumbling());
 
-        RenderUtil.drawQuad(RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_RANDOM));
-
-        GlStateManager.disableBlend();
+        RenderUtil.drawQuad(sprite, matrices.peek(), vc, RenderUtil.maxLight, overlay);
     }
 
     // --------------------------------------------------------------------- //

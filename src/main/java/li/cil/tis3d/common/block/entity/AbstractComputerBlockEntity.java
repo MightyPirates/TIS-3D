@@ -6,6 +6,7 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.common.machine.PipeHost;
 import li.cil.tis3d.common.machine.PipeImpl;
 import li.cil.tis3d.util.NBTIds;
+import li.cil.tis3d.util.WorldUtils;
 import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -147,7 +148,7 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
     @Override
     public void fromTag(final CompoundTag nbt) {
         super.fromTag(nbt);
-        if (nbt.containsKey("_client")) {
+        if (nbt.contains("_client")) {
             fromClientTag(nbt);
         } else {
             readFromNBTForServer(nbt);
@@ -178,7 +179,7 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
         // our tile entity.
         for (final Direction facing : Direction.values()) {
             final BlockPos neighborPos = getPos().offset(facing);
-            if (world.isBlockLoaded(neighborPos)) {
+            if (WorldUtils.isBlockLoaded(world, neighborPos)) {
                 // If we have a casing, set it as our neighbor.
                 final BlockEntity blockEntity = world.getBlockEntity(neighborPos);
                 if (blockEntity instanceof AbstractComputerBlockEntity) {
@@ -208,7 +209,7 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
         final ListTag pipesNbt = nbt.getList(TAG_PIPES, NBTIds.TAG_COMPOUND);
         final int pipeCount = Math.min(pipesNbt.size(), pipes.length);
         for (int i = 0; i < pipeCount; i++) {
-            pipes[i].readFromNBT(pipesNbt.getCompoundTag(i));
+            pipes[i].readFromNBT(pipesNbt.getCompound(i));
         }
 
         readFromNBTCommon(nbt);

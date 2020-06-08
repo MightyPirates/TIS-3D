@@ -1,9 +1,7 @@
 package li.cil.tis3d.common.module;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import li.cil.tis3d.api.FontRendererAPI;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
@@ -11,6 +9,8 @@ import li.cil.tis3d.api.module.traits.BlockChangeAware;
 import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.init.Textures;
+import li.cil.tis3d.client.render.font.AbstractFontRenderer;
+import li.cil.tis3d.client.render.font.SmallFontRenderer;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.CodeBookItem;
@@ -18,14 +18,17 @@ import li.cil.tis3d.common.module.execution.MachineImpl;
 import li.cil.tis3d.common.module.execution.MachineState;
 import li.cil.tis3d.common.module.execution.compiler.Compiler;
 import li.cil.tis3d.common.module.execution.compiler.ParseException;
+import li.cil.tis3d.util.ColorUtils;
 import li.cil.tis3d.util.EnumUtils;
 import li.cil.tis3d.util.NBTIds;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -36,7 +39,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -232,22 +234,28 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
 
     @Environment(EnvType.CLIENT)
     @Override
-    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
+    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks,
+                       final MatrixStack matrices, final VertexConsumerProvider vcp,
+                       final int light, final int overlay) {
         if ((!getCasing().isEnabled() || !isVisible()) && !isObserverLookingAt(rendererDispatcher)) {
             return;
         }
 
-        rotateForRendering();
-        RenderUtil.ignoreLighting();
+        matrices.push();
+        rotateForRendering(matrices);
 
         // Draw status texture.
-        RenderUtil.drawQuad(RenderUtil.getSprite(STATE_LOCATIONS[state.ordinal()]));
+        final Sprite baseSprite = RenderUtil.getSprite(STATE_LOCATIONS[state.ordinal()]);
+        final VertexConsumer vc = vcp.getBuffer(RenderLayer.getCutoutMipped());
+        RenderUtil.drawQuad(baseSprite, matrices.peek(), vc, RenderUtil.maxLight, overlay);
 
         // Render detailed state when player is close.
         final MachineState machineState = getState();
-        if (machineState.code != null && rendererDispatcher.cameraEntity.getBlockPos().getSquaredDistance(getCasing().getPosition()) < 64) {
-            renderState(machineState);
+        if (machineState.code != null && rendererDispatcher.camera.getBlockPos().getSquaredDistance(getCasing().getPosition()) < 64) {
+            renderState(matrices, vcp, RenderUtil.maxLight, overlay, machineState);
         }
+
+        matrices.pop();
     }
 
     @Override
@@ -258,7 +266,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
         getState().readFromNBT(machineNbt);
         state = EnumUtils.readFromNBT(State.class, TAG_STATE, nbt);
 
-        if (nbt.containsKey(TAG_COMPILE_ERROR)) {
+        if (nbt.contains(TAG_COMPILE_ERROR)) {
             final CompoundTag errorNbt = nbt.getCompound(TAG_COMPILE_ERROR);
             compileError = new ParseException(errorNbt.getString(TAG_MESSAGE), errorNbt.getInt(TAG_LINE_NUMBER), errorNbt.getInt(TAG_START), errorNbt.getInt(TAG_END));
         } else {
@@ -347,26 +355,33 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
     }
 
     @Environment(EnvType.CLIENT)
-    private void renderState(final MachineState machineState) {
+    private void renderState(final MatrixStack matrices, final VertexConsumerProvider vcp,
+                             final int light, final int overlay,
+                             final MachineState machineState) {
         // Offset to start drawing at top left of inner area, slightly inset.
-        GlStateManager.translatef(3.5f / 16f, 3.5f / 16f, 0);
-        GlStateManager.scalef(1 / 128f, 1 / 128f, 1);
-        GlStateManager.translatef(1, 1, 0);
-        GlStateManager.color4f(1f, 1f, 1f, 1f);
+        matrices.translate(3.5f / 16f, 3.5f / 16f, 0);
+        matrices.scale(1 / 128f, 1 / 128f, 1);
+        matrices.translate(1, 1, 0);
+
+        AbstractFontRenderer fontRenderer = (AbstractFontRenderer) SmallFontRenderer.INSTANCE;
+        final VertexConsumer vcFont = fontRenderer.chooseVertexConsumer(vcp);
 
         // Draw register info on top.
         final String accLast = String.format("ACC:%4X LAST:%s", machineState.acc, machineState.last.map(Enum::name).orElse("NONE"));
-        FontRendererAPI.drawString(accLast);
-        GlStateManager.translatef(0, FontRendererAPI.getCharHeight() + 4, 0);
+        fontRenderer.drawString(matrices.peek(), vcFont, light, overlay, accLast);
+        matrices.translate(0, fontRenderer.getCharHeight() + 4, 0);
         final String bakState = String.format("BAK:%4X MODE:%s", machineState.bak, state.name());
-        FontRendererAPI.drawString(bakState);
-        GlStateManager.translatef(0, FontRendererAPI.getCharHeight() + 4, 0);
-        drawLine(1);
-        GlStateManager.translatef(0, 5, 0);
+        fontRenderer.drawString(matrices.peek(), vcFont, light, overlay, bakState);
+        matrices.translate(0, fontRenderer.getCharHeight() + 4, 0);
+
+        // Push the current transform, we will return to it after text rendering
+        // to draw the colored quads (lines)
+        matrices.push();
+        matrices.translate(0, 5, 0);
 
         // If we have more lines than fit on our "screen", offset so that the
         // current line is in the middle, but don't let last line scroll in.
-        final int maxLines = 50 / (FontRendererAPI.getCharHeight() + 1);
+        final int maxLines = 50 / (fontRenderer.getCharHeight() + 1);
         final int totalLines = machineState.code.length;
         final int currentLine;
         if (machineState.lineNumbers.size() > 0) {
@@ -378,25 +393,50 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
         }
         final int page = currentLine / maxLines;
         final int offset = page * maxLines;
+
+        int color = ColorUtils.WHITE;
+        int currentLineBgColor = color;
+        // Some bookkeeping so we can draw the current-line background
+        // at the correct y offset later
+        int yDeltaSum = 5;
+        int currentLineOffset = -1;
+
         for (int lineNumber = offset; lineNumber < Math.min(totalLines, offset + maxLines); lineNumber++) {
             final String line = machineState.code[lineNumber];
             if (lineNumber == currentLine) {
                 if (state == State.WAIT) {
-                    GlStateManager.color3f(0.66f, 0.66f, 0.66f);
+                    currentLineBgColor = 0xFFA8A8A8;
                 } else if (state == State.ERR || compileError != null && compileError.getLineNumber() == currentLine) {
-                    GlStateManager.color3f(1f, 0f, 0f);
+                    currentLineBgColor = 0xFFFF0000;
                 }
 
-                drawLine(FontRendererAPI.getCharHeight());
+                currentLineOffset = yDeltaSum;
 
-                GlStateManager.color3f(0f, 0f, 0f);
+                color = 0xFF000000;
             } else {
-                GlStateManager.color3f(1f, 1f, 1f);
+                color = ColorUtils.WHITE;
             }
 
-            FontRendererAPI.drawString(line, 18);
+            fontRenderer.drawString(matrices.peek(), vcFont, light, overlay,
+                                    color, line, 18);
 
-            GlStateManager.translatef(0, FontRendererAPI.getCharHeight() + 1, 0);
+            final int yDelta = fontRenderer.getCharHeight() + 1;
+            yDeltaSum += yDelta;
+            matrices.translate(0, yDelta, 0);
+        }
+
+        matrices.pop();
+
+        final VertexConsumer vcColor = vcp.getBuffer(RenderLayer.getSolid());
+        drawLine(matrices.peek(), vcColor, light, overlay,
+                 ColorUtils.WHITE, 1);
+
+        if (currentLineOffset != -1) {
+            // Draw current line marker behind text
+            matrices.translate(0, currentLineOffset, 0.005f / 2);
+
+            drawLine(matrices.peek(), vcColor, light, overlay,
+                     currentLineBgColor, fontRenderer.getCharHeight());
         }
     }
 
@@ -406,21 +446,12 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
      * @param height the height of the line to draw.
      */
     @Environment(EnvType.CLIENT)
-    private static void drawLine(final int height) {
-        GlStateManager.depthMask(false);
-        GlStateManager.disableTexture();
-
-        final Tessellator tessellator = Tessellator.getInstance();
-        final BufferBuilder buffer = tessellator.getBufferBuilder();
-        buffer.begin(GL11.GL_QUADS, VertexFormats.POSITION);
-        buffer.vertex(-0.5f, height + 0.5f, 0).next();
-        buffer.vertex(71.5f, height + 0.5f, 0).next();
-        buffer.vertex(71.5f, -0.5f, 0).next();
-        buffer.vertex(-0.5f, -0.5f, 0).next();
-        tessellator.draw();
-
-        GlStateManager.depthMask(true);
-        GlStateManager.enableTexture();
+    private static void drawLine(final MatrixStack.Entry matrices, final VertexConsumer vcColor,
+                                 final int light, final int overlay,
+                                 final int color, final int height) {
+        RenderUtil.drawColorQuad(matrices, vcColor,
+                                 -0.5f, -0.5f, 72, height + 1,
+                                 color, light, overlay);
     }
 
     // --------------------------------------------------------------------- //

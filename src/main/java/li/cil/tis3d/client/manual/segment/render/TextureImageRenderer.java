@@ -1,13 +1,12 @@
 package li.cil.tis3d.client.manual.segment.render;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.TextureUtil;
 import li.cil.tis3d.api.manual.ImageRenderer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.Texture;
 import net.minecraft.client.texture.TextureManager;
+import net.minecraft.client.texture.TextureUtil;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -24,7 +23,7 @@ public class TextureImageRenderer implements ImageRenderer {
         this.location = location;
 
         final TextureManager manager = MinecraftClient.getInstance().getTextureManager();
-        final Texture image = manager.getTexture(location);
+        final AbstractTexture image = manager.getTexture(location);
         if (image instanceof ImageTexture) {
             this.texture = (ImageTexture)image;
         } else {

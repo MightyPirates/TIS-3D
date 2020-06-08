@@ -7,10 +7,13 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.util.TransformUtil;
+import li.cil.tis3d.util.WorldUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -74,7 +77,7 @@ public abstract class AbstractModule implements Module {
      */
     @Environment(EnvType.CLIENT)
     protected boolean isObserverLookingAt(final BlockEntityRenderDispatcher rendererDispatcher) {
-        final HitResult hitResult = rendererDispatcher.hitResult;
+        final HitResult hitResult = rendererDispatcher.crosshairTarget;
         if (hitResult == null) {
             return false;
         }
@@ -109,7 +112,7 @@ public abstract class AbstractModule implements Module {
     @Environment(EnvType.CLIENT)
     @Nullable
     protected Vec3d getObserverLookAt(final BlockEntityRenderDispatcher rendererDispatcher) {
-        final HitResult hitResult = rendererDispatcher.hitResult;
+        final HitResult hitResult = rendererDispatcher.crosshairTarget;
         if (hitResult == null) {
             return null;
         }
@@ -161,7 +164,7 @@ public abstract class AbstractModule implements Module {
     protected boolean isVisible() {
         final World world = getCasing().getCasingWorld();
         final BlockPos neighborPos = getCasing().getPosition().offset(Face.toDirection(getFace()));
-        if (!world.isBlockLoaded(neighborPos)) {
+        if (!WorldUtils.isBlockLoaded(world, neighborPos)) {
             // If the neighbor isn't loaded, we can assume we're also not visible on that side.
             return false;
         }
@@ -237,7 +240,9 @@ public abstract class AbstractModule implements Module {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
+    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks,
+                       final MatrixStack matrices, final VertexConsumerProvider vcp,
+                       final int light, final int overlay) {
     }
 
     @Override

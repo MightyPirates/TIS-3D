@@ -15,21 +15,22 @@ import li.cil.tis3d.common.network.handler.CodeBookDataMessageHandler;
 import li.cil.tis3d.common.network.handler.ReadOnlyMemoryModuleDataServerMessageHandler;
 import li.cil.tis3d.common.network.message.*;
 import li.cil.tis3d.util.Side;
+import li.cil.tis3d.util.WorldUtils;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.fabricmc.fabric.api.network.PacketRegistry;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.network.packet.CustomPayloadS2CPacket;
-import net.minecraft.client.network.packet.ParticleS2CPacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
+import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
+import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.network.packet.CustomPayloadC2SPacket;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
@@ -86,7 +87,7 @@ public final class Network {
 
     public void sendRedstoneEffect(final World world, final double x, final double y, final double z) {
         final BlockPos position = new BlockPos(x, y, z);
-        if (!world.isBlockLoaded(position)) {
+        if (!WorldUtils.isBlockLoaded(world, position)) {
             final BlockState state = world.getBlockState(position);
             // Note: in 1.12 and earlier this was what is now
             //     Block.isShapeFullCube(state.getCollisionShape(world, position))
@@ -159,7 +160,7 @@ public final class Network {
                 if (player.squaredDistanceTo(new Vec3d(pos)) < rangeSq) {
                     final ServerPlayerEntity networkedPlayer = (ServerPlayerEntity)player;
                     networkedPlayer.networkHandler.sendPacket(packet);
-                    if (!networkedPlayer.networkHandler.client.isLocal()) {
+                    if (!networkedPlayer.networkHandler.connection.isLocal()) {
                         sent++;
                     }
                 }

@@ -27,7 +27,7 @@ public class ArrayInventory implements Inventory {
         final ListTag itemList = nbt.getList(TAG_ITEMS, NBTIds.TAG_COMPOUND);
         final int count = Math.min(itemList.size(), items.length);
         for (int index = 0; index < count; index++) {
-            items[index] = ItemStack.fromTag(itemList.getCompoundTag(index));
+            items[index] = ItemStack.fromTag(itemList.getCompound(index));
         }
     }
 

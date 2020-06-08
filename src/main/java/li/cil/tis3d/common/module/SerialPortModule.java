@@ -11,9 +11,15 @@ import li.cil.tis3d.api.serial.SerialInterface;
 import li.cil.tis3d.api.serial.SerialInterfaceProvider;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.init.Textures;
+import li.cil.tis3d.util.WorldUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -100,14 +106,17 @@ public final class SerialPortModule extends AbstractModule implements BlockChang
 
     @Environment(EnvType.CLIENT)
     @Override
-    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks) {
+    public void render(final BlockEntityRenderDispatcher rendererDispatcher, final float partialTicks,
+                       final MatrixStack matrices, final VertexConsumerProvider vcp,
+                       final int light, final int overlay) {
         if (!getCasing().isEnabled()) {
             return;
         }
 
-        RenderUtil.ignoreLighting();
+        final VertexConsumer vc = vcp.getBuffer(RenderLayer.getCutoutMipped());
+        final Sprite sprite = RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_SERIAL_PORT);
 
-        RenderUtil.drawQuad(RenderUtil.getSprite(Textures.LOCATION_OVERLAY_MODULE_SERIAL_PORT));
+        RenderUtil.drawQuad(sprite, matrices.peek(), vc, RenderUtil.maxLight, overlay);
     }
 
     @Override
@@ -116,7 +125,7 @@ public final class SerialPortModule extends AbstractModule implements BlockChang
 
         writing = nbt.getShort(TAG_VALUE);
 
-        if (nbt.containsKey(TAG_SERIAL_INTERFACE)) {
+        if (nbt.contains(TAG_SERIAL_INTERFACE)) {
             if (serialInterface.isPresent()) {
                 serialInterface.get().readFromNBT(nbt.getCompound(TAG_SERIAL_INTERFACE));
             } else {
@@ -158,7 +167,7 @@ public final class SerialPortModule extends AbstractModule implements BlockChang
         final World world = getCasing().getCasingWorld();
         final BlockPos neighborPos = getCasing().getPosition().offset(Face.toDirection(getFace()));
         final Direction neighborSide = Face.toDirection(getFace().getOpposite());
-        if (world.isBlockLoaded(neighborPos)) {
+        if (WorldUtils.isBlockLoaded(world, neighborPos)) {
             final SerialInterfaceProvider provider = SerialAPI.getProviderFor(world, neighborPos, neighborSide);
             if (provider != null) {
                 if (!serialInterface.map(s -> provider.isValid(world, neighborPos, neighborSide, s)).orElse(false)) {

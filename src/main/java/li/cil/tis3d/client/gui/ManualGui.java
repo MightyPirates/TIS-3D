@@ -19,6 +19,7 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.Window;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -72,7 +73,8 @@ public final class ManualGui extends Screen {
     public void init() {
         super.init();
 
-        final ScaledResolution screenSize = new ScaledResolution(minecraft.window.getScaledWidth(), minecraft.window.getScaledHeight());
+        final Window window = MinecraftClient.getInstance().getWindow();
+        final ScaledResolution screenSize = new ScaledResolution(window.getScaledWidth(), window.getScaledHeight());
         final ScaledResolution guiSize = new ScaledResolution(WINDOW_WIDTH, WINDOW_HEIGHT);
         final int midX = screenSize.scaledWidth / 2;
         final int midY = screenSize.scaledHeight / 2;
@@ -91,7 +93,7 @@ public final class ManualGui extends Screen {
         }
 
         scrollButton = new ImageButton(guiLeft + SCROLL_POS_X, guiTop + SCROLL_POS_Y, 26, 13, Textures.LOCATION_GUI_MANUAL_SCROLL, (button) -> {
-            
+
         }) {
             @Override
             public boolean mouseClicked(final double x, final double y, final int button) {
@@ -119,7 +121,7 @@ public final class ManualGui extends Screen {
             final ManualAPIImpl.Tab tab = ManualAPIImpl.getTabs().get(i);
             final ImageButton button = (ImageButton)buttons.get(i);
             GlStateManager.pushMatrix();
-            GlStateManager.translatef(button.x + 30, (float)(button.y + 4 - TAB_OVERLAP / 2), (int)blitOffset);
+            GlStateManager.translatef(button.x + 30, (float)(button.y + 4 - TAB_OVERLAP / 2), getBlitOffset());
             tab.renderer.render();
             GlStateManager.popMatrix();
         }
@@ -319,18 +321,18 @@ public final class ManualGui extends Screen {
                 final int y0 = y + verticalImageOffset;
                 final int y1 = y + verticalImageOffset + ((imageHeightOverride > 0) ? imageHeightOverride : height);
 
-                final double u0 = 0;
-                final double u1 = u0 + 1;
-                final double v0 = (hoverOverride || isHovered()) ? 0.5 : 0;
-                final double v1 = v0 + 0.5;
+                final float u0 = 0;
+                final float u1 = u0 + 1;
+                final float v0 = (hoverOverride || isHovered()) ? 0.5f : 0;
+                final float v1 = v0 + 0.5f;
 
                 final Tessellator t = Tessellator.getInstance();
-                final BufferBuilder b = t.getBufferBuilder();
-                b.begin(GL11.GL_QUADS, VertexFormats.POSITION_UV);
-                b.vertex(x0, y1, blitOffset).texture(u0, v1).next();
-                b.vertex(x1, y1, blitOffset).texture(u1, v1).next();
-                b.vertex(x1, y0, blitOffset).texture(u1, v0).next();
-                b.vertex(x0, y0, blitOffset).texture(u0, v0).next();
+                final BufferBuilder b = t.getBuffer();
+                b.begin(GL11.GL_QUADS, VertexFormats.POSITION_TEXTURE);
+                b.vertex(x0, y1, getBlitOffset()).texture(u0, v1).next();
+                b.vertex(x1, y1, getBlitOffset()).texture(u1, v1).next();
+                b.vertex(x1, y0, getBlitOffset()).texture(u1, v0).next();
+                b.vertex(x0, y0, getBlitOffset()).texture(u0, v0).next();
                 t.draw();
             }
         }

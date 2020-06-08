@@ -23,8 +23,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
@@ -56,7 +57,7 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
     // State
 
     @Override
-    protected void appendProperties(final StateFactory.Builder<Block, BlockState> builder) {
+    protected void appendProperties(final StateManager.Builder<Block, BlockState> builder) {
         builder.add(
             MODULE_X_NEG,
             MODULE_X_POS,
@@ -109,7 +110,7 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
     }
 
     public static boolean activate(final ItemUsageContext context) {
-        if (!context.isPlayerSneaking()) {
+        if (!context.shouldCancelInteraction()) {
             return false;
         }
 
@@ -120,13 +121,14 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
 
         // TODO Ugly, but context does not pass on hand...
         final Hand hand = context.getPlayer() != null && context.getPlayer().getStackInHand(Hand.OFF_HAND) == context.getStack() ? Hand.OFF_HAND : Hand.MAIN_HAND;
-        return ((CasingBlock)blockState.getBlock()).activate(blockState, context.getWorld(), context.getBlockPos(), context.getPlayer(), hand, ((ItemUsageContextAccessors)context).getBlockHitResult());
+        final ActionResult ar = ((CasingBlock)blockState.getBlock()).onUse(blockState, context.getWorld(), context.getBlockPos(), context.getPlayer(), hand, ((ItemUsageContextAccessors)context).getBlockHitResult());
+        return ar == ActionResult.SUCCESS;
     }
 
     @SuppressWarnings("deprecation")
-    public boolean activate(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockHitResult blockHitResult) {
+    public ActionResult onUse(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockHitResult blockHitResult) {
         final Vec3d hit = blockHitResult.getPos().subtract(blockHitResult.getBlockPos().getX(), blockHitResult.getBlockPos().getY(), blockHitResult.getBlockPos().getZ());
-        if (world.isBlockLoaded(pos)) {
+        if (WorldUtils.isBlockLoaded(world, pos)) {
             final BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof CasingBlockEntity) {
                 final CasingBlockEntity casing = (CasingBlockEntity)blockEntity;
@@ -149,26 +151,26 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
                             }
                         }
                     }
-                    return true;
+                    return ActionResult.SUCCESS;
                 }
 
                 // Trying to look something up in the manual?
                 if (Items.isBookManual(heldItem)) {
                     final ItemStack moduleStack = casing.getInvStack(blockHitResult.getSide().ordinal());
                     if (ManualBookItem.tryOpenManual(world, player, ManualAPI.pathFor(moduleStack))) {
-                        return true;
+                        return ActionResult.SUCCESS;
                     }
                 }
 
                 // Let the module handle the activation.
                 final Module module = casing.getModule(Face.fromDirection(blockHitResult.getSide()));
                 if (module != null && module.onActivate(player, hand, hit)) {
-                    return true;
+                    return ActionResult.SUCCESS;
                 }
 
                 // Don't allow changing modules while casing is locked.
                 if (casing.isLocked()) {
-                    return super.activate(state, world, pos, player, hand, blockHitResult);
+                    return super.onUse(state, world, pos, player, hand, blockHitResult);
                 }
 
                 // Remove old module or install new one.
@@ -183,7 +185,7 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
                             world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.BLOCK_PISTON_CONTRACT, SoundCategory.BLOCKS, 0.2f, 0.8f + world.random.nextFloat() * 0.1f);
                         }
                     }
-                    return true;
+                    return ActionResult.SUCCESS;
                 } else if (!heldItem.isEmpty()) {
                     // Installing a new module in the casing.
                     if (casing.canInsertInvStack(blockHitResult.getSide().ordinal(), heldItem, blockHitResult.getSide())) {
@@ -202,13 +204,13 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
                             }
                             world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.BLOCK_PISTON_EXTEND, SoundCategory.BLOCKS, 0.2f, 0.8f + world.random.nextFloat() * 0.1f);
                         }
-                        return true;
+                        return ActionResult.SUCCESS;
                     }
                 }
             }
         }
 
-        return super.activate(state, world, pos, player, hand, blockHitResult);
+        return super.onUse(state, world, pos, player, hand, blockHitResult);
     }
 
     @SuppressWarnings("deprecation")
