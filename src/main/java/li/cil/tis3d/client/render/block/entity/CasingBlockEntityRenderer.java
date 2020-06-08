@@ -11,7 +11,7 @@ import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.init.Items;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.TexturedRenderLayers;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
@@ -125,7 +125,7 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
             return false;
         }
 
-        final VertexConsumer vc = vcp.getBuffer(TexturedRenderLayers.getEntityCutout());
+        final VertexConsumer vc = vcp.getBuffer(RenderLayer.getCutoutMipped());
 
         if (isObserverSneaking() && !casing.isLocked()) {
             final Sprite closedSprite;
@@ -189,7 +189,7 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
     private void drawModuleOverlay(final CasingBlockEntity casing, final Face face, final float partialTicks,
                                    final MatrixStack matrices, final VertexConsumerProvider vcp,
                                    final int light, final int overlay) {
-        final VertexConsumer vc = vcp.getBuffer(TexturedRenderLayers.getEntityCutout());
+        final VertexConsumer vc = vcp.getBuffer(RenderLayer.getCutoutMipped());
         final Sprite closedSprite = RenderUtil.getSprite(Textures.LOCATION_OVERLAY_CASING_PORT_CLOSED_SMALL);
 
         matrices.push();
