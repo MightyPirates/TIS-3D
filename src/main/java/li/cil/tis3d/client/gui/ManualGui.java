@@ -313,7 +313,7 @@ public final class ManualGui extends Screen {
                 MinecraftClient.getInstance().getTextureManager().bindTexture(image);
                 GlStateManager.color4f(1, 1, 1, 1);
 
-                //~ isHovered = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
+                hovered = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
 
                 final int x0 = x;
                 final int x1 = x + width;
