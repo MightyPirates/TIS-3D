@@ -7,6 +7,7 @@ import li.cil.tis3d.client.manual.Document;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
 
@@ -62,7 +63,7 @@ public final class RenderSegment extends AbstractSegment implements InteractiveS
     }
 
     @Override
-    public Optional<InteractiveSegment> render(final int x, final int y, final int indent, final int maxWidth, final TextRenderer renderer, final int mouseX, final int mouseY) {
+    public Optional<InteractiveSegment> render(final MatrixStack matrices, final int x, final int y, final int indent, final int maxWidth, final TextRenderer renderer, final int mouseX, final int mouseY) {
         final int width = imageWidth(maxWidth);
         final int height = imageHeight(maxWidth);
         final int xOffset = (maxWidth - width) / 2;

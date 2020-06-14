@@ -128,7 +128,7 @@ public final class ManualGui extends Screen {
             GlStateManager.popMatrix();
         }
 
-        currentSegment = Document.render(document, guiLeft + 16, guiTop + 48, DOCUMENT_MAX_WIDTH, DOCUMENT_MAX_HEIGHT, offset(), getTextRenderer(), mouseX, mouseY);
+        currentSegment = Document.render(matrices, document, guiLeft + 16, guiTop + 48, DOCUMENT_MAX_WIDTH, DOCUMENT_MAX_HEIGHT, offset(), getTextRenderer(), mouseX, mouseY);
 
         if (!isDragging) {
             currentSegment.ifPresent(s -> s.tooltip().ifPresent(t -> renderTooltip(matrices, FontRendererUtils.translate(t), mouseX, mouseY)));
