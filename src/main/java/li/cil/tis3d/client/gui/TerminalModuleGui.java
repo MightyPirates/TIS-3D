@@ -7,6 +7,7 @@ import li.cil.tis3d.common.module.TerminalModule;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Hand;
 import org.lwjgl.glfw.GLFW;
@@ -28,8 +29,8 @@ public final class TerminalModuleGui extends Screen {
         return that == module;
     }
 
-    //~ @Override
-    public void render(final int mouseX, final int mouseY, final float partialTicks) {
+    @Override
+    public void render(final MatrixStack matrices, final int mouseX, final int mouseY, final float partialTicks) {
         GlStateManager.disableTexture();
 
         // To be on the safe side (see manual.Document#render).
