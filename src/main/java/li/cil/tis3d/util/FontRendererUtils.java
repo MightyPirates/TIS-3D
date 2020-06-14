@@ -4,8 +4,9 @@ import li.cil.tis3d.common.Constants;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.font.TextHandler;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 
 import java.util.List;
@@ -27,10 +28,14 @@ public final class FontRendererUtils {
      */
     public static void addStringToTooltip(final String info, final List<Text> tooltip) {
         final MinecraftClient mc = MinecraftClient.getInstance();
-        //~ if (mc != null) {
-        if (false) { // XXX
-            final TextRenderer fontRenderer = mc.textRenderer;
-            //~ tooltip.addAll(fontRenderer.wrapLines(info, Constants.MAX_TOOLTIP_WIDTH).stream().map(LiteralText::new).collect(Collectors.toList()));
+        if (mc != null) {
+            final TextHandler textHandler = mc.textRenderer.getTextHandler();
+            textHandler.wrapLines(info, Constants.MAX_TOOLTIP_WIDTH, Style.EMPTY, false,
+            (style, start, end) -> {
+                final LiteralText text = new LiteralText(info.substring(start, end));
+                text.setStyle(style);
+                tooltip.add(text);
+            });
         } else {
             tooltip.add(new LiteralText(info));
         }
