@@ -10,6 +10,7 @@ import li.cil.tis3d.common.network.message.ReadOnlyMemoryModuleDataMessage;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Hand;
@@ -75,8 +76,8 @@ public final class ReadOnlyMemoryModuleGui extends Screen {
         client.keyboard.enableRepeatEvents(false);
     }
 
-    //~ @Override
-    public void render(final int mouseX, final int mouseY, final float partialTicks) {
+    @Override
+    public void render(final MatrixStack matrices, final int mouseX, final int mouseY, final float partialTicks) {
         if (player.removed || !Items.isModuleReadOnlyMemory(player.getStackInHand(hand))) {
             client.openScreen(null);
             return;
@@ -85,7 +86,7 @@ public final class ReadOnlyMemoryModuleGui extends Screen {
         // Background.
         GlStateManager.color4f(1, 1, 1, 1);
         client.getTextureManager().bindTexture(Textures.LOCATION_GUI_MEMORY);
-        //~ blit(guiX, guiY, 0, 0, GUI_WIDTH, GUI_HEIGHT);
+        drawTexture(matrices, guiX, guiY, 0, 0, GUI_WIDTH, GUI_HEIGHT);
 
         // Draw row and column headers.
         drawHeaders();
@@ -101,7 +102,7 @@ public final class ReadOnlyMemoryModuleGui extends Screen {
         drawMemory();
 
         // Draw marker around currently selected memory cell.
-        drawSelectionBox();
+        drawSelectionBox(matrices);
     }
 
     @Override
@@ -292,7 +293,7 @@ public final class ReadOnlyMemoryModuleGui extends Screen {
         GlStateManager.popMatrix();
     }
 
-    private void drawSelectionBox() {
+    private void drawSelectionBox(final MatrixStack matrices) {
         final int visibleCells = (int)(System.currentTimeMillis() - initTime) * 2;
         if (selectedCell > visibleCells) {
             return;
@@ -309,7 +310,7 @@ public final class ReadOnlyMemoryModuleGui extends Screen {
 
         client.getTextureManager().bindTexture(Textures.LOCATION_GUI_MEMORY);
         final int vPos = (int)(client.world.getTime() % 16) * 8;
-        //~ blit(0, 0, 256 - (CELL_WIDTH + 1), vPos, 11, 8);
+        drawTexture(matrices, 0, 0, 256 - (CELL_WIDTH + 1), vPos, 11, 8);
 
         GlStateManager.popMatrix();
     }
