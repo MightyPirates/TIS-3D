@@ -5,6 +5,7 @@ import li.cil.tis3d.client.manual.Document;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class TextSegment extends BasicTextSegment {
     }
 
     @Override
-    public Optional<InteractiveSegment> render(final int x, final int y, final int indent, final int maxWidth, final TextRenderer renderer, final int mouseX, final int mouseY) {
+    public Optional<InteractiveSegment> render(final MatrixStack matrices, final int x, final int y, final int indent, final int maxWidth, final TextRenderer renderer, final int mouseX, final int mouseY) {
         int currentX = x + indent;
         int currentY = y;
         String chars = text;
@@ -61,7 +62,7 @@ public class TextSegment extends BasicTextSegment {
             GlStateManager.translatef(currentX, currentY, 0);
             GlStateManager.scalef(scale, scale, scale);
             GlStateManager.translatef(-currentX, -currentY, 0);
-            //~ renderer.draw(format + part, currentX, currentY, color);
+            renderer.draw(matrices, format + part, currentX, currentY, color);
             GlStateManager.popMatrix();
             currentX = x + wrapIndent;
             currentY += lineHeight(renderer);
