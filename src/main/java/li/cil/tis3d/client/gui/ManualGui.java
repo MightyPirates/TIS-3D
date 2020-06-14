@@ -120,7 +120,7 @@ public final class ManualGui extends Screen {
             final ManualAPIImpl.Tab tab = ManualAPIImpl.getTabs().get(i);
             final ImageButton button = (ImageButton)buttons.get(i);
             GlStateManager.pushMatrix();
-            //~ GlStateManager.translatef(button.x + 30, (float)(button.y + 4 - TAB_OVERLAP / 2), getBlitOffset());
+            GlStateManager.translatef(button.x + 30, (float)(button.y + 4 - TAB_OVERLAP / 2), getZOffset());
             tab.renderer.render();
             GlStateManager.popMatrix();
         }
@@ -328,10 +328,10 @@ public final class ManualGui extends Screen {
                 final Tessellator t = Tessellator.getInstance();
                 final BufferBuilder b = t.getBuffer();
                 b.begin(GL11.GL_QUADS, VertexFormats.POSITION_TEXTURE);
-                //~ b.vertex(x0, y1, getBlitOffset()).texture(u0, v1).next();
-                //~ b.vertex(x1, y1, getBlitOffset()).texture(u1, v1).next();
-                //~ b.vertex(x1, y0, getBlitOffset()).texture(u1, v0).next();
-                //~ b.vertex(x0, y0, getBlitOffset()).texture(u0, v0).next();
+                b.vertex(x0, y1, getZOffset()).texture(u0, v1).next();
+                b.vertex(x1, y1, getZOffset()).texture(u1, v1).next();
+                b.vertex(x1, y0, getZOffset()).texture(u1, v0).next();
+                b.vertex(x0, y0, getZOffset()).texture(u0, v0).next();
                 t.draw();
             }
         }
