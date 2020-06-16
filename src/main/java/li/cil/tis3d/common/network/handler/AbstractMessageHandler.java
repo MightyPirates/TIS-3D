@@ -28,45 +28,6 @@ public abstract class AbstractMessageHandler<T extends AbstractMessage> {
 
     @Nullable
     protected World getWorld(final DimensionType dimension, final PacketContext context) {
-        switch (context.getPacketEnvironment()) {
-            case CLIENT:
-                //noinspection MethodCallSideOnly Guarded by CLIENT switch case.
-                return getWorldClient(dimension, context);
-            case SERVER:
-                return getWorldServer(dimension, context);
-            default:
-                return null;
-        }
-    }
-
-    @Environment(EnvType.CLIENT)
-    @Nullable
-    private static World getWorldClient(final DimensionType dimension, final PacketContext context) {
-        final PlayerEntity player = context.getPlayer();
-        if (player == null) {
-            return null;
-        }
-
-        final World world = player.world;
-        if (world == null) {
-            return null;
-        }
-
-        //~ if (world.getDimension().getType() != dimension) {
-            //~ return null;
-        //~ }
-
-        return world;
-    }
-
-    @Nullable
-    private static World getWorldServer(final DimensionType dimension, final PacketContext context) {
-        final MinecraftServer server = context.getPlayer().getServer();
-        if (server == null) {
-            return null;
-        }
-
-        //~ return server.getWorld(dimension);
-        return null; // XXX
+        return context.getPlayer().world;
     }
 }

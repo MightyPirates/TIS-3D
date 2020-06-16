@@ -9,6 +9,6 @@ import javax.annotation.Nullable;
 public abstract class AbstractMessageHandlerWithDimension<T extends AbstractMessageWithDimension> extends AbstractMessageHandler<T> {
     @Nullable
     protected World getWorld(final T message, final PacketContext context) {
-        return getWorld(message.getDimension(), context);
+        return context.getPlayer().world;
     }
 }
