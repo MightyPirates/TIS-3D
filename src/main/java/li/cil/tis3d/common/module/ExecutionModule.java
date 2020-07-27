@@ -64,12 +64,15 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
         WAIT
     }
 
-    private static final Identifier[] STATE_LOCATIONS = new Identifier[]{
-        Textures.LOCATION_OVERLAY_MODULE_EXECUTION_IDLE,
-        Textures.LOCATION_OVERLAY_MODULE_EXECUTION_ERROR,
-        Textures.LOCATION_OVERLAY_MODULE_EXECUTION_RUNNING,
-        Textures.LOCATION_OVERLAY_MODULE_EXECUTION_WAITING
-    };
+    @Environment(EnvType.CLIENT)
+    private static final class RenderData {
+        static final Identifier[] STATE_LOCATIONS = new Identifier[]{
+            Textures.LOCATION_OVERLAY_MODULE_EXECUTION_IDLE,
+            Textures.LOCATION_OVERLAY_MODULE_EXECUTION_ERROR,
+            Textures.LOCATION_OVERLAY_MODULE_EXECUTION_RUNNING,
+            Textures.LOCATION_OVERLAY_MODULE_EXECUTION_WAITING
+        };
+    }
 
     // NBT tag names.
     private static final String TAG_STATE = "state";
@@ -245,7 +248,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
         rotateForRendering(matrices);
 
         // Draw status texture.
-        final Sprite baseSprite = RenderUtil.getSprite(STATE_LOCATIONS[state.ordinal()]);
+        final Sprite baseSprite = RenderUtil.getSprite(RenderData.STATE_LOCATIONS[state.ordinal()]);
         final VertexConsumer vc = vcp.getBuffer(RenderLayer.getCutoutMipped());
         RenderUtil.drawQuad(baseSprite, matrices.peek(), vc, RenderUtil.maxLight, overlay);
 
