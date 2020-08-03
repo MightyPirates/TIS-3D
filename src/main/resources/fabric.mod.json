@@ -31,8 +31,8 @@
         ]
     },
     "depends": {
-        "minecraft": ">=1.16-rc2",
-        "fabricloader": ">=0.4.1",
+        "minecraft": ">=1.16.2-beta.1",
+        "fabricloader": ">=0.9.0",
         "fabric": ">=0.2.7"
     },
     "mixins": [

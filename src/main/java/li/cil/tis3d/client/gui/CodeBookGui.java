@@ -24,7 +24,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.StringRenderable;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Hand;
 import org.lwjgl.glfw.GLFW;
@@ -102,7 +102,7 @@ public final class CodeBookGui extends Screen {
             rebuildLines();
         }));
 
-        client.keyboard.enableRepeatEvents(true);
+        client.keyboard.setRepeatEvents(true);
     }
 
     @Override
@@ -117,7 +117,7 @@ public final class CodeBookGui extends Screen {
         data.writeToNBT(nbt);
         Network.INSTANCE.sendToServer(new CodeBookDataMessage(nbt, hand));
 
-        client.keyboard.enableRepeatEvents(false);
+        client.keyboard.setRepeatEvents(false);
     }
 
     @Override
@@ -644,7 +644,7 @@ public final class CodeBookGui extends Screen {
 
             // Part two of error handling, draw tooltip, *on top* of blinking cursor.
             if (mouseX >= startX && mouseX <= endX && mouseY >= startY && mouseY <= startY + getTextRenderer().fontHeight) {
-                final List<StringRenderable> tooltip = new ArrayList<>();
+                final List<Text> tooltip = new ArrayList<>();
                 if (isErrorOnPreviousPage) {
                     tooltip.add(new TranslatableText(Constants.MESSAGE_ERROR_ON_PREVIOUS_PAGE));
                 } else if (isErrorOnNextPage) {
@@ -652,7 +652,7 @@ public final class CodeBookGui extends Screen {
                 }
                 final String translatedException = I18n.translate(exception.getMessage());
                 final List<String> lines = Arrays.asList(Constants.PATTERN_LINES.split(translatedException));
-                tooltip.addAll(lines.stream().map(StringRenderable::plain).collect(Collectors.toList()));
+                tooltip.addAll(lines.stream().map(Text::of).collect(Collectors.toList()));
                 renderTooltip(matrices, tooltip, mouseX, mouseY);
                 GlStateManager.disableLighting();
             }
