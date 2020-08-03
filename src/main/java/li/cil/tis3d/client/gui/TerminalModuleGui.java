@@ -100,13 +100,13 @@ public final class TerminalModuleGui extends Screen {
     @Override
     public void init() {
         super.init();
-        client.keyboard.enableRepeatEvents(true);
+        client.keyboard.setRepeatEvents(true);
     }
 
     @Override
     public void onClose() {
         super.onClose();
-        client.keyboard.enableRepeatEvents(false);
+        client.keyboard.setRepeatEvents(false);
     }
 
     @Override
