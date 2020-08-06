@@ -3,6 +3,7 @@ package li.cil.tis3d.client.manual.segment;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -63,6 +64,7 @@ public interface Segment {
      * Render the segment at the specified coordinates with the specified
      * properties.
      *
+     * @param matrices the transformation stack.
      * @param x        the x position to render at.
      * @param y        the y position to render at.
      * @param indent   the current indentation.
@@ -72,7 +74,7 @@ public interface Segment {
      * @param mouseY   the y mouse position.
      * @return the hovered interactive segment, if any.
      */
-    Optional<InteractiveSegment> render(final int x, final int y, final int indent, final int maxWidth, final TextRenderer renderer, final int mouseX, final int mouseY);
+    Optional<InteractiveSegment> render(final MatrixStack matrices, final int x, final int y, final int indent, final int maxWidth, final TextRenderer renderer, final int mouseX, final int mouseY);
 
     // ----------------------------------------------------------------------- //
 

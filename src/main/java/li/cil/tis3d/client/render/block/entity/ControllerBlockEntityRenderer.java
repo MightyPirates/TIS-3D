@@ -11,10 +11,10 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public final class ControllerBlockEntityRenderer extends BlockEntityRenderer<ControllerBlockEntity> {
@@ -43,7 +43,7 @@ public final class ControllerBlockEntityRenderer extends BlockEntityRenderer<Con
         final Matrix4f modMat = matrices.peek().getModel();
         final int bg = MinecraftClient.getInstance().options.getTextBackgroundColor(0.25f);
         final TextRenderer textRenderer = dispatcher.getTextRenderer();
-        final float x = -textRenderer.getStringWidth(str) / 2.0f;
+        final float x = -textRenderer.getWidth(str) / 2.0f;
         textRenderer.draw(str, x, 0, 0x20FFFFFF, false, modMat, vcp, true, bg, RenderUtil.maxLight);
         textRenderer.draw(str, x, 0, -1, false, modMat, vcp, false, 0, RenderUtil.maxLight);
 

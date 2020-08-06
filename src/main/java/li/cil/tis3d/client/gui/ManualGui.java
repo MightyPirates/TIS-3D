@@ -7,6 +7,7 @@ import li.cil.tis3d.client.manual.Document;
 import li.cil.tis3d.client.manual.segment.InteractiveSegment;
 import li.cil.tis3d.client.manual.segment.Segment;
 import li.cil.tis3d.common.api.ManualAPIImpl;
+import li.cil.tis3d.util.FontRendererUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -19,7 +20,10 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.Window;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.StringRenderable;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
@@ -72,7 +76,7 @@ public final class ManualGui extends Screen {
     public void init() {
         super.init();
 
-        final Window window = MinecraftClient.getInstance().getWindow();
+        final Window window = client.getWindow();
         final ScaledResolution screenSize = new ScaledResolution(window.getScaledWidth(), window.getScaledHeight());
         final ScaledResolution guiSize = new ScaledResolution(WINDOW_WIDTH, WINDOW_HEIGHT);
         final int midX = screenSize.scaledWidth / 2;
@@ -105,13 +109,13 @@ public final class ManualGui extends Screen {
     }
 
     @Override
-    public void render(final int mouseX, final int mouseY, final float partialTicks) {
+    public void render(final MatrixStack matrices, final int mouseX, final int mouseY, final float partialTicks) {
         GlStateManager.enableBlend();
 
-        super.render(mouseX, mouseY, partialTicks);
+        super.render(matrices, mouseX, mouseY, partialTicks);
 
-        minecraft.getTextureManager().bindTexture(Textures.LOCATION_GUI_MANUAL_BACKGROUND);
-        DrawableHelper.blit(guiLeft, guiTop, 0, 0, xSize, ySize, WINDOW_WIDTH, WINDOW_HEIGHT);
+        client.getTextureManager().bindTexture(Textures.LOCATION_GUI_MANUAL_BACKGROUND);
+        drawTexture(matrices, guiLeft, guiTop, 0, 0, xSize, ySize, WINDOW_WIDTH, WINDOW_HEIGHT);
 
         scrollButton.active = canScroll();
         scrollButton.hoverOverride = isDragging;
@@ -120,29 +124,29 @@ public final class ManualGui extends Screen {
             final ManualAPIImpl.Tab tab = ManualAPIImpl.getTabs().get(i);
             final ImageButton button = (ImageButton)buttons.get(i);
             GlStateManager.pushMatrix();
-            GlStateManager.translatef(button.x + 30, (float)(button.y + 4 - TAB_OVERLAP / 2), getBlitOffset());
+            GlStateManager.translatef(button.x + 30, (float)(button.y + 4 - TAB_OVERLAP / 2), getZOffset());
             tab.renderer.render();
             GlStateManager.popMatrix();
         }
 
-        currentSegment = Document.render(document, guiLeft + 16, guiTop + 48, DOCUMENT_MAX_WIDTH, DOCUMENT_MAX_HEIGHT, offset(), getTextRenderer(), mouseX, mouseY);
+        currentSegment = Document.render(matrices, document, guiLeft + 16, guiTop + 48, DOCUMENT_MAX_WIDTH, DOCUMENT_MAX_HEIGHT, offset(), getTextRenderer(), mouseX, mouseY);
 
         if (!isDragging) {
-            currentSegment.ifPresent(s -> s.tooltip().ifPresent(t -> renderTooltip(Collections.singletonList(I18n.translate(t)), mouseX, mouseY)));
+            currentSegment.ifPresent(s -> s.tooltip().ifPresent(t -> renderTooltip(matrices, new TranslatableText(t), mouseX, mouseY)));
 
             for (int i = 0; i < ManualAPIImpl.getTabs().size() && i < MAX_TABS_PER_SIDE; i++) {
                 final ManualAPIImpl.Tab tab = ManualAPIImpl.getTabs().get(i);
                 final ImageButton button = (ImageButton)buttons.get(i);
                 if (mouseX > button.x && mouseX < button.x + button.getWidth() && mouseY > button.y && mouseY < button.y + button.getHeight()) {
                     if (tab.tooltip != null) {
-                        renderTooltip(Collections.singletonList(I18n.translate(tab.tooltip)), mouseX, mouseY);
+                        renderTooltip(matrices, new TranslatableText(tab.tooltip), mouseX, mouseY);
                     }
                 }
             }
         }
 
         if (canScroll() && (isCoordinateOverScrollBar(mouseX - guiLeft, mouseY - guiTop) || isDragging)) {
-            renderTooltip(Collections.singletonList(100 * offset() / maxOffset() + "%"), guiLeft + SCROLL_POS_X + SCROLL_WIDTH, scrollButton.y + scrollButton.getHeight() + 1);
+            renderTooltip(matrices, StringRenderable.plain(100 * offset() / maxOffset() + "%"), guiLeft + SCROLL_POS_X + SCROLL_WIDTH, scrollButton.y + scrollButton.getHeight() + 1);
         }
     }
 
@@ -156,11 +160,11 @@ public final class ManualGui extends Screen {
 
     @Override
     public boolean keyPressed(final int code, final int scancode, final int mods) {
-        if (minecraft.options.keyJump.matchesKey(code, scancode)) {
+        if (client.options.keyJump.matchesKey(code, scancode)) {
             popPage();
             return true;
-        } else if (minecraft.options.keyInventory.matchesKey(code, scancode)) {
-            minecraft.player.closeScreen();
+        } else if (client.options.keyInventory.matchesKey(code, scancode)) {
+            client.player.closeScreen();
             return true;
         } else {
             return super.keyPressed(code, scancode, mods);
@@ -224,7 +228,7 @@ public final class ManualGui extends Screen {
     // --------------------------------------------------------------------- //
 
     private TextRenderer getTextRenderer() {
-        return font;
+        return textRenderer;
     }
 
     private boolean canScroll() {
@@ -251,7 +255,7 @@ public final class ManualGui extends Screen {
             ManualAPIImpl.popPath();
             refreshPage();
         } else {
-            minecraft.player.closeScreen();
+            client.player.closeScreen();
         }
     }
 
@@ -285,7 +289,7 @@ public final class ManualGui extends Screen {
         private int imageHeightOverride = 0;
 
         ImageButton(final int x, final int y, final int w, final int h, final Identifier image, final PressAction action) {
-            super(x, y, w, h, "", action);
+            super(x, y, w, h, LiteralText.EMPTY, action);
             this.image = image;
         }
 
@@ -308,12 +312,12 @@ public final class ManualGui extends Screen {
         }
 
         @Override
-        public void render(final int mouseX, final int mouseY, final float partialTicks) {
+        public void render(final MatrixStack matrices, final int mouseX, final int mouseY, final float partialTicks) {
             if (visible) {
                 MinecraftClient.getInstance().getTextureManager().bindTexture(image);
                 GlStateManager.color4f(1, 1, 1, 1);
 
-                isHovered = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
+                hovered = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
 
                 final int x0 = x;
                 final int x1 = x + width;
@@ -328,10 +332,10 @@ public final class ManualGui extends Screen {
                 final Tessellator t = Tessellator.getInstance();
                 final BufferBuilder b = t.getBuffer();
                 b.begin(GL11.GL_QUADS, VertexFormats.POSITION_TEXTURE);
-                b.vertex(x0, y1, getBlitOffset()).texture(u0, v1).next();
-                b.vertex(x1, y1, getBlitOffset()).texture(u1, v1).next();
-                b.vertex(x1, y0, getBlitOffset()).texture(u1, v0).next();
-                b.vertex(x0, y0, getBlitOffset()).texture(u0, v0).next();
+                b.vertex(x0, y1, getZOffset()).texture(u0, v1).next();
+                b.vertex(x1, y1, getZOffset()).texture(u1, v1).next();
+                b.vertex(x1, y0, getZOffset()).texture(u1, v0).next();
+                b.vertex(x0, y0, getZOffset()).texture(u0, v0).next();
                 t.draw();
             }
         }

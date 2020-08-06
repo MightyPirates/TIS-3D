@@ -31,7 +31,7 @@ public class TextureImageRenderer implements ImageRenderer {
             this.texture = (ImageTexture)image;
         } else {
             if (image != null && image.getGlId() != -1) {
-                TextureUtil.releaseTextureId(image.getGlId());
+                TextureUtil.deleteId(image.getGlId());
             }
             this.texture = new ImageTexture(location);
             manager.registerTexture(location, texture);
@@ -81,7 +81,7 @@ public class TextureImageRenderer implements ImageRenderer {
             try (final InputStream is = resource.getInputStream()) {
                 final NativeImage bi = NativeImage.read(is);
 
-                TextureUtil.prepareImage(this.getGlId(), bi.getWidth(), bi.getHeight());
+                TextureUtil.allocate(this.getGlId(), bi.getWidth(), bi.getHeight());
                 bi.upload(0, 0, 0, false);
 
                 width = bi.getWidth();

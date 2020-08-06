@@ -45,7 +45,7 @@ public final class ControllerBlock extends Block implements BlockEntityProvider 
                     }
                     final ItemStack bookManual = new ItemStack(Items.BOOK_MANUAL);
                     if (player.inventory.insertStack(bookManual)) {
-                        player.playerContainer.sendContentUpdates();
+                        player.playerScreenHandler.sendContentUpdates();
                     }
                     if (bookManual.getCount() > 0) {
                         player.dropItem(bookManual, false, false);
@@ -71,11 +71,11 @@ public final class ControllerBlock extends Block implements BlockEntityProvider 
 
     @SuppressWarnings("deprecation")
     @Override
-    public void onBlockRemoved(final BlockState state, final World world, final BlockPos pos, final BlockState newState, final boolean flag) {
+    public void onStateReplaced(final BlockState state, final World world, final BlockPos pos, final BlockState newState, final boolean flag) {
         if (state.getBlock() != newState.getBlock()) {
             world.removeBlockEntity(pos);
         }
-        super.onBlockRemoved(state, world, pos, newState, flag);
+        super.onStateReplaced(state, world, pos, newState, flag);
     }
 
     // --------------------------------------------------------------------- //

@@ -5,6 +5,7 @@ import li.cil.tis3d.client.manual.Document;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 
 import java.util.Set;
 
@@ -117,7 +118,7 @@ abstract class BasicTextSegment extends AbstractSegment implements Segment {
     }
 
     protected int computeWrapIndent(final TextRenderer renderer) {
-        return (LISTS.contains(getRootPrefix())) ? renderer.getStringWidth(getRootPrefix()) : 0;
+        return (LISTS.contains(getRootPrefix())) ? renderer.getWidth(getRootPrefix()) : 0;
     }
 
     // ----------------------------------------------------------------------- //

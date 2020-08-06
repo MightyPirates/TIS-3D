@@ -64,12 +64,15 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
         WAIT
     }
 
-    private static final Identifier[] STATE_LOCATIONS = new Identifier[]{
-        Textures.LOCATION_OVERLAY_MODULE_EXECUTION_IDLE,
-        Textures.LOCATION_OVERLAY_MODULE_EXECUTION_ERROR,
-        Textures.LOCATION_OVERLAY_MODULE_EXECUTION_RUNNING,
-        Textures.LOCATION_OVERLAY_MODULE_EXECUTION_WAITING
-    };
+    @Environment(EnvType.CLIENT)
+    private static final class RenderData {
+        static final Identifier[] STATE_LOCATIONS = new Identifier[]{
+            Textures.LOCATION_OVERLAY_MODULE_EXECUTION_IDLE,
+            Textures.LOCATION_OVERLAY_MODULE_EXECUTION_ERROR,
+            Textures.LOCATION_OVERLAY_MODULE_EXECUTION_RUNNING,
+            Textures.LOCATION_OVERLAY_MODULE_EXECUTION_WAITING
+        };
+    }
 
     // NBT tag names.
     private static final String TAG_STATE = "state";
@@ -160,7 +163,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
                 }
                 final ItemStack bookCode = new ItemStack(Items.BOOK_CODE);
                 if (player.inventory.insertStack(bookCode)) {
-                    player.playerContainer.sendContentUpdates();
+                    player.playerScreenHandler.sendContentUpdates();
                 }
                 if (bookCode.getCount() > 0) {
                     player.dropItem(bookCode, false, false);
@@ -245,7 +248,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
         rotateForRendering(matrices);
 
         // Draw status texture.
-        final Sprite baseSprite = RenderUtil.getSprite(STATE_LOCATIONS[state.ordinal()]);
+        final Sprite baseSprite = RenderUtil.getSprite(RenderData.STATE_LOCATIONS[state.ordinal()]);
         final VertexConsumer vc = vcp.getBuffer(RenderLayer.getCutoutMipped());
         RenderUtil.drawQuad(baseSprite, matrices.peek(), vc, RenderUtil.maxLight, overlay);
 
@@ -321,7 +324,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
             Compiler.compile(code, getState());
         } catch (final ParseException e) {
             compileError = e;
-            player.addChatMessage(new TranslatableText(Constants.MESSAGE_COMPILE_ERROR, e.getLineNumber(), e.getStart(), e.getEnd()).append(new TranslatableText(e.getMessage())), false);
+            player.sendMessage(new TranslatableText(Constants.MESSAGE_COMPILE_ERROR, e.getLineNumber(), e.getStart(), e.getEnd()).append(new TranslatableText(e.getMessage())), false);
         }
     }
 

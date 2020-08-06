@@ -296,7 +296,7 @@ public final class DisplayModule extends AbstractModuleWithRotation {
         int ip = 0;
         for (int iy = 0; iy < RESOLUTION; iy++) {
             for (int ix = 0; ix < RESOLUTION; ix++, ip++) {
-                img.setPixelRgba(ix, iy, image[ip]);
+                img.setPixelColor(ix, iy, image[ip]);
             }
         }
     }

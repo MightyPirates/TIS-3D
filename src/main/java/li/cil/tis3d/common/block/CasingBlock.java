@@ -18,11 +18,11 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.container.Container;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
@@ -96,7 +96,7 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
         final BlockEntity blockEntity = view.getBlockEntity(pos);
         if (blockEntity instanceof CasingBlockEntity) {
             final CasingBlockEntity casing = (CasingBlockEntity)blockEntity;
-            final ItemStack stack = casing.getInvStack(side.ordinal());
+            final ItemStack stack = casing.getStack(side.ordinal());
             if (!stack.isEmpty()) {
                 return stack.copy();
             }
@@ -159,7 +159,7 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
 
                 // Trying to look something up in the manual?
                 if (Items.isBookManual(heldItem)) {
-                    final ItemStack moduleStack = casing.getInvStack(blockHitResult.getSide().ordinal());
+                    final ItemStack moduleStack = casing.getStack(blockHitResult.getSide().ordinal());
                     if (ManualBookItem.tryOpenManual(world, player, ManualAPI.pathFor(moduleStack))) {
                         return ActionResult.SUCCESS;
                     }
@@ -177,7 +177,7 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
                 }
 
                 // Remove old module or install new one.
-                final ItemStack oldModule = casing.getInvStack(blockHitResult.getSide().ordinal());
+                final ItemStack oldModule = casing.getStack(blockHitResult.getSide().ordinal());
                 if (!oldModule.isEmpty()) {
                     // Removing a present module from the casing.
                     if (!world.isClient) {
@@ -191,7 +191,7 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
                     return ActionResult.SUCCESS;
                 } else if (!heldItem.isEmpty()) {
                     // Installing a new module in the casing.
-                    if (casing.canInsertInvStack(blockHitResult.getSide().ordinal(), heldItem, blockHitResult.getSide())) {
+                    if (casing.canInsert(blockHitResult.getSide().ordinal(), heldItem, blockHitResult.getSide())) {
                         if (!world.isClient) {
                             final ItemStack insertedStack;
                             if (player.abilities.creativeMode) {
@@ -203,7 +203,7 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
                                 final Port orientation = Port.fromDirection(player.getHorizontalFacing());
                                 casing.setInventorySlotContents(blockHitResult.getSide().ordinal(), insertedStack, orientation);
                             } else {
-                                casing.setInvStack(blockHitResult.getSide().ordinal(), insertedStack);
+                                casing.setStack(blockHitResult.getSide().ordinal(), insertedStack);
                             }
                             world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.BLOCK_PISTON_EXTEND, SoundCategory.BLOCKS, 0.2f, 0.8f + world.random.nextFloat() * 0.1f);
                         }
@@ -218,16 +218,16 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
 
     @SuppressWarnings("deprecation")
     @Override
-    public void onBlockRemoved(final BlockState state, final World world, final BlockPos pos, final BlockState newState, final boolean isMoved) {
+    public void onStateReplaced(final BlockState state, final World world, final BlockPos pos, final BlockState newState, final boolean isMoved) {
         if (state.getBlock() != newState.getBlock()) {
             final BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof CasingBlockEntity) {
                 ItemScatterer.spawn(world, pos, (CasingBlockEntity)blockEntity);
-                world.updateHorizontalAdjacent(pos, this);
+                world.updateComparators(pos, this);
             }
             world.removeBlockEntity(pos);
         }
-        super.onBlockRemoved(state, world, pos, newState, isMoved);
+        super.onStateReplaced(state, world, pos, newState, isMoved);
     }
 
     // --------------------------------------------------------------------- //
@@ -242,7 +242,7 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
     @SuppressWarnings("deprecation")
     @Override
     public int getComparatorOutput(final BlockState state, final World world, final BlockPos pos) {
-        return Container.calculateComparatorOutput(world.getBlockEntity(pos));
+        return ScreenHandler.calculateComparatorOutput(world.getBlockEntity(pos));
     }
 
     @SuppressWarnings("deprecation")

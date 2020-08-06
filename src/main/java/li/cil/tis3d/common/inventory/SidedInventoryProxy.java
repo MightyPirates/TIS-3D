@@ -11,17 +11,17 @@ public interface SidedInventoryProxy extends InventoryProxy, SidedInventory {
     SidedInventory getInventory();
 
     @Override
-    default int[] getInvAvailableSlots(final Direction facing) {
-        return getInventory().getInvAvailableSlots(facing);
+    default int[] getAvailableSlots(final Direction facing) {
+        return getInventory().getAvailableSlots(facing);
     }
 
     @Override
-    default boolean canInsertInvStack(final int slot, final ItemStack stack, @Nullable final Direction facing) {
-        return getInventory().canInsertInvStack(slot, stack, facing);
+    default boolean canInsert(final int slot, final ItemStack stack, @Nullable final Direction facing) {
+        return getInventory().canInsert(slot, stack, facing);
     }
 
     @Override
-    default boolean canExtractInvStack(final int slot, final ItemStack stack, final Direction facing) {
-        return getInventory().canExtractInvStack(slot, stack, facing);
+    default boolean canExtract(final int slot, final ItemStack stack, final Direction facing) {
+        return getInventory().canExtract(slot, stack, facing);
     }
 }

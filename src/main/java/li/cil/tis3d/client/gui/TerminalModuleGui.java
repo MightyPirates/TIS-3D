@@ -7,6 +7,7 @@ import li.cil.tis3d.common.module.TerminalModule;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Hand;
 import org.lwjgl.glfw.GLFW;
@@ -29,7 +30,7 @@ public final class TerminalModuleGui extends Screen {
     }
 
     @Override
-    public void render(final int mouseX, final int mouseY, final float partialTicks) {
+    public void render(final MatrixStack matrices, final int mouseX, final int mouseY, final float partialTicks) {
         GlStateManager.disableTexture();
 
         // To be on the safe side (see manual.Document#render).
@@ -91,7 +92,7 @@ public final class TerminalModuleGui extends Screen {
         module.writeToInput(chr);
 
         if (Settings.animateTypingHand) {
-            minecraft.player.swingHand(Hand.MAIN_HAND);
+            client.player.swingHand(Hand.MAIN_HAND);
         }
         return true;
     }
@@ -99,13 +100,13 @@ public final class TerminalModuleGui extends Screen {
     @Override
     public void init() {
         super.init();
-        minecraft.keyboard.enableRepeatEvents(true);
+        client.keyboard.enableRepeatEvents(true);
     }
 
     @Override
     public void onClose() {
         super.onClose();
-        minecraft.keyboard.enableRepeatEvents(false);
+        client.keyboard.enableRepeatEvents(false);
     }
 
     @Override

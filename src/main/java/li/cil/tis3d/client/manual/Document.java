@@ -10,6 +10,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.util.Window;
+import net.minecraft.client.util.math.MatrixStack;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -103,6 +104,7 @@ public final class Document {
      * Renders a list of segments and tooltips if a segment with a tooltip is hovered.
      * Returns the hovered interactive segment, if any.
      *
+     * @param matrices  the transformation stack.
      * @param document  the document to render.
      * @param x         the x position to render at.
      * @param y         the y position to render at.
@@ -114,7 +116,7 @@ public final class Document {
      * @param mouseY    the y position of the mouse.
      * @return the interactive segment being hovered, if any.
      */
-    public static Optional<InteractiveSegment> render(final Segment document, final int x, final int y, final int maxWidth, final int maxHeight, final int yOffset, final TextRenderer renderer, final int mouseX, final int mouseY) {
+    public static Optional<InteractiveSegment> render(final MatrixStack matrices, final Segment document, final int x, final int y, final int maxWidth, final int maxHeight, final int yOffset, final TextRenderer renderer, final int mouseX, final int mouseY) {
         final MinecraftClient mc = MinecraftClient.getInstance();
         final Window window = mc.getWindow();
 
@@ -159,7 +161,7 @@ public final class Document {
         while (segment != null) {
             final int segmentHeight = segment.nextY(indent, maxWidth, renderer);
             if (currentY + segmentHeight >= minY && currentY <= maxY) {
-                final Optional<InteractiveSegment> result = segment.render(x, currentY, indent, maxWidth, renderer, mouseX, mouseY);
+                final Optional<InteractiveSegment> result = segment.render(matrices, x, currentY, indent, maxWidth, renderer, mouseX, mouseY);
                 if (!hovered.isPresent()) {
                     hovered = result;
                 }
