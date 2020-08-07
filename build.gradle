@@ -120,7 +120,7 @@ curseforge {
         addGameVersion "Java 10"
 
         relations {
-            requiredLibrary 'fabric'
+            requiredLibrary 'fabric-api'
         }
         mainArtifact(file("${project.buildDir}/libs/${archivesBaseName}-${version}.jar"))
         afterEvaluate {
