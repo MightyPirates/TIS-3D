@@ -59,7 +59,7 @@ public final class ReadOnlyMemoryModuleGui extends Screen {
         guiX = (width - GUI_WIDTH) / 2;
         guiY = (height - GUI_HEIGHT) / 2;
 
-        client.keyboard.enableRepeatEvents(true);
+        client.keyboard.setRepeatEvents(true);
     }
 
     @Override
@@ -73,7 +73,7 @@ public final class ReadOnlyMemoryModuleGui extends Screen {
             Network.INSTANCE.sendToServer(new ReadOnlyMemoryModuleDataMessage(data, hand));
         }
 
-        client.keyboard.enableRepeatEvents(false);
+        client.keyboard.setRepeatEvents(false);
     }
 
     @Override

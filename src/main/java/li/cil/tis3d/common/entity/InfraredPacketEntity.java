@@ -329,7 +329,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
         EntityHitResult entityHit = null;
         double bestSqrDistance = Double.POSITIVE_INFINITY;
 
-        final List<Entity> collisions = world.getEntities(this, getBoundingBox().stretch(getVelocity()), EntityPredicates.EXCEPT_SPECTATOR);
+        final List<Entity> collisions = world.getOtherEntities(this, getBoundingBox().stretch(getVelocity()), EntityPredicates.EXCEPT_SPECTATOR);
         for (final Entity entity : collisions) {
             if (entity.collides()) {
                 final Box entityBounds = entity.getBoundingBox();
