@@ -1,0 +1,13 @@
+{
+    "type": "minecraft:block",
+    "pools": [{
+        "rolls": 1,
+        "entries": [{
+            "type": "minecraft:item",
+            "name": "tis3d:casing"
+        }],
+        "conditions": [{
+            "condition": "minecraft:survives_explosion"
+        }]
+    }]
+}
