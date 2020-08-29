@@ -16,6 +16,11 @@ import net.minecraft.client.util.math.MatrixStack;
  */
 @Environment(EnvType.CLIENT)
 public interface FontRendererAPI {
+    /**
+     * Font type; small font is found on eg. the execution module,
+     * whereas the normal font is used for modules which require more
+     * legibility, eg. the terminal module.
+     */
     public enum Font {
         SmallFont,
         NormalFont
@@ -39,10 +44,29 @@ public interface FontRendererAPI {
      */
     void drawString(final String string, final int maxChars);
 
+    /**
+     * Render up to the specified amount of characters of the specified string.
+     *
+     * @param font     the font type.
+     * @param matrices the current transformation.
+     * @param vc       the VertexConsumer queried via {@code chooseVertexConsumer}.
+     * @param light    the light value, usually {@code RenderUtil.maxLight}.
+     * @param overlay  the overlay value, passed from vanilla.
+     * @param color    the text color, in {@code 0xAARRGGBB}.
+     * @param string   the string to render.
+     * @param maxChars the maximum number of characters to render.
+     */
     void drawString(final Font font, final MatrixStack.Entry matrices, final VertexConsumer vc,
                     final int light, final int overlay, final int color,
-                    final CharSequence value, final int maxChars);
+                    final CharSequence string, final int maxChars);
 
+    /**
+     * Query an appropriate {@link net.minecraft.client.render.VertexConsumer} for a given font type.
+     *
+     * @param font the font type.
+     * @param vcp  the VertexConsumerProvider for this frame.
+     * @return the VertexConsumer instance to use with further text render calls.
+     */
     VertexConsumer chooseVertexConsumer(final Font font, final VertexConsumerProvider vcp);
 
     /**
