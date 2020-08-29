@@ -1,8 +1,8 @@
 package li.cil.tis3d.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import li.cil.tis3d.api.FontRendererAPI;
 import li.cil.tis3d.client.init.Textures;
+import li.cil.tis3d.client.render.font.SmallFontRenderer;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.module.RandomAccessMemoryModule;
 import li.cil.tis3d.common.network.Network;
@@ -241,7 +241,7 @@ public final class ReadOnlyMemoryModuleGui extends Screen {
         GlStateManager.pushMatrix();
         GlStateManager.translatef(guiX + GRID_LEFT + 3, guiY + 6, 0);
         for (int col = 0; col < 16; col++) {
-            FontRendererAPI.drawString(String.format("%X", col));
+            SmallFontRenderer.INSTANCE.drawString(String.format("%X", col));
             GlStateManager.translatef(CELL_WIDTH, 0, 0);
         }
         GlStateManager.popMatrix();
@@ -250,7 +250,7 @@ public final class ReadOnlyMemoryModuleGui extends Screen {
         GlStateManager.pushMatrix();
         GlStateManager.translatef(guiX + 7, guiY + 14, 0);
         for (int row = 0; row < 16; row++) {
-            FontRendererAPI.drawString(String.format("0X%X0", row));
+            SmallFontRenderer.INSTANCE.drawString(String.format("0X%X0", row));
             GlStateManager.translatef(0, CELL_HEIGHT, 0);
         }
         GlStateManager.popMatrix();
@@ -265,11 +265,11 @@ public final class ReadOnlyMemoryModuleGui extends Screen {
         GlStateManager.color4f(1, 1, 1, 1 - sinceInitialized / 0.5f);
         GlStateManager.enableBlend();
 
-        final int labelWidth = FontRendererAPI.getCharWidth() * LABEL_INITIALIZING.length();
+        final int labelWidth = SmallFontRenderer.INSTANCE.getCharWidth() * LABEL_INITIALIZING.length();
 
         GlStateManager.pushMatrix();
         GlStateManager.translatef((float)(guiX + GRID_LEFT + 3 + 7 * CELL_WIDTH - labelWidth / 2), guiY + GRID_TOP + 1 + 7 * CELL_HEIGHT, 0);
-        FontRendererAPI.drawString(LABEL_INITIALIZING);
+        SmallFontRenderer.INSTANCE.drawString(LABEL_INITIALIZING);
         GlStateManager.popMatrix();
     }
 
@@ -281,7 +281,7 @@ public final class ReadOnlyMemoryModuleGui extends Screen {
         GlStateManager.pushMatrix();
         GlStateManager.translatef(guiX + GRID_LEFT + 1, guiY + GRID_TOP + 1, 0);
         for (int i = 0, count = Math.min(visibleCells, data.length); i < count; i++) {
-            FontRendererAPI.drawString(String.format("%02X", data[i]));
+            SmallFontRenderer.INSTANCE.drawString(String.format("%02X", data[i]));
 
             final int col = i & 0x0F;
             if (col < 0x0F) {
