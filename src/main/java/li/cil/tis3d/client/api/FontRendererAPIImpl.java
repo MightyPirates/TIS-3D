@@ -1,6 +1,6 @@
 package li.cil.tis3d.client.api;
 
-import li.cil.tis3d.api.API;
+import li.cil.tis3d.api.ClientAPI;
 import li.cil.tis3d.api.detail.FontRendererAPI;
 import li.cil.tis3d.client.render.font.SmallFontRenderer;
 import li.cil.tis3d.client.render.font.NormalFontRenderer;

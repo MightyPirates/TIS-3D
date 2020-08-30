@@ -1,6 +1,6 @@
 package li.cil.tis3d.client.init;
 
-import li.cil.tis3d.api.API;
+import li.cil.tis3d.api.ClientAPI;
 import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.api.ClientExtInitializer;
 import li.cil.tis3d.api.prefab.manual.ItemStackTabIconRenderer;
@@ -14,6 +14,7 @@ import li.cil.tis3d.client.manual.provider.TextureImageProvider;
 import li.cil.tis3d.client.render.block.entity.CasingBlockEntityRenderer;
 import li.cil.tis3d.client.render.block.entity.ControllerBlockEntityRenderer;
 import li.cil.tis3d.client.render.entity.InvisibleEntityRenderer;
+import li.cil.tis3d.common.API;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.api.SerialAPIImpl;
 import li.cil.tis3d.common.block.CasingBlock;
@@ -57,7 +58,10 @@ public final class BootstrapClient implements ClientModInitializer {
         Network.INSTANCE.initClient();
 
         // Initialize API.
-        API.fontRendererAPI = new FontRendererAPIImpl();
+        API.fontRenderer = new FontRendererAPIImpl();
+        li.cil.tis3d.api.API.fontRendererAPI = API.fontRenderer;
+        final ClientAPI clientAPI = new ClientAPI();
+        clientAPI.fontRenderer = API.fontRenderer;
 
         // Register event handlers.
         ClientTickCallback.EVENT.register(client -> DisplayModule.LeakDetector.tick());

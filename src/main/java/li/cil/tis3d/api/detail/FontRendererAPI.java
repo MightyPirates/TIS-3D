@@ -1,6 +1,6 @@
 package li.cil.tis3d.api.detail;
 
-import li.cil.tis3d.api.API;
+import li.cil.tis3d.api.ClientAPI;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumer;
