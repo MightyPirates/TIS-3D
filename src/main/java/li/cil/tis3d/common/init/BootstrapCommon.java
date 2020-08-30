@@ -95,7 +95,7 @@ public final class BootstrapCommon implements ModInitializer {
         final String fullEntrypoint =  extensionEntrypoint("main");
         final List<ExtInitializer> extensions = FabricLoader.getInstance().getEntrypoints(fullEntrypoint, ExtInitializer.class);
         for (ExtInitializer initializer : extensions) {
-            initializer.onInitialize();
+            initializer.onInitialize(commonAPI);
         }
     }
 

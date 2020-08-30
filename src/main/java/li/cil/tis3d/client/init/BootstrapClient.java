@@ -94,7 +94,7 @@ public final class BootstrapClient implements ClientModInitializer {
         final String fullEntrypoint = BootstrapCommon.extensionEntrypoint("client");
         final List<ClientExtInitializer> extensions = FabricLoader.getInstance().getEntrypoints(fullEntrypoint, ClientExtInitializer.class);
         for (ClientExtInitializer initializer : extensions) {
-            initializer.onInitializeClient();
+            initializer.onInitializeClient(clientAPI);
         }
     }
 
