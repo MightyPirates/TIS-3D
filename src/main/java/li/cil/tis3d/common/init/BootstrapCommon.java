@@ -1,11 +1,13 @@
 package li.cil.tis3d.common.init;
 
 import li.cil.tis3d.api.API;
+import li.cil.tis3d.api.CommonAPI;
 import li.cil.tis3d.api.ExtInitializer;
 import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.api.ModuleAPI;
 import li.cil.tis3d.client.manual.provider.GameRegistryPathProvider;
 import li.cil.tis3d.common.Constants;
+import li.cil.tis3d.common.LocalAPI;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.api.*;
 import li.cil.tis3d.common.event.TickHandlerInfraredPacket;
@@ -39,6 +41,14 @@ public final class BootstrapCommon implements ModInitializer {
         API.manualAPI = ManualAPIImpl.INSTANCE;
         API.moduleAPI = new ModuleAPIImpl();
         API.serialAPI = SerialAPIImpl.INSTANCE;
+
+        final CommonAPI commonAPI = new CommonAPI();
+        commonAPI.itemGroup = API.itemGroup;
+        commonAPI.infraredAPI = API.infraredAPI;
+        commonAPI.manualAPI = API.manualAPI;
+        commonAPI.moduleAPI = API.moduleAPI;
+        commonAPI.serialAPI = API.serialAPI;
+        LocalAPI.common = commonAPI;
 
         // Register network handler.
         Network.INSTANCE.initServer();

@@ -1,6 +1,6 @@
 package li.cil.tis3d.common.api;
 
-import li.cil.tis3d.api.API;
+import li.cil.tis3d.api.ClientAPI;
 import li.cil.tis3d.api.detail.FontRendererAPI;
 import li.cil.tis3d.client.render.font.SmallFontRenderer;
 import li.cil.tis3d.client.render.font.NormalFontRenderer;
@@ -26,7 +26,7 @@ public final class FontRendererAPIImpl implements FontRendererAPI {
     }
 
     @Override
-    public void drawString(final API.Font font, final MatrixStack.Entry matrices, final VertexConsumer vc,
+    public void drawString(final ClientAPI.Font font, final MatrixStack.Entry matrices, final VertexConsumer vc,
                            final int light, final int overlay, final int color,
                            final CharSequence value, final int maxChars) {
         switch (font) {
@@ -44,7 +44,7 @@ public final class FontRendererAPIImpl implements FontRendererAPI {
     }
 
     @Override
-    public VertexConsumer chooseVertexConsumer(final API.Font font, final VertexConsumerProvider vcp) {
+    public VertexConsumer chooseVertexConsumer(final ClientAPI.Font font, final VertexConsumerProvider vcp) {
         switch (font) {
         case SmallFont:
             return SmallFontRenderer.INSTANCE.chooseVertexConsumer(vcp);

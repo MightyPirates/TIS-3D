@@ -1,6 +1,6 @@
 package li.cil.tis3d.api.detail;
 
-import li.cil.tis3d.api.API;
+import li.cil.tis3d.api.ClientAPI;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumer;
@@ -46,7 +46,7 @@ public interface FontRendererAPI {
      * @param string   the string to render.
      * @param maxChars the maximum number of characters to render.
      */
-    void drawString(final API.Font font, final MatrixStack.Entry matrices, final VertexConsumer vc,
+    void drawString(final ClientAPI.Font font, final MatrixStack.Entry matrices, final VertexConsumer vc,
                     final int light, final int overlay, final int color,
                     final CharSequence string, final int maxChars);
 
@@ -57,7 +57,7 @@ public interface FontRendererAPI {
      * @param vcp  the VertexConsumerProvider for this frame.
      * @return the VertexConsumer instance to use with further text render calls.
      */
-    VertexConsumer chooseVertexConsumer(final API.Font font, final VertexConsumerProvider vcp);
+    VertexConsumer chooseVertexConsumer(final ClientAPI.Font font, final VertexConsumerProvider vcp);
 
     /**
      * Get the width of the characters drawn with the font renderer, in pixels.
