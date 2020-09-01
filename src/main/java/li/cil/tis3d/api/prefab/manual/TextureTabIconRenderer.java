@@ -1,5 +1,6 @@
 package li.cil.tis3d.api.prefab.manual;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import li.cil.tis3d.api.manual.TabIconRenderer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -25,6 +26,7 @@ public class TextureTabIconRenderer implements TabIconRenderer {
     @Override
     public void render() {
         MinecraftClient.getInstance().getTextureManager().bindTexture(location);
+        RenderSystem.enableBlend();
         final Tessellator t = Tessellator.getInstance();
         final BufferBuilder b = t.getBuffer();
         b.begin(GL11.GL_QUADS, VertexFormats.POSITION_TEXTURE);
@@ -33,5 +35,6 @@ public class TextureTabIconRenderer implements TabIconRenderer {
         b.vertex(16, 0, 0).texture(1, 0).next();
         b.vertex(0, 0, 0).texture(0, 0).next();
         t.draw();
+        RenderSystem.disableBlend();
     }
 }
