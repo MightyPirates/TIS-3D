@@ -92,7 +92,7 @@ public final class BootstrapCommon implements ModInitializer {
         moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_TIMER, TimerModule::new));
 
         // Add default manual providers for server side stuff.
-        ManualAPI.addProvider(new GameRegistryPathProvider());
+        commonAPI.manual.addProvider(new GameRegistryPathProvider());
 
         // Mod integration.
         Integration.init();

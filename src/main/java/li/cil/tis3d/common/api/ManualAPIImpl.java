@@ -2,7 +2,7 @@ package li.cil.tis3d.common.api;
 
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
-import li.cil.tis3d.api.detail.ManualAPI;
+import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.api.manual.*;
 import li.cil.tis3d.client.gui.GuiHelper;
 import li.cil.tis3d.client.gui.ManualGui;
