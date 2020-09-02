@@ -15,21 +15,14 @@ import javax.annotation.Nullable;
  * block in front of it, the registered providers supporting the position will
  * be used to create the {@link li.cil.tis3d.api.serial.SerialInterface} used
  * to communicate with the block.
- * <p>
- * This is made available in the init phase, so you'll either have to (soft)
- * depend on TIS-3D or you must not make calls to this before the init phase.
  */
-public final class SerialAPI {
+public interface SerialAPI {
     /**
      * Register the specified provider.
      *
      * @param provider the provider to register.
      */
-    public static void addProvider(final SerialInterfaceProvider provider) {
-        if (API.serialAPI != null) {
-            API.serialAPI.addProvider(provider);
-        }
-    }
+    void addProvider(final SerialInterfaceProvider provider);
 
     /**
      * Find the first provider supporting the specified block position.
@@ -40,15 +33,5 @@ public final class SerialAPI {
      * @return the first provider supporting the item stack, or <tt>null</tt>.
      */
     @Nullable
-    public static SerialInterfaceProvider getProviderFor(final World world, final BlockPos position, final Direction side) {
-        if (API.serialAPI != null) {
-            return API.serialAPI.getProviderFor(world, position, side);
-        }
-        return null;
-    }
-
-    // --------------------------------------------------------------------- //
-
-    private SerialAPI() {
-    }
+    SerialInterfaceProvider getProviderFor(final World world, final BlockPos position, final Direction side);
 }

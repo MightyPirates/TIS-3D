@@ -1,5 +1,6 @@
 package li.cil.tis3d.common;
 
+import li.cil.tis3d.api.SerialAPI;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemGroup;
@@ -15,7 +16,7 @@ public class API {
     public static li.cil.tis3d.api.detail.InfraredAPI infrared;
     public static li.cil.tis3d.api.detail.ManualAPI manual;
     public static li.cil.tis3d.api.detail.ModuleAPI module;
-    public static li.cil.tis3d.api.detail.SerialAPI serial;
+    public static SerialAPI serial;
 
     @Environment(EnvType.CLIENT)
     public static li.cil.tis3d.api.detail.FontRendererAPI fontRenderer;
