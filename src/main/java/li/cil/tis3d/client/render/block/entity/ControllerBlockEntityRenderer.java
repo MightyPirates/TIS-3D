@@ -2,6 +2,7 @@ package li.cil.tis3d.client.render.block.entity;
 
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.common.block.entity.ControllerBlockEntity;
+import li.cil.tis3d.util.ColorUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -45,7 +46,7 @@ public final class ControllerBlockEntityRenderer extends BlockEntityRenderer<Con
         final TextRenderer textRenderer = dispatcher.getTextRenderer();
         final float x = -textRenderer.getWidth(str) / 2.0f;
         textRenderer.draw(str, x, 0, 0x20FFFFFF, false, modMat, vcp, true, bg, RenderUtil.maxLight);
-        textRenderer.draw(str, x, 0, -1, false, modMat, vcp, false, 0, RenderUtil.maxLight);
+        textRenderer.draw(str, x, 0, ColorUtils.WHITE, false, modMat, vcp, false, 0, RenderUtil.maxLight);
 
         matrices.pop();
     }
