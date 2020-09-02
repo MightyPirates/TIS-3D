@@ -5,5 +5,5 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public final class ClientAPI {
-    public li.cil.tis3d.api.detail.FontRendererAPI fontRenderer;
+    public FontRendererAPI fontRenderer;
 }

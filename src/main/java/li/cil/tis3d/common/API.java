@@ -1,5 +1,6 @@
 package li.cil.tis3d.common;
 
+import li.cil.tis3d.api.FontRendererAPI;
 import li.cil.tis3d.api.InfraredAPI;
 import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.api.ModuleAPI;
@@ -22,5 +23,5 @@ public class API {
     public static SerialAPI serial;
 
     @Environment(EnvType.CLIENT)
-    public static li.cil.tis3d.api.detail.FontRendererAPI fontRenderer;
+    public static FontRendererAPI fontRenderer;
 }
