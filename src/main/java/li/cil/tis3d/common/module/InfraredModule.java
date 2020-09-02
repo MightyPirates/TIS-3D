@@ -10,6 +10,7 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModule;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.init.Textures;
+import li.cil.tis3d.common.LocalAPI;
 import li.cil.tis3d.common.Settings;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -205,6 +206,6 @@ public final class InfraredModule extends AbstractModule implements InfraredRece
         final Vec3d position = new Vec3d(blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5);
         final Vec3d direction = new Vec3d(facing.getOffsetX(), facing.getOffsetY(), facing.getOffsetZ());
 
-        InfraredAPI.sendPacket(world, position, direction, value);
+        LocalAPI.common.infraredAPI.sendPacket(world, position, direction, value);
     }
 }

@@ -1,6 +1,6 @@
 package li.cil.tis3d.common.api;
 
-import li.cil.tis3d.api.detail.InfraredAPI;
+import li.cil.tis3d.api.InfraredAPI;
 import li.cil.tis3d.api.infrared.InfraredPacket;
 import li.cil.tis3d.common.entity.InfraredPacketEntity;
 import li.cil.tis3d.common.init.Entities;
