@@ -1,7 +1,7 @@
 package li.cil.tis3d.common.block.entity;
 
-import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.HaltAndCatchFireException;
+import li.cil.tis3d.common.API;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.HaltAndCatchFireMessage;

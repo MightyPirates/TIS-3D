@@ -59,7 +59,6 @@ public final class BootstrapClient implements ClientModInitializer {
 
         // Initialize API.
         API.fontRenderer = new FontRendererAPIImpl();
-        li.cil.tis3d.api.API.fontRendererAPI = API.fontRenderer;
         final ClientAPI clientAPI = new ClientAPI();
         clientAPI.fontRenderer = API.fontRenderer;
 

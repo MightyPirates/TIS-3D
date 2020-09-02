@@ -1,7 +1,7 @@
 package li.cil.tis3d.client.manual.provider;
 
-import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.manual.PathProvider;
+import li.cil.tis3d.common.API;
 import li.cil.tis3d.util.WorldUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;

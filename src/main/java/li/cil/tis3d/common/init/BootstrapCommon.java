@@ -43,12 +43,6 @@ public final class BootstrapCommon implements ModInitializer {
         API.module = moduleAPI;
         API.serial = SerialAPIImpl.INSTANCE;
 
-        li.cil.tis3d.api.API.itemGroup = API.itemGroup;
-        li.cil.tis3d.api.API.infraredAPI = API.infrared;
-        li.cil.tis3d.api.API.manualAPI = API.manual;
-        li.cil.tis3d.api.API.moduleAPI = API.module;
-        li.cil.tis3d.api.API.serialAPI = API.serial;
-
         final CommonAPI commonAPI = new CommonAPI();
         commonAPI.itemGroup = API.itemGroup;
         commonAPI.infrared = API.infrared;

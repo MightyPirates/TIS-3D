@@ -1,10 +1,10 @@
 package li.cil.tis3d.client.manual.provider;
 
-import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.manual.ImageProvider;
 import li.cil.tis3d.api.manual.ImageRenderer;
 import li.cil.tis3d.client.manual.segment.render.ItemStackImageRenderer;
 import li.cil.tis3d.client.manual.segment.render.MissingItemRenderer;
+import li.cil.tis3d.common.API;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
