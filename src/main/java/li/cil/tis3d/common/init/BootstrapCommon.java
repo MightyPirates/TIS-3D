@@ -1,6 +1,5 @@
 package li.cil.tis3d.common.init;
 
-import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.CommonAPI;
 import li.cil.tis3d.api.ExtInitializer;
 import li.cil.tis3d.api.ManualAPI;
@@ -28,28 +27,22 @@ public final class BootstrapCommon implements ModInitializer {
     @Override
     public void onInitialize() {
         // Load our settings first to have all we need for remaining init.
-        Settings.load(new File(FabricLoader.getInstance().getConfigDirectory(), API.MOD_ID + ".cfg"));
+        Settings.load(new File(FabricLoader.getInstance().getConfigDirectory(), CommonAPI.MOD_ID + ".cfg"));
 
         // Initialize API.
         //noinspection Convert2MethodRef
-        API.itemGroup = FabricItemGroupBuilder.create(Constants.NAME_ITEM_GROUP).
+        LocalAPI.common.itemGroup = FabricItemGroupBuilder.create(Constants.NAME_ITEM_GROUP).
             // Gotta be a lambda or items get initialized before item group is set.
                 icon(() -> Items.CONTROLLER.getStackForRender()).
                 build();
 
         final ModuleAPI moduleAPI = new ModuleAPIImpl();
 
-        API.infraredAPI = new InfraredAPIImpl();
-        API.manualAPI = ManualAPIImpl.INSTANCE;
-        API.moduleAPI = moduleAPI;
-        API.serialAPI = SerialAPIImpl.INSTANCE;
-
         final CommonAPI commonAPI = new CommonAPI();
-        commonAPI.itemGroup = API.itemGroup;
-        commonAPI.infraredAPI = API.infraredAPI;
-        commonAPI.manualAPI = API.manualAPI;
-        commonAPI.moduleAPI = API.moduleAPI;
-        commonAPI.serialAPI = API.serialAPI;
+        commonAPI.infraredAPI = new InfraredAPIImpl();
+        commonAPI.manualAPI = ManualAPIImpl.INSTANCE;
+        commonAPI.moduleAPI = moduleAPI;
+        commonAPI.serialAPI = SerialAPIImpl.INSTANCE;
         LocalAPI.common = commonAPI;
 
         // Register network handler.
@@ -102,6 +95,6 @@ public final class BootstrapCommon implements ModInitializer {
     }
 
     public static String extensionEntrypoint(final String entrypoint) {
-        return API.MOD_ID + ":" + entrypoint;
+        return CommonAPI.MOD_ID + ":" + entrypoint;
     }
 }

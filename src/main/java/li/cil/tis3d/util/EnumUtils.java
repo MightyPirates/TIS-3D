@@ -1,6 +1,6 @@
 package li.cil.tis3d.util;
 
-import li.cil.tis3d.api.API;
+import li.cil.tis3d.api.CommonAPI;
 import net.minecraft.nbt.CompoundTag;
 import org.apache.logging.log4j.LogManager;
 
@@ -15,7 +15,7 @@ public final class EnumUtils {
                 return Enum.valueOf(clazz, nbt.getString(tagName));
             } catch (final IllegalArgumentException e) {
                 // This can only happen if someone messes with the save.
-                LogManager.getLogger(API.MOD_ID).warn("Broken save, enum value is invalid.", e);
+                LogManager.getLogger(CommonAPI.MOD_ID).warn("Broken save, enum value is invalid.", e);
                 return clazz.getEnumConstants()[0];
             }
         } else {

@@ -1,6 +1,6 @@
 package li.cil.tis3d.client.manual.provider;
 
-import li.cil.tis3d.api.API;
+import li.cil.tis3d.api.CommonAPI;
 import li.cil.tis3d.api.manual.ImageProvider;
 import li.cil.tis3d.api.manual.ImageRenderer;
 import li.cil.tis3d.client.manual.segment.render.ItemStackImageRenderer;
@@ -13,7 +13,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public final class TagImageProvider implements ImageProvider {
-    private static final String WARNING_TAG_MISSING = API.MOD_ID + ".manual.warning.missing.tag";
+    private static final String WARNING_TAG_MISSING = CommonAPI.MOD_ID + ".manual.warning.missing.tag";
 
     @Override
     public ImageRenderer getImage(final String data) {

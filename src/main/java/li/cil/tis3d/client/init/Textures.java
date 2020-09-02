@@ -1,6 +1,6 @@
 package li.cil.tis3d.client.init;
 
-import li.cil.tis3d.api.API;
+import li.cil.tis3d.api.CommonAPI;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
@@ -8,37 +8,37 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public final class Textures {
-    public static final Identifier LOCATION_GUI_BOOK_CODE_BACKGROUND = new Identifier(API.MOD_ID, "textures/gui/book_code.png");
-    public static final Identifier LOCATION_GUI_MANUAL_BACKGROUND = new Identifier(API.MOD_ID, "textures/gui/manual.png");
-    public static final Identifier LOCATION_GUI_MANUAL_TAB = new Identifier(API.MOD_ID, "textures/gui/manual_tab.png");
-    public static final Identifier LOCATION_GUI_MANUAL_SCROLL = new Identifier(API.MOD_ID, "textures/gui/manual_scroll.png");
-    public static final Identifier LOCATION_GUI_MANUAL_MISSING = new Identifier(API.MOD_ID, "textures/gui/manual_missing.png");
-    public static final Identifier LOCATION_GUI_MEMORY = new Identifier(API.MOD_ID, "textures/gui/module_memory.png");
+    public static final Identifier LOCATION_GUI_BOOK_CODE_BACKGROUND = new Identifier(CommonAPI.MOD_ID, "textures/gui/book_code.png");
+    public static final Identifier LOCATION_GUI_MANUAL_BACKGROUND = new Identifier(CommonAPI.MOD_ID, "textures/gui/manual.png");
+    public static final Identifier LOCATION_GUI_MANUAL_TAB = new Identifier(CommonAPI.MOD_ID, "textures/gui/manual_tab.png");
+    public static final Identifier LOCATION_GUI_MANUAL_SCROLL = new Identifier(CommonAPI.MOD_ID, "textures/gui/manual_scroll.png");
+    public static final Identifier LOCATION_GUI_MANUAL_MISSING = new Identifier(CommonAPI.MOD_ID, "textures/gui/manual_missing.png");
+    public static final Identifier LOCATION_GUI_MEMORY = new Identifier(CommonAPI.MOD_ID, "textures/gui/module_memory.png");
 
-    public static final Identifier LOCATION_OVERLAY_UTIL_WHITE = new Identifier(API.MOD_ID, "block/overlay/util_white");
-    public static final Identifier LOCATION_OVERLAY_CASING_LOCKED = new Identifier(API.MOD_ID, "block/overlay/casing_locked");
-    public static final Identifier LOCATION_OVERLAY_CASING_UNLOCKED = new Identifier(API.MOD_ID, "block/overlay/casing_unlocked");
-    public static final Identifier LOCATION_OVERLAY_CASING_PORT_CLOSED = new Identifier(API.MOD_ID, "block/overlay/casing_port_closed");
-    public static final Identifier LOCATION_OVERLAY_CASING_PORT_OPEN = new Identifier(API.MOD_ID, "block/overlay/casing_port_open");
-    public static final Identifier LOCATION_OVERLAY_CASING_PORT_HIGHLIGHT = new Identifier(API.MOD_ID, "block/overlay/casing_port_highlight");
-    public static final Identifier LOCATION_OVERLAY_CASING_PORT_CLOSED_SMALL = new Identifier(API.MOD_ID, "block/overlay/casing_port_closed_small");
-    public static final Identifier LOCATION_OVERLAY_MODULE_AUDIO = new Identifier(API.MOD_ID, "block/overlay/module_audio");
-    public static final Identifier LOCATION_OVERLAY_MODULE_BUNDLED_REDSTONE = new Identifier(API.MOD_ID, "block/overlay/module_bundled_redstone");
-    public static final Identifier LOCATION_OVERLAY_MODULE_EXECUTION_ERROR = new Identifier(API.MOD_ID, "block/overlay/module_execution_error");
-    public static final Identifier LOCATION_OVERLAY_MODULE_EXECUTION_IDLE = new Identifier(API.MOD_ID, "block/overlay/module_execution_idle");
-    public static final Identifier LOCATION_OVERLAY_MODULE_EXECUTION_RUNNING = new Identifier(API.MOD_ID, "block/overlay/module_execution_running");
-    public static final Identifier LOCATION_OVERLAY_MODULE_EXECUTION_WAITING = new Identifier(API.MOD_ID, "block/overlay/module_execution_waiting");
-    public static final Identifier LOCATION_OVERLAY_MODULE_INFRARED = new Identifier(API.MOD_ID, "block/overlay/module_infrared");
-    public static final Identifier LOCATION_OVERLAY_MODULE_KEYPAD = new Identifier(API.MOD_ID, "block/overlay/module_keypad");
-    public static final Identifier LOCATION_OVERLAY_MODULE_QUEUE = new Identifier(API.MOD_ID, "block/overlay/module_queue");
-    public static final Identifier LOCATION_OVERLAY_MODULE_RANDOM = new Identifier(API.MOD_ID, "block/overlay/module_random");
-    public static final Identifier LOCATION_OVERLAY_MODULE_REDSTONE = new Identifier(API.MOD_ID, "block/overlay/module_redstone");
-    public static final Identifier LOCATION_OVERLAY_MODULE_REDSTONE_BARS = new Identifier(API.MOD_ID, "block/overlay/module_redstone_bars");
-    public static final Identifier LOCATION_OVERLAY_MODULE_SEQUENCER = new Identifier(API.MOD_ID, "block/overlay/module_sequencer");
-    public static final Identifier LOCATION_OVERLAY_MODULE_SERIAL_PORT = new Identifier(API.MOD_ID, "block/overlay/module_serial_port");
-    public static final Identifier LOCATION_OVERLAY_MODULE_STACK = new Identifier(API.MOD_ID, "block/overlay/module_stack");
-    public static final Identifier LOCATION_OVERLAY_MODULE_TERMINAL = new Identifier(API.MOD_ID, "block/overlay/module_terminal");
-    public static final Identifier LOCATION_OVERLAY_MODULE_TIMER = new Identifier(API.MOD_ID, "block/overlay/module_timer");
+    public static final Identifier LOCATION_OVERLAY_UTIL_WHITE = new Identifier(CommonAPI.MOD_ID, "block/overlay/util_white");
+    public static final Identifier LOCATION_OVERLAY_CASING_LOCKED = new Identifier(CommonAPI.MOD_ID, "block/overlay/casing_locked");
+    public static final Identifier LOCATION_OVERLAY_CASING_UNLOCKED = new Identifier(CommonAPI.MOD_ID, "block/overlay/casing_unlocked");
+    public static final Identifier LOCATION_OVERLAY_CASING_PORT_CLOSED = new Identifier(CommonAPI.MOD_ID, "block/overlay/casing_port_closed");
+    public static final Identifier LOCATION_OVERLAY_CASING_PORT_OPEN = new Identifier(CommonAPI.MOD_ID, "block/overlay/casing_port_open");
+    public static final Identifier LOCATION_OVERLAY_CASING_PORT_HIGHLIGHT = new Identifier(CommonAPI.MOD_ID, "block/overlay/casing_port_highlight");
+    public static final Identifier LOCATION_OVERLAY_CASING_PORT_CLOSED_SMALL = new Identifier(CommonAPI.MOD_ID, "block/overlay/casing_port_closed_small");
+    public static final Identifier LOCATION_OVERLAY_MODULE_AUDIO = new Identifier(CommonAPI.MOD_ID, "block/overlay/module_audio");
+    public static final Identifier LOCATION_OVERLAY_MODULE_BUNDLED_REDSTONE = new Identifier(CommonAPI.MOD_ID, "block/overlay/module_bundled_redstone");
+    public static final Identifier LOCATION_OVERLAY_MODULE_EXECUTION_ERROR = new Identifier(CommonAPI.MOD_ID, "block/overlay/module_execution_error");
+    public static final Identifier LOCATION_OVERLAY_MODULE_EXECUTION_IDLE = new Identifier(CommonAPI.MOD_ID, "block/overlay/module_execution_idle");
+    public static final Identifier LOCATION_OVERLAY_MODULE_EXECUTION_RUNNING = new Identifier(CommonAPI.MOD_ID, "block/overlay/module_execution_running");
+    public static final Identifier LOCATION_OVERLAY_MODULE_EXECUTION_WAITING = new Identifier(CommonAPI.MOD_ID, "block/overlay/module_execution_waiting");
+    public static final Identifier LOCATION_OVERLAY_MODULE_INFRARED = new Identifier(CommonAPI.MOD_ID, "block/overlay/module_infrared");
+    public static final Identifier LOCATION_OVERLAY_MODULE_KEYPAD = new Identifier(CommonAPI.MOD_ID, "block/overlay/module_keypad");
+    public static final Identifier LOCATION_OVERLAY_MODULE_QUEUE = new Identifier(CommonAPI.MOD_ID, "block/overlay/module_queue");
+    public static final Identifier LOCATION_OVERLAY_MODULE_RANDOM = new Identifier(CommonAPI.MOD_ID, "block/overlay/module_random");
+    public static final Identifier LOCATION_OVERLAY_MODULE_REDSTONE = new Identifier(CommonAPI.MOD_ID, "block/overlay/module_redstone");
+    public static final Identifier LOCATION_OVERLAY_MODULE_REDSTONE_BARS = new Identifier(CommonAPI.MOD_ID, "block/overlay/module_redstone_bars");
+    public static final Identifier LOCATION_OVERLAY_MODULE_SEQUENCER = new Identifier(CommonAPI.MOD_ID, "block/overlay/module_sequencer");
+    public static final Identifier LOCATION_OVERLAY_MODULE_SERIAL_PORT = new Identifier(CommonAPI.MOD_ID, "block/overlay/module_serial_port");
+    public static final Identifier LOCATION_OVERLAY_MODULE_STACK = new Identifier(CommonAPI.MOD_ID, "block/overlay/module_stack");
+    public static final Identifier LOCATION_OVERLAY_MODULE_TERMINAL = new Identifier(CommonAPI.MOD_ID, "block/overlay/module_terminal");
+    public static final Identifier LOCATION_OVERLAY_MODULE_TIMER = new Identifier(CommonAPI.MOD_ID, "block/overlay/module_timer");
 
     static void registerSprites(final ClientSpriteRegistryCallback.Registry registry) {
         registry.register(LOCATION_OVERLAY_UTIL_WHITE);

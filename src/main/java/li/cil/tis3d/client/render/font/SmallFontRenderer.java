@@ -1,6 +1,6 @@
 package li.cil.tis3d.client.render.font;
 
-import li.cil.tis3d.api.API;
+import li.cil.tis3d.api.CommonAPI;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 public final class SmallFontRenderer extends AbstractFontRenderer {
     public static final FontRenderer INSTANCE = new SmallFontRenderer();
 
-    private static final Identifier LOCATION_FONT_TEXTURE = new Identifier(API.MOD_ID, "textures/font/small.png");
+    private static final Identifier LOCATION_FONT_TEXTURE = new Identifier(CommonAPI.MOD_ID, "textures/font/small.png");
     private static final String CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890:#-,?+!=()'.";
 
     // --------------------------------------------------------------------- //

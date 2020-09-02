@@ -1,6 +1,6 @@
 package li.cil.tis3d.common.api;
 
-import li.cil.tis3d.api.API;
+import li.cil.tis3d.api.CommonAPI;
 import li.cil.tis3d.api.SerialAPI;
 import li.cil.tis3d.api.manual.ContentProvider;
 import li.cil.tis3d.api.prefab.manual.ResourceContentProvider;
@@ -88,7 +88,7 @@ public final class SerialAPIImpl implements SerialAPI {
         // --------------------------------------------------------------------- //
 
         SerialProtocolContentProvider() {
-            super(API.MOD_ID, "doc/");
+            super(CommonAPI.MOD_ID, "doc/");
         }
 
         void addReference(@Nullable final SerialProtocolDocumentationReference reference) {

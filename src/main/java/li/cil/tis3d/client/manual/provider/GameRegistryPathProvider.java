@@ -1,6 +1,6 @@
 package li.cil.tis3d.client.manual.provider;
 
-import li.cil.tis3d.api.API;
+import li.cil.tis3d.api.CommonAPI;
 import li.cil.tis3d.api.manual.PathProvider;
 import li.cil.tis3d.util.WorldUtils;
 import net.minecraft.block.Block;
@@ -22,13 +22,13 @@ public final class GameRegistryPathProvider implements PathProvider {
         final Block block = Block.getBlockFromItem(item);
         if (block != Blocks.AIR) {
             final String modId = Registry.BLOCK.getId(block).getNamespace();
-            if (API.MOD_ID.equals(modId)) {
+            if (CommonAPI.MOD_ID.equals(modId)) {
                 return "%LANGUAGE%/block/" + block.getTranslationKey().replaceFirst("^tile\\.tis3d\\.", "") + ".md";
             }
         } else {
             final Identifier name = Registry.ITEM.getId(item);
             final String modId = name.getNamespace();
-            if (API.MOD_ID.equals(modId)) {
+            if (CommonAPI.MOD_ID.equals(modId)) {
                 return "%LANGUAGE%/item/" + item.getTranslationKey().replaceFirst("^item\\.tis3d\\.", "") + ".md";
             }
         }
@@ -42,7 +42,7 @@ public final class GameRegistryPathProvider implements PathProvider {
         }
         final Block block = world.getBlockState(pos).getBlock();
         final String modId = Registry.BLOCK.getId(block).getNamespace();
-        if (API.MOD_ID.equals(modId)) {
+        if (CommonAPI.MOD_ID.equals(modId)) {
             return "%LANGUAGE%/block/" + block.getTranslationKey().replaceFirst("^block\\.tis3d\\.", "") + ".md";
         }
         return null;

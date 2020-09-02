@@ -1,7 +1,8 @@
 package li.cil.tis3d.common.init;
 
-import li.cil.tis3d.api.API;
+import li.cil.tis3d.api.CommonAPI;
 import li.cil.tis3d.common.Constants;
+import li.cil.tis3d.common.LocalAPI;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.item.*;
 import net.minecraft.item.BlockItem;
@@ -19,13 +20,13 @@ import java.util.Objects;
  * Manages setup, registration and lookup of items.
  */
 public final class Items {
-    public static final Item BOOK_CODE = new CodeBookItem(new Item.Settings().maxCount(1).group(API.itemGroup));
-    public static final Item BOOK_MANUAL = new ManualBookItem(new Item.Settings().maxCount(16).group(API.itemGroup));
-    public static final Item KEY = new KeyItem(new Item.Settings().maxCount(1).group(API.itemGroup));
-    public static final Item KEY_CREATIVE = new KeyItem(new Item.Settings().maxCount(1).group(API.itemGroup));
-    public static final Item PRISM = new Item(new Item.Settings().maxCount(32).group(API.itemGroup));
-    public static final BlockItem CASING = new BlockItem(Blocks.CASING, new Item.Settings().group(API.itemGroup));
-    public static final BlockItem CONTROLLER = new BlockItem(Blocks.CONTROLLER, new Item.Settings().group(API.itemGroup));
+    public static final Item BOOK_CODE = new CodeBookItem(new Item.Settings().maxCount(1).group(LocalAPI.common.itemGroup));
+    public static final Item BOOK_MANUAL = new ManualBookItem(new Item.Settings().maxCount(16).group(LocalAPI.common.itemGroup));
+    public static final Item KEY = new KeyItem(new Item.Settings().maxCount(1).group(LocalAPI.common.itemGroup));
+    public static final Item KEY_CREATIVE = new KeyItem(new Item.Settings().maxCount(1).group(LocalAPI.common.itemGroup));
+    public static final Item PRISM = new Item(new Item.Settings().maxCount(32).group(LocalAPI.common.itemGroup));
+    public static final BlockItem CASING = new BlockItem(Blocks.CASING, new Item.Settings().group(LocalAPI.common.itemGroup));
+    public static final BlockItem CONTROLLER = new BlockItem(Blocks.CONTROLLER, new Item.Settings().group(LocalAPI.common.itemGroup));
 
     private static final Map<Identifier, Item> modules = new HashMap<>();
 
@@ -97,7 +98,7 @@ public final class Items {
 
     private static Item registerModule(final Identifier identifier) {
         final boolean isListed = !Settings.disabledModules.contains(identifier);
-        final Item.Settings settings = isListed ? new Item.Settings().group(API.itemGroup) : new Item.Settings();
+        final Item.Settings settings = isListed ? new Item.Settings().group(LocalAPI.common.itemGroup) : new Item.Settings();
         if (Objects.equals(identifier, Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY)) {
             return registerItem(new ReadOnlyMemoryModuleItem(settings), identifier, isListed);
         } else {

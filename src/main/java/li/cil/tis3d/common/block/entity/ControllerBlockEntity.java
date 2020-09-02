@@ -1,6 +1,6 @@
 package li.cil.tis3d.common.block.entity;
 
-import li.cil.tis3d.api.API;
+import li.cil.tis3d.api.CommonAPI;
 import li.cil.tis3d.api.machine.HaltAndCatchFireException;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.network.Network;
@@ -91,7 +91,7 @@ public final class ControllerBlockEntity extends AbstractComputerBlockEntity imp
 
         ControllerState(final boolean isError) {
             this.isError = isError;
-            this.translateKey = API.MOD_ID + ".controller.status." + name().toLowerCase(Locale.US);
+            this.translateKey = CommonAPI.MOD_ID + ".controller.status." + name().toLowerCase(Locale.US);
         }
 
         // --------------------------------------------------------------------- //

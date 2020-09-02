@@ -1,6 +1,6 @@
 package li.cil.tis3d.client.manual.provider;
 
-import li.cil.tis3d.api.API;
+import li.cil.tis3d.api.CommonAPI;
 import li.cil.tis3d.api.manual.ImageProvider;
 import li.cil.tis3d.api.manual.ImageRenderer;
 import li.cil.tis3d.client.manual.segment.render.MissingItemRenderer;
@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public final class TextureImageProvider implements ImageProvider {
-    private static final String WARNING_IMAGE_MISSING = API.MOD_ID + ".manual.warning.missing.image";
+    private static final String WARNING_IMAGE_MISSING = CommonAPI.MOD_ID + ".manual.warning.missing.image";
 
     @Override
     public ImageRenderer getImage(final String data) {

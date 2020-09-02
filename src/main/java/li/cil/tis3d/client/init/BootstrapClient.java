@@ -1,7 +1,7 @@
 package li.cil.tis3d.client.init;
 
-import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.ClientAPI;
+import li.cil.tis3d.api.CommonAPI;
 import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.api.ClientExtInitializer;
 import li.cil.tis3d.api.prefab.manual.ItemStackTabIconRenderer;
@@ -59,9 +59,8 @@ public final class BootstrapClient implements ClientModInitializer {
         Network.INSTANCE.initClient();
 
         // Initialize API.
-        API.fontRendererAPI = new FontRendererAPIImpl();
         final ClientAPI clientAPI = new ClientAPI();
-        clientAPI.fontRendererAPI = API.fontRendererAPI;
+        clientAPI.fontRendererAPI = new FontRendererAPIImpl();
         LocalAPI.client = clientAPI;
 
         // Register event handlers.
@@ -79,17 +78,17 @@ public final class BootstrapClient implements ClientModInitializer {
 
         // Add default manual providers for client side stuff.
         final ManualAPI manualAPI = LocalAPI.common.manualAPI;
-        manualAPI.addProvider(new ResourceContentProvider(API.MOD_ID, "doc/"));
+        manualAPI.addProvider(new ResourceContentProvider(CommonAPI.MOD_ID, "doc/"));
         manualAPI.addProvider(SerialAPIImpl.INSTANCE.getSerialProtocolContentProvider());
         manualAPI.addProvider("", new TextureImageProvider());
         manualAPI.addProvider("item", new ItemImageProvider());
         manualAPI.addProvider("block", new BlockImageProvider());
         manualAPI.addProvider("tag", new TagImageProvider());
 
-        manualAPI.addTab(new TextureTabIconRenderer(new Identifier(API.MOD_ID, "textures/gui/manual_home.png")), "tis3d.manual.home", "%LANGUAGE%/index.md");
+        manualAPI.addTab(new TextureTabIconRenderer(new Identifier(CommonAPI.MOD_ID, "textures/gui/manual_home.png")), "tis3d.manual.home", "%LANGUAGE%/index.md");
         manualAPI.addTab(new ItemStackTabIconRenderer(new ItemStack(Blocks.CONTROLLER)), "tis3d.manual.blocks", "%LANGUAGE%/block/index.md");
         manualAPI.addTab(new ItemStackTabIconRenderer(new ItemStack(findModuleItem())), "tis3d.manual.items", "%LANGUAGE%/item/index.md");
-        manualAPI.addTab(new TextureTabIconRenderer(new Identifier(API.MOD_ID, "textures/gui/manual_serial_protocols.png")), "tis3d.manual.serial_protocols", "%LANGUAGE%/serial_protocols.md");
+        manualAPI.addTab(new TextureTabIconRenderer(new Identifier(CommonAPI.MOD_ID, "textures/gui/manual_serial_protocols.png")), "tis3d.manual.serial_protocols", "%LANGUAGE%/serial_protocols.md");
 
         // Initialize extensions.
         final String fullEntrypoint = BootstrapCommon.extensionEntrypoint("client");

@@ -3,7 +3,7 @@ package li.cil.tis3d.common.network;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
-import li.cil.tis3d.api.API;
+import li.cil.tis3d.api.CommonAPI;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.client.network.handler.*;
@@ -204,7 +204,7 @@ public final class Network {
 
     @SuppressWarnings("unchecked")
     private <TMessage extends AbstractMessage> Identifier getMessageIdentifier(final Class<TMessage> messageClass) {
-        return messageIdCache.computeIfAbsent((Class<AbstractMessage>)messageClass, clazz -> new Identifier(API.MOD_ID, clazz.getSimpleName().toLowerCase(Locale.ROOT)));
+        return messageIdCache.computeIfAbsent((Class<AbstractMessage>)messageClass, clazz -> new Identifier(CommonAPI.MOD_ID, clazz.getSimpleName().toLowerCase(Locale.ROOT)));
     }
 
     private PacketByteBuf serializeMessage(final AbstractMessage message) {
