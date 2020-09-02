@@ -36,9 +36,11 @@ public final class BootstrapCommon implements ModInitializer {
                 icon(() -> Items.CONTROLLER.getStackForRender()).
                 build();
 
+        final ModuleAPI moduleAPI = new ModuleAPIImpl();
+
         API.infrared = new InfraredAPIImpl();
         API.manual = ManualAPIImpl.INSTANCE;
-        API.module = new ModuleAPIImpl();
+        API.module = moduleAPI;
         API.serial = SerialAPIImpl.INSTANCE;
 
         li.cil.tis3d.api.API.itemGroup = API.itemGroup;
@@ -72,22 +74,22 @@ public final class BootstrapCommon implements ModInitializer {
         Items.registerItems();
 
         // Register providers for built-in modules.
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_AUDIO, AudioModule::new));
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_BUNDLED_REDSTONE, BundledRedstoneModule::new));
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_DISPLAY, DisplayModule::new));
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_EXECUTION, ExecutionModule::new));
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_INFRARED, InfraredModule::new));
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_KEYPAD, KeypadModule::new));
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_QUEUE, QueueModule::new));
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_RANDOM, RandomModule::new));
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY, RandomAccessMemoryModule::new));
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY, ReadOnlyMemoryModule::new));
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_REDSTONE, RedstoneModule::new));
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_SEQUENCER, SequencerModule::new));
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_SERIAL_PORT, SerialPortModule::new));
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_STACK, StackModule::new));
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_TERMINAL, TerminalModule::new));
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_TIMER, TimerModule::new));
+        moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_AUDIO, AudioModule::new));
+        moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_BUNDLED_REDSTONE, BundledRedstoneModule::new));
+        moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_DISPLAY, DisplayModule::new));
+        moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_EXECUTION, ExecutionModule::new));
+        moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_INFRARED, InfraredModule::new));
+        moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_KEYPAD, KeypadModule::new));
+        moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_QUEUE, QueueModule::new));
+        moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_RANDOM, RandomModule::new));
+        moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY, RandomAccessMemoryModule::new));
+        moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY, ReadOnlyMemoryModule::new));
+        moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_REDSTONE, RedstoneModule::new));
+        moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_SEQUENCER, SequencerModule::new));
+        moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_SERIAL_PORT, SerialPortModule::new));
+        moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_STACK, StackModule::new));
+        moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_TERMINAL, TerminalModule::new));
+        moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_TIMER, TimerModule::new));
 
         // Add default manual providers for server side stuff.
         ManualAPI.addProvider(new GameRegistryPathProvider());

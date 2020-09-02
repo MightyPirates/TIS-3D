@@ -1,6 +1,6 @@
 package li.cil.tis3d.common.api;
 
-import li.cil.tis3d.api.detail.ModuleAPI;
+import li.cil.tis3d.api.ModuleAPI;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.ModuleProvider;
