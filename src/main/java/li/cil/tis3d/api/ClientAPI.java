@@ -10,5 +10,5 @@ public final class ClientAPI {
         NormalFont
     }
 
-    public li.cil.tis3d.api.detail.FontRendererAPI fontRendererAPI;
+    public FontRendererAPI fontRendererAPI;
 }

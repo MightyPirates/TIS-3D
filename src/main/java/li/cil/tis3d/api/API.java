@@ -21,7 +21,7 @@ public final class API {
     }
 
     // Set in TIS-3D pre-init, prefer using static entry point classes instead.
-    public static li.cil.tis3d.api.detail.FontRendererAPI fontRendererAPI;
+    public static FontRendererAPI fontRendererAPI;
     public static InfraredAPI infraredAPI;
     public static ManualAPI manualAPI;
     public static ModuleAPI moduleAPI;

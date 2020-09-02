@@ -1,7 +1,7 @@
 package li.cil.tis3d.common.api;
 
 import li.cil.tis3d.api.ClientAPI;
-import li.cil.tis3d.api.detail.FontRendererAPI;
+import li.cil.tis3d.api.FontRendererAPI;
 import li.cil.tis3d.client.render.font.SmallFontRenderer;
 import li.cil.tis3d.client.render.font.NormalFontRenderer;
 import net.fabricmc.api.EnvType;
