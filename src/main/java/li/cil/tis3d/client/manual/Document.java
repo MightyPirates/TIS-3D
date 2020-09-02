@@ -5,6 +5,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.api.manual.ImageRenderer;
 import li.cil.tis3d.client.manual.segment.*;
+import li.cil.tis3d.common.LocalAPI;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -221,7 +222,7 @@ public final class Document {
 
     private static Segment ImageSegment(final Segment s, final Matcher m) {
         try {
-            final ImageRenderer renderer = ManualAPI.imageFor(m.group(2));
+            final ImageRenderer renderer = LocalAPI.common.manualAPI.imageFor(m.group(2));
             if (renderer != null) {
                 return new RenderSegment(s, m.group(1), renderer);
             } else {

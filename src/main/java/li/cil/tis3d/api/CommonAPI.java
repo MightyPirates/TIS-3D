@@ -6,7 +6,7 @@ public final class CommonAPI {
     public ItemGroup itemGroup;
 
     public li.cil.tis3d.api.detail.InfraredAPI infraredAPI;
-    public li.cil.tis3d.api.detail.ManualAPI manualAPI;
+    public ManualAPI manualAPI;
     public ModuleAPI moduleAPI;
     public SerialAPI serialAPI;
 }

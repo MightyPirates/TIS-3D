@@ -2,6 +2,7 @@ package li.cil.tis3d.common.item;
 
 import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.common.Constants;
+import li.cil.tis3d.common.LocalAPI;
 import li.cil.tis3d.util.FontRendererUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -35,9 +36,9 @@ public final class ManualBookItem extends BookItem {
         }
 
         if (world.isClient) {
-            ManualAPI.openFor(player);
-            ManualAPI.reset();
-            ManualAPI.navigate(path);
+            LocalAPI.common.manualAPI.openFor(player);
+            LocalAPI.common.manualAPI.reset();
+            LocalAPI.common.manualAPI.navigate(path);
         }
 
         return true;
@@ -60,16 +61,16 @@ public final class ManualBookItem extends BookItem {
         if (player == null) {
             return super.useOnBlock(context);
         }
-        return tryOpenManual(context.getWorld(), player, ManualAPI.pathFor(context.getWorld(), context.getBlockPos())) ? ActionResult.SUCCESS : super.useOnBlock(context);
+        return tryOpenManual(context.getWorld(), player, LocalAPI.common.manualAPI.pathFor(context.getWorld(), context.getBlockPos())) ? ActionResult.SUCCESS : super.useOnBlock(context);
     }
 
     @Override
     public TypedActionResult<ItemStack> use(final World world, final PlayerEntity player, final Hand hand) {
         if (world.isClient) {
             if (player.isSneaking()) {
-                ManualAPI.reset();
+                LocalAPI.common.manualAPI.reset();
             }
-            ManualAPI.openFor(player);
+            LocalAPI.common.manualAPI.openFor(player);
         }
         return new TypedActionResult<>(ActionResult.SUCCESS, player.getStackInHand(hand));
     }

@@ -1,6 +1,7 @@
 package li.cil.tis3d.client.manual.segment;
 
 import li.cil.tis3d.api.ManualAPI;
+import li.cil.tis3d.common.LocalAPI;
 import li.cil.tis3d.common.api.ManualAPIImpl;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -31,7 +32,7 @@ public final class LinkSegment extends TextSegment implements InteractiveSegment
     private boolean isLinkValid() {
         if (!isLinkValidInitialized) {
             isLinkValid = (url.startsWith("http://") || url.startsWith("https://")) ||
-                ManualAPI.contentFor(ManualAPIImpl.makeRelative(url, ManualAPIImpl.peekPath())) != null;
+                LocalAPI.common.manualAPI.contentFor(ManualAPIImpl.makeRelative(url, ManualAPIImpl.peekPath())) != null;
             isLinkValidInitialized = true;
         }
         return isLinkValid;
@@ -66,7 +67,7 @@ public final class LinkSegment extends TextSegment implements InteractiveSegment
         if (url.startsWith("http://") || url.startsWith("https://")) {
             handleUrl(url);
         } else {
-            ManualAPI.navigate(ManualAPIImpl.makeRelative(url, ManualAPIImpl.peekPath()));
+            LocalAPI.common.manualAPI.navigate(ManualAPIImpl.makeRelative(url, ManualAPIImpl.peekPath()));
         }
         return true;
     }

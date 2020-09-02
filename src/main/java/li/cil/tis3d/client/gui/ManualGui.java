@@ -6,6 +6,7 @@ import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.client.manual.Document;
 import li.cil.tis3d.client.manual.segment.InteractiveSegment;
 import li.cil.tis3d.client.manual.segment.Segment;
+import li.cil.tis3d.common.LocalAPI;
 import li.cil.tis3d.common.api.ManualAPIImpl;
 import li.cil.tis3d.util.FontRendererUtils;
 import net.fabricmc.api.EnvType;
@@ -91,7 +92,7 @@ public final class ManualGui extends Screen {
             final int y = guiTop + TAB_POS_Y + i * (TAB_HEIGHT - TAB_OVERLAP);
             final int id = i;
             this.addButton(new ImageButton(x, y, TAB_WIDTH, TAB_HEIGHT - TAB_OVERLAP - 1, Textures.LOCATION_GUI_MANUAL_TAB, (button) -> {
-                ManualAPI.navigate(ManualAPIImpl.getTabs().get(id).path);
+                LocalAPI.common.manualAPI.navigate(ManualAPIImpl.getTabs().get(id).path);
             }).setImageHeight(TAB_HEIGHT).setVerticalImageOffset(-TAB_OVERLAP / 2));
         }
 
@@ -244,7 +245,7 @@ public final class ManualGui extends Screen {
     }
 
     private void refreshPage() {
-        final Iterable<String> content = ManualAPI.contentFor(ManualAPIImpl.peekPath());
+        final Iterable<String> content = LocalAPI.common.manualAPI.contentFor(ManualAPIImpl.peekPath());
         document = Document.parse(content != null ? content : Collections.singletonList("Document not found: " + ManualAPIImpl.peekPath()));
         documentHeight = Document.height(document, DOCUMENT_MAX_WIDTH, getTextRenderer());
         scrollTo(offset());
