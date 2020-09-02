@@ -11,6 +11,7 @@ import li.cil.tis3d.api.serial.SerialInterface;
 import li.cil.tis3d.api.serial.SerialInterfaceProvider;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.client.init.Textures;
+import li.cil.tis3d.common.LocalAPI;
 import li.cil.tis3d.util.WorldUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -168,7 +169,7 @@ public final class SerialPortModule extends AbstractModule implements BlockChang
         final BlockPos neighborPos = getCasing().getPosition().offset(Face.toDirection(getFace()));
         final Direction neighborSide = Face.toDirection(getFace().getOpposite());
         if (WorldUtils.isBlockLoaded(world, neighborPos)) {
-            final SerialInterfaceProvider provider = SerialAPI.getProviderFor(world, neighborPos, neighborSide);
+            final SerialInterfaceProvider provider = LocalAPI.common.serialAPI.getProviderFor(world, neighborPos, neighborSide);
             if (provider != null) {
                 if (!serialInterface.map(s -> provider.isValid(world, neighborPos, neighborSide, s)).orElse(false)) {
                     // Either we didn't have an interface for our neighbor yet,
