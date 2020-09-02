@@ -24,7 +24,7 @@ public final class API {
     public static li.cil.tis3d.api.detail.FontRendererAPI fontRendererAPI;
     public static li.cil.tis3d.api.detail.InfraredAPI infraredAPI;
     public static li.cil.tis3d.api.detail.ManualAPI manualAPI;
-    public static li.cil.tis3d.api.detail.ModuleAPI moduleAPI;
+    public static ModuleAPI moduleAPI;
     public static SerialAPI serialAPI;
 
     private API() {

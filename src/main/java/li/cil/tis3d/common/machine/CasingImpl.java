@@ -9,6 +9,7 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.ModuleProvider;
 import li.cil.tis3d.api.module.traits.Redstone;
+import li.cil.tis3d.common.LocalAPI;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.block.entity.ControllerBlockEntity;
 import li.cil.tis3d.common.init.Items;
@@ -252,7 +253,7 @@ public final class CasingImpl implements Casing {
             }
 
             final Face face = Face.VALUES[index];
-            final ModuleProvider provider = ModuleAPI.getProviderFor(stack, blockEntity, face);
+            final ModuleProvider provider = LocalAPI.common.moduleAPI.getProviderFor(stack, blockEntity, face);
             if (provider == null) {
                 if (modules[index] != null) {
                     modules[index].onDisposed();
