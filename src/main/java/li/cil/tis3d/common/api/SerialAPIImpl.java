@@ -72,6 +72,7 @@ public final class SerialAPIImpl implements SerialAPI {
      */
     private static final class SerialProtocolContentProvider extends ResourceContentProvider {
         private static final String LANGUAGE_KEY = "%LANGUAGE%";
+        private static final String FALLBACK_LANGUAGE = "en_us";
         private static final Pattern PATTERN_LANGUAGE_KEY = Pattern.compile(LANGUAGE_KEY);
         private static final String SERIAL_PROTOCOLS_PATH = "%LANGUAGE%/serial_protocols.md";
         private static final String SERIAL_PROTOCOLS_TEMPLATE = "%LANGUAGE%/template/serial_protocols.md";
@@ -107,8 +108,14 @@ public final class SerialAPIImpl implements SerialAPI {
             final String language = MinecraftClient.getInstance().getLanguageManager().getLanguage().getCode();
             final String localizedProtocolsPath = PATTERN_LANGUAGE_KEY.matcher(SERIAL_PROTOCOLS_PATH).replaceAll(language);
             if (localizedProtocolsPath.equals(path)) {
-                final String localizedTemplatePath = PATTERN_LANGUAGE_KEY.matcher(SERIAL_PROTOCOLS_TEMPLATE).replaceAll(language);
-                return populateTemplate(super.getContent(localizedTemplatePath));
+                String localizedTemplatePath = PATTERN_LANGUAGE_KEY.matcher(SERIAL_PROTOCOLS_TEMPLATE).replaceAll(language);
+                Iterable<String> content = super.getContent(localizedTemplatePath);
+                if (content == null) {
+                    // Didn't find content for the current language, fall back to US English
+                    localizedTemplatePath = PATTERN_LANGUAGE_KEY.matcher(SERIAL_PROTOCOLS_TEMPLATE).replaceAll(FALLBACK_LANGUAGE);
+                    content = super.getContent(localizedTemplatePath);
+                }
+                return populateTemplate(content);
             }
             return null;
         }
