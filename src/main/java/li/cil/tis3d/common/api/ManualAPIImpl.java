@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 public final class ManualAPIImpl implements ManualAPI {
     // Language placeholder replacement.
     private static final String LANGUAGE_KEY = "%LANGUAGE%";
-    private static final String FALLBACK_LANGUAGE = "en_US";
+    private static final String FALLBACK_LANGUAGE = "en_us";
     private static final Pattern PATTERN_LANGUAGE_KEY = Pattern.compile(LANGUAGE_KEY);
 
     // Error messages.
