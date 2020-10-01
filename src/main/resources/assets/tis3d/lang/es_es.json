@@ -1,26 +1,26 @@
 {
     "itemGroup.tis3d.name": "TIS-3D",
 
-    "item.tis3d.book_code": "Biblia de Codigo",
+    "item.tis3d.book_code": "Libro de Codigo",
     "item.tis3d.book_manual": "Manual de Referencia de TIS-3D",
     "item.tis3d.key": "Llave",
     "item.tis3d.key_creative": "Llave Maestra",
-    "item.tis3d.module_audio": "Modulo de Audio",
+    "item.tis3d.module_audio": "Módulo de Audio",
     "item.tis3d.module_bundled_redstone": "Módulo Redstone incluido",
     "item.tis3d.module_display": "Módulo de Pantalla",
-    "item.tis3d.module_execution": "Modulo de Ejecucion",
+    "item.tis3d.module_execution": "Módulo de Ejecucion",
     "item.tis3d.module_infrared": "Módulo de Infrarrojos",
     "item.tis3d.module_keypad": "Módulo de Teclado",
     "item.tis3d.module_queue": "Módulo de Cola",
-    "item.tis3d.module_random": "Modulo Random",
-    "item.tis3d.module_random_access_memory": "Modulo de RAM",
-    "item.tis3d.module_read_only_memory": "Modulo de ROM",
-    "item.tis3d.module_redstone": "Modulo de Redstone",
+    "item.tis3d.module_random": "Módulo Random",
+    "item.tis3d.module_random_access_memory": "Módulo de RAM",
+    "item.tis3d.module_read_only_memory": "Módulo de ROM",
+    "item.tis3d.module_redstone": "Módulo de Redstone",
     "item.tis3d.module_sequencer": "Módulo Secuenciador",
-    "item.tis3d.module_serial_port": "Modulo de Puerto Serial",
-    "item.tis3d.module_stack": "Modulo de Estaqueo",
-    "item.tis3d.module_terminal": "Modulo de Terminal",
-    "item.tis3d.module_timer": "Modulo de Temporizador",
+    "item.tis3d.module_serial_port": "Módulo de Puerto Serial",
+    "item.tis3d.module_stack": "Módulo de Estaqueo",
+    "item.tis3d.module_terminal": "Módulo de Terminal",
+    "item.tis3d.module_timer": "Módulo de Temporizador",
     "item.tis3d.prism": "Prisma",
 
     "block.tis3d.casing": "Cubierta",
@@ -55,5 +55,5 @@
 
     "tis3d.tooltip.book_code": "§7Usa un libro en un modulo de ejecucion instalado para conseguir una copia.",
     "tis3d.tooltip.book_manual": "§7Usa un libro en un bloque controlador para conseguir una copia.",
-    "tis3d.tooltip.key": "§7Agachate mientras estas sujetando para recivir puertos en una cara de la cubierta."
+    "tis3d.tooltip.key": "§7Agachate mientras estas sujetando para recibir puertos en una cara de la cubierta."
 }
