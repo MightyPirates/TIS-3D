@@ -1,6 +1,5 @@
 package li.cil.tis3d.common.block;
 
-import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;

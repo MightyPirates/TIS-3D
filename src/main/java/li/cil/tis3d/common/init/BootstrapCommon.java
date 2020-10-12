@@ -2,7 +2,7 @@ package li.cil.tis3d.common.init;
 
 import li.cil.tis3d.api.CommonAPI;
 import li.cil.tis3d.api.ExtInitializer;
-import li.cil.tis3d.api.ManualAPI;
+import li.cil.tis3d.api.ManualCommonAPI;
 import li.cil.tis3d.api.ModuleAPI;
 import li.cil.tis3d.client.manual.provider.GameRegistryPathProvider;
 import li.cil.tis3d.common.API;

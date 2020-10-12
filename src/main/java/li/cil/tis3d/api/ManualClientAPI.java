@@ -19,7 +19,7 @@ import javax.annotation.Nullable;
  * Note: this is a <em>client side only</em> API. It will do nothing on
  * dedicated servers (i.e. <tt>API.manual</tt> will be <tt>null</tt>).
  */
-public interface ManualAPI {
+public interface ManualClientAPI extends ManualCommonAPI {
     /**
      * Register a tab to be displayed next to the manual.
      * <p>
@@ -33,16 +33,6 @@ public interface ManualAPI {
      * @param path     the path to the page to open when the tab is clicked.
      */
     void addTab(final TabIconRenderer renderer, @Nullable final String tooltip, final String path);
-
-    /**
-     * Register a path provider.
-     * <p>
-     * Path providers are used to find documentation entries for item stacks
-     * and blocks in the world.
-     *
-     * @param provider the provider to register.
-     */
-    void addProvider(final PathProvider provider);
 
     /**
      * Register a content provider.

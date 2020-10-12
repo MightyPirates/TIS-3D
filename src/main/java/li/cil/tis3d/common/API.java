@@ -2,7 +2,7 @@ package li.cil.tis3d.common;
 
 import li.cil.tis3d.api.FontRendererAPI;
 import li.cil.tis3d.api.InfraredAPI;
-import li.cil.tis3d.api.ManualAPI;
+import li.cil.tis3d.api.ManualClientAPI;
 import li.cil.tis3d.api.ModuleAPI;
 import li.cil.tis3d.api.SerialAPI;
 import net.fabricmc.api.EnvType;
@@ -18,7 +18,7 @@ public class API {
     public static ItemGroup itemGroup;
 
     public static InfraredAPI infrared;
-    public static ManualAPI manual;
+    public static ManualClientAPI manual;
     public static ModuleAPI module;
     public static SerialAPI serial;
 

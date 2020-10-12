@@ -1,8 +1,8 @@
 package li.cil.tis3d.client.init;
 
 import li.cil.tis3d.api.ClientAPI;
-import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.api.ClientExtInitializer;
+import li.cil.tis3d.api.ManualClientAPI;
 import li.cil.tis3d.api.prefab.manual.ItemStackTabIconRenderer;
 import li.cil.tis3d.api.prefab.manual.ResourceContentProvider;
 import li.cil.tis3d.api.prefab.manual.TextureTabIconRenderer;
@@ -61,6 +61,7 @@ public final class BootstrapClient implements ClientModInitializer {
         API.fontRenderer = new FontRendererAPIImpl();
         final ClientAPI clientAPI = new ClientAPI();
         clientAPI.fontRenderer = API.fontRenderer;
+        clientAPI.manual = API.manual;
 
         // Register event handlers.
         ClientTickCallback.EVENT.register(client -> DisplayModule.LeakDetector.tick());
@@ -76,7 +77,7 @@ public final class BootstrapClient implements ClientModInitializer {
         BlockEntityRendererRegistry.INSTANCE.register(ControllerBlockEntity.TYPE, ControllerBlockEntityRenderer::new);
 
         // Add default manual providers for client side stuff.
-        final ManualAPI manualAPI = API.manual;
+        final ManualClientAPI manualAPI = API.manual;
         manualAPI.addProvider(new ResourceContentProvider(API.MOD_ID, "doc/"));
         manualAPI.addProvider(SerialAPIImpl.INSTANCE.getSerialProtocolContentProvider());
         manualAPI.addProvider("", new TextureImageProvider());

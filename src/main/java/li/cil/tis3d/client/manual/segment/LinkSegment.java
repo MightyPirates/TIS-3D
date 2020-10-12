@@ -1,6 +1,5 @@
 package li.cil.tis3d.client.manual.segment;
 
-import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.common.API;
 import li.cil.tis3d.common.api.ManualAPIImpl;
 import net.fabricmc.api.EnvType;

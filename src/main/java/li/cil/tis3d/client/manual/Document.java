@@ -2,7 +2,6 @@ package li.cil.tis3d.client.manual;
 
 import com.google.common.base.Strings;
 import com.mojang.blaze3d.platform.GlStateManager;
-import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.api.manual.ImageRenderer;
 import li.cil.tis3d.client.manual.segment.*;
 import li.cil.tis3d.common.API;

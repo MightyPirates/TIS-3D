@@ -6,7 +6,7 @@ public final class CommonAPI {
     public ItemGroup itemGroup;
 
     public InfraredAPI infrared;
-    public ManualAPI manual;
+    public ManualCommonAPI manual;
     public ModuleAPI module;
     public SerialAPI serial;
 }

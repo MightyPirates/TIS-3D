@@ -1,7 +1,6 @@
 package li.cil.tis3d.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.client.manual.Document;
 import li.cil.tis3d.client.manual.segment.InteractiveSegment;
