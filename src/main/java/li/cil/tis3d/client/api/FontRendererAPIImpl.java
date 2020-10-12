@@ -1,4 +1,4 @@
-package li.cil.tis3d.common.api;
+package li.cil.tis3d.client.api;
 
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.detail.FontRendererAPI;
