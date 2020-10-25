@@ -3,7 +3,7 @@
 ![嗯，是时候了](item:tis3d:module_timer)
 
 【注意】
-译者从英文文档翻译下文中的内容时感觉其艰涩难懂。为准确起见，以下以保留有疑问的英文原文。您可以帮助我们在GitHub上改进这些翻译。
+译者从英文文档翻译下文中的内容时感觉其艰涩难懂。为准确起见，以下保留有疑问的英文原文。您可以帮助我们在GitHub上改进这些翻译。
 
 计时器模块使用高精度石英谐振以提供一致且可靠的定时等待操作。其硬件运行于20Hz的时钟上，意味着计时器每步进1次需要花费刚刚好50毫秒。计时器使用以下时钟周期进行配置。
 
@@ -13,9 +13,11 @@ The timer module uses a high precision quartz to allow consistent and reliably t
 
 The timer module continuously reads values from all four of its ports. When a value is read, the internal timer state is set to the specified value, and will be decremented by one in each future clock cycle, until it reaches zero. Once it has reached zero, the timer module continuously writes a constant, implementation specific value to all four of its ports.
 
-
+由于计时器模块仅在时间流逝时向端口写入，因而可以通过设定计时器并尝试从中读取以实现等待一定量的时间的效果。由于TIS-3D计算机的接口读写阻塞机制，这会使计算机暂停执行，直到计时器步进到一定值。
 
 As the timer module only writes to its ports when the timer has elapsed, it is therefore possible to wait for a specific amount of time, by setting up the timer and then trying to read a value from it. Due to the blocking nature of port I/O in TIS-3D computers, this will pause exectution until the timer has elapsed.
+
+通过使[执行模块](module_execution.md)通过虚拟接口`ANY`读取计时器模块，可以实现中断，因此可以让并行程序向该[执行模块](module_execution.md)写入值以终止读入。
 
 An interrupt may be implemented by having an [execution module](module_execution.md) read from the timer module using the virtual `ANY` port, therefore allowing concurrent programs to end the read by pushing a value to that [execution module](module_execution.md).
 
