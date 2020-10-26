@@ -104,8 +104,8 @@ public final class CodeBookGui extends Screen {
     }
 
     @Override
-    public void onClose() {
-        super.onClose();
+    public void removed() {
+        super.removed();
 
         // Write changes back to our data tag.
         saveProgram();
