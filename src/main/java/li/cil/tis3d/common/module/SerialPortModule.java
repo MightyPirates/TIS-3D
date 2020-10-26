@@ -1,6 +1,5 @@
 package li.cil.tis3d.common.module;
 
-import li.cil.tis3d.api.SerialAPI;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
@@ -29,11 +28,7 @@ import net.minecraft.world.World;
 import java.util.Optional;
 
 /**
- * The stack module can be used to store a number of values to be retrieved
- * later on. It operates as LIFO queue, providing the top element to all ports
- * but a single value can only be read from one port.
- * <p>
- * While it is not full, it will receive data on all ports and push them back.
+ * The serial port module can provides access to blocks with a {@link SerialInterface}.
  */
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public final class SerialPortModule extends AbstractModule implements BlockChangeAware {
@@ -207,7 +202,7 @@ public final class SerialPortModule extends AbstractModule implements BlockChang
      */
     private void stepOutput() {
         if (serialInterface.map(SerialInterface::canRead).orElse(false)) {
-            final short value = serialInterface.map(SerialInterface::peek).orElse((short)0);
+            final short value = serialInterface.map(SerialInterface::peek).orElse((short) 0);
             if (value != writing) {
                 cancelWrite();
                 writing = value;

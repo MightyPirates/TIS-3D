@@ -23,7 +23,7 @@ public interface SerialInterface {
      * <p>
      * If this is <tt>true</tt>, the serial port module will call {@link #write(short)}
      * when it has something to write. If it is <tt>false</tt>, the serial port module
-     * won't read any values. It is legal change the returned value between ticks to
+     * won't read any values. It is legal to change the returned value between ticks to
      * cancel an active transfer.
      * <p>
      * This method is called in each update of the serial port module, which
