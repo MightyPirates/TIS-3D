@@ -22,11 +22,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import java.util.Optional;
 
 /**
- * The stack module can be used to store a number of values to be retrieved
- * later on. It operates as LIFO queue, providing the top element to all ports
- * but a single value can only be read from one port.
- * <p>
- * While it is not full, it will receive data on all ports and push them back.
+ * The serial port module can provides access to blocks with a {@link SerialInterface}.
  */
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public final class SerialPortModule extends AbstractModule implements ModuleWithBlockChangeListener {
