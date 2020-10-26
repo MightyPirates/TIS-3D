@@ -1,4 +1,4 @@
-# Display Module
+# 显示模块
 
 ![按数字进行绘制](item:tis3d:module_display)
 
