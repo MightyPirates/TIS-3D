@@ -1,6 +1,8 @@
 package li.cil.tis3d.api;
 
 import li.cil.tis3d.api.manual.*;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -9,7 +11,7 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 
 /**
- * This API allows interfacing with the in-game manual of OpenComputers.
+ * This API allows interfacing with the in-game manual of TIS-3D.
  * <p>
  * It allows opening the manual at a desired specific page, as well as
  * registering custom tabs and content callback handlers.
@@ -17,7 +19,7 @@ import javax.annotation.Nullable;
  * Note: this is a <em>client side only</em> API. It will do nothing on
  * dedicated servers (i.e. <tt>API.manual</tt> will be <tt>null</tt>).
  */
-public final class ManualAPI {
+public interface ManualClientAPI extends ManualCommonAPI {
     /**
      * Register a tab to be displayed next to the manual.
      * <p>
@@ -30,25 +32,7 @@ public final class ManualAPI {
      * @param tooltip  the unlocalized tooltip of the tab, or <tt>null</tt>.
      * @param path     the path to the page to open when the tab is clicked.
      */
-    public static void addTab(final TabIconRenderer renderer, final String tooltip, final String path) {
-        if (API.manualAPI != null) {
-            API.manualAPI.addTab(renderer, tooltip, path);
-        }
-    }
-
-    /**
-     * Register a path provider.
-     * <p>
-     * Path providers are used to find documentation entries for item stacks
-     * and blocks in the world.
-     *
-     * @param provider the provider to register.
-     */
-    public static void addProvider(final PathProvider provider) {
-        if (API.manualAPI != null) {
-            API.manualAPI.addProvider(provider);
-        }
-    }
+    void addTab(final TabIconRenderer renderer, @Nullable final String tooltip, final String path);
 
     /**
      * Register a content provider.
@@ -60,11 +44,7 @@ public final class ManualAPI {
      *
      * @param provider the provider to register.
      */
-    public static void addProvider(final ContentProvider provider) {
-        if (API.manualAPI != null) {
-            API.manualAPI.addProvider(provider);
-        }
-    }
+    void addProvider(final ContentProvider provider);
 
     /**
      * Register an image provider.
@@ -74,8 +54,7 @@ public final class ManualAPI {
      * the image URL, i.e. <tt>![tooltip](prefix:data)</tt> will select the
      * image provider registered for the prefix <tt>prefix</tt>, and pass to
      * it the argument <tt>data</tt>, then use the returned renderer to draw
-     * an element in the place of the tag. The provided prefix is expected to
-     * be <em>without</em> the colon (<tt>:</tt>).
+     * an element in the place of the tag.
      * <p>
      * Custom providers are only selected if a prefix is matched, otherwise
      * it'll treat it as a relative path to an image to load via Minecraft's
@@ -84,29 +63,7 @@ public final class ManualAPI {
      * @param prefix   the prefix on which to use the provider.
      * @param provider the provider to register.
      */
-    public static void addProvider(final String prefix, final ImageProvider provider) {
-        if (API.manualAPI != null) {
-            API.manualAPI.addProvider(prefix, provider);
-        }
-    }
-
-    /**
-     * Get the image renderer for the specified image path.
-     * <p>
-     * This will look for {@link ImageProvider}s registered for a prefix in the
-     * specified path. If there is no match, or the matched content provider
-     * does not provide a renderer, this will return <tt>null</tt>.
-     *
-     * @param path the path to the image to get the renderer for.
-     * @return the custom renderer for that path.
-     */
-    @Nullable
-    public static ImageRenderer imageFor(final String path) {
-        if (API.manualAPI != null) {
-            return API.manualAPI.imageFor(path);
-        }
-        return null;
-    }
+    void addProvider(final String prefix, final ImageProvider provider);
 
     // ----------------------------------------------------------------------- //
 
@@ -117,12 +74,7 @@ public final class ManualAPI {
      * @return the path to the page, <tt>null</tt> if none is known.
      */
     @Nullable
-    public static String pathFor(final ItemStack stack) {
-        if (API.manualAPI != null) {
-            return API.manualAPI.pathFor(stack);
-        }
-        return null;
-    }
+    String pathFor(final ItemStack stack);
 
     /**
      * Look up the documentation for the specified block in the world.
@@ -132,26 +84,35 @@ public final class ManualAPI {
      * @return the path to the page, <tt>null</tt> if none is known.
      */
     @Nullable
-    public static String pathFor(final World world, final BlockPos pos) {
-        if (API.manualAPI != null) {
-            return API.manualAPI.pathFor(world, pos);
-        }
-        return null;
-    }
+    String pathFor(final World world, final BlockPos pos);
 
     /**
      * Get the content of the documentation page at the specified location.
+     * <p>
+     * The provided path may contain the special variable <tt>%LANGUAGE%</tt>,
+     * which will be resolved to the currently set language, falling back to
+     * <tt>en_US</tt>.
      *
      * @param path the path of the page to get the content of.
      * @return the content of the page, or <tt>null</tt> if none exists.
      */
+    @Environment(EnvType.CLIENT)
     @Nullable
-    public static Iterable<String> contentFor(final String path) {
-        if (API.manualAPI != null) {
-            return API.manualAPI.contentFor(path);
-        }
-        return null;
-    }
+    Iterable<String> contentFor(final String path);
+
+    /**
+     * Get the image renderer for the specified image path.
+     * <p>
+     * This will look for {@link ImageProvider}s registered for a prefix in the
+     * specified path. If there is no match, or the matched content provider
+     * does not provide a renderer, this will return <tt>null</tt>.
+     *
+     * @param path the path to the image to get the renderer for.
+     * @return the custom renderer for that path, or <tt>null</tt> if none exists.
+     */
+    @Environment(EnvType.CLIENT)
+    @Nullable
+    ImageRenderer imageFor(final String path);
 
     // ----------------------------------------------------------------------- //
 
@@ -163,34 +124,19 @@ public final class ManualAPI {
      *
      * @param player the player to open the manual for.
      */
-    public static void openFor(final PlayerEntity player) {
-        if (API.manualAPI != null) {
-            API.manualAPI.openFor(player);
-        }
-    }
+    @Environment(EnvType.CLIENT)
+    void openFor(final PlayerEntity player);
 
     /**
      * Reset the history of the manual.
      */
-    public static void reset() {
-        if (API.manualAPI != null) {
-            API.manualAPI.reset();
-        }
-    }
+    void reset();
 
     /**
      * Navigate to a page in the manual.
      *
      * @param path the path to navigate to.
      */
-    public static void navigate(final String path) {
-        if (API.manualAPI != null) {
-            API.manualAPI.navigate(path);
-        }
-    }
-
-    // ----------------------------------------------------------------------- //
-
-    private ManualAPI() {
-    }
+    @Environment(EnvType.CLIENT)
+    void navigate(final String path);
 }

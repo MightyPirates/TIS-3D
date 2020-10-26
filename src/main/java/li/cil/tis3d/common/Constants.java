@@ -1,6 +1,5 @@
 package li.cil.tis3d.common;
 
-import li.cil.tis3d.api.API;
 import net.minecraft.util.Identifier;
 
 import java.util.regex.Pattern;

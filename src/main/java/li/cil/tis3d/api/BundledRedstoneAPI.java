@@ -6,6 +6,9 @@ import java.util.ArrayList;
 
 /**
  * API entry point for TIS-3D specific bundled redstone events.
+ *
+ * WARNING: This entry point is currently experimental and may change at any time.
+ * Use at your own risk.
  */
 public final class BundledRedstoneAPI {
     /**

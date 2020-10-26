@@ -1,6 +1,6 @@
 package li.cil.tis3d.util;
 
-import li.cil.tis3d.api.API;
+import li.cil.tis3d.common.API;
 import net.minecraft.nbt.CompoundTag;
 import org.apache.logging.log4j.LogManager;
 

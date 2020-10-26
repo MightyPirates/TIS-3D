@@ -2,7 +2,7 @@ package li.cil.tis3d.common.api;
 
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
-import li.cil.tis3d.api.detail.ManualAPI;
+import li.cil.tis3d.api.ManualClientAPI;
 import li.cil.tis3d.api.manual.*;
 import li.cil.tis3d.client.gui.GuiHelper;
 import li.cil.tis3d.client.gui.ManualGui;
@@ -20,7 +20,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.regex.Pattern;
 
-public final class ManualAPIImpl implements ManualAPI {
+public final class ManualAPIImpl implements ManualClientAPI {
     // Language placeholder replacement.
     private static final String LANGUAGE_KEY = "%LANGUAGE%";
     private static final String FALLBACK_LANGUAGE = "en_us";

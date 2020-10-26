@@ -6,6 +6,7 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.ModuleProvider;
 import li.cil.tis3d.api.module.traits.Rotatable;
+import li.cil.tis3d.common.API;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.init.Blocks;
 import li.cil.tis3d.common.network.Network;
@@ -93,7 +94,7 @@ public final class CasingInventory extends ArrayInventory implements SidedInvent
     }
 
     private boolean canInstall(final ItemStack stack, final Face face) {
-        return ModuleAPI.getProviderFor(stack, blockEntity, face) != null;
+        return API.module.getProviderFor(stack, blockEntity, face) != null;
     }
 
     // --------------------------------------------------------------------- //
@@ -113,7 +114,7 @@ public final class CasingInventory extends ArrayInventory implements SidedInvent
         }
 
         final Face face = Face.VALUES[index];
-        final ModuleProvider provider = ModuleAPI.getProviderFor(stack, blockEntity, face);
+        final ModuleProvider provider = API.module.getProviderFor(stack, blockEntity, face);
         if (provider == null) {
             return;
         }

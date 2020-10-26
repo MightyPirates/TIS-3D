@@ -13,21 +13,14 @@ import javax.annotation.Nullable;
  * <p>
  * When trying to create a module instance for an {@link net.minecraft.item.ItemStack},
  * all registered providers will be queried, until one returns something not <tt>null</tt>.
- * <p>
- * This is made available in the init phase, so you'll either have to (soft)
- * depend on TIS-3D or you must not make calls to this before the init phase.
  */
-public final class ModuleAPI {
+public interface ModuleAPI {
     /**
      * Register the specified provider.
      *
      * @param provider the provider to register.
      */
-    public static void addProvider(final ModuleProvider provider) {
-        if (API.moduleAPI != null) {
-            API.moduleAPI.addProvider(provider);
-        }
-    }
+    void addProvider(final ModuleProvider provider);
 
     /**
      * Find the first provider supporting the specified item stack.
@@ -38,15 +31,5 @@ public final class ModuleAPI {
      * @return the first provider supporting the item stack, or <tt>null</tt>.
      */
     @Nullable
-    public static ModuleProvider getProviderFor(final ItemStack stack, final Casing casing, final Face face) {
-        if (API.moduleAPI != null) {
-            return API.moduleAPI.getProviderFor(stack, casing, face);
-        }
-        return null;
-    }
-
-    // --------------------------------------------------------------------- //
-
-    private ModuleAPI() {
-    }
+    ModuleProvider getProviderFor(final ItemStack stack, final Casing casing, final Face face);
 }

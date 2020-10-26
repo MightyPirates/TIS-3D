@@ -1,11 +1,11 @@
 package li.cil.tis3d.common.api;
 
-import li.cil.tis3d.api.API;
-import li.cil.tis3d.api.detail.SerialAPI;
+import li.cil.tis3d.api.SerialAPI;
 import li.cil.tis3d.api.manual.ContentProvider;
 import li.cil.tis3d.api.prefab.manual.ResourceContentProvider;
 import li.cil.tis3d.api.serial.SerialInterfaceProvider;
 import li.cil.tis3d.api.serial.SerialProtocolDocumentationReference;
+import li.cil.tis3d.common.API;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;

@@ -1,11 +1,11 @@
 package li.cil.tis3d.common.block;
 
-import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.traits.Redstone;
 import li.cil.tis3d.api.util.TransformUtil;
+import li.cil.tis3d.common.API;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ManualBookItem;
@@ -160,7 +160,7 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
                 // Trying to look something up in the manual?
                 if (Items.isBookManual(heldItem)) {
                     final ItemStack moduleStack = casing.getStack(blockHitResult.getSide().ordinal());
-                    if (ManualBookItem.tryOpenManual(world, player, ManualAPI.pathFor(moduleStack))) {
+                    if (ManualBookItem.tryOpenManual(world, player, API.manual.pathFor(moduleStack))) {
                         return ActionResult.SUCCESS;
                     }
                 }

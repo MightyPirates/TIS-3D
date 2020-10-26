@@ -1,9 +1,11 @@
 package li.cil.tis3d.common.init;
 
-import li.cil.tis3d.api.API;
-import li.cil.tis3d.api.ManualAPI;
+import li.cil.tis3d.api.CommonAPI;
+import li.cil.tis3d.api.ExtInitializer;
+import li.cil.tis3d.api.ManualCommonAPI;
 import li.cil.tis3d.api.ModuleAPI;
 import li.cil.tis3d.client.manual.provider.GameRegistryPathProvider;
+import li.cil.tis3d.common.API;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.api.*;
@@ -18,6 +20,7 @@ import net.fabricmc.fabric.api.event.server.ServerTickCallback;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.File;
+import java.util.List;
 
 @SuppressWarnings("unused")
 public final class BootstrapCommon implements ModInitializer {
@@ -33,10 +36,19 @@ public final class BootstrapCommon implements ModInitializer {
                 icon(() -> Items.CONTROLLER.getStackForRender()).
                 build();
 
-        API.infraredAPI = new InfraredAPIImpl();
-        API.manualAPI = ManualAPIImpl.INSTANCE;
-        API.moduleAPI = new ModuleAPIImpl();
-        API.serialAPI = SerialAPIImpl.INSTANCE;
+        final ModuleAPI moduleAPI = new ModuleAPIImpl();
+
+        API.infrared = new InfraredAPIImpl();
+        API.manual = ManualAPIImpl.INSTANCE;
+        API.module = moduleAPI;
+        API.serial = SerialAPIImpl.INSTANCE;
+
+        final CommonAPI commonAPI = new CommonAPI();
+        commonAPI.itemGroup = API.itemGroup;
+        commonAPI.infrared = API.infrared;
+        commonAPI.manual = API.manual;
+        commonAPI.module = API.module;
+        commonAPI.serial = API.serial;
 
         // Register network handler.
         Network.INSTANCE.initServer();
@@ -56,27 +68,38 @@ public final class BootstrapCommon implements ModInitializer {
         Items.registerItems();
 
         // Register providers for built-in modules.
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_AUDIO, AudioModule::new));
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_BUNDLED_REDSTONE, BundledRedstoneModule::new));
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_DISPLAY, DisplayModule::new));
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_EXECUTION, ExecutionModule::new));
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_INFRARED, InfraredModule::new));
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_KEYPAD, KeypadModule::new));
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_QUEUE, QueueModule::new));
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_RANDOM, RandomModule::new));
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY, RandomAccessMemoryModule::new));
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY, ReadOnlyMemoryModule::new));
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_REDSTONE, RedstoneModule::new));
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_SEQUENCER, SequencerModule::new));
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_SERIAL_PORT, SerialPortModule::new));
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_STACK, StackModule::new));
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_TERMINAL, TerminalModule::new));
-        ModuleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_TIMER, TimerModule::new));
+        moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_AUDIO, AudioModule::new));
+        moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_BUNDLED_REDSTONE, BundledRedstoneModule::new));
+        moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_DISPLAY, DisplayModule::new));
+        moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_EXECUTION, ExecutionModule::new));
+        moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_INFRARED, InfraredModule::new));
+        moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_KEYPAD, KeypadModule::new));
+        moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_QUEUE, QueueModule::new));
+        moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_RANDOM, RandomModule::new));
+        moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_RANDOM_ACCESS_MEMORY, RandomAccessMemoryModule::new));
+        moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_READ_ONLY_MEMORY, ReadOnlyMemoryModule::new));
+        moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_REDSTONE, RedstoneModule::new));
+        moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_SEQUENCER, SequencerModule::new));
+        moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_SERIAL_PORT, SerialPortModule::new));
+        moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_STACK, StackModule::new));
+        moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_TERMINAL, TerminalModule::new));
+        moduleAPI.addProvider(new SimpleModuleProvider<>(Constants.NAME_ITEM_MODULE_TIMER, TimerModule::new));
 
         // Add default manual providers for server side stuff.
-        ManualAPI.addProvider(new GameRegistryPathProvider());
+        commonAPI.manual.addProvider(new GameRegistryPathProvider());
 
         // Mod integration.
         Integration.init();
+
+        // Initialize extensions.
+        final String fullEntrypoint =  extensionEntrypoint("main");
+        final List<ExtInitializer> extensions = FabricLoader.getInstance().getEntrypoints(fullEntrypoint, ExtInitializer.class);
+        for (ExtInitializer initializer : extensions) {
+            initializer.onInitialize(commonAPI);
+        }
+    }
+
+    public static String extensionEntrypoint(final String entrypoint) {
+        return API.MOD_ID + ":" + entrypoint;
     }
 }

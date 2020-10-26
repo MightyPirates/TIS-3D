@@ -1,6 +1,6 @@
 package li.cil.tis3d.common.init;
 
-import li.cil.tis3d.api.API;
+import li.cil.tis3d.common.API;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.item.*;

@@ -1,6 +1,6 @@
 package li.cil.tis3d.client.init;
 
-import li.cil.tis3d.api.API;
+import li.cil.tis3d.common.API;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
