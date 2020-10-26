@@ -10,7 +10,6 @@ import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.ModuleProvider;
 import li.cil.tis3d.api.module.traits.Redstone;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
-import li.cil.tis3d.common.block.entity.ControllerBlockEntity;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.util.NBTIds;
@@ -68,7 +67,7 @@ public final class CasingImpl implements Casing {
     /**
      * Calls {@link Module#onEnabled()} on all modules.
      * <p>
-     * Used by the controller when its state changes to {@link ControllerBlockEntity.ControllerState#RUNNING}.
+     * Used by the controller when its state changes to {@code RUNNING}.
      */
     public void onEnabled() {
         for (final Module module : modules) {
@@ -82,7 +81,7 @@ public final class CasingImpl implements Casing {
     /**
      * Calls {@link Module#onDisabled()} on all modules and resets all pipes.
      * <p>
-     * Used by the controller when its state changes from {@link ControllerBlockEntity.ControllerState#RUNNING},
+     * Used by the controller when its state changes from {@code RUNNING},
      * or the controller is reset (scan scheduled), or the controller is unloaded.
      */
     public void onDisabled() {
