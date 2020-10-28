@@ -72,7 +72,16 @@ dependencies {
 }
 
 processResources {
-    inputs.property "version", project.simpleVersion
+    inputs.property "version", config.mod.version
+
+    from(sourceSets.main.resources.srcDirs) {
+        include "fabric.mod.json"
+        expand "version": config.mod.version
+    }
+
+    from(sourceSets.main.resources.srcDirs) {
+        exclude "fabric.mod.json"
+    }
 }
 
 task apiJar(type: Jar) {

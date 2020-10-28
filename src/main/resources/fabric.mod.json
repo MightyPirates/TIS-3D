@@ -3,8 +3,8 @@
     "id": "tis3d",
     "name": "TIS-3D",
     "description": "TIS-100 inspired low-tech computing for Minecraft.",
-    "version": "1.5.0",
-    
+    "version": "${version}",
+
     "authors": [
         {
             "name": "Sangar",
