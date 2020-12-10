@@ -37,7 +37,7 @@ public final class Settings {
     /**
      * The maximum number of characters a single line in a program may have.
      */
-    public static int maxColumnsPerLine = 18;
+    public static int maxColumnsPerLine = 29;
 
     /**
      * Maximum number of items stored in our receiver queue.
