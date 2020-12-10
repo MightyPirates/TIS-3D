@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
  * Valid sources and sinks for move operations.
  */
 public enum Target {
+    PC,
     ACC,
     BAK,
     NIL,
