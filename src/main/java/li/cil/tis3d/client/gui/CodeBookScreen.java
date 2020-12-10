@@ -2,7 +2,6 @@ package li.cil.tis3d.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import li.cil.tis3d.client.renderer.Textures;
-import li.cil.tis3d.common.CommonConfig;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.item.CodeBookItem;
 import li.cil.tis3d.common.item.Items;
@@ -43,23 +42,25 @@ public final class CodeBookScreen extends Screen {
     private static final TranslationTextComponent NEXT_PAGE_TOOLTIP = new TranslationTextComponent("tis3d.code_book.next_page");
     private static final TranslationTextComponent DELETE_PAGE_TOOLTIP = new TranslationTextComponent("tis3d.code_book.delete_page");
 
-    private static final int GUI_WIDTH = 148;
+    private static final int GUI_WIDTH = 230;
     private static final int GUI_HEIGHT = 230;
     private static final int BUTTON_PAGE_CHANGE_PREV_X = 8;
-    private static final int BUTTON_PAGE_CHANGE_NEXT_X = 116;
+    private static final int BUTTON_PAGE_CHANGE_NEXT_X = 186;
     private static final int BUTTON_PAGE_CHANGE_Y = 224;
-    private static final int BUTTON_PAGE_DELETE_X = 66;
+    private static final int BUTTON_PAGE_DELETE_X = 106;
     private static final int BUTTON_PAGE_DELETE_Y = 224;
     private static final int CODE_POS_X = 18;
     private static final int CODE_POS_Y = 16;
     private static final int CODE_WIDTH = 120;
     private static final int CODE_MARGIN = 30;
-    private static final int PAGE_NUMBER_X = 74;
+    private static final int PAGE_NUMBER_X = 114;
     private static final int PAGE_NUMBER_Y = 212;
 
     private static final int COLOR_CODE = 0xFF333333;
     private static final int COLOR_CODE_SELECTED = 0xFFEEEEEE;
     private static final int COLOR_SELECTION = 0xCC333399;
+
+    private static final int MAX_CHARS_PER_LINE = 29;
 
     private ButtonChangePage buttonNextPage;
     private ButtonChangePage buttonPreviousPage;
@@ -277,7 +278,7 @@ public final class CodeBookScreen extends Screen {
                     final StringBuilder currLine = lines.get(line);
                     final StringBuilder nextLine = lines.get(line + 1);
 
-                    if (currLine.length() + nextLine.length() < CommonConfig.maxColumnsPerLine) {
+                    if (currLine.length() + nextLine.length() < MAX_CHARS_PER_LINE) {
                         currLine.append(nextLine);
                         lines.remove(line + 1);
                     }
@@ -295,7 +296,7 @@ public final class CodeBookScreen extends Screen {
                     final StringBuilder prevLine = lines.get(line - 1);
                     final StringBuilder currLine = lines.get(line);
 
-                    if (prevLine.length() + currLine.length() < CommonConfig.maxColumnsPerLine) {
+                    if (prevLine.length() + currLine.length() < MAX_CHARS_PER_LINE) {
                         prevLine.append(currLine);
                         lines.remove(line);
                     }
@@ -378,7 +379,7 @@ public final class CodeBookScreen extends Screen {
         final int line = indexToLine(getSelectionStart());
         final int column = indexToColumn(getSelectionStart());
 
-        if (lines.get(line).length() < CommonConfig.maxColumnsPerLine) {
+        if (lines.get(line).length() < MAX_CHARS_PER_LINE) {
             lines.get(line).insert(column, String.valueOf(codePoint).toUpperCase(Locale.US));
             selectionStart = selectionEnd = selectionEnd + 1;
         }
@@ -553,11 +554,11 @@ public final class CodeBookScreen extends Screen {
         if (pastedLines.length - 1 + lines.size() > Constants.MAX_LINES_PER_PAGE) {
             return false; // Invalid paste, too many resulting lines.
         }
-        if (pastedLines[0].length() + lines.get(selectedLine).length() > CommonConfig.maxColumnsPerLine) {
+        if (pastedLines[0].length() + lines.get(selectedLine).length() > MAX_CHARS_PER_LINE) {
             return false; // Invalid paste, combined first line and current line too long.
         }
         for (final String pastedLine : pastedLines) {
-            if (pastedLine.length() > CommonConfig.maxColumnsPerLine) {
+            if (pastedLine.length() > MAX_CHARS_PER_LINE) {
                 return false; // Invalid paste, a line is too long.
             }
         }
@@ -644,11 +645,11 @@ public final class CodeBookScreen extends Screen {
             if (isErrorOnPreviousPage) {
                 localLineNumber = 0;
                 startX = columnToX(localLineNumber, 0);
-                rawEndX = columnToX(localLineNumber, CommonConfig.maxColumnsPerLine);
+                rawEndX = columnToX(localLineNumber, MAX_CHARS_PER_LINE);
             } else if (isErrorOnNextPage) {
                 localLineNumber = lines.size() - 1;
                 startX = columnToX(localLineNumber, 0);
-                rawEndX = columnToX(localLineNumber, CommonConfig.maxColumnsPerLine);
+                rawEndX = columnToX(localLineNumber, MAX_CHARS_PER_LINE);
             } else {
                 localLineNumber = exception.getLineNumber();
                 startX = columnToX(localLineNumber, exception.getStart());

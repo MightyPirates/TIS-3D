@@ -45,14 +45,6 @@ public final class CommonConfig {
     public static int maxLinesPerProgram = 40;
 
     /**
-     * The maximum number of characters a single line in a program may have.
-     */
-    @Path("module.execution") @Min(1) @Max(80)
-    @Comment("The maximum number of columns per line of an ASM program for an execution node may have.")
-    @Translation("maxColumnsPerLine")
-    public static int maxColumnsPerLine = 18;
-
-    /**
      * Maximum number of items stored in our receiver queue.
      * <p>
      * If the queue runs full, additionally received packets will be dropped.
