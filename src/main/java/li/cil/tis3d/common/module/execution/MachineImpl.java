@@ -30,6 +30,7 @@ public final class MachineImpl implements Machine {
         this.state = new MachineState();
         this.module = module;
         this.interfaces = ImmutableMap.<Target, TargetInterface>builder().
+            put(Target.PC, new PcTargetInterface(this)).
             put(Target.ACC, new AccTargetInterface(this)).
             put(Target.BAK, new BakTargetInterface(this)).
             put(Target.NIL, new NilTargetInterface(this)).
