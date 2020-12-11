@@ -60,7 +60,7 @@ public final class CodeBookScreen extends Screen {
     private static final int COLOR_CODE_SELECTED = 0xFFEEEEEE;
     private static final int COLOR_SELECTION = 0xCC333399;
 
-    private static final int MAX_CHARS_PER_LINE = 29;
+    private static final int MAX_CHARS_PER_LINE = 33;
 
     private ButtonChangePage buttonNextPage;
     private ButtonChangePage buttonPreviousPage;
