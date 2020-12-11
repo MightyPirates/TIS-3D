@@ -11,10 +11,8 @@ import li.cil.tis3d.common.module.execution.compiler.Compiler;
 import li.cil.tis3d.common.module.execution.compiler.ParseException;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.CodeBookDataMessage;
-import li.cil.tis3d.util.FontRendererUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
@@ -39,18 +37,18 @@ import java.util.stream.Collectors;
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 @Environment(EnvType.CLIENT)
 public final class CodeBookGui extends Screen {
-    private static final int GUI_WIDTH = 230;
+    private static final int GUI_WIDTH = 218;
     private static final int GUI_HEIGHT = 230;
     private static final int BUTTON_PAGE_CHANGE_PREV_X = 8;
     private static final int BUTTON_PAGE_CHANGE_NEXT_X = 186;
     private static final int BUTTON_PAGE_CHANGE_Y = 224;
-    private static final int BUTTON_PAGE_DELETE_X = 106;
+    private static final int BUTTON_PAGE_DELETE_X = 101;
     private static final int BUTTON_PAGE_DELETE_Y = 224;
     private static final int CODE_POS_X = 18;
     private static final int CODE_POS_Y = 16;
-    private static final int CODE_WIDTH = 120;
-    private static final int CODE_MARGIN = 30;
-    private static final int PAGE_NUMBER_X = 114;
+    private static final int CODE_WIDTH = 190;
+    private static final int CODE_MARGIN = 10;
+    private static final int PAGE_NUMBER_X = 109;
     private static final int PAGE_NUMBER_Y = 212;
 
     private static final int COLOR_CODE = 0xFF333333;
