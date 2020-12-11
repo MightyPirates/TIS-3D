@@ -42,18 +42,18 @@ public final class CodeBookScreen extends Screen {
     private static final TranslationTextComponent NEXT_PAGE_TOOLTIP = new TranslationTextComponent("tis3d.code_book.next_page");
     private static final TranslationTextComponent DELETE_PAGE_TOOLTIP = new TranslationTextComponent("tis3d.code_book.delete_page");
 
-    private static final int GUI_WIDTH = 230;
+    private static final int GUI_WIDTH = 218;
     private static final int GUI_HEIGHT = 230;
     private static final int BUTTON_PAGE_CHANGE_PREV_X = 8;
     private static final int BUTTON_PAGE_CHANGE_NEXT_X = 186;
     private static final int BUTTON_PAGE_CHANGE_Y = 224;
-    private static final int BUTTON_PAGE_DELETE_X = 106;
+    private static final int BUTTON_PAGE_DELETE_X = 101;
     private static final int BUTTON_PAGE_DELETE_Y = 224;
     private static final int CODE_POS_X = 18;
     private static final int CODE_POS_Y = 16;
-    private static final int CODE_WIDTH = 120;
-    private static final int CODE_MARGIN = 30;
-    private static final int PAGE_NUMBER_X = 114;
+    private static final int CODE_WIDTH = 190;
+    private static final int CODE_MARGIN = 10;
+    private static final int PAGE_NUMBER_X = 109;
     private static final int PAGE_NUMBER_Y = 212;
 
     private static final int COLOR_CODE = 0xFF333333;
