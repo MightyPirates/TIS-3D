@@ -36,7 +36,7 @@ public final class PipeImpl implements Pipe {
      * regardless of whether reader or writer ran first (when they start in
      * the same step).
      */
-    private enum State {
+    public enum State {
         /**
          * Waiting for a reader.
          */

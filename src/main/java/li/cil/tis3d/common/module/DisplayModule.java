@@ -90,7 +90,7 @@ public final class DisplayModule extends AbstractModuleWithRotation {
      * Current state of the display module, decides what happens with the next
      * value read on any of the ports.
      */
-    private enum State {
+    public enum State {
         COLOR, X, Y, W, H;
 
         public static final State[] VALUES = State.values();

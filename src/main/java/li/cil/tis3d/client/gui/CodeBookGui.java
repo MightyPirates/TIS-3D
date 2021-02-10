@@ -674,7 +674,7 @@ public final class CodeBookGui extends Screen {
 
     // --------------------------------------------------------------------- //
 
-    private enum PageChangeType {
+    public enum PageChangeType {
         Previous,
         Next
     }
