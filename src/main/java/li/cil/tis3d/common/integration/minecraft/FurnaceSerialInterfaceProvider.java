@@ -44,7 +44,7 @@ public final class FurnaceSerialInterfaceProvider implements SerialInterfaceProv
     private static final class SerialInterfaceFurnace implements SerialInterface {
         private static final String TAG_MODE = "mode";
 
-        private enum FurnaceField {
+        public enum FurnaceField {
             /**
              * How many more ticks the furnace will continue operating before
              * another fuel item must be consumed.
@@ -84,7 +84,7 @@ public final class FurnaceSerialInterfaceProvider implements SerialInterfaceProv
             }
         }
 
-        private enum Mode {
+        public enum Mode {
             PercentageFuel,
             PercentageProgress
         }

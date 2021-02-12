@@ -57,7 +57,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
     // --------------------------------------------------------------------- //
     // Computed data
 
-    private enum State {
+    public enum State {
         IDLE,
         ERR,
         RUN,
