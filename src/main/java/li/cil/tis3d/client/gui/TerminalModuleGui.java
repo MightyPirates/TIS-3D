@@ -1,6 +1,7 @@
 package li.cil.tis3d.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.common.Settings;
 import li.cil.tis3d.common.module.TerminalModule;
@@ -31,29 +32,29 @@ public final class TerminalModuleGui extends Screen {
 
     @Override
     public void render(final MatrixStack matrices, final int mouseX, final int mouseY, final float partialTicks) {
-        GlStateManager.disableTexture();
+        GlStateManager._disableTexture();
 
         // To be on the safe side (see manual.Document#render).
-        GlStateManager.disableAlphaTest();
+        GlStateManager._disableDepthTest();
 
-        GlStateManager.color4f(1, 1, 1, 1);
-        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT, false);
-        GlStateManager.enableDepthTest();
-        GlStateManager.depthFunc(GL11.GL_LEQUAL);
-        GlStateManager.depthMask(true);
-        GlStateManager.colorMask(false, false, false, false);
-        GlStateManager.pushMatrix();
-        GlStateManager.translatef(0, 0, 500);
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+        GlStateManager._clear(GL11.GL_DEPTH_BUFFER_BIT, false);
+        GlStateManager._enableDepthTest();
+        GlStateManager._depthFunc(GL11.GL_LEQUAL);
+        GlStateManager._depthMask(true);
+        GlStateManager._colorMask(false, false, false, false);
+        matrices.push();
+        matrices.translate(0, 0, 500);
 
         RenderUtil.drawUntexturedQuad(8, 8, width - 16, height - 16);
 
-        GlStateManager.popMatrix();
-        GlStateManager.depthMask(false);
-        GlStateManager.colorMask(true, true, true, true);
+        matrices.pop();
+        GlStateManager._depthMask(false);
+        GlStateManager._colorMask(true, true, true, true);
 
         RenderUtil.drawUntexturedQuad(4, 4, width - 8, height - 8);
 
-        GlStateManager.enableTexture();
+        GlStateManager._enableTexture();
     }
 
     @Override

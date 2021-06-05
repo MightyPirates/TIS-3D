@@ -1,6 +1,7 @@
 package li.cil.tis3d.client.manual.segment.render;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.platform.TextureUtil;
 import li.cil.tis3d.api.manual.ImageRenderer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -8,7 +9,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.TextureManager;
-import net.minecraft.client.texture.TextureUtil;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -31,7 +32,7 @@ public class TextureImageRenderer implements ImageRenderer {
             this.texture = (ImageTexture)image;
         } else {
             if (image != null && image.getGlId() != -1) {
-                TextureUtil.deleteId(image.getGlId());
+                TextureUtil.releaseTextureId(image.getGlId());
             }
             this.texture = new ImageTexture(location);
             manager.registerTexture(location, texture);
@@ -49,9 +50,9 @@ public class TextureImageRenderer implements ImageRenderer {
     }
 
     @Override
-    public void render(final int mouseX, final int mouseY) {
+    public void render(final MatrixStack matrcies, final int mouseX, final int mouseY) {
         MinecraftClient.getInstance().getTextureManager().bindTexture(location);
-        GlStateManager.color4f(1, 1, 1, 1);
+        GlStateManager._clearColor(1, 1, 1, 1);
         GL11.glBegin(GL11.GL_QUADS);
         GL11.glTexCoord2f(0, 0);
         GL11.glVertex2f(0, 0);
@@ -81,7 +82,7 @@ public class TextureImageRenderer implements ImageRenderer {
             try (final InputStream is = resource.getInputStream()) {
                 final NativeImage bi = NativeImage.read(is);
 
-                TextureUtil.allocate(this.getGlId(), bi.getWidth(), bi.getHeight());
+                TextureUtil.prepareImage(this.getGlId(), bi.getWidth(), bi.getHeight());
                 bi.upload(0, 0, 0, false);
 
                 width = bi.getWidth();

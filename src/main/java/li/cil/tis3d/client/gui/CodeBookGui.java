@@ -1,6 +1,7 @@
 package li.cil.tis3d.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.Settings;
@@ -93,9 +94,9 @@ public final class CodeBookGui extends Screen {
 
         // Buttons for next / previous page of pages.
 
-        this.addButton(buttonPreviousPage = new ButtonChangePage(guiX + BUTTON_PAGE_CHANGE_PREV_X, guiY + BUTTON_PAGE_CHANGE_Y, PageChangeType.Previous, (button) -> changePage(-1)));
-        this.addButton(buttonNextPage = new ButtonChangePage(guiX + BUTTON_PAGE_CHANGE_NEXT_X, guiY + BUTTON_PAGE_CHANGE_Y, PageChangeType.Next, (button) -> changePage(1)));
-        this.addButton(buttonDeletePage = new ButtonDeletePage(guiX + BUTTON_PAGE_DELETE_X, guiY + BUTTON_PAGE_DELETE_Y, (button) -> {
+        this.addDrawable(buttonPreviousPage = new ButtonChangePage(guiX + BUTTON_PAGE_CHANGE_PREV_X, guiY + BUTTON_PAGE_CHANGE_Y, PageChangeType.Previous, (button) -> changePage(-1)));
+        this.addDrawable(buttonNextPage = new ButtonChangePage(guiX + BUTTON_PAGE_CHANGE_NEXT_X, guiY + BUTTON_PAGE_CHANGE_Y, PageChangeType.Next, (button) -> changePage(1)));
+        this.addDrawable(buttonDeletePage = new ButtonDeletePage(guiX + BUTTON_PAGE_DELETE_X, guiY + BUTTON_PAGE_DELETE_Y, (button) -> {
             data.removePage(data.getSelectedPage());
             rebuildLines();
         }));
@@ -120,13 +121,13 @@ public final class CodeBookGui extends Screen {
 
     @Override
     public void render(final MatrixStack matrices, final int mouseX, final int mouseY, final float partialTicks) {
-        if (player.removed || !Items.isBookCode(player.getStackInHand(hand))) {
+        if (player.isRemoved() || !Items.isBookCode(player.getStackInHand(hand))) {
             client.openScreen(null);
             return;
         }
 
         // Background.
-        GlStateManager.color4f(1, 1, 1, 1);
+        GlStateManager._clearColor(1, 1, 1, 1);
         client.getTextureManager().bindTexture(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
         drawTexture(matrices, guiX, guiY, 0, 0, GUI_WIDTH, GUI_HEIGHT);
 
@@ -652,7 +653,7 @@ public final class CodeBookGui extends Screen {
                 final List<String> lines = Arrays.asList(Constants.PATTERN_LINES.split(translatedException));
                 tooltip.addAll(lines.stream().map(Text::of).collect(Collectors.toList()));
                 renderTooltip(matrices, tooltip, mouseX, mouseY);
-                GlStateManager.disableLighting();
+                //RenderSystem._setShaderLights(null,null);
             }
         } else {
             // Draw selection position in text.
@@ -699,7 +700,7 @@ public final class CodeBookGui extends Screen {
             }
 
             final boolean isHovered = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
-            GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+            GlStateManager._clearColor(1.0F, 1.0F, 1.0F, 1.0F);
             client.getTextureManager().bindTexture(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
             final int offsetX = isHovered ? BUTTON_WIDTH : 0;
             final int offsetY = type == PageChangeType.Previous ? BUTTON_HEIGHT : 0;
@@ -724,7 +725,7 @@ public final class CodeBookGui extends Screen {
             }
 
             final boolean isHovered = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
-            GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+            GlStateManager._clearColor(1.0F, 1.0F, 1.0F, 1.0F);
             client.getTextureManager().bindTexture(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
             final int offsetX = isHovered ? BUTTON_WIDTH : 0;
             drawTexture(matrices, x, y, TEXTURE_X + offsetX, TEXTURE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);

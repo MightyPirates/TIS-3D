@@ -1,6 +1,8 @@
 package li.cil.tis3d.client.manual.segment;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderCallStorage;
+import com.mojang.blaze3d.systems.RenderSystem;
 import li.cil.tis3d.api.manual.ImageRenderer;
 import li.cil.tis3d.api.manual.InteractiveImageRenderer;
 import li.cil.tis3d.client.manual.Document;
@@ -75,31 +77,31 @@ public final class RenderSegment extends AbstractSegment implements InteractiveS
 
         final Optional<InteractiveSegment> hovered = checkHovered(mouseX, mouseY, x + xOffset, y + yOffset, width, height);
 
-        GlStateManager.color4f(1, 1, 1, 1);
-        GlStateManager.pushMatrix();
-        GlStateManager.translatef(x + xOffset, y + yOffset, 0);
-        GlStateManager.scalef(s, s, s);
+        GlStateManager._clearColor(1, 1, 1, 1);
+        matrices.push();
+        matrices.translate(x + xOffset, y + yOffset, 0);
+        matrices.scale(s, s, s);
 
-        GlStateManager.enableBlend();
-        GlStateManager.enableAlphaTest();
+        RenderSystem.enableBlend();
+        GlStateManager._enableDepthTest();
 
         if (hovered.isPresent()) {
-            GlStateManager.color4f(1, 1, 1, 0.15f);
-            GlStateManager.disableTexture();
+            GlStateManager._clearColor(1, 1, 1, 0.15f);
+            GlStateManager._disableTexture();
             GL11.glBegin(GL11.GL_QUADS);
             GL11.glVertex2f(0, 0);
             GL11.glVertex2f(0, imageRenderer.getHeight());
             GL11.glVertex2f(imageRenderer.getWidth(), imageRenderer.getHeight());
             GL11.glVertex2f(imageRenderer.getWidth(), 0);
             GL11.glEnd();
-            GlStateManager.enableTexture();
+            GlStateManager._enableTexture();
         }
 
-        GlStateManager.color4f(1, 1, 1, 1);
+        GlStateManager._clearColor(1, 1, 1, 1);
 
-        imageRenderer.render(mouseX - x, mouseY - y);
+        imageRenderer.render(matrices,mouseX - x, mouseY - y);
 
-        GlStateManager.popMatrix();
+        matrices.pop();
 
         return hovered;
     }

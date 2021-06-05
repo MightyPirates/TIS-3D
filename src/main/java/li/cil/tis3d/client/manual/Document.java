@@ -2,6 +2,7 @@ package li.cil.tis3d.client.manual;
 
 import com.google.common.base.Strings;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import li.cil.tis3d.api.manual.ImageRenderer;
 import li.cil.tis3d.client.manual.segment.*;
 import li.cil.tis3d.common.API;
@@ -12,6 +13,7 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL32;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,24 +122,26 @@ public final class Document {
         final MinecraftClient mc = MinecraftClient.getInstance();
         final Window window = mc.getWindow();
 
-        GlStateManager.pushLightingAttributes();
+        //GlStateManager.pushLightingAttributes();
+        //GL32.glPushAttrib(8256);
 
         // On some systems/drivers/graphics cards the next calls won't update the
         // depth buffer correctly if alpha test is enabled. Guess how we found out?
         // By noticing that on those systems it only worked while chat messages
         // were visible. Yeah. I know.
-        GlStateManager.disableAlphaTest();
+        //GlStateManager._disableDepthTest();
+
+        GlStateManager._clearColor(1, 1, 1, 1);
+        RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, false);
+        RenderSystem.enableDepthTest();
+        RenderSystem.depthFunc(GL11.GL_LEQUAL);
+        RenderSystem.depthMask(true);
+        RenderSystem.colorMask(false, false, false, false);
 
         // Clear depth mask, then create masks in foreground above and below scroll area.
-        GlStateManager.color4f(1, 1, 1, 1);
-        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT, false);
-        GlStateManager.enableDepthTest();
-        GlStateManager.depthFunc(GL11.GL_LEQUAL);
-        GlStateManager.depthMask(true);
-        GlStateManager.colorMask(false, false, false, false);
 
-        GlStateManager.pushMatrix();
-        GlStateManager.translatef(0, 0, 500);
+        matrices.push();
+        matrices.translate(0, 0, 500);
         GL11.glBegin(GL11.GL_QUADS);
         GL11.glVertex2f(0, y);
         GL11.glVertex2f(window.getFramebufferWidth(), y);
@@ -148,9 +152,8 @@ public final class Document {
         GL11.glVertex2f(window.getFramebufferWidth(), y + maxHeight);
         GL11.glVertex2f(0, y + maxHeight);
         GL11.glEnd();
-        GlStateManager.popMatrix();
-        GlStateManager.colorMask(true, true, true, true);
-
+        matrices.pop();
+        GlStateManager._colorMask(true, true, true, true);
         // Actual rendering.
         Optional<InteractiveSegment> hovered = Optional.empty();
         int indent = 0;
@@ -175,11 +178,10 @@ public final class Document {
         }
         hovered.ifPresent(InteractiveSegment::notifyHover);
 
-        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT, false);
-        GlStateManager.popAttributes();
-        GlStateManager.bindTexture(0);
-
-        return hovered;
+        GlStateManager._clear(GL11.GL_DEPTH_BUFFER_BIT, false);
+        matrices.pop();
+        GlStateManager._bindTexture(0);
+        return Optional.empty();
     }
 
     // ----------------------------------------------------------------------- //

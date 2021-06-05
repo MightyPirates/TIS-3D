@@ -1,6 +1,7 @@
 package li.cil.tis3d.client.manual.segment;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import li.cil.tis3d.client.manual.Document;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -57,13 +58,13 @@ public class TextSegment extends BasicTextSegment {
                 final int cy = currentY;
                 hovered = interactive.flatMap(segment -> segment.checkHovered(mouseX, mouseY, cx, cy, stringWidth(part, renderer), (int)(Document.lineHeight(renderer) * scale)));
             }
-            GlStateManager.color4f(0f, 0f, 0f, 1);
-            GlStateManager.pushMatrix();
-            GlStateManager.translatef(currentX, currentY, 0);
-            GlStateManager.scalef(scale, scale, scale);
-            GlStateManager.translatef(-currentX, -currentY, 0);
+            GlStateManager._clearColor(0f, 0f, 0f, 1);
+            matrices.push();
+            matrices.translate(currentX, currentY, 0);
+            matrices.scale(scale, scale, scale);
+            matrices.translate(-currentX, -currentY, 0);
             renderer.draw(matrices, format + part, currentX, currentY, color);
-            GlStateManager.popMatrix();
+            matrices.pop();
             currentX = x + wrapIndent;
             currentY += lineHeight(renderer);
             chars = chars.substring(numChars);

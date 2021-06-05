@@ -1,6 +1,7 @@
 package li.cil.tis3d.client.manual.segment;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import li.cil.tis3d.client.render.font.NormalFontRenderer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -41,12 +42,12 @@ public final class CodeSegment extends BasicTextSegment {
         int numChars = maxChars(chars, maxWidth - indent, maxWidth - wrapIndent, renderer);
         while (chars.length() > 0) {
             final String part = chars.substring(0, numChars);
-            GlStateManager.color4f(0.25f, 0.3f, 0.5f, 1);
-            GlStateManager.pushMatrix();
-            GlStateManager.translatef(currentX, currentY, 0);
-            GlStateManager.scalef(FONT_SCALE, FONT_SCALE, FONT_SCALE);
+            GlStateManager._clearColor(0.25f, 0.3f, 0.5f, 1);
+            matrices.push();
+            matrices.translate(currentX, currentY, 0);
+            matrices.scale(FONT_SCALE, FONT_SCALE, FONT_SCALE);
             NormalFontRenderer.INSTANCE.drawString(part.toUpperCase());
-            GlStateManager.popMatrix();
+            matrices.pop();
             currentX = x + wrapIndent;
             currentY += lineHeight(renderer);
             chars = chars.substring(numChars);
