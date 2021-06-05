@@ -10,10 +10,15 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL32;
+import net.minecraft.util.math.Quaternion;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL15;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -123,7 +128,7 @@ public final class Document {
         final Window window = mc.getWindow();
 
         //GlStateManager.pushLightingAttributes();
-        //GL32.glPushAttrib(8256);
+        //GL15.glPushAttrib(8256);
 
         // On some systems/drivers/graphics cards the next calls won't update the
         // depth buffer correctly if alpha test is enabled. Guess how we found out?
@@ -132,9 +137,9 @@ public final class Document {
         //GlStateManager._disableDepthTest();
 
         GlStateManager._clearColor(1, 1, 1, 1);
-        RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, false);
+        RenderSystem.clear(GL15.GL_DEPTH_BUFFER_BIT, false);
         RenderSystem.enableDepthTest();
-        RenderSystem.depthFunc(GL11.GL_LEQUAL);
+        RenderSystem.depthFunc(GL15.GL_LEQUAL);
         RenderSystem.depthMask(true);
         RenderSystem.colorMask(false, false, false, false);
 
@@ -142,16 +147,17 @@ public final class Document {
 
         matrices.push();
         matrices.translate(0, 0, 500);
-        GL11.glBegin(GL11.GL_QUADS);
-        GL11.glVertex2f(0, y);
-        GL11.glVertex2f(window.getFramebufferWidth(), y);
-        GL11.glVertex2f(window.getFramebufferWidth(), 0);
-        GL11.glVertex2f(0, 0);
-        GL11.glVertex2f(0, window.getFramebufferHeight());
-        GL11.glVertex2f(window.getFramebufferWidth(), window.getFramebufferHeight());
-        GL11.glVertex2f(window.getFramebufferWidth(), y + maxHeight);
-        GL11.glVertex2f(0, y + maxHeight);
-        GL11.glEnd();
+
+        GL15.glBegin(GL15.GL_QUADS);
+        GL15.glVertex2f(0, y);
+        GL15.glVertex2f(window.getFramebufferWidth(), y);
+        GL15.glVertex2f(window.getFramebufferWidth(), 0);
+        GL15.glVertex2f(0, 0);
+        GL15.glVertex2f(0, window.getFramebufferHeight());
+        GL15.glVertex2f(window.getFramebufferWidth(), window.getFramebufferHeight());
+        GL15.glVertex2f(window.getFramebufferWidth(), y + maxHeight);
+        GL15.glVertex2f(0, y + maxHeight);
+        GL15.glEnd();
         matrices.pop();
         GlStateManager._colorMask(true, true, true, true);
         // Actual rendering.
@@ -178,7 +184,7 @@ public final class Document {
         }
         hovered.ifPresent(InteractiveSegment::notifyHover);
 
-        GlStateManager._clear(GL11.GL_DEPTH_BUFFER_BIT, false);
+        GlStateManager._clear(GL15.GL_DEPTH_BUFFER_BIT, false);
         matrices.pop();
         GlStateManager._bindTexture(0);
         return Optional.empty();

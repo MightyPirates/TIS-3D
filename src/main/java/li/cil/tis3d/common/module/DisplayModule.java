@@ -336,7 +336,7 @@ public final class DisplayModule extends AbstractModuleWithRotation {
 
             texMan.registerTexture(backingTextureId, tex);
             // Switch to RenderLayerAccess.getCutoutNoDiffLight (currently not working)
-            renderLayer = RenderLayer.getEntitySmoothCutout(backingTextureId);
+            renderLayer = RenderLayer.getEntityCutoutNoCull(backingTextureId);
         }
 
         return renderLayer;

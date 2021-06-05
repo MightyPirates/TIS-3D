@@ -26,7 +26,6 @@ public class ItemStackTabIconRenderer implements TabIconRenderer {
     @Environment(EnvType.CLIENT)
     @Override
     public void render() {
-        RenderSystem.enableColorLogicOp();
         //GlStateManager.enableRescaleNormal();
         RenderUtil.ignoreLighting();
         DiffuseLighting.enableGuiDepthLighting();

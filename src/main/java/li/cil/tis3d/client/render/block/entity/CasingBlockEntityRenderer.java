@@ -11,11 +11,10 @@ import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.init.Items;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.render.*;
+import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
@@ -28,8 +27,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
+import net.minecraft.world.World;
+
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -43,17 +45,25 @@ public final class CasingBlockEntityRenderer implements BlockEntityRenderer<Casi
     private final static Set<Class<?>> BLACKLIST = new HashSet<>();
 
     private BlockEntityRenderDispatcher dispatcher;
+    private final BlockRenderManager manager;
     private TextRenderer textRenderer;
 
     public CasingBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
         super();
         dispatcher = context.getRenderDispatcher();
         textRenderer = context.getTextRenderer();
+        manager = context.getRenderManager();
     }
 
     @Override
     public void render(final CasingBlockEntity casing, final float partialTicks, final MatrixStack matrices,
                        final VertexConsumerProvider vertexConsumers, final int light, final int overlay) {
+        var world = casing.getWorld();
+        if (world != null) {
+            BlockState blockState = casing.getCachedState();
+            this.renderModel(casing.getPos(), blockState, matrices, vertexConsumers, world, false, overlay);
+        }
+
         matrices.push();
         matrices.translate(0.5, 0.5, 0.5);
 
@@ -86,6 +96,12 @@ public final class CasingBlockEntityRenderer implements BlockEntityRenderer<Casi
         final Vec3d faceCenter = blockCenter.add(faceNormal.multiply(0.5));
         final Vec3d cameraToFaceCenter = faceCenter.subtract(cameraPosition);
         return faceNormal.dotProduct(cameraToFaceCenter) > 0;
+    }
+
+    private void renderModel(BlockPos pos, BlockState state, MatrixStack matrices, VertexConsumerProvider vertexConsumers, World world, boolean cull, int overlay) {
+        RenderLayer renderLayer = RenderLayers.getMovingBlockLayer(state);
+        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(renderLayer);
+        this.manager.getModelRenderer().render(world, this.manager.getModel(state), state, pos, matrices, vertexConsumer, cull, new Random(), state.getRenderingSeed(pos), overlay);
     }
 
     private void setupMatrix(final Face face, final MatrixStack matrices) {

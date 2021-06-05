@@ -5,10 +5,11 @@ import li.cil.tis3d.common.block.entity.ControllerBlockEntity;
 import li.cil.tis3d.util.ColorUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.*;
+import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
@@ -16,18 +17,24 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Matrix4f;
+import net.minecraft.world.World;
+
+import java.util.Random;
 
 @Environment(EnvType.CLIENT)
 public final class ControllerBlockEntityRenderer implements BlockEntityRenderer<ControllerBlockEntity> {
 
     private BlockEntityRenderDispatcher dispatcher;
+    private final BlockRenderManager manager;
     private TextRenderer textRenderer;
 
     public ControllerBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
         super();
         dispatcher = context.getRenderDispatcher();
         textRenderer = context.getTextRenderer();
+        manager = context.getRenderManager();
     }
 
     /**
@@ -60,6 +67,11 @@ public final class ControllerBlockEntityRenderer implements BlockEntityRenderer<
     @Override
     public void render(final ControllerBlockEntity controller, final float partialTicks, final MatrixStack matrices, final VertexConsumerProvider vertexConsumers, final int light, final int overlay) {
         final ControllerBlockEntity.ControllerState state = controller.getState();
+        var world = controller.getWorld();
+        if (world != null) {
+            BlockState blockState = controller.getCachedState();
+            this.renderModel(controller.getPos(), blockState, matrices, vertexConsumers, world, false, overlay);
+        }
         if (!state.isError) {
             return;
         }
@@ -81,5 +93,11 @@ public final class ControllerBlockEntityRenderer implements BlockEntityRenderer<
         }
 
         renderState(state, matrices, vertexConsumers);
+    }
+
+    private void renderModel(BlockPos pos, BlockState state, MatrixStack matrices, VertexConsumerProvider vertexConsumers, World world, boolean cull, int overlay) {
+        RenderLayer renderLayer = RenderLayers.getMovingBlockLayer(state);
+        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(renderLayer);
+        this.manager.getModelRenderer().render(world, this.manager.getModel(state), state, pos, matrices, vertexConsumer, cull, new Random(), state.getRenderingSeed(pos), overlay);
     }
 }
