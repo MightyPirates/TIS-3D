@@ -18,6 +18,7 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
@@ -127,8 +128,9 @@ public final class CodeBookGui extends Screen {
         }
 
         // Background.
-        GlStateManager._clearColor(1, 1, 1, 1);
-        client.getTextureManager().bindTexture(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+        RenderSystem.setShaderTexture(0, Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         drawTexture(matrices, guiX, guiY, 0, 0, GUI_WIDTH, GUI_HEIGHT);
 
         // Check page change button availability.
@@ -138,7 +140,6 @@ public final class CodeBookGui extends Screen {
         buttonDeletePage.visible = data.getPageCount() > 1 || isCurrentProgramNonEmpty();
 
         super.render(matrices, mouseX, mouseY, partialTicks);
-
         // Draw current program.
         drawProgram(matrices, mouseX, mouseY);
 
@@ -680,7 +681,7 @@ public final class CodeBookGui extends Screen {
         Next
     }
 
-    private class ButtonChangePage extends ButtonWidget {
+    private static class ButtonChangePage extends ButtonWidget {
         private static final int TEXTURE_X = 110;
         private static final int TEXTURE_Y = 231;
         private static final int BUTTON_WIDTH = 23;
@@ -700,8 +701,9 @@ public final class CodeBookGui extends Screen {
             }
 
             final boolean isHovered = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
-            GlStateManager._clearColor(1.0F, 1.0F, 1.0F, 1.0F);
-            client.getTextureManager().bindTexture(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShaderTexture(0, Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             final int offsetX = isHovered ? BUTTON_WIDTH : 0;
             final int offsetY = type == PageChangeType.Previous ? BUTTON_HEIGHT : 0;
             drawTexture(matrices, x, y, TEXTURE_X + offsetX, TEXTURE_Y + offsetY, BUTTON_WIDTH, BUTTON_HEIGHT);
@@ -725,8 +727,9 @@ public final class CodeBookGui extends Screen {
             }
 
             final boolean isHovered = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
-            GlStateManager._clearColor(1.0F, 1.0F, 1.0F, 1.0F);
-            client.getTextureManager().bindTexture(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
+            RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+            RenderSystem.setShaderTexture(0, Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             final int offsetX = isHovered ? BUTTON_WIDTH : 0;
             drawTexture(matrices, x, y, TEXTURE_X + offsetX, TEXTURE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
         }
