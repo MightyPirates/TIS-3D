@@ -25,11 +25,10 @@ public class ItemStackTabIconRenderer implements TabIconRenderer {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public void render() {
-        //GlStateManager.enableRescaleNormal();
+    public void render(int x, int y) {
         RenderUtil.ignoreLighting();
         DiffuseLighting.enableGuiDepthLighting();
-        MinecraftClient.getInstance().getItemRenderer().renderGuiItemIcon(stack, 0, 0);
+        MinecraftClient.getInstance().getItemRenderer().renderGuiItemIcon(stack, x, y);
         DiffuseLighting.disableGuiDepthLighting();
     }
 }

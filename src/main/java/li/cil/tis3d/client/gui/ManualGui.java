@@ -16,10 +16,7 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.*;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
@@ -91,9 +88,9 @@ public final class ManualGui extends Screen {
             final int x = guiLeft + TAB_POS_X;
             final int y = guiTop + TAB_POS_Y + i * (TAB_HEIGHT - TAB_OVERLAP);
             final int id = i;
-            list.add(this.addSelectableChild(new ImageButton(x, y, TAB_WIDTH, TAB_HEIGHT - TAB_OVERLAP - 1, Textures.LOCATION_GUI_MANUAL_TAB, (button) -> {
+            list.add(this.addDrawable(new ImageButton(x, y, TAB_WIDTH, TAB_HEIGHT - TAB_OVERLAP - 1, Textures.LOCATION_GUI_MANUAL_TAB, (button) -> {
                 API.manual.navigate(ManualAPIImpl.getTabs().get(id).path);
-            }).setImageHeight(TAB_HEIGHT).setVerticalImageOffset(-TAB_OVERLAP / 2)));
+            }).setImageHeight(TAB_HEIGHT)));
         }
 
         scrollButton = new ImageButton(guiLeft + SCROLL_POS_X, guiTop + SCROLL_POS_Y, 26, 13, Textures.LOCATION_GUI_MANUAL_SCROLL, (button) -> {
@@ -104,7 +101,7 @@ public final class ManualGui extends Screen {
                 return false; // Handled in parent mouseClicked
             }
         };
-        this.addSelectableChild(scrollButton);
+        this.addDrawable(scrollButton);
 
         refreshPage();
     }
@@ -115,7 +112,9 @@ public final class ManualGui extends Screen {
 
         super.render(matrices, mouseX, mouseY, partialTicks);
 
-        client.getTextureManager().bindTexture(Textures.LOCATION_GUI_MANUAL_BACKGROUND);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderTexture(0, Textures.LOCATION_GUI_MANUAL_BACKGROUND);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         drawTexture(matrices, guiLeft, guiTop, 0, 0, xSize, ySize, WINDOW_WIDTH, WINDOW_HEIGHT);
 
         scrollButton.active = canScroll();
@@ -125,8 +124,7 @@ public final class ManualGui extends Screen {
            final ManualAPIImpl.Tab tab = ManualAPIImpl.getTabs().get(i);
             final ImageButton button = list.get(i);
             matrices.push();
-            matrices.translate(button.x + 30, (float)(button.y + 4 - TAB_OVERLAP / 2), getZOffset());
-            tab.renderer.render();
+            tab.renderer.render(button.x + 25, (button.y + 9 - TAB_OVERLAP / 2));
             matrices.pop();
         }
 
@@ -315,8 +313,10 @@ public final class ManualGui extends Screen {
         @Override
         public void render(final MatrixStack matrices, final int mouseX, final int mouseY, final float partialTicks) {
             if (visible) {
-                MinecraftClient.getInstance().getTextureManager().bindTexture(image);
-                GlStateManager._clearColor(1, 1, 1, 1);
+
+                RenderSystem.setShader(GameRenderer::getPositionTexShader);
+                RenderSystem.setShaderTexture(0, image);
+                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
                 hovered = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
 
@@ -329,7 +329,6 @@ public final class ManualGui extends Screen {
                 final float u1 = u0 + 1;
                 final float v0 = (hoverOverride || isHovered()) ? 0.5f : 0;
                 final float v1 = v0 + 0.5f;
-
                 final Tessellator t = Tessellator.getInstance();
                 final BufferBuilder b = t.getBuffer();
                 b.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);

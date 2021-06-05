@@ -2,10 +2,13 @@ package li.cil.tis3d.client.manual.segment.render;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.TextureUtil;
+import com.mojang.blaze3d.systems.RenderSystem;
 import li.cil.tis3d.api.manual.ImageRenderer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.TextureManager;
@@ -19,7 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 @Environment(EnvType.CLIENT)
-public class TextureImageRenderer implements ImageRenderer {
+public class TextureImageRenderer extends DrawableHelper implements ImageRenderer {
     private final Identifier location;
     private final ImageTexture texture;
 
@@ -51,18 +54,10 @@ public class TextureImageRenderer implements ImageRenderer {
 
     @Override
     public void render(final MatrixStack matrcies, final int mouseX, final int mouseY) {
-        MinecraftClient.getInstance().getTextureManager().bindTexture(location);
-        GlStateManager._clearColor(1, 1, 1, 1);
-        GL11.glBegin(GL11.GL_QUADS);
-        GL11.glTexCoord2f(0, 0);
-        GL11.glVertex2f(0, 0);
-        GL11.glTexCoord2f(0, 1);
-        GL11.glVertex2f(0, texture.height);
-        GL11.glTexCoord2f(1, 1);
-        GL11.glVertex2f(texture.width, texture.height);
-        GL11.glTexCoord2f(1, 0);
-        GL11.glVertex2f(texture.width, 0);
-        GL11.glEnd();
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderTexture(0, location);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        this.drawTexture(matrcies, 0, 0,0,0, texture.width, texture.height);
     }
 
     private static class ImageTexture extends AbstractTexture {

@@ -8,6 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 
@@ -40,10 +41,9 @@ public final class ItemStackImageRenderer implements ImageRenderer {
         final int index = (int)(System.currentTimeMillis() % (CYCLE_SPEED * stacks.length)) / CYCLE_SPEED;
         final ItemStack stack = stacks[index];
 
-        matrices.scale(getWidth() / 16f, getHeight() / 16f, getWidth() / 16f);
         RenderUtil.ignoreLighting();
         DiffuseLighting.enableGuiDepthLighting();
-        mc.getItemRenderer().renderGuiItemIcon(stack, 0, 0);
+        mc.getItemRenderer().renderGuiItemIcon(stack, mouseX, mouseY);
         DiffuseLighting.disableGuiDepthLighting();
     }
 }

@@ -2,13 +2,12 @@ package li.cil.tis3d.api.prefab.manual;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import li.cil.tis3d.api.manual.TabIconRenderer;
+import li.cil.tis3d.client.init.Textures;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.render.*;
 import net.minecraft.util.Identifier;
 import org.lwjgl.opengl.GL11;
 
@@ -25,16 +24,18 @@ public class TextureTabIconRenderer implements TabIconRenderer {
     }
 
     @Override
-    public void render() {
-        MinecraftClient.getInstance().getTextureManager().bindTexture(location);
+    public void render(int x, int y) {
         RenderSystem.enableBlend();
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderTexture(0, location);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         final Tessellator t = Tessellator.getInstance();
         final BufferBuilder b = t.getBuffer();
         b.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        b.vertex(0, 16, 0).texture(0, 1).next();
-        b.vertex(16, 16, 0).texture(1, 1).next();
-        b.vertex(16, 0, 0).texture(1, 0).next();
-        b.vertex(0, 0, 0).texture(0, 0).next();
+        b.vertex(x, y + 16, 0).texture(0, 1).next();
+        b.vertex(x + 16, y + 16, 0).texture(1, 1).next();
+        b.vertex(x +16, y, 0).texture(1, 0).next();
+        b.vertex(x, y, 0).texture(0, 0).next();
         t.draw();
         RenderSystem.disableBlend();
     }

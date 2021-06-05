@@ -50,7 +50,8 @@ public final class RenderUtil {
      * @param location the location of the texture to bind.
      */
     public static void bindTexture(final Identifier location) {
-        MinecraftClient.getInstance().getTextureManager().bindTexture(location);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderTexture(0, location);
     }
 
     /**
