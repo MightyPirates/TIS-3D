@@ -1,11 +1,17 @@
 package li.cil.tis3d.common.block;
 
+import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.block.entity.ControllerBlockEntity;
+import li.cil.tis3d.common.init.Blocks;
+import li.cil.tis3d.common.init.Entities;
 import li.cil.tis3d.common.init.Items;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -15,11 +21,12 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Block for the controller driving the casings.
  */
-public final class ControllerBlock extends Block implements BlockEntityProvider {
+public final class ControllerBlock extends BlockWithEntity {
     public ControllerBlock(final Block.Settings builder) {
         super(builder);
     }
@@ -27,9 +34,10 @@ public final class ControllerBlock extends Block implements BlockEntityProvider 
     // --------------------------------------------------------------------- //
     // Common
 
+    @Nullable
     @Override
-    public BlockEntity createBlockEntity(final BlockView view) {
-        return new ControllerBlockEntity();
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return new ControllerBlockEntity(pos, state);
     }
 
     @SuppressWarnings("deprecation")
@@ -40,11 +48,11 @@ public final class ControllerBlock extends Block implements BlockEntityProvider 
             final Item item = heldItem.getItem();
             if (item == net.minecraft.item.Items.BOOK) {
                 if (!world.isClient) {
-                    if (!player.abilities.creativeMode) {
+                    if (!player.getAbilities().creativeMode) {
                         heldItem.split(1);
                     }
                     final ItemStack bookManual = new ItemStack(Items.BOOK_MANUAL);
-                    if (player.inventory.insertStack(bookManual)) {
+                    if (player.getInventory().insertStack(bookManual)) {
                         player.playerScreenHandler.sendContentUpdates();
                     }
                     if (bookManual.getCount() > 0) {
@@ -67,6 +75,14 @@ public final class ControllerBlock extends Block implements BlockEntityProvider 
         }
 
         return super.onUse(state, world, pos, player, hand, blockHitResult);
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+        return checkType(type, ControllerBlockEntity.TYPE, (world2, pos, state2, entity) -> {
+            if (!world.isClient) entity.tick();
+        });
     }
 
     @SuppressWarnings("deprecation")

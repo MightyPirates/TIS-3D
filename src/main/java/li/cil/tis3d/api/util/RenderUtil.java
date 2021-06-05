@@ -10,12 +10,10 @@ import net.minecraft.client.render.*;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
+import net.minecraft.util.math.Vec3f;
 
 /**
  * Utility class for rendering related operations.
@@ -64,7 +62,7 @@ public final class RenderUtil {
      */
     public static Sprite getSprite(final Identifier location) {
         final MinecraftClient mc = MinecraftClient.getInstance();
-        return mc.getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(location);
+        return mc.getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).apply(location);
     }
 
     /**
@@ -78,7 +76,7 @@ public final class RenderUtil {
     public static void drawUntexturedQuad(final float x, final float y, final float w, final float h) {
         final Tessellator tessellator = Tessellator.getInstance();
         final BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(GL11.GL_QUADS, VertexFormats.POSITION);
+        buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
         buffer.vertex(x, y + h, 0).next();
         buffer.vertex(x + w, y + h, 0).next();
         buffer.vertex(x + w, y, 0).next();
@@ -155,7 +153,7 @@ public final class RenderUtil {
     public static void drawQuad(final float x, final float y, final float w, final float h, final float u0, final float v0, final float u1, final float v1) {
         final Tessellator tessellator = Tessellator.getInstance();
         final BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(GL11.GL_QUADS, VertexFormats.POSITION_TEXTURE);
+        buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         buffer.vertex(x, y + h, 0).texture(u0, v1).next();
         buffer.vertex(x + w, y + h, 0).texture(u1, v1).next();
         buffer.vertex(x + w, y, 0).texture(u1, v0).next();
@@ -256,7 +254,7 @@ public final class RenderUtil {
 
         final Matrix4f modMat = matrices.getModel();
         final Matrix3f normMat = matrices.getNormal();
-        final Vector3f normDir = new Vector3f(0, 0, -1);
+        final Vec3f normDir = new Vec3f(0, 0, -1);
 
         vc.vertex(modMat, x, y + h, 0).color(r, g, b, a).texture(u0, v1)
           .overlay(overlay).light(light)
@@ -422,7 +420,7 @@ public final class RenderUtil {
      * overlays that should be emissive to also be visible in the dark.
      */
     public static void ignoreLighting() {
-        RenderSystem.glMultiTexCoord2f(GL13.GL_TEXTURE1, 240, 240);
+        RenderSystem.glUniform1i(240, 240);
     }
 
     // --------------------------------------------------------------------- //

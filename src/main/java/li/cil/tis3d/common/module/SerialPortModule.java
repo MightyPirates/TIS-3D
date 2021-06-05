@@ -20,7 +20,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -45,7 +45,7 @@ public final class SerialPortModule extends AbstractModule implements BlockChang
     private static final String TAG_SERIAL_INTERFACE = "serialInterface";
 
     private Optional<SerialInterface> serialInterface = Optional.empty();
-    private Optional<CompoundTag> serialInterfaceNbt = Optional.empty();
+    private Optional<NbtCompound> serialInterfaceNbt = Optional.empty();
     private boolean isScanScheduled = true;
 
     // --------------------------------------------------------------------- //
@@ -116,7 +116,7 @@ public final class SerialPortModule extends AbstractModule implements BlockChang
     }
 
     @Override
-    public void readFromNBT(final CompoundTag nbt) {
+    public void readFromNBT(final NbtCompound nbt) {
         super.readFromNBT(nbt);
 
         writing = nbt.getShort(TAG_VALUE);
@@ -131,13 +131,13 @@ public final class SerialPortModule extends AbstractModule implements BlockChang
     }
 
     @Override
-    public void writeToNBT(final CompoundTag nbt) {
+    public void writeToNBT(final NbtCompound nbt) {
         super.writeToNBT(nbt);
 
         nbt.putShort(TAG_VALUE, writing);
 
         if (serialInterface.isPresent()) {
-            final CompoundTag serialInterfaceNbt = new CompoundTag();
+            final NbtCompound serialInterfaceNbt = new NbtCompound();
             serialInterface.get().writeToNBT(serialInterfaceNbt);
             if (!nbt.isEmpty()) {
                 nbt.put(TAG_SERIAL_INTERFACE, serialInterfaceNbt);

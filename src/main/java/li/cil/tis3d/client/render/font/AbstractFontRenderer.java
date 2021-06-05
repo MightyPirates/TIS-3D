@@ -1,9 +1,9 @@
 package li.cil.tis3d.client.render.font;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import li.cil.tis3d.api.util.RenderLayerAccess;
 import li.cil.tis3d.api.util.RenderUtil;
 import li.cil.tis3d.util.ColorUtils;
 import net.fabricmc.api.EnvType;
@@ -39,19 +39,30 @@ public abstract class AbstractFontRenderer implements FontRenderer {
 
     // --------------------------------------------------------------------- //
 
+    @Override
     public void drawString(final CharSequence value) {
         drawString(value, value.length());
     }
 
+    @Override
     public void drawString(final CharSequence value, final int maxChars) {
-        GlStateManager.pushMatrix();
-        GlStateManager.depthMask(false);
+        drawString(value, maxChars);
+    }
+
+    public void drawString(final MatrixStack matrices, final CharSequence value) {
+        drawString(matrices, value, value.length());
+    }
+
+    public void drawString(final MatrixStack matrices, final CharSequence value, final int maxChars) {
+
+        matrices.push();
+        RenderSystem.depthMask(false);
 
         MinecraftClient.getInstance().getTextureManager().bindTexture(getTextureLocation());
 
         final Tessellator tessellator = Tessellator.getInstance();
         final BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(GL11.GL_QUADS, VertexFormats.POSITION_TEXTURE);
+        buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
 
         float tx = 0f;
         final int end = Math.min(maxChars, value.length());
@@ -61,11 +72,11 @@ public abstract class AbstractFontRenderer implements FontRenderer {
             tx += getCharWidth() + getGapU();
         }
 
-        GlStateManager.enableBlend();
+        RenderSystem.enableBlend();
         tessellator.draw();
 
-        GlStateManager.depthMask(true);
-        GlStateManager.popMatrix();
+        RenderSystem.depthMask(true);
+        matrices.pop();
     }
 
     public void drawString(final MatrixStack.Entry matrices, final VertexConsumer vc,
@@ -107,7 +118,8 @@ public abstract class AbstractFontRenderer implements FontRenderer {
      */
     public VertexConsumer chooseVertexConsumer(final VertexConsumerProvider vcp) {
         if (renderLayer == null) {
-            renderLayer = RenderLayerAccess.getCutoutNoDiffLight(getTextureLocation());
+            // Use correct RenderLayer (getCutoutNoDiffLight)
+            renderLayer = RenderLayer.getEntitySmoothCutout(getTextureLocation());
         }
 
         return vcp.getBuffer(renderLayer);

@@ -7,6 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.Identifier;
 import org.lwjgl.opengl.GL11;
@@ -29,7 +30,7 @@ public class TextureTabIconRenderer implements TabIconRenderer {
         RenderSystem.enableBlend();
         final Tessellator t = Tessellator.getInstance();
         final BufferBuilder b = t.getBuffer();
-        b.begin(GL11.GL_QUADS, VertexFormats.POSITION_TEXTURE);
+        b.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         b.vertex(0, 16, 0).texture(0, 1).next();
         b.vertex(16, 16, 0).texture(1, 1).next();
         b.vertex(16, 0, 0).texture(1, 0).next();

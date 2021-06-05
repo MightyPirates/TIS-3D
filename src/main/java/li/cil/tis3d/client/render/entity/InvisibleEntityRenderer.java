@@ -3,15 +3,15 @@ package li.cil.tis3d.client.render.entity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.Frustum;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class InvisibleEntityRenderer<T extends Entity> extends EntityRenderer<T> {
-    public InvisibleEntityRenderer(final EntityRenderDispatcher dispatcher) {
-        super(dispatcher);
+    public InvisibleEntityRenderer(final EntityRendererFactory.Context context) {
+        super(context);
     }
 
     @Override

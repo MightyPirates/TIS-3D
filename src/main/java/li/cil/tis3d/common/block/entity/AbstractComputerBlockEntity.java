@@ -11,8 +11,8 @@ import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -68,8 +68,8 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
 
     // --------------------------------------------------------------------- //
 
-    AbstractComputerBlockEntity(final BlockEntityType type) {
-        super(type);
+    AbstractComputerBlockEntity(final BlockEntityType type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
         for (final Face face : Face.VALUES) {
             for (final Port port : Port.VALUES) {
                 final int pipeIndex = pack(face, port);
@@ -147,8 +147,8 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
     // BlockEntity
 
     @Override
-    public void fromTag(final BlockState state, final CompoundTag nbt) {
-        super.fromTag(state, nbt);
+    public void readNbt(final NbtCompound nbt) {
+        super.readNbt(nbt);
         if (nbt.contains("_client")) {
             fromClientTag(nbt);
         } else {
@@ -157,15 +157,15 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
     }
 
     @Override
-    public CompoundTag toTag(final CompoundTag nbtIn) {
-        final CompoundTag nbt = super.toTag(nbtIn);
+    public NbtCompound writeNbt(final NbtCompound nbtIn) {
+        final NbtCompound nbt = super.writeNbt(nbtIn);
         writeToNBTForServer(nbt);
         return nbt;
     }
 
     @Override
-    public CompoundTag toInitialChunkDataTag() {
-        final CompoundTag nbt = super.toInitialChunkDataTag();
+    public NbtCompound toInitialChunkDataNbt() {
+        final NbtCompound nbt = super.toInitialChunkDataNbt();
         toClientTag(nbt);
         nbt.putBoolean("_client", true);
         return nbt;
@@ -206,8 +206,8 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
         }
     }
 
-    protected void readFromNBTForServer(final CompoundTag nbt) {
-        final ListTag pipesNbt = nbt.getList(TAG_PIPES, NBTIds.TAG_COMPOUND);
+    protected void readFromNBTForServer(final NbtCompound nbt) {
+        final NbtList pipesNbt = nbt.getList(TAG_PIPES, NBTIds.TAG_COMPOUND);
         final int pipeCount = Math.min(pipesNbt.size(), pipes.length);
         for (int i = 0; i < pipeCount; i++) {
             pipes[i].readFromNBT(pipesNbt.getCompound(i));
@@ -216,10 +216,10 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
         readFromNBTCommon(nbt);
     }
 
-    protected void writeToNBTForServer(final CompoundTag nbt) {
-        final ListTag pipesNbt = new ListTag();
+    protected void writeToNBTForServer(final NbtCompound nbt) {
+        final NbtList pipesNbt = new NbtList();
         for (final PipeImpl pipe : pipes) {
-            final CompoundTag portNbt = new CompoundTag();
+            final NbtCompound portNbt = new NbtCompound();
             pipe.writeToNBT(portNbt);
             pipesNbt.add(portNbt);
         }
@@ -228,19 +228,19 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
         writeToNBTCommon(nbt);
     }
 
-    public void fromClientTag(final CompoundTag nbt) {
+    public void fromClientTag(final NbtCompound nbt) {
         readFromNBTCommon(nbt);
     }
 
-    public CompoundTag toClientTag(final CompoundTag nbt) {
+    public NbtCompound toClientTag(final NbtCompound nbt) {
         writeToNBTCommon(nbt);
         return nbt;
     }
 
-    protected void readFromNBTCommon(final CompoundTag nbt) {
+    protected void readFromNBTCommon(final NbtCompound nbt) {
     }
 
-    protected void writeToNBTCommon(final CompoundTag nbt) {
+    protected void writeToNBTCommon(final NbtCompound nbt) {
     }
 
     boolean hasNeighbor(final Face face) {

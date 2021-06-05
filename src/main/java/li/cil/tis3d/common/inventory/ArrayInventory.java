@@ -4,9 +4,8 @@ import li.cil.tis3d.util.NBTIds;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import java.util.Arrays;
 
 /**
@@ -23,20 +22,20 @@ public class ArrayInventory implements Inventory {
 
     // --------------------------------------------------------------------- //
 
-    public void readFromNBT(final CompoundTag nbt) {
-        final ListTag itemList = nbt.getList(TAG_ITEMS, NBTIds.TAG_COMPOUND);
+    public void readFromNBT(final NbtCompound nbt) {
+        final NbtList itemList = nbt.getList(TAG_ITEMS, NBTIds.TAG_COMPOUND);
         final int count = Math.min(itemList.size(), items.length);
         for (int index = 0; index < count; index++) {
-            items[index] = ItemStack.fromTag(itemList.getCompound(index));
+            items[index] = ItemStack.fromNbt(itemList.getCompound(index));
         }
     }
 
-    public void writeToNBT(final CompoundTag nbt) {
-        final ListTag itemList = new ListTag();
+    public void writeToNBT(final NbtCompound nbt) {
+        final NbtList itemList = new NbtList();
         for (final ItemStack stack : items) {
-            final CompoundTag stackNbt = new CompoundTag();
+            final NbtCompound stackNbt = new NbtCompound();
             if (stack != null) {
-                stack.toTag(stackNbt);
+                stack.writeNbt(stackNbt);
             }
             itemList.add(stackNbt);
         }

@@ -11,22 +11,23 @@ import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.init.Items;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
-
+import net.minecraft.util.math.Vec3f;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -38,11 +39,16 @@ import java.util.Set;
  * block states for static individual texturing).
  */
 @Environment(EnvType.CLIENT)
-public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingBlockEntity> {
+public final class CasingBlockEntityRenderer implements BlockEntityRenderer<CasingBlockEntity> {
     private final static Set<Class<?>> BLACKLIST = new HashSet<>();
 
-    public CasingBlockEntityRenderer(final BlockEntityRenderDispatcher dispatcher) {
-        super(dispatcher);
+    private BlockEntityRenderDispatcher dispatcher;
+    private TextRenderer textRenderer;
+
+    public CasingBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
+        super();
+        dispatcher = context.getRenderDispatcher();
+        textRenderer = context.getTextRenderer();
     }
 
     @Override
@@ -83,36 +89,35 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
     }
 
     private void setupMatrix(final Face face, final MatrixStack matrices) {
-        final Vector3f axis;
+        final Vec3f axis;
         final int degree;
 
         switch (face) {
-            case Y_NEG:
-                axis = Vector3f.POSITIVE_X;
+            case Y_NEG -> {
+                axis = Vec3f.POSITIVE_X;
                 degree = -90;
-                break;
-            case Y_POS:
-                axis = Vector3f.POSITIVE_X;
+            }
+            case Y_POS -> {
+                axis = Vec3f.POSITIVE_X;
                 degree = 90;
-                break;
-            case Z_NEG:
-                axis = Vector3f.POSITIVE_Y;
+            }
+            case Z_NEG -> {
+                axis = Vec3f.POSITIVE_Y;
                 degree = 0;
-                break;
-            case Z_POS:
-                axis = Vector3f.POSITIVE_Y;
+            }
+            case Z_POS -> {
+                axis = Vec3f.POSITIVE_Y;
                 degree = 180;
-                break;
-            case X_NEG:
-                axis = Vector3f.POSITIVE_Y;
+            }
+            case X_NEG -> {
+                axis = Vec3f.POSITIVE_Y;
                 degree = 90;
-                break;
-            case X_POS:
-                axis = Vector3f.POSITIVE_Y;
+            }
+            case X_POS -> {
+                axis = Vec3f.POSITIVE_Y;
                 degree = -90;
-                break;
-            default:
-                throw new RuntimeException("Invalid face");
+            }
+            default -> throw new RuntimeException("Invalid face");
         }
 
         matrices.multiply(new Quaternion(axis, degree, true));
@@ -169,7 +174,7 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
                 }
 
                 matrices.translate(0.5f, 0.5f, 0.5f);
-                matrices.multiply(new Quaternion(Vector3f.POSITIVE_Z, 90, true));
+                matrices.multiply(new Quaternion(Vec3f.POSITIVE_Z, 90, true));
                 matrices.translate(-0.5f, -0.5f, -0.5f);
             }
             matrices.pop();
@@ -204,7 +209,7 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
             }
 
             matrices.translate(0.5f, 0.5f, 0.5f);
-            matrices.multiply(new Quaternion(Vector3f.POSITIVE_Z, 90, true));
+            matrices.multiply(new Quaternion(Vec3f.POSITIVE_Z, 90, true));
             matrices.translate(-0.5f, -0.5f, -0.5f);
         }
         matrices.pop();

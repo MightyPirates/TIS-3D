@@ -19,7 +19,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -132,7 +132,7 @@ public final class QueueModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void readFromNBT(final CompoundTag nbt) {
+    public void readFromNBT(final NbtCompound nbt) {
         super.readFromNBT(nbt);
 
         final int[] queueNbt = nbt.getIntArray(TAG_QUEUE);
@@ -146,7 +146,7 @@ public final class QueueModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void writeToNBT(final CompoundTag nbt) {
+    public void writeToNBT(final NbtCompound nbt) {
         super.writeToNBT(nbt);
 
         final int[] queueNbt = new int[queue.length];
