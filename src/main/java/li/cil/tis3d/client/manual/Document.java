@@ -149,7 +149,7 @@ public final class Document {
 
         final Tessellator t = Tessellator.getInstance();
         final BufferBuilder b = t.getBuffer();
-        b.begin(VertexFormat.DrawMode.QUADS, VertexFormats.BLIT_SCREEN);
+        b.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
         b.vertex(0, y,400);
         b.vertex(window.getFramebufferWidth(), y, 400);
         b.vertex(window.getFramebufferWidth(), 0, 400);
@@ -160,7 +160,6 @@ public final class Document {
         b.vertex(0, y + maxHeight, 400);
         t.draw();
 
-        matrices.scale(50, 50, 500);
         matrices.pop();
         RenderSystem.colorMask(true, true, true, true);
         // Actual rendering.
@@ -174,7 +173,7 @@ public final class Document {
             final int segmentHeight = segment.nextY(indent, maxWidth, renderer);
             if (currentY + segmentHeight >= minY && currentY <= maxY) {
                 final Optional<InteractiveSegment> result = segment.render(matrices, x, currentY, indent, maxWidth, renderer, mouseX, mouseY);
-                if (!hovered.isPresent()) {
+                if (hovered.isEmpty()) {
                     hovered = result;
                 }
             }
@@ -188,6 +187,7 @@ public final class Document {
         hovered.ifPresent(InteractiveSegment::notifyHover);
 
         RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, false);
+        GlStateManager._bindTexture(0);
         matrices.pop();
         return hovered;
     }

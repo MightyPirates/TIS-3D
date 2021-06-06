@@ -1,7 +1,5 @@
 package li.cil.tis3d.client.manual.segment;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderCallStorage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import li.cil.tis3d.api.manual.ImageRenderer;
 import li.cil.tis3d.api.manual.InteractiveImageRenderer;
@@ -9,9 +7,12 @@ import li.cil.tis3d.client.manual.Document;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
-import org.lwjgl.opengl.GL11;
 
 import java.util.Optional;
 
@@ -77,31 +78,40 @@ public final class RenderSegment extends AbstractSegment implements InteractiveS
 
         final Optional<InteractiveSegment> hovered = checkHovered(mouseX, mouseY, x + xOffset, y + yOffset, width, height);
 
-        GlStateManager._clearColor(1, 1, 1, 1);
+        RenderSystem.clearColor(1, 1, 1, 1);
         matrices.push();
         matrices.translate(x + xOffset, y + yOffset, 0);
         matrices.scale(s, s, s);
 
         RenderSystem.enableBlend();
-        GlStateManager._enableDepthTest();
+        RenderSystem.enableDepthTest();
 
         if (hovered.isPresent()) {
-            GlStateManager._clearColor(1, 1, 1, 0.15f);
-            GlStateManager._disableTexture();
-            GL11.glBegin(GL11.GL_QUADS);
-            GL11.glVertex2f(0, 0);
-            GL11.glVertex2f(0, imageRenderer.getHeight());
-            GL11.glVertex2f(imageRenderer.getWidth(), imageRenderer.getHeight());
-            GL11.glVertex2f(imageRenderer.getWidth(), 0);
-            GL11.glEnd();
-            GlStateManager._enableTexture();
+            RenderSystem.clearColor(1, 1, 1, 0.15f);
+            RenderSystem.disableTexture();
+            final Tessellator t = Tessellator.getInstance();
+            final BufferBuilder b = t.getBuffer();
+            b.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+            b.vertex(0, 0, 0);
+            b.vertex(0, imageRenderer.getHeight(), 0);
+            b.vertex(imageRenderer.getWidth(), imageRenderer.getHeight(), 0);
+            b.vertex(imageRenderer.getWidth(), 0, 0);
+            t.draw();
+            RenderSystem.enableTexture();
         }
 
-        GlStateManager._clearColor(1, 1, 1, 1);
+        RenderSystem.clearColor(1, 1, 1, 1);
+        MatrixStack matrixStack = RenderSystem.getModelViewStack();
+        matrixStack.translate(x, y, 0);
 
+        var xImage = imageRenderer.getWidth() / 16f;
+        var yImage = imageRenderer.getHeight() / 16f;
+        matrixStack.scale(xImage, yImage,1);
         imageRenderer.render(matrices,mouseX - x, mouseY - y);
 
         matrices.pop();
+        matrices.scale(1 / xImage,1 / yImage,0);
+        matrices.translate(-x, -y, 0);
 
         return hovered;
     }

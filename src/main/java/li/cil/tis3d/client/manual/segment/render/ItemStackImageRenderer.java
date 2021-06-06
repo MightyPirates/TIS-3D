@@ -8,9 +8,15 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public final class ItemStackImageRenderer implements ImageRenderer {
@@ -27,12 +33,12 @@ public final class ItemStackImageRenderer implements ImageRenderer {
 
     @Override
     public int getWidth() {
-        return 32;
+        return 40;
     }
 
     @Override
     public int getHeight() {
-        return 32;
+        return 40;
     }
 
     @Override
@@ -43,7 +49,7 @@ public final class ItemStackImageRenderer implements ImageRenderer {
 
         RenderUtil.ignoreLighting();
         DiffuseLighting.enableGuiDepthLighting();
-        mc.getItemRenderer().renderGuiItemIcon(stack, mouseX, mouseY);
+        mc.getItemRenderer().renderGuiItemIcon(stack, 0, 0);
         DiffuseLighting.disableGuiDepthLighting();
     }
 }
