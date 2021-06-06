@@ -1,6 +1,5 @@
 package li.cil.tis3d.client.gui;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.client.manual.Document;
@@ -8,16 +7,13 @@ import li.cil.tis3d.client.manual.segment.InteractiveSegment;
 import li.cil.tis3d.client.manual.segment.Segment;
 import li.cil.tis3d.common.API;
 import li.cil.tis3d.common.api.ManualAPIImpl;
-import li.cil.tis3d.util.FontRendererUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.*;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
@@ -55,7 +51,7 @@ public final class ManualGui extends Screen {
     private Segment document = null;
     private int documentHeight = 0;
     private Optional<InteractiveSegment> currentSegment = Optional.empty();
-    private ArrayList<ImageButton> list = new ArrayList<>(MAX_TABS_PER_SIDE);
+    private final ArrayList<ImageButton> list = new ArrayList<>(MAX_TABS_PER_SIDE);
 
     private ImageButton scrollButton = null;
 
@@ -74,6 +70,7 @@ public final class ManualGui extends Screen {
     public void init() {
         super.init();
 
+        assert client != null;
         final Window window = client.getWindow();
         final ScaledResolution screenSize = new ScaledResolution(window.getScaledWidth(), window.getScaledHeight());
         final ScaledResolution guiSize = new ScaledResolution(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -88,9 +85,11 @@ public final class ManualGui extends Screen {
             final int x = guiLeft + TAB_POS_X;
             final int y = guiTop + TAB_POS_Y + i * (TAB_HEIGHT - TAB_OVERLAP);
             final int id = i;
-            list.add(this.addDrawable(new ImageButton(x, y, TAB_WIDTH, TAB_HEIGHT - TAB_OVERLAP - 1, Textures.LOCATION_GUI_MANUAL_TAB, (button) -> {
-                API.manual.navigate(ManualAPIImpl.getTabs().get(id).path);
-            }).setImageHeight(TAB_HEIGHT)));
+            list.add(this.addDrawable(
+                new ImageButton(x, y, TAB_WIDTH, TAB_HEIGHT - TAB_OVERLAP - 1, Textures.LOCATION_GUI_MANUAL_TAB,
+                    (button) -> API.manual.navigate(ManualAPIImpl.getTabs().get(id).path))
+                    .setImageHeight(TAB_HEIGHT)
+                ));
         }
 
         scrollButton = new ImageButton(guiLeft + SCROLL_POS_X, guiTop + SCROLL_POS_Y, 26, 13, Textures.LOCATION_GUI_MANUAL_SCROLL, (button) -> {
@@ -128,24 +127,25 @@ public final class ManualGui extends Screen {
             matrices.pop();
         }
 
-        //currentSegment = Document.render(matrices, document, guiLeft + 16, guiTop + 48, DOCUMENT_MAX_WIDTH, DOCUMENT_MAX_HEIGHT, offset(), getTextRenderer(), mouseX, mouseY);
+        currentSegment = Document.render(matrices, document, guiLeft + 16, guiTop + 48, DOCUMENT_MAX_WIDTH, DOCUMENT_MAX_HEIGHT, offset(), getTextRenderer(), mouseX, mouseY);
 
         if (!isDragging) {
-            currentSegment.ifPresent(s -> s.tooltip().ifPresent(t -> renderTooltip(matrices, new TranslatableText(t), mouseX, mouseY)));
+            //currentSegment.flatMap(InteractiveSegment::tooltip).ifPresent(t -> renderTooltip(matrices, new TranslatableText(t), mouseX, mouseY));
 
             for (int i = 0; i < ManualAPIImpl.getTabs().size() && i < MAX_TABS_PER_SIDE; i++) {
                 final ManualAPIImpl.Tab tab = ManualAPIImpl.getTabs().get(i);
                 final ImageButton button = list.get(i);
                 if (mouseX > button.x && mouseX < button.x + button.getWidth() && mouseY > button.y && mouseY < button.y + button.getHeight()) {
                     if (tab.tooltip != null) {
-                        renderTooltip(matrices, new TranslatableText(tab.tooltip), mouseX, mouseY);
+                        //renderTooltip(matrices, new TranslatableText(tab.tooltip), mouseX, mouseY);
+                        //matrices.pop();
                     }
                 }
             }
         }
 
         if (canScroll() && (isCoordinateOverScrollBar(mouseX - guiLeft, mouseY - guiTop) || isDragging)) {
-            renderTooltip(matrices, Text.of(100 * offset() / maxOffset() + "%"), guiLeft + SCROLL_POS_X + SCROLL_WIDTH, scrollButton.y + scrollButton.getHeight() + 1);
+            //renderTooltip(matrices, Text.of(100 * offset() / maxOffset() + "%"), guiLeft + SCROLL_POS_X + SCROLL_WIDTH, scrollButton.y + scrollButton.getHeight() + 1);
         }
     }
 
@@ -159,10 +159,12 @@ public final class ManualGui extends Screen {
 
     @Override
     public boolean keyPressed(final int code, final int scancode, final int mods) {
+        if(client == null) return super.keyPressed(code, scancode, mods);
         if (client.options.keyJump.matchesKey(code, scancode)) {
             popPage();
             return true;
         } else if (client.options.keyInventory.matchesKey(code, scancode)) {
+            assert client.player != null;
             client.player.closeScreen();
             return true;
         } else {
@@ -253,7 +255,7 @@ public final class ManualGui extends Screen {
         if (ManualAPIImpl.getHistorySize() > 1) {
             ManualAPIImpl.popPath();
             refreshPage();
-        } else {
+        } else if (client != null && client.player != null) {
             client.player.closeScreen();
         }
     }
@@ -284,7 +286,6 @@ public final class ManualGui extends Screen {
     private static class ImageButton extends ButtonWidget {
         private final Identifier image;
         private boolean hoverOverride = false;
-        private int verticalImageOffset = 0;
         private int imageHeightOverride = 0;
 
         ImageButton(final int x, final int y, final int w, final int h, final Identifier image, final PressAction action) {
@@ -294,11 +295,6 @@ public final class ManualGui extends Screen {
 
         ImageButton setImageHeight(final int height) {
             this.imageHeightOverride = height;
-            return this;
-        }
-
-        ImageButton setVerticalImageOffset(final int offset) {
-            this.verticalImageOffset = offset;
             return this;
         }
 
@@ -322,6 +318,7 @@ public final class ManualGui extends Screen {
 
                 final int x0 = x;
                 final int x1 = x + width;
+                int verticalImageOffset = 0;
                 final int y0 = y + verticalImageOffset;
                 final int y1 = y + verticalImageOffset + ((imageHeightOverride > 0) ? imageHeightOverride : height);
 

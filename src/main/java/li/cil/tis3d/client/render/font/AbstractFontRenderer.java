@@ -40,13 +40,13 @@ public abstract class AbstractFontRenderer implements FontRenderer {
     // --------------------------------------------------------------------- //
 
     @Override
-    public void drawString(final CharSequence value) {
-        drawString(value, value.length());
+    public void drawString(CharSequence value, int maxChars) {
+
     }
 
     @Override
-    public void drawString(final CharSequence value, final int maxChars) {
-        drawString(value, maxChars);
+    public void drawString(final CharSequence value) {
+        drawString(value, value.length());
     }
 
     public void drawString(final MatrixStack matrices, final CharSequence value) {
