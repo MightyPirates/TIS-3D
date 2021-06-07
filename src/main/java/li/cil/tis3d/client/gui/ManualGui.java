@@ -130,22 +130,21 @@ public final class ManualGui extends Screen {
         currentSegment = Document.render(matrices, document, guiLeft + 16, guiTop + 48, DOCUMENT_MAX_WIDTH, DOCUMENT_MAX_HEIGHT, offset(), getTextRenderer(), mouseX, mouseY);
 
         if (!isDragging) {
-            //currentSegment.flatMap(InteractiveSegment::tooltip).ifPresent(t -> renderTooltip(matrices, new TranslatableText(t), mouseX, mouseY));
+            currentSegment.flatMap(InteractiveSegment::tooltip).ifPresent(t -> renderTooltip(matrices, new TranslatableText(t), mouseX, mouseY));
 
             for (int i = 0; i < ManualAPIImpl.getTabs().size() && i < MAX_TABS_PER_SIDE; i++) {
                 final ManualAPIImpl.Tab tab = ManualAPIImpl.getTabs().get(i);
                 final ImageButton button = list.get(i);
                 if (mouseX > button.x && mouseX < button.x + button.getWidth() && mouseY > button.y && mouseY < button.y + button.getHeight()) {
                     if (tab.tooltip != null) {
-                        //renderTooltip(matrices, new TranslatableText(tab.tooltip), mouseX, mouseY);
-                        //matrices.pop();
+                        renderTooltip(matrices, new TranslatableText(tab.tooltip), mouseX, mouseY);
                     }
                 }
             }
         }
 
         if (canScroll() && (isCoordinateOverScrollBar(mouseX - guiLeft, mouseY - guiTop) || isDragging)) {
-            //renderTooltip(matrices, Text.of(100 * offset() / maxOffset() + "%"), guiLeft + SCROLL_POS_X + SCROLL_WIDTH, scrollButton.y + scrollButton.getHeight() + 1);
+            renderTooltip(matrices, Text.of(100 * offset() / maxOffset() + "%"), guiLeft + SCROLL_POS_X + SCROLL_WIDTH, scrollButton.y + scrollButton.getHeight() + 1);
         }
     }
 
@@ -174,10 +173,11 @@ public final class ManualGui extends Screen {
 
     @Override
     public boolean mouseClicked(final double mouseXd, final double mouseYd, final int button) {
+
+        System.out.println("Hello World!");
         if (super.mouseClicked(mouseXd, mouseYd, button)) {
             return true;
         }
-
         final int mouseX = (int)Math.round(mouseXd);
         final int mouseY = (int)Math.round(mouseYd);
 

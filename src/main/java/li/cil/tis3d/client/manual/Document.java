@@ -188,7 +188,7 @@ public final class Document {
 
         RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, false);
         GlStateManager._bindTexture(0);
-        matrices.pop();
+        matrices.push();
         return hovered;
     }
 
