@@ -16,7 +16,7 @@ public final class InfraredAPIImpl implements InfraredAPI {
         final EntityInfraredPacket entity = Entities.INFRARED_PACKET.get().create(world);
         if (entity != null) {
             entity.configure(position, direction.normalize(), value);
-            world.addEntity(entity);
+            world.addFreshEntity(entity);
         }
         return entity;
     }

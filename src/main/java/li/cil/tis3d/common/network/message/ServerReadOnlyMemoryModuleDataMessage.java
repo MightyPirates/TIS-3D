@@ -21,7 +21,7 @@ public final class ServerReadOnlyMemoryModuleDataMessage extends AbstractReadOnl
 
     @Override
     protected void handleMessage(final NetworkEvent.Context context) {
-        final Screen screen = Minecraft.getInstance().currentScreen;
+        final Screen screen = Minecraft.getInstance().screen;
         if (screen instanceof ReadOnlyMemoryModuleScreen) {
             ((ReadOnlyMemoryModuleScreen) screen).setData(data);
         }

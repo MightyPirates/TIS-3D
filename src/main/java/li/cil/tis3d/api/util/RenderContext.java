@@ -63,7 +63,7 @@ public final class RenderContext {
     }
 
     public boolean isWithinRange(final BlockPos position, final float range) {
-        return position.withinDistance(dispatcher.renderInfo.getProjectedView(), range);
+        return position.closerThan(dispatcher.camera.getPosition(), range);
     }
 
     public boolean isWithinDetailRange(final BlockPos position) {
@@ -72,7 +72,7 @@ public final class RenderContext {
 
     public void drawAtlasSpriteLit(final ResourceLocation location) {
         final TextureAtlasSprite sprite = getSprite(location);
-        final IVertexBuilder buffer = getBuffer(RenderType.getTranslucentNoCrumbling());
+        final IVertexBuilder buffer = getBuffer(RenderType.translucentNoCrumbling());
         RenderUtil.drawQuad(this, buffer, sprite, 0, 0, 1, 1, 0, 0, 1, 1);
     }
 
@@ -85,10 +85,10 @@ public final class RenderContext {
     public void drawAtlasSpriteUnlit(final ResourceLocation location, final int argb) {
         final TextureAtlasSprite sprite = getSprite(location);
         final IVertexBuilder buffer = getBuffer(RenderLayerAccess.getModuleOverlay());
-        final float u0 = sprite.getInterpolatedU(0);
-        final float v0 = sprite.getInterpolatedV(0);
-        final float u1 = sprite.getInterpolatedU(16);
-        final float v1 = sprite.getInterpolatedV(16);
+        final float u0 = sprite.getU(0);
+        final float v0 = sprite.getV(0);
+        final float u1 = sprite.getU(16);
+        final float v1 = sprite.getV(16);
         RenderUtil.drawQuad(this, buffer, 0, 0, 1, 1, u0, v0, u1, v1, argb);
     }
 
@@ -103,10 +103,10 @@ public final class RenderContext {
     public void drawQuadUnlit(final float x, final float y, final float width, final float height, final int argb) {
         final TextureAtlasSprite sprite = getSprite(Textures.LOCATION_WHITE);
         final IVertexBuilder buffer = getBuffer(RenderLayerAccess.getModuleOverlay());
-        final float u0 = sprite.getInterpolatedU(0);
-        final float v0 = sprite.getInterpolatedV(0);
-        final float u1 = sprite.getInterpolatedU(16);
-        final float v1 = sprite.getInterpolatedV(16);
+        final float u0 = sprite.getU(0);
+        final float v0 = sprite.getV(0);
+        final float u1 = sprite.getU(16);
+        final float v1 = sprite.getV(16);
         RenderUtil.drawQuad(this, buffer, x, y, width, height, u0, v0, u1, v1, argb);
     }
 
@@ -119,6 +119,6 @@ public final class RenderContext {
     // --------------------------------------------------------------------- //
 
     private static TextureAtlasSprite getSprite(final ResourceLocation location) {
-        return Minecraft.getInstance().getAtlasSpriteGetter(PlayerContainer.LOCATION_BLOCKS_TEXTURE).apply(location);
+        return Minecraft.getInstance().getTextureAtlas(PlayerContainer.BLOCK_ATLAS).apply(location);
     }
 }

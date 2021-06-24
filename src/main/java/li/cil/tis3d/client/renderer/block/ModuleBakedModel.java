@@ -66,8 +66,8 @@ public final class ModuleBakedModel implements IDynamicBakedModel {
     }
 
     @Override
-    public boolean isAmbientOcclusion() {
-        return proxy.isAmbientOcclusion();
+    public boolean useAmbientOcclusion() {
+        return proxy.useAmbientOcclusion();
     }
 
     @Override
@@ -76,18 +76,19 @@ public final class ModuleBakedModel implements IDynamicBakedModel {
     }
 
     @Override
-    public boolean isSideLit() {
-        return proxy.isSideLit();
+    public boolean usesBlockLight() {
+        return proxy.usesBlockLight();
     }
 
     @Override
-    public boolean isBuiltInRenderer() {
-        return proxy.isBuiltInRenderer();
+    public boolean isCustomRenderer() {
+        return proxy.isCustomRenderer();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
-    public TextureAtlasSprite getParticleTexture() {
-        return proxy.getParticleTexture();
+    public TextureAtlasSprite getParticleIcon() {
+        return proxy.getParticleIcon();
     }
 
     @Override
@@ -98,7 +99,7 @@ public final class ModuleBakedModel implements IDynamicBakedModel {
     @Nonnull
     @Override
     public IModelData getModelData(@Nonnull final IBlockDisplayReader world, @Nonnull final BlockPos pos, @Nonnull final BlockState state, @Nonnull final IModelData tileData) {
-        final TileEntity tileEntity = world.getTileEntity(pos);
+        final TileEntity tileEntity = world.getBlockEntity(pos);
         if (!(tileEntity instanceof TileEntityCasing)) {
             return tileData;
         }

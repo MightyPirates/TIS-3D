@@ -138,7 +138,7 @@ public final class ModuleDisplay extends AbstractModuleWithRotation {
 
     @Override
     public void onDisposed() {
-        if (getCasing().getCasingWorld().isRemote()) {
+        if (getCasing().getCasingLevel().isClientSide()) {
             deleteTexture();
         }
     }
@@ -163,7 +163,7 @@ public final class ModuleDisplay extends AbstractModuleWithRotation {
         }
 
         final MatrixStack matrixStack = context.getMatrixStack();
-        matrixStack.push();
+        matrixStack.pushPose();
         rotateForRendering(matrixStack);
 
         validateTexture();
@@ -171,7 +171,7 @@ public final class ModuleDisplay extends AbstractModuleWithRotation {
         final IVertexBuilder buffer = context.getBuffer(getOrCreateRenderLayer());
         context.drawQuadUnlit(buffer, MARGIN / 32f, MARGIN / 32f, RESOLUTION / 32f, RESOLUTION / 32f);
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     @Override
@@ -275,7 +275,7 @@ public final class ModuleDisplay extends AbstractModuleWithRotation {
             final TextureManager textureManager = Minecraft.getInstance().getTextureManager();
             final DynamicTexture texture = getOrCreateTexture();
             textureId = new ResourceLocation(API.MOD_ID, "dynamic/display_module_" + (++nextTextureId));
-            textureManager.loadTexture(textureId, texture);
+            textureManager.register(textureId, texture);
             renderLayer = RenderLayerAccess.getModuleOverlay(textureId);
         }
 
@@ -288,7 +288,7 @@ public final class ModuleDisplay extends AbstractModuleWithRotation {
     @OnlyIn(Dist.CLIENT)
     private void deleteTexture() {
         if (textureId != null) {
-            Minecraft.getInstance().getTextureManager().deleteTexture(textureId);
+            Minecraft.getInstance().getTextureManager().release(textureId);
         }
 
         if (texture != null) {
@@ -309,7 +309,7 @@ public final class ModuleDisplay extends AbstractModuleWithRotation {
         imageDirty = false;
 
         final DynamicTexture texture = getOrCreateTexture();
-        final NativeImage nativeImage = texture.getTextureData();
+        final NativeImage nativeImage = texture.getPixels();
         if (nativeImage == null) {
             return;
         }
@@ -322,11 +322,11 @@ public final class ModuleDisplay extends AbstractModuleWithRotation {
                 final int b = Color.getBlueU8(argb);
                 final int g = Color.getGreenU8(argb);
                 final int r = Color.getRedU8(argb);
-                nativeImage.setPixelRGBA(ix, iy, NativeImage.getCombined(a, b, g, r));
+                nativeImage.setPixelRGBA(ix, iy, NativeImage.combine(a, b, g, r));
             }
         }
 
-        texture.updateDynamicTexture();
+        texture.upload();
     }
 
     /**

@@ -23,9 +23,9 @@ import net.minecraft.world.World;
 public final class BlockController extends Block {
     public BlockController() {
         super(Properties
-            .create(Material.IRON)
+            .of(Material.METAL)
             .sound(SoundType.METAL)
-            .hardnessAndResistance(1.5f, 6f));
+            .strength(1.5f, 6f));
     }
 
     // --------------------------------------------------------------------- //
@@ -43,40 +43,40 @@ public final class BlockController extends Block {
 
     @SuppressWarnings("deprecation")
     @Override
-    public ActionResultType onBlockActivated(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockRayTraceResult hit) {
-        final ItemStack heldItem = player.getHeldItem(hand);
+    public ActionResultType use(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockRayTraceResult hit) {
+        final ItemStack heldItem = player.getItemInHand(hand);
         if (!heldItem.isEmpty()) {
             final Item item = heldItem.getItem();
             if (item == net.minecraft.item.Items.BOOK) {
-                if (!world.isRemote()) {
-                    if (!player.abilities.isCreativeMode) {
+                if (!world.isClientSide()) {
+                    if (!player.abilities.instabuild) {
                         heldItem.split(1);
                     }
                     final ItemStack bookManual = new ItemStack(Items.BOOK_MANUAL.get());
-                    if (player.inventory.addItemStackToInventory(bookManual)) {
-                        player.container.detectAndSendChanges();
+                    if (player.inventory.add(bookManual)) {
+                        player.containerMenu.broadcastChanges();
                     }
                     if (bookManual.getCount() > 0) {
-                        player.dropItem(bookManual, false, false);
+                        player.drop(bookManual, false, false);
                     }
                 }
 
-                return ActionResultType.func_233537_a_(world.isRemote());
+                return ActionResultType.sidedSuccess(world.isClientSide());
             }
         }
 
-        final TileEntity tileEntity = world.getTileEntity(pos);
+        final TileEntity tileEntity = world.getBlockEntity(pos);
         if (tileEntity instanceof TileEntityController) {
             final TileEntityController controller = (TileEntityController) tileEntity;
 
-            if (!world.isRemote()) {
+            if (!world.isClientSide()) {
                 controller.forceStep();
             }
 
-            return ActionResultType.func_233537_a_(world.isRemote());
+            return ActionResultType.sidedSuccess(world.isClientSide());
         }
 
-        return super.onBlockActivated(state, world, pos, player, hand, hit);
+        return super.use(state, world, pos, player, hand, hit);
     }
 
     // --------------------------------------------------------------------- //
@@ -84,14 +84,14 @@ public final class BlockController extends Block {
 
     @SuppressWarnings("deprecation")
     @Override
-    public boolean hasComparatorInputOverride(final BlockState state) {
+    public boolean hasAnalogOutputSignal(final BlockState state) {
         return true;
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    public int getComparatorInputOverride(final BlockState state, final World world, final BlockPos pos) {
-        final TileEntity tileEntity = world.getTileEntity(pos);
+    public int getAnalogOutputSignal(final BlockState state, final World world, final BlockPos pos) {
+        final TileEntity tileEntity = world.getBlockEntity(pos);
         if (tileEntity instanceof TileEntityController) {
             final TileEntityController controller = (TileEntityController) tileEntity;
             return controller.getState() == TileEntityController.ControllerState.READY ? 15 : 0;
@@ -105,7 +105,7 @@ public final class BlockController extends Block {
     @SuppressWarnings("deprecation")
     @Override
     public void neighborChanged(final BlockState state, final World world, final BlockPos pos, final Block block, final BlockPos fromPos, final boolean isMoving) {
-        final TileEntity tileEntity = world.getTileEntity(pos);
+        final TileEntity tileEntity = world.getBlockEntity(pos);
         if (tileEntity instanceof TileEntityController) {
             final TileEntityController controller = (TileEntityController) tileEntity;
             controller.checkNeighbors();

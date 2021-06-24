@@ -17,10 +17,10 @@ public class ModItemTagsProvider extends ItemTagsProvider {
     }
 
     @Override
-    protected void registerTags() {
+    protected void addTags() {
         copy(BlockTags.COMPUTERS, COMPUTERS);
 
-        getOrCreateBuilder(MODULES).add(
+        tag(MODULES).add(
             AUDIO_MODULE.get(),
             DISPLAY_MODULE.get(),
             EXECUTION_MODULE.get(),
@@ -39,7 +39,7 @@ public class ModItemTagsProvider extends ItemTagsProvider {
             TIMER_MODULE.get()
         );
 
-        getOrCreateBuilder(BOOKS).add(
+        tag(BOOKS).add(
             BOOK_CODE.get(),
             BOOK_MANUAL.get(),
             Items.BOOK,
@@ -48,7 +48,7 @@ public class ModItemTagsProvider extends ItemTagsProvider {
             Items.WRITTEN_BOOK
         );
 
-        getOrCreateBuilder(KEYS).add(
+        tag(KEYS).add(
             KEY.get(),
             KEY_CREATIVE.get()
         );

@@ -100,7 +100,7 @@ public final class ModuleKeypad extends AbstractModuleWithRotation {
 
     @Override
     public boolean onActivate(final PlayerEntity player, final Hand hand, final Vector3d hit) {
-        if (player.isSneaking()) {
+        if (player.isShiftKeyDown()) {
             return false;
         }
 
@@ -118,8 +118,8 @@ public final class ModuleKeypad extends AbstractModuleWithRotation {
         // Handle input on the client and send it to the server for higher
         // hit position resolution (MC sends this to the server at a super
         // low resolution for some reason).
-        final World world = getCasing().getCasingWorld();
-        if (world.isRemote()) {
+        final World world = getCasing().getCasingLevel();
+        if (world.isClientSide()) {
             final Vector3d uv = hitToUV(hit);
             final int button = uvToButton((float) uv.x, (float) uv.y);
             if (button == -1) {
@@ -138,8 +138,8 @@ public final class ModuleKeypad extends AbstractModuleWithRotation {
 
     @Override
     public void onData(final CompoundNBT nbt) {
-        final World world = getCasing().getCasingWorld();
-        if (world.isRemote()) {
+        final World world = getCasing().getCasingLevel();
+        if (world.isClientSide()) {
             // Got state on which key is currently 'pressed'.
             if (nbt.contains(TAG_VALUE)) {
                 value = Optional.of(nbt.getShort(TAG_VALUE));
@@ -151,7 +151,7 @@ public final class ModuleKeypad extends AbstractModuleWithRotation {
             final short newValue = nbt.getShort(TAG_VALUE);
             value = Optional.of(newValue);
             getCasing().sendData(getFace(), nbt, DATA_TYPE_VALUE);
-            getCasing().getCasingWorld().playSound(null, getCasing().getPosition(), SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3f, VALUE_TO_PITCH[newValue]);
+            getCasing().getCasingLevel().playSound(null, getCasing().getPosition(), SoundEvents.LEVER_CLICK, SoundCategory.BLOCKS, 0.3f, VALUE_TO_PITCH[newValue]);
         }
     }
 
@@ -163,7 +163,7 @@ public final class ModuleKeypad extends AbstractModuleWithRotation {
         }
 
         final MatrixStack matrixStack = context.getMatrixStack();
-        matrixStack.push();
+        matrixStack.pushPose();
         rotateForRendering(matrixStack);
 
         // Draw base texture. Draw half transparent while writing current value,
@@ -182,7 +182,7 @@ public final class ModuleKeypad extends AbstractModuleWithRotation {
             }
         }
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     @Override

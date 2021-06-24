@@ -22,7 +22,7 @@ public final class ModPathProvider extends ForgeRegistryEntry<PathProvider> impl
         }
 
         final Item item = stack.getItem();
-        final Block block = Block.getBlockFromItem(item);
+        final Block block = Block.byItem(item);
         if (block != Blocks.AIR) {
             final ResourceLocation name = block.getRegistryName();
             if (name == null) {
@@ -31,7 +31,7 @@ public final class ModPathProvider extends ForgeRegistryEntry<PathProvider> impl
 
             final String modId = name.getNamespace();
             if (API.MOD_ID.equals(modId)) {
-                return "%LANGUAGE%/block/" + block.getTranslationKey().replaceFirst("^block\\.tis3d\\.", "") + ".md";
+                return "%LANGUAGE%/block/" + block.getDescriptionId().replaceFirst("^block\\.tis3d\\.", "") + ".md";
             }
         } else {
             final ResourceLocation name = item.getRegistryName();
@@ -41,7 +41,7 @@ public final class ModPathProvider extends ForgeRegistryEntry<PathProvider> impl
 
             final String modId = name.getNamespace();
             if (API.MOD_ID.equals(modId)) {
-                return "%LANGUAGE%/item/" + item.getTranslationKey().replaceFirst("^item\\.tis3d\\.", "") + ".md";
+                return "%LANGUAGE%/item/" + item.getDescriptionId().replaceFirst("^item\\.tis3d\\.", "") + ".md";
             }
         }
 
@@ -50,10 +50,10 @@ public final class ModPathProvider extends ForgeRegistryEntry<PathProvider> impl
 
     @Override
     public String pathFor(final World world, final BlockPos pos, final Direction side) {
-        final TileEntity tileEntity = world.getTileEntity(pos);
+        final TileEntity tileEntity = world.getBlockEntity(pos);
         if (tileEntity instanceof TileEntityCasing) {
             final TileEntityCasing casing = (TileEntityCasing) tileEntity;
-            final ItemStack moduleStack = casing.getStackInSlot(side.ordinal());
+            final ItemStack moduleStack = casing.getItem(side.ordinal());
             final String path = pathFor(moduleStack);
             if (path != null) {
                 return path;
@@ -68,7 +68,7 @@ public final class ModPathProvider extends ForgeRegistryEntry<PathProvider> impl
 
         final String modId = name.getNamespace();
         if (API.MOD_ID.equals(modId)) {
-            return "%LANGUAGE%/block/" + block.getTranslationKey().replaceFirst("^block\\.tis3d\\.", "") + ".md";
+            return "%LANGUAGE%/block/" + block.getDescriptionId().replaceFirst("^block\\.tis3d\\.", "") + ".md";
         }
 
         return null;

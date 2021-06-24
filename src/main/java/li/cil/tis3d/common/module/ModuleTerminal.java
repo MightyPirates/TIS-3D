@@ -117,7 +117,7 @@ public final class ModuleTerminal extends AbstractModuleWithRotation {
         stepOutput();
         stepInput();
 
-        final World world = getCasing().getCasingWorld();
+        final World world = getCasing().getCasingLevel();
         if (sendBuffer != null && world.getGameTime() > lastSendTick) {
             getCasing().sendData(getFace(), sendBuffer);
             sendBuffer = null;
@@ -128,7 +128,7 @@ public final class ModuleTerminal extends AbstractModuleWithRotation {
 
     @Override
     public void onDisposed() {
-        if (getCasing().getCasingWorld().isRemote()) {
+        if (getCasing().getCasingLevel().isClientSide()) {
             //noinspection MethodCallSideOnly Guarded by isClient check.
             closeGui();
         }
@@ -170,7 +170,7 @@ public final class ModuleTerminal extends AbstractModuleWithRotation {
 
     @Override
     public boolean onActivate(final PlayerEntity player, final Hand hand, final Vector3d hit) {
-        if (player.isSneaking()) {
+        if (player.isShiftKeyDown()) {
             return false;
         }
 
@@ -180,8 +180,8 @@ public final class ModuleTerminal extends AbstractModuleWithRotation {
             return true;
         }
 
-        final World world = player.getEntityWorld();
-        if (world.isRemote()) {
+        final World world = player.getCommandSenderWorld();
+        if (world.isClientSide()) {
             openScreen();
         }
 
@@ -190,7 +190,7 @@ public final class ModuleTerminal extends AbstractModuleWithRotation {
 
     @Override
     public void onData(final ByteBuf data) {
-        if (getCasing().getCasingWorld().isRemote()) {
+        if (getCasing().getCasingLevel().isClientSide()) {
             // Server -> Client can be input state or output.
             switch (data.readByte()) {
                 case PACKET_INPUT:
@@ -227,7 +227,7 @@ public final class ModuleTerminal extends AbstractModuleWithRotation {
         }
 
         final MatrixStack matrixStack = context.getMatrixStack();
-        matrixStack.push();
+        matrixStack.pushPose();
         rotateForRendering(matrixStack);
 
         if (context.isWithinDetailRange(getCasing().getPosition())) {
@@ -238,7 +238,7 @@ public final class ModuleTerminal extends AbstractModuleWithRotation {
             context.drawAtlasSpriteUnlit(Textures.LOCATION_OVERLAY_MODULE_TERMINAL);
         }
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     @Override
@@ -351,17 +351,17 @@ public final class ModuleTerminal extends AbstractModuleWithRotation {
 
     @OnlyIn(Dist.CLIENT)
     private void openScreen() {
-        Minecraft.getInstance().displayGuiScreen(new TerminalModuleScreen(this));
+        Minecraft.getInstance().setScreen(new TerminalModuleScreen(this));
     }
 
     @OnlyIn(Dist.CLIENT)
     private void closeGui() {
         final Minecraft mc = Minecraft.getInstance();
-        final Screen screen = mc.currentScreen;
+        final Screen screen = mc.screen;
         if (screen instanceof TerminalModuleScreen) {
             final TerminalModuleScreen gui = (TerminalModuleScreen) screen;
             if (gui.isFor(this)) {
-                gui.closeScreen();
+                gui.onClose();
             }
         }
     }
@@ -470,9 +470,9 @@ public final class ModuleTerminal extends AbstractModuleWithRotation {
     }
 
     private void bell() {
-        final World world = getCasing().getCasingWorld();
-        if (!world.isRemote()) {
-            world.playSound(null, getCasing().getPosition(), SoundEvents.BLOCK_NOTE_BLOCK_PLING, SoundCategory.BLOCKS, 0.3f, 2f);
+        final World world = getCasing().getCasingLevel();
+        if (!world.isClientSide()) {
+            world.playSound(null, getCasing().getPosition(), SoundEvents.NOTE_BLOCK_PLING, SoundCategory.BLOCKS, 0.3f, 2f);
         }
     }
 

@@ -35,8 +35,8 @@ public final class RenderUtil {
                                 final float x, final float y, final float w, final float h,
                                 final float u0, final float v0, final float u1, final float v1,
                                 final int argb) {
-        final Matrix4f modMat = context.getMatrixStack().getLast().getMatrix();
-        final Matrix3f normMat = context.getMatrixStack().getLast().getNormal();
+        final Matrix4f modMat = context.getMatrixStack().last().pose();
+        final Matrix3f normMat = context.getMatrixStack().last().normal();
         final Vector3f normDir = new Vector3f(0, 0, -1);
 
         final int a = Color.getAlphaU8(argb);
@@ -44,24 +44,24 @@ public final class RenderUtil {
         final int g = Color.getGreenU8(argb);
         final int b = Color.getBlueU8(argb);
 
-        buffer.pos(modMat, x, y + h, 0).color(r, g, b, a).tex(u0, v1)
-            .overlay(context.overlay).lightmap(context.light)
-            .normal(normMat, normDir.getX(), normDir.getY(), normDir.getZ())
+        buffer.vertex(modMat, x, y + h, 0).color(r, g, b, a).uv(u0, v1)
+            .overlayCoords(context.overlay).uv2(context.light)
+            .normal(normMat, normDir.x(), normDir.y(), normDir.z())
             .endVertex();
 
-        buffer.pos(modMat, x + w, y + h, 0).color(r, g, b, a).tex(u1, v1)
-            .overlay(context.overlay).lightmap(context.light)
-            .normal(normMat, normDir.getX(), normDir.getY(), normDir.getZ())
+        buffer.vertex(modMat, x + w, y + h, 0).color(r, g, b, a).uv(u1, v1)
+            .overlayCoords(context.overlay).uv2(context.light)
+            .normal(normMat, normDir.x(), normDir.y(), normDir.z())
             .endVertex();
 
-        buffer.pos(modMat, x + w, y, 0).color(r, g, b, a).tex(u1, v0)
-            .overlay(context.overlay).lightmap(context.light)
-            .normal(normMat, normDir.getX(), normDir.getY(), normDir.getZ())
+        buffer.vertex(modMat, x + w, y, 0).color(r, g, b, a).uv(u1, v0)
+            .overlayCoords(context.overlay).uv2(context.light)
+            .normal(normMat, normDir.x(), normDir.y(), normDir.z())
             .endVertex();
 
-        buffer.pos(modMat, x, y, 0).color(r, g, b, a).tex(u0, v0)
-            .overlay(context.overlay).lightmap(context.light)
-            .normal(normMat, normDir.getX(), normDir.getY(), normDir.getZ())
+        buffer.vertex(modMat, x, y, 0).color(r, g, b, a).uv(u0, v0)
+            .overlayCoords(context.overlay).uv2(context.light)
+            .normal(normMat, normDir.x(), normDir.y(), normDir.z())
             .endVertex();
     }
 
@@ -87,8 +87,8 @@ public final class RenderUtil {
                                 final float u0, final float v0, final float u1, final float v1) {
         drawQuad(context, buffer,
             x, y, w, h,
-            sprite.getInterpolatedU(u0 * 16), sprite.getInterpolatedV(v0 * 16),
-            sprite.getInterpolatedU(u1 * 16), sprite.getInterpolatedV(v1 * 16),
+            sprite.getU(u0 * 16), sprite.getV(v0 * 16),
+            sprite.getU(u1 * 16), sprite.getV(v1 * 16),
             Color.WHITE);
     }
 

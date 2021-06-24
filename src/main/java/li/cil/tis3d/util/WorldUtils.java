@@ -23,9 +23,9 @@ public final class WorldUtils {
     public static TileEntity getTileEntityThreadsafe(final IBlockReader world, final BlockPos pos) {
         if (world instanceof ChunkRenderCache) {
             final ChunkRenderCache renderCache = (ChunkRenderCache) world;
-            return renderCache.getTileEntity(pos, Chunk.CreateEntityType.CHECK);
+            return renderCache.getBlockEntity(pos, Chunk.CreateEntityType.CHECK);
         }
-        return world.getTileEntity(pos);
+        return world.getBlockEntity(pos);
     }
 
     /**

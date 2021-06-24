@@ -90,22 +90,22 @@ public abstract class AbstractFontRenderer implements FontRenderer {
         final float u = column * U_STEP;
         final float v = row * V_STEP;
 
-        final Matrix4f matrix = matrixStack.getLast().getMatrix();
-        buffer.pos(matrix, x, getCharHeight(), 0)
+        final Matrix4f matrix = matrixStack.last().pose();
+        buffer.vertex(matrix, x, getCharHeight(), 0)
             .color(r, g, b, a)
-            .tex(u, v + V_SIZE)
+            .uv(u, v + V_SIZE)
             .endVertex();
-        buffer.pos(matrix, x + getCharWidth(), getCharHeight(), 0)
+        buffer.vertex(matrix, x + getCharWidth(), getCharHeight(), 0)
             .color(r, g, b, a)
-            .tex(u + U_SIZE, v + V_SIZE)
+            .uv(u + U_SIZE, v + V_SIZE)
             .endVertex();
-        buffer.pos(matrix, x + getCharWidth(), 0, 0)
+        buffer.vertex(matrix, x + getCharWidth(), 0, 0)
             .color(r, g, b, a)
-            .tex(u + U_SIZE, v)
+            .uv(u + U_SIZE, v)
             .endVertex();
-        buffer.pos(matrix, x, 0, 0)
+        buffer.vertex(matrix, x, 0, 0)
             .color(r, g, b, a)
-            .tex(u, v)
+            .uv(u, v)
             .endVertex();
     }
 

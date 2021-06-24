@@ -24,7 +24,7 @@ public final class ClientReadOnlyMemoryModuleDataMessage extends AbstractReadOnl
     protected void handleMessage(final NetworkEvent.Context context) {
         final ServerPlayerEntity player = context.getSender();
         if (player != null) {
-            final ItemStack stack = player.getHeldItem(hand);
+            final ItemStack stack = player.getItemInHand(hand);
             if (Items.is(stack, Items.READ_ONLY_MEMORY_MODULE)) {
                 ItemModuleReadOnlyMemory.saveToStack(stack, data);
             }

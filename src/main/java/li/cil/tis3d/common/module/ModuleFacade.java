@@ -66,7 +66,7 @@ public final class ModuleFacade extends AbstractModule implements BlockChangeAwa
             return false;
         }
 
-        final ItemStack stack = player.getHeldItem(hand);
+        final ItemStack stack = player.getItemInHand(hand);
         if (stack.isEmpty()) {
             return false;
         }
@@ -77,8 +77,8 @@ public final class ModuleFacade extends AbstractModule implements BlockChangeAwa
         }
 
         if (!trySetFacadeState(state)) {
-            if (!getCasing().getCasingWorld().isRemote()) {
-                player.sendStatusMessage(MESSAGE_FACADE_INVALID_TARGET, true);
+            if (!getCasing().getCasingLevel().isClientSide()) {
+                player.displayClientMessage(MESSAGE_FACADE_INVALID_TARGET, true);
             }
 
             // No return false here to avoid popping out module due to invalid block.
@@ -92,10 +92,10 @@ public final class ModuleFacade extends AbstractModule implements BlockChangeAwa
         readFromNBT(nbt);
 
         // Force re-render to make change of facade configuration visible.
-        final World world = getCasing().getCasingWorld();
+        final World world = getCasing().getCasingLevel();
         final BlockPos position = getCasing().getPosition();
         final BlockState state = world.getBlockState(position);
-        world.notifyBlockUpdate(position, state, state, 1);
+        world.sendBlockUpdated(position, state, state, 3);
     }
 
     @Override
@@ -103,7 +103,7 @@ public final class ModuleFacade extends AbstractModule implements BlockChangeAwa
         super.readFromNBT(nbt);
 
         facadeState = NBTUtil.readBlockState(nbt.getCompound(TAG_STATE));
-        if (facadeState == Blocks.AIR.getDefaultState()) {
+        if (facadeState == Blocks.AIR.defaultBlockState()) {
             facadeState = null;
         }
     }
@@ -130,7 +130,7 @@ public final class ModuleFacade extends AbstractModule implements BlockChangeAwa
             return;
         }
 
-        trySetFacadeState(getCasing().getCasingWorld().getBlockState(neighborPos));
+        trySetFacadeState(getCasing().getCasingLevel().getBlockState(neighborPos));
     }
 
     // --------------------------------------------------------------------- //
@@ -143,9 +143,9 @@ public final class ModuleFacade extends AbstractModule implements BlockChangeAwa
             return Collections.emptyList();
         }
 
-        final BlockModelShapes shapes = Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelShapes();
-        final IBakedModel model = shapes.getModel(facadeState);
-        final World world = getCasing().getCasingWorld();
+        final BlockModelShapes shapes = Minecraft.getInstance().getBlockRenderer().getBlockModelShaper();
+        final IBakedModel model = shapes.getBlockModel(facadeState);
+        final World world = getCasing().getCasingLevel();
         final BlockPos position = getCasing().getPosition();
         final IModelData modelData = model.getModelData(world, position, facadeState, EmptyModelData.INSTANCE);
         return model.getQuads(facadeState, side, random, modelData);
@@ -154,13 +154,13 @@ public final class ModuleFacade extends AbstractModule implements BlockChangeAwa
     // --------------------------------------------------------------------- //
 
     private boolean trySetFacadeState(final BlockState state) {
-        if (state.getRenderType() != BlockRenderType.MODEL ||
-            !state.isOpaqueCube(getCasing().getCasingWorld(), getCasing().getPosition()) ||
+        if (state.getRenderShape() != BlockRenderType.MODEL ||
+            !state.isSolidRender(getCasing().getCasingLevel(), getCasing().getPosition()) ||
             state.getBlock().hasTileEntity(state)) {
             return false;
         }
 
-        if (!getCasing().getCasingWorld().isRemote()) {
+        if (!getCasing().getCasingLevel().isClientSide()) {
             facadeState = state;
             sendState();
         }

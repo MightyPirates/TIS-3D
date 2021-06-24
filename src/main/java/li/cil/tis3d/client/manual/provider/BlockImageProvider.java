@@ -40,7 +40,7 @@ public final class BlockImageProvider extends ForgeRegistryEntry<ImageProvider> 
                     .getState();
             } catch (final CommandSyntaxException e) {
                 LOGGER.error("Failed parsing block state.", e);
-                return Blocks.AIR.getDefaultState();
+                return Blocks.AIR.defaultBlockState();
             }
         }));
 

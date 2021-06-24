@@ -16,7 +16,7 @@ public final class WorldUnloadHandler {
 
     private static void onWorldUnload(final WorldEvent.Unload event) {
         if (event.getWorld() instanceof World) {
-            for (final TileEntity tileEntity : ((World) event.getWorld()).loadedTileEntityList) {
+            for (final TileEntity tileEntity : ((World) event.getWorld()).blockEntityList) {
                 if (tileEntity instanceof TileEntityCasing) {
                     final TileEntityCasing tileEntityCasing = (TileEntityCasing) tileEntity;
                     final CasingImpl casing = (CasingImpl) tileEntityCasing.getCasing();

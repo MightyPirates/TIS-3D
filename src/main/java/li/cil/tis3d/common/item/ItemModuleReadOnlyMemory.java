@@ -25,15 +25,15 @@ public final class ItemModuleReadOnlyMemory extends ItemModule {
     private static final byte[] EMPTY_DATA = new byte[0];
 
     public ItemModuleReadOnlyMemory() {
-        super(createProperties().maxStackSize(1));
+        super(createProperties().stacksTo(1));
     }
 
     // --------------------------------------------------------------------- //
     // Item
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(final World world, final PlayerEntity player, final Hand hand) {
-        if (!world.isRemote() && player instanceof ServerPlayerEntity) {
+    public ActionResult<ItemStack> use(final World world, final PlayerEntity player, final Hand hand) {
+        if (!world.isClientSide() && player instanceof ServerPlayerEntity) {
             final ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
             NetworkHooks.openGui(serverPlayer, new INamedContainerProvider() {
                 @Override
@@ -45,14 +45,14 @@ public final class ItemModuleReadOnlyMemory extends ItemModule {
                 public Container createMenu(final int id, final PlayerInventory playerInventory, final PlayerEntity player) {
                     return new ReadOnlyMemoryModuleContainer(id, player, hand);
                 }
-            }, buffer -> buffer.writeEnumValue(hand));
+            }, buffer -> buffer.writeEnum(hand));
         }
-        return ActionResult.func_233538_a_(player.getHeldItem(hand), world.isRemote());
+        return ActionResult.sidedSuccess(player.getItemInHand(hand), world.isClientSide());
     }
 
     @Override
     public boolean doesSneakBypassUse(final ItemStack stack, final IWorldReader world, final BlockPos pos, final PlayerEntity player) {
-        return world.getTileEntity(pos) instanceof Casing;
+        return world.getBlockEntity(pos) instanceof Casing;
     }
 
     // --------------------------------------------------------------------- //

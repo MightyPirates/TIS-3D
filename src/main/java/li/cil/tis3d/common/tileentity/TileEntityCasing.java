@@ -73,7 +73,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
     private static final String TAG_CASING = "casing";
     private static final String TAG_ENABLED = "enabled";
     private static final String TAG_INVENTORY = "inventory";
-    private static final String TAG_LOCKED = "closed"; // backwards compat .-. muh ocd
+    private static final String TAG_LOCKED = "locked";
 
     private TileEntityController controller;
     private boolean isEnabled;
@@ -160,7 +160,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
     }
 
     public void scheduleScan() {
-        if (getTileEntityWorld().isRemote()) {
+        if (getBlockEntityWorld().isClientSide()) {
             return;
         }
         if (getController() != null) {
@@ -195,7 +195,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
         for (final Face face : Face.VALUES) {
             final Module module = getModule(face);
             if (module instanceof BlockChangeAware) {
-                final BlockPos moduleNeighborPos = getPosition().offset(Face.toDirection(face));
+                final BlockPos moduleNeighborPos = getPosition().relative(Face.toDirection(face));
                 final boolean isModuleNeighbor = Objects.equals(neighborPos, moduleNeighborPos);
                 ((BlockChangeAware) module).onNeighborBlockChange(neighborPos, isModuleNeighbor);
             }
@@ -249,7 +249,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
 
         // Ensure there are no modules installed between two casings.
         if (hasNeighbor(face)) {
-            InventoryUtils.drop(getTileEntityWorld(), getPos(), this, face.ordinal(), getInventoryStackLimit(), Face.toDirection(face));
+            InventoryUtils.drop(getBlockEntityWorld(), getBlockPos(), this, face.ordinal(), getMaxStackSize(), Face.toDirection(face));
         }
 
         if (neighbor instanceof TileEntityController) {
@@ -286,12 +286,12 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
     // IInventory
 
     @Override
-    public boolean isUsableByPlayer(final PlayerEntity player) {
-        if (getTileEntityWorld().getTileEntity(pos) != this) {
+    public boolean stillValid(final PlayerEntity player) {
+        if (getBlockEntityWorld().getBlockEntity(getBlockPos()) != this) {
             return false;
         }
 
-        return pos.withinDistance(player.getPositionVec(), 8);
+        return getBlockPos().closerThan(player.position(), 8);
     }
 
     // --------------------------------------------------------------------- //
@@ -314,10 +314,10 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
     // TileEntity
 
     @Override
-    public void remove() {
-        super.remove();
+    public void setRemoved() {
+        super.setRemoved();
 
-        if (!getTileEntityWorld().isRemote()) {
+        if (!getBlockEntityWorld().isClientSide()) {
             onDisabled();
         }
 
@@ -356,13 +356,13 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
     public void onDataPacket(final NetworkManager manager, final SUpdateTileEntityPacket packet) {
         super.onDataPacket(manager, packet);
 
-        final World world = getTileEntityWorld();
-        final BlockState state = world.getBlockState(getPos());
-        world.notifyBlockUpdate(getPos(), state, state, 2);
+        final World world = getBlockEntityWorld();
+        final BlockState state = world.getBlockState(getBlockPos());
+        world.sendBlockUpdated(getBlockPos(), state, state, 2);
     }
 
     @Override
-    public double getMaxRenderDistanceSquared() {
+    public double getViewDistance() {
         return Network.RANGE_HIGH * Network.RANGE_HIGH;
     }
 
@@ -445,7 +445,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
      */
     @OnlyIn(Dist.CLIENT)
     public void setStackAndModuleClient(final int slot, final ItemStack stack, final CompoundNBT moduleData) {
-        inventory.setInventorySlotContents(slot, stack);
+        inventory.setItem(slot, stack);
         final Module module = casing.getModule(Face.VALUES[slot]);
         if (module != null) {
             module.readFromNBT(moduleData);
@@ -480,7 +480,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
 
     @Nullable
     private TileEntityController findController() {
-        final World world = getTileEntityWorld();
+        final World world = getBlockEntityWorld();
 
         // List of processed tile entities to avoid loops.
         final Set<TileEntity> processed = new HashSet<>();
@@ -543,16 +543,16 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
         final CasingLockedStateMessage message = new CasingLockedStateMessage(this, isLocked());
         Network.INSTANCE.send(Network.getTracking(this), message);
 
-        getTileEntityWorld().playSound(null, getPos(),
-            SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3f, isLocked() ? 0.5f : 0.6f);
+        getBlockEntityWorld().playSound(null, getBlockPos(),
+            SoundEvents.LEVER_CLICK, SoundCategory.BLOCKS, 0.3f, isLocked() ? 0.5f : 0.6f);
     }
 
     private void sendReceivingPipeLockedState(final Face face, final Port port) {
         final ReceivingPipeLockedStateMessage message = new ReceivingPipeLockedStateMessage(this, face, port, isReceivingPipeLocked(face, port));
         Network.INSTANCE.send(Network.getTracking(this), message);
 
-        getTileEntityWorld().playSound(null, getPos(),
-            SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3f, isReceivingPipeLocked(face, port) ? 0.5f : 0.6f);
+        getBlockEntityWorld().playSound(null, getBlockPos(),
+            SoundEvents.LEVER_CLICK, SoundCategory.BLOCKS, 0.3f, isReceivingPipeLocked(face, port) ? 0.5f : 0.6f);
     }
 
     private static void decompressClosed(final byte[] compressed, final boolean[][] decompressed) {

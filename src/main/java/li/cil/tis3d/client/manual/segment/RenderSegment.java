@@ -73,7 +73,7 @@ public final class RenderSegment extends AbstractSegment implements InteractiveS
 
         final Optional<InteractiveSegment> hovered = checkHovered(mouseX, mouseY, x + xOffset, y + yOffset, width, height);
 
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(x + xOffset, y + yOffset, 0);
         matrixStack.scale(s, s, s);
 
@@ -83,7 +83,7 @@ public final class RenderSegment extends AbstractSegment implements InteractiveS
 
         imageRenderer.render(matrixStack, mouseX - x, mouseY - y);
 
-        matrixStack.pop();
+        matrixStack.popPose();
 
         return hovered;
     }

@@ -21,146 +21,146 @@ public class ModRecipesProvider extends RecipeProvider {
     }
 
     @Override
-    protected void registerRecipes(final Consumer<IFinishedRecipe> consumer) {
+    protected void buildShapelessRecipes(final Consumer<IFinishedRecipe> consumer) {
         ShapedRecipeBuilder
-            .shapedRecipe(Items.CASING.get(), 8)
-            .patternLine("IRI")
-            .patternLine("RSR")
-            .patternLine("IRI")
-            .key('I', Tags.Items.INGOTS_IRON)
-            .key('R', Tags.Items.DUSTS_REDSTONE)
-            .key('S', Tags.Items.STORAGE_BLOCKS_IRON)
-            .addCriterion("has_redstone", inventoryChange(Tags.Items.DUSTS_REDSTONE))
-            .build(consumer);
+            .shaped(Items.CASING.get(), 8)
+            .pattern("IRI")
+            .pattern("RSR")
+            .pattern("IRI")
+            .define('I', Tags.Items.INGOTS_IRON)
+            .define('R', Tags.Items.DUSTS_REDSTONE)
+            .define('S', Tags.Items.STORAGE_BLOCKS_IRON)
+            .unlockedBy("has_redstone", inventoryChange(Tags.Items.DUSTS_REDSTONE))
+            .save(consumer);
 
         ShapedRecipeBuilder
-            .shapedRecipe(Items.CONTROLLER.get())
-            .patternLine("IRI")
-            .patternLine("RSR")
-            .patternLine("IRI")
-            .key('I', Tags.Items.INGOTS_IRON)
-            .key('R', Tags.Items.DUSTS_REDSTONE)
-            .key('S', Tags.Items.GEMS_DIAMOND)
-            .addCriterion("has_redstone", inventoryChange(Tags.Items.DUSTS_REDSTONE))
-            .build(consumer);
+            .shaped(Items.CONTROLLER.get())
+            .pattern("IRI")
+            .pattern("RSR")
+            .pattern("IRI")
+            .define('I', Tags.Items.INGOTS_IRON)
+            .define('R', Tags.Items.DUSTS_REDSTONE)
+            .define('S', Tags.Items.GEMS_DIAMOND)
+            .unlockedBy("has_redstone", inventoryChange(Tags.Items.DUSTS_REDSTONE))
+            .save(consumer);
 
         ShapedRecipeBuilder
-            .shapedRecipe(Items.KEY.get())
-            .patternLine("GI ")
-            .patternLine("GI ")
-            .patternLine("LRQ")
-            .key('L', Tags.Items.GEMS_LAPIS)
-            .key('G', Tags.Items.NUGGETS_GOLD)
-            .key('I', Tags.Items.INGOTS_IRON)
-            .key('Q', Tags.Items.GEMS_QUARTZ)
-            .key('R', Tags.Items.DUSTS_REDSTONE)
-            .addCriterion("has_casing", inventoryChange(Items.CASING.get()))
-            .build(consumer);
+            .shaped(Items.KEY.get())
+            .pattern("GI ")
+            .pattern("GI ")
+            .pattern("LRQ")
+            .define('L', Tags.Items.GEMS_LAPIS)
+            .define('G', Tags.Items.NUGGETS_GOLD)
+            .define('I', Tags.Items.INGOTS_IRON)
+            .define('Q', Tags.Items.GEMS_QUARTZ)
+            .define('R', Tags.Items.DUSTS_REDSTONE)
+            .unlockedBy("has_casing", inventoryChange(Items.CASING.get()))
+            .save(consumer);
 
         ShapelessRecipeBuilder
-            .shapelessRecipe(Items.PRISM.get())
-            .addIngredient(Tags.Items.GEMS_QUARTZ)
-            .addIngredient(Tags.Items.DUSTS_REDSTONE)
-            .addIngredient(Tags.Items.GEMS_LAPIS)
-            .addIngredient(Tags.Items.GEMS_EMERALD)
-            .addCriterion("has_execution_module", inventoryChange(Items.EXECUTION_MODULE.get()))
-            .build(consumer);
+            .shapeless(Items.PRISM.get())
+            .requires(Tags.Items.GEMS_QUARTZ)
+            .requires(Tags.Items.DUSTS_REDSTONE)
+            .requires(Tags.Items.GEMS_LAPIS)
+            .requires(Tags.Items.GEMS_EMERALD)
+            .unlockedBy("has_execution_module", inventoryChange(Items.EXECUTION_MODULE.get()))
+            .save(consumer);
 
         module(Items.AUDIO_MODULE, 2, net.minecraft.item.Items.NOTE_BLOCK)
-            .addCriterion("has_sequencer_module", inventoryChange(Items.SEQUENCER_MODULE.get()))
-            .build(consumer);
+            .unlockedBy("has_sequencer_module", inventoryChange(Items.SEQUENCER_MODULE.get()))
+            .save(consumer);
         module(Items.DISPLAY_MODULE, 2, Items.PRISM.get())
-            .addCriterion("has_execution_module", inventoryChange(Items.EXECUTION_MODULE.get()))
-            .build(consumer);
+            .unlockedBy("has_execution_module", inventoryChange(Items.EXECUTION_MODULE.get()))
+            .save(consumer);
         module(Items.EXECUTION_MODULE, 2, Tags.Items.INGOTS_GOLD)
-            .addCriterion("has_redstone_module", inventoryChange(Items.REDSTONE_MODULE.get()))
-            .build(consumer);
+            .unlockedBy("has_redstone_module", inventoryChange(Items.REDSTONE_MODULE.get()))
+            .save(consumer);
         module(Items.FACADE_MODULE, 8, net.minecraft.item.Items.PAPER)
-            .build(consumer);
+            .save(consumer);
         module(Items.INFRARED_MODULE, 2, net.minecraft.item.Items.SPIDER_EYE)
-            .addCriterion("has_redstone_module", inventoryChange(Items.REDSTONE_MODULE.get()))
-            .build(consumer);
+            .unlockedBy("has_redstone_module", inventoryChange(Items.REDSTONE_MODULE.get()))
+            .save(consumer);
         module(Items.KEYPAD_MODULE, 2, ItemTags.BUTTONS)
-            .addCriterion("has_redstone_module", inventoryChange(Items.REDSTONE_MODULE.get()))
-            .build(consumer);
+            .unlockedBy("has_redstone_module", inventoryChange(Items.REDSTONE_MODULE.get()))
+            .save(consumer);
         module(Items.RANDOM_MODULE, 2, Tags.Items.ENDER_PEARLS)
-            .addCriterion("has_execution_module", inventoryChange(Items.EXECUTION_MODULE.get()))
-            .build(consumer);
+            .unlockedBy("has_execution_module", inventoryChange(Items.EXECUTION_MODULE.get()))
+            .save(consumer);
         module(Items.RANDOM_ACCESS_MEMORY_MODULE, 2, Tags.Items.GEMS_EMERALD)
-            .addCriterion("has_stack_module", inventoryChange(Items.STACK_MODULE.get()))
-            .build(consumer);
+            .unlockedBy("has_stack_module", inventoryChange(Items.STACK_MODULE.get()))
+            .save(consumer);
         module(Items.READ_ONLY_MEMORY_MODULE, 2, li.cil.tis3d.common.tags.ItemTags.BOOKS)
-            .addCriterion("has_stack_module", inventoryChange(Items.STACK_MODULE.get()))
-            .build(consumer);
+            .unlockedBy("has_stack_module", inventoryChange(Items.STACK_MODULE.get()))
+            .save(consumer);
         module(Items.REDSTONE_MODULE, 2, net.minecraft.item.Items.REPEATER)
-            .build(consumer);
+            .save(consumer);
         module(Items.SEQUENCER_MODULE, 2, ItemTags.MUSIC_DISCS)
-            .addCriterion("has_queue", inventoryChange(Items.QUEUE_MODULE.get()))
-            .build(consumer);
+            .unlockedBy("has_queue", inventoryChange(Items.QUEUE_MODULE.get()))
+            .save(consumer);
         module(Items.SERIAL_PORT_MODULE, 2, Tags.Items.GEMS_QUARTZ)
-            .addCriterion("has_execution_module", inventoryChange(Items.EXECUTION_MODULE.get()))
-            .build(consumer);
+            .unlockedBy("has_execution_module", inventoryChange(Items.EXECUTION_MODULE.get()))
+            .save(consumer);
         module(Items.STACK_MODULE, 2, Tags.Items.CHESTS)
-            .addCriterion("has_redstone_module", inventoryChange(Items.REDSTONE_MODULE.get()))
-            .build(consumer);
+            .unlockedBy("has_redstone_module", inventoryChange(Items.REDSTONE_MODULE.get()))
+            .save(consumer);
         module(Items.TIMER_MODULE, 2, Tags.Items.SAND)
-            .addCriterion("has_execution_module", inventoryChange(Items.EXECUTION_MODULE.get()))
-            .build(consumer);
+            .unlockedBy("has_execution_module", inventoryChange(Items.EXECUTION_MODULE.get()))
+            .save(consumer);
 
         ShapedRecipeBuilder
-            .shapedRecipe(Items.TERMINAL_MODULE.get())
-            .patternLine("KDS")
-            .patternLine("IQI")
-            .patternLine(" R ")
-            .key('K', Items.KEYPAD_MODULE.get())
-            .key('D', Items.DISPLAY_MODULE.get())
-            .key('S', Items.STACK_MODULE.get())
-            .key('I', Tags.Items.INGOTS_IRON)
-            .key('Q', Tags.Items.GEMS_QUARTZ)
-            .key('R', Tags.Items.DUSTS_REDSTONE)
-            .addCriterion("has_casing", inventoryChange(Items.CASING.get()))
-            .addCriterion("has_keypad", inventoryChange(Items.KEYPAD_MODULE.get()))
-            .build(consumer);
+            .shaped(Items.TERMINAL_MODULE.get())
+            .pattern("KDS")
+            .pattern("IQI")
+            .pattern(" R ")
+            .define('K', Items.KEYPAD_MODULE.get())
+            .define('D', Items.DISPLAY_MODULE.get())
+            .define('S', Items.STACK_MODULE.get())
+            .define('I', Tags.Items.INGOTS_IRON)
+            .define('Q', Tags.Items.GEMS_QUARTZ)
+            .define('R', Tags.Items.DUSTS_REDSTONE)
+            .unlockedBy("has_casing", inventoryChange(Items.CASING.get()))
+            .unlockedBy("has_keypad", inventoryChange(Items.KEYPAD_MODULE.get()))
+            .save(consumer);
 
         ShapelessRecipeBuilder
-            .shapelessRecipe(Items.QUEUE_MODULE.get())
-            .addIngredient(Items.STACK_MODULE.get())
-            .addCriterion("has_stack", inventoryChange(Items.STACK_MODULE.get()))
-            .build(consumer, new ResourceLocation(API.MOD_ID, Items.QUEUE_MODULE.getId().getPath() + "/from_stack"));
+            .shapeless(Items.QUEUE_MODULE.get())
+            .requires(Items.STACK_MODULE.get())
+            .unlockedBy("has_stack", inventoryChange(Items.STACK_MODULE.get()))
+            .save(consumer, new ResourceLocation(API.MOD_ID, Items.QUEUE_MODULE.getId().getPath() + "/from_stack"));
         ShapelessRecipeBuilder
-            .shapelessRecipe(Items.STACK_MODULE.get())
-            .addIngredient(Items.QUEUE_MODULE.get())
-            .addCriterion("has_queue", inventoryChange(Items.QUEUE_MODULE.get()))
-            .build(consumer, new ResourceLocation(API.MOD_ID, Items.STACK_MODULE.getId().getPath() + "/from_queue"));
+            .shapeless(Items.STACK_MODULE.get())
+            .requires(Items.QUEUE_MODULE.get())
+            .unlockedBy("has_queue", inventoryChange(Items.QUEUE_MODULE.get()))
+            .save(consumer, new ResourceLocation(API.MOD_ID, Items.STACK_MODULE.getId().getPath() + "/from_queue"));
     }
 
     private static ShapedRecipeBuilder module(final RegistryObject<? extends Item> module, final int count, final Item item) {
         return module(module, count)
-            .key('S', item);
+            .define('S', item);
     }
 
     private static ShapedRecipeBuilder module(final RegistryObject<? extends Item> module, final int count, final ITag<Item> tag) {
         return module(module, count)
-            .key('S', tag);
+            .define('S', tag);
     }
 
     private static ShapedRecipeBuilder module(final RegistryObject<? extends Item> module, final int count) {
         return ShapedRecipeBuilder
-            .shapedRecipe(module.get(), count)
-            .patternLine("PPP")
-            .patternLine("ISI")
-            .patternLine(" R ")
-            .key('P', Tags.Items.GLASS_PANES_COLORLESS)
-            .key('I', Tags.Items.INGOTS_IRON)
-            .key('R', Tags.Items.DUSTS_REDSTONE)
-            .addCriterion("has_casing", inventoryChange(Items.CASING.get()));
+            .shaped(module.get(), count)
+            .pattern("PPP")
+            .pattern("ISI")
+            .pattern(" R ")
+            .define('P', Tags.Items.GLASS_PANES_COLORLESS)
+            .define('I', Tags.Items.INGOTS_IRON)
+            .define('R', Tags.Items.DUSTS_REDSTONE)
+            .unlockedBy("has_casing", inventoryChange(Items.CASING.get()));
     }
 
     private static InventoryChangeTrigger.Instance inventoryChange(final ITag<Item> tag) {
-        return InventoryChangeTrigger.Instance.forItems(ItemPredicate.Builder.create().tag(tag).build());
+        return InventoryChangeTrigger.Instance.hasItems(ItemPredicate.Builder.item().of(tag).build());
     }
 
     private static InventoryChangeTrigger.Instance inventoryChange(final IItemProvider item) {
-        return InventoryChangeTrigger.Instance.forItems(item);
+        return InventoryChangeTrigger.Instance.hasItems(item);
     }
 }

@@ -21,7 +21,7 @@ public interface Casing {
      *
      * @return the world the casing lives in.
      */
-    World getCasingWorld();
+    World getCasingLevel();
 
     /**
      * The position of the casing in the world it exists in.
@@ -34,7 +34,7 @@ public interface Casing {
      * Flag the casing as dirty so it is saved when the chunk containing it
      * saved next.
      */
-    void markDirty();
+    void setChanged();
 
     // --------------------------------------------------------------------- //
 

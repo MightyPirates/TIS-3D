@@ -101,7 +101,7 @@ public final class ModuleExecution extends AbstractModuleWithRotation implements
             state = State.IDLE;
         } else if (machine.step()) {
             state = State.RUN;
-            getCasing().markDirty();
+            getCasing().setChanged();
             sendPartialState();
             return; // Don't send data twice.
         } else {
@@ -109,7 +109,7 @@ public final class ModuleExecution extends AbstractModuleWithRotation implements
         }
 
         if (prevState != state) {
-            getCasing().markDirty();
+            getCasing().setChanged();
             sendPartialState();
         }
     }
@@ -143,20 +143,20 @@ public final class ModuleExecution extends AbstractModuleWithRotation implements
 
     @Override
     public boolean onActivate(final PlayerEntity player, final Hand hand, final Vector3d hit) {
-        final ItemStack heldItem = player.getHeldItem(hand);
+        final ItemStack heldItem = player.getItemInHand(hand);
 
         // Vanilla book? If so, make that a code book.
         if (Items.is(heldItem, net.minecraft.item.Items.BOOK)) {
-            if (!player.getEntityWorld().isRemote()) {
-                if (!player.abilities.isCreativeMode) {
+            if (!player.getCommandSenderWorld().isClientSide()) {
+                if (!player.abilities.instabuild) {
                     heldItem.split(1);
                 }
                 final ItemStack bookCode = new ItemStack(Items.BOOK_CODE.get());
-                if (player.inventory.addItemStackToInventory(bookCode)) {
-                    player.container.detectAndSendChanges();
+                if (player.inventory.add(bookCode)) {
+                    player.containerMenu.broadcastChanges();
                 }
                 if (bookCode.getCount() > 0) {
-                    player.dropItem(bookCode, false, false);
+                    player.drop(bookCode, false, false);
                 }
             }
 
@@ -164,7 +164,7 @@ public final class ModuleExecution extends AbstractModuleWithRotation implements
         }
 
         // Code book? Store current program on it if sneaking.
-        if (Items.is(heldItem, Items.BOOK_CODE) && player.isSneaking()) {
+        if (Items.is(heldItem, Items.BOOK_CODE) && player.isShiftKeyDown()) {
             final ItemBookCode.Data data = ItemBookCode.Data.loadFromStack(heldItem);
             if (getState().code != null && getState().code.length > 0) {
                 data.addOrSelectProgram(Arrays.asList(getState().code));
@@ -175,7 +175,7 @@ public final class ModuleExecution extends AbstractModuleWithRotation implements
         }
 
         // If sneaking otherwise, ignore interaction.
-        if (player.isSneaking()) {
+        if (player.isShiftKeyDown()) {
             return false;
         }
 
@@ -197,11 +197,11 @@ public final class ModuleExecution extends AbstractModuleWithRotation implements
         }
 
         // Compile the code into our machine state.
-        final World world = getCasing().getCasingWorld();
-        if (!world.isRemote()) {
+        final World world = getCasing().getCasingLevel();
+        if (!world.isClientSide()) {
             compile(code);
             if (compileError != null) {
-                player.sendStatusMessage(Strings.getCompileError(compileError), false);
+                player.displayClientMessage(Strings.getCompileError(compileError), false);
             }
             sendFullState();
         }
@@ -236,7 +236,7 @@ public final class ModuleExecution extends AbstractModuleWithRotation implements
         }
 
         final MatrixStack matrixStack = context.getMatrixStack();
-        matrixStack.push();
+        matrixStack.pushPose();
         rotateForRendering(matrixStack);
 
         // Draw status texture.
@@ -248,7 +248,7 @@ public final class ModuleExecution extends AbstractModuleWithRotation implements
             renderState(context, machineState);
         }
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     @Override
@@ -336,7 +336,7 @@ public final class ModuleExecution extends AbstractModuleWithRotation implements
     @OnlyIn(Dist.CLIENT)
     private void renderState(final RenderContext context, final MachineState machineState) {
         final MatrixStack matrixStack = context.getMatrixStack();
-        matrixStack.push();
+        matrixStack.pushPose();
 
         // Offset to start drawing at top left of inner area, slightly inset.
         matrixStack.translate(3.5f / 16f, 3.5f / 16f, 0);
@@ -392,7 +392,7 @@ public final class ModuleExecution extends AbstractModuleWithRotation implements
             matrixStack.translate(0, fontRenderer.getCharHeight() + 1, 0);
         }
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     /**

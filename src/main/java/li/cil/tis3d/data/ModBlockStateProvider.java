@@ -32,7 +32,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
         final MultiPartBlockStateBuilder casingBuilder = getMultipartBuilder(Blocks.CASING.get());
         BlockCasing.FACE_TO_PROPERTY.forEach((face, property) -> {
             final Direction direction = Face.toDirection(face);
-            final int rotationY = (int) direction.getHorizontalAngle();
+            final int rotationY = (int) direction.toYRot();
             final int rotationX;
             if (direction == Direction.UP) {
                 rotationX = 90;

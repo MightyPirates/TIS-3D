@@ -21,7 +21,7 @@ public class TextureTabIconRenderer extends AbstractTab {
 
     @Override
     public void renderIcon(final MatrixStack matrixStack) {
-        Minecraft.getInstance().getTextureManager().bindTexture(location);
+        Minecraft.getInstance().getTextureManager().bind(location);
         Screen.blit(matrixStack, 0, 0, 16, 16, 0, 0, 1, 1, 1, 1);
     }
 }

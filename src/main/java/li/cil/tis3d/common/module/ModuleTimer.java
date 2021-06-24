@@ -12,7 +12,6 @@ import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.client.renderer.font.FontRenderer;
-import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -60,7 +59,7 @@ public final class ModuleTimer extends AbstractModuleWithRotation {
     @Override
     public void step() {
         if (!hasElapsed) {
-            final long worldTime = getCasing().getCasingWorld().getGameTime();
+            final long worldTime = getCasing().getCasingLevel().getGameTime();
             if (worldTime >= timer) {
                 hasElapsed = true;
             }
@@ -99,15 +98,14 @@ public final class ModuleTimer extends AbstractModuleWithRotation {
         }
 
         final MatrixStack matrixStack = context.getMatrixStack();
-        matrixStack.push();
+        matrixStack.pushPose();
         rotateForRendering(matrixStack);
 
         context.drawAtlasSpriteUnlit(Textures.LOCATION_OVERLAY_MODULE_TIMER);
 
         // Render detailed state when player is close.
         if (!hasElapsed && context.isWithinDetailRange(getCasing().getPosition())) {
-            final Minecraft mc = Minecraft.getInstance();
-            final long worldTime = mc.world != null ? mc.world.getGameTime() : 0;
+            final long worldTime = context.getDispatcher().level.getGameTime();
             final float remaining = (float) (timer - worldTime) - context.getPartialTicks();
             if (remaining <= 0) {
                 hasElapsed = true;
@@ -116,7 +114,7 @@ public final class ModuleTimer extends AbstractModuleWithRotation {
             }
         }
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     @Override
@@ -141,7 +139,7 @@ public final class ModuleTimer extends AbstractModuleWithRotation {
      * @param value the value to set the timer to.
      */
     private void setTimer(final short value) {
-        final long worldTime = getCasing().getCasingWorld().getGameTime();
+        final long worldTime = getCasing().getCasingLevel().getGameTime();
         timer = worldTime + (value & 0xFFFF);
         hasElapsed = timer == worldTime;
 

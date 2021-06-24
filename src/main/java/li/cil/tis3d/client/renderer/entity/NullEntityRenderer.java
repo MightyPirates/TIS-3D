@@ -18,7 +18,7 @@ public final class NullEntityRenderer<T extends Entity> extends EntityRenderer<T
     }
 
     @Override
-    public ResourceLocation getEntityTexture(final T entity) {
+    public ResourceLocation getTextureLocation(final T entity) {
         return MissingTextureSprite.getLocation();
     }
 }

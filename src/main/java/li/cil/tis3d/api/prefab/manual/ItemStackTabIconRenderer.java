@@ -26,9 +26,9 @@ public class ItemStackTabIconRenderer extends AbstractTab {
         // takes a MatrixStack. Yet.
 
         final Vector4f position = new Vector4f(0, 0, 0, 1);
-        position.transform(matrixStack.getLast().getMatrix());
+        position.transform(matrixStack.last().pose());
 
-        Minecraft.getInstance().getItemRenderer().renderItemAndEffectIntoGUI(stack, (int) position.getX(), (int) position.getY());
+        Minecraft.getInstance().getItemRenderer().renderGuiItem(stack, (int) position.x(), (int) position.y());
 
         // Unfuck GL state.
         RenderSystem.enableBlend();

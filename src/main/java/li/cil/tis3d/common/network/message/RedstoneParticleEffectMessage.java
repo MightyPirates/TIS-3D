@@ -27,7 +27,7 @@ public final class RedstoneParticleEffectMessage extends AbstractMessage {
     protected void handleMessage(final NetworkEvent.Context context) {
         final World world = getClientWorld();
         if (world != null) {
-            world.addParticle(RedstoneParticleData.REDSTONE_DUST, x, y, z, 0, 0, 0);
+            world.addParticle(RedstoneParticleData.REDSTONE, x, y, z, 0, 0, 0);
         }
     }
 

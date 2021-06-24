@@ -105,7 +105,7 @@ public final class ModuleStack extends AbstractModuleWithRotation {
         }
 
         final MatrixStack matrixStack = context.getMatrixStack();
-        matrixStack.push();
+        matrixStack.pushPose();
         rotateForRendering(matrixStack);
 
         context.drawAtlasSpriteUnlit(Textures.LOCATION_OVERLAY_MODULE_STACK);
@@ -115,7 +115,7 @@ public final class ModuleStack extends AbstractModuleWithRotation {
             drawState(context);
         }
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     @Override

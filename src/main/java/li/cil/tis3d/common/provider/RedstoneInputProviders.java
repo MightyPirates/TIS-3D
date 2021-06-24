@@ -30,7 +30,7 @@ public final class RedstoneInputProviders {
     public static int getRedstoneInput(final Redstone module) {
         int maxSignal = 0;
         for (final RedstoneInputProvider provider : REDSTONE_INPUT_PROVIDER_REGISTRY.get()) {
-            final int signal = provider.getInput(module.getCasing().getCasingWorld(), module.getCasing().getPosition(), Face.toDirection(module.getFace()));
+            final int signal = provider.getInput(module.getCasing().getCasingLevel(), module.getCasing().getPosition(), Face.toDirection(module.getFace()));
             if (signal > maxSignal) {
                 maxSignal = signal;
             }

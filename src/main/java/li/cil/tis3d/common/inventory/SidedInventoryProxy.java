@@ -4,6 +4,8 @@ import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 
+import javax.annotation.Nullable;
+
 public interface SidedInventoryProxy extends InventoryProxy, ISidedInventory {
     @Override
     ISidedInventory getInventory();
@@ -14,12 +16,12 @@ public interface SidedInventoryProxy extends InventoryProxy, ISidedInventory {
     }
 
     @Override
-    default boolean canInsertItem(final int slot, final ItemStack stack, final Direction facing) {
-        return getInventory().canInsertItem(slot, stack, facing);
+    default boolean canPlaceItemThroughFace(final int slot, final ItemStack stack, @Nullable final Direction facing) {
+        return getInventory().canPlaceItemThroughFace(slot, stack, facing);
     }
 
     @Override
-    default boolean canExtractItem(final int slot, final ItemStack stack, final Direction facing) {
-        return getInventory().canExtractItem(slot, stack, facing);
+    default boolean canTakeItemThroughFace(final int slot, final ItemStack stack, final Direction facing) {
+        return getInventory().canTakeItemThroughFace(slot, stack, facing);
     }
 }

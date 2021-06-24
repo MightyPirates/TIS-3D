@@ -26,7 +26,7 @@ public class TextureImageRenderer implements ImageRenderer {
             this.texture = (ImageTexture) image;
         } else {
             this.texture = new ImageTexture(location);
-            manager.loadTexture(location, texture);
+            manager.register(location, texture);
         }
     }
 
@@ -42,7 +42,7 @@ public class TextureImageRenderer implements ImageRenderer {
 
     @Override
     public void render(final MatrixStack matrixStack, final int mouseX, final int mouseY) {
-        Minecraft.getInstance().getTextureManager().bindTexture(location);
+        Minecraft.getInstance().getTextureManager().bind(location);
         Screen.blit(matrixStack, 0, 0, getWidth(), getHeight(), 0, 0, 1, 1, 1, 1);
     }
 
@@ -55,10 +55,10 @@ public class TextureImageRenderer implements ImageRenderer {
         }
 
         @Override
-        public void loadTexture(final IResourceManager manager) throws IOException {
-            super.loadTexture(manager);
-            try (final TextureData textureData = getTextureData(manager)) {
-                final NativeImage nativeImage = textureData.getNativeImage();
+        public void load(final IResourceManager manager) throws IOException {
+            super.load(manager);
+            try (final TextureData textureData = getTextureImage(manager)) {
+                final NativeImage nativeImage = textureData.getImage();
                 width = nativeImage.getWidth();
                 height = nativeImage.getHeight();
             }

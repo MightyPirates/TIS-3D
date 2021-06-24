@@ -16,8 +16,8 @@ public interface CasingProxy extends Casing {
     Casing getCasing();
 
     @Override
-    default World getCasingWorld() {
-        return getCasing().getCasingWorld();
+    default World getCasingLevel() {
+        return getCasing().getCasingLevel();
     }
 
     @Override
@@ -26,8 +26,8 @@ public interface CasingProxy extends Casing {
     }
 
     @Override
-    default void markDirty() {
-        getCasing().markDirty();
+    default void setChanged() {
+        getCasing().setChanged();
     }
 
     @Override

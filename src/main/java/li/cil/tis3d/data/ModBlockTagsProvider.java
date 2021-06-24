@@ -15,8 +15,8 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
     }
 
     @Override
-    protected void registerTags() {
-        getOrCreateBuilder(COMPUTERS).add(
+    protected void addTags() {
+        tag(COMPUTERS).add(
             CASING.get(),
             CONTROLLER.get()
         );

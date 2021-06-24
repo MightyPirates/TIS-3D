@@ -42,14 +42,14 @@ public final class ItemStackImageRenderer implements ImageRenderer {
         // This is *nasty*, but sadly there's no renderItemAndEffectIntoGUI() variant that
         // takes a MatrixStack. Yet.
 
-        GlStateManager.pushMatrix();
-        GlStateManager.scalef(scaleX, scaleY, 1);
+        GlStateManager._pushMatrix();
+        GlStateManager._scalef(scaleX, scaleY, 1);
 
         final Vector4f position = new Vector4f(0, 0, 0, 1);
-        position.transform(matrixStack.getLast().getMatrix());
-        mc.getItemRenderer().renderItemAndEffectIntoGUI(stack, (int) (position.getX() / scaleX), (int) (position.getY() / scaleY));
+        position.transform(matrixStack.last().pose());
+        mc.getItemRenderer().renderGuiItem(stack, (int) (position.x() / scaleX), (int) (position.y() / scaleY));
 
-        GlStateManager.popMatrix();
+        GlStateManager._popMatrix();
 
         // Unfuck GL state.
         RenderSystem.enableBlend();

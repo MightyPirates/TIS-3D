@@ -44,7 +44,7 @@ public final class ModuleAudio extends AbstractModule {
 
     @Override
     public void step() {
-        final World world = getCasing().getCasingWorld();
+        final World world = getCasing().getCasingLevel();
 
         stepInput();
 
@@ -75,7 +75,7 @@ public final class ModuleAudio extends AbstractModule {
             }
             if (receivingPipe.canTransfer()) {
                 // Don't actually read more values if we already sent a packet this tick.
-                final World world = getCasing().getCasingWorld();
+                final World world = getCasing().getCasingLevel();
                 if (world.getGameTime() > lastStep) {
                     playNote(receivingPipe.read());
                 }
@@ -100,7 +100,7 @@ public final class ModuleAudio extends AbstractModule {
         }
 
         // Send event to check if the sound may be played / should be modulated.
-        final World world = getCasing().getCasingWorld();
+        final World world = getCasing().getCasingLevel();
         final BlockPos pos = getCasing().getPosition();
         NoteBlockInstrument instrument = NoteBlockInstrument.values()[instrumentId];
         final NoteBlockEvent.Play event = new NoteBlockEvent.Play(world, pos, world.getBlockState(pos), noteId, instrument);
@@ -112,15 +112,15 @@ public final class ModuleAudio extends AbstractModule {
 
             // Offset to have the actual origin be in front of the module.
             final Direction facing = Face.toDirection(getFace());
-            final double x = pos.getX() + 0.5 + facing.getXOffset() * 0.6;
-            final double y = pos.getY() + 0.5 + facing.getYOffset() * 0.6;
-            final double z = pos.getZ() + 0.5 + facing.getZOffset() * 0.6;
+            final double x = pos.getX() + 0.5 + facing.getStepX() * 0.6;
+            final double y = pos.getY() + 0.5 + facing.getStepY() * 0.6;
+            final double z = pos.getZ() + 0.5 + facing.getStepZ() * 0.6;
 
             // Let there be sound!
-            world.playSound(null, x, y, z, instrument.getSound(), SoundCategory.BLOCKS, volume, pitch);
+            world.playSound(null, x, y, z, instrument.getSoundEvent(), SoundCategory.BLOCKS, volume, pitch);
             if (world instanceof ServerWorld) {
                 final ServerWorld serverWorld = (ServerWorld) world;
-                serverWorld.spawnParticle(ParticleTypes.NOTE, x, y, z, 1, 0, 0, 0, 0);
+                serverWorld.sendParticles(ParticleTypes.NOTE, x, y, z, 1, 0, 0, 0, 0);
             }
         }
     }

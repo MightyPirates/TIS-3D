@@ -100,7 +100,7 @@ public final class ManualAPIImpl implements ManualAPI {
     @Nullable
     public Iterable<String> contentFor(final String path) {
         final String cleanPath = Files.simplifyPath(path);
-        final Language currentLanguage = Minecraft.getInstance().getLanguageManager().getCurrentLanguage();
+        final Language currentLanguage = Minecraft.getInstance().getLanguageManager().getSelected();
         final Optional<Iterable<String>> result = contentForWithRedirects(PATTERN_LANGUAGE_KEY.matcher(cleanPath).replaceAll(currentLanguage.getCode()));
         if (result.isPresent()) {
             return result.get();
@@ -130,7 +130,7 @@ public final class ManualAPIImpl implements ManualAPI {
 
     @Override
     public void open() {
-        Minecraft.getInstance().displayGuiScreen(new ManualScreen());
+        Minecraft.getInstance().setScreen(new ManualScreen());
     }
 
     @Override
@@ -141,7 +141,7 @@ public final class ManualAPIImpl implements ManualAPI {
 
     @Override
     public void navigate(final String path) {
-        final Screen screen = Minecraft.getInstance().currentScreen;
+        final Screen screen = Minecraft.getInstance().screen;
         if (screen instanceof ManualScreen) {
             ((ManualScreen) screen).pushPage(path);
         } else {

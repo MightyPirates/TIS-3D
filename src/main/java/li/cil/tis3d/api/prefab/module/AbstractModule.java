@@ -84,10 +84,10 @@ public abstract class AbstractModule implements Module {
         }
 
         final BlockRayTraceResult blockHitResult = (BlockRayTraceResult) hitResult;
-        if (!getCasing().getPosition().equals(blockHitResult.getPos())) {
+        if (!getCasing().getPosition().equals(blockHitResult.getBlockPos())) {
             return false;
         }
-        if (blockHitResult.getFace() != Face.toDirection(getFace())) {
+        if (blockHitResult.getDirection() != Face.toDirection(getFace())) {
             return false;
         }
 
@@ -119,14 +119,15 @@ public abstract class AbstractModule implements Module {
         }
 
         final BlockRayTraceResult blockHitResult = (BlockRayTraceResult) hitResult;
-        if (!getCasing().getPosition().equals(blockHitResult.getPos())) {
+        final BlockPos pos = blockHitResult.getBlockPos();
+        if (!getCasing().getPosition().equals(pos)) {
             return null;
         }
-        if (blockHitResult.getFace() != Face.toDirection(getFace())) {
+        if (blockHitResult.getDirection() != Face.toDirection(getFace())) {
             return null;
         }
 
-        return hitResult.getHitVec().subtract(Vector3d.copy(blockHitResult.getPos()));
+        return hitResult.getLocation().subtract(pos.getX(), pos.getY(), pos.getZ());
     }
 
     // --------------------------------------------------------------------- //
@@ -158,8 +159,8 @@ public abstract class AbstractModule implements Module {
      * @return whether the module is currently visible.
      */
     protected boolean isVisible() {
-        final World world = getCasing().getCasingWorld();
-        final BlockPos neighborPos = getCasing().getPosition().offset(Face.toDirection(getFace()));
+        final World world = getCasing().getCasingLevel();
+        final BlockPos neighborPos = getCasing().getPosition().relative(Face.toDirection(getFace()));
         if (!WorldUtils.isBlockLoaded(world, neighborPos)) {
             // If the neighbor isn't loaded, we can assume we're also not visible on that side.
             return false;
@@ -173,7 +174,7 @@ public abstract class AbstractModule implements Module {
 
         // Otherwise check if the neighboring block blocks visibility to our face.
         final BlockState neighborState = world.getBlockState(neighborPos);
-        return !neighborState.isSolid();
+        return !neighborState.canOcclude();
     }
 
     // --------------------------------------------------------------------- //

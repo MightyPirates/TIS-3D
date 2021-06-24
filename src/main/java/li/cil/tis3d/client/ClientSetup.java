@@ -38,7 +38,7 @@ public final class ClientSetup {
         API.smallFontRenderer = FontRendererSmall.INSTANCE;
         API.manualAPI = ManualAPIImpl.INSTANCE;
 
-        ScreenManager.registerFactory(Containers.READ_ONLY_MEMORY_MODULE.get(), ReadOnlyMemoryModuleScreen::new);
+        ScreenManager.register(Containers.READ_ONLY_MEMORY_MODULE.get(), ReadOnlyMemoryModuleScreen::new);
 
         ClientRegistry.bindTileEntityRenderer(TileEntities.CASING.get(), TileEntitySpecialRendererCasing::new);
         ClientRegistry.bindTileEntityRenderer(TileEntities.CONTROLLER.get(), TileEntitySpecialRendererController::new);
@@ -55,7 +55,7 @@ public final class ClientSetup {
 
     @SubscribeEvent
     public static void handleTextureStitchEvent(final TextureStitchEvent.Pre event) {
-        if (Objects.equals(event.getMap().getTextureLocation(), PlayerContainer.LOCATION_BLOCKS_TEXTURE)) {
+        if (Objects.equals(event.getMap().location(), PlayerContainer.BLOCK_ATLAS)) {
             Textures.handleTextureStitchEvent(event);
         }
     }

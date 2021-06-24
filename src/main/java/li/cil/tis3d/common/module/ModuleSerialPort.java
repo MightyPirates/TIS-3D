@@ -153,8 +153,8 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
         }
         isScanScheduled = false;
 
-        final World world = getCasing().getCasingWorld();
-        final BlockPos neighborPos = getCasing().getPosition().offset(Face.toDirection(getFace()));
+        final World world = getCasing().getCasingLevel();
+        final BlockPos neighborPos = getCasing().getPosition().relative(Face.toDirection(getFace()));
         final Direction neighborSide = Face.toDirection(getFace().getOpposite());
         if (WorldUtils.isBlockLoaded(world, neighborPos)) {
             final SerialInterfaceProvider provider = SerialInterfaceProviders.getProviderFor(world, neighborPos, neighborSide);

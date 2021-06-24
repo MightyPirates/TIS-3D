@@ -17,12 +17,12 @@ public final class SerialInterfaceProviderFurnace extends ForgeRegistryEntry<Ser
 
     @Override
     public boolean worksWith(final World world, final BlockPos position, final Direction side) {
-        return world.getTileEntity(position) instanceof FurnaceTileEntity;
+        return world.getBlockEntity(position) instanceof FurnaceTileEntity;
     }
 
     @Override
     public SerialInterface interfaceFor(final World world, final BlockPos position, final Direction side) {
-        final FurnaceTileEntity furnace = (FurnaceTileEntity) world.getTileEntity(position);
+        final FurnaceTileEntity furnace = (FurnaceTileEntity) world.getBlockEntity(position);
         if (furnace == null) {
             throw new IllegalArgumentException("Provided location does not contain a furnace. Check via worksWith first.");
         }
@@ -79,15 +79,15 @@ public final class SerialInterfaceProviderFurnace extends ForgeRegistryEntry<Ser
         public short peek() {
             switch (mode) {
                 case PercentageFuel: {
-                    final int value = furnace.burnTime;
-                    final int total = furnace.recipesUsed;
+                    final int value = furnace.litTime;
+                    final int total = furnace.litDuration;
                     if (total > 0) {
                         return (short) (value * 100 / total);
                     }
                 }
                 case PercentageProgress: {
-                    final int value = furnace.cookTime;
-                    final int total = furnace.cookTimeTotal;
+                    final int value = furnace.cookingProgress;
+                    final int total = furnace.cookingTotalTime;
                     if (total > 0) {
                         return (short) (value * 100 / total);
                     }

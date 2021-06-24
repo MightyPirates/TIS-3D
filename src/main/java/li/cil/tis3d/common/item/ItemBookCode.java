@@ -25,30 +25,30 @@ import java.util.*;
  */
 public final class ItemBookCode extends ModItem {
     public ItemBookCode() {
-        super(createProperties().maxStackSize(1));
+        super(createProperties().stacksTo(1));
     }
 
     // --------------------------------------------------------------------- //
     // Item
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(final World world, final PlayerEntity player, final Hand hand) {
-        if (world.isRemote()) {
+    public ActionResult<ItemStack> use(final World world, final PlayerEntity player, final Hand hand) {
+        if (world.isClientSide()) {
             openScreen(player, hand);
         }
-        return ActionResult.func_233538_a_(player.getHeldItem(hand), world.isRemote());
+        return ActionResult.sidedSuccess(player.getItemInHand(hand), world.isClientSide());
     }
 
     @Override
     public boolean doesSneakBypassUse(final ItemStack stack, final IWorldReader world, final BlockPos pos, final PlayerEntity player) {
-        return world.getTileEntity(pos) instanceof Casing;
+        return world.getBlockEntity(pos) instanceof Casing;
     }
 
     // --------------------------------------------------------------------- //
 
     @OnlyIn(Dist.CLIENT)
     private void openScreen(final PlayerEntity player, final Hand hand) {
-        Minecraft.getInstance().displayGuiScreen(new CodeBookScreen(player, hand));
+        Minecraft.getInstance().setScreen(new CodeBookScreen(player, hand));
     }
 
     // --------------------------------------------------------------------- //

@@ -60,7 +60,7 @@ public final class ModuleInfrared extends AbstractModule implements ICapabilityP
 
     @Override
     public void step() {
-        final World world = getCasing().getCasingWorld();
+        final World world = getCasing().getCasingLevel();
 
         stepOutput();
         stepInput();
@@ -148,8 +148,8 @@ public final class ModuleInfrared extends AbstractModule implements ICapabilityP
             return;
         }
 
-        final World world = getCasing().getCasingWorld();
-        if (world.isRemote()) {
+        final World world = getCasing().getCasingLevel();
+        if (world.isClientSide()) {
             return;
         }
 
@@ -191,7 +191,7 @@ public final class ModuleInfrared extends AbstractModule implements ICapabilityP
             }
             if (receivingPipe.canTransfer()) {
                 // Don't actually read more values if we already sent a packet this tick.
-                final World world = getCasing().getCasingWorld();
+                final World world = getCasing().getCasingLevel();
                 if (world.getGameTime() > lastStep) {
                     emitInfraredPacket(receivingPipe.read());
                 }
@@ -206,11 +206,11 @@ public final class ModuleInfrared extends AbstractModule implements ICapabilityP
      */
     private void emitInfraredPacket(final short value) {
         final Direction facing = Face.toDirection(getFace());
-        final BlockPos blockPos = getCasing().getPosition().offset(facing);
+        final BlockPos blockPos = getCasing().getPosition().relative(facing);
 
-        final World world = getCasing().getCasingWorld();
+        final World world = getCasing().getCasingLevel();
         final Vector3d position = new Vector3d(blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5);
-        final Vector3d direction = new Vector3d(facing.getXOffset(), facing.getYOffset(), facing.getZOffset());
+        final Vector3d direction = new Vector3d(facing.getStepX(), facing.getStepY(), facing.getStepZ());
 
         InfraredAPI.sendPacket(world, position, direction, value);
     }

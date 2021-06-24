@@ -34,36 +34,36 @@ public final class TerminalModuleScreen extends Screen {
     protected void init() {
         super.init();
 
-        getMinecraft().keyboardListener.enableRepeatEvents(true);
+        getMinecraft().keyboardHandler.setSendRepeatsToGui(true);
         MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Override
-    public void onClose() {
-        super.onClose();
+    public void removed() {
+        super.removed();
 
-        getMinecraft().keyboardListener.enableRepeatEvents(false);
+        getMinecraft().keyboardHandler.setSendRepeatsToGui(false);
         MinecraftForge.EVENT_BUS.unregister(this);
     }
 
     @Override
     public void render(final MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
         // To be on the safe side (see manual.Document#render).
-        GlStateManager.disableAlphaTest();
+        GlStateManager._disableAlphaTest();
 
-        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT, false);
-        GlStateManager.enableDepthTest();
-        GlStateManager.depthFunc(GL11.GL_LEQUAL);
-        GlStateManager.depthMask(true);
-        GlStateManager.colorMask(false, false, false, false);
-        matrixStack.push();
+        GlStateManager._clear(GL11.GL_DEPTH_BUFFER_BIT, false);
+        GlStateManager._enableDepthTest();
+        GlStateManager._depthFunc(GL11.GL_LEQUAL);
+        GlStateManager._depthMask(true);
+        GlStateManager._colorMask(false, false, false, false);
+        matrixStack.pushPose();
         matrixStack.translate(0, 0, 500);
 
         fill(matrixStack, 8, 8, width - 8, height - 8, 0);
 
-        matrixStack.pop();
-        GlStateManager.depthMask(false);
-        GlStateManager.colorMask(true, true, true, true);
+        matrixStack.popPose();
+        GlStateManager._depthMask(false);
+        GlStateManager._colorMask(true, true, true, true);
 
         fill(matrixStack, 4, 4, width - 4, height - 4, Color.WHITE);
     }
@@ -109,7 +109,7 @@ public final class TerminalModuleScreen extends Screen {
 
         final ClientPlayerEntity player = getMinecraft().player;
         if (ClientConfig.animateTypingHand && player != null) {
-            player.swingArm(Hand.MAIN_HAND);
+            player.swing(Hand.MAIN_HAND);
         }
     }
 

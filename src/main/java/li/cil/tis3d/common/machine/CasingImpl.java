@@ -74,7 +74,7 @@ public final class CasingImpl implements Casing {
                 module.onEnabled();
             }
         }
-        markDirty();
+        setChanged();
     }
 
     /**
@@ -93,7 +93,7 @@ public final class CasingImpl implements Casing {
             pipe.cancelRead();
             pipe.cancelWrite();
         }
-        markDirty();
+        setChanged();
     }
 
     /**
@@ -139,7 +139,7 @@ public final class CasingImpl implements Casing {
 
         // End-of-life notification for module if it was active.
         final Module oldModule = getModule(face);
-        if (tileEntity.isEnabled() && oldModule != null && !getCasingWorld().isRemote()) {
+        if (tileEntity.isEnabled() && oldModule != null && !getCasingLevel().isClientSide()) {
             oldModule.onDisabled();
         }
 
@@ -151,9 +151,9 @@ public final class CasingImpl implements Casing {
 
         // Reset redstone output if the previous module was redstone capable.
         if (hadRedstone) {
-            if (!getCasingWorld().isRemote()) {
-                tileEntity.markDirty();
-                getCasingWorld().notifyNeighborsOfStateChange(getPosition(), tileEntity.getBlockState().getBlock());
+            if (!getCasingLevel().isClientSide()) {
+                tileEntity.setChanged();
+                getCasingLevel().updateNeighborsAt(getPosition(), tileEntity.getBlockState().getBlock());
             }
         }
 
@@ -168,11 +168,11 @@ public final class CasingImpl implements Casing {
         }
 
         // Activate the module if the controller is active.
-        if (tileEntity.isEnabled() && module != null && !getCasingWorld().isRemote()) {
+        if (tileEntity.isEnabled() && module != null && !getCasingLevel().isClientSide()) {
             module.onEnabled();
         }
 
-        tileEntity.markDirty();
+        tileEntity.setChanged();
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -239,8 +239,8 @@ public final class CasingImpl implements Casing {
      * @param nbt the data to load.
      */
     public void readFromNBT(final CompoundNBT nbt) {
-        for (int index = 0; index < tileEntity.getSizeInventory(); index++) {
-            final ItemStack stack = tileEntity.getStackInSlot(index);
+        for (int index = 0; index < tileEntity.getContainerSize(); index++) {
+            final ItemStack stack = tileEntity.getItem(index);
             if (stack.isEmpty()) {
                 if (modules[index] != null) {
                     modules[index].onDisposed();
@@ -271,8 +271,8 @@ public final class CasingImpl implements Casing {
             }
         }
 
-        if (nbt.hasUniqueId(TAG_KEY)) {
-            lock = nbt.getUniqueId(TAG_KEY);
+        if (nbt.hasUUID(TAG_KEY)) {
+            lock = nbt.getUUID(TAG_KEY);
         } else {
             lock = null;
         }
@@ -295,7 +295,7 @@ public final class CasingImpl implements Casing {
         nbt.put(TAG_MODULES, modulesNbt);
 
         if (lock != null) {
-            nbt.putUniqueId(TAG_KEY, lock);
+            nbt.putUUID(TAG_KEY, lock);
         }
     }
 
@@ -303,18 +303,18 @@ public final class CasingImpl implements Casing {
     // Casing
 
     @Override
-    public World getCasingWorld() {
-        return tileEntity.getTileEntityWorld();
+    public World getCasingLevel() {
+        return tileEntity.getBlockEntityWorld();
     }
 
     @Override
     public BlockPos getPosition() {
-        return tileEntity.getPos();
+        return tileEntity.getBlockPos();
     }
 
     @Override
-    public void markDirty() {
-        tileEntity.markDirty();
+    public void setChanged() {
+        tileEntity.setChanged();
     }
 
     @Override
@@ -376,10 +376,10 @@ public final class CasingImpl implements Casing {
         if (nbt == null) {
             return Optional.empty();
         }
-        if (!nbt.hasUniqueId(TAG_KEY)) {
+        if (!nbt.hasUUID(TAG_KEY)) {
             return Optional.empty();
         }
-        return Optional.of(nbt.getUniqueId(TAG_KEY));
+        return Optional.of(nbt.getUUID(TAG_KEY));
     }
 
     /**
@@ -390,6 +390,6 @@ public final class CasingImpl implements Casing {
      */
     private static void setKeyForStack(final ItemStack stack, final UUID key) {
         final CompoundNBT nbt = stack.getOrCreateTag();
-        nbt.putUniqueId(TAG_KEY, key);
+        nbt.putUUID(TAG_KEY, key);
     }
 }

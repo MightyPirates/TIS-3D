@@ -65,7 +65,7 @@ public final class ModuleRedstone extends AbstractModuleWithRotation implements 
 
     @Override
     public void step() {
-        final World world = getCasing().getCasingWorld();
+        final World world = getCasing().getCasingLevel();
 
         for (final Port port : Port.VALUES) {
             stepOutput(port);
@@ -110,14 +110,14 @@ public final class ModuleRedstone extends AbstractModuleWithRotation implements 
     @Override
     public void render(final RenderContext context) {
         final MatrixStack matrixStack = context.getMatrixStack();
-        matrixStack.push();
+        matrixStack.pushPose();
         rotateForRendering(matrixStack);
 
         // Draw base overlay.
         context.drawAtlasSpriteUnlit(Textures.LOCATION_OVERLAY_MODULE_REDSTONE);
 
         if (!getCasing().isEnabled()) {
-            matrixStack.pop();
+            matrixStack.popPose();
             return;
         }
 
@@ -135,7 +135,7 @@ public final class ModuleRedstone extends AbstractModuleWithRotation implements 
         context.drawAtlasSpriteUnlit(Textures.LOCATION_OVERLAY_MODULE_REDSTONE_BARS,
             INPUT_X, v0Input, SHARED_W, heightInput);
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     @Override
@@ -165,8 +165,8 @@ public final class ModuleRedstone extends AbstractModuleWithRotation implements 
     @Override
     public void setRedstoneInput(final short value) {
         // We never call this on the client side, but other might...
-        final World world = getCasing().getCasingWorld();
-        if (world.isRemote()) {
+        final World world = getCasing().getCasingLevel();
+        if (world.isClientSide()) {
             return;
         }
 
@@ -179,7 +179,7 @@ public final class ModuleRedstone extends AbstractModuleWithRotation implements 
         input = validatedValue;
 
         // If the value changed, make sure we're saved.
-        getCasing().markDirty();
+        getCasing().setChanged();
 
         // The value changed, cancel our output to make sure it's up-to-date.
         cancelWrite();
@@ -229,7 +229,7 @@ public final class ModuleRedstone extends AbstractModuleWithRotation implements 
         output = validatedValue;
 
         // If the value changed, make sure we're saved.
-        getCasing().markDirty();
+        getCasing().setChanged();
 
         // Notify neighbors, avoid multiple world updates per tick.
         scheduledNeighborUpdate = true;
@@ -241,11 +241,11 @@ public final class ModuleRedstone extends AbstractModuleWithRotation implements 
      * Notify all neighbors of a block update, to let them realize our output changed.
      */
     private void notifyNeighbors() {
-        final World world = getCasing().getCasingWorld();
+        final World world = getCasing().getCasingLevel();
 
         scheduledNeighborUpdate = false;
         final Block blockType = world.getBlockState(getCasing().getPosition()).getBlock();
-        world.notifyNeighborsOfStateChange(getCasing().getPosition(), blockType);
+        world.updateNeighborsAt(getCasing().getPosition(), blockType);
     }
 
     /**

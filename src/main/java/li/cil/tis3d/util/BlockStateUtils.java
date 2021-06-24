@@ -14,13 +14,13 @@ public final class BlockStateUtils {
             return null;
         }
 
-        final Block block = Block.getBlockFromItem(stack.getItem());
+        final Block block = Block.byItem(stack.getItem());
         //noinspection ConstantConditions Block may be null because ItemBlock.getBlock can return null.
         if (block == null || block == Blocks.AIR) {
             return null;
         }
 
-        return block.getDefaultState();
+        return block.defaultBlockState();
     }
 
     // --------------------------------------------------------------------- //

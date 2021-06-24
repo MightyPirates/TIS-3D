@@ -82,7 +82,7 @@ public final class CodeBookScreen extends Screen {
         super(new StringTextComponent("Code Book"));
         this.player = player;
         this.hand = hand;
-        this.data = ItemBookCode.Data.loadFromStack(player.getHeldItem(Hand.MAIN_HAND));
+        this.data = ItemBookCode.Data.loadFromStack(player.getItemInHand(Hand.MAIN_HAND));
 
         rebuildLines();
     }
@@ -102,12 +102,12 @@ public final class CodeBookScreen extends Screen {
         buttonNextPage = addButton(new ButtonChangePage(guiX + BUTTON_PAGE_CHANGE_NEXT_X, guiY + BUTTON_PAGE_CHANGE_Y, PageChangeType.Next, button -> changePage(1)));
         buttonDeletePage = addButton(new ButtonDeletePage(guiX + BUTTON_PAGE_DELETE_X, guiY + BUTTON_PAGE_DELETE_Y, button -> deletePage()));
 
-        getMinecraft().keyboardListener.enableRepeatEvents(true);
+        getMinecraft().keyboardHandler.setSendRepeatsToGui(true);
     }
 
     @Override
-    public void onClose() {
-        super.onClose();
+    public void removed() {
+        super.removed();
 
         // Write changes back to our data tag.
         saveProgram();
@@ -117,18 +117,18 @@ public final class CodeBookScreen extends Screen {
         data.writeToNBT(nbt);
         Network.INSTANCE.sendToServer(new CodeBookDataMessage(hand, nbt));
 
-        getMinecraft().keyboardListener.enableRepeatEvents(false);
+        getMinecraft().keyboardHandler.setSendRepeatsToGui(false);
     }
 
     @Override
     public void render(final MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
-        if (!player.isAlive() || !Items.is(player.getHeldItem(hand), Items.BOOK_CODE)) {
-            Minecraft.getInstance().displayGuiScreen(null);
+        if (!player.isAlive() || !Items.is(player.getItemInHand(hand), Items.BOOK_CODE)) {
+            Minecraft.getInstance().setScreen(null);
             return;
         }
 
         // Background.
-        getMinecraft().getTextureManager().bindTexture(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
+        getMinecraft().getTextureManager().bind(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
         blit(matrixStack, guiX, guiY, 0, 0, GUI_WIDTH, GUI_HEIGHT);
 
         // Check page change button availability.
@@ -144,7 +144,9 @@ public final class CodeBookScreen extends Screen {
 
         // Draw page number.
         final String pageInfo = String.format("%d/%d", data.getSelectedPage() + 1, data.getPageCount());
-        getFontRenderer().drawString(matrixStack, pageInfo, (float) (guiX + PAGE_NUMBER_X - getFontRenderer().getStringWidth(pageInfo) / 2), guiY + PAGE_NUMBER_Y, COLOR_CODE);
+        final int x = guiX + PAGE_NUMBER_X - getFontRenderer().width(pageInfo) / 2;
+        final int y = guiY + PAGE_NUMBER_Y;
+        getFontRenderer().drawShadow(matrixStack, pageInfo, x, y, COLOR_CODE);
     }
 
     @Override
@@ -327,16 +329,16 @@ public final class CodeBookScreen extends Screen {
                 selectionStart = 0;
                 selectionEnd = positionToIndex(Integer.MAX_VALUE, Integer.MAX_VALUE);
             } else if (keyCode == GLFW.GLFW_KEY_C) {
-                getMinecraft().keyboardListener.setClipboardString(selectionToString());
+                getMinecraft().keyboardHandler.setClipboard(selectionToString());
             } else if (keyCode == GLFW.GLFW_KEY_X) {
-                getMinecraft().keyboardListener.setClipboardString(selectionToString());
+                getMinecraft().keyboardHandler.setClipboard(selectionToString());
                 deleteSelection();
 
                 recompile();
             } else if (keyCode == GLFW.GLFW_KEY_V) {
                 deleteSelection();
 
-                final String[] pastedLines = Constants.PATTERN_LINES.split(getMinecraft().keyboardListener.getClipboardString());
+                final String[] pastedLines = Constants.PATTERN_LINES.split(getMinecraft().keyboardHandler.getClipboard());
                 if (!isValidPaste(pastedLines)) {
                     return true;
                 }
@@ -393,7 +395,7 @@ public final class CodeBookScreen extends Screen {
 
     @Nullable
     @Override
-    public IGuiEventListener getListener() {
+    public IGuiEventListener getFocused() {
         // We don't want space to trigger buttons, all input is interpreted as text input in this UI.
         return null;
     }
@@ -440,7 +442,7 @@ public final class CodeBookScreen extends Screen {
     }
 
     private int cursorToLine(final double y) {
-        return (int) Math.max(0, Math.min(Math.min(lines.size() - 1, Constants.MAX_LINES_PER_PAGE), (y - guiY - CODE_POS_Y) / getFontRenderer().FONT_HEIGHT));
+        return (int) Math.max(0, Math.min(Math.min(lines.size() - 1, Constants.MAX_LINES_PER_PAGE), (y - guiY - CODE_POS_Y) / getFontRenderer().lineHeight));
     }
 
     private int cursorToColumn(final double x, final double y) {
@@ -449,11 +451,11 @@ public final class CodeBookScreen extends Screen {
 
     private int xToColumn(final double x, final int line) {
         final int relX = (int) Math.max(0, x - guiX - CODE_POS_X);
-        return getFontRenderer().func_238412_a_(lines.get(line).toString(), relX).length();
+        return getFontRenderer().plainSubstrByWidth(lines.get(line).toString(), relX).length();
     }
 
     private int columnToX(final int line, final int column) {
-        return guiX + CODE_POS_X + getFontRenderer().getStringWidth(lines.get(line).substring(0, Math.min(column, lines.get(line).length())));
+        return guiX + CODE_POS_X + getFontRenderer().width(lines.get(line).substring(0, Math.min(column, lines.get(line).length())));
     }
 
     private int positionToIndex(final int line, final int column) {
@@ -489,7 +491,7 @@ public final class CodeBookScreen extends Screen {
 
     private boolean isInCodeArea(final double mouseX, final double mouseY) {
         return mouseX >= guiX + CODE_POS_X - CODE_MARGIN && mouseX <= guiX + CODE_POS_X + CODE_WIDTH + CODE_MARGIN &&
-               mouseY >= guiY + CODE_POS_Y - CODE_MARGIN && mouseY <= guiY + CODE_POS_Y + getFontRenderer().FONT_HEIGHT * Constants.MAX_LINES_PER_PAGE + CODE_MARGIN;
+               mouseY >= guiY + CODE_POS_Y - CODE_MARGIN && mouseY <= guiY + CODE_POS_Y + getFontRenderer().lineHeight * Constants.MAX_LINES_PER_PAGE + CODE_MARGIN;
     }
 
     private boolean isCurrentProgramNonEmpty() {
@@ -602,7 +604,7 @@ public final class CodeBookScreen extends Screen {
         for (int lineNumber = 0; lineNumber < lines.size(); lineNumber++) {
             final StringBuilder line = lines.get(lineNumber);
             final int end = position + line.length();
-            final int offsetY = lineNumber * getFontRenderer().FONT_HEIGHT;
+            final int offsetY = lineNumber * getFontRenderer().lineHeight;
             final int lineX = guiX + CODE_POS_X;
             final int lineY = guiY + CODE_POS_Y + offsetY;
             if (selectionStart != selectionEnd && intersectsSelection(position, end)) {
@@ -614,20 +616,20 @@ public final class CodeBookScreen extends Screen {
                 final int selected = Math.min(line.length() - prefix, getSelectionEnd() - (position + prefix));
 
                 final String prefixText = line.substring(0, prefix);
-                getFontRenderer().drawString(matrixStack, prefixText, currX, lineY, COLOR_CODE);
-                currX += getFontRenderer().getStringWidth(prefixText);
+                getFontRenderer().draw(matrixStack, prefixText, currX, lineY, COLOR_CODE);
+                currX += getFontRenderer().width(prefixText);
 
                 final String selectedText = line.substring(prefix, prefix + selected);
-                final int selectedWidth = getFontRenderer().getStringWidth(selectedText);
-                fill(matrixStack, currX - 1, lineY - 1, currX + selectedWidth, lineY + getFontRenderer().FONT_HEIGHT - 1, COLOR_SELECTION);
-                getFontRenderer().drawString(matrixStack, selectedText, currX, lineY, COLOR_CODE_SELECTED);
+                final int selectedWidth = getFontRenderer().width(selectedText);
+                fill(matrixStack, currX - 1, lineY - 1, currX + selectedWidth, lineY + getFontRenderer().lineHeight - 1, COLOR_SELECTION);
+                getFontRenderer().draw(matrixStack, selectedText, currX, lineY, COLOR_CODE_SELECTED);
                 currX += selectedWidth;
 
                 final String postfixString = line.substring(prefix + selected);
-                getFontRenderer().drawString(matrixStack, postfixString, currX, lineY, COLOR_CODE);
+                getFontRenderer().draw(matrixStack, postfixString, currX, lineY, COLOR_CODE);
             } else {
                 // No selection here, just draw the line. Get it? "draw the line"?
-                getFontRenderer().drawString(matrixStack, line.toString(), lineX, lineY, COLOR_CODE);
+                getFontRenderer().draw(matrixStack, line.toString(), lineX, lineY, COLOR_CODE);
             }
 
             position += line.length() + 1;
@@ -652,16 +654,16 @@ public final class CodeBookScreen extends Screen {
                 startX = columnToX(localLineNumber, exception.getStart());
                 rawEndX = columnToX(localLineNumber, exception.getEnd());
             }
-            final int startY = guiY + CODE_POS_Y + localLineNumber * getFontRenderer().FONT_HEIGHT - 1;
-            final int endX = Math.max(rawEndX, startX + getFontRenderer().getStringWidth(" "));
+            final int startY = guiY + CODE_POS_Y + localLineNumber * getFontRenderer().lineHeight - 1;
+            final int endX = Math.max(rawEndX, startX + getFontRenderer().width(" "));
 
-            fill(matrixStack, startX - 1, startY + getFontRenderer().FONT_HEIGHT - 1, endX, startY + getFontRenderer().FONT_HEIGHT, Color.RED);
+            fill(matrixStack, startX - 1, startY + getFontRenderer().lineHeight - 1, endX, startY + getFontRenderer().lineHeight, Color.RED);
 
             // Draw selection position in text.
             drawTextCursor(matrixStack);
 
             // Part two of error handling, draw tooltip, *on top* of blinking cursor.
-            if (mouseX >= startX && mouseX <= endX && mouseY >= startY && mouseY <= startY + getFontRenderer().FONT_HEIGHT) {
+            if (mouseX >= startX && mouseX <= endX && mouseY >= startY && mouseY <= startY + getFontRenderer().lineHeight) {
                 final List<ITextComponent> tooltip = new ArrayList<>();
                 if (isErrorOnPreviousPage) {
                     tooltip.add(ERROR_ON_PREVIOUS_PAGE_TOOLTIP);
@@ -682,10 +684,10 @@ public final class CodeBookScreen extends Screen {
             final int line = indexToLine(selectionEnd);
             final int column = indexToColumn(selectionEnd);
             final StringBuilder sb = lines.get(line);
-            final int x = guiX + CODE_POS_X + getFontRenderer().getStringWidth(sb.substring(0, column)) - 1;
-            final int y = guiY + CODE_POS_Y + line * getFontRenderer().FONT_HEIGHT - 1;
-            fill(matrixStack, x + 1, y + 1, x + 2 + 1, y + getFontRenderer().FONT_HEIGHT + 1, Color.GRAY);
-            fill(matrixStack, x, y, x + 2, y + getFontRenderer().FONT_HEIGHT, COLOR_CODE_SELECTED);
+            final int x = guiX + CODE_POS_X + getFontRenderer().width(sb.substring(0, column)) - 1;
+            final int y = guiY + CODE_POS_Y + line * getFontRenderer().lineHeight - 1;
+            fill(matrixStack, x + 1, y + 1, x + 2 + 1, y + getFontRenderer().lineHeight + 1, Color.GRAY);
+            fill(matrixStack, x, y, x + 2, y + getFontRenderer().lineHeight, COLOR_CODE_SELECTED);
         }
     }
 
@@ -711,7 +713,7 @@ public final class CodeBookScreen extends Screen {
 
         @Override
         public void renderButton(final MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
-            getMinecraft().getTextureManager().bindTexture(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
+            getMinecraft().getTextureManager().bind(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
             final int offsetX = isHovered() ? BUTTON_WIDTH : 0;
             final int offsetY = type == PageChangeType.Previous ? BUTTON_HEIGHT : 0;
             blit(matrixStack, x, y, TEXTURE_X + offsetX, TEXTURE_Y + offsetY, BUTTON_WIDTH, BUTTON_HEIGHT);
@@ -742,7 +744,7 @@ public final class CodeBookScreen extends Screen {
 
         @Override
         public void renderButton(final MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
-            getMinecraft().getTextureManager().bindTexture(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
+            getMinecraft().getTextureManager().bind(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
             final int offsetX = isHovered() ? BUTTON_WIDTH : 0;
             blit(matrixStack, x, y, TEXTURE_X + offsetX, TEXTURE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
 

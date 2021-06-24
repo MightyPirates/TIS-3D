@@ -16,7 +16,7 @@ import java.util.Arrays;
 
 public final class ReadOnlyMemoryModuleContainer extends Container {
     public static ReadOnlyMemoryModuleContainer create(final int id, final PlayerInventory playerInventory, final PacketBuffer data) {
-        final Hand hand = data.readEnumValue(Hand.class);
+        final Hand hand = data.readEnum(Hand.class);
         return new ReadOnlyMemoryModuleContainer(id, playerInventory.player, hand);
     }
 
@@ -41,12 +41,12 @@ public final class ReadOnlyMemoryModuleContainer extends Container {
     // Container
 
     @Override
-    public void detectAndSendChanges() {
-        super.detectAndSendChanges();
+    public void broadcastChanges() {
+        super.broadcastChanges();
 
         if (player instanceof ServerPlayerEntity) {
             final ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
-            final byte[] data = ItemModuleReadOnlyMemory.loadFromStack(player.getHeldItem(hand));
+            final byte[] data = ItemModuleReadOnlyMemory.loadFromStack(player.getItemInHand(hand));
             if (!Arrays.equals(data, lastSentData)) {
                 lastSentData = data;
                 final ServerReadOnlyMemoryModuleDataMessage message = new ServerReadOnlyMemoryModuleDataMessage(hand, data);
@@ -56,7 +56,7 @@ public final class ReadOnlyMemoryModuleContainer extends Container {
     }
 
     @Override
-    public boolean canInteractWith(final PlayerEntity player) {
-        return Items.is(player.getHeldItem(hand), Items.READ_ONLY_MEMORY_MODULE);
+    public boolean stillValid(final PlayerEntity player) {
+        return Items.is(player.getItemInHand(hand), Items.READ_ONLY_MEMORY_MODULE);
     }
 }

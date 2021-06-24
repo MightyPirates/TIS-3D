@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 public final class ItemGroups {
     public static final ItemGroup COMMON = new ItemGroup(API.MOD_ID + ".common") {
         @Override
-        public ItemStack createIcon() {
+        public ItemStack makeIcon() {
             return new ItemStack(Items.CONTROLLER.get());
         }
     };

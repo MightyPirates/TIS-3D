@@ -27,7 +27,7 @@ public final class InventoryUtils {
      */
     @Nullable
     public static ItemEntity drop(final World world, final BlockPos pos, final IInventory inventory, final int index, final int count, final Direction towards) {
-        final ItemStack stack = inventory.decrStackSize(index, count);
+        final ItemStack stack = inventory.removeItem(index, count);
         return spawnStackInWorld(world, pos, stack, towards);
     }
 
@@ -46,11 +46,11 @@ public final class InventoryUtils {
             return null;
         }
 
-        final Random rng = world.rand;
+        final Random rng = world.random;
 
-        final double ox = towards.getXOffset();
-        final double oy = towards.getYOffset();
-        final double oz = towards.getZOffset();
+        final double ox = towards.getStepX();
+        final double oy = towards.getStepY();
+        final double oz = towards.getStepZ();
         final double tx = 0.1 * (rng.nextDouble() - 0.5) + ox * 0.65;
         final double ty = 0.1 * (rng.nextDouble() - 0.5) + oy * 0.75 + (ox + oz) * 0.25;
         final double tz = 0.1 * (rng.nextDouble() - 0.5) + oz * 0.65;
@@ -60,13 +60,13 @@ public final class InventoryUtils {
 
         final ItemEntity entity = new ItemEntity(world, px, py, pz, stack.copy());
 
-        entity.setMotion(
+        entity.setDeltaMovement(
             0.0125 * (rng.nextDouble() - 0.5) + ox * 0.03,
             0.0125 * (rng.nextDouble() - 0.5) + oy * 0.08 + (ox + oz) * 0.03,
             0.0125 * (rng.nextDouble() - 0.5) + oz * 0.03
         );
-        entity.setPickupDelay(15);
-        world.addEntity(entity);
+        entity.setPickUpDelay(15);
+        world.addFreshEntity(entity);
 
         return entity;
     }

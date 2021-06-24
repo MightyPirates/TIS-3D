@@ -15,6 +15,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
@@ -169,11 +170,12 @@ public final class TileEntityController extends TileEntityComputer implements IT
      * cause additional steps when not in the paused step!
      */
     public void forceStep() {
-        final World world = getTileEntityWorld();
+        final World world = getBlockEntityWorld();
         if (state == ControllerState.RUNNING) {
             forceStep = true;
-            world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
-                SoundEvents.BLOCK_STONE_BUTTON_CLICK_ON, SoundCategory.BLOCKS, 0.2f, 0.8f + world.rand.nextFloat() * 0.1f);
+            final Vector3d pos = Vector3d.atCenterOf(getBlockPos());
+            world.playSound(null, pos.x(), pos.y(), pos.z(),
+                SoundEvents.STONE_BUTTON_CLICK_ON, SoundCategory.BLOCKS, 0.2f, 0.8f + world.random.nextFloat() * 0.1f);
         }
     }
 
@@ -181,11 +183,11 @@ public final class TileEntityController extends TileEntityComputer implements IT
      * Reset the controller, pause for a moment and catch fire.
      */
     public void haltAndCatchFire() {
-        final World world = getTileEntityWorld();
-        if (!world.isRemote()) {
+        final World world = getBlockEntityWorld();
+        if (!world.isClientSide()) {
             state = ControllerState.READY;
             casings.forEach(TileEntityCasing::onDisabled);
-            final HaltAndCatchFireMessage message = new HaltAndCatchFireMessage(getPos());
+            final HaltAndCatchFireMessage message = new HaltAndCatchFireMessage(getBlockPos());
             final PacketDistributor.PacketTarget target = Network.getTargetPoint(this, Network.RANGE_MEDIUM);
             Network.INSTANCE.send(target, message);
         }
@@ -196,10 +198,10 @@ public final class TileEntityController extends TileEntityComputer implements IT
     // TileEntity
 
     @Override
-    public void remove() {
-        super.remove();
+    public void setRemoved() {
+        super.setRemoved();
 
-        if (getTileEntityWorld().isRemote()) {
+        if (getBlockEntityWorld().isClientSide()) {
             return;
         }
 
@@ -262,10 +264,10 @@ public final class TileEntityController extends TileEntityComputer implements IT
 
     @Override
     public void tick() {
-        final World world = getTileEntityWorld();
+        final World world = getBlockEntityWorld();
 
         // Only update multi-block and casings on the server.
-        if (world.isRemote()) {
+        if (world.isClientSide()) {
             if (hcfCooldown > 0) {
                 --hcfCooldown;
 
@@ -273,18 +275,18 @@ public final class TileEntityController extends TileEntityComputer implements IT
                     final ServerWorld serverWorld = (ServerWorld) world;
                     // Spawn some fire particles! No actual fire, that'd be... problematic.
                     for (final Direction facing : Direction.values()) {
-                        final BlockPos neighborPos = getPos().offset(facing);
+                        final BlockPos neighborPos = getBlockPos().relative(facing);
                         final BlockState neighborState = world.getBlockState(neighborPos);
-                        if (neighborState.isSolid()) {
+                        if (neighborState.canOcclude()) {
                             continue;
                         }
-                        if (world.rand.nextFloat() > 0.25f) {
+                        if (world.random.nextFloat() > 0.25f) {
                             continue;
                         }
-                        final float ox = neighborPos.getX() + world.rand.nextFloat();
-                        final float oy = neighborPos.getY() + world.rand.nextFloat();
-                        final float oz = neighborPos.getZ() + world.rand.nextFloat();
-                        serverWorld.spawnParticle(ParticleTypes.FLAME, ox, oy, oz, 5, 0, 0, 0, 0);
+                        final float ox = neighborPos.getX() + world.random.nextFloat();
+                        final float oy = neighborPos.getY() + world.random.nextFloat();
+                        final float oz = neighborPos.getZ() + world.random.nextFloat();
+                        serverWorld.sendParticles(ParticleTypes.FLAME, ox, oy, oz, 5, 0, 0, 0, 0);
                     }
                 }
             }
@@ -293,9 +295,9 @@ public final class TileEntityController extends TileEntityComputer implements IT
         }
 
         if (state != lastSentState) {
-            final Chunk chunk = world.getChunkAt(pos);
-            final BlockState blockState = world.getBlockState(getPos());
-            world.markAndNotifyBlock(getPos(), chunk, blockState, blockState, 7, 512);
+            final Chunk chunk = world.getChunkAt(getBlockPos());
+            final BlockState blockState = world.getBlockState(getBlockPos());
+            world.markAndNotifyBlock(getBlockPos(), chunk, blockState, blockState, 7, 512);
             lastSentState = state;
         }
 
@@ -336,7 +338,7 @@ public final class TileEntityController extends TileEntityComputer implements IT
             forceStep = forceStep && power == 1;
 
             // Are we powered?
-            if (!world.isBlockPowered(getPos())) {
+            if (!world.hasNeighborSignal(getBlockPos())) {
                 // Nope, fall back to ready state, disable modules.
                 state = ControllerState.READY;
                 casings.forEach(TileEntityCasing::onDisabled);
@@ -404,12 +406,12 @@ public final class TileEntityController extends TileEntityComputer implements IT
      */
     static boolean addNeighbors(final World world, final TileEntity tileEntity, final Set<TileEntity> processed, final Queue<TileEntity> queue) {
         for (final Direction facing : Direction.values()) {
-            final BlockPos neighborPos = tileEntity.getPos().offset(facing);
+            final BlockPos neighborPos = tileEntity.getBlockPos().relative(facing);
             if (!WorldUtils.isBlockLoaded(world, neighborPos)) {
                 return false;
             }
 
-            final TileEntity neighborTileEntity = world.getTileEntity(neighborPos);
+            final TileEntity neighborTileEntity = world.getBlockEntity(neighborPos);
             if (neighborTileEntity == null) {
                 continue;
             }
@@ -430,7 +432,7 @@ public final class TileEntityController extends TileEntityComputer implements IT
      * the {@link #casings} field on success.
      */
     private void scan() {
-        final World world = getTileEntityWorld();
+        final World world = getBlockEntityWorld();
 
         // List of processed tile entities to avoid loops.
         final Set<TileEntity> processed = new HashSet<>();
@@ -477,7 +479,7 @@ public final class TileEntityController extends TileEntityComputer implements IT
         // scanning (see comment on addNeighbors), re-scan next tick when
         // they all have their world object set... but only exit after having
         // touched all of them, to make sure they've been created.
-        if (newCasings.stream().anyMatch(c -> !c.hasWorld())) {
+        if (newCasings.stream().anyMatch(c -> !c.hasLevel())) {
             return;
         }
 
@@ -516,11 +518,11 @@ public final class TileEntityController extends TileEntityComputer implements IT
      * @return the accumulative redstone signal.
      */
     private int computePower() {
-        final World world = getTileEntityWorld();
+        final World world = getBlockEntityWorld();
 
         int acc = 0;
         for (final Direction facing : Direction.values()) {
-            acc += Math.max(0, Math.min(15, world.getRedstonePower(getPos().offset(facing), facing)));
+            acc += Math.max(0, Math.min(15, world.getSignal(getBlockPos().relative(facing), facing)));
         }
         return acc;
     }

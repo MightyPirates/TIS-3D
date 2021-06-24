@@ -40,12 +40,12 @@ public abstract class AbstractMessage {
     @Nullable
     protected World getServerWorld(final NetworkEvent.Context context) {
         final ServerPlayerEntity sender = context.getSender();
-        return sender != null ? sender.getServerWorld() : null;
+        return sender != null ? sender.getLevel() : null;
     }
 
     @OnlyIn(Dist.CLIENT)
     @Nullable
     protected World getClientWorld() {
-        return Minecraft.getInstance().world;
+        return Minecraft.getInstance().level;
     }
 }

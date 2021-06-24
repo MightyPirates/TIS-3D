@@ -23,12 +23,12 @@ public final class TagImageProvider extends ForgeRegistryEntry<ImageProvider> im
     @Override
     public ImageRenderer getImage(final String path) {
         final String data = path.substring(PREFIX.length());
-        final ITag<Item> tag = ItemTags.getCollection().get(new ResourceLocation(data));
-        if (tag == null || tag.getAllElements().isEmpty()) {
+        final ITag<Item> tag = ItemTags.getAllTags().getTag(new ResourceLocation(data));
+        if (tag == null || tag.getValues().isEmpty()) {
             return new MissingItemRenderer(Strings.WARNING_TAG_MISSING);
         }
         return new ItemStackImageRenderer(tag
-            .getAllElements().stream()
+            .getValues().stream()
             .map(ItemStack::new)
             .toArray(ItemStack[]::new));
     }

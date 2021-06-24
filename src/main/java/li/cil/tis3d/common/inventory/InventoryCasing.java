@@ -47,28 +47,28 @@ public final class InventoryCasing extends Inventory implements ISidedInventory 
             onItemAdded(index, facing);
         }
 
-        markDirty();
+        setChanged();
     }
 
     // --------------------------------------------------------------------- //
     // IInventory
 
     @Override
-    public int getInventoryStackLimit() {
+    public int getMaxStackSize() {
         return 1;
     }
 
     @Override
-    public void markDirty() {
-        tileEntity.markDirty();
-        final World world = tileEntity.getTileEntityWorld();
-        if (!world.isRemote()) {
+    public void setChanged() {
+        tileEntity.setChanged();
+        final World world = tileEntity.getBlockEntityWorld();
+        if (!world.isClientSide()) {
             BlockState state = tileEntity.getBlockState();
             for (final Face face : Face.VALUES) {
                 final BooleanProperty property = BlockCasing.FACE_TO_PROPERTY.get(face);
-                state = state.with(property, !items[face.ordinal()].isEmpty());
+                state = state.setValue(property, !items[face.ordinal()].isEmpty());
             }
-            world.setBlockState(tileEntity.getPos(), state);
+            world.setBlockAndUpdate(tileEntity.getBlockPos(), state);
         }
     }
 
@@ -81,16 +81,16 @@ public final class InventoryCasing extends Inventory implements ISidedInventory 
     }
 
     @Override
-    public boolean canInsertItem(final int index, final ItemStack stack, @Nullable final Direction side) {
+    public boolean canPlaceItemThroughFace(final int index, final ItemStack stack, @Nullable final Direction side) {
         return side != null && side.ordinal() == index &&
-               getStackInSlot(index).isEmpty() &&
+               getItem(index).isEmpty() &&
                tileEntity.getModule(Face.fromDirection(side)) == null && // Handles virtual modules.
                canInstall(stack, Face.fromDirection(side));
     }
 
     @Override
-    public boolean canExtractItem(final int index, final ItemStack stack, final Direction side) {
-        return side.ordinal() == index && stack == getStackInSlot(index);
+    public boolean canTakeItemThroughFace(final int index, final ItemStack stack, final Direction side) {
+        return side.ordinal() == index && stack == getItem(index);
     }
 
     private boolean canInstall(final ItemStack stack, final Face face) {
@@ -106,7 +106,7 @@ public final class InventoryCasing extends Inventory implements ISidedInventory 
     }
 
     private void onItemAdded(final int index, final Port facing) {
-        final ItemStack stack = getStackInSlot(index);
+        final ItemStack stack = getItem(index);
         if (stack.isEmpty()) {
             return;
         }
@@ -123,7 +123,7 @@ public final class InventoryCasing extends Inventory implements ISidedInventory 
             ((Rotatable) module).setFacing(facing);
         }
 
-        if (!tileEntity.getCasingWorld().isRemote()) {
+        if (!tileEntity.getCasingLevel().isClientSide()) {
             // Grab module data from newly created module, if any, don't rely on stack.
             // Rationale: module may initialize data from stack while contents of stack
             // are not synchronized to client, or do some fancy server-side only setup
@@ -148,9 +148,9 @@ public final class InventoryCasing extends Inventory implements ISidedInventory 
         final Face face = Face.VALUES[index];
         final Module module = tileEntity.getModule(face);
         tileEntity.setModule(face, null);
-        if (!tileEntity.getCasingWorld().isRemote()) {
+        if (!tileEntity.getCasingLevel().isClientSide()) {
             if (module != null) {
-                module.onUninstalled(getStackInSlot(index));
+                module.onUninstalled(getItem(index));
                 module.onDisposed();
             }
 

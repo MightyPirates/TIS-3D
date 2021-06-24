@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
  */
 public final class ItemKey extends ModItem {
     public ItemKey() {
-        super(createProperties().maxStackSize(1));
+        super(createProperties().stacksTo(1));
     }
 
     // --------------------------------------------------------------------- //
@@ -28,7 +28,7 @@ public final class ItemKey extends ModItem {
 
     @Override
     public boolean doesSneakBypassUse(final ItemStack stack, final IWorldReader world, final BlockPos pos, final PlayerEntity player) {
-        return world.getTileEntity(pos) instanceof Casing;
+        return world.getBlockEntity(pos) instanceof Casing;
     }
 
     @Override

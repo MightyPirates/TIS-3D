@@ -21,14 +21,14 @@ public abstract class AbstractReadOnlyMemoryModuleDataMessage extends AbstractMe
 
     @Override
     public void fromBytes(final PacketBuffer buffer) {
-        hand = buffer.readEnumValue(Hand.class);
+        hand = buffer.readEnum(Hand.class);
         data = new byte[buffer.readInt()];
         buffer.readBytes(data);
     }
 
     @Override
     public void toBytes(final PacketBuffer buffer) {
-        buffer.writeEnumValue(hand);
+        buffer.writeEnum(hand);
         buffer.writeInt(data.length);
         buffer.writeBytes(data);
     }

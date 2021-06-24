@@ -43,8 +43,8 @@ public final class CasingInventoryMessage extends AbstractMessageWithPosition {
         super.fromBytes(buffer);
 
         slot = buffer.readUnsignedByte();
-        stack = buffer.readItemStack();
-        moduleData = buffer.readCompoundTag();
+        stack = buffer.readItem();
+        moduleData = buffer.readNbt();
     }
 
     @Override
@@ -52,7 +52,7 @@ public final class CasingInventoryMessage extends AbstractMessageWithPosition {
         super.toBytes(buffer);
 
         buffer.writeByte(slot);
-        buffer.writeItemStack(stack);
-        buffer.writeCompoundTag(moduleData);
+        buffer.writeItemStack(stack, false);
+        buffer.writeNbt(moduleData);
     }
 }

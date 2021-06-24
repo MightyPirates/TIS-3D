@@ -48,8 +48,8 @@ public final class ManualScreen extends Screen {
     private static final int windowWidth = 256;
     private static final int windowHeight = 256;
 
-    private int guiLeft = 0;
-    private int guiTop = 0;
+    private int leftPos = 0;
+    private int topPos = 0;
 
     private boolean isDragging = false;
     private Segment document = null;
@@ -73,33 +73,33 @@ public final class ManualScreen extends Screen {
     public void init() {
         super.init();
 
-        this.guiLeft = (width - windowWidth) / 2;
-        this.guiTop = (height - windowHeight) / 2;
+        this.leftPos = (width - windowWidth) / 2;
+        this.topPos = (height - windowHeight) / 2;
 
         IterableUtils.forEachWithIndex(ManualAPIImpl.getTabs(), (i, tab) -> {
             if (i >= maxTabsPerSide) return;
-            final int x = guiLeft + tabPosX;
-            final int y = guiTop + tabPosY + i * (tabHeight - tabOverlap);
+            final int x = leftPos + tabPosX;
+            final int y = topPos + tabPosY + i * (tabHeight - tabOverlap);
             addButton(new TabButton(x, y, tabWidth, tabHeight - tabOverlap - 1, tab, (button) -> ManualAPI.navigate(tab.getPath())));
         });
 
-        scrollButton = addButton(new ScrollButton(guiLeft + scrollPosX, guiTop + scrollPosY, 26, 13));
+        scrollButton = addButton(new ScrollButton(leftPos + scrollPosX, topPos + scrollPosY, 26, 13));
 
         refreshPage();
     }
 
     @Override
     public void render(final MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
-        GlStateManager.enableBlend();
+        GlStateManager._enableBlend();
 
         super.render(matrixStack, mouseX, mouseY, partialTicks);
 
-        getMinecraft().getTextureManager().bindTexture(Textures.LOCATION_GUI_MANUAL_BACKGROUND);
-        blit(matrixStack, guiLeft, guiTop, 0, 0, windowWidth, windowHeight, windowWidth, windowHeight);
+        getMinecraft().getTextureManager().bind(Textures.LOCATION_GUI_MANUAL_BACKGROUND);
+        blit(matrixStack, leftPos, topPos, 0, 0, windowWidth, windowHeight, windowWidth, windowHeight);
 
         scrollButton.active = canScroll();
 
-        currentSegment = Document.render(matrixStack, document, guiLeft + 16, guiTop + 48, documentMaxWidth, documentMaxHeight, offset(), getFontRenderer(), mouseX, mouseY);
+        currentSegment = Document.render(matrixStack, document, leftPos + 16, topPos + 48, documentMaxWidth, documentMaxHeight, offset(), getFontRenderer(), mouseX, mouseY);
 
         currentSegment.flatMap(InteractiveSegment::tooltip).ifPresent(t ->
             renderWrappedToolTip(matrixStack, Collections.singletonList(t), mouseX, mouseY, getFontRenderer()));
@@ -123,13 +123,13 @@ public final class ManualScreen extends Screen {
 
     @Override
     public boolean keyPressed(final int keyCode, final int scanCode, final int modifiers) {
-        if (getMinecraft().gameSettings.keyBindJump.matchesKey(keyCode, scanCode)) {
+        if (getMinecraft().options.keyJump.matches(keyCode, scanCode)) {
             popPage();
             return true;
-        } else if (getMinecraft().gameSettings.keyBindInventory.matchesKey(keyCode, scanCode)) {
+        } else if (getMinecraft().options.keyInventory.matches(keyCode, scanCode)) {
             final ClientPlayerEntity player = getMinecraft().player;
             if (player != null) {
-                player.closeScreen();
+                player.closeContainer();
             }
             return true;
         } else {
@@ -143,9 +143,9 @@ public final class ManualScreen extends Screen {
             return true;
         }
 
-        if (canScroll() && button == 0 && isCoordinateOverScrollBar(mouseX - guiLeft, mouseY - guiTop)) {
+        if (canScroll() && button == 0 && isCoordinateOverScrollBar(mouseX - leftPos, mouseY - topPos)) {
             isDragging = true;
-            scrollButton.playDownSound(Minecraft.getInstance().getSoundHandler());
+            scrollButton.playDownSound(Minecraft.getInstance().getSoundManager());
             scrollMouse(mouseY);
             return true;
         } else if (button == 0) {
@@ -221,13 +221,13 @@ public final class ManualScreen extends Screen {
         } else {
             final ClientPlayerEntity player = getMinecraft().player;
             if (player != null) {
-                player.closeScreen();
+                player.closeContainer();
             }
         }
     }
 
     private void scrollMouse(final double mouseY) {
-        scrollTo((int) Math.round((mouseY - guiTop - scrollPosY - 6.5) * maxOffset() / (scrollHeight - 13.0)));
+        scrollTo((int) Math.round((mouseY - topPos - scrollPosY - 6.5) * maxOffset() / (scrollHeight - 13.0)));
     }
 
     private void scroll(final double amount) {
@@ -236,7 +236,7 @@ public final class ManualScreen extends Screen {
 
     private void scrollTo(final int row) {
         ManualAPIImpl.setOffset(Math.max(0, Math.min(maxOffset(), row)));
-        final int yMin = guiTop + scrollPosY;
+        final int yMin = topPos + scrollPosY;
         if (maxOffset() > 0) {
             scrollButton.y = yMin + (scrollHeight - 13) * offset() / maxOffset();
         } else {
@@ -272,15 +272,15 @@ public final class ManualScreen extends Screen {
 
         @Override
         public void renderButton(final MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
-            getMinecraft().getTextureManager().bindTexture(Textures.LOCATION_GUI_MANUAL_TAB);
+            getMinecraft().getTextureManager().bind(Textures.LOCATION_GUI_MANUAL_TAB);
             blit(matrixStack, x, y, 0, isHovered() ? tabHeight : 0, tabWidth, tabHeight, tabWidth, tabHeight * 2);
 
-            matrixStack.push();
+            matrixStack.pushPose();
             matrixStack.translate(x + 30, (float) (y + 4), 0);
 
             tab.renderIcon(matrixStack);
 
-            matrixStack.pop();
+            matrixStack.popPose();
         }
     }
 
@@ -292,7 +292,7 @@ public final class ManualScreen extends Screen {
         @Override
         protected boolean clicked(final double mouseX, final double mouseY) {
             if (super.clicked(mouseX, mouseY)) {
-                playDownSound(Minecraft.getInstance().getSoundHandler());
+                playDownSound(Minecraft.getInstance().getSoundManager());
             }
             return false;
         }
@@ -309,26 +309,26 @@ public final class ManualScreen extends Screen {
             final float v0 = (isDragging || isHovered()) ? 0.5f : 0;
             final float v1 = v0 + 0.5f;
 
-            getMinecraft().getTextureManager().bindTexture(Textures.LOCATION_GUI_MANUAL_SCROLL);
+            getMinecraft().getTextureManager().bind(Textures.LOCATION_GUI_MANUAL_SCROLL);
 
             final Tessellator t = Tessellator.getInstance();
-            final BufferBuilder b = t.getBuffer();
-            b.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-            b.pos(x0, y1, getBlitOffset()).tex(u0, v1).endVertex();
-            b.pos(x1, y1, getBlitOffset()).tex(u1, v1).endVertex();
-            b.pos(x1, y0, getBlitOffset()).tex(u1, v0).endVertex();
-            b.pos(x0, y0, getBlitOffset()).tex(u0, v0).endVertex();
-            t.draw();
+            final BufferBuilder builder = t.getBuilder();
+            builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+            builder.vertex(x0, y1, getBlitOffset()).uv(u0, v1).endVertex();
+            builder.vertex(x1, y1, getBlitOffset()).uv(u1, v1).endVertex();
+            builder.vertex(x1, y0, getBlitOffset()).uv(u1, v0).endVertex();
+            builder.vertex(x0, y0, getBlitOffset()).uv(u0, v0).endVertex();
+            t.end();
         }
 
         @Override
         public void renderToolTip(final MatrixStack matrixStack, final int mouseX, final int mouseY) {
-            if (!isDragging && !isHovered() && !isCoordinateOverScrollBar(mouseX - guiLeft, mouseY - guiTop)) {
+            if (!isDragging && !isHovered() && !isCoordinateOverScrollBar(mouseX - leftPos, mouseY - topPos)) {
                 return;
             }
             renderTooltip(matrixStack, new StringTextComponent(100 * offset() / maxOffset() + "%"),
-                guiLeft + scrollPosX + scrollWidth,
-                y + getHeightRealms() + 1);
+                leftPos + scrollPosX + scrollWidth,
+                y + getHeight() + 1);
         }
     }
 }

@@ -33,7 +33,7 @@ public final class MonospaceSegment extends BasicTextSegment {
 
     @Override
     public Optional<InteractiveSegment> render(final MatrixStack matrixStack, final int x, final int y, final int indent, final int maxWidth, final FontRenderer renderer, final int mouseX, final int mouseY) {
-        final IRenderTypeBuffer.Impl bufferFactory = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
+        final IRenderTypeBuffer.Impl bufferFactory = IRenderTypeBuffer.immediate(Tessellator.getInstance().getBuilder());
 
         int currentX = x + indent;
         int currentY = y + OFFSET_Y;
@@ -42,12 +42,12 @@ public final class MonospaceSegment extends BasicTextSegment {
         int numChars = maxChars(chars, maxWidth - indent, maxWidth - wrapIndent, renderer);
         while (chars.length() > 0) {
             final String part = chars.substring(0, numChars);
-            matrixStack.push();
+            matrixStack.pushPose();
             matrixStack.translate(currentX, currentY, 0);
             matrixStack.scale(FONT_SCALE, FONT_SCALE, FONT_SCALE);
 
             FontRendererNormal.INSTANCE.drawString(matrixStack, bufferFactory, part.toUpperCase(), CODE_TEXT_COLOR, Integer.MAX_VALUE);
-            matrixStack.pop();
+            matrixStack.popPose();
 
             currentX = x + wrapIndent;
             currentY += lineHeight(renderer);
@@ -56,7 +56,7 @@ public final class MonospaceSegment extends BasicTextSegment {
             numChars = maxChars(chars, maxWidth - wrapIndent, maxWidth - wrapIndent, renderer);
         }
 
-        bufferFactory.finish();
+        bufferFactory.endBatch();
 
         return Optional.empty();
     }

@@ -27,18 +27,18 @@ public class Inventory implements IInventory {
         final ListNBT itemList = nbt.getList(TAG_ITEMS, Constants.NBT.TAG_COMPOUND);
         final int count = Math.min(itemList.size(), items.length);
         for (int index = 0; index < count; index++) {
-            items[index] = ItemStack.read(itemList.getCompound(index));
+            items[index] = ItemStack.of(itemList.getCompound(index));
         }
     }
 
     public void writeToNBT(final CompoundNBT nbt) {
         final ListNBT itemList = new ListNBT();
         for (final ItemStack stack : items) {
-            final CompoundNBT stackNbt = new CompoundNBT();
+            final CompoundNBT stackTag = new CompoundNBT();
             if (stack != null) {
-                stack.write(stackNbt);
+                stack.save(stackTag);
             }
-            itemList.add(stackNbt);
+            itemList.add(stackTag);
         }
         nbt.put(TAG_ITEMS, itemList);
     }
@@ -55,7 +55,7 @@ public class Inventory implements IInventory {
     // IInventory
 
     @Override
-    public int getSizeInventory() {
+    public int getContainerSize() {
         return items.length;
     }
 
@@ -70,31 +70,31 @@ public class Inventory implements IInventory {
     }
 
     @Override
-    public ItemStack getStackInSlot(final int index) {
+    public ItemStack getItem(final int index) {
         return items[index];
     }
 
     @Override
-    public ItemStack decrStackSize(final int index, final int count) {
+    public ItemStack removeItem(final int index, final int count) {
         if (items[index].getCount() <= count) {
-            return removeStackFromSlot(index);
+            return removeItemNoUpdate(index);
         } else {
             final ItemStack stack = items[index].split(count);
             assert items[index].getCount() > 0;
-            markDirty();
+            setChanged();
             return stack;
         }
     }
 
     @Override
-    public ItemStack removeStackFromSlot(final int index) {
+    public ItemStack removeItemNoUpdate(final int index) {
         final ItemStack stack = items[index];
-        setInventorySlotContents(index, ItemStack.EMPTY);
+        setItem(index, ItemStack.EMPTY);
         return stack;
     }
 
     @Override
-    public void setInventorySlotContents(final int index, final ItemStack stack) {
+    public void setItem(final int index, final ItemStack stack) {
         if (items[index] == stack) {
             return;
         }
@@ -109,37 +109,19 @@ public class Inventory implements IInventory {
             onItemAdded(index);
         }
 
-        markDirty();
+        setChanged();
     }
 
     @Override
-    public int getInventoryStackLimit() {
-        return 64;
+    public void setChanged() {
     }
 
     @Override
-    public void markDirty() {
-    }
-
-    @Override
-    public boolean isUsableByPlayer(final PlayerEntity player) {
+    public boolean stillValid(final PlayerEntity player) {
         return true;
     }
 
     @Override
-    public void openInventory(final PlayerEntity player) {
-    }
-
-    @Override
-    public void closeInventory(final PlayerEntity player) {
-    }
-
-    @Override
-    public boolean isItemValidForSlot(final int index, final ItemStack stack) {
-        return true;
-    }
-
-    @Override
-    public void clear() {
+    public void clearContent() {
     }
 }

@@ -98,15 +98,15 @@ public final class ModuleSequencer extends AbstractModuleWithRotation {
 
     @Override
     public boolean onActivate(final PlayerEntity player, final Hand hand, final Vector3d hit) {
-        if (player.isSneaking()) {
+        if (player.isShiftKeyDown()) {
             return false;
         }
 
         // Handle input on the client and send it to the server for higher
         // hit position resolution (MC sends this to the server at a super
         // low resolution for some reason).
-        final World world = getCasing().getCasingWorld();
-        if (world.isRemote()) {
+        final World world = getCasing().getCasingLevel();
+        if (world.isClientSide()) {
             final Vector3d uv = hitToUV(hit);
             final int col = uvToCol((float) uv.x);
             final int row = uvToRow((float) uv.y);
@@ -121,7 +121,7 @@ public final class ModuleSequencer extends AbstractModuleWithRotation {
 
     @Override
     public void onData(final ByteBuf data) {
-        if (getCasing().getCasingWorld().isRemote()) {
+        if (getCasing().getCasingLevel().isClientSide()) {
             if (data.readBoolean()) {
                 decodeConfiguration(data.readLong(), configuration);
             } else {
@@ -141,7 +141,7 @@ public final class ModuleSequencer extends AbstractModuleWithRotation {
         }
 
         final MatrixStack matrixStack = context.getMatrixStack();
-        matrixStack.push();
+        matrixStack.pushPose();
         rotateForRendering(matrixStack);
 
         final boolean enabled = getCasing().isEnabled();
@@ -184,7 +184,7 @@ public final class ModuleSequencer extends AbstractModuleWithRotation {
             }
         }
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     @Override

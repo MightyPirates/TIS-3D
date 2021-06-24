@@ -40,17 +40,17 @@ public final class TileEntitySpecialRendererCasing extends TileEntityRenderer<Ti
     private static final double Z_FIGHT_BUFFER = 0.001;
     private final static Set<Class<?>> BLACKLIST = new HashSet<>();
 
-    public TileEntitySpecialRendererCasing(final TileEntityRendererDispatcher dispatcher) {
-        super(dispatcher);
+    public TileEntitySpecialRendererCasing(final TileEntityRendererDispatcher renderer) {
+        super(renderer);
     }
 
     @Override
     public void render(final TileEntityCasing casing, final float partialTicks, final MatrixStack matrixStack,
                        final IRenderTypeBuffer bufferFactory, final int light, final int overlay) {
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(0.5, 0.5, 0.5);
 
-        final RenderContext context = new RenderContext(renderDispatcher, matrixStack, bufferFactory, partialTicks, light, overlay);
+        final RenderContext context = new RenderContext(renderer, matrixStack, bufferFactory, partialTicks, light, overlay);
 
         // Render all modules, adjust matrix stack to allow easily rendering an overlay in (0, 0, 0) to (1, 1, 0).
         for (final Face face : Face.VALUES) {
@@ -58,29 +58,29 @@ public final class TileEntitySpecialRendererCasing extends TileEntityRenderer<Ti
                 continue;
             }
 
-            matrixStack.push();
+            matrixStack.pushPose();
             setupMatrix(face, matrixStack);
 
             if (!isObserverHoldingKey() || !drawConfigOverlay(context, casing, face)) {
                 // Grab neighbor lighting for module rendering because the casing itself is opaque and hence fully dark.
-                final BlockPos neighborPos = casing.getPos().offset(Face.toDirection(face));
-                final int neighborLight = WorldRenderer.getCombinedLight(renderDispatcher.world, neighborPos);
+                final BlockPos neighborPos = casing.getBlockPos().relative(Face.toDirection(face));
+                final int neighborLight = WorldRenderer.getLightColor(renderer.level, neighborPos);
                 drawModuleOverlay(new RenderContext(context, neighborLight), casing, face);
             }
 
-            matrixStack.pop();
+            matrixStack.popPose();
         }
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     private boolean isBackFace(final BlockPos position, final Face face) {
-        final Vector3d cameraPosition = renderDispatcher.renderInfo.getProjectedView();
-        final Vector3d blockCenter = Vector3d.copy(position).add(0.5, 0.5, 0.5);
-        final Vector3d faceNormal = new Vector3d(Face.toDirection(face).toVector3f());
+        final Vector3d cameraPosition = renderer.camera.getPosition();
+        final Vector3d blockCenter = Vector3d.atCenterOf(position);
+        final Vector3d faceNormal = Vector3d.atLowerCornerOf(Face.toDirection(face).getNormal());
         final Vector3d faceCenter = blockCenter.add(faceNormal.scale(0.5));
         final Vector3d cameraToFaceCenter = faceCenter.subtract(cameraPosition);
-        return faceNormal.dotProduct(cameraToFaceCenter) > 0;
+        return faceNormal.dot(cameraToFaceCenter) > 0;
     }
 
     private void setupMatrix(final Face face, final MatrixStack matrixStack) {
@@ -116,7 +116,7 @@ public final class TileEntitySpecialRendererCasing extends TileEntityRenderer<Ti
                 throw new IllegalArgumentException("Invalid face");
         }
 
-        matrixStack.rotate(new Quaternion(axis, degree, true));
+        matrixStack.mulPose(new Quaternion(axis, degree, true));
         matrixStack.translate(0.5, 0.5, -(0.5 + Z_FIGHT_BUFFER));
         matrixStack.scale(-1, -1, 1);
     }
@@ -132,17 +132,17 @@ public final class TileEntitySpecialRendererCasing extends TileEntityRenderer<Ti
             final ResourceLocation openSprite;
 
             final Port lookingAtPort;
-            final boolean isLookingAt = isObserverLookingAt(casing.getPos(), face);
+            final boolean isLookingAt = isObserverLookingAt(casing.getPosition(), face);
             if (isLookingAt) {
                 closedSprite = Textures.LOCATION_OVERLAY_CASING_PORT_CLOSED;
                 openSprite = Textures.LOCATION_OVERLAY_CASING_PORT_OPEN;
 
-                final RayTraceResult hit = renderDispatcher.cameraHitResult;
-                assert hit.getType() == RayTraceResult.Type.BLOCK : "renderDispatcher.cameraHitResult.getType() is not of type BLOCK even though it was in isObserverLookingAt";
-                assert hit instanceof BlockRayTraceResult : "renderDispatcher.cameraHitResult is not a BlockRayTraceResult even though it was in isObserverLookingAt";
+                final RayTraceResult hit = renderer.cameraHitResult;
+                assert hit.getType() == RayTraceResult.Type.BLOCK : "renderer.cameraHitResult.getType() is not of type BLOCK even though it was in isObserverLookingAt";
+                assert hit instanceof BlockRayTraceResult : "renderer.cameraHitResult is not a BlockRayTraceResult even though it was in isObserverLookingAt";
                 final BlockRayTraceResult blockHit = (BlockRayTraceResult) hit;
-                final BlockPos pos = blockHit.getPos();
-                final Vector3d uv = TransformUtil.hitToUV(face, blockHit.getHitVec().subtract(Vector3d.copy(pos)));
+                final BlockPos pos = blockHit.getBlockPos();
+                final Vector3d uv = TransformUtil.hitToUV(face, blockHit.getLocation().subtract(pos.getX(), pos.getY(), pos.getZ()));
                 lookingAtPort = Port.fromUVQuadrant(uv);
             } else {
                 closedSprite = Textures.LOCATION_OVERLAY_CASING_PORT_CLOSED_SMALL;
@@ -152,7 +152,7 @@ public final class TileEntitySpecialRendererCasing extends TileEntityRenderer<Ti
             }
 
             final MatrixStack matrixStack = context.getMatrixStack();
-            matrixStack.push();
+            matrixStack.pushPose();
             for (final Port port : Port.CLOCKWISE) {
                 final boolean isClosed = casing.isReceivingPipeLocked(face, port);
                 final ResourceLocation sprite = isClosed ? closedSprite : openSprite;
@@ -165,10 +165,10 @@ public final class TileEntitySpecialRendererCasing extends TileEntityRenderer<Ti
                 }
 
                 matrixStack.translate(0.5, 0.5, 0.5);
-                matrixStack.rotate(new Quaternion(Vector3f.ZP, 90, true));
+                matrixStack.mulPose(new Quaternion(Vector3f.ZP, 90, true));
                 matrixStack.translate(-0.5, -0.5, -0.5);
             }
-            matrixStack.pop();
+            matrixStack.popPose();
 
             return isLookingAt;
         } else {
@@ -187,7 +187,7 @@ public final class TileEntitySpecialRendererCasing extends TileEntityRenderer<Ti
 
     private void drawModuleOverlay(final RenderContext context, final TileEntityCasing casing, final Face face) {
         final MatrixStack matrixStack = context.getMatrixStack();
-        matrixStack.push();
+        matrixStack.pushPose();
         for (final Port port : Port.CLOCKWISE) {
             final boolean isClosed = casing.isReceivingPipeLocked(face, port);
             if (isClosed) {
@@ -195,10 +195,10 @@ public final class TileEntitySpecialRendererCasing extends TileEntityRenderer<Ti
             }
 
             matrixStack.translate(0.5, 0.5, 0.5);
-            matrixStack.rotate(new Quaternion(Vector3f.ZP, 90, true));
+            matrixStack.mulPose(new Quaternion(Vector3f.ZP, 90, true));
             matrixStack.translate(-0.5, -0.5, -0.5);
         }
-        matrixStack.pop();
+        matrixStack.popPose();
 
         final Module module = casing.getModule(face);
         if (module == null) {
@@ -217,11 +217,11 @@ public final class TileEntitySpecialRendererCasing extends TileEntityRenderer<Ti
     }
 
     private boolean isObserverKindaClose(final TileEntityCasing casing) {
-        return casing.getPos().withinDistance(renderDispatcher.renderInfo.getProjectedView(), 16);
+        return casing.getBlockPos().closerThan(renderer.camera.getPosition(), 16);
     }
 
     private boolean isObserverHoldingKey() {
-        for (final ItemStack stack : renderDispatcher.renderInfo.getRenderViewEntity().getHeldEquipment()) {
+        for (final ItemStack stack : renderer.camera.getEntity().getHandSlots()) {
             if (Items.is(stack, Items.KEY) || Items.is(stack, Items.KEY_CREATIVE)) {
                 return true;
             }
@@ -231,20 +231,20 @@ public final class TileEntitySpecialRendererCasing extends TileEntityRenderer<Ti
     }
 
     private boolean isObserverSneaking() {
-        return renderDispatcher.renderInfo.getRenderViewEntity().isSneaking();
+        return renderer.camera.getEntity().isShiftKeyDown();
     }
 
     private boolean isObserverLookingAt(final BlockPos pos, final Face face) {
-        final RayTraceResult hit = renderDispatcher.cameraHitResult;
+        final RayTraceResult hit = renderer.cameraHitResult;
         if (!(hit instanceof BlockRayTraceResult)) {
             return false;
         }
 
         final BlockRayTraceResult blockHit = (BlockRayTraceResult) hit;
-        if (Face.fromDirection(blockHit.getFace()) != face) {
+        if (Face.fromDirection(blockHit.getDirection()) != face) {
             return false;
         }
 
-        return Objects.equals(blockHit.getPos(), pos);
+        return Objects.equals(blockHit.getBlockPos(), pos);
     }
 }

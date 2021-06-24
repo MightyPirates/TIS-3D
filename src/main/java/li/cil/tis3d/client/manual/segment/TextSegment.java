@@ -56,15 +56,15 @@ public class TextSegment extends BasicTextSegment {
                 final int cy = currentY;
                 hovered = interactive.flatMap(segment -> segment.checkHovered(mouseX, mouseY, cx, cy, stringWidth(part, renderer), (int) (Document.lineHeight(renderer) * scale)));
             }
-            GlStateManager.color4f(0f, 0f, 0f, 1); // TODO wat?
-            matrixStack.push();
+            GlStateManager._color4f(0f, 0f, 0f, 1); // TODO wat?
+            matrixStack.pushPose();
             matrixStack.translate(currentX, currentY, 0);
             matrixStack.scale(scale, scale, scale);
             matrixStack.translate(-currentX, -currentY, 0);
 
-            renderer.drawString(matrixStack, format + part, currentX, currentY, color);
+            renderer.draw(matrixStack, format + part, currentX, currentY, color);
 
-            matrixStack.pop();
+            matrixStack.popPose();
             currentX = x + wrapIndent;
             currentY += lineHeight(renderer);
             chars = chars.substring(numChars);
@@ -111,7 +111,7 @@ public class TextSegment extends BasicTextSegment {
 
     @Override
     protected int stringWidth(final String s, final FontRenderer renderer) {
-        return (int) (renderer.getStringWidth(resolvedFormat() + s) * resolvedScale());
+        return (int) (renderer.width(resolvedFormat() + s) * resolvedScale());
     }
 
     // ----------------------------------------------------------------------- //

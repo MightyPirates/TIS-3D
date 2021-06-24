@@ -53,7 +53,7 @@ public abstract class AbstractModuleWithRotation extends AbstractModule implemen
     protected void rotateForRendering(final MatrixStack matrixStack) {
         final int rotation = Port.ROTATION[getFacing().ordinal()];
         matrixStack.translate(0.5f, 0.5f, 0);
-        matrixStack.rotate(new Quaternion(0, 0, 90 * rotation * Face.toDirection(getFace()).getYOffset(), true));
+        matrixStack.mulPose(new Quaternion(0, 0, 90 * rotation * Face.toDirection(getFace()).getStepY(), true));
         matrixStack.translate(-0.5f, -0.5f, 0);
     }
 

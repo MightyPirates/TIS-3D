@@ -11,15 +11,15 @@ public final class TooltipUtils {
             return;
         }
 
-        final String translationKey = stack.getTranslationKey() + ".desc";
+        final String translationKey = stack.getDescriptionId() + ".desc";
         final LanguageMap languagemap = LanguageMap.getInstance();
-        if (languagemap.func_230506_b_(translationKey)) {
+        if (languagemap.has(translationKey)) {
             final TranslationTextComponent description = new TranslationTextComponent(translationKey);
             tooltip.add(makeGray(description));
         }
     }
 
     private static IFormattableTextComponent makeGray(final IFormattableTextComponent text) {
-        return text.modifyStyle(s -> s.setColor(net.minecraft.util.text.Color.fromTextFormatting(TextFormatting.GRAY)));
+        return text.withStyle(s -> s.withColor(TextFormatting.GRAY));
     }
 }

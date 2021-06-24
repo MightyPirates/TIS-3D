@@ -96,7 +96,7 @@ public final class Network {
     // --------------------------------------------------------------------- //
 
     public static PacketDistributor.PacketTarget getTargetPoint(final World world, final double x, final double y, final double z, final int range) {
-        final PacketDistributor.TargetPoint target = new PacketDistributor.TargetPoint(x, y, z, range, world.getDimensionKey());
+        final PacketDistributor.TargetPoint target = new PacketDistributor.TargetPoint(x, y, z, range, world.dimension());
         return PacketDistributor.NEAR.with(() -> target);
     }
 
@@ -105,11 +105,11 @@ public final class Network {
     }
 
     public static PacketDistributor.PacketTarget getTargetPoint(final TileEntityComputer tileEntity, final int range) {
-        return getTargetPoint(Objects.requireNonNull(tileEntity.getTileEntityWorld()), tileEntity.getPos(), range);
+        return getTargetPoint(Objects.requireNonNull(tileEntity.getBlockEntityWorld()), tileEntity.getBlockPos(), range);
     }
 
     public static PacketDistributor.PacketTarget getTracking(final Casing casing) {
-        final Chunk chunk = casing.getCasingWorld().getChunkAt(casing.getPosition());
+        final Chunk chunk = casing.getCasingLevel().getChunkAt(casing.getPosition());
         return PacketDistributor.TRACKING_CHUNK.with(() -> chunk);
     }
 
@@ -127,7 +127,7 @@ public final class Network {
         final BlockPos position = new BlockPos(x, y, z);
         if (!WorldUtils.isBlockLoaded(world, position)) {
             final BlockState state = world.getBlockState(position);
-            if (state.isSolid()) {
+            if (state.isSolidRender(world, position)) {
                 // Skip particle emission when inside a block where they aren't visible anyway.
                 return;
             }
@@ -227,7 +227,7 @@ public final class Network {
             }
 
             final Position that = (Position) obj;
-            return Objects.equals(world.getDimensionKey(), that.world.getDimensionKey()) &&
+            return Objects.equals(world.dimension(), that.world.dimension()) &&
                    Float.compare(that.x, x) == 0 &&
                    Float.compare(that.y, y) == 0 &&
                    Float.compare(that.z, z) == 0;
@@ -236,7 +236,7 @@ public final class Network {
 
         @Override
         public int hashCode() {
-            int result = world.getDimensionKey().hashCode();
+            int result = world.dimension().hashCode();
             result = 31 * result + (x != +0.0f ? Float.floatToIntBits(x) : 0);
             result = 31 * result + (y != +0.0f ? Float.floatToIntBits(y) : 0);
             result = 31 * result + (z != +0.0f ? Float.floatToIntBits(z) : 0);
@@ -308,8 +308,8 @@ public final class Network {
     }
 
     private static CasingSendQueue getQueueFor(final Casing casing) {
-        final World world = casing.getCasingWorld();
-        final Dist side = world.isRemote() ? Dist.CLIENT : Dist.DEDICATED_SERVER;
+        final World world = casing.getCasingLevel();
+        final Dist side = world.isClientSide() ? Dist.CLIENT : Dist.DEDICATED_SERVER;
         final Map<Casing, CasingSendQueue> queues = getQueues(side);
         CasingSendQueue queue = queues.get(casing);
         if (queue == null) {
@@ -381,8 +381,8 @@ public final class Network {
          * @param casing the casing this queue belongs to.
          */
         private void flush(final Casing casing) {
-            final World world = casing.getCasingWorld();
-            final Dist side = world.isRemote() ? Dist.CLIENT : Dist.DEDICATED_SERVER;
+            final World world = casing.getCasingLevel();
+            final Dist side = world.isClientSide() ? Dist.CLIENT : Dist.DEDICATED_SERVER;
             final ByteBuf data = Unpooled.buffer();
             collectData(data);
             if (data.readableBytes() > 0) {
@@ -394,7 +394,7 @@ public final class Network {
                 } else {
                     final ServerCasingDataMessage message = new ServerCasingDataMessage(casing, data);
                     Network.INSTANCE.send(getTracking(casing), message);
-                    didSend = areAnyPlayersNear(casing.getCasingWorld(), casing.getPosition(), RANGE_HIGH);
+                    didSend = areAnyPlayersNear(casing.getCasingLevel(), casing.getPosition(), RANGE_HIGH);
                 }
                 if (didSend) {
                     incrementPacketsSent(side);
@@ -559,9 +559,9 @@ public final class Network {
      * @return <tt>true</tt> if there are nearby players; <tt>false</tt> otherwise.
      */
     private static boolean areAnyPlayersNear(final World world, final Vector3d position, final int range) {
-        for (final PlayerEntity player : world.getPlayers()) {
+        for (final PlayerEntity player : world.players()) {
             if (player instanceof ServerPlayerEntity) {
-                if (position.isWithinDistanceOf(player.getPositionVec(), range)) {
+                if (position.closerThan(player.position(), range)) {
                     return true;
                 }
             }
@@ -570,7 +570,7 @@ public final class Network {
     }
 
     private static boolean areAnyPlayersNear(final World world, final BlockPos position, final int range) {
-        return areAnyPlayersNear(world, Vector3d.copyCentered(position), range);
+        return areAnyPlayersNear(world, Vector3d.atCenterOf(position), range);
     }
 
     // --------------------------------------------------------------------- //

@@ -48,7 +48,7 @@ public final class SerialProtocolContentProvider extends ResourceContentProvider
     @Override
     @Nullable
     public Iterable<String> getContent(final String path) {
-        final String language = Minecraft.getInstance().getLanguageManager().getCurrentLanguage().getCode();
+        final String language = Minecraft.getInstance().getLanguageManager().getSelected().getCode();
         final String localizedProtocolsPath = PATTERN_LANGUAGE_KEY.matcher(SERIAL_PROTOCOLS_PATH).replaceAll(language);
         if (localizedProtocolsPath.equals(path)) {
             final String localizedTemplatePath = PATTERN_LANGUAGE_KEY.matcher(SERIAL_PROTOCOLS_TEMPLATE).replaceAll(language);
@@ -82,7 +82,7 @@ public final class SerialProtocolContentProvider extends ResourceContentProvider
             }
             references.sort(Comparator.comparing(s -> s.name));
             for (final SerialProtocolDocumentationReference protocol : references) {
-                sb.append("- [").append(I18n.format(protocol.name)).append("](").append(protocol.link).append(")\n");
+                sb.append("- [").append(I18n.get(protocol.name)).append("](").append(protocol.link).append(")\n");
             }
             cachedList = sb.toString();
         }

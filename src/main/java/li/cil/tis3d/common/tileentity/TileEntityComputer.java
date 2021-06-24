@@ -80,8 +80,8 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
         }
     }
 
-    public World getTileEntityWorld() {
-        return Objects.requireNonNull(getWorld());
+    public World getBlockEntityWorld() {
+        return Objects.requireNonNull(getLevel());
     }
 
     /**
@@ -134,33 +134,33 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
 
     @Override
     public World getPipeHostWorld() {
-        return getTileEntityWorld();
+        return getBlockEntityWorld();
     }
 
     @Override
     public BlockPos getPipeHostPosition() {
-        return getPos();
+        return getBlockPos();
     }
 
     // --------------------------------------------------------------------- //
     // TileEntity
 
     @Override
-    public void read(final BlockState state, final CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(final BlockState state, final CompoundNBT tag) {
+        super.load(state, tag);
         readFromNBTForServer(tag);
     }
 
     @Override
-    public CompoundNBT write(final CompoundNBT compound) {
-        final CompoundNBT tag = super.write(compound);
+    public CompoundNBT save(final CompoundNBT compound) {
+        final CompoundNBT tag = super.save(compound);
         writeToNBTForServer(tag);
         return tag;
     }
 
     @Override
     public void onDataPacket(final NetworkManager manager, final SUpdateTileEntityPacket packet) {
-        readFromNBTForClient(packet.getNbtCompound());
+        readFromNBTForClient(packet.getTag());
     }
 
     @Nullable
@@ -168,7 +168,7 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
     public SUpdateTileEntityPacket getUpdatePacket() {
         final CompoundNBT nbt = new CompoundNBT();
         writeToNBTForClient(nbt);
-        return new SUpdateTileEntityPacket(getPos(), 0, nbt);
+        return new SUpdateTileEntityPacket(getBlockPos(), 0, nbt);
     }
 
     @Override
@@ -187,15 +187,15 @@ public abstract class TileEntityComputer extends TileEntity implements PipeHost 
     // --------------------------------------------------------------------- //
 
     public void checkNeighbors() {
-        final World world = getTileEntityWorld();
+        final World world = getBlockEntityWorld();
 
         // When a neighbor changed, check all neighbors and register them in
         // our tile entity.
         for (final Direction facing : Direction.values()) {
-            final BlockPos neighborPos = getPos().offset(facing);
+            final BlockPos neighborPos = getBlockPos().relative(facing);
             if (WorldUtils.isBlockLoaded(world, neighborPos)) {
                 // If we have a casing, set it as our neighbor.
-                final TileEntity tileEntity = world.getTileEntity(neighborPos);
+                final TileEntity tileEntity = world.getBlockEntity(neighborPos);
                 if (tileEntity instanceof TileEntityComputer) {
                     setNeighbor(Face.fromDirection(facing), (TileEntityComputer) tileEntity);
                 } else {

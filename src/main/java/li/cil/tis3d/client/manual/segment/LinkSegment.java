@@ -97,7 +97,7 @@ public final class LinkSegment extends TextSegment implements InteractiveSegment
         } catch (final Throwable t) {
             final ClientPlayerEntity player = Minecraft.getInstance().player;
             if (player != null) {
-                player.sendStatusMessage(new StringTextComponent(t.toString()), false);
+                player.displayClientMessage(new StringTextComponent(t.toString()), false);
             }
         }
     }

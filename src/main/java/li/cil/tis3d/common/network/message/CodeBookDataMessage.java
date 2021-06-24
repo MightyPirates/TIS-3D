@@ -11,11 +11,11 @@ import net.minecraftforge.fml.network.NetworkEvent;
 
 public final class CodeBookDataMessage extends AbstractMessage {
     private Hand hand;
-    private CompoundNBT nbt;
+    private CompoundNBT tag;
 
-    public CodeBookDataMessage(final Hand hand, final CompoundNBT nbt) {
+    public CodeBookDataMessage(final Hand hand, final CompoundNBT tag) {
         this.hand = hand;
-        this.nbt = nbt;
+        this.tag = tag;
     }
 
     public CodeBookDataMessage(final PacketBuffer buffer) {
@@ -32,22 +32,22 @@ public final class CodeBookDataMessage extends AbstractMessage {
             return;
         }
 
-        final ItemStack stack = player.getHeldItem(hand);
+        final ItemStack stack = player.getItemInHand(hand);
         if (Items.is(stack, Items.BOOK_CODE)) {
-            final ItemBookCode.Data data = ItemBookCode.Data.loadFromNBT(nbt);
+            final ItemBookCode.Data data = ItemBookCode.Data.loadFromNBT(tag);
             ItemBookCode.Data.saveToStack(stack, data);
         }
     }
 
     @Override
     public void fromBytes(final PacketBuffer buffer) {
-        hand = buffer.readEnumValue(Hand.class);
-        nbt = buffer.readCompoundTag();
+        hand = buffer.readEnum(Hand.class);
+        tag = buffer.readNbt();
     }
 
     @Override
     public void toBytes(final PacketBuffer buffer) {
-        buffer.writeEnumValue(hand);
-        buffer.writeCompoundTag(nbt);
+        buffer.writeEnum(hand);
+        buffer.writeNbt(tag);
     }
 }

@@ -59,23 +59,23 @@ public final class BlockCasing extends Block {
 
     public BlockCasing() {
         super(Properties
-            .create(Material.IRON)
+            .of(Material.METAL)
             .sound(SoundType.METAL)
-            .hardnessAndResistance(1.5f, 6f));
+            .strength(1.5f, 6f));
 
-        BlockState defaultState = getStateContainer().getBaseState();
+        BlockState defaultState = getStateDefinition().any();
         for (final BooleanProperty value : FACE_TO_PROPERTY.values()) {
-            defaultState = defaultState.with(value, false);
+            defaultState = defaultState.setValue(value, false);
         }
-        setDefaultState(defaultState);
+        registerDefaultState(defaultState);
     }
 
     // --------------------------------------------------------------------- //
     // State
 
     @Override
-    protected void fillStateContainer(final StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(final StateContainer.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
         for (final BooleanProperty value : FACE_TO_PROPERTY.values()) {
             builder.add(value);
         }
@@ -87,11 +87,11 @@ public final class BlockCasing extends Block {
     @Override
     public ItemStack getPickBlock(final BlockState state, final RayTraceResult hit, final IBlockReader world, final BlockPos pos, final PlayerEntity player) {
         // Allow picking modules installed in the casing.
-        final TileEntity tileEntity = world.getTileEntity(pos);
+        final TileEntity tileEntity = world.getBlockEntity(pos);
         if (tileEntity instanceof TileEntityCasing && hit instanceof BlockRayTraceResult) {
             final TileEntityCasing casing = (TileEntityCasing) tileEntity;
             final BlockRayTraceResult blockHit = (BlockRayTraceResult) hit;
-            final ItemStack stack = casing.getStackInSlot(blockHit.getFace().ordinal());
+            final ItemStack stack = casing.getItem(blockHit.getDirection().ordinal());
             if (!stack.isEmpty()) {
                 return stack.copy();
             }
@@ -114,28 +114,29 @@ public final class BlockCasing extends Block {
 
     @SuppressWarnings("deprecation")
     @Override
-    public ActionResultType onBlockActivated(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockRayTraceResult hit) {
+    public ActionResultType use(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockRayTraceResult hit) {
         if (!WorldUtils.isBlockLoaded(world, pos)) {
-            return super.onBlockActivated(state, world, pos, player, hand, hit);
+            return super.use(state, world, pos, player, hand, hit);
         }
 
-        final TileEntity tileEntity = world.getTileEntity(pos);
+        final TileEntity tileEntity = world.getBlockEntity(pos);
         if (!(tileEntity instanceof TileEntityCasing)) {
-            return super.onBlockActivated(state, world, pos, player, hand, hit);
+            return super.use(state, world, pos, player, hand, hit);
         }
 
-        final Vector3d localHitPos = hit.getHitVec().subtract(Vector3d.copy(hit.getPos()));
-        final Direction side = hit.getFace();
+        final BlockPos hitPos = hit.getBlockPos();
+        final Vector3d localHitPos = hit.getLocation().subtract(hitPos.getX(), hitPos.getY(), hitPos.getZ());
+        final Direction side = hit.getDirection();
         final TileEntityCasing casing = (TileEntityCasing) tileEntity;
-        final ItemStack heldItem = player.getHeldItem(hand);
+        final ItemStack heldItem = player.getItemInHand(hand);
 
         // Locking or unlocking the casing or a port?
         if (Items.is(heldItem, Items.KEY)) {
-            if (!world.isRemote()) {
+            if (!world.isClientSide()) {
                 if (casing.isLocked()) {
                     casing.unlock(heldItem);
                 } else {
-                    if (!player.isSneaking()) {
+                    if (!player.isShiftKeyDown()) {
                         casing.lock(heldItem);
                     } else {
                         final Face face = Face.fromDirection(side);
@@ -146,67 +147,67 @@ public final class BlockCasing extends Block {
                     }
                 }
             }
-            return ActionResultType.func_233537_a_(world.isRemote());
+            return ActionResultType.sidedSuccess(world.isClientSide());
         }
 
         // Let the module handle the activation.
         final Module module = casing.getModule(Face.fromDirection(side));
         if (module != null && module.onActivate(player, hand, localHitPos)) {
-            return ActionResultType.func_233537_a_(world.isRemote());
+            return ActionResultType.sidedSuccess(world.isClientSide());
         }
 
         // Don't allow changing modules while casing is locked.
         if (casing.isLocked()) {
-            return super.onBlockActivated(state, world, pos, player, hand, hit);
+            return super.use(state, world, pos, player, hand, hit);
         }
 
         // Remove old module or install new one.
-        final ItemStack oldModule = casing.getStackInSlot(side.ordinal());
+        final ItemStack oldModule = casing.getItem(side.ordinal());
         if (!oldModule.isEmpty()) {
             // Removing a present module from the casing.
-            if (!world.isRemote()) {
+            if (!world.isClientSide()) {
                 final ItemEntity entity = InventoryUtils.drop(world, pos, casing, side.ordinal(), 1, side);
                 if (entity != null) {
-                    entity.setNoPickupDelay();
-                    entity.onCollideWithPlayer(player);
-                    world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.BLOCK_PISTON_CONTRACT, SoundCategory.BLOCKS, 0.2f, 0.8f + world.rand.nextFloat() * 0.1f);
+                    entity.setNoPickUpDelay();
+                    entity.playerTouch(player);
+                    world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.PISTON_CONTRACT, SoundCategory.BLOCKS, 0.2f, 0.8f + world.random.nextFloat() * 0.1f);
                 }
             }
-            return ActionResultType.func_233537_a_(world.isRemote());
+            return ActionResultType.sidedSuccess(world.isClientSide());
         } else if (!heldItem.isEmpty()) {
             // Installing a new module in the casing.
-            if (casing.canInsertItem(side.ordinal(), heldItem, side)) {
-                if (!world.isRemote()) {
+            if (casing.canPlaceItemThroughFace(side.ordinal(), heldItem, side)) {
+                if (!world.isClientSide()) {
                     final ItemStack insertedStack;
-                    if (player.abilities.isCreativeMode) {
+                    if (player.abilities.instabuild) {
                         insertedStack = heldItem.copy().split(1);
                     } else {
                         insertedStack = heldItem.split(1);
                     }
                     if (side.getAxis() == Direction.Axis.Y) {
-                        final Port orientation = Port.fromDirection(player.getHorizontalFacing());
+                        final Port orientation = Port.fromDirection(player.getDirection());
                         casing.setInventorySlotContents(side.ordinal(), insertedStack, orientation);
                     } else {
-                        casing.setInventorySlotContents(side.ordinal(), insertedStack);
+                        casing.setItem(side.ordinal(), insertedStack);
                     }
-                    world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.BLOCK_PISTON_EXTEND, SoundCategory.BLOCKS, 0.2f, 0.8f + world.rand.nextFloat() * 0.1f);
+                    world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.PISTON_EXTEND, SoundCategory.BLOCKS, 0.2f, 0.8f + world.random.nextFloat() * 0.1f);
                 }
-                return ActionResultType.func_233537_a_(world.isRemote());
+                return ActionResultType.sidedSuccess(world.isClientSide());
             }
         }
-        return super.onBlockActivated(state, world, pos, player, hand, hit);
+        return super.use(state, world, pos, player, hand, hit);
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    public void onReplaced(final BlockState state, final World world, final BlockPos pos, final BlockState newState, final boolean isMoving) {
-        if (!state.isIn(newState.getBlock())) {
-            final TileEntity tileentity = world.getTileEntity(pos);
+    public void onRemove(final BlockState state, final World world, final BlockPos pos, final BlockState newState, final boolean isMoving) {
+        if (!state.is(newState.getBlock())) {
+            final TileEntity tileentity = world.getBlockEntity(pos);
             if (tileentity instanceof TileEntityCasing) {
-                InventoryHelper.dropInventoryItems(world, pos, (IInventory) tileentity);
-                world.updateComparatorOutputLevel(pos, this);
+                InventoryHelper.dropContents(world, pos, (IInventory) tileentity);
+                world.updateNeighbourForOutputSignal(pos, this);
             }
-            super.onReplaced(state, world, pos, newState, isMoving);
+            super.onRemove(state, world, pos, newState, isMoving);
         }
     }
 
@@ -215,20 +216,20 @@ public final class BlockCasing extends Block {
 
     @SuppressWarnings("deprecation")
     @Override
-    public boolean hasComparatorInputOverride(final BlockState state) {
+    public boolean hasAnalogOutputSignal(final BlockState state) {
         return true;
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    public int getComparatorInputOverride(final BlockState state, final World world, final BlockPos pos) {
-        return Container.calcRedstone(world.getTileEntity(pos));
+    public int getAnalogOutputSignal(final BlockState state, final World world, final BlockPos pos) {
+        return Container.getRedstoneSignalFromBlockEntity(world.getBlockEntity(pos));
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    public int getWeakPower(final BlockState blockState, final IBlockReader world, final BlockPos pos, final Direction side) {
-        final TileEntity tileentity = world.getTileEntity(pos);
+    public int getSignal(final BlockState blockState, final IBlockReader world, final BlockPos pos, final Direction side) {
+        final TileEntity tileentity = world.getBlockEntity(pos);
         if (tileentity instanceof TileEntityCasing) {
             final TileEntityCasing casing = (TileEntityCasing) tileentity;
             final Module module = casing.getModule(Face.fromDirection(side.getOpposite()));
@@ -236,12 +237,12 @@ public final class BlockCasing extends Block {
                 return ((Redstone) module).getRedstoneOutput();
             }
         }
-        return super.getWeakPower(blockState, world, pos, side);
+        return super.getSignal(blockState, world, pos, side);
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    public boolean canProvidePower(final BlockState state) {
+    public boolean isSignalSource(final BlockState state) {
         return true;
     }
 
@@ -251,7 +252,7 @@ public final class BlockCasing extends Block {
     @SuppressWarnings("deprecation")
     @Override
     public void neighborChanged(final BlockState state, final World world, final BlockPos pos, final Block block, final BlockPos fromPos, final boolean isMoving) {
-        final TileEntity tileEntity = world.getTileEntity(pos);
+        final TileEntity tileEntity = world.getBlockEntity(pos);
         if (tileEntity instanceof TileEntityCasing) {
             final TileEntityCasing casing = (TileEntityCasing) tileEntity;
             casing.checkNeighbors();

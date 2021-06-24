@@ -123,17 +123,17 @@ public class ModuleRandomAccessMemory extends AbstractModuleWithRotation {
 
     @Override
     public boolean onActivate(final PlayerEntity player, final Hand hand, final Vector3d hit) {
-        final ItemStack heldItem = player.getHeldItem(hand);
+        final ItemStack heldItem = player.getItemInHand(hand);
         if (!Items.is(heldItem, Items.READ_ONLY_MEMORY_MODULE)) {
             return false;
         }
 
-        final boolean isReading = player.isSneaking();
+        final boolean isReading = player.isShiftKeyDown();
         if (!isReading && getCasing().isLocked()) {
             return false;
         }
 
-        if (!getCasing().getCasingWorld().isRemote()) {
+        if (!getCasing().getCasingLevel().isClientSide()) {
             if (isReading) {
                 ItemModuleReadOnlyMemory.saveToStack(heldItem, memory);
             } else {
@@ -169,7 +169,7 @@ public class ModuleRandomAccessMemory extends AbstractModuleWithRotation {
         }
 
         final MatrixStack matrixStack = context.getMatrixStack();
-        matrixStack.push();
+        matrixStack.pushPose();
         rotateForRendering(matrixStack);
 
         final int cells = 4;
@@ -187,7 +187,7 @@ public class ModuleRandomAccessMemory extends AbstractModuleWithRotation {
             }
         }
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     @Override

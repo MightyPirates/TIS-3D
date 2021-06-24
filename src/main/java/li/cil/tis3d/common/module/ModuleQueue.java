@@ -109,7 +109,7 @@ public final class ModuleQueue extends AbstractModuleWithRotation {
         }
 
         final MatrixStack matrixStack = context.getMatrixStack();
-        matrixStack.push();
+        matrixStack.pushPose();
         rotateForRendering(matrixStack);
 
         context.drawAtlasSpriteUnlit(Textures.LOCATION_OVERLAY_MODULE_QUEUE);
@@ -119,7 +119,7 @@ public final class ModuleQueue extends AbstractModuleWithRotation {
             drawState(context);
         }
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     @Override

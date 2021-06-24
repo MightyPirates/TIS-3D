@@ -28,30 +28,30 @@ public final class TileEntitySpecialRendererController extends TileEntityRendere
             return;
         }
 
-        final RayTraceResult hit = renderDispatcher.cameraHitResult;
+        final RayTraceResult hit = renderer.cameraHitResult;
         if (hit instanceof BlockRayTraceResult) {
             final BlockRayTraceResult blockHit = (BlockRayTraceResult) hit;
-            if (Objects.equals(blockHit.getPos(), controller.getPos())) {
+            if (Objects.equals(blockHit.getBlockPos(), controller.getBlockPos())) {
                 renderState(matrixStack, bufferFactory, state);
             }
         }
     }
 
     private void renderState(final MatrixStack matrixStack, final IRenderTypeBuffer bufferFactory, final TileEntityController.ControllerState state) {
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(0.5, 1.4, 0.5);
-        matrixStack.rotate(renderDispatcher.renderInfo.getRotation());
+        matrixStack.mulPose(renderer.camera.rotation());
         matrixStack.scale(-0.025f, -0.025f, 0.025f);
 
         final ITextComponent message = state.message;
-        final FontRenderer fontRenderer = renderDispatcher.getFontRenderer();
-        final float x = -fontRenderer.getStringPropertyWidth(message) / 2.0f;
-        final Matrix4f matrix = matrixStack.getLast().getMatrix();
-        final int backgroundColor = Minecraft.getInstance().gameSettings.getTextBackgroundColor(0.25f);
-        final int maxBrightness = LightTexture.packLight(0xF, 0xF);
-        fontRenderer.func_243247_a(message, x, 0, Color.withAlpha(Color.WHITE, 0.125f), false, matrix, bufferFactory, true, backgroundColor, maxBrightness);
-        fontRenderer.func_243247_a(message, x, 0, Color.WHITE, false, matrix, bufferFactory, false, 0, maxBrightness);
+        final FontRenderer fontRenderer = renderer.getFont();
+        final float x = -fontRenderer.width(message) / 2.0f;
+        final Matrix4f matrix = matrixStack.last().pose();
+        final int backgroundColor = Minecraft.getInstance().options.getBackgroundColor(0.25f);
+        final int maxBrightness = LightTexture.pack(0xF, 0xF);
+        fontRenderer.drawInBatch(message, x, 0, Color.withAlpha(Color.WHITE, 0.125f), false, matrix, bufferFactory, true, backgroundColor, maxBrightness);
+        fontRenderer.drawInBatch(message, x, 0, Color.WHITE, false, matrix, bufferFactory, false, 0, maxBrightness);
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 }

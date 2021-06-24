@@ -97,28 +97,28 @@ public final class Document {
      * @return the height of a single line.
      */
     public static int lineHeight(final FontRenderer renderer) {
-        return renderer.FONT_HEIGHT + 1;
+        return renderer.lineHeight + 1;
     }
 
     /**
      * Renders a list of segments and tooltips if a segment with a tooltip is hovered.
      * Returns the hovered interactive segment, if any.
      *
-     * @param matrixStack
-     * @param document      the document to render.
-     * @param x             the x position to render at.
-     * @param y             the y position to render at.
-     * @param maxWidth      the width of the area to render the document in.
-     * @param maxHeight     the height of the area to render the document in.
-     * @param yOffset       the vertical scroll offset of the document.
-     * @param renderer      the font renderer to use.
-     * @param mouseX        the x position of the mouse.
-     * @param mouseY        the y position of the mouse.
+     * @param matrixStack the current matrix stack.
+     * @param document    the document to render.
+     * @param x           the x position to render at.
+     * @param y           the y position to render at.
+     * @param maxWidth    the width of the area to render the document in.
+     * @param maxHeight   the height of the area to render the document in.
+     * @param yOffset     the vertical scroll offset of the document.
+     * @param renderer    the font renderer to use.
+     * @param mouseX      the x position of the mouse.
+     * @param mouseY      the y position of the mouse.
      * @return the interactive segment being hovered, if any.
      */
     public static Optional<InteractiveSegment> render(final MatrixStack matrixStack, final Segment document, final int x, final int y, final int maxWidth, final int maxHeight, final int yOffset, final FontRenderer renderer, final int mouseX, final int mouseY) {
         final Minecraft mc = Minecraft.getInstance();
-        final MainWindow window = mc.getMainWindow();
+        final MainWindow window = mc.getWindow();
 
         // On some systems/drivers/graphics cards the next calls won't update the
         // depth buffer correctly if alpha test is enabled. Guess how we found out?
@@ -127,13 +127,13 @@ public final class Document {
         RenderSystem.disableAlphaTest();
 
         // Clear depth mask, then create masks in foreground above and below scroll area.
-        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT, false);
+        GlStateManager._clear(GL11.GL_DEPTH_BUFFER_BIT, false);
 
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(0, 0, 500);
-        Screen.fill(matrixStack, 0, 0, window.getFramebufferWidth(), y, 0);
-        Screen.fill(matrixStack, 0, y + maxHeight, window.getFramebufferWidth(), window.getFramebufferHeight(), 0);
-        matrixStack.pop();
+        Screen.fill(matrixStack, 0, 0, window.getWidth(), y, 0);
+        Screen.fill(matrixStack, 0, y + maxHeight, window.getWidth(), window.getHeight(), 0);
+        matrixStack.popPose();
 
         // Actual rendering.
         Optional<InteractiveSegment> hovered = Optional.empty();
@@ -159,7 +159,7 @@ public final class Document {
         }
         hovered.ifPresent(InteractiveSegment::notifyHover);
 
-        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT, false);
+        GlStateManager._clear(GL11.GL_DEPTH_BUFFER_BIT, false);
 
         return hovered;
     }

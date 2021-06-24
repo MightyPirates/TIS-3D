@@ -2,6 +2,7 @@ package li.cil.tis3d.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.common.container.ReadOnlyMemoryModuleContainer;
@@ -34,8 +35,8 @@ public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMe
     public ReadOnlyMemoryModuleScreen(final ReadOnlyMemoryModuleContainer container, final PlayerInventory playerInventory, final ITextComponent title) {
         super(container, playerInventory, title);
 
-        xSize = 190;
-        ySize = 130;
+        width = 190;
+        height = 130;
     }
 
     public void setData(final byte[] data) {
@@ -51,21 +52,21 @@ public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMe
     public void init() {
         super.init();
 
-        getMinecraft().keyboardListener.enableRepeatEvents(true);
+        getMinecraft().keyboardHandler.setSendRepeatsToGui(true);
     }
 
     @Override
-    public void onClose() {
-        super.onClose();
+    public void removed() {
+        super.removed();
 
         // Only send to server if our data is actually based on the old server
         // data to avoid erasing ROM when closing UI again too quickly.
         if (receivedData) {
             // Save any changes made and send them to the server.
-            Network.INSTANCE.sendToServer(new ClientReadOnlyMemoryModuleDataMessage(container.getHand(), data));
+            Network.INSTANCE.sendToServer(new ClientReadOnlyMemoryModuleDataMessage(menu.getHand(), data));
         }
 
-        getMinecraft().keyboardListener.enableRepeatEvents(false);
+        getMinecraft().keyboardHandler.setSendRepeatsToGui(false);
     }
 
     @Override
@@ -74,8 +75,8 @@ public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMe
 
         super.render(matrixStack, mouseX, mouseY, partialTicks);
 
-        final BufferBuilder buffer = Tessellator.getInstance().getBuffer();
-        final IRenderTypeBuffer.Impl bufferFactory = IRenderTypeBuffer.getImpl(buffer);
+        final BufferBuilder buffer = Tessellator.getInstance().getBuilder();
+        final IRenderTypeBuffer.Impl bufferFactory = IRenderTypeBuffer.immediate(buffer);
 
         // Draw row and column headers.
         drawHeaders(matrixStack, bufferFactory);
@@ -84,28 +85,28 @@ public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMe
         drawInitializing(matrixStack, bufferFactory);
 
         if (!receivedData) {
-            bufferFactory.finish();
+            bufferFactory.endBatch();
             return;
         }
 
         // Draw memory cells being edited.
         drawMemory(matrixStack, bufferFactory);
 
-        bufferFactory.finish();
+        bufferFactory.endBatch();
 
         // Draw marker around currently selected memory cell.
         drawSelectionBox(matrixStack);
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(final MatrixStack matrixStack, final float partialTicks, final int x, final int y) {
-        GlStateManager.color4f(1, 1, 1, 1);
-        getMinecraft().getTextureManager().bindTexture(Textures.LOCATION_GUI_MEMORY);
-        blit(matrixStack, guiLeft, guiTop, 0, 0, xSize, ySize);
+    protected void renderBg(final MatrixStack matrixStack, final float partialTicks, final int x, final int y) {
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        getMinecraft().getTextureManager().bind(Textures.LOCATION_GUI_MEMORY);
+        blit(matrixStack, x, y, 0, 0, width, height);
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(final MatrixStack matrixStack, final int x, final int y) {
+    protected void renderLabels(final MatrixStack matrixStack, final int x, final int y) {
         // Suppress rendering of labels.
     }
 
@@ -126,7 +127,7 @@ public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMe
     @Override
     public boolean keyPressed(final int keyCode, final int scanCode, final int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            closeScreen();
+            onClose();
             return true;
         }
 
@@ -212,8 +213,8 @@ public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMe
             return;
         }
 
-        final int col = (int) ((mouseX + 1 - guiLeft - GRID_LEFT) / CELL_WIDTH);
-        final int row = (int) ((mouseY + 1 - guiTop - GRID_TOP) / CELL_HEIGHT);
+        final int col = (int) ((mouseX + 1 - leftPos - GRID_LEFT) / CELL_WIDTH);
+        final int row = (int) ((mouseY + 1 - topPos - GRID_TOP) / CELL_HEIGHT);
 
         if (isInGridArea(col, row)) {
             selectedCell = (row << 4) | col;
@@ -227,22 +228,22 @@ public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMe
 
     private void drawHeaders(final MatrixStack matrixStack, final IRenderTypeBuffer.Impl bufferFactory) {
         // Columns headers (top).
-        matrixStack.push();
-        matrixStack.translate(guiLeft + GRID_LEFT + 3, guiTop + 6, 0);
+        matrixStack.pushPose();
+        matrixStack.translate(leftPos + GRID_LEFT + 3, topPos + 6, 0);
         for (int col = 0; col < 16; col++) {
             API.smallFontRenderer.drawString(matrixStack, bufferFactory, String.format("%X", col), Color.GUI_TEXT, 2);
             matrixStack.translate(CELL_WIDTH, 0, 0);
         }
-        matrixStack.pop();
+        matrixStack.popPose();
 
         // Row headers (left).
-        matrixStack.push();
-        matrixStack.translate(guiLeft + 7, guiTop + 14, 0);
+        matrixStack.pushPose();
+        matrixStack.translate(leftPos + 7, topPos + 14, 0);
         for (int row = 0; row < 16; row++) {
             API.smallFontRenderer.drawString(matrixStack, bufferFactory, String.format("0X%X0", row), Color.GUI_TEXT, 4);
             matrixStack.translate(0, CELL_HEIGHT, 0);
         }
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     private void drawInitializing(final MatrixStack matrixStack, final IRenderTypeBuffer.Impl bufferFactory) {
@@ -256,10 +257,10 @@ public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMe
 
         final int labelWidth = API.smallFontRenderer.getCharWidth() * LABEL_INITIALIZING.length();
 
-        matrixStack.push();
-        matrixStack.translate((float) (guiLeft + GRID_LEFT + 3 + 7 * CELL_WIDTH - labelWidth / 2), guiTop + GRID_TOP + 1 + 7 * CELL_HEIGHT, 0);
+        matrixStack.pushPose();
+        matrixStack.translate((float) (leftPos + GRID_LEFT + 3 + 7 * CELL_WIDTH - labelWidth / 2), topPos + GRID_TOP + 1 + 7 * CELL_HEIGHT, 0);
         API.smallFontRenderer.drawString(matrixStack, bufferFactory, LABEL_INITIALIZING, color, LABEL_INITIALIZING.length());
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     private void drawMemory(final MatrixStack matrixStack, final IRenderTypeBuffer.Impl bufferFactory) {
@@ -268,8 +269,8 @@ public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMe
         final int selectedX = selectedCell & 0x0F;
         final int selectedY = selectedCell / 0x0F;
 
-        matrixStack.push();
-        matrixStack.translate(guiLeft + GRID_LEFT + 1, guiTop + GRID_TOP + 1, 0);
+        matrixStack.pushPose();
+        matrixStack.translate(leftPos + GRID_LEFT + 1, topPos + GRID_TOP + 1, 0);
         for (int i = 0, count = Math.min(visibleCells, data.length); i < count; i++) {
             final int col = i & 0x0F;
             final int row = i / 0x0F;
@@ -295,7 +296,7 @@ public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMe
                 matrixStack.translate(-CELL_WIDTH * 0x0F, CELL_HEIGHT, 0);
             }
         }
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     private void drawSelectionBox(final MatrixStack matrixStack) {
@@ -307,16 +308,16 @@ public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMe
         final int col = selectedCell & 0x0F;
         final int row = (selectedCell & 0xF0) >> 4;
 
-        final int x = guiLeft + GRID_LEFT + CELL_WIDTH * col - 1;
-        final int y = guiTop + GRID_TOP + CELL_HEIGHT * row - 1;
+        final int x = leftPos + GRID_LEFT + CELL_WIDTH * col - 1;
+        final int y = topPos + GRID_TOP + CELL_HEIGHT * row - 1;
 
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(x, y, 0);
 
-        getMinecraft().getTextureManager().bindTexture(Textures.LOCATION_GUI_MEMORY);
-        final int vPos = (int) (getMinecraft().world.getGameTime() % 16) * 8;
+        getMinecraft().getTextureManager().bind(Textures.LOCATION_GUI_MEMORY);
+        final int vPos = (int) (getMinecraft().level.getGameTime() % 16) * 8;
         blit(matrixStack, 0, 0, 256 - (CELL_WIDTH + 1), vPos, 11, 8);
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 }

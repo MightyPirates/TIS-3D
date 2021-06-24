@@ -17,27 +17,27 @@ public final class ItemBookManual extends ModItem {
     // Item
 
     @Override
-    public ActionResultType onItemUse(final ItemUseContext context) {
-        final World world = context.getWorld();
-        if (world.isRemote()) {
-            final String path = ManualAPI.pathFor(world, context.getPos(), context.getFace());
+    public ActionResultType useOn(final ItemUseContext context) {
+        final World world = context.getLevel();
+        if (world.isClientSide()) {
+            final String path = ManualAPI.pathFor(world, context.getClickedPos(), context.getClickedFace());
             if (path != null) {
                 ManualAPI.open();
                 ManualAPI.reset();
                 ManualAPI.navigate(path);
             }
         }
-        return ActionResultType.func_233537_a_(world.isRemote());
+        return ActionResultType.sidedSuccess(world.isClientSide());
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(final World world, final PlayerEntity player, final Hand hand) {
-        if (world.isRemote()) {
-            if (player.isSneaking()) {
+    public ActionResult<ItemStack> use(final World world, final PlayerEntity player, final Hand hand) {
+        if (world.isClientSide()) {
+            if (player.isShiftKeyDown()) {
                 ManualAPI.reset();
             }
             ManualAPI.open();
         }
-        return ActionResult.func_233538_a_(player.getHeldItem(hand), world.isRemote());
+        return ActionResult.sidedSuccess(player.getItemInHand(hand), world.isClientSide());
     }
 }

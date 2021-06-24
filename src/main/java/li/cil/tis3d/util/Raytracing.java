@@ -33,10 +33,10 @@ public final class Raytracing {
     @Nullable
     public static RayTraceResult intersectIgnoringTransparent(final World world, final BlockPos position, final Vector3d start, final Vector3d end) {
         final BlockState state = world.getBlockState(position);
-        if (state.isSolid()) {
+        if (state.isSolidRender(world, position)) {
             final VoxelShape shape = state.getCollisionShape(world, position);
             if (!shape.isEmpty()) {
-                return shape.rayTrace(start, end, position);
+                return shape.clip(start, end, position);
             }
         }
         return null;

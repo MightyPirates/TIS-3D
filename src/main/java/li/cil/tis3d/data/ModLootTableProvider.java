@@ -27,15 +27,15 @@ public class ModLootTableProvider extends LootTableProvider {
     protected void validate(final Map<ResourceLocation, LootTable> map, final ValidationTracker validationtracker) {
         final Set<ResourceLocation> modLootTableIds =
             LootTables
-                .getReadOnlyLootTables()
+                .all()
                 .stream()
                 .filter(lootTable -> Objects.equals(lootTable.getNamespace(), API.MOD_ID))
                 .collect(Collectors.toSet());
 
         for (final ResourceLocation id : Sets.difference(modLootTableIds, map.keySet()))
-            validationtracker.addProblem("Missing mod loot table: " + id);
+            validationtracker.reportProblem("Missing mod loot table: " + id);
 
-        map.forEach((location, table) -> LootTableManager.validateLootTable(validationtracker, location, table));
+        map.forEach((location, table) -> LootTableManager.validate(validationtracker, location, table));
     }
 
     @Override
@@ -46,8 +46,8 @@ public class ModLootTableProvider extends LootTableProvider {
     public static final class ModBlockLootTables extends BlockLootTables {
         @Override
         protected void addTables() {
-            registerDropSelfLootTable(Blocks.CASING.get());
-            registerDropSelfLootTable(Blocks.CONTROLLER.get());
+            dropSelf(Blocks.CASING.get());
+            dropSelf(Blocks.CONTROLLER.get());
         }
 
         @Override

@@ -17,12 +17,12 @@ public final class Entities {
     // --------------------------------------------------------------------- //
 
     public static final RegistryObject<EntityType<EntityInfraredPacket>> INFRARED_PACKET = register("robot", EntityInfraredPacket::new, EntityClassification.MISC, b -> b
-        .size(0.25f, 0.25f)
-        .trackingRange(16)
+        .sized(0.25f, 0.25f)
+        .setTrackingRange(16)
         .setUpdateInterval(1)
         .setShouldReceiveVelocityUpdates(true)
-        .immuneToFire()
-        .disableSummoning());
+        .fireImmune()
+        .noSummon());
 
     // --------------------------------------------------------------------- //
 
@@ -33,6 +33,6 @@ public final class Entities {
     // --------------------------------------------------------------------- //
 
     private static <T extends Entity> RegistryObject<EntityType<T>> register(final String name, final EntityType.IFactory<T> factory, final EntityClassification classification, final Function<EntityType.Builder<T>, EntityType.Builder<T>> customizer) {
-        return ENTITIES.register(name, () -> customizer.apply(EntityType.Builder.create(factory, classification)).build(name));
+        return ENTITIES.register(name, () -> customizer.apply(EntityType.Builder.of(factory, classification)).build(name));
     }
 }
