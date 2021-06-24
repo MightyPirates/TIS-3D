@@ -20,7 +20,7 @@ import java.util.Random;
  * {@link net.minecraft.client.renderer.model.IBakedModel#getQuads(BlockState, Direction, Random, IModelData)},
  * so calls to this method may not come from the main thread.
  */
-public interface CasingFaceQuadOverride {
+public interface ModuleWithBakedModel {
     /**
      * Called to obtain quads to use for the specified side instead of the casing's default ones. May return
      * <c>null</c> to not override the default quads. Will be called directly from the casing's
@@ -33,5 +33,5 @@ public interface CasingFaceQuadOverride {
      * @return the list of replacement quads, or <c>null</c> to use the default casing quads.
      */
     @OnlyIn(Dist.CLIENT)
-    List<BakedQuad> getCasingFaceQuads(final @Nullable BlockState state, @Nullable final Direction side, final Random random);
+    List<BakedQuad> getQuads(final @Nullable BlockState state, @Nullable final Direction side, final Random random);
 }

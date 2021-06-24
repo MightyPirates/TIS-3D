@@ -7,7 +7,7 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.ModuleProvider;
-import li.cil.tis3d.api.module.traits.Redstone;
+import li.cil.tis3d.api.module.traits.ModuleWithRedstone;
 import li.cil.tis3d.common.item.Items;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.provider.ModuleProviders;
@@ -144,7 +144,7 @@ public final class CasingImpl implements Casing {
         }
 
         // Remember for below.
-        final boolean hadRedstone = oldModule instanceof Redstone;
+        final boolean hadRedstone = oldModule instanceof ModuleWithRedstone;
 
         // Apply new module before adjust remaining state.
         modules[face.ordinal()] = module;

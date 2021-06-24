@@ -53,7 +53,7 @@ public final class ModuleProviders {
     @Nullable
     public static ModuleProvider getProviderFor(final ItemStack stack, final Casing casing, final Face face) {
         for (final ModuleProvider provider : MODULE_PROVIDER_REGISTRY.get()) {
-            if (provider.worksWith(stack, casing, face)) {
+            if (provider.matches(stack, casing, face)) {
                 return provider;
             }
         }

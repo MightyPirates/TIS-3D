@@ -157,7 +157,7 @@ public final class ModuleSequencer extends AbstractModuleWithRotation {
         // Draw base grid of sequencer entries.
         context.drawAtlasSpriteUnlit(Textures.LOCATION_OVERLAY_MODULE_SEQUENCER, Color.withAlpha(Color.WHITE, enabled ? 1f : 0.5f));
 
-        if (context.isWithinDetailRange(getCasing().getPosition())) {
+        if (context.closeEnoughForDetails(getCasing().getPosition())) {
             // Draw configuration of sequencer.
             final int color = Color.withAlpha(ACTIVE_CELL_COLOR, enabled ? 1f : 0.5f);
             for (int col = 0; col < COL_COUNT; col++) {
@@ -172,7 +172,7 @@ public final class ModuleSequencer extends AbstractModuleWithRotation {
         }
 
         // Draw selection overlay for focused cell, if any.
-        final Vector3d hitPos = getObserverLookAt(context.getDispatcher());
+        final Vector3d hitPos = getLocalHitPosition(context.getDispatcher().cameraHitResult);
         if (hitPos != null) {
             final Vector3d uv = hitToUV(hitPos);
             final int col = uvToCol((float) uv.x);

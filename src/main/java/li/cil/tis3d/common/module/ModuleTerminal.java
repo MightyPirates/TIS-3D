@@ -3,6 +3,7 @@ package li.cil.tis3d.common.module;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
@@ -11,7 +12,7 @@ import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.gui.TerminalModuleScreen;
 import li.cil.tis3d.client.renderer.Textures;
-import li.cil.tis3d.client.renderer.font.FontRendererNormal;
+import li.cil.tis3d.client.renderer.font.FontRenderer;
 import li.cil.tis3d.util.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -230,7 +231,7 @@ public final class ModuleTerminal extends AbstractModuleWithRotation {
         matrixStack.pushPose();
         rotateForRendering(matrixStack);
 
-        if (context.isWithinDetailRange(getCasing().getPosition())) {
+        if (context.closeEnoughForDetails(getCasing().getPosition())) {
             // Player is close, render actual terminal text.
             renderText(context);
         } else {
@@ -306,7 +307,7 @@ public final class ModuleTerminal extends AbstractModuleWithRotation {
         matrixStack.translate(2f / 16f, 2f / 16f, 0);
         matrixStack.scale(1 / 512f, 1 / 512f, 1);
 
-        final FontRendererNormal fontRenderer = FontRendererNormal.INSTANCE;
+        final FontRenderer fontRenderer = API.normalFontRenderer;
 
         final int totalWidth = 12 * 32;
         final int textWidth = MAX_COLUMNS * fontRenderer.getCharWidth();
@@ -321,16 +322,16 @@ public final class ModuleTerminal extends AbstractModuleWithRotation {
     }
 
     @OnlyIn(Dist.CLIENT)
-    private void renderDisplay(final RenderContext context, final FontRendererNormal fontRenderer) {
+    private void renderDisplay(final RenderContext context, final FontRenderer fontRenderer) {
         final MatrixStack matrixStack = context.getMatrixStack();
         for (final StringBuilder line : display) {
-            fontRenderer.drawString(matrixStack, context.bufferFactory, line);
+            context.drawString(fontRenderer, line);
             matrixStack.translate(0, fontRenderer.getCharHeight(), 0);
         }
     }
 
     @OnlyIn(Dist.CLIENT)
-    private void renderInput(final RenderContext context, final FontRendererNormal fontRenderer, final int textWidth) {
+    private void renderInput(final RenderContext context, final FontRenderer fontRenderer, final int textWidth) {
         final MatrixStack matrixStack = context.getMatrixStack();
 
         final int color = Color.withAlpha(Color.WHITE, isInputEnabled ? 1f : 0.5f);
@@ -339,7 +340,7 @@ public final class ModuleTerminal extends AbstractModuleWithRotation {
         context.drawQuadUnlit(-2, 2, textWidth + 4, 20, Color.DARK_GRAY);
 
         matrixStack.translate(0, 4, 0);
-        fontRenderer.drawString(matrixStack, context.bufferFactory, input);
+        context.drawString(fontRenderer, input);
 
         if (isInputEnabled && input.length() < MAX_COLUMNS && System.currentTimeMillis() % 800 > 400) {
             final int w = fontRenderer.getCharWidth();

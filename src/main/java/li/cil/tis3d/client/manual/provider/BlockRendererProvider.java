@@ -2,10 +2,10 @@ package li.cil.tis3d.client.manual.provider;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import li.cil.tis3d.api.manual.ImageProvider;
-import li.cil.tis3d.api.manual.ImageRenderer;
+import li.cil.tis3d.api.manual.RendererProvider;
+import li.cil.tis3d.api.manual.ContentRenderer;
 import li.cil.tis3d.client.manual.Strings;
-import li.cil.tis3d.client.manual.segment.render.ItemStackImageRenderer;
+import li.cil.tis3d.client.manual.segment.render.ItemStackContentRenderer;
 import li.cil.tis3d.client.manual.segment.render.MissingItemRenderer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public final class BlockImageProvider extends ForgeRegistryEntry<ImageProvider> implements ImageProvider {
+public final class BlockRendererProvider extends ForgeRegistryEntry<RendererProvider> implements RendererProvider {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private static final String PREFIX = "block:";
@@ -31,7 +31,7 @@ public final class BlockImageProvider extends ForgeRegistryEntry<ImageProvider> 
     }
 
     @Override
-    public ImageRenderer getImage(final String path) {
+    public ContentRenderer getRenderer(final String path) {
         final String data = path.substring(PREFIX.length());
         final BlockState state = Objects.requireNonNull(BLOCK_STATE_CACHE.computeIfAbsent(data, (string) -> {
             try {
@@ -45,7 +45,7 @@ public final class BlockImageProvider extends ForgeRegistryEntry<ImageProvider> 
         }));
 
         if (state.getBlock() != Blocks.AIR) {
-            return new ItemStackImageRenderer(new ItemStack(state.getBlock()));
+            return new ItemStackContentRenderer(new ItemStack(state.getBlock()));
         } else {
             return new MissingItemRenderer(Strings.WARNING_BLOCK_MISSING);
         }

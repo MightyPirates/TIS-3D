@@ -4,7 +4,7 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
-import li.cil.tis3d.api.module.traits.BlockChangeAware;
+import li.cil.tis3d.api.module.traits.ModuleWithBlockChangeListener;
 import li.cil.tis3d.api.prefab.module.AbstractModule;
 import li.cil.tis3d.api.serial.SerialInterface;
 import li.cil.tis3d.api.serial.SerialInterfaceProvider;
@@ -29,7 +29,7 @@ import java.util.Optional;
  * While it is not full, it will receive data on all ports and push them back.
  */
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-public final class ModuleSerialPort extends AbstractModule implements BlockChangeAware {
+public final class ModuleSerialPort extends AbstractModule implements ModuleWithBlockChangeListener {
     // --------------------------------------------------------------------- //
     // Persisted data
 
@@ -159,11 +159,11 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
         if (WorldUtils.isBlockLoaded(world, neighborPos)) {
             final SerialInterfaceProvider provider = SerialInterfaceProviders.getProviderFor(world, neighborPos, neighborSide);
             if (provider != null) {
-                if (!serialInterface.map(s -> provider.isValid(world, neighborPos, neighborSide, s)).orElse(false)) {
+                if (!serialInterface.map(s -> provider.stillValid(world, neighborPos, neighborSide, s)).orElse(false)) {
                     // Either we didn't have an interface for our neighbor yet,
                     // or the interface has become invalid, so create a new one.
                     reset();
-                    serialInterface = Optional.ofNullable(provider.interfaceFor(world, neighborPos, neighborSide));
+                    serialInterface = Optional.ofNullable(provider.getInterface(world, neighborPos, neighborSide));
                     if (serialInterface.isPresent() && serialInterfaceNbt.isPresent()) {
                         serialInterface.get().readFromNBT(serialInterfaceNbt.get());
                         serialInterfaceNbt = Optional.empty(); // Done reading, don't re-use.

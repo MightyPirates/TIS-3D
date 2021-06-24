@@ -39,14 +39,14 @@ public abstract class AbstractFontRenderer implements FontRenderer {
         drawString(matrixStack, bufferFactory, value, Color.WHITE, value.length());
     }
 
-    public void drawString(final MatrixStack matrixStack, final IRenderTypeBuffer bufferFactory, final CharSequence value, final int color, final int maxChars) {
+    public void drawString(final MatrixStack matrixStack, final IRenderTypeBuffer bufferFactory, final CharSequence value, final int argb, final int maxChars) {
         final IVertexBuilder buffer = getDefaultBuffer(bufferFactory);
 
         float tx = 0f;
         final int end = Math.min(maxChars, value.length());
         for (int i = 0; i < end; i++) {
             final char ch = value.charAt(i);
-            drawChar(matrixStack, buffer, color, tx, ch);
+            drawChar(matrixStack, buffer, argb, tx, ch);
             tx += getCharWidth() + getGapU();
         }
     }
@@ -73,17 +73,17 @@ public abstract class AbstractFontRenderer implements FontRenderer {
         return bufferFactory.getBuffer(renderLayer);
     }
 
-    private void drawChar(final MatrixStack matrixStack, final IVertexBuilder buffer, final int color, final float x, final char ch) {
+    private void drawChar(final MatrixStack matrixStack, final IVertexBuilder buffer, final int argb, final float x, final char ch) {
         if (Character.isWhitespace(ch) || Character.isISOControl(ch)) {
             return;
         }
 
         final int index = getCharIndex(ch);
 
-        final int a = (color >>> 24) & 0xFF;
-        final int r = (color >>> 16) & 0xFF;
-        final int g = (color >>> 8) & 0xFF;
-        final int b = color & 0xFF;
+        final int a = Color.getAlphaU8(argb);
+        final int r = Color.getRedU8(argb);
+        final int g = Color.getGreenU8(argb);
+        final int b = Color.getBlueU8(argb);
 
         final int column = index % COLUMNS;
         final int row = index / COLUMNS;

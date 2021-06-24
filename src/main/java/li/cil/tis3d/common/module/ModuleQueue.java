@@ -115,7 +115,7 @@ public final class ModuleQueue extends AbstractModuleWithRotation {
         context.drawAtlasSpriteUnlit(Textures.LOCATION_OVERLAY_MODULE_QUEUE);
 
         // Render detailed state when player is close.
-        if (!isEmpty() && context.isWithinDetailRange(getCasing().getPosition())) {
+        if (!isEmpty() && context.closeEnoughForDetails(getCasing().getPosition())) {
             drawState(context);
         }
 
@@ -269,7 +269,7 @@ public final class ModuleQueue extends AbstractModuleWithRotation {
 
         final FontRenderer fontRenderer = API.smallFontRenderer;
         for (int i = tail, j = 0; i != head; i = (i + 1) % QUEUE_SIZE, j++) {
-            fontRenderer.drawString(matrixStack, context.bufferFactory, String.format("%4X", queue[i]));
+            context.drawString(fontRenderer, String.format("%4X", queue[i]));
             matrixStack.translate(0, fontRenderer.getCharHeight() + 1, 0);
             if ((j + 1) % 4 == 0) {
                 matrixStack.translate((fontRenderer.getCharWidth() + 1) * 5, (fontRenderer.getCharHeight() + 1) * -4, 0);

@@ -6,7 +6,6 @@ import li.cil.tis3d.api.serial.SerialInterfaceProvider;
 import li.cil.tis3d.api.serial.SerialProtocolDocumentationReference;
 import li.cil.tis3d.common.provider.SerialInterfaceProviders;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.I18n;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -80,9 +79,9 @@ public final class SerialProtocolContentProvider extends ResourceContentProvider
                     references.add(reference);
                 }
             }
-            references.sort(Comparator.comparing(s -> s.name));
+            references.sort(Comparator.comparing(s -> s.getName().getString()));
             for (final SerialProtocolDocumentationReference protocol : references) {
-                sb.append("- [").append(I18n.get(protocol.name)).append("](").append(protocol.link).append(")\n");
+                sb.append("- [").append(protocol.getName()).append("](").append(protocol.getLink()).append(")\n");
             }
             cachedList = sb.toString();
         }

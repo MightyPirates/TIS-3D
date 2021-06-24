@@ -110,12 +110,12 @@ public final class ManualAPIImpl implements ManualAPI {
 
     @Override
     @Nullable
-    public ImageRenderer imageFor(final String href) {
-        final IForgeRegistry<ImageProvider> imageProviders = Manual.IMAGE_PROVIDER_REGISTRY.get();
-        for (final ImageProvider provider : imageProviders) {
+    public ContentRenderer imageFor(final String href) {
+        final IForgeRegistry<RendererProvider> imageProviders = Manual.IMAGE_PROVIDER_REGISTRY.get();
+        for (final RendererProvider provider : imageProviders) {
             if (provider.matches(href)) {
                 try {
-                    final ImageRenderer image = provider.getImage(href);
+                    final ContentRenderer image = provider.getRenderer(href);
                     if (image != null) {
                         return image;
                     }

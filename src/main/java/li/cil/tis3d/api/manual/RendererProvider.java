@@ -19,7 +19,7 @@ import javax.annotation.Nullable;
  * resource providing facilities, and display that.
  */
 @OnlyIn(Dist.CLIENT)
-public interface ImageProvider extends IForgeRegistryEntry<ImageProvider> {
+public interface RendererProvider extends IForgeRegistryEntry<RendererProvider> {
     /**
      * Tests whether this image provider works for the specified path.
      * <p>
@@ -47,5 +47,5 @@ public interface ImageProvider extends IForgeRegistryEntry<ImageProvider> {
      * @return the image renderer for the data, or <tt>null</tt> if none exists.
      */
     @Nullable
-    ImageRenderer getImage(final String data);
+    ContentRenderer getRenderer(final String data);
 }

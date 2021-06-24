@@ -15,7 +15,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
  * Built-in image renderers are <tt>item</tt>, <tt>block</tt> and <tt>tag</tt>.
  */
 @OnlyIn(Dist.CLIENT)
-public interface ImageRenderer {
+public interface ContentRenderer {
     /**
      * The width of the area this renderer uses.
      * <p>

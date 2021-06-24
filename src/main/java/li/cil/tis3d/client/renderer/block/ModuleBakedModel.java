@@ -2,7 +2,7 @@ package li.cil.tis3d.client.renderer.block;
 
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
-import li.cil.tis3d.api.module.traits.CasingFaceQuadOverride;
+import li.cil.tis3d.api.module.traits.ModuleWithBakedModel;
 import li.cil.tis3d.common.tileentity.TileEntityCasing;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.BakedQuad;
@@ -44,15 +44,15 @@ public final class ModuleBakedModel implements IDynamicBakedModel {
         final CasingModules modules = extraData.getData(CasingModules.CASING_MODULES_PROPERTY);
         if (modules != null) {
             if (side != null) {
-                final CasingFaceQuadOverride module = modules.getModule(Face.fromDirection(side));
+                final ModuleWithBakedModel module = modules.getModule(Face.fromDirection(side));
                 if (module != null) {
-                    quads.addAll(module.getCasingFaceQuads(state, side, random));
+                    quads.addAll(module.getQuads(state, side, random));
                 }
             } else {
                 for (final Face face : Face.VALUES) {
-                    final CasingFaceQuadOverride module = modules.getModule(face);
+                    final ModuleWithBakedModel module = modules.getModule(face);
                     if (module != null) {
-                        quads.addAll(module.getCasingFaceQuads(state, null, random));
+                        quads.addAll(module.getQuads(state, null, random));
                     }
                 }
             }
@@ -108,8 +108,8 @@ public final class ModuleBakedModel implements IDynamicBakedModel {
         final CasingModules data = new CasingModules();
         for (final Face face : Face.VALUES) {
             final Module module = casing.getModule(face);
-            if (module instanceof CasingFaceQuadOverride) {
-                data.setModule(face, (CasingFaceQuadOverride) module);
+            if (module instanceof ModuleWithBakedModel) {
+                data.setModule(face, (ModuleWithBakedModel) module);
             }
         }
 
@@ -127,10 +127,10 @@ public final class ModuleBakedModel implements IDynamicBakedModel {
     private static final class CasingModules {
         public static final ModelProperty<CasingModules> CASING_MODULES_PROPERTY = new ModelProperty<>();
 
-        private final CasingFaceQuadOverride[] modules = new CasingFaceQuadOverride[Face.VALUES.length];
+        private final ModuleWithBakedModel[] modules = new ModuleWithBakedModel[Face.VALUES.length];
 
         public boolean isEmpty() {
-            for (final CasingFaceQuadOverride module : modules) {
+            for (final ModuleWithBakedModel module : modules) {
                 if (module != null) {
                     return false;
                 }
@@ -139,12 +139,12 @@ public final class ModuleBakedModel implements IDynamicBakedModel {
             return true;
         }
 
-        public void setModule(final Face face, final CasingFaceQuadOverride module) {
+        public void setModule(final Face face, final ModuleWithBakedModel module) {
             modules[face.ordinal()] = module;
         }
 
         @Nullable
-        public CasingFaceQuadOverride getModule(final Face face) {
+        public ModuleWithBakedModel getModule(final Face face) {
             return modules[face.ordinal()];
         }
     }

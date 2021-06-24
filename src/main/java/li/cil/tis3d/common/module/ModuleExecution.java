@@ -7,7 +7,7 @@ import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
-import li.cil.tis3d.api.module.traits.BlockChangeAware;
+import li.cil.tis3d.api.module.traits.ModuleWithBlockChangeListener;
 import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
@@ -41,7 +41,7 @@ import java.util.*;
 /**
  * The programmable execution module.
  */
-public final class ModuleExecution extends AbstractModuleWithRotation implements BlockChangeAware {
+public final class ModuleExecution extends AbstractModuleWithRotation implements ModuleWithBlockChangeListener {
     // --------------------------------------------------------------------- //
     // Persisted data
 
@@ -231,7 +231,7 @@ public final class ModuleExecution extends AbstractModuleWithRotation implements
     @OnlyIn(Dist.CLIENT)
     @Override
     public void render(final RenderContext context) {
-        if ((!getCasing().isEnabled() || !isVisible()) && !this.isObserverLookingAt(context.getDispatcher())) {
+        if ((!getCasing().isEnabled() || !isVisible()) && !this.isHitFace(context.getDispatcher().cameraHitResult)) {
             return;
         }
 
@@ -244,7 +244,7 @@ public final class ModuleExecution extends AbstractModuleWithRotation implements
 
         // Render detailed state when player is close.
         final MachineState machineState = getState();
-        if (machineState.code != null && context.isWithinDetailRange(getCasing().getPosition())) {
+        if (machineState.code != null && context.closeEnoughForDetails(getCasing().getPosition())) {
             renderState(context, machineState);
         }
 
@@ -347,10 +347,10 @@ public final class ModuleExecution extends AbstractModuleWithRotation implements
 
         // Draw register info on top.
         final String accLast = String.format("ACC:%4X LAST:%s", machineState.acc, machineState.last.map(Enum::name).orElse("NONE"));
-        fontRenderer.drawString(matrixStack, context.bufferFactory, accLast);
+        context.drawString(fontRenderer, accLast);
         matrixStack.translate(0, fontRenderer.getCharHeight() + 4, 0);
         final String bakState = String.format("BAK:%4X MODE:%s", machineState.bak, state.name());
-        fontRenderer.drawString(matrixStack, context.bufferFactory, bakState);
+        context.drawString(fontRenderer, bakState);
         matrixStack.translate(0, fontRenderer.getCharHeight() + 4, 0);
 
         drawLine(context, 1, Color.WHITE);
@@ -384,9 +384,9 @@ public final class ModuleExecution extends AbstractModuleWithRotation implements
                     drawLine(context, fontRenderer.getCharHeight(), Color.WHITE);
                 }
 
-                fontRenderer.drawString(matrixStack, context.bufferFactory, line, Color.BLACK, 18);
+                context.drawString(fontRenderer, line, Color.BLACK, 18);
             } else {
-                fontRenderer.drawString(matrixStack, context.bufferFactory, line, Color.WHITE, 18);
+                context.drawString(fontRenderer, line, Color.WHITE, 18);
             }
 
             matrixStack.translate(0, fontRenderer.getCharHeight() + 1, 0);

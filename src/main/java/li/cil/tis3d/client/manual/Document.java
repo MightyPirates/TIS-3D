@@ -5,7 +5,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import li.cil.tis3d.api.ManualAPI;
-import li.cil.tis3d.api.manual.ImageRenderer;
+import li.cil.tis3d.api.manual.ContentRenderer;
 import li.cil.tis3d.client.manual.segment.*;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
@@ -205,7 +205,7 @@ public final class Document {
         try {
             final String title = m.group(1);
             final String url = m.group(2);
-            final ImageRenderer renderer = ManualAPI.imageFor(url);
+            final ContentRenderer renderer = ManualAPI.imageFor(url);
             if (renderer != null) {
                 return new RenderSegment(s, new StringTextComponent(title), renderer);
             } else {

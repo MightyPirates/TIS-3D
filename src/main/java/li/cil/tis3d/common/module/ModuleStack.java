@@ -111,7 +111,7 @@ public final class ModuleStack extends AbstractModuleWithRotation {
         context.drawAtlasSpriteUnlit(Textures.LOCATION_OVERLAY_MODULE_STACK);
 
         // Render detailed state when player is close.
-        if (context.isWithinDetailRange(getCasing().getPosition())) {
+        if (context.closeEnoughForDetails(getCasing().getPosition())) {
             drawState(context);
         }
 
@@ -260,7 +260,7 @@ public final class ModuleStack extends AbstractModuleWithRotation {
         final FontRenderer fontRenderer = API.smallFontRenderer;
 
         for (int i = 0; i <= top; i++) {
-            fontRenderer.drawString(matrixStack, context.bufferFactory, String.format("%4X", stack[i]));
+            context.drawString(fontRenderer, String.format("%4X", stack[i]));
             matrixStack.translate(0, fontRenderer.getCharHeight() + 1, 0);
             if ((i + 1) % 4 == 0) {
                 matrixStack.translate((fontRenderer.getCharWidth() + 1) * 5, (fontRenderer.getCharHeight() + 1) * -4, 0);

@@ -2,8 +2,8 @@ package li.cil.tis3d.common.module;
 
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
-import li.cil.tis3d.api.module.traits.BlockChangeAware;
-import li.cil.tis3d.api.module.traits.CasingFaceQuadOverride;
+import li.cil.tis3d.api.module.traits.ModuleWithBlockChangeListener;
+import li.cil.tis3d.api.module.traits.ModuleWithBakedModel;
 import li.cil.tis3d.api.prefab.module.AbstractModule;
 import li.cil.tis3d.util.BlockStateUtils;
 import net.minecraft.block.BlockRenderType;
@@ -33,7 +33,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public final class ModuleFacade extends AbstractModule implements BlockChangeAware, CasingFaceQuadOverride {
+public final class ModuleFacade extends AbstractModule implements ModuleWithBlockChangeListener, ModuleWithBakedModel {
     // --------------------------------------------------------------------- //
     // Persisted data
 
@@ -138,7 +138,7 @@ public final class ModuleFacade extends AbstractModule implements BlockChangeAwa
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public List<BakedQuad> getCasingFaceQuads(@Nullable final BlockState state, @Nullable final Direction side, final Random random) {
+    public List<BakedQuad> getQuads(@Nullable final BlockState state, @Nullable final Direction side, final Random random) {
         if (facadeState == null) {
             return Collections.emptyList();
         }

@@ -32,7 +32,7 @@ public final class SerialInterfaceProviders {
     @Nullable
     public static SerialInterfaceProvider getProviderFor(final World world, final BlockPos position, final Direction side) {
         for (final SerialInterfaceProvider provider : MODULE_PROVIDER_REGISTRY.get()) {
-            if (provider.worksWith(world, position, side)) {
+            if (provider.matches(world, position, side)) {
                 return provider;
             }
         }

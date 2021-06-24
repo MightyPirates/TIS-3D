@@ -1,7 +1,7 @@
 package li.cil.tis3d.client.manual.segment.render;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import li.cil.tis3d.api.manual.ImageRenderer;
+import li.cil.tis3d.api.manual.ContentRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.texture.NativeImage;
@@ -13,11 +13,11 @@ import net.minecraft.util.ResourceLocation;
 
 import java.io.IOException;
 
-public class TextureImageRenderer implements ImageRenderer {
+public class TextureContentRenderer implements ContentRenderer {
     private final ResourceLocation location;
     private final ImageTexture texture;
 
-    public TextureImageRenderer(final ResourceLocation location) {
+    public TextureContentRenderer(final ResourceLocation location) {
         this.location = location;
 
         final TextureManager manager = Minecraft.getInstance().getTextureManager();

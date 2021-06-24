@@ -8,7 +8,7 @@ import li.cil.tis3d.api.module.Module;
  * for a redstone strength when the block is queried for its weak redstone power on
  * the side the module is installed in.
  */
-public interface Redstone extends Module {
+public interface ModuleWithRedstone extends Module {
     /**
      * Get the current redstone output of the module.
      *

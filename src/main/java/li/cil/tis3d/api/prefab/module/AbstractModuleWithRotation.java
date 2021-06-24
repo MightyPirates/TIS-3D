@@ -4,7 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
-import li.cil.tis3d.api.module.traits.Rotatable;
+import li.cil.tis3d.api.module.traits.ModuleWithRotation;
 import li.cil.tis3d.api.util.TransformUtil;
 import li.cil.tis3d.util.EnumUtils;
 import net.minecraft.nbt.CompoundNBT;
@@ -23,7 +23,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
  * graphical purposes (e.g. the built-in redstone and stack modules do
  * this).
  */
-public abstract class AbstractModuleWithRotation extends AbstractModule implements Rotatable {
+public abstract class AbstractModuleWithRotation extends AbstractModule implements ModuleWithRotation {
     // --------------------------------------------------------------------- //
     // Persisted data
 

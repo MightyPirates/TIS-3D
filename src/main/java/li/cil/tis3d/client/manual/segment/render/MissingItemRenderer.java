@@ -1,10 +1,10 @@
 package li.cil.tis3d.client.manual.segment.render;
 
-import li.cil.tis3d.api.manual.InteractiveImageRenderer;
+import li.cil.tis3d.api.manual.InteractiveContentRenderer;
 import li.cil.tis3d.client.renderer.Textures;
 import net.minecraft.util.text.ITextComponent;
 
-public final class MissingItemRenderer extends TextureImageRenderer implements InteractiveImageRenderer {
+public final class MissingItemRenderer extends TextureContentRenderer implements InteractiveContentRenderer {
     private final ITextComponent tooltip;
 
     public MissingItemRenderer(final ITextComponent tooltip) {

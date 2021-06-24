@@ -3,12 +3,12 @@ package li.cil.tis3d.client.manual.segment.render;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import li.cil.tis3d.api.manual.ImageRenderer;
+import li.cil.tis3d.api.manual.ContentRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.vector.Vector4f;
 
-public final class ItemStackImageRenderer implements ImageRenderer {
+public final class ItemStackContentRenderer implements ContentRenderer {
     /**
      * How long to show individual stacks, in milliseconds, before switching to the next.
      */
@@ -16,7 +16,7 @@ public final class ItemStackImageRenderer implements ImageRenderer {
 
     private final ItemStack[] stacks;
 
-    public ItemStackImageRenderer(final ItemStack... stacks) {
+    public ItemStackContentRenderer(final ItemStack... stacks) {
         this.stacks = stacks;
     }
 

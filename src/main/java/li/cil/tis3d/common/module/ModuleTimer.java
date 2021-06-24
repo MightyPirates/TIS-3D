@@ -104,7 +104,7 @@ public final class ModuleTimer extends AbstractModuleWithRotation {
         context.drawAtlasSpriteUnlit(Textures.LOCATION_OVERLAY_MODULE_TIMER);
 
         // Render detailed state when player is close.
-        if (!hasElapsed && context.isWithinDetailRange(getCasing().getPosition())) {
+        if (!hasElapsed && context.closeEnoughForDetails(getCasing().getPosition())) {
             final long worldTime = context.getDispatcher().level.getGameTime();
             final float remaining = (float) (timer - worldTime) - context.getPartialTicks();
             if (remaining <= 0) {
@@ -213,6 +213,6 @@ public final class ModuleTimer extends AbstractModuleWithRotation {
         matrixStack.scale(1 / 80f, 1 / 80f, 1);
         matrixStack.translate(-width / 2f + 1, -height / 2f + 1, 0);
 
-        fontRenderer.drawString(matrixStack, context.bufferFactory, time);
+        context.drawString(fontRenderer, time);
     }
 }

@@ -1,7 +1,7 @@
 package li.cil.tis3d.api;
 
-import li.cil.tis3d.api.manual.ImageProvider;
-import li.cil.tis3d.api.manual.ImageRenderer;
+import li.cil.tis3d.api.manual.RendererProvider;
+import li.cil.tis3d.api.manual.ContentRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -22,7 +22,7 @@ public final class ManualAPI {
     /**
      * Get the image renderer for the specified image path.
      * <p>
-     * This will look for {@link ImageProvider}s registered for a prefix in the
+     * This will look for {@link RendererProvider}s registered for a prefix in the
      * specified path. If there is no match, or the matched content provider
      * does not provide a renderer, this will return <tt>null</tt>.
      *
@@ -30,7 +30,7 @@ public final class ManualAPI {
      * @return the custom renderer for that path.
      */
     @Nullable
-    public static ImageRenderer imageFor(final String path) {
+    public static ContentRenderer imageFor(final String path) {
         if (API.manualAPI != null) {
             return API.manualAPI.imageFor(path);
         }

@@ -74,8 +74,7 @@ public abstract class AbstractModule implements Module {
      * @return <tt>true</tt> if the observer is looking at the module, <tt>false</tt> otherwise.
      */
     @OnlyIn(Dist.CLIENT)
-    protected boolean isObserverLookingAt(final TileEntityRendererDispatcher dispatcher) {
-        final RayTraceResult hitResult = dispatcher.cameraHitResult;
+    protected boolean isHitFace(@Nullable final RayTraceResult hitResult) {
         if (hitResult == null) {
             return false;
         }
@@ -109,8 +108,7 @@ public abstract class AbstractModule implements Module {
      */
     @OnlyIn(Dist.CLIENT)
     @Nullable
-    protected Vector3d getObserverLookAt(final TileEntityRendererDispatcher dispatcher) {
-        final RayTraceResult hitResult = dispatcher.cameraHitResult;
+    protected Vector3d getLocalHitPosition(@Nullable final RayTraceResult hitResult) {
         if (hitResult == null) {
             return null;
         }

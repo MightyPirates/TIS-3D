@@ -3,7 +3,7 @@ package li.cil.tis3d.common.block;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
-import li.cil.tis3d.api.module.traits.Redstone;
+import li.cil.tis3d.api.module.traits.ModuleWithRedstone;
 import li.cil.tis3d.api.util.TransformUtil;
 import li.cil.tis3d.common.item.Items;
 import li.cil.tis3d.common.tileentity.TileEntities;
@@ -233,8 +233,8 @@ public final class BlockCasing extends Block {
         if (tileentity instanceof TileEntityCasing) {
             final TileEntityCasing casing = (TileEntityCasing) tileentity;
             final Module module = casing.getModule(Face.fromDirection(side.getOpposite()));
-            if (module instanceof Redstone) {
-                return ((Redstone) module).getRedstoneOutput();
+            if (module instanceof ModuleWithRedstone) {
+                return ((ModuleWithRedstone) module).getRedstoneOutput();
             }
         }
         return super.getSignal(blockState, world, pos, side);

@@ -15,7 +15,7 @@ import net.minecraft.world.World;
  * {@link Block#neighborChanged(BlockState, World, BlockPos, Block, BlockPos, boolean)} method.
  */
 @SuppressWarnings("deprecation")
-public interface BlockChangeAware extends Module {
+public interface ModuleWithBlockChangeListener extends Module {
     /**
      * Called when a block adjacent to the hosting {@link Casing} changes.
      *

@@ -7,7 +7,7 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
-import li.cil.tis3d.api.module.traits.Redstone;
+import li.cil.tis3d.api.module.traits.ModuleWithRedstone;
 import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
@@ -17,7 +17,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-public final class ModuleRedstone extends AbstractModuleWithRotation implements Redstone {
+public final class ModuleRedstone extends AbstractModuleWithRotation implements ModuleWithRedstone {
     // --------------------------------------------------------------------- //
     // Persisted data
 

@@ -28,10 +28,10 @@ public interface FontRenderer {
      * @param matrixStack   the current matrix stack.
      * @param bufferFactory the buffer to render the string into.
      * @param value         the string to render.
-     * @param color         the color to render the string with.
+     * @param argb          the color to render the string with.
      * @param maxChars      the maximum number of characters to render.
      */
-    void drawString(final MatrixStack matrixStack, final IRenderTypeBuffer bufferFactory, final CharSequence value, final int color, final int maxChars);
+    void drawString(final MatrixStack matrixStack, final IRenderTypeBuffer bufferFactory, final CharSequence value, final int argb, final int maxChars);
 
     /**
      * Get the width of the characters drawn with the font renderer, in pixels.

@@ -12,7 +12,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
  * one, or render a small GUI on a page.
  */
 @OnlyIn(Dist.CLIENT)
-public interface InteractiveImageRenderer extends ImageRenderer {
+public interface InteractiveContentRenderer extends ContentRenderer {
     /**
      * Get a custom tooltip for this image renderer.
      * <p>

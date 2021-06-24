@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
  * Creates a module instance for a specified item stack.
  * <p>
  * Providers should be as specific as possible in the implementation of their
- * {@link #worksWith(ItemStack, Casing, Face)} method. The first provider claiming to support
+ * {@link #matches(ItemStack, Casing, Face)} method. The first provider claiming to support
  * the specified parameters will be used to create a {@link Module} instance via its
  * {@link #createModule(ItemStack, Casing, Face)} method and the order in which providers are
  * queried is not guaranteed to be deterministic. As such, there should be no two providers
@@ -29,7 +29,7 @@ public interface ModuleProvider extends IForgeRegistryEntry<ModuleProvider> {
      * @param face   the face the module would be installed on.
      * @return <tt>true</tt> if the stack is supported, <tt>false</tt> otherwise.
      */
-    boolean worksWith(final ItemStack stack, final Casing casing, final Face face);
+    boolean matches(final ItemStack stack, final Casing casing, final Face face);
 
     /**
      * Creates a new module instance for the specified item stack.

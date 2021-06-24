@@ -8,6 +8,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.FurnaceTileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
@@ -16,12 +17,12 @@ public final class SerialInterfaceProviderFurnace extends ForgeRegistryEntry<Ser
     // SerialInterfaceProvider
 
     @Override
-    public boolean worksWith(final World world, final BlockPos position, final Direction side) {
+    public boolean matches(final World world, final BlockPos position, final Direction side) {
         return world.getBlockEntity(position) instanceof FurnaceTileEntity;
     }
 
     @Override
-    public SerialInterface interfaceFor(final World world, final BlockPos position, final Direction side) {
+    public SerialInterface getInterface(final World world, final BlockPos position, final Direction side) {
         final FurnaceTileEntity furnace = (FurnaceTileEntity) world.getBlockEntity(position);
         if (furnace == null) {
             throw new IllegalArgumentException("Provided location does not contain a furnace. Check via worksWith first.");
@@ -31,11 +32,11 @@ public final class SerialInterfaceProviderFurnace extends ForgeRegistryEntry<Ser
 
     @Override
     public SerialProtocolDocumentationReference getDocumentationReference() {
-        return new SerialProtocolDocumentationReference("Minecraft Furnace", "protocols/minecraft_furnace.md");
+        return new SerialProtocolDocumentationReference(new TranslationTextComponent("tis3d.manual.serial_protocols.furnace"), "protocols/minecraft_furnace.md");
     }
 
     @Override
-    public boolean isValid(final World world, final BlockPos position, final Direction side, final SerialInterface serialInterface) {
+    public boolean stillValid(final World world, final BlockPos position, final Direction side, final SerialInterface serialInterface) {
         return serialInterface instanceof SerialInterfaceFurnace;
     }
 

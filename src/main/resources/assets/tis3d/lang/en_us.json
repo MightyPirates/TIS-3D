@@ -51,6 +51,7 @@
     "tis3d.manual.blocks": "Blocks",
     "tis3d.manual.items": "Items",
     "tis3d.manual.serial_protocols": "Serial Protocols",
+    "tis3d.manual.serial_protocols.furnace": "Minecraft Furnace",
     "tis3d.manual.warning.missing.block": "Block unavailable.",
     "tis3d.manual.warning.missing.image": "Image not found.",
     "tis3d.manual.warning.missing.item": "Item unavailable.",

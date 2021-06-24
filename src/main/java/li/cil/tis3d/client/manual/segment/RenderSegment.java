@@ -1,8 +1,8 @@
 package li.cil.tis3d.client.manual.segment;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import li.cil.tis3d.api.manual.ImageRenderer;
-import li.cil.tis3d.api.manual.InteractiveImageRenderer;
+import li.cil.tis3d.api.manual.ContentRenderer;
+import li.cil.tis3d.api.manual.InteractiveContentRenderer;
 import li.cil.tis3d.client.manual.Document;
 import li.cil.tis3d.util.Color;
 import net.minecraft.client.gui.FontRenderer;
@@ -15,15 +15,15 @@ import java.util.Optional;
 public final class RenderSegment extends AbstractSegment implements InteractiveSegment {
     private final Segment parent;
     private final ITextComponent title;
-    private final ImageRenderer imageRenderer;
+    private final ContentRenderer contentRenderer;
 
     private int lastX = 0;
     private int lastY = 0;
 
-    public RenderSegment(final Segment parent, final ITextComponent title, final ImageRenderer imageRenderer) {
+    public RenderSegment(final Segment parent, final ITextComponent title, final ContentRenderer contentRenderer) {
         this.parent = parent;
         this.title = title;
-        this.imageRenderer = imageRenderer;
+        this.contentRenderer = contentRenderer;
     }
 
     @Override
@@ -33,8 +33,8 @@ public final class RenderSegment extends AbstractSegment implements InteractiveS
 
     @Override
     public Optional<ITextComponent> tooltip() {
-        if (imageRenderer instanceof InteractiveImageRenderer) {
-            return Optional.of(((InteractiveImageRenderer) imageRenderer).getTooltip(title));
+        if (contentRenderer instanceof InteractiveContentRenderer) {
+            return Optional.of(((InteractiveContentRenderer) contentRenderer).getTooltip(title));
         } else {
             return Optional.of(title);
         }
@@ -42,8 +42,8 @@ public final class RenderSegment extends AbstractSegment implements InteractiveS
 
     @Override
     public boolean onMouseClick(final double mouseX, final double mouseY) {
-        return imageRenderer instanceof InteractiveImageRenderer &&
-               ((InteractiveImageRenderer) imageRenderer).onMouseClick(mouseX - lastX, mouseY - lastY);
+        return contentRenderer instanceof InteractiveContentRenderer &&
+               ((InteractiveContentRenderer) contentRenderer).onMouseClick(mouseX - lastX, mouseY - lastY);
     }
 
     @Override
@@ -78,10 +78,10 @@ public final class RenderSegment extends AbstractSegment implements InteractiveS
         matrixStack.scale(s, s, s);
 
         if (hovered.isPresent()) {
-            Screen.fill(matrixStack, 0, 0, imageRenderer.getWidth(), imageRenderer.getHeight(), Color.withAlpha(Color.WHITE, 0.15f));
+            Screen.fill(matrixStack, 0, 0, contentRenderer.getWidth(), contentRenderer.getHeight(), Color.withAlpha(Color.WHITE, 0.15f));
         }
 
-        imageRenderer.render(matrixStack, mouseX - x, mouseY - y);
+        contentRenderer.render(matrixStack, mouseX - x, mouseY - y);
 
         matrixStack.popPose();
 
@@ -90,18 +90,18 @@ public final class RenderSegment extends AbstractSegment implements InteractiveS
 
     @Override
     public String toString() {
-        return String.format("![%s](%s)", title, imageRenderer);
+        return String.format("![%s](%s)", title, contentRenderer);
     }
 
     private float scale(final int maxWidth) {
-        return Math.min(1f, maxWidth / (float) imageRenderer.getWidth());
+        return Math.min(1f, maxWidth / (float) contentRenderer.getWidth());
     }
 
     private int imageWidth(final int maxWidth) {
-        return Math.min(maxWidth, imageRenderer.getWidth());
+        return Math.min(maxWidth, contentRenderer.getWidth());
     }
 
     private int imageHeight(final int maxWidth) {
-        return MathHelper.ceil(imageRenderer.getHeight() * scale(maxWidth)) + 4;
+        return MathHelper.ceil(contentRenderer.getHeight() * scale(maxWidth)) + 4;
     }
 }

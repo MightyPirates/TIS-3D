@@ -21,7 +21,7 @@ public final class SimpleModuleProvider<T extends Module> extends ForgeRegistryE
         this.moduleConstructor = moduleConstructor;
     }
 
-    public boolean worksWith(final ItemStack stack, final Casing casing, final Face face) {
+    public boolean matches(final ItemStack stack, final Casing casing, final Face face) {
         return stack.getItem() == module.get();
     }
 

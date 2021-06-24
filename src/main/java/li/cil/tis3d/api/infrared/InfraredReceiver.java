@@ -1,6 +1,7 @@
 package li.cil.tis3d.api.infrared;
 
 import li.cil.tis3d.api.machine.Casing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.IBlockReader;
@@ -26,7 +27,7 @@ import net.minecraft.world.IBlockReader;
  * the corresponding capability attached automatically.
  * <p>
  * Note that for blocks that do not have a raytrace shape, defined by
- * {@link net.minecraft.block.BlockState#getRayTraceShape(IBlockReader, BlockPos)
+ * {@link net.minecraft.block.BlockState#getOcclusionShape(IBlockReader, BlockPos)}
  * this will never be called, as they will be skipped when performing a hit test!
  */
 public interface InfraredReceiver {

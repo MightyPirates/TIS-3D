@@ -4,7 +4,7 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.ModuleProvider;
-import li.cil.tis3d.api.module.traits.Rotatable;
+import li.cil.tis3d.api.module.traits.ModuleWithRotation;
 import li.cil.tis3d.common.block.BlockCasing;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.CasingInventoryMessage;
@@ -119,8 +119,8 @@ public final class InventoryCasing extends Inventory implements ISidedInventory 
 
         final Module module = provider.createModule(stack, tileEntity, face);
 
-        if (module instanceof Rotatable) {
-            ((Rotatable) module).setFacing(facing);
+        if (module instanceof ModuleWithRotation) {
+            ((ModuleWithRotation) module).setFacing(facing);
         }
 
         if (!tileEntity.getCasingLevel().isClientSide()) {

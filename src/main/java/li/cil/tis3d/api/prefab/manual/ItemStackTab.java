@@ -12,10 +12,10 @@ import javax.annotation.Nullable;
 /**
  * Simple implementation of a tab icon renderer using an item stack as its graphic.
  */
-public class ItemStackTabIconRenderer extends AbstractTab {
+public class ItemStackTab extends AbstractTab {
     private final ItemStack stack;
 
-    public ItemStackTabIconRenderer(final String path, @Nullable final ITextComponent tooltip, final ItemStack stack) {
+    public ItemStackTab(final String path, @Nullable final ITextComponent tooltip, final ItemStack stack) {
         super(path, tooltip);
         this.stack = stack;
     }

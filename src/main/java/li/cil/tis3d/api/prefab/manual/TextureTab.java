@@ -11,10 +11,10 @@ import javax.annotation.Nullable;
 /**
  * Simple implementation of a tab icon renderer using a full texture as its graphic.
  */
-public class TextureTabIconRenderer extends AbstractTab {
+public class TextureTab extends AbstractTab {
     private final ResourceLocation location;
 
-    public TextureTabIconRenderer(final String path, @Nullable final ITextComponent tooltip, final ResourceLocation location) {
+    public TextureTab(final String path, @Nullable final ITextComponent tooltip, final ResourceLocation location) {
         super(path, tooltip);
         this.location = location;
     }

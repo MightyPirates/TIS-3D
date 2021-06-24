@@ -34,7 +34,7 @@ public final class Raytracing {
     public static RayTraceResult intersectIgnoringTransparent(final World world, final BlockPos position, final Vector3d start, final Vector3d end) {
         final BlockState state = world.getBlockState(position);
         if (state.isSolidRender(world, position)) {
-            final VoxelShape shape = state.getCollisionShape(world, position);
+            final VoxelShape shape = state.getOcclusionShape(world, position);
             if (!shape.isEmpty()) {
                 return shape.clip(start, end, position);
             }

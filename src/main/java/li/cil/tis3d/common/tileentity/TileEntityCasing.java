@@ -5,8 +5,9 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
-import li.cil.tis3d.api.module.traits.BlockChangeAware;
-import li.cil.tis3d.api.module.traits.Redstone;
+import li.cil.tis3d.api.module.traits.ModuleWithBlockChangeListener;
+import li.cil.tis3d.api.module.traits.ModuleWithRedstone;
+import li.cil.tis3d.api.module.traits.ModuleWithRotation;
 import li.cil.tis3d.common.CommonConfig;
 import li.cil.tis3d.common.inventory.InventoryCasing;
 import li.cil.tis3d.common.inventory.SidedInventoryProxy;
@@ -96,7 +97,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
 
     /**
      * Used to notify the case that redstone inputs may have changed, which
-     * will in turn cause modules implementing {@link Redstone} to get notified.
+     * will in turn cause modules implementing {@link ModuleWithRedstone} to get notified.
      */
     public void markRedstoneDirty() {
         redstoneDirty = true;
@@ -136,7 +137,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
 
     /**
      * Place a module stack into the specified slot, immediately setting the
-     * module's rotation to the specified facing if it is a {@link li.cil.tis3d.api.module.traits.Rotatable}
+     * module's rotation to the specified facing if it is a {@link ModuleWithRotation}
      * module.
      *
      * @param index  the slot to place the module into.
@@ -194,10 +195,10 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
     public void notifyModulesOfBlockChange(final BlockPos neighborPos) {
         for (final Face face : Face.VALUES) {
             final Module module = getModule(face);
-            if (module instanceof BlockChangeAware) {
+            if (module instanceof ModuleWithBlockChangeListener) {
                 final BlockPos moduleNeighborPos = getPosition().relative(Face.toDirection(face));
                 final boolean isModuleNeighbor = Objects.equals(neighborPos, moduleNeighborPos);
-                ((BlockChangeAware) module).onNeighborBlockChange(neighborPos, isModuleNeighbor);
+                ((ModuleWithBlockChangeListener) module).onNeighborBlockChange(neighborPos, isModuleNeighbor);
             }
         }
     }
@@ -228,10 +229,10 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
 
         for (final Face face : Face.VALUES) {
             final Module module = getCasing().getModule(face);
-            if (module instanceof Redstone) {
-                final Redstone redstone = (Redstone) module;
-                final short signal = (short) RedstoneInputProviders.getRedstoneInput(redstone);
-                redstone.setRedstoneInput(signal);
+            if (module instanceof ModuleWithRedstone) {
+                final ModuleWithRedstone redstoneModule = (ModuleWithRedstone) module;
+                final short signal = (short) RedstoneInputProviders.getRedstoneInput(module);
+                redstoneModule.setRedstoneInput(signal);
             }
         }
     }

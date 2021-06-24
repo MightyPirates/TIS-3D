@@ -18,15 +18,10 @@ import java.util.ArrayList;
  * <p>
  * Beware that the manual is unaware of resource domains. In other words, two
  * paths that are identical except for their resource domain will be the same,
- * as seen from the manual. This means you should probably place your
- * documentation somewhere other than <tt>doc/</tt>, because that's where the
- * OpenComputers documentation lives, and it is queried first - meaning if you
- * have a page with the same path as one in OpenComputers, it is practically
- * unreachable (because the OC provider is always queried first).
+ * as seen from the manual.
  */
 public class ResourceContentProvider extends ForgeRegistryEntry<ContentProvider> implements ContentProvider {
     private final String resourceDomain;
-
     private final String basePath;
 
     public ResourceContentProvider(final String resourceDomain, final String basePath) {
