@@ -1,12 +1,17 @@
 package li.cil.tis3d.client.manual;
 
 import com.google.common.base.Strings;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.api.manual.ImageRenderer;
 import li.cil.tis3d.client.manual.segment.*;
+import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.util.text.StringTextComponent;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -99,50 +104,36 @@ public final class Document {
      * Renders a list of segments and tooltips if a segment with a tooltip is hovered.
      * Returns the hovered interactive segment, if any.
      *
-     * @param document  the document to render.
-     * @param x         the x position to render at.
-     * @param y         the y position to render at.
-     * @param maxWidth  the width of the area to render the document in.
-     * @param maxHeight the height of the area to render the document in.
-     * @param yOffset   the vertical scroll offset of the document.
-     * @param renderer  the font renderer to use.
-     * @param mouseX    the x position of the mouse.
-     * @param mouseY    the y position of the mouse.
+     * @param matrixStack
+     * @param document      the document to render.
+     * @param x             the x position to render at.
+     * @param y             the y position to render at.
+     * @param maxWidth      the width of the area to render the document in.
+     * @param maxHeight     the height of the area to render the document in.
+     * @param yOffset       the vertical scroll offset of the document.
+     * @param renderer      the font renderer to use.
+     * @param mouseX        the x position of the mouse.
+     * @param mouseY        the y position of the mouse.
      * @return the interactive segment being hovered, if any.
      */
-    public static Optional<InteractiveSegment> render(final Segment document, final int x, final int y, final int maxWidth, final int maxHeight, final int yOffset, final FontRenderer renderer, final int mouseX, final int mouseY) {
-        final Minecraft mc = Minecraft.getMinecraft();
-
-        GlStateManager.pushAttrib();
+    public static Optional<InteractiveSegment> render(final MatrixStack matrixStack, final Segment document, final int x, final int y, final int maxWidth, final int maxHeight, final int yOffset, final FontRenderer renderer, final int mouseX, final int mouseY) {
+        final Minecraft mc = Minecraft.getInstance();
+        final MainWindow window = mc.getMainWindow();
 
         // On some systems/drivers/graphics cards the next calls won't update the
         // depth buffer correctly if alpha test is enabled. Guess how we found out?
         // By noticing that on those systems it only worked while chat messages
         // were visible. Yeah. I know.
-        GlStateManager.disableAlpha();
+        RenderSystem.disableAlphaTest();
 
         // Clear depth mask, then create masks in foreground above and below scroll area.
-        GlStateManager.color(1, 1, 1, 1);
-        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT);
-        GlStateManager.enableDepth();
-        GlStateManager.depthFunc(GL11.GL_LEQUAL);
-        GlStateManager.depthMask(true);
-        GlStateManager.colorMask(false, false, false, false);
+        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT, false);
 
-        GlStateManager.pushMatrix();
-        GlStateManager.translate(0, 0, 500);
-        GL11.glBegin(GL11.GL_QUADS);
-        GL11.glVertex2f(0, y);
-        GL11.glVertex2f(mc.displayWidth, y);
-        GL11.glVertex2f(mc.displayWidth, 0);
-        GL11.glVertex2f(0, 0);
-        GL11.glVertex2f(0, mc.displayHeight);
-        GL11.glVertex2f(mc.displayWidth, mc.displayHeight);
-        GL11.glVertex2f(mc.displayWidth, y + maxHeight);
-        GL11.glVertex2f(0, y + maxHeight);
-        GL11.glEnd();
-        GlStateManager.popMatrix();
-        GlStateManager.colorMask(true, true, true, true);
+        matrixStack.push();
+        matrixStack.translate(0, 0, 500);
+        Screen.fill(matrixStack, 0, 0, window.getFramebufferWidth(), y, 0);
+        Screen.fill(matrixStack, 0, y + maxHeight, window.getFramebufferWidth(), window.getFramebufferHeight(), 0);
+        matrixStack.pop();
 
         // Actual rendering.
         Optional<InteractiveSegment> hovered = Optional.empty();
@@ -154,7 +145,7 @@ public final class Document {
         while (segment != null) {
             final int segmentHeight = segment.nextY(indent, maxWidth, renderer);
             if (currentY + segmentHeight >= minY && currentY <= maxY) {
-                final Optional<InteractiveSegment> result = segment.render(x, currentY, indent, maxWidth, renderer, mouseX, mouseY);
+                final Optional<InteractiveSegment> result = segment.render(matrixStack, x, currentY, indent, maxWidth, renderer, mouseX, mouseY);
                 if (!hovered.isPresent()) {
                     hovered = result;
                 }
@@ -168,8 +159,7 @@ public final class Document {
         }
         hovered.ifPresent(InteractiveSegment::notifyHover);
 
-        GlStateManager.popAttrib();
-        GlStateManager.bindTexture(0);
+        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT, false);
 
         return hovered;
     }
@@ -192,7 +182,7 @@ public final class Document {
     }
 
     private static Segment CodeSegment(final Segment s, final Matcher m) {
-        return new CodeSegment(s, m.group(2));
+        return new MonospaceSegment(s, m.group(2));
     }
 
     private static Segment LinkSegment(final Segment s, final Matcher m) {
@@ -213,11 +203,13 @@ public final class Document {
 
     private static Segment ImageSegment(final Segment s, final Matcher m) {
         try {
-            final ImageRenderer renderer = ManualAPI.imageFor(m.group(2));
+            final String title = m.group(1);
+            final String url = m.group(2);
+            final ImageRenderer renderer = ManualAPI.imageFor(url);
             if (renderer != null) {
-                return new RenderSegment(s, m.group(1), renderer);
+                return new RenderSegment(s, new StringTextComponent(title), renderer);
             } else {
-                return new TextSegment(s, "No renderer found for: " + m.group(2));
+                return new TextSegment(s, "No renderer found for: " + url);
             }
         } catch (final Throwable t) {
             return new TextSegment(s, Strings.isNullOrEmpty(t.toString()) ? "Unknown error." : t.toString());

@@ -1,5 +1,9 @@
 package li.cil.tis3d.api.manual;
 
+import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+
 /**
  * Allows implementing advanced image renderers that react to mouse input and
  * specify customized tooltips.
@@ -7,6 +11,7 @@ package li.cil.tis3d.api.manual;
  * This way you can e.g. disable the default tooltip and render a more advanced
  * one, or render a small GUI on a page.
  */
+@OnlyIn(Dist.CLIENT)
 public interface InteractiveImageRenderer extends ImageRenderer {
     /**
      * Get a custom tooltip for this image renderer.
@@ -16,7 +21,7 @@ public interface InteractiveImageRenderer extends ImageRenderer {
      * @param tooltip the original tooltip of the element.
      * @return the tooltip to use for the element.
      */
-    String getTooltip(final String tooltip);
+    ITextComponent getTooltip(final ITextComponent tooltip);
 
     /**
      * Called when the mouse is clicked while over this image renderer.
@@ -31,5 +36,5 @@ public interface InteractiveImageRenderer extends ImageRenderer {
      * @param mouseY the Y coordinate of the mouse, relative to the element.
      * @return whether the click was handled.
      */
-    boolean onMouseClick(final int mouseX, final int mouseY);
+    boolean onMouseClick(final double mouseX, final double mouseY);
 }

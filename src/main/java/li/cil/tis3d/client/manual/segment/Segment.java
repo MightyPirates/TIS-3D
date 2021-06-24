@@ -1,5 +1,6 @@
 package li.cil.tis3d.client.manual.segment;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.FontRenderer;
 
 import javax.annotation.Nullable;
@@ -60,16 +61,17 @@ public interface Segment {
      * Render the segment at the specified coordinates with the specified
      * properties.
      *
-     * @param x        the x position to render at.
-     * @param y        the y position to render at.
-     * @param indent   the current indentation.
-     * @param maxWidth the maximum width of the document.
-     * @param renderer the font renderer to use.
-     * @param mouseX   the x mouse position.
-     * @param mouseY   the y mouse position.
+     * @param matrixStack the current matrix stack.
+     * @param x           the x position to render at.
+     * @param y           the y position to render at.
+     * @param indent      the current indentation.
+     * @param maxWidth    the maximum width of the document.
+     * @param renderer    the font renderer to use.
+     * @param mouseX      the x mouse position.
+     * @param mouseY      the y mouse position.
      * @return the hovered interactive segment, if any.
      */
-    Optional<InteractiveSegment> render(final int x, final int y, final int indent, final int maxWidth, final FontRenderer renderer, final int mouseX, final int mouseY);
+    Optional<InteractiveSegment> render(final MatrixStack matrixStack, final int x, final int y, final int indent, final int maxWidth, final FontRenderer renderer, final int mouseX, final int mouseY);
 
     // ----------------------------------------------------------------------- //
 

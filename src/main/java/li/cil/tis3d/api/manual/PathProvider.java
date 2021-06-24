@@ -1,8 +1,12 @@
 package li.cil.tis3d.api.manual;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 
@@ -20,7 +24,8 @@ import javax.annotation.Nullable;
  * paths, for language agnostic paths. These will be resolved to the currently
  * set language, falling back to <tt>en_US</tt>, during actual content lookup.
  */
-public interface PathProvider {
+@OnlyIn(Dist.CLIENT)
+public interface PathProvider extends IForgeRegistryEntry<PathProvider> {
     /**
      * Get the path to the documentation page for the provided item stack.
      * <p>
@@ -41,8 +46,9 @@ public interface PathProvider {
      *
      * @param world the world containing the block.
      * @param pos   the position coordinate of the block.
+     * @param side  the face of the block.
      * @return the path to the page, <tt>null</tt> if none is known.
      */
     @Nullable
-    String pathFor(final World world, final BlockPos pos);
+    String pathFor(final World world, final BlockPos pos, final Direction side);
 }

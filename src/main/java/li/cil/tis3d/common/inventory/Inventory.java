@@ -1,13 +1,10 @@
 package li.cil.tis3d.common.inventory;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraftforge.common.util.Constants;
 
 import java.util.Arrays;
@@ -18,34 +15,32 @@ import java.util.Arrays;
 public class Inventory implements IInventory {
     private static final String TAG_ITEMS = "inventory";
 
-    private final String name;
     protected final ItemStack[] items;
 
-    public Inventory(final String name, final int size) {
-        this.name = name;
+    public Inventory(final int size) {
         Arrays.fill(items = new ItemStack[size], ItemStack.EMPTY);
     }
 
     // --------------------------------------------------------------------- //
 
-    public void readFromNBT(final NBTTagCompound nbt) {
-        final NBTTagList itemList = nbt.getTagList(TAG_ITEMS, Constants.NBT.TAG_COMPOUND);
-        final int count = Math.min(itemList.tagCount(), items.length);
+    public void readFromNBT(final CompoundNBT nbt) {
+        final ListNBT itemList = nbt.getList(TAG_ITEMS, Constants.NBT.TAG_COMPOUND);
+        final int count = Math.min(itemList.size(), items.length);
         for (int index = 0; index < count; index++) {
-            items[index] = new ItemStack(itemList.getCompoundTagAt(index));
+            items[index] = ItemStack.read(itemList.getCompound(index));
         }
     }
 
-    public void writeToNBT(final NBTTagCompound nbt) {
-        final NBTTagList itemList = new NBTTagList();
+    public void writeToNBT(final CompoundNBT nbt) {
+        final ListNBT itemList = new ListNBT();
         for (final ItemStack stack : items) {
-            final NBTTagCompound stackNbt = new NBTTagCompound();
+            final CompoundNBT stackNbt = new CompoundNBT();
             if (stack != null) {
-                stack.writeToNBT(stackNbt);
+                stack.write(stackNbt);
             }
-            itemList.appendTag(stackNbt);
+            itemList.add(stackNbt);
         }
-        nbt.setTag(TAG_ITEMS, itemList);
+        nbt.put(TAG_ITEMS, itemList);
     }
 
     // --------------------------------------------------------------------- //
@@ -54,24 +49,6 @@ public class Inventory implements IInventory {
     }
 
     protected void onItemRemoved(final int index) {
-    }
-
-    // --------------------------------------------------------------------- //
-    // IWorldNameable
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public boolean hasCustomName() {
-        return false;
-    }
-
-    @Override
-    public ITextComponent getDisplayName() {
-        return hasCustomName() ? new TextComponentString(getName()) : new TextComponentTranslation(getName());
     }
 
     // --------------------------------------------------------------------- //
@@ -102,7 +79,7 @@ public class Inventory implements IInventory {
         if (items[index].getCount() <= count) {
             return removeStackFromSlot(index);
         } else {
-            final ItemStack stack = items[index].splitStack(count);
+            final ItemStack stack = items[index].split(count);
             assert items[index].getCount() > 0;
             markDirty();
             return stack;
@@ -145,35 +122,21 @@ public class Inventory implements IInventory {
     }
 
     @Override
-    public boolean isUsableByPlayer(final EntityPlayer player) {
+    public boolean isUsableByPlayer(final PlayerEntity player) {
         return true;
     }
 
     @Override
-    public void openInventory(final EntityPlayer player) {
+    public void openInventory(final PlayerEntity player) {
     }
 
     @Override
-    public void closeInventory(final EntityPlayer player) {
+    public void closeInventory(final PlayerEntity player) {
     }
 
     @Override
     public boolean isItemValidForSlot(final int index, final ItemStack stack) {
         return true;
-    }
-
-    @Override
-    public int getField(final int id) {
-        return 0;
-    }
-
-    @Override
-    public void setField(final int id, final int value) {
-    }
-
-    @Override
-    public int getFieldCount() {
-        return 0;
     }
 
     @Override

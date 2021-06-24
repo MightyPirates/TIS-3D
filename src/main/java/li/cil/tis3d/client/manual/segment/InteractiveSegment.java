@@ -1,5 +1,7 @@
 package li.cil.tis3d.client.manual.segment;
 
+import net.minecraft.util.text.ITextComponent;
+
 import java.util.Optional;
 
 /**
@@ -16,7 +18,7 @@ public interface InteractiveSegment extends Segment {
      *
      * @return the tooltip for this interactive segment, if any.
      */
-    default Optional<String> tooltip() {
+    default Optional<ITextComponent> tooltip() {
         return Optional.empty();
     }
 
@@ -31,7 +33,7 @@ public interface InteractiveSegment extends Segment {
      * @param mouseY the Y coordinate of the mouse cursor.
      * @return whether the click was processed (true) or ignored (false).
      */
-    boolean onMouseClick(final int mouseX, final int mouseY);
+    boolean onMouseClick(final double mouseX, final double mouseY);
 
     // Called during the render call on the currently hovered interactive segment.
     // Useful to track hover state, e.g. for link highlighting.

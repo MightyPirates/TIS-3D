@@ -1,7 +1,7 @@
 package li.cil.tis3d.util;
 
 import li.cil.tis3d.api.API;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.Constants;
 import org.apache.logging.log4j.LogManager;
 
@@ -9,8 +9,8 @@ import org.apache.logging.log4j.LogManager;
  * Utility method for wrapping enum serialization against exceptions.
  */
 public final class EnumUtils {
-    public static <T extends Enum<T>> T readFromNBT(final Class<T> clazz, final String tagName, final NBTTagCompound nbt) {
-        if (nbt.hasKey(tagName, Constants.NBT.TAG_STRING)) {
+    public static <T extends Enum<T>> T readFromNBT(final Class<T> clazz, final String tagName, final CompoundNBT nbt) {
+        if (nbt.contains(tagName, Constants.NBT.TAG_STRING)) {
             // Backwards compatibility.
             try {
                 return Enum.valueOf(clazz, nbt.getString(tagName));
@@ -24,8 +24,8 @@ public final class EnumUtils {
         }
     }
 
-    public static <T extends Enum<T>> void writeToNBT(final Enum<T> value, final String tagName, final NBTTagCompound nbt) {
-        nbt.setByte(tagName, (byte) value.ordinal());
+    public static <T extends Enum<T>> void writeToNBT(final Enum<T> value, final String tagName, final CompoundNBT nbt) {
+        nbt.putByte(tagName, (byte) value.ordinal());
     }
 
     // --------------------------------------------------------------------- //

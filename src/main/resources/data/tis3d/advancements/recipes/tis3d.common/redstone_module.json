@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "tis3d:redstone_module"
+    ]
+  },
+  "criteria": {
+    "has_casing": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "tis3d:casing"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "tis3d:redstone_module"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_casing",
+      "has_the_recipe"
+    ]
+  ]
+}

@@ -1,0 +1,36 @@
+{
+    "itemGroup.tis3d.name": "TIS-3D",
+
+    "item.tis3d.book_code": "Code-Bibel",
+    "item.tis3d.book_code.desc": "§7Klicke mit einem Buch auf ein Ausführmodul, um ein Kopie zu erhalten.",
+    "item.tis3d.book_manual": "TIS-3D Benutzerhandbuch",
+    "item.tis3d.book_manual.desc": "§7Klicke mit einem Buch auf einen Controller, um ein Kopie zu erhalten.",
+    "item.tis3d.key": "Schlüssel",
+    "item.tis3d.key.desc": "§7Schleiche bei Verwendung, um einzelne Ports einer Gehäuseseite zu deaktivieren.",
+    "item.tis3d.key_creative": "Generalschlüssel",
+    "item.tis3d.key_creative.desc": "§7Schleiche bei Verwendung, um einzelne Ports einer Gehäuseseite zu deaktivieren.",
+    "item.tis3d.audio_module": "Audiomodul",
+    "item.tis3d.display_module": "Bildschirmmodul",
+    "item.tis3d.execution_module": "Ausführmodul",
+    "item.tis3d.infrared_module": "Infrarotmodul",
+    "item.tis3d.keypad_module": "Tastenblockmodul",
+    "item.tis3d.queue_module": "Queue-Modul",
+    "item.tis3d.random_module": "Zufallsmodul",
+    "item.tis3d.random_access_memory_module": "RAM-Modul",
+    "item.tis3d.read_only_memory_module": "ROM-Modul",
+    "item.tis3d.redstone_module": "Redstone-Modul",
+    "item.tis3d.serial_port_module": "Schnittstellenmodul",
+    "item.tis3d.stack_module": "Stack-Modul",
+    "item.tis3d.terminal_module": "Eingabemodul",
+    "item.tis3d.timer_module": "Timer-Modul",
+    "item.tis3d.prism": "Prisma",
+
+    "block.tis3d.casing": "Gehäuse",
+    "block.tis3d.controller": "Controller",
+
+    "tis3d.controller.status.incomplete": "Scan fehlgeschlagen",
+    "tis3d.controller.status.multiple_controllers": "Mehrere Controller",
+    "tis3d.controller.status.too_complex": "Zu komplex",
+    "tis3d.code_book.error_on_next_page": "Fehler auf der nächsten Seite:",
+    "tis3d.code_book.error_on_previous_page": "Fehler auf der vorherigen Seite:"
+}

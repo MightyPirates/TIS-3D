@@ -1,101 +1,154 @@
 buildscript {
     repositories {
-        jcenter()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
+        maven { url = 'https://files.minecraftforge.net/maven' }
+        mavenCentral()
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
     }
 }
 
 plugins {
-    id "com.matthewprenger.cursegradle" version "1.0.9"
+    id "com.matthewprenger.cursegradle" version "1.4.0"
 }
 
-apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
-
-file "build.properties" withReader {
-    def prop = new Properties()
-    prop.load(it)
-    ext.config = new ConfigSlurper().parse prop
-}
-
-version = config.mod.version
-group = config.mod.group
-archivesBaseName = config.mod.name
-
 def getGitRef() {
-  try {
-    def stdout = new ByteArrayOutputStream()
-    exec {
-      commandLine 'git', 'rev-parse', '--short', 'HEAD'
-      standardOutput = stdout
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'rev-parse', '--short', 'HEAD'
+            standardOutput = stdout
+        }
+        return stdout.toString().trim()
+    } catch (Throwable e) {
+        return "unknown"
     }
-    return stdout.toString().trim()
-  } catch (Throwable e) {
-    return "unknown"
-  }
 }
 
-if (System.getenv("PROMOTED_NUMBER") != null)
-    version += ".${System.getenv("PROMOTED_NUMBER")}"
-else if (System.getenv("BUILD_NUMBER") != null)
-    version += ".${System.getenv("BUILD_NUMBER")}"
-else
-    version += "+" + getGitRef()
+final def semver = "${version_major}.${version_minor}.${version_patch}"
 
-ext.simpleVersion = version
-version = "MC${config.minecraft.version}-${project.version}"
+String build_number = System.getenv("PROMOTED_NUMBER");
+if (build_number == null)
+    build_number = System.getenv("BUILD_NUMBER")
+if (build_number == null)
+    build_number = getGitRef()
 
-minecraft {
-    version = "${config.minecraft.version}-${config.forge.version}"
-    runDir = "run"
-    mappings = config.minecraft.mappings
-    replace "@VERSION@", project.simpleVersion
-}
+version = "${semver}+${build_number}"
+group = mod_group
+archivesBaseName = "${mod_name.replace(' ', '-')}-MC${minecraft_version}-Forge"
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
 repositories {
-    maven { url "http://dvs1.progwml6.com/files/maven" }
+    maven { url "http://dvs1.progwml6.com/files/maven" } // JEI
+    maven { url "http://maven.cil.li/" } // Markdown Manual
 }
 
 dependencies {
-    deobfCompile "mezz.jei:jei_${config.minecraft.version}:${config.jei.version}"
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+
+    compileOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}:${jei_version}:api")
+    runtimeOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}:${jei_version}")
 }
 
 processResources {
-    inputs.property "version", project.simpleVersion
-    inputs.property "mcversion", project.minecraft.version
-    inputs.property "fversion", config.forge.version
     from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
-        expand 'version':project.simpleVersion, 'mcversion':project.minecraft.version, 'fversion':config.forge.version
+        include 'META-INF/mods.toml'
+
+        expand([
+            'mod_version'          : version,
+            'mod_name'             : mod_name,
+            'mod_url'              : mod_url,
+            'mod_issues_url'       : mod_issues_url,
+            'forge_version_min'    : forge_version_min,
+            'minecraft_version_min': minecraft_version_min
+        ])
     }
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
+}
+
+minecraft {
+    mappings channel: mappings_channel, version: mappings_version
+
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'info'
+
+            mods {
+                tis3d {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file('run')
+
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'info'
+
+            mods {
+                tis3d {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        data {
+            workingDirectory project.file('run')
+
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'info'
+
+            args '--mod', 'tis3d', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources')
+
+            mods {
+                tis3d {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
+}
+
+task copyGeneratedResources(type: Copy) {
+    from "src/generated"
+    into "src/main"
+    exclude "resources/.cache"
+}
+
+jar {
+    finalizedBy 'reobfJar'
+
+    manifest {
+        attributes([
+            "Specification-Title"     : "tis3d",
+            "Specification-Vendor"    : "Sangar",
+            "Specification-Version"   : "1",
+            "Implementation-Title"    : project.name,
+            "Implementation-Version"  : "${semver}",
+            "Implementation-Vendor"   : "Sangar",
+            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
     }
 }
 
 task apiJar(type: Jar) {
+    classifier = 'api'
     from sourceSets.main.allSource
     from sourceSets.main.output
-    classifier = 'api'
     include 'li/cil/tis3d/api/**'
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    from javadoc.destinationDir
-    classifier 'javadoc'
-}
-
 artifacts {
-    archives javadocJar
     archives apiJar
 }
 
@@ -103,7 +156,6 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             artifact jar
-            artifact javadocJar
             artifact apiJar
         }
     }
@@ -117,18 +169,11 @@ publishing {
 curseforge {
     apiKey = project.hasProperty("curseForgeApiKey") ? project.curseForgeApiKey : ""
     project {
-        id = config.curse.project.id
-        releaseType = config.curse.project.releaseType
+        id = curse_project_id
+        releaseType = curse_project_releaseType
         changelogType = "markdown"
         changelog = file("changelog.md")
-        addGameVersion config.minecraft.version
+        addGameVersion minecraft_version
         addGameVersion "Java 8"
-    }
-}
-
-// this is needed for IntelliJ so we don't have to copy over the assets manually every time
-idea {
-    module {
-        outputDir = file('build/classes/main')
     }
 }

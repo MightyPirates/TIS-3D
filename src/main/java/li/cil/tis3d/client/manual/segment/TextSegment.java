@@ -1,8 +1,9 @@
 package li.cil.tis3d.client.manual.segment;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.tis3d.client.manual.Document;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -12,6 +13,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TextSegment extends BasicTextSegment {
+    private static final int DEFAULT_TEXT_COLOR = 0xFF333333;
+
     private final Segment parent;
     private final String text;
 
@@ -32,7 +35,7 @@ public class TextSegment extends BasicTextSegment {
     }
 
     @Override
-    public Optional<InteractiveSegment> render(final int x, final int y, final int indent, final int maxWidth, final FontRenderer renderer, final int mouseX, final int mouseY) {
+    public Optional<InteractiveSegment> render(final MatrixStack matrixStack, final int x, final int y, final int indent, final int maxWidth, final FontRenderer renderer, final int mouseX, final int mouseY) {
         int currentX = x + indent;
         int currentY = y;
         String chars = text;
@@ -53,13 +56,15 @@ public class TextSegment extends BasicTextSegment {
                 final int cy = currentY;
                 hovered = interactive.flatMap(segment -> segment.checkHovered(mouseX, mouseY, cx, cy, stringWidth(part, renderer), (int) (Document.lineHeight(renderer) * scale)));
             }
-            GlStateManager.color(0f, 0f, 0f, 1);
-            GlStateManager.pushMatrix();
-            GlStateManager.translate(currentX, currentY, 0);
-            GlStateManager.scale(scale, scale, scale);
-            GlStateManager.translate(-currentX, -currentY, 0);
-            renderer.drawString(format + part, currentX, currentY, color);
-            GlStateManager.popMatrix();
+            GlStateManager.color4f(0f, 0f, 0f, 1); // TODO wat?
+            matrixStack.push();
+            matrixStack.translate(currentX, currentY, 0);
+            matrixStack.scale(scale, scale, scale);
+            matrixStack.translate(-currentX, -currentY, 0);
+
+            renderer.drawString(matrixStack, format + part, currentX, currentY, color);
+
+            matrixStack.pop();
             currentX = x + wrapIndent;
             currentY += lineHeight(renderer);
             chars = chars.substring(numChars);
@@ -132,7 +137,7 @@ public class TextSegment extends BasicTextSegment {
         if (parent instanceof TextSegment) {
             return ((TextSegment) parent).resolvedColor();
         } else {
-            return 0x333333;
+            return DEFAULT_TEXT_COLOR;
         }
     }
 

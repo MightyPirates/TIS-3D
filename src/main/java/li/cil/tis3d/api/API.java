@@ -1,6 +1,9 @@
 package li.cil.tis3d.api;
 
-import li.cil.tis3d.common.api.CreativeTab;
+import li.cil.tis3d.client.renderer.font.FontRenderer;
+import net.minecraft.item.ItemGroup;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * Glue / actual references for the TIS-3D API.
@@ -11,21 +14,15 @@ public final class API {
      */
     public static final String MOD_ID = "tis3d";
 
-    /**
-     * The current version of the mod.
-     */
-    public static final String MOD_VERSION = "@VERSION@";
-
     // --------------------------------------------------------------------- //
 
-    public static CreativeTab creativeTab;
-
-    // Set in TIS-3D pre-init, prefer using static entry point classes instead.
-    public static li.cil.tis3d.api.detail.FontRendererAPI fontRendererAPI;
+    // Set in TIS-3D constructor, prefer using static entry point classes instead where possible.
+    public static ItemGroup itemGroup;
     public static li.cil.tis3d.api.detail.InfraredAPI infraredAPI;
-    public static li.cil.tis3d.api.detail.ManualAPI manualAPI;
-    public static li.cil.tis3d.api.detail.ModuleAPI moduleAPI;
-    public static li.cil.tis3d.api.detail.SerialAPI serialAPI;
+
+    @OnlyIn(Dist.CLIENT) public static FontRenderer normalFontRenderer;
+    @OnlyIn(Dist.CLIENT) public static FontRenderer smallFontRenderer;
+    @OnlyIn(Dist.CLIENT) public static li.cil.tis3d.api.detail.ManualAPI manualAPI;
 
     private API() {
     }

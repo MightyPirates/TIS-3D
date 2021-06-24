@@ -1,17 +1,20 @@
 package li.cil.tis3d.common.block;
 
-import li.cil.tis3d.common.init.Items;
+import li.cil.tis3d.common.item.Items;
 import li.cil.tis3d.common.tileentity.TileEntityController;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 /**
@@ -19,41 +22,46 @@ import net.minecraft.world.World;
  */
 public final class BlockController extends Block {
     public BlockController() {
-        super(Material.IRON);
+        super(Properties
+            .create(Material.IRON)
+            .sound(SoundType.METAL)
+            .hardnessAndResistance(1.5f, 6f));
     }
 
     // --------------------------------------------------------------------- //
     // Common
 
     @Override
-    public boolean hasTileEntity(final IBlockState state) {
+    public boolean hasTileEntity(final BlockState state) {
         return true;
     }
 
     @Override
-    public TileEntity createTileEntity(final World world, final IBlockState state) {
+    public TileEntity createTileEntity(final BlockState state, final IBlockReader world) {
         return new TileEntityController();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
-    public boolean onBlockActivated(final World world, final BlockPos pos, final IBlockState state, final EntityPlayer player, final EnumHand hand, final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
+    public ActionResultType onBlockActivated(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockRayTraceResult hit) {
         final ItemStack heldItem = player.getHeldItem(hand);
         if (!heldItem.isEmpty()) {
             final Item item = heldItem.getItem();
-            if (item == net.minecraft.init.Items.BOOK) {
-                if (!world.isRemote) {
-                    if (!player.capabilities.isCreativeMode) {
-                        heldItem.splitStack(1);
+            if (item == net.minecraft.item.Items.BOOK) {
+                if (!world.isRemote()) {
+                    if (!player.abilities.isCreativeMode) {
+                        heldItem.split(1);
                     }
-                    final ItemStack bookManual = new ItemStack(Items.BOOK_MANUAL);
+                    final ItemStack bookManual = new ItemStack(Items.BOOK_MANUAL.get());
                     if (player.inventory.addItemStackToInventory(bookManual)) {
-                        player.inventoryContainer.detectAndSendChanges();
+                        player.container.detectAndSendChanges();
                     }
                     if (bookManual.getCount() > 0) {
                         player.dropItem(bookManual, false, false);
                     }
                 }
-                return true;
+
+                return ActionResultType.func_233537_a_(world.isRemote());
             }
         }
 
@@ -61,13 +69,14 @@ public final class BlockController extends Block {
         if (tileEntity instanceof TileEntityController) {
             final TileEntityController controller = (TileEntityController) tileEntity;
 
-            if (!world.isRemote) {
+            if (!world.isRemote()) {
                 controller.forceStep();
             }
 
-            return true;
+            return ActionResultType.func_233537_a_(world.isRemote());
         }
-        return super.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
+
+        return super.onBlockActivated(state, world, pos, player, hand, hit);
     }
 
     // --------------------------------------------------------------------- //
@@ -75,13 +84,13 @@ public final class BlockController extends Block {
 
     @SuppressWarnings("deprecation")
     @Override
-    public boolean hasComparatorInputOverride(final IBlockState state) {
+    public boolean hasComparatorInputOverride(final BlockState state) {
         return true;
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    public int getComparatorInputOverride(final IBlockState state, final World world, final BlockPos pos) {
+    public int getComparatorInputOverride(final BlockState state, final World world, final BlockPos pos) {
         final TileEntity tileEntity = world.getTileEntity(pos);
         if (tileEntity instanceof TileEntityController) {
             final TileEntityController controller = (TileEntityController) tileEntity;
@@ -95,12 +104,12 @@ public final class BlockController extends Block {
 
     @SuppressWarnings("deprecation")
     @Override
-    public void neighborChanged(final IBlockState state, final World world, final BlockPos pos, final Block neighborBlock, final BlockPos neighborPos) {
+    public void neighborChanged(final BlockState state, final World world, final BlockPos pos, final Block block, final BlockPos fromPos, final boolean isMoving) {
         final TileEntity tileEntity = world.getTileEntity(pos);
         if (tileEntity instanceof TileEntityController) {
             final TileEntityController controller = (TileEntityController) tileEntity;
             controller.checkNeighbors();
         }
-        super.neighborChanged(state, world, pos, neighborBlock, neighborPos);
+        super.neighborChanged(state, world, pos, block, fromPos, isMoving);
     }
 }

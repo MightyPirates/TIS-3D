@@ -1,6 +1,6 @@
 # 栈模块
 
-![栈溢出](item:tis3d:module_stack)
+![栈溢出](item:tis3d:stack_module)
 
 堆栈模块能够存储多达**16**个值。它作为扩充[执行模块](module_execution.md)的内存。
 

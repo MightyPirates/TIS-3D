@@ -1,5 +1,6 @@
 package li.cil.tis3d.common.module;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.machine.Casing;
@@ -7,17 +8,16 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.traits.Redstone;
-import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
-import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.renderer.TextureLoader;
+import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
+import li.cil.tis3d.api.util.RenderContext;
+import li.cil.tis3d.client.renderer.Textures;
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
-public final class ModuleRedstone extends AbstractModuleRotatable implements Redstone {
+public final class ModuleRedstone extends AbstractModuleWithRotation implements Redstone {
     // --------------------------------------------------------------------- //
     // Persisted data
 
@@ -35,14 +35,12 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
     private static final byte DATA_TYPE_UPDATE = 0;
 
     // Rendering info.
-    private static final float LEFT_U0 = 9 / 32f;
-    private static final float LEFT_U1 = 12 / 32f;
-    private static final float RIGHT_U0 = 20 / 32f;
-    private static final float RIGHT_U1 = 23 / 32f;
+    private static final float OUTPUT_X = 9 / 32f;
+    private static final float INPUT_X = 20 / 32f;
     private static final float SHARED_V0 = 10 / 32f;
-    private static final float SHARED_V1 = 25 / 32f;
+    private static final float SHARED_Y = 25 / 32f;
     private static final float SHARED_W = 3 / 32f;
-    private static final float SHARED_H = SHARED_V1 - SHARED_V0;
+    private static final float SHARED_H = SHARED_Y - SHARED_V0;
 
     /**
      * The last tick we updated. Used to avoid changing output multiple times a
@@ -74,11 +72,11 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
             stepInput(port);
         }
 
-        if (scheduledNeighborUpdate && world.getTotalWorldTime() > lastStep) {
+        if (scheduledNeighborUpdate && world.getGameTime() > lastStep) {
             notifyNeighbors();
         }
 
-        lastStep = world.getTotalWorldTime();
+        lastStep = world.getGameTime();
     }
 
     @Override
@@ -108,36 +106,40 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
         output = data.readShort();
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Override
-    public void render(final boolean enabled, final float partialTicks) {
-        rotateForRendering();
-        RenderUtil.ignoreLighting();
+    public void render(final RenderContext context) {
+        final MatrixStack matrixStack = context.getMatrixStack();
+        matrixStack.push();
+        rotateForRendering(matrixStack);
 
         // Draw base overlay.
-        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_REDSTONE));
+        context.drawAtlasSpriteUnlit(Textures.LOCATION_OVERLAY_MODULE_REDSTONE);
 
-        if (!enabled) {
+        if (!getCasing().isEnabled()) {
+            matrixStack.pop();
             return;
         }
-
-        final TextureAtlasSprite barsSprite = RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_REDSTONE_BARS);
 
         // Draw output bar.
         final float relativeOutput = output / 15f;
         final float heightOutput = relativeOutput * SHARED_H;
-        final float v0Output = SHARED_V1 - heightOutput;
-        RenderUtil.drawQuad(barsSprite, LEFT_U0, v0Output, SHARED_W, heightOutput, LEFT_U0, v0Output, LEFT_U1, SHARED_V1);
+        final float v0Output = SHARED_Y - heightOutput;
+        context.drawAtlasSpriteUnlit(Textures.LOCATION_OVERLAY_MODULE_REDSTONE_BARS,
+            OUTPUT_X, v0Output, SHARED_W, heightOutput);
 
         // Draw input bar.
         final float relativeInput = input / 15f;
         final float heightInput = relativeInput * SHARED_H;
-        final float v0Input = SHARED_V1 - heightInput;
-        RenderUtil.drawQuad(barsSprite, RIGHT_U0, v0Input, SHARED_W, heightInput, RIGHT_U0, v0Input, RIGHT_U1, SHARED_V1);
+        final float v0Input = SHARED_Y - heightInput;
+        context.drawAtlasSpriteUnlit(Textures.LOCATION_OVERLAY_MODULE_REDSTONE_BARS,
+            INPUT_X, v0Input, SHARED_W, heightInput);
+
+        matrixStack.pop();
     }
 
     @Override
-    public void readFromNBT(final NBTTagCompound nbt) {
+    public void readFromNBT(final CompoundNBT nbt) {
         super.readFromNBT(nbt);
 
         output = (short) Math.max(0, Math.min(15, nbt.getShort(TAG_OUTPUT)));
@@ -145,11 +147,11 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
     }
 
     @Override
-    public void writeToNBT(final NBTTagCompound nbt) {
+    public void writeToNBT(final CompoundNBT nbt) {
         super.writeToNBT(nbt);
 
-        nbt.setInteger(TAG_OUTPUT, output);
-        nbt.setInteger(TAG_INPUT, input);
+        nbt.putInt(TAG_OUTPUT, output);
+        nbt.putInt(TAG_INPUT, input);
     }
 
     // --------------------------------------------------------------------- //
@@ -164,7 +166,7 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
     public void setRedstoneInput(final short value) {
         // We never call this on the client side, but other might...
         final World world = getCasing().getCasingWorld();
-        if (world.isRemote) {
+        if (world.isRemote()) {
             return;
         }
 
@@ -243,7 +245,7 @@ public final class ModuleRedstone extends AbstractModuleRotatable implements Red
 
         scheduledNeighborUpdate = false;
         final Block blockType = world.getBlockState(getCasing().getPosition()).getBlock();
-        world.notifyNeighborsOfStateChange(getCasing().getPosition(), blockType, false);
+        world.notifyNeighborsOfStateChange(getCasing().getPosition(), blockType);
     }
 
     /**

@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "tis3d:random_module"
+    ]
+  },
+  "criteria": {
+    "has_casing": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "tis3d:casing"
+          }
+        ]
+      }
+    },
+    "has_execution_module": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "tis3d:execution_module"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "tis3d:random_module"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_casing",
+      "has_execution_module",
+      "has_the_recipe"
+    ]
+  ]
+}

@@ -3,7 +3,9 @@ package li.cil.tis3d.client.manual.segment;
 import li.cil.tis3d.api.ManualAPI;
 import li.cil.tis3d.common.api.ManualAPIImpl;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 import java.net.URI;
 import java.util.Optional;
@@ -28,7 +30,7 @@ public final class LinkSegment extends TextSegment implements InteractiveSegment
     private boolean isLinkValid() {
         if (!isLinkValidInitialized) {
             isLinkValid = (url.startsWith("http://") || url.startsWith("https://")) ||
-                ManualAPI.contentFor(ManualAPIImpl.makeRelative(url, ManualAPIImpl.peekPath())) != null;
+                          ManualAPI.contentFor(ManualAPIImpl.makeRelative(url, ManualAPIImpl.peekPath())) != null;
             isLinkValidInitialized = true;
         }
         return isLinkValid;
@@ -54,12 +56,12 @@ public final class LinkSegment extends TextSegment implements InteractiveSegment
     }
 
     @Override
-    public Optional<String> tooltip() {
-        return Optional.of(url);
+    public Optional<ITextComponent> tooltip() {
+        return Optional.of(new StringTextComponent(url));
     }
 
     @Override
-    public boolean onMouseClick(final int mouseX, final int mouseY) {
+    public boolean onMouseClick(final double mouseX, final double mouseY) {
         if (url.startsWith("http://") || url.startsWith("https://")) {
             handleUrl(url);
         } else {
@@ -93,7 +95,10 @@ public final class LinkSegment extends TextSegment implements InteractiveSegment
             final Object instance = desktop.getMethod("getDesktop").invoke(null);
             desktop.getMethod("browse", URI.class).invoke(instance, new URI(url));
         } catch (final Throwable t) {
-            Minecraft.getMinecraft().player.sendMessage(new TextComponentString(t.toString()));
+            final ClientPlayerEntity player = Minecraft.getInstance().player;
+            if (player != null) {
+                player.sendStatusMessage(new StringTextComponent(t.toString()), false);
+            }
         }
     }
 

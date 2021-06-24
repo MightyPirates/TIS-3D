@@ -1,11 +1,11 @@
 package li.cil.tis3d.util;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -18,27 +18,7 @@ public final class Raytracing {
     @FunctionalInterface
     public interface CollisionDetector {
         @Nullable
-        RayTraceResult intersect(final World world, final BlockPos position, final Vec3d start, final Vec3d end);
-    }
-
-    /**
-     * Standard callback for {@link #raytrace(World, Vec3d, Vec3d, CollisionDetector)},
-     * only checks blocks that have a bounding box and are not liquids.
-     *
-     * @param world    the world to perform the intersection check in.
-     * @param position the position of the block to perform the intersection check with.
-     * @param start    the start of the line to intersect the block with.
-     * @param end      the end of the line to intersect the block with.
-     * @return hit information on the intersect, or <tt>null</tt> if there was none.
-     */
-    @Nullable
-    public static RayTraceResult intersectIgnoringLiquids(final World world, final BlockPos position, final Vec3d start, final Vec3d end) {
-        final IBlockState state = world.getBlockState(position);
-        final Block block = state.getBlock();
-        if (state.getCollisionBoundingBox(world, position) != null && block.canCollideCheck(state, false)) {
-            return state.collisionRayTrace(world, position, start, end);
-        }
-        return null;
+        RayTraceResult intersect(final World world, final BlockPos position, final Vector3d start, final Vector3d end);
     }
 
     /**
@@ -51,34 +31,18 @@ public final class Raytracing {
      * @return hit information on the intersect, or <tt>null</tt> if there was none.
      */
     @Nullable
-    public static RayTraceResult intersectIgnoringTransparent(final World world, final BlockPos position, final Vec3d start, final Vec3d end) {
-        final IBlockState state = world.getBlockState(position);
-        final Block block = state.getBlock();
-        if (!state.getMaterial().blocksMovement() || !state.getMaterial().isOpaque() || !state.getMaterial().blocksLight()) {
-            return null;
-        }
-        if (state.getCollisionBoundingBox(world, position) != null && block.canCollideCheck(state, false)) {
-            return state.collisionRayTrace(world, position, start, end);
+    public static RayTraceResult intersectIgnoringTransparent(final World world, final BlockPos position, final Vector3d start, final Vector3d end) {
+        final BlockState state = world.getBlockState(position);
+        if (state.isSolid()) {
+            final VoxelShape shape = state.getCollisionShape(world, position);
+            if (!shape.isEmpty()) {
+                return shape.rayTrace(start, end, position);
+            }
         }
         return null;
     }
 
     // --------------------------------------------------------------------- //
-
-    /**
-     * Trace along the specified line, testing for collision with blocks along the way.
-     * <p>
-     * Uses the default intersection logic defined in {@link #intersectIgnoringLiquids(World, BlockPos, Vec3d, Vec3d)}.
-     *
-     * @param world the world to shoot the ray in.
-     * @param start the start of the line to trace.
-     * @param end   the end of the line to trace.
-     * @return the first detected hit, or <tt>null</tt> if there was none.
-     */
-    @Nullable
-    public static RayTraceResult raytrace(final World world, final Vec3d start, final Vec3d end) {
-        return raytrace(world, start, end, Raytracing::intersectIgnoringLiquids);
-    }
 
     /**
      * Trace along the specified line, testing for collision with blocks along the way.
@@ -90,7 +54,7 @@ public final class Raytracing {
      * @return the first detected hit, or <tt>null</tt> if there was none.
      */
     @Nullable
-    public static RayTraceResult raytrace(final World world, final Vec3d start, final Vec3d end, final CollisionDetector callback) {
+    public static RayTraceResult raytrace(final World world, final Vector3d start, final Vector3d end, final CollisionDetector callback) {
         // Adapted from http://jsfiddle.net/wivlaro/mkaWf/6/
 
         final int startPosX = MathHelper.floor(start.x);
@@ -138,7 +102,7 @@ public final class Raytracing {
             // Check if we're colliding with the block.
             final BlockPos position = new BlockPos(currentPosX, currentPosY, currentPosZ);
             final RayTraceResult hit = callback.intersect(world, position, start, end);
-            if (hit != null && hit.typeOfHit != RayTraceResult.Type.MISS) {
+            if (hit != null && hit.getType() != RayTraceResult.Type.MISS) {
                 return hit;
             }
 

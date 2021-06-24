@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "tis3d:book_code",
+    "tis3d:book_manual",
+    "minecraft:book",
+    "minecraft:enchanted_book",
+    "minecraft:writable_book",
+    "minecraft:written_book"
+  ]
+}

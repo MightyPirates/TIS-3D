@@ -1,6 +1,6 @@
 # 随机模块
 
-![4](item:tis3d:module_random)
+![4](item:tis3d:random_module)
 
 随机模块利用一种接近虚空的物质所带有的高熵，在TIS-3D计算机支持的值范围产生均匀分布的随机值。
 

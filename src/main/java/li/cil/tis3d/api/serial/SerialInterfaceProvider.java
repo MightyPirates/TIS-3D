@@ -1,8 +1,10 @@
 package li.cil.tis3d.api.serial;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 
@@ -11,8 +13,10 @@ import javax.annotation.Nullable;
  * <p>
  * Implementation will typically check for the presence of a specific tile
  * entity and create a wrapper for the tile entity.
+ * <p>
+ * Additional providers may be registered with the {@link Registry} <tt>tis3d:serial_interfaces</tt>.
  */
-public interface SerialInterfaceProvider {
+public interface SerialInterfaceProvider extends IForgeRegistryEntry<SerialInterfaceProvider> {
     /**
      * Checks whether the provider supports the specified block position.
      *
@@ -21,7 +25,7 @@ public interface SerialInterfaceProvider {
      * @param side     the side of the position in question.
      * @return whether a {@link SerialInterface} can be provided for the position.
      */
-    boolean worksWith(final World world, final BlockPos position, final EnumFacing side);
+    boolean worksWith(final World world, final BlockPos position, final Direction side);
 
     /**
      * Creates a new serial interface instance for the specified position.
@@ -32,7 +36,7 @@ public interface SerialInterfaceProvider {
      * @return the interface to use for communicating with the position.
      */
     @Nullable
-    SerialInterface interfaceFor(final World world, final BlockPos position, final EnumFacing side);
+    SerialInterface interfaceFor(final World world, final BlockPos position, final Direction side);
 
     /**
      * A reference to a manual entry describing the protocol used by the
@@ -67,7 +71,7 @@ public interface SerialInterfaceProvider {
      * <p>
      * Generally this this should return <tt>false</tt> if the interface is not
      * once provided by this provider, or more generally, if it is the same kind
-     * of serial interface that would be created via {@link #interfaceFor(World, BlockPos, EnumFacing)},
+     * of serial interface that would be created via {@link #interfaceFor(World, BlockPos, Direction)},
      * otherwise this should return <tt>true</tt>.
      *
      * @param world           the world containing the position.
@@ -76,5 +80,5 @@ public interface SerialInterfaceProvider {
      * @param serialInterface the interface to validate.
      * @return <tt>true</tt> if the interface is still valid, <tt>false</tt> if a new one should be created.
      */
-    boolean isValid(final World world, final BlockPos position, final EnumFacing side, final SerialInterface serialInterface);
+    boolean isValid(final World world, final BlockPos position, final Direction side, final SerialInterface serialInterface);
 }

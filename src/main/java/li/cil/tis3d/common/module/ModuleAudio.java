@@ -5,23 +5,19 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModule;
-import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.renderer.TextureLoader;
-import li.cil.tis3d.common.network.Network;
-import li.cil.tis3d.common.network.message.MessageParticleEffect;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumParticleTypes;
+import li.cil.tis3d.api.util.RenderContext;
+import li.cil.tis3d.client.renderer.Textures;
+import net.minecraft.particles.ParticleTypes;
+import net.minecraft.state.properties.NoteBlockInstrument;
+import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.NoteBlockEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * The audio module, emitting sounds like none other.
@@ -29,15 +25,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public final class ModuleAudio extends AbstractModule {
     // --------------------------------------------------------------------- //
     // Computed data
-
-    /**
-     * Resolve instrument ID to sound event used for instrument.
-     */
-    private static final SoundEvent[] INSTRUMENTS = new SoundEvent[]{SoundEvents.BLOCK_NOTE_HARP, SoundEvents.BLOCK_NOTE_BASEDRUM, SoundEvents.BLOCK_NOTE_SNARE, SoundEvents.BLOCK_NOTE_HAT, SoundEvents.BLOCK_NOTE_BASS, SoundEvents.BLOCK_NOTE_FLUTE, SoundEvents.BLOCK_NOTE_BELL, SoundEvents.BLOCK_NOTE_GUITAR, SoundEvents.BLOCK_NOTE_CHIME, SoundEvents.BLOCK_NOTE_XYLOPHONE};
-
-    static {
-        assert INSTRUMENTS.length == NoteBlockEvent.Instrument.values().length;
-    }
 
     /**
      * The last tick we made a sound. Used to avoid emitting multiple sounds
@@ -61,21 +48,17 @@ public final class ModuleAudio extends AbstractModule {
 
         stepInput();
 
-        lastStep = world.getTotalWorldTime();
+        lastStep = world.getGameTime();
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Override
-    public void render(final boolean enabled, final float partialTicks) {
-        if (!enabled) {
+    public void render(final RenderContext context) {
+        if (!getCasing().isEnabled()) {
             return;
         }
 
-        GlStateManager.enableBlend();
-
-        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_AUDIO));
-
-        GlStateManager.disableBlend();
+        context.drawAtlasSpriteLit(Textures.LOCATION_OVERLAY_MODULE_AUDIO);
     }
 
     // --------------------------------------------------------------------- //
@@ -93,7 +76,7 @@ public final class ModuleAudio extends AbstractModule {
             if (receivingPipe.canTransfer()) {
                 // Don't actually read more values if we already sent a packet this tick.
                 final World world = getCasing().getCasingWorld();
-                if (world.getTotalWorldTime() > lastStep) {
+                if (world.getGameTime() > lastStep) {
                     playNote(receivingPipe.read());
                 }
             }
@@ -108,7 +91,8 @@ public final class ModuleAudio extends AbstractModule {
     private void playNote(final int value) {
         final int noteId = (value & 0xFF00) >>> 8;
         final int volume = Math.min(4, (value & 0x00F0) >>> 4);
-        final int instrumentId = value & 0x000F;
+        int instrumentId = value & 0x000F;
+        if (instrumentId >= NoteBlockInstrument.values().length) instrumentId = 0;
 
         // Skip mute sounds.
         if (volume < 1) {
@@ -118,24 +102,26 @@ public final class ModuleAudio extends AbstractModule {
         // Send event to check if the sound may be played / should be modulated.
         final World world = getCasing().getCasingWorld();
         final BlockPos pos = getCasing().getPosition();
-        final NoteBlockEvent.Play event = new NoteBlockEvent.Play(world, pos, world.getBlockState(pos), noteId, instrumentId);
+        NoteBlockInstrument instrument = NoteBlockInstrument.values()[instrumentId];
+        final NoteBlockEvent.Play event = new NoteBlockEvent.Play(world, pos, world.getBlockState(pos), noteId, instrument);
         if (!MinecraftForge.EVENT_BUS.post(event)) {
             // Not cancelled, get pitch, sound effect name.
             final int note = event.getVanillaNoteId();
             final float pitch = (float) Math.pow(2, (note - 12) / 12.0);
-            final SoundEvent sound = INSTRUMENTS[event.getInstrument().ordinal()];
+            instrument = event.getInstrument();
 
             // Offset to have the actual origin be in front of the module.
-            final EnumFacing facing = Face.toEnumFacing(getFace());
+            final Direction facing = Face.toDirection(getFace());
             final double x = pos.getX() + 0.5 + facing.getXOffset() * 0.6;
             final double y = pos.getY() + 0.5 + facing.getYOffset() * 0.6;
             final double z = pos.getZ() + 0.5 + facing.getZOffset() * 0.6;
 
             // Let there be sound!
-            world.playSound(null, x, y, z, sound, SoundCategory.BLOCKS, volume, pitch);
-            final MessageParticleEffect message = new MessageParticleEffect(world, EnumParticleTypes.NOTE, x, y, z);
-            final NetworkRegistry.TargetPoint target = Network.getTargetPoint(world, x, y, z, Network.RANGE_LOW);
-            Network.INSTANCE.getWrapper().sendToAllAround(message, target);
+            world.playSound(null, x, y, z, instrument.getSound(), SoundCategory.BLOCKS, volume, pitch);
+            if (world instanceof ServerWorld) {
+                final ServerWorld serverWorld = (ServerWorld) world;
+                serverWorld.spawnParticle(ParticleTypes.NOTE, x, y, z, 1, 0, 0, 0, 0);
+            }
         }
     }
 }

@@ -1,6 +1,5 @@
 package li.cil.tis3d.common.module;
 
-import li.cil.tis3d.api.SerialAPI;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
@@ -9,14 +8,16 @@ import li.cil.tis3d.api.module.traits.BlockChangeAware;
 import li.cil.tis3d.api.prefab.module.AbstractModule;
 import li.cil.tis3d.api.serial.SerialInterface;
 import li.cil.tis3d.api.serial.SerialInterfaceProvider;
-import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.renderer.TextureLoader;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import li.cil.tis3d.api.util.RenderContext;
+import li.cil.tis3d.client.renderer.Textures;
+import li.cil.tis3d.common.provider.SerialInterfaceProviders;
+import li.cil.tis3d.util.WorldUtils;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.Optional;
 
@@ -27,6 +28,7 @@ import java.util.Optional;
  * <p>
  * While it is not full, it will receive data on all ports and push them back.
  */
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public final class ModuleSerialPort extends AbstractModule implements BlockChangeAware {
     // --------------------------------------------------------------------- //
     // Persisted data
@@ -41,7 +43,7 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
     private static final String TAG_SERIAL_INTERFACE = "serialInterface";
 
     private Optional<SerialInterface> serialInterface = Optional.empty();
-    private Optional<NBTTagCompound> serialInterfaceNbt = Optional.empty();
+    private Optional<CompoundNBT> serialInterfaceNbt = Optional.empty();
     private boolean isScanScheduled = true;
 
     // --------------------------------------------------------------------- //
@@ -96,44 +98,42 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
         stepOutput();
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Override
-    public void render(final boolean enabled, final float partialTicks) {
-        if (!enabled) {
+    public void render(final RenderContext context) {
+        if (!getCasing().isEnabled()) {
             return;
         }
 
-        RenderUtil.ignoreLighting();
-
-        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_SERIAL_PORT));
+        context.drawAtlasSpriteUnlit(Textures.LOCATION_OVERLAY_MODULE_SERIAL_PORT);
     }
 
     @Override
-    public void readFromNBT(final NBTTagCompound nbt) {
+    public void readFromNBT(final CompoundNBT nbt) {
         super.readFromNBT(nbt);
 
         writing = nbt.getShort(TAG_VALUE);
 
-        if (nbt.hasKey(TAG_SERIAL_INTERFACE)) {
+        if (nbt.contains(TAG_SERIAL_INTERFACE)) {
             if (serialInterface.isPresent()) {
-                serialInterface.get().readFromNBT(nbt.getCompoundTag(TAG_SERIAL_INTERFACE));
+                serialInterface.get().readFromNBT(nbt.getCompound(TAG_SERIAL_INTERFACE));
             } else {
-                serialInterfaceNbt = Optional.of(nbt.getCompoundTag(TAG_SERIAL_INTERFACE));
+                serialInterfaceNbt = Optional.of(nbt.getCompound(TAG_SERIAL_INTERFACE));
             }
         }
     }
 
     @Override
-    public void writeToNBT(final NBTTagCompound nbt) {
+    public void writeToNBT(final CompoundNBT nbt) {
         super.writeToNBT(nbt);
 
-        nbt.setShort(TAG_VALUE, writing);
+        nbt.putShort(TAG_VALUE, writing);
 
         if (serialInterface.isPresent()) {
-            final NBTTagCompound serialInterfaceNbt = new NBTTagCompound();
+            final CompoundNBT serialInterfaceNbt = new CompoundNBT();
             serialInterface.get().writeToNBT(serialInterfaceNbt);
             if (!nbt.isEmpty()) {
-                nbt.setTag(TAG_SERIAL_INTERFACE, serialInterfaceNbt);
+                nbt.put(TAG_SERIAL_INTERFACE, serialInterfaceNbt);
             }
         }
     }
@@ -154,10 +154,10 @@ public final class ModuleSerialPort extends AbstractModule implements BlockChang
         isScanScheduled = false;
 
         final World world = getCasing().getCasingWorld();
-        final BlockPos neighborPos = getCasing().getPosition().offset(Face.toEnumFacing(getFace()));
-        final EnumFacing neighborSide = Face.toEnumFacing(getFace().getOpposite());
-        if (world.isBlockLoaded(neighborPos)) {
-            final SerialInterfaceProvider provider = SerialAPI.getProviderFor(world, neighborPos, neighborSide);
+        final BlockPos neighborPos = getCasing().getPosition().offset(Face.toDirection(getFace()));
+        final Direction neighborSide = Face.toDirection(getFace().getOpposite());
+        if (WorldUtils.isBlockLoaded(world, neighborPos)) {
+            final SerialInterfaceProvider provider = SerialInterfaceProviders.getProviderFor(world, neighborPos, neighborSide);
             if (provider != null) {
                 if (!serialInterface.map(s -> provider.isValid(world, neighborPos, neighborSide, s)).orElse(false)) {
                     // Either we didn't have an interface for our neighbor yet,

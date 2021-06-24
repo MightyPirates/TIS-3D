@@ -1,105 +1,68 @@
 package li.cil.tis3d.api.util;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.Tessellator;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
+import li.cil.tis3d.util.Color;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.opengl.GL11;
+import net.minecraft.util.math.vector.Matrix3f;
+import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.math.vector.Vector3f;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * Utility class for rendering related operations.
  */
+@OnlyIn(Dist.CLIENT)
 public final class RenderUtil {
     /**
-     * Bind the texture at the specified location to be used for quad rendering.
+     * Draw an arbitrarily sized colored quad with the specified texture coordinates.
+     * <p>
+     * Color components are in the [0, 255] range.
      *
-     * @param location the location of the texture to bind.
+     * @param context the current render context.
+     * @param buffer  the buffer collecting vertex information.
+     * @param x       the x position of the quad.
+     * @param y       the y position of the quad.
+     * @param w       the width of the quad.
+     * @param h       the height of the quad.
+     * @param u0      lower u texture coordinate.
+     * @param v0      lower v texture coordinate.
+     * @param u1      upper u texture coordinate.
+     * @param v1      upper v texture coordinate.
+     * @param argb    the ARGB vertex color.
      */
-    @SideOnly(Side.CLIENT)
-    public static void bindTexture(final ResourceLocation location) {
-        Minecraft.getMinecraft().getTextureManager().bindTexture(location);
-    }
+    public static void drawQuad(final RenderContext context, final IVertexBuilder buffer,
+                                final float x, final float y, final float w, final float h,
+                                final float u0, final float v0, final float u1, final float v1,
+                                final int argb) {
+        final Matrix4f modMat = context.getMatrixStack().getLast().getMatrix();
+        final Matrix3f normMat = context.getMatrixStack().getLast().getNormal();
+        final Vector3f normDir = new Vector3f(0, 0, -1);
 
-    /**
-     * Get the texture atlas sprite for the specified texture loaded into the
-     * block texture map.
-     *
-     * @param location the location of the texture to get the sprite for.
-     * @return the sprite of the texture in the block atlas; <code>missingno</code> if not found.
-     */
-    @SideOnly(Side.CLIENT)
-    public static TextureAtlasSprite getSprite(final ResourceLocation location) {
-        return Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(location.toString());
-    }
+        final int a = Color.getAlphaU8(argb);
+        final int r = Color.getRedU8(argb);
+        final int g = Color.getGreenU8(argb);
+        final int b = Color.getBlueU8(argb);
 
-    /**
-     * Draw a full one-by-one, untextured quad.
-     *
-     * @param x the x position of the quad.
-     * @param y the y position of the quad.
-     * @param w the width of the quad.
-     * @param h the height of the quad.
-     */
-    @SideOnly(Side.CLIENT)
-    public static void drawUntexturedQuad(final float x, final float y, final float w, final float h) {
-        final Tessellator tessellator = Tessellator.getInstance();
-        final BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
-        buffer.pos(x, y + h, 0).endVertex();
-        buffer.pos(x + w, y + h, 0).endVertex();
-        buffer.pos(x + w, y, 0).endVertex();
-        buffer.pos(x, y, 0).endVertex();
-        tessellator.draw();
-    }
+        buffer.pos(modMat, x, y + h, 0).color(r, g, b, a).tex(u0, v1)
+            .overlay(context.overlay).lightmap(context.light)
+            .normal(normMat, normDir.getX(), normDir.getY(), normDir.getZ())
+            .endVertex();
 
-    /**
-     * Draw an arbitrarily sized quad with the specified texture coordinates.
-     *
-     * @param x  the x position of the quad.
-     * @param y  the y position of the quad.
-     * @param w  the width of the quad.
-     * @param h  the height of the quad.
-     * @param u0 lower u texture coordinate.
-     * @param v0 lower v texture coordinate.
-     * @param u1 upper u texture coordinate.
-     * @param v1 upper v texture coordinate.
-     */
-    @SideOnly(Side.CLIENT)
-    public static void drawQuad(final float x, final float y, final float w, final float h, final float u0, final float v0, final float u1, final float v1) {
-        final Tessellator tessellator = Tessellator.getInstance();
-        final BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-        buffer.pos(x, y + h, 0).tex(u0, v1).endVertex();
-        buffer.pos(x + w, y + h, 0).tex(u1, v1).endVertex();
-        buffer.pos(x + w, y, 0).tex(u1, v0).endVertex();
-        buffer.pos(x, y, 0).tex(u0, v0).endVertex();
-        tessellator.draw();
-    }
+        buffer.pos(modMat, x + w, y + h, 0).color(r, g, b, a).tex(u1, v1)
+            .overlay(context.overlay).lightmap(context.light)
+            .normal(normMat, normDir.getX(), normDir.getY(), normDir.getZ())
+            .endVertex();
 
-    /**
-     * Draw a full one-by-one quad with the specified texture coordinates.
-     *
-     * @param u0 lower u texture coordinate.
-     * @param v0 lower v texture coordinate.
-     * @param u1 upper u texture coordinate.
-     * @param v1 upper v texture coordinate.
-     */
-    @SideOnly(Side.CLIENT)
-    public static void drawQuad(final float u0, final float v0, final float u1, final float v1) {
-        drawQuad(0, 0, 1, 1, u0, v0, u1, v1);
-    }
+        buffer.pos(modMat, x + w, y, 0).color(r, g, b, a).tex(u1, v0)
+            .overlay(context.overlay).lightmap(context.light)
+            .normal(normMat, normDir.getX(), normDir.getY(), normDir.getZ())
+            .endVertex();
 
-    /**
-     * Draw a full one-by-one quad.
-     */
-    @SideOnly(Side.CLIENT)
-    public static void drawQuad() {
-        drawQuad(0, 0, 1, 1);
+        buffer.pos(modMat, x, y, 0).color(r, g, b, a).tex(u0, v0)
+            .overlay(context.overlay).lightmap(context.light)
+            .normal(normMat, normDir.getX(), normDir.getY(), normDir.getZ())
+            .endVertex();
     }
 
     /**
@@ -107,55 +70,26 @@ public final class RenderUtil {
      * <p>
      * The UV coordinates are relative to the sprite.
      *
-     * @param sprite the sprite to render.
-     * @param x      the x position of the quad.
-     * @param y      the y position of the quad.
-     * @param w      the width of the quad.
-     * @param h      the height of the quad.
-     * @param u0     lower u texture coordinate.
-     * @param v0     lower v texture coordinate.
-     * @param u1     upper u texture coordinate.
-     * @param v1     upper v texture coordinate.
+     * @param context the current render context.
+     * @param buffer  the buffer collecting vertex information.
+     * @param sprite  the sprite to render.
+     * @param x       the x position of the quad.
+     * @param y       the y position of the quad.
+     * @param w       the width of the quad.
+     * @param h       the height of the quad.
+     * @param u0      lower u texture coordinate.
+     * @param v0      lower v texture coordinate.
+     * @param u1      upper u texture coordinate.
+     * @param v1      upper v texture coordinate.
      */
-    @SideOnly(Side.CLIENT)
-    public static void drawQuad(final TextureAtlasSprite sprite, final float x, final float y, final float w, final float h, final float u0, final float v0, final float u1, final float v1) {
-        drawQuad(x, y, w, h, sprite.getInterpolatedU(u0 * 16), sprite.getInterpolatedV(v0 * 16), sprite.getInterpolatedU(u1 * 16), sprite.getInterpolatedV(v1 * 16));
-    }
-
-    /**
-     * Draw a full one-by-one quad with the specified texture coordinates and sprite texture.
-     * <p>
-     * The UV coordinates are relative to the sprite.
-     *
-     * @param sprite the sprite to render.
-     * @param u0     lower u texture coordinate.
-     * @param v0     lower v texture coordinate.
-     * @param u1     upper u texture coordinate.
-     * @param v1     upper v texture coordinate.
-     */
-    @SideOnly(Side.CLIENT)
-    public static void drawQuad(final TextureAtlasSprite sprite, final float u0, final float v0, final float u1, final float v1) {
-        drawQuad(sprite, 0, 0, 1, 1, u0, v0, u1, v1);
-    }
-
-    /**
-     * Draw a full one-by-one quad with the specified sprite texture.
-     *
-     * @param sprite the sprite to render.
-     */
-    @SideOnly(Side.CLIENT)
-    public static void drawQuad(final TextureAtlasSprite sprite) {
-        drawQuad(sprite, 0, 0, 1, 1);
-    }
-
-    /**
-     * Configure the light map so that whatever is rendered next is rendered at
-     * full brightness, regardless of environment brightness. Useful for rendering
-     * overlays that should be emissive to also be visible in the dark.
-     */
-    @SideOnly(Side.CLIENT)
-    public static void ignoreLighting() {
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
+    public static void drawQuad(final RenderContext context, final IVertexBuilder buffer, final TextureAtlasSprite sprite,
+                                final float x, final float y, final float w, final float h,
+                                final float u0, final float v0, final float u1, final float v1) {
+        drawQuad(context, buffer,
+            x, y, w, h,
+            sprite.getInterpolatedU(u0 * 16), sprite.getInterpolatedV(v0 * 16),
+            sprite.getInterpolatedU(u1 * 16), sprite.getInterpolatedV(v1 * 16),
+            Color.WHITE);
     }
 
     // --------------------------------------------------------------------- //

@@ -1,25 +1,30 @@
 package li.cil.tis3d.common.api;
 
-import com.google.common.base.Strings;
 import com.google.common.io.Files;
 import li.cil.tis3d.api.detail.ManualAPI;
 import li.cil.tis3d.api.manual.*;
-import li.cil.tis3d.client.gui.GuiManual;
-import li.cil.tis3d.common.TIS3D;
-import li.cil.tis3d.common.gui.GuiHandlerCommon;
+import li.cil.tis3d.client.gui.ManualScreen;
+import li.cil.tis3d.client.manual.Manual;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.resources.Language;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.registries.IForgeRegistry;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.regex.Pattern;
 
 public final class ManualAPIImpl implements ManualAPI {
+    private static final Logger LOGGER = LogManager.getLogger();
+
+    // --------------------------------------------------------------------- //
+
     // Language placeholder replacement.
     private static final String LANGUAGE_KEY = "%LANGUAGE%";
     private static final String FALLBACK_LANGUAGE = "en_US";
@@ -59,8 +64,8 @@ public final class ManualAPIImpl implements ManualAPI {
         INSTANCE.history.pop();
     }
 
-    public static List<Tab> getTabs() {
-        return INSTANCE.tabs;
+    public static Iterable<Tab> getTabs() {
+        return Manual.TAB_REGISTRY.get();
     }
 
     // --------------------------------------------------------------------- //
@@ -69,26 +74,6 @@ public final class ManualAPIImpl implements ManualAPI {
      * The history of pages the player navigated through (like browser history).
      */
     private final Stack<History> history = new Stack<>();
-
-    /**
-     * The registered tabs of the manual, which are really just glorified links.
-     */
-    private final List<Tab> tabs = new ArrayList<>();
-
-    /**
-     * The list of registered path providers, used for resolving items/blocks to paths.
-     */
-    private final List<PathProvider> pathProviders = new ArrayList<>();
-
-    /**
-     * The list of registered content providers, used for resolving paths to page content.
-     */
-    private final List<ContentProvider> contentProviders = new ArrayList<>();
-
-    /**
-     * The list of registered image providers, used for drawing images.
-     */
-    private final List<PrefixedImageProvider> imageProviders = new ArrayList<>();
 
     // --------------------------------------------------------------------- //
 
@@ -99,39 +84,6 @@ public final class ManualAPIImpl implements ManualAPI {
     // --------------------------------------------------------------------- //
 
     @Override
-    public void addTab(final TabIconRenderer renderer, @Nullable final String tooltip, final String path) {
-        tabs.add(new Tab(renderer, tooltip, path));
-        if (tabs.size() > 7) {
-            TIS3D.getLog().warn("Gosh I'm popular! Too many tabs were added to the in-game manual, so some won't be shown. In case this actually happens, let me know and I'll look into making them scrollable or something...");
-        }
-    }
-
-    @Override
-    public void addProvider(final PathProvider provider) {
-        if (!pathProviders.contains(provider)) {
-            pathProviders.add(provider);
-        }
-    }
-
-    @Override
-    public void addProvider(final ContentProvider provider) {
-        if (!contentProviders.contains(provider)) {
-            contentProviders.add(provider);
-        }
-    }
-
-    @Override
-    public void addProvider(final String prefix, final ImageProvider provider) {
-        final String actualPrefix = (Strings.isNullOrEmpty(prefix)) ? "" : prefix + ":";
-        for (final PrefixedImageProvider entry : imageProviders) {
-            if (entry.prefix.equals(actualPrefix) && entry.provider == provider) {
-                return;
-            }
-        }
-        imageProviders.add(new PrefixedImageProvider(actualPrefix, provider));
-    }
-
-    @Override
     @Nullable
     public String pathFor(final ItemStack stack) {
         return pathFor(p -> p.pathFor(stack), MESSAGE_PATH_PROVIDER_ITEM_EXCEPTION);
@@ -139,16 +91,17 @@ public final class ManualAPIImpl implements ManualAPI {
 
     @Override
     @Nullable
-    public String pathFor(final World world, final BlockPos pos) {
-        return pathFor(p -> p.pathFor(world, pos), MESSAGE_PATH_PROVIDER_BLOCK_EXCEPTION);
+    public String pathFor(final World world, final BlockPos pos, final Direction side) {
+        return pathFor(p -> p.pathFor(world, pos, side), MESSAGE_PATH_PROVIDER_BLOCK_EXCEPTION);
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     @Override
     @Nullable
     public Iterable<String> contentFor(final String path) {
         final String cleanPath = Files.simplifyPath(path);
-        final String language = FMLCommonHandler.instance().getCurrentLanguage();
-        final Optional<Iterable<String>> result = contentForWithRedirects(PATTERN_LANGUAGE_KEY.matcher(cleanPath).replaceAll(language));
+        final Language currentLanguage = Minecraft.getInstance().getLanguageManager().getCurrentLanguage();
+        final Optional<Iterable<String>> result = contentForWithRedirects(PATTERN_LANGUAGE_KEY.matcher(cleanPath).replaceAll(currentLanguage.getCode()));
         if (result.isPresent()) {
             return result.get();
         }
@@ -158,16 +111,16 @@ public final class ManualAPIImpl implements ManualAPI {
     @Override
     @Nullable
     public ImageRenderer imageFor(final String href) {
-        for (int i = imageProviders.size() - 1; i >= 0; i--) {
-            final PrefixedImageProvider entry = imageProviders.get(i);
-            if (href.startsWith(entry.prefix)) {
+        final IForgeRegistry<ImageProvider> imageProviders = Manual.IMAGE_PROVIDER_REGISTRY.get();
+        for (final ImageProvider provider : imageProviders) {
+            if (provider.matches(href)) {
                 try {
-                    final ImageRenderer image = entry.provider.getImage(href.substring(entry.prefix.length()));
+                    final ImageRenderer image = provider.getImage(href);
                     if (image != null) {
                         return image;
                     }
                 } catch (final Throwable t) {
-                    TIS3D.getLog().warn(MESSAGE_IMAGE_PROVIDER_EXCEPTION, t);
+                    LOGGER.warn(MESSAGE_IMAGE_PROVIDER_EXCEPTION, t);
                 }
             }
         }
@@ -176,10 +129,8 @@ public final class ManualAPIImpl implements ManualAPI {
     }
 
     @Override
-    public void openFor(final EntityPlayer player) {
-        if (player.getEntityWorld().isRemote) {
-            player.openGui(TIS3D.instance, GuiHandlerCommon.GuiId.BOOK_MANUAL.ordinal(), player.getEntityWorld(), 0, 0, 0);
-        }
+    public void open() {
+        Minecraft.getInstance().displayGuiScreen(new ManualScreen());
     }
 
     @Override
@@ -190,14 +141,9 @@ public final class ManualAPIImpl implements ManualAPI {
 
     @Override
     public void navigate(final String path) {
-        final Minecraft mc = Minecraft.getMinecraft();
-        if (mc == null) {
-            return;
-        }
-
-        final GuiScreen screen = mc.currentScreen;
-        if (screen instanceof GuiManual) {
-            ((GuiManual) screen).pushPage(path);
+        final Screen screen = Minecraft.getInstance().currentScreen;
+        if (screen instanceof ManualScreen) {
+            ((ManualScreen) screen).pushPage(path);
         } else {
             history.push(new History(path));
         }
@@ -229,14 +175,14 @@ public final class ManualAPIImpl implements ManualAPI {
 
     @Nullable
     private String pathFor(final ProviderQuery query, final String warning) {
-        for (final PathProvider provider : pathProviders) {
+        for (final PathProvider provider : Manual.PATH_PROVIDER_REGISTRY.get()) {
             try {
                 final String path = query.pathFor(provider);
                 if (path != null) {
                     return path;
                 }
             } catch (final Throwable t) {
-                TIS3D.getLog().warn(warning, t);
+                LOGGER.warn(warning, t);
             }
         }
         return null;
@@ -272,14 +218,14 @@ public final class ManualAPIImpl implements ManualAPI {
     }
 
     private Optional<Iterable<String>> doContentLookup(final String path) {
-        for (final ContentProvider provider : contentProviders) {
+        for (final ContentProvider provider : Manual.CONTENT_PROVIDER_REGISTRY.get()) {
             try {
                 final Iterable<String> lines = provider.getContent(path);
                 if (lines != null) {
                     return Optional.of(lines);
                 }
             } catch (final Throwable t) {
-                TIS3D.getLog().warn(MESSAGE_CONTENT_LOOKUP_EXCEPTION, t);
+                LOGGER.warn(MESSAGE_CONTENT_LOOKUP_EXCEPTION, t);
             }
         }
         return Optional.empty();
@@ -293,28 +239,6 @@ public final class ManualAPIImpl implements ManualAPI {
 
         private History(final String path) {
             this.path = path;
-        }
-    }
-
-    public static final class Tab {
-        public final TabIconRenderer renderer;
-        public final String tooltip;
-        public final String path;
-
-        private Tab(final TabIconRenderer renderer, @Nullable final String tooltip, final String path) {
-            this.renderer = renderer;
-            this.tooltip = tooltip;
-            this.path = path;
-        }
-    }
-
-    private static final class PrefixedImageProvider {
-        public final String prefix;
-        public final ImageProvider provider;
-
-        private PrefixedImageProvider(final String prefix, final ImageProvider provider) {
-            this.prefix = prefix;
-            this.provider = provider;
         }
     }
 

@@ -2,8 +2,7 @@ package li.cil.tis3d.common.module.execution.compiler;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
-import li.cil.tis3d.common.Constants;
-import li.cil.tis3d.common.Settings;
+import li.cil.tis3d.common.CommonConfig;
 import li.cil.tis3d.common.module.execution.MachineState;
 import li.cil.tis3d.common.module.execution.compiler.instruction.*;
 import li.cil.tis3d.common.module.execution.instruction.*;
@@ -32,8 +31,8 @@ public final class Compiler {
         state.clear();
 
         final String[] lines = Iterables.toArray(code, String.class);
-        if (lines.length > Settings.maxLinesPerProgram) {
-            throw new ParseException(Constants.MESSAGE_TOO_MANY_LINES, Settings.maxLinesPerProgram, 0, 0);
+        if (lines.length > CommonConfig.maxLinesPerProgram) {
+            throw new ParseException(Strings.MESSAGE_TOO_MANY_LINES, CommonConfig.maxLinesPerProgram, 0, 0);
         }
         for (int lineNumber = 0; lineNumber < lines.length; lineNumber++) {
             lines[lineNumber] = lines[lineNumber].toUpperCase(Locale.US);
@@ -47,8 +46,8 @@ public final class Compiler {
             final Map<String, String> defines = new HashMap<>();
             for (int lineNumber = 0; lineNumber < lines.length; lineNumber++) {
                 // Enforce max line length.
-                if (lines[lineNumber].length() > Settings.maxColumnsPerLine) {
-                    throw new ParseException(Constants.MESSAGE_TOO_MANY_COLUMNS, lineNumber, Settings.maxColumnsPerLine, Settings.maxColumnsPerLine);
+                if (lines[lineNumber].length() > CommonConfig.maxColumnsPerLine) {
+                    throw new ParseException(Strings.MESSAGE_TOO_MANY_COLUMNS, lineNumber, CommonConfig.maxColumnsPerLine, CommonConfig.maxColumnsPerLine);
                 }
 
                 // Check for defines, also trims whitespace.
@@ -73,7 +72,7 @@ public final class Compiler {
                     parseInstruction(lineMatcher, state, lineNumber, defines, validators);
                 } else {
                     // This should be pretty much impossible...
-                    throw new ParseException(Constants.MESSAGE_INVALID_FORMAT, lineNumber, 0, 0);
+                    throw new ParseException(Strings.MESSAGE_INVALID_FORMAT, lineNumber, 0, 0);
                 }
             }
 
@@ -151,7 +150,7 @@ public final class Compiler {
 
         // Got a label, store it and the address it represents.
         if (state.labels.containsKey(label)) {
-            throw new ParseException(Constants.MESSAGE_LABEL_DUPLICATE, lineNumber, matcher.start("label"), matcher.end("label"));
+            throw new ParseException(Strings.MESSAGE_LABEL_DUPLICATE, lineNumber, matcher.start("label"), matcher.end("label"));
         }
         state.labels.put(label, state.instructions.size());
     }

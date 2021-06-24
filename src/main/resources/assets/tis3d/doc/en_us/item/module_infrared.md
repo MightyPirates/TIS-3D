@@ -1,6 +1,6 @@
 # Infrared Module
 
-![Seeing red](item:tis3d:module_infrared)
+![Seeing red](item:tis3d:infrared_module)
 
 The infrared module provides short range, line-of-sight wireless transmission of values, either inside an appropriately structured TIS-3D computer, or between different TIS-3D computers. This allows fast communication between multiple systems, avoiding the generally lossy alternative of transferring data over redstone.
 

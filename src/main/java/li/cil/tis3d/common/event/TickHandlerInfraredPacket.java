@@ -1,12 +1,10 @@
 package li.cil.tis3d.common.event;
 
 import li.cil.tis3d.common.entity.EntityInfraredPacket;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -17,30 +15,31 @@ import java.util.Set;
  * of loaded chunks around the overall area of loaded chunks.
  */
 public final class TickHandlerInfraredPacket {
-    public static final TickHandlerInfraredPacket INSTANCE = new TickHandlerInfraredPacket();
+    private static final Set<EntityInfraredPacket> livePackets = new HashSet<>();
+    private static final Set<EntityInfraredPacket> pendingRemovals = new HashSet<>();
+    private static final Set<EntityInfraredPacket> pendingAdds = new HashSet<>();
 
     // --------------------------------------------------------------------- //
 
-    private final Set<EntityInfraredPacket> livePackets = new HashSet<>();
-    private final List<EntityInfraredPacket> pendingRemovals = new ArrayList<>();
-    private final List<EntityInfraredPacket> pendingAdds = new ArrayList<>();
+    public static void initialize() {
+        MinecraftForge.EVENT_BUS.addListener(TickHandlerInfraredPacket::onServerTick);
+    }
 
     // --------------------------------------------------------------------- //
 
-    public void watchPacket(final EntityInfraredPacket packet) {
+    public static void watchPacket(final EntityInfraredPacket packet) {
         pendingRemovals.remove(packet);
         pendingAdds.add(packet);
     }
 
-    public void unwatchPacket(final EntityInfraredPacket packet) {
+    public static void unwatchPacket(final EntityInfraredPacket packet) {
         pendingAdds.remove(packet);
         pendingRemovals.add(packet);
     }
 
     // --------------------------------------------------------------------- //
 
-    @SubscribeEvent
-    public void onServerTick(final TickEvent.ServerTickEvent event) {
+    private static void onServerTick(final TickEvent.ServerTickEvent event) {
         if (event.phase != TickEvent.Phase.END) {
             return;
         }
@@ -52,10 +51,5 @@ public final class TickHandlerInfraredPacket {
         pendingRemovals.clear();
 
         livePackets.forEach(EntityInfraredPacket::updateLifetime);
-    }
-
-    // --------------------------------------------------------------------- //
-
-    private TickHandlerInfraredPacket() {
     }
 }

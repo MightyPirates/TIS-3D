@@ -1,8 +1,9 @@
 package li.cil.tis3d.api.infrared;
 
 import li.cil.tis3d.api.machine.Casing;
-import net.minecraft.block.material.Material;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.IBlockReader;
 
 /**
  * When implemented this will be used let the instance handle a received
@@ -24,9 +25,9 @@ import net.minecraft.util.math.RayTraceResult;
  * For compatibility, entities and tile entities implementing this interface will have
  * the corresponding capability attached automatically.
  * <p>
- * Note that for non-opaque blocks, defined as <tt>!{@link Material#blocksMovement()} ||
- * !{@link Material#isOpaque()} || !{@link Material#blocksLight()})</tt>) this will
- * never be called, as they will be skipped when performing a collision check!
+ * Note that for blocks that do not have a raytrace shape, defined by
+ * {@link net.minecraft.block.BlockState#getRayTraceShape(IBlockReader, BlockPos)
+ * this will never be called, as they will be skipped when performing a hit test!
  */
 public interface InfraredReceiver {
     /**

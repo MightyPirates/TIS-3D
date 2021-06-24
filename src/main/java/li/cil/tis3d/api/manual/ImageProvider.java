@@ -1,15 +1,35 @@
 package li.cil.tis3d.api.manual;
 
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.registries.IForgeRegistryEntry;
+
 import javax.annotation.Nullable;
 
 /**
- * This allows implementing custom image providers for rendering custom content
- * in manual pages. Each provider can be registered for one or more prefixes,
- * and will be selected based on the prefix it was registered with. It is
- * expected to return an image renderer, which essentially represents the
- * area it will render to.
+ * Image providers are used to render custom content in a page. These are
+ * selected via the standard image tag of Markdown, based on the prefix of
+ * the image URL, i.e. <tt>![tooltip](prefix:data)</tt> will select the
+ * image provider registered for the prefix <tt>prefix</tt>, and pass to
+ * it the argument <tt>data</tt>, then use the returned renderer to draw
+ * an element in the place of the tag.
+ * <p>
+ * Custom providers are only selected if a prefix is matched, otherwise
+ * it'll treat it as a relative path to an image to load via Minecraft's
+ * resource providing facilities, and display that.
  */
-public interface ImageProvider {
+@OnlyIn(Dist.CLIENT)
+public interface ImageProvider extends IForgeRegistryEntry<ImageProvider> {
+    /**
+     * Tests whether this image provider works for the specified path.
+     * <p>
+     * Specifically, this should at least check if the path starts with the
+     * prefix this provider is responsible for.
+     *
+     * @param path the path to check for.
+     */
+    boolean matches(String path);
+
     /**
      * Gets an image renderer for the specified data.
      * <p>

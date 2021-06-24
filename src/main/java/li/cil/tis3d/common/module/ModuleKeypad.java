@@ -1,26 +1,28 @@
 package li.cil.tis3d.common.module;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
-import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
-import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.renderer.TextureLoader;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumHand;
+import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
+import li.cil.tis3d.api.util.RenderContext;
+import li.cil.tis3d.client.renderer.Textures;
+import li.cil.tis3d.util.Color;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.SoundEvents;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.Optional;
 
-public final class ModuleKeypad extends AbstractModuleRotatable {
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+public final class ModuleKeypad extends AbstractModuleWithRotation {
     // --------------------------------------------------------------------- //
     // Persisted data
 
@@ -37,6 +39,9 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
 
     // Data packet types.
     private static final byte DATA_TYPE_VALUE = 0;
+
+    // Color of hovered/focused button highlight.
+    private static final int HIGHLIGHT_COLOR = Color.withAlpha(Color.WHITE, 0.5f);
 
     // Rendering info.
     private static final float KEYS_U0 = 5 / 32f;
@@ -73,7 +78,7 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
             value = Optional.empty();
 
             // Tell clients we can input again.
-            getCasing().sendData(getFace(), new NBTTagCompound(), DATA_TYPE_VALUE);
+            getCasing().sendData(getFace(), new CompoundNBT(), DATA_TYPE_VALUE);
         }
     }
 
@@ -90,11 +95,11 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
     @Override
     public void onWriteComplete(final Port port) {
         // Tell clients we can input again.
-        getCasing().sendData(getFace(), new NBTTagCompound(), DATA_TYPE_VALUE);
+        getCasing().sendData(getFace(), new CompoundNBT(), DATA_TYPE_VALUE);
     }
 
     @Override
-    public boolean onActivate(final EntityPlayer player, final EnumHand hand, final float hitX, final float hitY, final float hitZ) {
+    public boolean onActivate(final PlayerEntity player, final Hand hand, final Vector3d hit) {
         if (player.isSneaking()) {
             return false;
         }
@@ -114,8 +119,8 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
         // hit position resolution (MC sends this to the server at a super
         // low resolution for some reason).
         final World world = getCasing().getCasingWorld();
-        if (world.isRemote) {
-            final Vec3d uv = hitToUV(new Vec3d(hitX, hitY, hitZ));
+        if (world.isRemote()) {
+            final Vector3d uv = hitToUV(hit);
             final int button = uvToButton((float) uv.x, (float) uv.y);
             if (button == -1) {
                 // No button here.
@@ -123,8 +128,8 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
             }
             final short number = buttonToNumber(button);
 
-            final NBTTagCompound nbt = new NBTTagCompound();
-            nbt.setShort(TAG_VALUE, number);
+            final CompoundNBT nbt = new CompoundNBT();
+            nbt.putShort(TAG_VALUE, number);
             getCasing().sendData(getFace(), nbt, DATA_TYPE_VALUE);
         }
 
@@ -132,16 +137,16 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
     }
 
     @Override
-    public void onData(final NBTTagCompound nbt) {
+    public void onData(final CompoundNBT nbt) {
         final World world = getCasing().getCasingWorld();
-        if (world.isRemote) {
+        if (world.isRemote()) {
             // Got state on which key is currently 'pressed'.
-            if (nbt.hasKey(TAG_VALUE)) {
+            if (nbt.contains(TAG_VALUE)) {
                 value = Optional.of(nbt.getShort(TAG_VALUE));
             } else {
                 value = Optional.empty();
             }
-        } else if (!value.isPresent() && nbt.hasKey(TAG_VALUE)) {
+        } else if (!value.isPresent() && nbt.contains(TAG_VALUE)) {
             // Got an input and don't have one yet.
             final short newValue = nbt.getShort(TAG_VALUE);
             value = Optional.of(newValue);
@@ -150,53 +155,50 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
         }
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Override
-    public void render(final boolean enabled, final float partialTicks) {
-        if (!enabled || !isVisible()) {
+    public void render(final RenderContext context) {
+        if (!getCasing().isEnabled() || !isVisible()) {
             return;
         }
 
-        rotateForRendering();
-        RenderUtil.ignoreLighting();
-        GlStateManager.enableBlend();
+        final MatrixStack matrixStack = context.getMatrixStack();
+        matrixStack.push();
+        rotateForRendering(matrixStack);
 
         // Draw base texture. Draw half transparent while writing current value,
         // i.e. while no input is possible.
-        value.ifPresent(unused -> GlStateManager.color(1, 1, 1, 0.5f));
-        GlStateManager.depthMask(false);
-        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_KEYPAD));
-        GlStateManager.depthMask(true);
+        context.drawAtlasSpriteUnlit(Textures.LOCATION_OVERLAY_MODULE_KEYPAD, Color.withAlpha(Color.WHITE, value.isPresent() ? 0.5f : 1f));
 
         // Draw overlay for hovered button if we can currently input a value.
         if (!value.isPresent()) {
-            final Vec3d hitPos = getPlayerLookAt();
+            final Vector3d hitPos = getObserverLookAt(context.getDispatcher());
             if (hitPos != null) {
-                final Vec3d uv = hitToUV(hitPos);
+                final Vector3d uv = hitToUV(hitPos);
                 final int button = uvToButton((float) uv.x, (float) uv.y);
                 if (button >= 0) {
-                    drawButtonOverlay(button);
+                    drawButtonOverlay(context, button);
                 }
             }
         }
 
-        GlStateManager.disableBlend();
+        matrixStack.pop();
     }
 
     @Override
-    public void readFromNBT(final NBTTagCompound nbt) {
+    public void readFromNBT(final CompoundNBT nbt) {
         super.readFromNBT(nbt);
 
-        if (nbt.hasKey(TAG_VALUE)) {
+        if (nbt.contains(TAG_VALUE)) {
             value = Optional.of(nbt.getShort(TAG_VALUE));
         }
     }
 
     @Override
-    public void writeToNBT(final NBTTagCompound nbt) {
+    public void writeToNBT(final CompoundNBT nbt) {
         super.writeToNBT(nbt);
 
-        value.ifPresent(x -> nbt.setShort(TAG_VALUE, x));
+        value.ifPresent(x -> nbt.putShort(TAG_VALUE, x));
     }
 
     // --------------------------------------------------------------------- //
@@ -263,16 +265,14 @@ public final class ModuleKeypad extends AbstractModuleRotatable {
         return (short) ((button + 1) % 10);
     }
 
-    private void drawButtonOverlay(final int button) {
+    private void drawButtonOverlay(final RenderContext context, final int button) {
         final int column = button % 3;
         final int row = button / 3;
         final float x = KEYS_U0 + column * KEYS_STEP_U;
         final float y = KEYS_V0 + row * KEYS_STEP_V;
         final float w = buttonToNumber(button) == 0 ? (KEYS_SIZE_U + KEYS_STEP_U) : KEYS_SIZE_U;
         final float h = row == 3 ? KEYS_SIZE_V_LAST : KEYS_SIZE_V;
-        GlStateManager.disableTexture2D();
-        GlStateManager.color(1, 1, 1, 0.5f);
-        RenderUtil.drawUntexturedQuad(x, y, w, h);
-        GlStateManager.enableTexture2D();
+
+        context.drawQuadUnlit(x, y, w, h, HIGHLIGHT_COLOR);
     }
 }

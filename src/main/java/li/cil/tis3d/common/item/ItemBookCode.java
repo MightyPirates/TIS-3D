@@ -1,25 +1,21 @@
 package li.cil.tis3d.common.item;
 
 import li.cil.tis3d.api.machine.Casing;
+import li.cil.tis3d.client.gui.CodeBookScreen;
 import li.cil.tis3d.common.Constants;
-import li.cil.tis3d.common.TIS3D;
-import li.cil.tis3d.common.gui.GuiHandlerCommon;
-import li.cil.tis3d.util.FontRendererUtils;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemBook;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.StringNBT;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -27,46 +23,32 @@ import java.util.*;
 /**
  * The code book, utility book for coding ASM programs for execution modules.
  */
-public final class ItemBookCode extends ItemBook {
+public final class ItemBookCode extends ModItem {
     public ItemBookCode() {
-        setMaxStackSize(1);
+        super(createProperties().maxStackSize(1));
     }
 
     // --------------------------------------------------------------------- //
     // Item
 
-    @SideOnly(Side.CLIENT)
     @Override
-    public void addInformation(final ItemStack stack, @Nullable final World world, final List<String> tooltip, final ITooltipFlag flag) {
-        super.addInformation(stack, world, tooltip, flag);
-        final String info = I18n.format(Constants.TOOLTIP_BOOK_CODE);
-        FontRendererUtils.addStringToTooltip(info, tooltip);
-    }
-
-    @Override
-    public ActionResult<ItemStack> onItemRightClick(final World world, final EntityPlayer player, final EnumHand hand) {
-        if (world.isRemote) {
-            player.openGui(TIS3D.instance, GuiHandlerCommon.GuiId.BOOK_CODE.ordinal(), world, 0, 0, 0);
+    public ActionResult<ItemStack> onItemRightClick(final World world, final PlayerEntity player, final Hand hand) {
+        if (world.isRemote()) {
+            openScreen(player, hand);
         }
-        return super.onItemRightClick(world, player, hand);
+        return ActionResult.func_233538_a_(player.getHeldItem(hand), world.isRemote());
     }
 
     @Override
-    public boolean doesSneakBypassUse(final ItemStack stack, final IBlockAccess world, final BlockPos pos, final EntityPlayer player) {
+    public boolean doesSneakBypassUse(final ItemStack stack, final IWorldReader world, final BlockPos pos, final PlayerEntity player) {
         return world.getTileEntity(pos) instanceof Casing;
     }
 
     // --------------------------------------------------------------------- //
-    // ItemBook
 
-    @Override
-    public boolean isEnchantable(final ItemStack stack) {
-        return false;
-    }
-
-    @Override
-    public int getItemEnchantability() {
-        return 0;
+    @OnlyIn(Dist.CLIENT)
+    private void openScreen(final PlayerEntity player, final Hand hand) {
+        Minecraft.getInstance().displayGuiScreen(new CodeBookScreen(player, hand));
     }
 
     // --------------------------------------------------------------------- //
@@ -258,15 +240,15 @@ public final class ItemBookCode extends ItemBook {
          *
          * @param nbt the tag to load the data from.
          */
-        public void readFromNBT(final NBTTagCompound nbt) {
+        public void readFromNBT(final CompoundNBT nbt) {
             pages.clear();
 
-            final NBTTagList pagesNbt = nbt.getTagList(TAG_PAGES, net.minecraftforge.common.util.Constants.NBT.TAG_STRING);
-            for (int index = 0; index < pagesNbt.tagCount(); index++) {
-                pages.add(Arrays.asList(Constants.PATTERN_LINES.split(pagesNbt.getStringTagAt(index))));
+            final ListNBT pagesNbt = nbt.getList(TAG_PAGES, net.minecraftforge.common.util.Constants.NBT.TAG_STRING);
+            for (int index = 0; index < pagesNbt.size(); index++) {
+                pages.add(Arrays.asList(Constants.PATTERN_LINES.split(pagesNbt.getString(index))));
             }
 
-            selectedPage = nbt.getInteger(TAG_SELECTED);
+            selectedPage = nbt.getInt(TAG_SELECTED);
             validateSelectedPage();
         }
 
@@ -275,20 +257,20 @@ public final class ItemBookCode extends ItemBook {
          *
          * @param nbt the tag to save the data to.
          */
-        public void writeToNBT(final NBTTagCompound nbt) {
-            final NBTTagList pagesNbt = new NBTTagList();
+        public void writeToNBT(final CompoundNBT nbt) {
+            final ListNBT pagesNbt = new ListNBT();
             int removed = 0;
             for (int index = 0; index < pages.size(); index++) {
                 final List<String> program = pages.get(index);
                 if (program.size() > 1 || program.get(0).length() > 0) {
-                    pagesNbt.appendTag(new NBTTagString(String.join("\n", program)));
+                    pagesNbt.add(StringNBT.valueOf(String.join("\n", program)));
                 } else if (index < selectedPage) {
                     removed++;
                 }
             }
-            nbt.setTag(TAG_PAGES, pagesNbt);
+            nbt.put(TAG_PAGES, pagesNbt);
 
-            nbt.setInteger(TAG_SELECTED, selectedPage - removed);
+            nbt.putInt(TAG_SELECTED, selectedPage - removed);
         }
 
         // --------------------------------------------------------------------- //
@@ -317,7 +299,7 @@ public final class ItemBookCode extends ItemBook {
          * @param nbt the tag to load the data from.
          * @return the data loaded from the tag.
          */
-        public static Data loadFromNBT(@Nullable final NBTTagCompound nbt) {
+        public static Data loadFromNBT(@Nullable final CompoundNBT nbt) {
             final Data data = new Data();
             if (nbt != null) {
                 data.readFromNBT(nbt);
@@ -332,7 +314,7 @@ public final class ItemBookCode extends ItemBook {
          * @return the data loaded from the stack.
          */
         public static Data loadFromStack(final ItemStack stack) {
-            return loadFromNBT(stack.getTagCompound());
+            return loadFromNBT(stack.getTag());
         }
 
         /**
@@ -342,11 +324,7 @@ public final class ItemBookCode extends ItemBook {
          * @param data  the data to save to the item stack.
          */
         public static void saveToStack(final ItemStack stack, final Data data) {
-            NBTTagCompound nbt = stack.getTagCompound();
-            if (nbt == null) {
-                stack.setTagCompound(nbt = new NBTTagCompound());
-            }
-            data.writeToNBT(nbt);
+            data.writeToNBT(stack.getOrCreateTag());
         }
 
         // --------------------------------------------------------------------- //

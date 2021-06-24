@@ -1,24 +1,26 @@
 package li.cil.tis3d.client.manual.segment;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import li.cil.tis3d.api.manual.ImageRenderer;
 import li.cil.tis3d.api.manual.InteractiveImageRenderer;
 import li.cil.tis3d.client.manual.Document;
+import li.cil.tis3d.util.Color;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.math.MathHelper;
-import org.lwjgl.opengl.GL11;
+import net.minecraft.util.text.ITextComponent;
 
 import java.util.Optional;
 
 public final class RenderSegment extends AbstractSegment implements InteractiveSegment {
     private final Segment parent;
-    private final String title;
+    private final ITextComponent title;
     private final ImageRenderer imageRenderer;
 
     private int lastX = 0;
     private int lastY = 0;
 
-    public RenderSegment(final Segment parent, final String title, final ImageRenderer imageRenderer) {
+    public RenderSegment(final Segment parent, final ITextComponent title, final ImageRenderer imageRenderer) {
         this.parent = parent;
         this.title = title;
         this.imageRenderer = imageRenderer;
@@ -30,7 +32,7 @@ public final class RenderSegment extends AbstractSegment implements InteractiveS
     }
 
     @Override
-    public Optional<String> tooltip() {
+    public Optional<ITextComponent> tooltip() {
         if (imageRenderer instanceof InteractiveImageRenderer) {
             return Optional.of(((InteractiveImageRenderer) imageRenderer).getTooltip(title));
         } else {
@@ -39,9 +41,9 @@ public final class RenderSegment extends AbstractSegment implements InteractiveS
     }
 
     @Override
-    public boolean onMouseClick(final int mouseX, final int mouseY) {
+    public boolean onMouseClick(final double mouseX, final double mouseY) {
         return imageRenderer instanceof InteractiveImageRenderer &&
-            ((InteractiveImageRenderer) imageRenderer).onMouseClick(mouseX - lastX, mouseY - lastY);
+               ((InteractiveImageRenderer) imageRenderer).onMouseClick(mouseX - lastX, mouseY - lastY);
     }
 
     @Override
@@ -59,7 +61,7 @@ public final class RenderSegment extends AbstractSegment implements InteractiveS
     }
 
     @Override
-    public Optional<InteractiveSegment> render(final int x, final int y, final int indent, final int maxWidth, final FontRenderer renderer, final int mouseX, final int mouseY) {
+    public Optional<InteractiveSegment> render(final MatrixStack matrixStack, final int x, final int y, final int indent, final int maxWidth, final FontRenderer renderer, final int mouseX, final int mouseY) {
         final int width = imageWidth(maxWidth);
         final int height = imageHeight(maxWidth);
         final int xOffset = (maxWidth - width) / 2;
@@ -71,31 +73,17 @@ public final class RenderSegment extends AbstractSegment implements InteractiveS
 
         final Optional<InteractiveSegment> hovered = checkHovered(mouseX, mouseY, x + xOffset, y + yOffset, width, height);
 
-        GlStateManager.color(1, 1, 1, 1);
-        GlStateManager.pushMatrix();
-        GlStateManager.translate(x + xOffset, y + yOffset, 0);
-        GlStateManager.scale(s, s, s);
-
-        GlStateManager.enableBlend();
-        GlStateManager.enableAlpha();
+        matrixStack.push();
+        matrixStack.translate(x + xOffset, y + yOffset, 0);
+        matrixStack.scale(s, s, s);
 
         if (hovered.isPresent()) {
-            GlStateManager.color(1, 1, 1, 0.15f);
-            GlStateManager.disableTexture2D();
-            GL11.glBegin(GL11.GL_QUADS);
-            GL11.glVertex2f(0, 0);
-            GL11.glVertex2f(0, imageRenderer.getHeight());
-            GL11.glVertex2f(imageRenderer.getWidth(), imageRenderer.getHeight());
-            GL11.glVertex2f(imageRenderer.getWidth(), 0);
-            GL11.glEnd();
-            GlStateManager.enableTexture2D();
+            Screen.fill(matrixStack, 0, 0, imageRenderer.getWidth(), imageRenderer.getHeight(), Color.withAlpha(Color.WHITE, 0.15f));
         }
 
-        GlStateManager.color(1, 1, 1, 1);
+        imageRenderer.render(matrixStack, mouseX - x, mouseY - y);
 
-        imageRenderer.render(mouseX - x, mouseY - y);
-
-        GlStateManager.popMatrix();
+        matrixStack.pop();
 
         return hovered;
     }

@@ -1,25 +1,25 @@
 package li.cil.tis3d.common.module;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
-import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
-import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.renderer.TextureLoader;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.Vec3d;
+import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
+import li.cil.tis3d.api.util.RenderContext;
+import li.cil.tis3d.client.renderer.Textures;
+import li.cil.tis3d.util.Color;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
-public final class ModuleSequencer extends AbstractModuleRotatable {
+public final class ModuleSequencer extends AbstractModuleWithRotation {
     // --------------------------------------------------------------------- //
     // Persisted data
 
@@ -36,6 +36,11 @@ public final class ModuleSequencer extends AbstractModuleRotatable {
     private static final String TAG_POSITION = "position";
     private static final String TAG_DELAY = "delay";
     private static final String TAG_STEPS_REMAINING = "stepsRemaining";
+
+    // Colors for module rendering.
+    private static final int BAR_COLOR = 0xFF334C59;
+    private static final int ACTIVE_CELL_COLOR = 0xFFCCD8DF;
+    private static final int HIGHLIGHT_COLOR = 0x80B2CCE5;
 
     // Data packet types.
     private static final byte DATA_TYPE_CONFIGURATION = 0;
@@ -92,7 +97,7 @@ public final class ModuleSequencer extends AbstractModuleRotatable {
     }
 
     @Override
-    public boolean onActivate(final EntityPlayer player, final EnumHand hand, final float hitX, final float hitY, final float hitZ) {
+    public boolean onActivate(final PlayerEntity player, final Hand hand, final Vector3d hit) {
         if (player.isSneaking()) {
             return false;
         }
@@ -101,13 +106,13 @@ public final class ModuleSequencer extends AbstractModuleRotatable {
         // hit position resolution (MC sends this to the server at a super
         // low resolution for some reason).
         final World world = getCasing().getCasingWorld();
-        if (world.isRemote) {
-            final Vec3d uv = hitToUV(new Vec3d(hitX, hitY, hitZ));
+        if (world.isRemote()) {
+            final Vector3d uv = hitToUV(hit);
             final int col = uvToCol((float) uv.x);
             final int row = uvToRow((float) uv.y);
             if (col >= 0 && row >= 0) {
                 configuration[col][row] = !configuration[col][row];
-                sendConfiguration(Side.SERVER);
+                sendConfiguration(Dist.DEDICATED_SERVER);
             }
         }
 
@@ -116,7 +121,7 @@ public final class ModuleSequencer extends AbstractModuleRotatable {
 
     @Override
     public void onData(final ByteBuf data) {
-        if (getCasing().getCasingWorld().isRemote) {
+        if (getCasing().getCasingWorld().isRemote()) {
             if (data.readBoolean()) {
                 decodeConfiguration(data.readLong(), configuration);
             } else {
@@ -124,92 +129,84 @@ public final class ModuleSequencer extends AbstractModuleRotatable {
             }
         } else {
             decodeConfiguration(data.readLong(), configuration);
-            sendConfiguration(Side.CLIENT);
+            sendConfiguration(Dist.CLIENT);
         }
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Override
-    public void render(final boolean enabled, final float partialTicks) {
+    public void render(final RenderContext context) {
         if (!isVisible()) {
             return;
         }
 
-        rotateForRendering();
-        RenderUtil.ignoreLighting();
-        GlStateManager.enableBlend();
+        final MatrixStack matrixStack = context.getMatrixStack();
+        matrixStack.push();
+        rotateForRendering(matrixStack);
 
-        GlStateManager.disableTexture2D();
-        GlStateManager.depthMask(false);
-
+        final boolean enabled = getCasing().isEnabled();
         if (enabled) {
             // Draw bar in background indicating current position in sequence.
             final float barU0 = BAR_U0 + BAR_STEP_U * position;
             final float brightness = 0.75f + 0.25f * (delay == 0 ? 1 : (1 - (delay - stepsRemaining) / (float) delay));
-            GlStateManager.color(0.2f, 0.3f, 0.35f, brightness);
-            RenderUtil.drawUntexturedQuad(barU0, BAR_V0, BAR_SIZE_U, BAR_SIZE_V);
+            final int color = Color.withAlpha(BAR_COLOR, brightness);
+
+            context.drawQuadUnlit(barU0, BAR_V0, BAR_SIZE_U, BAR_SIZE_V, color);
         }
 
         // Draw base grid of sequencer entries.
-        GlStateManager.enableTexture2D();
-        GlStateManager.color(1, 1, 1, enabled ? 1 : 0.5f);
-        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_SEQUENCER));
-        GlStateManager.disableTexture2D();
+        context.drawAtlasSpriteUnlit(Textures.LOCATION_OVERLAY_MODULE_SEQUENCER, Color.withAlpha(Color.WHITE, enabled ? 1f : 0.5f));
 
-        GlStateManager.depthMask(true);
-
-        final Minecraft mc = Minecraft.getMinecraft();
-        if (mc != null && mc.player != null && mc.player.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
+        if (context.isWithinDetailRange(getCasing().getPosition())) {
             // Draw configuration of sequencer.
-            GlStateManager.color(0.8f, 0.85f, 0.875f, enabled ? 1 : 0.5f);
+            final int color = Color.withAlpha(ACTIVE_CELL_COLOR, enabled ? 1f : 0.5f);
             for (int col = 0; col < COL_COUNT; col++) {
                 for (int row = 0; row < ROW_COUNT; row++) {
                     if (configuration[col][row]) {
                         final float u0 = CELLS_U0 + CELLS_STEP_U * col;
                         final float v0 = CELLS_V0 + CELLS_STEP_V * row;
-                        RenderUtil.drawUntexturedQuad(u0, v0, CELLS_SIZE_U, CELLS_SIZE_V);
+                        context.drawQuadUnlit(u0, v0, CELLS_SIZE_U, CELLS_SIZE_V, color);
                     }
                 }
             }
         }
 
         // Draw selection overlay for focused cell, if any.
-        final Vec3d hitPos = getPlayerLookAt();
+        final Vector3d hitPos = getObserverLookAt(context.getDispatcher());
         if (hitPos != null) {
-            final Vec3d uv = hitToUV(hitPos);
+            final Vector3d uv = hitToUV(hitPos);
             final int col = uvToCol((float) uv.x);
             final int row = uvToRow((float) uv.y);
             if (col >= 0 && row >= 0) {
-                GlStateManager.color(0.7f, 0.8f, 0.9f, 0.5f);
                 final float u = CELLS_OUTER_U0 + col * CELLS_OUTER_STEP_U;
                 final float v = CELLS_OUTER_V0 + row * CELLS_OUTER_STEP_V;
-                RenderUtil.drawUntexturedQuad(u, v, CELLS_OUTER_SIZE_U, CELLS_OUTER_SIZE_V);
+                context.drawQuadUnlit(u, v, CELLS_OUTER_SIZE_U, CELLS_OUTER_SIZE_V, HIGHLIGHT_COLOR);
             }
         }
 
-        GlStateManager.disableBlend();
+        matrixStack.pop();
     }
 
     @Override
-    public void readFromNBT(final NBTTagCompound nbt) {
+    public void readFromNBT(final CompoundNBT nbt) {
         super.readFromNBT(nbt);
 
         decodeConfiguration(nbt.getLong(TAG_CONFIGURATION), configuration);
-        position = Math.min(Math.max(nbt.getInteger(TAG_POSITION), 0), COL_COUNT - 1);
-        delay = Math.min(Math.max(nbt.getInteger(TAG_DELAY), 0), 0xFFFF);
-        stepsRemaining = Math.min(Math.max(nbt.getInteger(TAG_STEPS_REMAINING), 0), 0xFFFF);
+        position = Math.min(Math.max(nbt.getInt(TAG_POSITION), 0), COL_COUNT - 1);
+        delay = Math.min(Math.max(nbt.getInt(TAG_DELAY), 0), 0xFFFF);
+        stepsRemaining = Math.min(Math.max(nbt.getInt(TAG_STEPS_REMAINING), 0), 0xFFFF);
 
         initializeOutput();
     }
 
     @Override
-    public void writeToNBT(final NBTTagCompound nbt) {
+    public void writeToNBT(final CompoundNBT nbt) {
         super.writeToNBT(nbt);
 
-        nbt.setLong(TAG_CONFIGURATION, encodeConfiguration(configuration));
-        nbt.setInteger(TAG_POSITION, position);
-        nbt.setInteger(TAG_DELAY, delay);
-        nbt.setInteger(TAG_STEPS_REMAINING, stepsRemaining);
+        nbt.putLong(TAG_CONFIGURATION, encodeConfiguration(configuration));
+        nbt.putInt(TAG_POSITION, position);
+        nbt.putInt(TAG_DELAY, delay);
+        nbt.putInt(TAG_STEPS_REMAINING, stepsRemaining);
     }
 
     // --------------------------------------------------------------------- //
@@ -243,9 +240,9 @@ public final class ModuleSequencer extends AbstractModuleRotatable {
         }
     }
 
-    private void sendConfiguration(final Side toSide) {
+    private void sendConfiguration(final Dist toSide) {
         final ByteBuf data = Unpooled.buffer();
-        if (toSide == Side.CLIENT) {
+        if (toSide == Dist.CLIENT) {
             data.writeBoolean(true);
         }
         data.writeLong(encodeConfiguration(configuration));

@@ -1,21 +1,21 @@
 package li.cil.tis3d.common.module;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
-import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
-import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.renderer.TextureLoader;
+import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
+import li.cil.tis3d.api.util.RenderContext;
+import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.client.renderer.font.FontRenderer;
-import li.cil.tis3d.client.renderer.font.FontRendererNormal;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * The timer module can be used to wait for a specific amount of game time.
@@ -26,7 +26,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * This module will receive data on all ports and push back a value while the
  * timer is zero.
  */
-public final class ModuleTimer extends AbstractModuleRotatable {
+public final class ModuleTimer extends AbstractModuleWithRotation {
     // --------------------------------------------------------------------- //
     // Persisted data
 
@@ -60,7 +60,7 @@ public final class ModuleTimer extends AbstractModuleRotatable {
     @Override
     public void step() {
         if (!hasElapsed) {
-            final long worldTime = getCasing().getCasingWorld().getTotalWorldTime();
+            final long worldTime = getCasing().getCasingWorld().getGameTime();
             if (worldTime >= timer) {
                 hasElapsed = true;
             }
@@ -91,43 +91,46 @@ public final class ModuleTimer extends AbstractModuleRotatable {
         hasElapsed = false; // Recompute in render().
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Override
-    public void render(final boolean enabled, final float partialTicks) {
-        if (!enabled) {
+    public void render(final RenderContext context) {
+        if (!getCasing().isEnabled()) {
             return;
         }
 
-        rotateForRendering();
-        RenderUtil.ignoreLighting();
+        final MatrixStack matrixStack = context.getMatrixStack();
+        matrixStack.push();
+        rotateForRendering(matrixStack);
 
-        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_TIMER));
+        context.drawAtlasSpriteUnlit(Textures.LOCATION_OVERLAY_MODULE_TIMER);
 
         // Render detailed state when player is close.
-        final Minecraft mc = Minecraft.getMinecraft();
-        if (!hasElapsed && mc != null && mc.player != null && mc.player.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
-            final long worldTime = mc.world != null ? mc.world.getTotalWorldTime() : 0;
-            final float remaining = (float) (timer - worldTime) - partialTicks;
+        if (!hasElapsed && context.isWithinDetailRange(getCasing().getPosition())) {
+            final Minecraft mc = Minecraft.getInstance();
+            final long worldTime = mc.world != null ? mc.world.getGameTime() : 0;
+            final float remaining = (float) (timer - worldTime) - context.getPartialTicks();
             if (remaining <= 0) {
                 hasElapsed = true;
             } else {
-                drawState(remaining);
+                drawState(context, remaining);
             }
         }
+
+        matrixStack.pop();
     }
 
     @Override
-    public void readFromNBT(final NBTTagCompound nbt) {
+    public void readFromNBT(final CompoundNBT nbt) {
         super.readFromNBT(nbt);
 
         timer = nbt.getLong(TAG_TIMER);
     }
 
     @Override
-    public void writeToNBT(final NBTTagCompound nbt) {
+    public void writeToNBT(final CompoundNBT nbt) {
         super.writeToNBT(nbt);
 
-        nbt.setLong(TAG_TIMER, timer);
+        nbt.putLong(TAG_TIMER, timer);
     }
 
     // --------------------------------------------------------------------- //
@@ -138,7 +141,7 @@ public final class ModuleTimer extends AbstractModuleRotatable {
      * @param value the value to set the timer to.
      */
     private void setTimer(final short value) {
-        final long worldTime = getCasing().getCasingWorld().getTotalWorldTime();
+        final long worldTime = getCasing().getCasingWorld().getGameTime();
         timer = worldTime + (value & 0xFFFF);
         hasElapsed = timer == worldTime;
 
@@ -189,8 +192,8 @@ public final class ModuleTimer extends AbstractModuleRotatable {
         getCasing().sendData(getFace(), data, DATA_TYPE_UPDATE);
     }
 
-    @SideOnly(Side.CLIENT)
-    private void drawState(final float remaining) {
+    @OnlyIn(Dist.CLIENT)
+    private void drawState(final RenderContext context, final float remaining) {
         final float milliseconds = remaining * 50f; // One tick is 50ms.
         final float seconds = milliseconds / 1000f;
         final int minutes = (int) (seconds / 60f);
@@ -201,13 +204,17 @@ public final class ModuleTimer extends AbstractModuleRotatable {
         } else {
             time = String.format("%.2f", seconds);
         }
-        final FontRenderer fontRenderer = FontRendererNormal.INSTANCE;
+
+        final FontRenderer fontRenderer = API.normalFontRenderer;
+
         final int width = time.length() * fontRenderer.getCharWidth();
         final int height = fontRenderer.getCharHeight();
 
-        GlStateManager.translate(0.5f, 0.5f, 0);
-        GlStateManager.scale(1 / 80f, 1 / 80f, 1);
-        GlStateManager.translate(-width / 2f + 1, -height / 2f + 1, 0);
-        fontRenderer.drawString(time);
+        final MatrixStack matrixStack = context.getMatrixStack();
+        matrixStack.translate(0.5f, 0.5f, 0);
+        matrixStack.scale(1 / 80f, 1 / 80f, 1);
+        matrixStack.translate(-width / 2f + 1, -height / 2f + 1, 0);
+
+        fontRenderer.drawString(matrixStack, context.bufferFactory, time);
     }
 }

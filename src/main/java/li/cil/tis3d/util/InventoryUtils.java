@@ -1,9 +1,9 @@
 package li.cil.tis3d.util;
 
-import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -26,7 +26,7 @@ public final class InventoryUtils {
      * @return the entity representing the dropped item stack, or <tt>null</tt> if the stack was null or empty.
      */
     @Nullable
-    public static EntityItem drop(final World world, final BlockPos pos, final IInventory inventory, final int index, final int count, final EnumFacing towards) {
+    public static ItemEntity drop(final World world, final BlockPos pos, final IInventory inventory, final int index, final int count, final Direction towards) {
         final ItemStack stack = inventory.decrStackSize(index, count);
         return spawnStackInWorld(world, pos, stack, towards);
     }
@@ -41,7 +41,7 @@ public final class InventoryUtils {
      * @return the entity representing the dropped item stack, or <tt>null</tt> if the stack was null or empty.
      */
     @Nullable
-    public static EntityItem spawnStackInWorld(final World world, final BlockPos pos, final ItemStack stack, final EnumFacing towards) {
+    public static ItemEntity spawnStackInWorld(final World world, final BlockPos pos, final ItemStack stack, final Direction towards) {
         if (stack.isEmpty()) {
             return null;
         }
@@ -58,13 +58,15 @@ public final class InventoryUtils {
         final double py = pos.getY() + 0.5 + ty;
         final double pz = pos.getZ() + 0.5 + tz;
 
-        final EntityItem entity = new EntityItem(world, px, py, pz, stack.copy());
+        final ItemEntity entity = new ItemEntity(world, px, py, pz, stack.copy());
 
-        entity.motionX = 0.0125 * (rng.nextDouble() - 0.5) + ox * 0.03;
-        entity.motionY = 0.0125 * (rng.nextDouble() - 0.5) + oy * 0.08 + (ox + oz) * 0.03;
-        entity.motionZ = 0.0125 * (rng.nextDouble() - 0.5) + oz * 0.03;
+        entity.setMotion(
+            0.0125 * (rng.nextDouble() - 0.5) + ox * 0.03,
+            0.0125 * (rng.nextDouble() - 0.5) + oy * 0.08 + (ox + oz) * 0.03,
+            0.0125 * (rng.nextDouble() - 0.5) + oz * 0.03
+        );
         entity.setPickupDelay(15);
-        world.spawnEntity(entity);
+        world.addEntity(entity);
 
         return entity;
     }

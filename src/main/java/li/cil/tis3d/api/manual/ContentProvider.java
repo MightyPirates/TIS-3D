@@ -1,6 +1,9 @@
 package li.cil.tis3d.api.manual;
 
 import li.cil.tis3d.api.prefab.manual.ResourceContentProvider;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 
@@ -14,7 +17,8 @@ import javax.annotation.Nullable;
  *
  * @see ResourceContentProvider
  */
-public interface ContentProvider {
+@OnlyIn(Dist.CLIENT)
+public interface ContentProvider extends IForgeRegistryEntry<ContentProvider> {
     /**
      * Called to get the content of a path pointed to by the specified path.
      * <p>

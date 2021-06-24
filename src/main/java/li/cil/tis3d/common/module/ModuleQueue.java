@@ -1,21 +1,21 @@
 package li.cil.tis3d.common.module;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import li.cil.tis3d.api.FontRendererAPI;
+import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
-import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
-import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.renderer.TextureLoader;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.nbt.NBTTagCompound;
+import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
+import li.cil.tis3d.api.util.RenderContext;
+import li.cil.tis3d.client.renderer.Textures;
+import li.cil.tis3d.client.renderer.font.FontRenderer;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * The queue module can be used to store a number of values to be retrieved
@@ -24,7 +24,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * <p>
  * While it is not full, it will receive data on all ports and push them back.
  */
-public final class ModuleQueue extends AbstractModuleRotatable {
+public final class ModuleQueue extends AbstractModuleWithRotation {
     // --------------------------------------------------------------------- //
     // Persisted data
 
@@ -101,27 +101,29 @@ public final class ModuleQueue extends AbstractModuleRotatable {
         }
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Override
-    public void render(final boolean enabled, final float partialTicks) {
-        if (!enabled) {
+    public void render(final RenderContext context) {
+        if (!getCasing().isEnabled()) {
             return;
         }
 
-        rotateForRendering();
-        RenderUtil.ignoreLighting();
+        final MatrixStack matrixStack = context.getMatrixStack();
+        matrixStack.push();
+        rotateForRendering(matrixStack);
 
-        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_QUEUE));
+        context.drawAtlasSpriteUnlit(Textures.LOCATION_OVERLAY_MODULE_QUEUE);
 
         // Render detailed state when player is close.
-        final Minecraft mc = Minecraft.getMinecraft();
-        if (!isEmpty() && mc != null && mc.player != null && mc.player.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
-            drawState();
+        if (!isEmpty() && context.isWithinDetailRange(getCasing().getPosition())) {
+            drawState(context);
         }
+
+        matrixStack.pop();
     }
 
     @Override
-    public void readFromNBT(final NBTTagCompound nbt) {
+    public void readFromNBT(final CompoundNBT nbt) {
         super.readFromNBT(nbt);
 
         final int[] queueNbt = nbt.getIntArray(TAG_QUEUE);
@@ -130,22 +132,22 @@ public final class ModuleQueue extends AbstractModuleRotatable {
             queue[i] = (short) queueNbt[i];
         }
 
-        head = MathHelper.clamp(nbt.getInteger(TAG_HEAD), 0, QUEUE_SIZE - 1);
-        tail = MathHelper.clamp(nbt.getInteger(TAG_TAIL), 0, QUEUE_SIZE - 1);
+        head = MathHelper.clamp(nbt.getInt(TAG_HEAD), 0, QUEUE_SIZE - 1);
+        tail = MathHelper.clamp(nbt.getInt(TAG_TAIL), 0, QUEUE_SIZE - 1);
     }
 
     @Override
-    public void writeToNBT(final NBTTagCompound nbt) {
+    public void writeToNBT(final CompoundNBT nbt) {
         super.writeToNBT(nbt);
 
         final int[] queueNbt = new int[queue.length];
         for (int i = 0; i < queue.length; i++) {
             queueNbt[i] = queue[i];
         }
-        nbt.setIntArray(TAG_QUEUE, queueNbt);
+        nbt.putIntArray(TAG_QUEUE, queueNbt);
 
-        nbt.setInteger(TAG_HEAD, head);
-        nbt.setInteger(TAG_TAIL, tail);
+        nbt.putInt(TAG_HEAD, head);
+        nbt.putInt(TAG_TAIL, tail);
     }
 
     // --------------------------------------------------------------------- //
@@ -256,19 +258,21 @@ public final class ModuleQueue extends AbstractModuleRotatable {
         getCasing().sendData(getFace(), data, DATA_TYPE_UPDATE);
     }
 
-    @SideOnly(Side.CLIENT)
-    private void drawState() {
-        // Offset to start drawing at top left of inner area, slightly inset.
-        GlStateManager.translate(3 / 16f, 5 / 16f, 0);
-        GlStateManager.scale(1 / 128f, 1 / 128f, 1);
-        GlStateManager.translate(4.5f, 14.5f, 0);
-        GlStateManager.color(1f, 1f, 1f, 1f);
+    @OnlyIn(Dist.CLIENT)
+    private void drawState(final RenderContext context) {
+        final MatrixStack matrixStack = context.getMatrixStack();
 
+        // Offset to start drawing at top left of inner area, slightly inset.
+        matrixStack.translate(3 / 16f, 5 / 16f, 0);
+        matrixStack.scale(1 / 128f, 1 / 128f, 1);
+        matrixStack.translate(4.5f, 14.5f, 0);
+
+        final FontRenderer fontRenderer = API.smallFontRenderer;
         for (int i = tail, j = 0; i != head; i = (i + 1) % QUEUE_SIZE, j++) {
-            FontRendererAPI.drawString(String.format("%4X", queue[i]));
-            GlStateManager.translate(0, FontRendererAPI.getCharHeight() + 1, 0);
+            fontRenderer.drawString(matrixStack, context.bufferFactory, String.format("%4X", queue[i]));
+            matrixStack.translate(0, fontRenderer.getCharHeight() + 1, 0);
             if ((j + 1) % 4 == 0) {
-                GlStateManager.translate((FontRendererAPI.getCharWidth() + 1) * 5, (FontRendererAPI.getCharHeight() + 1) * -4, 0);
+                matrixStack.translate((fontRenderer.getCharWidth() + 1) * 5, (fontRenderer.getCharHeight() + 1) * -4, 0);
             }
         }
     }

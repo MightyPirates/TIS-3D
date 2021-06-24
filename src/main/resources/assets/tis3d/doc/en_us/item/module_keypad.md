@@ -1,6 +1,6 @@
 # Keypad Module
 
-![Push the button!](item:tis3d:module_keypad)
+![Push the button!](item:tis3d:keypad_module)
 
 The keypad module allows basic user-interfacing with a TIS-3D computer system. It permits the input of single digits, which are then written to the ports of the keypad module.
 

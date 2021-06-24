@@ -1,6 +1,6 @@
 # 执行模块
 
-![执——行!](item:tis3d:module_execution)
+![执——行!](item:tis3d:execution_module)
 
 执行模块是编程TIS-3D计算机的主要手段。
 用一本普通的书使用在已安装的[执行模块](module_execution.md)上，可以得到编码书。

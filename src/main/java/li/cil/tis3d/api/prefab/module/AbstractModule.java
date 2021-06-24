@@ -6,21 +6,23 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
+import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.api.util.TransformUtil;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
+import li.cil.tis3d.util.WorldUtils;
+import net.minecraft.block.BlockState;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumHand;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 
@@ -68,15 +70,28 @@ public abstract class AbstractModule implements Module {
     /**
      * Utility method for determining whether the player is currently looking at this module.
      *
-     * @return <tt>true</tt> if the player is looking at the module, <tt>false</tt> otherwise.
+     * @param dispatcher the render context.
+     * @return <tt>true</tt> if the observer is looking at the module, <tt>false</tt> otherwise.
      */
-    @SideOnly(Side.CLIENT)
-    protected boolean isPlayerLookingAt() {
-        final RayTraceResult hit = Minecraft.getMinecraft().objectMouseOver;
-        return hit != null &&
-            hit.typeOfHit == RayTraceResult.Type.BLOCK &&
-            getCasing().getPosition().equals(hit.getBlockPos()) &&
-            hit.sideHit == Face.toEnumFacing(getFace());
+    @OnlyIn(Dist.CLIENT)
+    protected boolean isObserverLookingAt(final TileEntityRendererDispatcher dispatcher) {
+        final RayTraceResult hitResult = dispatcher.cameraHitResult;
+        if (hitResult == null) {
+            return false;
+        }
+        if (hitResult.getType() != RayTraceResult.Type.BLOCK) {
+            return false;
+        }
+
+        final BlockRayTraceResult blockHitResult = (BlockRayTraceResult) hitResult;
+        if (!getCasing().getPosition().equals(blockHitResult.getPos())) {
+            return false;
+        }
+        if (blockHitResult.getFace() != Face.toDirection(getFace())) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -86,25 +101,32 @@ public abstract class AbstractModule implements Module {
      * <p>
      * Note that this will return the unadjusted X, Y and Z components. To transform this
      * coordinate to a UV coordinate mapped to the module's face, pass this into
-     * {@link #hitToUV}. Note that this method is overridden in {@link AbstractModuleRotatable}
+     * {@link #hitToUV}. Note that this method is overridden in {@link AbstractModuleWithRotation}
      * to also take into account the module's rotation.
      *
-     * @return the UV coordinate the player is looking at as the X and Y components.
+     * @param dispatcher the render context.
+     * @return the UV coordinate the observer is looking at as the X and Y components.
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Nullable
-    protected Vec3d getPlayerLookAt() {
-        final RayTraceResult hit = Minecraft.getMinecraft().objectMouseOver;
-        if (hit != null &&
-            hit.typeOfHit == RayTraceResult.Type.BLOCK &&
-            getCasing().getPosition().equals(hit.getBlockPos()) &&
-            hit.sideHit == Face.toEnumFacing(getFace())) {
-            return new Vec3d(hit.hitVec.x - hit.getBlockPos().getX(),
-                hit.hitVec.y - hit.getBlockPos().getY(),
-                hit.hitVec.z - hit.getBlockPos().getZ());
-        } else {
+    protected Vector3d getObserverLookAt(final TileEntityRendererDispatcher dispatcher) {
+        final RayTraceResult hitResult = dispatcher.cameraHitResult;
+        if (hitResult == null) {
             return null;
         }
+        if (hitResult.getType() != RayTraceResult.Type.BLOCK) {
+            return null;
+        }
+
+        final BlockRayTraceResult blockHitResult = (BlockRayTraceResult) hitResult;
+        if (!getCasing().getPosition().equals(blockHitResult.getPos())) {
+            return null;
+        }
+        if (blockHitResult.getFace() != Face.toDirection(getFace())) {
+            return null;
+        }
+
+        return hitResult.getHitVec().subtract(Vector3d.copy(blockHitResult.getPos()));
     }
 
     // --------------------------------------------------------------------- //
@@ -114,15 +136,15 @@ public abstract class AbstractModule implements Module {
      * Project a hit position on the surface of a casing to a UV coordinate on
      * the face of this module.
      * <p>
-     * Note that this is also overridden in {@link AbstractModuleRotatable} to
+     * Note that this is also overridden in {@link AbstractModuleWithRotation} to
      * take into account the module's rotation.
      *
      * @param hitPos the hit position to project.
      * @return the projected UV coordinate, with the Z component being 0.
-     * @see #getPlayerLookAt()
-     * @see Module#onActivate(EntityPlayer, EnumHand, float, float, float)
+     * @see #getObserverLookAt(TileEntityRendererDispatcher)
+     * @see Module#onActivate(PlayerEntity, Hand, Vector3d)
      */
-    protected Vec3d hitToUV(final Vec3d hitPos) {
+    protected Vector3d hitToUV(final Vector3d hitPos) {
         return TransformUtil.hitToUV(getFace(), hitPos);
     }
 
@@ -137,22 +159,21 @@ public abstract class AbstractModule implements Module {
      */
     protected boolean isVisible() {
         final World world = getCasing().getCasingWorld();
-        final BlockPos neighborPos = getCasing().getPosition().offset(Face.toEnumFacing(getFace()));
-        if (!world.isBlockLoaded(neighborPos)) {
+        final BlockPos neighborPos = getCasing().getPosition().offset(Face.toDirection(getFace()));
+        if (!WorldUtils.isBlockLoaded(world, neighborPos)) {
             // If the neighbor isn't loaded, we can assume we're also not visible on that side.
             return false;
         }
 
-        final Chunk chunk = world.getChunk(neighborPos);
+        final Chunk chunk = world.getChunkAt(neighborPos);
         if (chunk.isEmpty()) {
             // If the neighbor chunk is empty, we must assume we're visible.
             return true;
         }
 
         // Otherwise check if the neighboring block blocks visibility to our face.
-        final IBlockState neighborState = world.getBlockState(neighborPos);
-        final Block neighborBlock = neighborState.getBlock();
-        return !neighborBlock.doesSideBlockRendering(neighborState, world, neighborPos, Face.toEnumFacing(getFace().getOpposite()));
+        final BlockState neighborState = world.getBlockState(neighborPos);
+        return !neighborState.isSolid();
     }
 
     // --------------------------------------------------------------------- //
@@ -201,28 +222,28 @@ public abstract class AbstractModule implements Module {
     }
 
     @Override
-    public boolean onActivate(final EntityPlayer player, final EnumHand hand, final float hitX, final float hitY, final float hitZ) {
+    public boolean onActivate(final PlayerEntity player, final Hand hand, final Vector3d hit) {
         return false;
     }
 
     @Override
-    public void onData(final NBTTagCompound nbt) {
+    public void onData(final CompoundNBT nbt) {
     }
 
     @Override
     public void onData(final ByteBuf data) {
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Override
-    public void render(final boolean enabled, final float partialTicks) {
+    public void render(final RenderContext context) {
     }
 
     @Override
-    public void readFromNBT(final NBTTagCompound nbt) {
+    public void readFromNBT(final CompoundNBT nbt) {
     }
 
     @Override
-    public void writeToNBT(final NBTTagCompound nbt) {
+    public void writeToNBT(final CompoundNBT nbt) {
     }
 }

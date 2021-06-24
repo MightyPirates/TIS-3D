@@ -4,15 +4,19 @@ import io.netty.buffer.ByteBuf;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
-import net.minecraft.entity.player.EntityPlayer;
+import li.cil.tis3d.api.util.RenderContext;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumHand;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * A module that can be installed in a TIS-3D {@link Casing}.
+ * <p>
+ * Instantiated by {@link ModuleProvider}s for {@link ItemStack}s inserted into {@link Casing}.
  */
 public interface Module {
     /**
@@ -49,7 +53,7 @@ public interface Module {
      * This is called before the first {@link #onEnabled()}, and also <em>before
      * it is actually set in the containing {@link Casing}</em>. Particularly
      * this means {@link Casing#getModule(Face)} for the module's {@link Face}
-     * will return <tt>null</tt> in this callback.
+     * will still return <tt>null</tt> in this callback.
      * <p>
      * Note that this is only called on the server.
      *
@@ -146,12 +150,10 @@ public interface Module {
      *
      * @param player the player that clicked the module.
      * @param hand   the hand the player used to activate the module.
-     * @param hitX   the relative x position that was clicked.
-     * @param hitY   the relative y position that was clicked.
-     * @param hitZ   the relative z position that was clicked.
+     * @param hit    the relative position that was clicked.
      * @return <tt>true</tt> if the click was handled, <tt>false</tt> otherwise.
      */
-    boolean onActivate(final EntityPlayer player, final EnumHand hand, final float hitX, final float hitY, final float hitZ);
+    boolean onActivate(final PlayerEntity player, final Hand hand, final Vector3d hit);
 
     /**
      * Called with NBT data sent from the remote instance of the module.
@@ -161,10 +163,10 @@ public interface Module {
      * this way and vice versa).
      *
      * @param nbt the received data.
-     * @see Casing#sendData(Face, NBTTagCompound, byte)
-     * @see Casing#sendData(Face, NBTTagCompound)
+     * @see Casing#sendData(Face, CompoundNBT, byte)
+     * @see Casing#sendData(Face, CompoundNBT)
      */
-    void onData(final NBTTagCompound nbt);
+    void onData(final CompoundNBT nbt);
 
     /**
      * Called with data sent from the remote instance of the module.
@@ -188,17 +190,11 @@ public interface Module {
      * The render state will be adjusted to take into account the face the
      * module is installed in, i.e. rendering from (0, 0, 0) to (1, 1, 0) will
      * render the full quad of face of the casing the module is installed in.
-     * <p>
-     * Note that the <code>enabled</code> is the same as {@link Casing#isEnabled()},
-     * it is merely passed along for backwards compatibility from before the
-     * time that getter existed.
      *
-     * @param enabled      whether the module is currently enabled.
-     * @param partialTicks the partial time elapsed in this tick.
+     * @param context the current render context.
      */
-    // TODO In 1.13, pass along TileEntityRendererDispatcher so we don't have to fetch info that's in there statically.
-    @SideOnly(Side.CLIENT)
-    void render(final boolean enabled, final float partialTicks);
+    @OnlyIn(Dist.CLIENT)
+    void render(final RenderContext context);
 
     // --------------------------------------------------------------------- //
 
@@ -207,12 +203,12 @@ public interface Module {
      *
      * @param nbt the tag to load the state from.
      */
-    void readFromNBT(final NBTTagCompound nbt);
+    void readFromNBT(final CompoundNBT nbt);
 
     /**
      * Save the state of the module to the specified NBT compound.
      *
      * @param nbt the tag to save the state to.
      */
-    void writeToNBT(final NBTTagCompound nbt);
+    void writeToNBT(final CompoundNBT nbt);
 }

@@ -4,7 +4,6 @@ This index lists all of the documented items in TIS-3D. If you're looking for a 
 
 ## Modules
 - [Audio Module](module_audio.md)
-- [Bundled Redstone Module](module_bundled_redstone.md)
 - [Display Module](module_display.md)
 - [Execution Module](module_execution.md)
 - [Facade Module](module_facade.md)

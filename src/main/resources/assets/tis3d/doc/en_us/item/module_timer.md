@@ -1,6 +1,6 @@
 # Timer Module
 
-![Hell, it's about time](item:tis3d:module_timer)
+![Hell, it's about time](item:tis3d:timer_module)
 
 The timer module uses a high precision quartz to allow consistent and reliably timed wait operations. Its hardware runs on a 20 Hz clock, meaning one timer step will take exactly 50 milliseconds. The timer is configured using these clock cycles.
 

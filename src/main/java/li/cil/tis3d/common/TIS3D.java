@@ -1,57 +1,50 @@
 package li.cil.tis3d.common;
 
 import li.cil.tis3d.api.API;
+import li.cil.tis3d.client.ClientConfig;
+import li.cil.tis3d.client.ClientSetup;
+import li.cil.tis3d.client.manual.Manual;
+import li.cil.tis3d.client.renderer.font.FontRendererNormal;
+import li.cil.tis3d.client.renderer.font.FontRendererSmall;
+import li.cil.tis3d.common.api.InfraredAPIImpl;
+import li.cil.tis3d.common.api.ManualAPIImpl;
+import li.cil.tis3d.common.block.Blocks;
+import li.cil.tis3d.common.container.Containers;
+import li.cil.tis3d.common.entity.Entities;
+import li.cil.tis3d.common.item.ItemGroups;
+import li.cil.tis3d.common.item.Items;
+import li.cil.tis3d.common.provider.ModuleProviders;
+import li.cil.tis3d.common.provider.RedstoneInputProviders;
+import li.cil.tis3d.common.provider.SerialInterfaceProviders;
+import li.cil.tis3d.common.tags.BlockTags;
+import li.cil.tis3d.common.tags.ItemTags;
+import li.cil.tis3d.common.tileentity.TileEntities;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import org.apache.logging.log4j.Logger;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
-/**
- * Entry point for FML.
- */
-@Mod(modid = API.MOD_ID, version = API.MOD_VERSION, useMetadata = true)
+@Mod(API.MOD_ID)
 public final class TIS3D {
-    // --------------------------------------------------------------------- //
-    // FML / Forge
+    public TIS3D() {
+        ConfigManager.add(CommonConfig::new);
+        ConfigManager.add(ClientConfig::new);
+        ConfigManager.initialize();
 
-    @Mod.Instance(API.MOD_ID)
-    public static TIS3D instance;
+        ItemTags.initialize();
+        BlockTags.initialize();
+        Blocks.initialize();
+        Items.initialize();
+        TileEntities.initialize();
+        Entities.initialize();
+        Containers.initialize();
 
-    @SidedProxy(clientSide = Constants.PROXY_CLIENT, serverSide = Constants.PROXY_COMMON)
-    public static ProxyCommon proxy;
+        ModuleProviders.initialize();
+        SerialInterfaceProviders.initialize();
+        RedstoneInputProviders.initialize();
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> Manual::initialize);
 
-    @EventHandler
-    public void onPreInit(final FMLPreInitializationEvent event) {
-        log = event.getModLog();
-        proxy.onPreInit(event);
-    }
-
-    @EventHandler
-    public void onInit(final FMLInitializationEvent event) {
-        proxy.onInit(event);
-    }
-
-    @EventHandler
-    public void onPostInit(final FMLPostInitializationEvent event) {
-        proxy.onPostInit(event);
-    }
-
-    // --------------------------------------------------------------------- //
-
-    /**
-     * Logger the mod should use, filled in pre-init.
-     */
-    private static Logger log;
-
-    /**
-     * Get the logger to be used by the mod.
-     *
-     * @return the mod's logger.
-     */
-    public static Logger getLog() {
-        return log;
+        FMLJavaModLoadingContext.get().getModEventBus().register(CommonSetup.class);
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> FMLJavaModLoadingContext.get().getModEventBus().register(ClientSetup.class));
     }
 }

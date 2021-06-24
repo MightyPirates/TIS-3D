@@ -1,32 +1,36 @@
 package li.cil.tis3d.api.prefab.manual;
 
-import li.cil.tis3d.api.manual.TabIconRenderer;
-import li.cil.tis3d.api.util.RenderUtil;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.math.vector.Vector4f;
+import net.minecraft.util.text.ITextComponent;
+
+import javax.annotation.Nullable;
 
 /**
  * Simple implementation of a tab icon renderer using an item stack as its graphic.
  */
-@SuppressWarnings("UnusedDeclaration")
-public class ItemStackTabIconRenderer implements TabIconRenderer {
+public class ItemStackTabIconRenderer extends AbstractTab {
     private final ItemStack stack;
 
-    public ItemStackTabIconRenderer(final ItemStack stack) {
+    public ItemStackTabIconRenderer(final String path, @Nullable final ITextComponent tooltip, final ItemStack stack) {
+        super(path, tooltip);
         this.stack = stack;
     }
 
-    @SideOnly(Side.CLIENT)
     @Override
-    public void render() {
-        GlStateManager.enableRescaleNormal();
-        RenderUtil.ignoreLighting();
-        RenderHelper.enableGUIStandardItemLighting();
-        Minecraft.getMinecraft().getRenderItem().renderItemAndEffectIntoGUI(stack, 0, 0);
-        RenderHelper.disableStandardItemLighting();
+    public void renderIcon(final MatrixStack matrixStack) {
+        // This is *nasty*, but sadly there's no renderItemAndEffectIntoGUI() variant that
+        // takes a MatrixStack. Yet.
+
+        final Vector4f position = new Vector4f(0, 0, 0, 1);
+        position.transform(matrixStack.getLast().getMatrix());
+
+        Minecraft.getInstance().getItemRenderer().renderItemAndEffectIntoGUI(stack, (int) position.getX(), (int) position.getY());
+
+        // Unfuck GL state.
+        RenderSystem.enableBlend();
     }
 }

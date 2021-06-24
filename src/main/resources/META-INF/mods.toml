@@ -1,0 +1,28 @@
+modLoader = "javafml"
+loaderVersion = "[31,)"
+issueTrackerURL = "${mod_issues_url}"
+license = "MIT"
+
+[[mods]]
+modId = "tis3d"
+version = "${mod_version}"
+displayName = "${mod_name}"
+displayURL = "${mod_url}"
+#logoFile = "logo.png"
+authors = "Sangar"
+description = '''
+TIS-100 inspired low-tech computing for Minecraft.
+'''
+
+[[dependencies.tis3d]]
+modId = "forge"
+mandatory = true
+versionRange = "[${forge_version_min},)"
+ordering = "NONE"
+side = "BOTH"
+[[dependencies.tis3d]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[${minecraft_version_min}]"
+ordering = "NONE"
+side = "BOTH"

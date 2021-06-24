@@ -1,16 +1,22 @@
 package li.cil.tis3d.common.item;
 
 import li.cil.tis3d.api.machine.Casing;
-import li.cil.tis3d.common.TIS3D;
-import li.cil.tis3d.common.gui.GuiHandlerCommon;
-import net.minecraft.entity.player.EntityPlayer;
+import li.cil.tis3d.common.container.ReadOnlyMemoryModuleContainer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
@@ -19,20 +25,33 @@ public final class ItemModuleReadOnlyMemory extends ItemModule {
     private static final byte[] EMPTY_DATA = new byte[0];
 
     public ItemModuleReadOnlyMemory() {
-        setMaxStackSize(1);
+        super(createProperties().maxStackSize(1));
     }
 
     // --------------------------------------------------------------------- //
     // Item
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(final World world, final EntityPlayer player, final EnumHand hand) {
-        player.openGui(TIS3D.instance, GuiHandlerCommon.GuiId.MODULE_MEMORY.ordinal(), world, 0, 0, 0);
-        return super.onItemRightClick(world, player, hand);
+    public ActionResult<ItemStack> onItemRightClick(final World world, final PlayerEntity player, final Hand hand) {
+        if (!world.isRemote() && player instanceof ServerPlayerEntity) {
+            final ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
+            NetworkHooks.openGui(serverPlayer, new INamedContainerProvider() {
+                @Override
+                public ITextComponent getDisplayName() {
+                    return StringTextComponent.EMPTY;
+                }
+
+                @Override
+                public Container createMenu(final int id, final PlayerInventory playerInventory, final PlayerEntity player) {
+                    return new ReadOnlyMemoryModuleContainer(id, player, hand);
+                }
+            }, buffer -> buffer.writeEnumValue(hand));
+        }
+        return ActionResult.func_233538_a_(player.getHeldItem(hand), world.isRemote());
     }
 
     @Override
-    public boolean doesSneakBypassUse(final ItemStack stack, final IBlockAccess world, final BlockPos pos, final EntityPlayer player) {
+    public boolean doesSneakBypassUse(final ItemStack stack, final IWorldReader world, final BlockPos pos, final PlayerEntity player) {
         return world.getTileEntity(pos) instanceof Casing;
     }
 
@@ -44,7 +63,7 @@ public final class ItemModuleReadOnlyMemory extends ItemModule {
      * @param nbt the tag to load the data from.
      * @return the data loaded from the tag.
      */
-    public static byte[] loadFromNBT(@Nullable final NBTTagCompound nbt) {
+    public static byte[] loadFromNBT(@Nullable final CompoundNBT nbt) {
         if (nbt != null) {
             return nbt.getByteArray(TAG_DATA);
         }
@@ -58,7 +77,7 @@ public final class ItemModuleReadOnlyMemory extends ItemModule {
      * @return the data loaded from the stack.
      */
     public static byte[] loadFromStack(final ItemStack stack) {
-        return loadFromNBT(stack.getTagCompound());
+        return loadFromNBT(stack.getTag());
     }
 
     /**
@@ -68,10 +87,7 @@ public final class ItemModuleReadOnlyMemory extends ItemModule {
      * @param data  the data to save to the item stack.
      */
     public static void saveToStack(final ItemStack stack, final byte[] data) {
-        NBTTagCompound nbt = stack.getTagCompound();
-        if (nbt == null) {
-            stack.setTagCompound(nbt = new NBTTagCompound());
-        }
+        final CompoundNBT nbt = stack.getOrCreateTag();
 
         byte[] nbtData = nbt.getByteArray(TAG_DATA);
         if (nbtData.length != data.length) {
@@ -79,6 +95,6 @@ public final class ItemModuleReadOnlyMemory extends ItemModule {
         }
 
         System.arraycopy(data, 0, nbtData, 0, data.length);
-        nbt.setByteArray(TAG_DATA, nbtData);
+        nbt.putByteArray(TAG_DATA, nbtData);
     }
 }

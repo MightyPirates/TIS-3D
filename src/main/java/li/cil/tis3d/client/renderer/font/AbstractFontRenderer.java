@@ -1,20 +1,21 @@
 package li.cil.tis3d.client.renderer.font;
 
-import gnu.trove.map.TCharIntMap;
-import gnu.trove.map.hash.TCharIntHashMap;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
+import it.unimi.dsi.fastutil.chars.Char2IntMap;
+import it.unimi.dsi.fastutil.chars.Char2IntOpenHashMap;
+import li.cil.tis3d.client.renderer.RenderLayerAccess;
+import li.cil.tis3d.util.Color;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.util.ResourceLocation;
-import org.lwjgl.opengl.GL11;
+import net.minecraft.util.math.vector.Matrix4f;
 
 /**
  * Base implementation for texture based font rendering.
  */
 public abstract class AbstractFontRenderer implements FontRenderer {
-    private final TCharIntMap CHAR_MAP;
+    private final Char2IntMap CHAR_MAP;
 
     private final int COLUMNS = getResolution() / (getCharWidth() + getGapU());
     private final float U_SIZE = getCharWidth() / (float) getResolution();
@@ -22,8 +23,10 @@ public abstract class AbstractFontRenderer implements FontRenderer {
     private final float U_STEP = (getCharWidth() + getGapU()) / (float) getResolution();
     private final float V_STEP = (getCharHeight() + getGapV()) / (float) getResolution();
 
+    private RenderType renderLayer;
+
     AbstractFontRenderer() {
-        CHAR_MAP = new TCharIntHashMap();
+        CHAR_MAP = new Char2IntOpenHashMap();
         final CharSequence chars = getCharacters();
         for (int index = 0; index < chars.length(); index++) {
             CHAR_MAP.put(chars.charAt(index), index);
@@ -32,32 +35,20 @@ public abstract class AbstractFontRenderer implements FontRenderer {
 
     // --------------------------------------------------------------------- //
 
-    public void drawString(final CharSequence value) {
-        drawString(value, value.length());
+    public void drawString(final MatrixStack matrixStack, final IRenderTypeBuffer bufferFactory, final CharSequence value) {
+        drawString(matrixStack, bufferFactory, value, Color.WHITE, value.length());
     }
 
-    public void drawString(final CharSequence value, final int maxChars) {
-        GlStateManager.pushMatrix();
-        GlStateManager.depthMask(false);
-
-        Minecraft.getMinecraft().getTextureManager().bindTexture(getTextureLocation());
-
-        final Tessellator tessellator = Tessellator.getInstance();
-        final BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+    public void drawString(final MatrixStack matrixStack, final IRenderTypeBuffer bufferFactory, final CharSequence value, final int color, final int maxChars) {
+        final IVertexBuilder buffer = getDefaultBuffer(bufferFactory);
 
         float tx = 0f;
         final int end = Math.min(maxChars, value.length());
         for (int i = 0; i < end; i++) {
             final char ch = value.charAt(i);
-            drawChar(tx, ch, buffer);
+            drawChar(matrixStack, buffer, color, tx, ch);
             tx += getCharWidth() + getGapU();
         }
-
-        tessellator.draw();
-
-        GlStateManager.depthMask(true);
-        GlStateManager.popMatrix();
     }
 
     // --------------------------------------------------------------------- //
@@ -74,21 +65,48 @@ public abstract class AbstractFontRenderer implements FontRenderer {
 
     // --------------------------------------------------------------------- //
 
-    private void drawChar(final float x, final char ch, final BufferBuilder buffer) {
+    private IVertexBuilder getDefaultBuffer(final IRenderTypeBuffer bufferFactory) {
+        if (renderLayer == null) {
+            renderLayer = RenderLayerAccess.getModuleOverlay(getTextureLocation());
+        }
+
+        return bufferFactory.getBuffer(renderLayer);
+    }
+
+    private void drawChar(final MatrixStack matrixStack, final IVertexBuilder buffer, final int color, final float x, final char ch) {
         if (Character.isWhitespace(ch) || Character.isISOControl(ch)) {
             return;
         }
+
         final int index = getCharIndex(ch);
+
+        final int a = (color >>> 24) & 0xFF;
+        final int r = (color >>> 16) & 0xFF;
+        final int g = (color >>> 8) & 0xFF;
+        final int b = color & 0xFF;
 
         final int column = index % COLUMNS;
         final int row = index / COLUMNS;
         final float u = column * U_STEP;
         final float v = row * V_STEP;
 
-        buffer.pos(x, getCharHeight(), 0).tex(u, v + V_SIZE).endVertex();
-        buffer.pos(x + getCharWidth(), getCharHeight(), 0).tex(u + U_SIZE, v + V_SIZE).endVertex();
-        buffer.pos(x + getCharWidth(), 0, 0).tex(u + U_SIZE, v).endVertex();
-        buffer.pos(x, 0, 0).tex(u, v).endVertex();
+        final Matrix4f matrix = matrixStack.getLast().getMatrix();
+        buffer.pos(matrix, x, getCharHeight(), 0)
+            .color(r, g, b, a)
+            .tex(u, v + V_SIZE)
+            .endVertex();
+        buffer.pos(matrix, x + getCharWidth(), getCharHeight(), 0)
+            .color(r, g, b, a)
+            .tex(u + U_SIZE, v + V_SIZE)
+            .endVertex();
+        buffer.pos(matrix, x + getCharWidth(), 0, 0)
+            .color(r, g, b, a)
+            .tex(u + U_SIZE, v)
+            .endVertex();
+        buffer.pos(matrix, x, 0, 0)
+            .color(r, g, b, a)
+            .tex(u, v)
+            .endVertex();
     }
 
     private int getCharIndex(final char ch) {

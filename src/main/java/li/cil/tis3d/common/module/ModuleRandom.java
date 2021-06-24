@@ -5,12 +5,11 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModule;
-import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.renderer.TextureLoader;
-import net.minecraft.client.renderer.GlStateManager;
+import li.cil.tis3d.api.util.RenderContext;
+import li.cil.tis3d.client.renderer.Textures;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.Random;
 
@@ -38,19 +37,14 @@ public final class ModuleRandom extends AbstractModule {
         stepOutput(port);
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Override
-    public void render(final boolean enabled, final float partialTicks) {
-        if (!enabled) {
+    public void render(final RenderContext context) {
+        if (!getCasing().isEnabled()) {
             return;
         }
 
-        RenderUtil.ignoreLighting();
-        GlStateManager.enableBlend();
-
-        RenderUtil.drawQuad(RenderUtil.getSprite(TextureLoader.LOCATION_OVERLAY_MODULE_RANDOM));
-
-        GlStateManager.disableBlend();
+        context.drawAtlasSpriteUnlit(Textures.LOCATION_OVERLAY_MODULE_RANDOM);
     }
 
     // --------------------------------------------------------------------- //

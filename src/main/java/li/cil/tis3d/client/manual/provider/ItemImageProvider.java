@@ -1,35 +1,33 @@
 package li.cil.tis3d.client.manual.provider;
 
-import com.google.common.base.Strings;
-import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.manual.ImageProvider;
 import li.cil.tis3d.api.manual.ImageRenderer;
+import li.cil.tis3d.client.manual.Strings;
 import li.cil.tis3d.client.manual.segment.render.ItemStackImageRenderer;
 import li.cil.tis3d.client.manual.segment.render.MissingItemRenderer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.ForgeRegistryEntry;
 
-public final class ItemImageProvider implements ImageProvider {
-    private static final String WARNING_ITEM_MISSING = API.MOD_ID + ".manual.warning.missing.item";
+public final class ItemImageProvider extends ForgeRegistryEntry<ImageProvider> implements ImageProvider {
+    private static final String PREFIX = "item:";
 
     @Override
-    public ImageRenderer getImage(final String data) {
-        final int splitIndex = data.lastIndexOf('@');
-        final String name, optMeta;
-        if (splitIndex > 0) {
-            name = data.substring(0, splitIndex);
-            optMeta = data.substring(splitIndex);
+    public boolean matches(final String path) {
+        return path.startsWith(PREFIX);
+    }
+
+    @Override
+    public ImageRenderer getImage(final String path) {
+        final String name = path.substring(PREFIX.length());
+        final Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(name));
+        if (item != null && item != Items.AIR) {
+            return new ItemStackImageRenderer(new ItemStack(item));
         } else {
-            name = data;
-            optMeta = "";
-        }
-        final int meta = (Strings.isNullOrEmpty(optMeta)) ? 0 : Integer.parseInt(optMeta.substring(1));
-        final Item item = Item.REGISTRY.getObject(new ResourceLocation(name));
-        if (item != null) {
-            return new ItemStackImageRenderer(new ItemStack(item, 1, meta));
-        } else {
-            return new MissingItemRenderer(WARNING_ITEM_MISSING);
+            return new MissingItemRenderer(Strings.WARNING_ITEM_MISSING);
         }
     }
 }

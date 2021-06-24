@@ -1,37 +1,53 @@
 package li.cil.tis3d.client.manual.provider;
 
-import com.google.common.base.Strings;
-import li.cil.tis3d.api.API;
+import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import li.cil.tis3d.api.manual.ImageProvider;
 import li.cil.tis3d.api.manual.ImageRenderer;
+import li.cil.tis3d.client.manual.Strings;
 import li.cil.tis3d.client.manual.segment.render.ItemStackImageRenderer;
 import li.cil.tis3d.client.manual.segment.render.MissingItemRenderer;
-import net.minecraft.block.Block;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.command.arguments.BlockStateParser;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.registries.ForgeRegistryEntry;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-public final class BlockImageProvider implements ImageProvider {
-    private static final String WARNING_BLOCK_MISSING = API.MOD_ID + ".manual.warning.missing.block";
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
+public final class BlockImageProvider extends ForgeRegistryEntry<ImageProvider> implements ImageProvider {
+    private static final Logger LOGGER = LogManager.getLogger();
+
+    private static final String PREFIX = "block:";
+    private static final Map<String, BlockState> BLOCK_STATE_CACHE = new HashMap<>();
 
     @Override
-    public ImageRenderer getImage(final String data) {
-        final int splitIndex = data.lastIndexOf('@');
-        final String name, optMeta;
-        if (splitIndex > 0) {
-            name = data.substring(0, splitIndex);
-            optMeta = data.substring(splitIndex);
+    public boolean matches(final String path) {
+        return path.startsWith(PREFIX);
+    }
+
+    @Override
+    public ImageRenderer getImage(final String path) {
+        final String data = path.substring(PREFIX.length());
+        final BlockState state = Objects.requireNonNull(BLOCK_STATE_CACHE.computeIfAbsent(data, (string) -> {
+            try {
+                return new BlockStateParser(new StringReader(string), false)
+                    .parse(false)
+                    .getState();
+            } catch (final CommandSyntaxException e) {
+                LOGGER.error("Failed parsing block state.", e);
+                return Blocks.AIR.getDefaultState();
+            }
+        }));
+
+        if (state.getBlock() != Blocks.AIR) {
+            return new ItemStackImageRenderer(new ItemStack(state.getBlock()));
         } else {
-            name = data;
-            optMeta = "";
-        }
-        final int meta = (Strings.isNullOrEmpty(optMeta)) ? 0 : Integer.parseInt(optMeta.substring(1));
-        final Block block = Block.REGISTRY.getObject(new ResourceLocation(name));
-        if (Item.getItemFromBlock(block) != Items.AIR) {
-            return new ItemStackImageRenderer(new ItemStack(block, 1, meta));
-        } else {
-            return new MissingItemRenderer(WARNING_BLOCK_MISSING);
+            return new MissingItemRenderer(Strings.WARNING_BLOCK_MISSING);
         }
     }
 }

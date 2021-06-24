@@ -3,13 +3,24 @@ package li.cil.tis3d.api.module;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.registry.Registry;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 
 /**
  * Creates a module instance for a specified item stack.
+ * <p>
+ * Providers should be as specific as possible in the implementation of their
+ * {@link #worksWith(ItemStack, Casing, Face)} method. The first provider claiming to support
+ * the specified parameters will be used to create a {@link Module} instance via its
+ * {@link #createModule(ItemStack, Casing, Face)} method and the order in which providers are
+ * queried is not guaranteed to be deterministic. As such, there should be no two providers
+ * that can support the same {@link ItemStack}.
+ * <p>
+ * Additional providers may be registered with the {@link Registry} <tt>tis3d:modules</tt>.
  */
-public interface ModuleProvider {
+public interface ModuleProvider extends IForgeRegistryEntry<ModuleProvider> {
     /**
      * Checks whether the provider supports the specified stack.
      *

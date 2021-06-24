@@ -1,23 +1,25 @@
 package li.cil.tis3d.common.module;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
-import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
-import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.common.init.Items;
+import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
+import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.common.item.ItemModuleReadOnlyMemory;
+import li.cil.tis3d.common.item.Items;
+import li.cil.tis3d.util.Color;
 import li.cil.tis3d.util.EnumUtils;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumHand;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.Arrays;
 
@@ -29,7 +31,7 @@ import java.util.Arrays;
  * <li>ACCESS: await either read to retrieve value or write to set value, all ports writing, all ports reading.</li>
  * </ul>
  */
-public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
+public class ModuleRandomAccessMemory extends AbstractModuleWithRotation {
     // --------------------------------------------------------------------- //
     // Persisted data
 
@@ -120,9 +122,9 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
     }
 
     @Override
-    public boolean onActivate(final EntityPlayer player, final EnumHand hand, final float hitX, final float hitY, final float hitZ) {
+    public boolean onActivate(final PlayerEntity player, final Hand hand, final Vector3d hit) {
         final ItemStack heldItem = player.getHeldItem(hand);
-        if (!Items.isModuleReadOnlyMemory(heldItem)) {
+        if (!Items.is(heldItem, Items.READ_ONLY_MEMORY_MODULE)) {
             return false;
         }
 
@@ -131,7 +133,7 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
             return false;
         }
 
-        if (!getCasing().getCasingWorld().isRemote) {
+        if (!getCasing().getCasingWorld().isRemote()) {
             if (isReading) {
                 ItemModuleReadOnlyMemory.saveToStack(heldItem, memory);
             } else {
@@ -159,38 +161,37 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
         }
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Override
-    public void render(final boolean enabled, final float partialTicks) {
-        if (!enabled || !isVisible()) {
+    public void render(final RenderContext context) {
+        if (!getCasing().isEnabled() || !isVisible()) {
             return;
         }
 
-        rotateForRendering();
-        RenderUtil.ignoreLighting();
-        GlStateManager.enableBlend();
-        GlStateManager.disableTexture2D();
+        final MatrixStack matrixStack = context.getMatrixStack();
+        matrixStack.push();
+        rotateForRendering(matrixStack);
 
         final int cells = 4;
         final int cellSize = MEMORY_SIZE / (cells * cells);
+        final int cellWidth = (int) Math.sqrt(cellSize);
+        final int cellColor = getCellColor();
         for (int y = 0; y < cells; y++) {
             for (int x = 0; x < cells; x++) {
-                final int offset = (y * cells + x) * cellSize;
-                final float brightness = 0.25f + sectorSum(offset, cellSize) * 0.75f;
-                setCellColor(brightness);
+                final float brightness = 0.25f + sectorSum(x * cellWidth, y * cellWidth, cellWidth) * 0.75f;
+                final int color = Color.withAlpha(cellColor, brightness);
 
                 final float u0 = QUADS_U0 + x * QUADS_STEP_U;
                 final float v0 = QUADS_V0 + y * QUADS_STEP_V;
-                RenderUtil.drawUntexturedQuad(u0, v0, QUADS_SIZE_U, QUADS_SIZE_V);
+                context.drawQuadUnlit(u0, v0, QUADS_SIZE_U, QUADS_SIZE_V, color);
             }
         }
 
-        GlStateManager.enableTexture2D();
-        GlStateManager.disableBlend();
+        matrixStack.pop();
     }
 
     @Override
-    public void readFromNBT(final NBTTagCompound nbt) {
+    public void readFromNBT(final CompoundNBT nbt) {
         super.readFromNBT(nbt);
 
         load(nbt.getByteArray(TAG_MEMORY));
@@ -199,11 +200,11 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
     }
 
     @Override
-    public void writeToNBT(final NBTTagCompound nbt) {
+    public void writeToNBT(final CompoundNBT nbt) {
         super.writeToNBT(nbt);
 
-        nbt.setByteArray(TAG_MEMORY, memory.clone());
-        nbt.setByte(TAG_ADDRESS, address);
+        nbt.putByteArray(TAG_MEMORY, memory.clone());
+        nbt.putByte(TAG_ADDRESS, address);
         EnumUtils.writeToNBT(state, TAG_STATE, nbt);
     }
 
@@ -224,13 +225,11 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
     }
 
     /**
-     * Set the color of the memory cell currently being drawn in the {@link GlStateManager}.
-     *
-     * @param brightness the brightness the cell is rendered at (the alpha).
+     * Get the color of the memory cells for this module.
      */
-    @SideOnly(Side.CLIENT)
-    protected void setCellColor(final float brightness) {
-        GlStateManager.color(0.4f, 1f, 1f, brightness);
+    @OnlyIn(Dist.CLIENT)
+    protected int getCellColor() {
+        return 0xFFBBDDFF;
     }
 
     // --------------------------------------------------------------------- //
@@ -351,12 +350,17 @@ public class ModuleRandomAccessMemory extends AbstractModuleRotatable {
         getCasing().sendData(getFace(), data);
     }
 
-    private float sectorSum(final int offset, final int count) {
+    private float sectorSum(final int x0, final int y0, final int sectorWidth) {
         int sum = 0;
-        for (int i = offset, end = offset + count; i < end; i++) {
-            sum += memory[i] & 0xFF;
+        final int sectorSize = sectorWidth * sectorWidth;
+        final int rowWidth = MEMORY_SIZE / sectorSize;
+        for (int y = y0; y < y0 + sectorWidth; y++) {
+            for (int x = x0; x < x0 + sectorWidth; x++) {
+                final int i = y * rowWidth + x;
+                sum += memory[i] & 0xFF;
+            }
         }
-        return sum / (count * (float) 0xFF);
+        return sum / (sectorWidth * sectorWidth * (float) 0xFF);
     }
 
     protected final void load(final byte[] data) {

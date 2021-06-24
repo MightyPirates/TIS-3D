@@ -1,40 +1,39 @@
 package li.cil.tis3d.common.module;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import li.cil.tis3d.api.FontRendererAPI;
+import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.traits.BlockChangeAware;
-import li.cil.tis3d.api.prefab.module.AbstractModuleRotatable;
-import li.cil.tis3d.api.util.RenderUtil;
-import li.cil.tis3d.client.renderer.TextureLoader;
+import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
+import li.cil.tis3d.api.util.RenderContext;
+import li.cil.tis3d.client.renderer.Textures;
+import li.cil.tis3d.client.renderer.font.FontRenderer;
 import li.cil.tis3d.common.Constants;
-import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ItemBookCode;
+import li.cil.tis3d.common.item.Items;
 import li.cil.tis3d.common.module.execution.MachineImpl;
 import li.cil.tis3d.common.module.execution.MachineState;
 import li.cil.tis3d.common.module.execution.compiler.Compiler;
 import li.cil.tis3d.common.module.execution.compiler.ParseException;
+import li.cil.tis3d.common.module.execution.compiler.Strings;
+import li.cil.tis3d.util.Color;
 import li.cil.tis3d.util.EnumUtils;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.EnumHand;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.opengl.GL11;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.util.Constants.NBT;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -42,7 +41,7 @@ import java.util.*;
 /**
  * The programmable execution module.
  */
-public final class ModuleExecution extends AbstractModuleRotatable implements BlockChangeAware {
+public final class ModuleExecution extends AbstractModuleWithRotation implements BlockChangeAware {
     // --------------------------------------------------------------------- //
     // Persisted data
 
@@ -60,21 +59,19 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         WAIT
     }
 
-    private static final ResourceLocation[] STATE_LOCATIONS = new ResourceLocation[]{
-        TextureLoader.LOCATION_OVERLAY_MODULE_EXECUTION_IDLE,
-        TextureLoader.LOCATION_OVERLAY_MODULE_EXECUTION_ERROR,
-        TextureLoader.LOCATION_OVERLAY_MODULE_EXECUTION_RUNNING,
-        TextureLoader.LOCATION_OVERLAY_MODULE_EXECUTION_WAITING
-    };
+    @OnlyIn(Dist.CLIENT)
+    private static final class RenderData {
+        private static final ResourceLocation[] STATE_LOCATIONS = new ResourceLocation[]{
+            Textures.LOCATION_OVERLAY_MODULE_EXECUTION_IDLE,
+            Textures.LOCATION_OVERLAY_MODULE_EXECUTION_ERROR,
+            Textures.LOCATION_OVERLAY_MODULE_EXECUTION_RUNNING,
+            Textures.LOCATION_OVERLAY_MODULE_EXECUTION_WAITING
+        };
+    }
 
     // NBT tag names.
     private static final String TAG_STATE = "state";
     private static final String TAG_MACHINE = "machine";
-    private static final String TAG_COMPILE_ERROR = "compileError";
-    private static final String TAG_MESSAGE = "message";
-    private static final String TAG_LINE_NUMBER = "lineNumber";
-    private static final String TAG_START = "columnStart";
-    private static final String TAG_END = "columnEnd";
 
     // Data packet types.
     private static final byte DATA_TYPE_FULL = 0;
@@ -145,18 +142,18 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
     }
 
     @Override
-    public boolean onActivate(final EntityPlayer player, final EnumHand hand, final float hitX, final float hitY, final float hitZ) {
+    public boolean onActivate(final PlayerEntity player, final Hand hand, final Vector3d hit) {
         final ItemStack heldItem = player.getHeldItem(hand);
 
         // Vanilla book? If so, make that a code book.
-        if (heldItem.getItem() == net.minecraft.init.Items.BOOK) {
-            if (!player.getEntityWorld().isRemote) {
-                if (!player.capabilities.isCreativeMode) {
-                    heldItem.splitStack(1);
+        if (Items.is(heldItem, net.minecraft.item.Items.BOOK)) {
+            if (!player.getEntityWorld().isRemote()) {
+                if (!player.abilities.isCreativeMode) {
+                    heldItem.split(1);
                 }
-                final ItemStack bookCode = new ItemStack(Items.BOOK_CODE);
+                final ItemStack bookCode = new ItemStack(Items.BOOK_CODE.get());
                 if (player.inventory.addItemStackToInventory(bookCode)) {
-                    player.inventoryContainer.detectAndSendChanges();
+                    player.container.detectAndSendChanges();
                 }
                 if (bookCode.getCount() > 0) {
                     player.dropItem(bookCode, false, false);
@@ -167,7 +164,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         }
 
         // Code book? Store current program on it if sneaking.
-        if (Items.isBookCode(heldItem) && player.isSneaking()) {
+        if (Items.is(heldItem, Items.BOOK_CODE) && player.isSneaking()) {
             final ItemBookCode.Data data = ItemBookCode.Data.loadFromStack(heldItem);
             if (getState().code != null && getState().code.length > 0) {
                 data.addOrSelectProgram(Arrays.asList(getState().code));
@@ -201,8 +198,11 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
 
         // Compile the code into our machine state.
         final World world = getCasing().getCasingWorld();
-        if (!world.isRemote) {
-            compile(code, player);
+        if (!world.isRemote()) {
+            compile(code);
+            if (compileError != null) {
+                player.sendStatusMessage(Strings.getCompileError(compileError), false);
+            }
             sendFullState();
         }
 
@@ -210,7 +210,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
     }
 
     @Override
-    public void onData(final NBTTagCompound nbt) {
+    public void onData(final CompoundNBT nbt) {
         readFromNBT(nbt);
     }
 
@@ -228,60 +228,50 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         state = State.values()[data.readByte()];
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Override
-    public void render(final boolean enabled, final float partialTicks) {
-        if ((!enabled || !isVisible()) && !isPlayerLookingAt()) {
+    public void render(final RenderContext context) {
+        if ((!getCasing().isEnabled() || !isVisible()) && !this.isObserverLookingAt(context.getDispatcher())) {
             return;
         }
 
-        rotateForRendering();
-        RenderUtil.ignoreLighting();
+        final MatrixStack matrixStack = context.getMatrixStack();
+        matrixStack.push();
+        rotateForRendering(matrixStack);
 
         // Draw status texture.
-        RenderUtil.drawQuad(RenderUtil.getSprite(STATE_LOCATIONS[state.ordinal()]));
+        context.drawAtlasSpriteUnlit(RenderData.STATE_LOCATIONS[state.ordinal()]);
 
         // Render detailed state when player is close.
         final MachineState machineState = getState();
-        final Minecraft mc = Minecraft.getMinecraft();
-        if (machineState.code != null && mc != null && mc.player != null && mc.player.getDistanceSqToCenter(getCasing().getPosition()) < 64) {
-            renderState(machineState);
+        if (machineState.code != null && context.isWithinDetailRange(getCasing().getPosition())) {
+            renderState(context, machineState);
         }
+
+        matrixStack.pop();
     }
 
     @Override
-    public void readFromNBT(final NBTTagCompound nbt) {
+    public void readFromNBT(final CompoundNBT nbt) {
         super.readFromNBT(nbt);
 
-        final NBTTagCompound machineNbt = nbt.getCompoundTag(TAG_MACHINE);
+        final CompoundNBT machineNbt = nbt.getCompound(TAG_MACHINE);
         getState().readFromNBT(machineNbt);
         state = EnumUtils.readFromNBT(State.class, TAG_STATE, nbt);
 
-        if (nbt.hasKey(TAG_COMPILE_ERROR)) {
-            final NBTTagCompound errorNbt = nbt.getCompoundTag(TAG_COMPILE_ERROR);
-            compileError = new ParseException(errorNbt.getString(TAG_MESSAGE), errorNbt.getInteger(TAG_LINE_NUMBER), errorNbt.getInteger(TAG_START), errorNbt.getInteger(TAG_END));
-        } else {
-            compileError = null;
+        if (getState().code != null) {
+            compile(Arrays.asList(getState().code));
         }
     }
 
     @Override
-    public void writeToNBT(final NBTTagCompound nbt) {
+    public void writeToNBT(final CompoundNBT nbt) {
         super.writeToNBT(nbt);
 
-        final NBTTagCompound machineNbt = new NBTTagCompound();
+        final CompoundNBT machineNbt = new CompoundNBT();
         getState().writeToNBT(machineNbt);
-        nbt.setTag(TAG_MACHINE, machineNbt);
+        nbt.put(TAG_MACHINE, machineNbt);
         EnumUtils.writeToNBT(state, TAG_STATE, nbt);
-
-        if (compileError != null) {
-            final NBTTagCompound errorNbt = new NBTTagCompound();
-            errorNbt.setString(TAG_MESSAGE, compileError.getMessage());
-            errorNbt.setInteger(TAG_LINE_NUMBER, compileError.getLineNumber());
-            errorNbt.setInteger(TAG_START, compileError.getStart());
-            errorNbt.setInteger(TAG_END, compileError.getEnd());
-            nbt.setTag(TAG_COMPILE_ERROR, errorNbt);
-        }
     }
 
     // --------------------------------------------------------------------- //
@@ -302,17 +292,15 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
      * compiled into the module's machine state. On errors, the state will
      * be left in a reset state.
      *
-     * @param code   the code to compile.
-     * @param player the player that issued the compile.
+     * @param code the code to compile.
      */
-    private void compile(final Iterable<String> code, final EntityPlayer player) {
+    private void compile(final Iterable<String> code) {
         compileError = null;
         try {
             getState().clear();
             Compiler.compile(code, getState());
         } catch (final ParseException e) {
             compileError = e;
-            player.sendMessage(new TextComponentTranslation(Constants.MESSAGE_COMPILE_ERROR, e.getLineNumber(), e.getStart(), e.getEnd()).appendSibling(new TextComponentTranslation(e.getMessage())));
         }
     }
 
@@ -320,7 +308,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
      * Send the full state to the client.
      */
     private void sendFullState() {
-        final NBTTagCompound nbt = new NBTTagCompound();
+        final CompoundNBT nbt = new CompoundNBT();
         writeToNBT(nbt);
         getCasing().sendData(getFace(), nbt, DATA_TYPE_FULL);
     }
@@ -345,30 +333,36 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         getCasing().sendData(getFace(), data, DATA_TYPE_INCREMENTAL);
     }
 
-    @SideOnly(Side.CLIENT)
-    private void renderState(final MachineState machineState) {
+    @OnlyIn(Dist.CLIENT)
+    private void renderState(final RenderContext context, final MachineState machineState) {
+        final MatrixStack matrixStack = context.getMatrixStack();
+        matrixStack.push();
+
         // Offset to start drawing at top left of inner area, slightly inset.
-        GlStateManager.translate(3.5f / 16f, 3.5f / 16f, 0);
-        GlStateManager.scale(1 / 128f, 1 / 128f, 1);
-        GlStateManager.translate(1, 1, 0);
-        GlStateManager.color(1f, 1f, 1f, 1f);
+        matrixStack.translate(3.5f / 16f, 3.5f / 16f, 0);
+        matrixStack.scale(1 / 128f, 1 / 128f, 1);
+        matrixStack.translate(1, 1, 0);
+
+        final FontRenderer fontRenderer = API.smallFontRenderer;
 
         // Draw register info on top.
         final String accLast = String.format("ACC:%4X LAST:%s", machineState.acc, machineState.last.map(Enum::name).orElse("NONE"));
-        FontRendererAPI.drawString(accLast);
-        GlStateManager.translate(0, FontRendererAPI.getCharHeight() + 4, 0);
+        fontRenderer.drawString(matrixStack, context.bufferFactory, accLast);
+        matrixStack.translate(0, fontRenderer.getCharHeight() + 4, 0);
         final String bakState = String.format("BAK:%4X MODE:%s", machineState.bak, state.name());
-        FontRendererAPI.drawString(bakState);
-        GlStateManager.translate(0, FontRendererAPI.getCharHeight() + 4, 0);
-        drawLine(1);
-        GlStateManager.translate(0, 5, 0);
+        fontRenderer.drawString(matrixStack, context.bufferFactory, bakState);
+        matrixStack.translate(0, fontRenderer.getCharHeight() + 4, 0);
+
+        drawLine(context, 1, Color.WHITE);
+
+        matrixStack.translate(0, 5, 0);
 
         // If we have more lines than fit on our "screen", offset so that the
         // current line is in the middle, but don't let last line scroll in.
-        final int maxLines = 50 / (FontRendererAPI.getCharHeight() + 1);
+        final int maxLines = 50 / (fontRenderer.getCharHeight() + 1);
         final int totalLines = machineState.code.length;
         final int currentLine;
-        if (machineState.lineNumbers.size() > 0) {
+        if (!machineState.lineNumbers.isEmpty()) {
             currentLine = Optional.ofNullable(machineState.lineNumbers.get(machineState.pc)).orElse(-1);
         } else if (compileError != null) {
             currentLine = compileError.getLineNumber();
@@ -377,26 +371,28 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
         }
         final int page = currentLine / maxLines;
         final int offset = page * maxLines;
+
         for (int lineNumber = offset; lineNumber < Math.min(totalLines, offset + maxLines); lineNumber++) {
             final String line = machineState.code[lineNumber];
             if (lineNumber == currentLine) {
+                // Draw current line marker behind text
                 if (state == State.WAIT) {
-                    GlStateManager.color(0.66f, 0.66f, 0.66f);
+                    drawLine(context, fontRenderer.getCharHeight(), Color.LIGHT_GRAY);
                 } else if (state == State.ERR || compileError != null && compileError.getLineNumber() == currentLine) {
-                    GlStateManager.color(1f, 0f, 0f);
+                    drawLine(context, fontRenderer.getCharHeight(), Color.RED);
+                } else {
+                    drawLine(context, fontRenderer.getCharHeight(), Color.WHITE);
                 }
 
-                drawLine(FontRendererAPI.getCharHeight());
-
-                GlStateManager.color(0f, 0f, 0f);
+                fontRenderer.drawString(matrixStack, context.bufferFactory, line, Color.BLACK, 18);
             } else {
-                GlStateManager.color(1f, 1f, 1f);
+                fontRenderer.drawString(matrixStack, context.bufferFactory, line, Color.WHITE, 18);
             }
 
-            FontRendererAPI.drawString(line, 18);
-
-            GlStateManager.translate(0, FontRendererAPI.getCharHeight() + 1, 0);
+            matrixStack.translate(0, fontRenderer.getCharHeight() + 1, 0);
         }
+
+        matrixStack.pop();
     }
 
     /**
@@ -404,22 +400,9 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
      *
      * @param height the height of the line to draw.
      */
-    @SideOnly(Side.CLIENT)
-    private static void drawLine(final int height) {
-        GlStateManager.depthMask(false);
-        GlStateManager.disableTexture2D();
-
-        final Tessellator tessellator = Tessellator.getInstance();
-        final BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
-        buffer.pos(-0.5f, height + 0.5f, 0).endVertex();
-        buffer.pos(71.5f, height + 0.5f, 0).endVertex();
-        buffer.pos(71.5f, -0.5f, 0).endVertex();
-        buffer.pos(-0.5f, -0.5f, 0).endVertex();
-        tessellator.draw();
-
-        GlStateManager.depthMask(true);
-        GlStateManager.enableTexture2D();
+    @OnlyIn(Dist.CLIENT)
+    private static void drawLine(final RenderContext context, final int height, final int color) {
+        context.drawQuadUnlit(-0.5f, -0.5f, 72, height + 1, color);
     }
 
     // --------------------------------------------------------------------- //
@@ -434,24 +417,25 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
     private static final class SourceCodeProviderVanilla implements SourceCodeProvider {
         @Override
         public boolean worksFor(final ItemStack stack) {
-            return Items.isItem(stack, net.minecraft.init.Items.WRITTEN_BOOK) || Items.isItem(stack, net.minecraft.init.Items.WRITABLE_BOOK);
+            return Items.is(stack, net.minecraft.item.Items.WRITTEN_BOOK) ||
+                   Items.is(stack, net.minecraft.item.Items.WRITABLE_BOOK);
         }
 
         @Override
         public Iterable<String> codeFor(final ItemStack stack) {
-            final NBTTagCompound nbt = stack.getTagCompound();
+            final CompoundNBT nbt = stack.getTag();
             if (nbt == null) {
                 return null;
             }
 
-            final NBTTagList pages = nbt.getTagList("pages", net.minecraftforge.common.util.Constants.NBT.TAG_STRING);
-            if (pages.tagCount() < 1) {
+            final ListNBT pages = nbt.getList("pages", NBT.TAG_STRING);
+            if (pages.isEmpty()) {
                 return null;
             }
 
             final List<String> code = new ArrayList<>();
-            for (int page = 0; page < pages.tagCount(); page++) {
-                Collections.addAll(code, Constants.PATTERN_LINES.split(pages.getStringTagAt(page)));
+            for (int page = 0; page < pages.size(); page++) {
+                Collections.addAll(code, Constants.PATTERN_LINES.split(pages.getString(page)));
             }
             return code;
         }
@@ -460,7 +444,7 @@ public final class ModuleExecution extends AbstractModuleRotatable implements Bl
     private static final class SourceCodeProviderBookCode implements SourceCodeProvider {
         @Override
         public boolean worksFor(final ItemStack stack) {
-            return Items.isBookCode(stack);
+            return Items.is(stack, Items.BOOK_CODE);
         }
 
         @Override

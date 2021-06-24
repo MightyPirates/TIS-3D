@@ -1,6 +1,6 @@
 # 键盘模块
 
-![按下按钮!](item:tis3d:module_keypad)
+![按下按钮!](item:tis3d:keypad_module)
 
 键盘模块为TIS-3D计算机系统提供了一套基础的用户交 互方式。它允许输入一位数，然后将其写入到输入模块的端口。
 

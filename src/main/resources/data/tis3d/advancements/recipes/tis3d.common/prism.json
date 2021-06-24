@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "tis3d:prism"
+    ]
+  },
+  "criteria": {
+    "has_execution_module": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "tis3d:execution_module"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "tis3d:prism"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_execution_module",
+      "has_the_recipe"
+    ]
+  ]
+}

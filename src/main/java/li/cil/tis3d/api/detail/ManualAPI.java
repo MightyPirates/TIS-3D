@@ -1,71 +1,18 @@
 package li.cil.tis3d.api.detail;
 
-import li.cil.tis3d.api.manual.*;
-import net.minecraft.entity.player.EntityPlayer;
+import li.cil.tis3d.api.manual.ImageProvider;
+import li.cil.tis3d.api.manual.ImageRenderer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 
+@OnlyIn(Dist.CLIENT)
 public interface ManualAPI {
-    /**
-     * Register a tab to be displayed next to the manual.
-     * <p>
-     * These are intended to link to index pages, and for the time being there
-     * a relatively low number of tabs that can be displayed, so I'd ask you to
-     * only register as many tabs as actually, technically *needed*. Which will
-     * usually be one, for your main index page.
-     *
-     * @param renderer the renderer used to render the icon on your tab.
-     * @param tooltip  the unlocalized tooltip of the tab, or <tt>null</tt>.
-     * @param path     the path to the page to open when the tab is clicked.
-     */
-    void addTab(final TabIconRenderer renderer, @Nullable final String tooltip, final String path);
-
-    /**
-     * Register a path provider.
-     * <p>
-     * Path providers are used to find documentation entries for item stacks
-     * and blocks in the world.
-     *
-     * @param provider the provider to register.
-     */
-    void addProvider(final PathProvider provider);
-
-    /**
-     * Register a content provider.
-     * <p>
-     * Content providers are used to resolve paths to page content, if the
-     * standard system (using Minecraft's resource loading facilities) fails.
-     * <p>
-     * This can be useful for providing dynamic content, for example.
-     *
-     * @param provider the provider to register.
-     */
-    void addProvider(final ContentProvider provider);
-
-    /**
-     * Register an image provider.
-     * <p>
-     * Image providers are used to render custom content in a page. These are
-     * selected via the standard image tag of Markdown, based on the prefix of
-     * the image URL, i.e. <tt>![tooltip](prefix:data)</tt> will select the
-     * image provider registered for the prefix <tt>prefix</tt>, and pass to
-     * it the argument <tt>data</tt>, then use the returned renderer to draw
-     * an element in the place of the tag.
-     * <p>
-     * Custom providers are only selected if a prefix is matched, otherwise
-     * it'll treat it as a relative path to an image to load via Minecraft's
-     * resource providing facilities, and display that.
-     *
-     * @param prefix   the prefix on which to use the provider.
-     * @param provider the provider to register.
-     */
-    void addProvider(final String prefix, final ImageProvider provider);
-
-    // ----------------------------------------------------------------------- //
-
     /**
      * Look up the documentation path for the specified item stack.
      *
@@ -80,10 +27,11 @@ public interface ManualAPI {
      *
      * @param world the world containing the block.
      * @param pos   the position of the block.
+     * @param side  the face of the block.
      * @return the path to the page, <tt>null</tt> if none is known.
      */
     @Nullable
-    String pathFor(final World world, final BlockPos pos);
+    String pathFor(final World world, final BlockPos pos, final Direction side);
 
     /**
      * Get the content of the documentation page at the specified location.
@@ -118,10 +66,8 @@ public interface ManualAPI {
      * <p>
      * If you wish to display a specific page, call {@link #navigate(String)}
      * after this function returns, with the path to the page to show.
-     *
-     * @param player the player to open the manual for.
      */
-    void openFor(final EntityPlayer player);
+    void open();
 
     /**
      * Reset the history of the manual.

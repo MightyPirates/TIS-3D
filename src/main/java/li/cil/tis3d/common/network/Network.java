@@ -6,33 +6,35 @@ import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
-import li.cil.tis3d.client.network.handler.*;
-import li.cil.tis3d.common.Settings;
-import li.cil.tis3d.common.TIS3D;
-import li.cil.tis3d.common.network.handler.MessageHandlerBookCodeData;
-import li.cil.tis3d.common.network.handler.MessageHandlerCasingData;
-import li.cil.tis3d.common.network.handler.MessageHandlerModuleReadOnlyMemoryDataServer;
+import li.cil.tis3d.common.CommonConfig;
 import li.cil.tis3d.common.network.message.*;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayerMP;
+import li.cil.tis3d.common.tileentity.TileEntityComputer;
+import li.cil.tis3d.util.WorldUtils;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.handshake.NetworkDispatcher;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.fml.network.NetworkDirection;
+import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * Central networking hub for TIS-3D.
@@ -43,66 +45,77 @@ import java.util.*;
  * effect emission and module packets where possible.
  */
 public final class Network {
-    public static final Network INSTANCE = new Network();
+    private static final Logger LOGGER = LogManager.getLogger();
+
+    private static final String PROTOCOL_VERSION = "1";
 
     public static final int RANGE_HIGH = 48;
     public static final int RANGE_MEDIUM = 32;
     public static final int RANGE_LOW = 16;
 
-    private static SimpleNetworkWrapper wrapper;
+    // --------------------------------------------------------------------- //
 
-    private enum Messages {
-        CasingDataClient,
-        CasingDataServer,
-        ParticleEffects,
-        CasingEnabledState,
-        BookCodeData,
-        HaltAndCatchFire,
-        CasingLockedState,
-        ReceivingPipeLockedState,
-        CasingInventory,
-        ReadOnlyMemoryData,
+    public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
+        new ResourceLocation(API.MOD_ID, "main"),
+        () -> PROTOCOL_VERSION,
+        PROTOCOL_VERSION::equals,
+        PROTOCOL_VERSION::equals
+    );
+
+    // --------------------------------------------------------------------- //
+
+    private static int nextPacketId = 1;
+
+    // --------------------------------------------------------------------- //
+
+    public static void initialize() {
+        registerMessage(CodeBookDataMessage.class, CodeBookDataMessage::new, NetworkDirection.PLAY_TO_SERVER);
+        registerMessage(ServerCasingDataMessage.class, ServerCasingDataMessage::new, NetworkDirection.PLAY_TO_CLIENT);
+        registerMessage(ClientCasingDataMessage.class, ClientCasingDataMessage::new, NetworkDirection.PLAY_TO_SERVER);
+        registerMessage(CasingEnabledStateMessage.class, CasingEnabledStateMessage::new, NetworkDirection.PLAY_TO_CLIENT);
+        registerMessage(CasingLockedStateMessage.class, CasingLockedStateMessage::new, NetworkDirection.PLAY_TO_CLIENT);
+        registerMessage(CasingInventoryMessage.class, CasingInventoryMessage::new, NetworkDirection.PLAY_TO_CLIENT);
+        registerMessage(HaltAndCatchFireMessage.class, HaltAndCatchFireMessage::new, NetworkDirection.PLAY_TO_CLIENT);
+        registerMessage(RedstoneParticleEffectMessage.class, RedstoneParticleEffectMessage::new, NetworkDirection.PLAY_TO_CLIENT);
+        registerMessage(ReceivingPipeLockedStateMessage.class, ReceivingPipeLockedStateMessage::new, NetworkDirection.PLAY_TO_CLIENT);
+        registerMessage(ServerReadOnlyMemoryModuleDataMessage.class, ServerReadOnlyMemoryModuleDataMessage::new, NetworkDirection.PLAY_TO_CLIENT);
+        registerMessage(ClientReadOnlyMemoryModuleDataMessage.class, ClientReadOnlyMemoryModuleDataMessage::new, NetworkDirection.PLAY_TO_SERVER);
+
+        MinecraftForge.EVENT_BUS.addListener(Network::onClientTick);
+        MinecraftForge.EVENT_BUS.addListener(Network::onServerTick);
+    }
+
+    private static <T extends AbstractMessage> void registerMessage(final Class<T> type, final Function<PacketBuffer, T> decoder, final NetworkDirection direction) {
+        INSTANCE.messageBuilder(type, getNextPacketId(), direction)
+            .encoder(AbstractMessage::toBytes)
+            .decoder(decoder)
+            .consumer(AbstractMessage::handleMessage)
+            .add();
     }
 
     // --------------------------------------------------------------------- //
 
-    public void init() {
-        wrapper = NetworkRegistry.INSTANCE.newSimpleChannel(API.MOD_ID);
-
-        wrapper.registerMessage(MessageHandlerBookCodeData.class, MessageBookCodeData.class, Messages.BookCodeData.ordinal(), Side.SERVER);
-        wrapper.registerMessage(MessageHandlerCasingData.class, MessageCasingData.class, Messages.CasingDataClient.ordinal(), Side.CLIENT);
-        wrapper.registerMessage(MessageHandlerCasingData.class, MessageCasingData.class, Messages.CasingDataServer.ordinal(), Side.SERVER);
-        wrapper.registerMessage(MessageHandlerCasingEnabledState.class, MessageCasingEnabledState.class, Messages.CasingEnabledState.ordinal(), Side.CLIENT);
-        wrapper.registerMessage(MessageHandlerCasingLockedState.class, MessageCasingLockedState.class, Messages.CasingLockedState.ordinal(), Side.CLIENT);
-        wrapper.registerMessage(MessageHandlerCasingInventory.class, MessageCasingInventory.class, Messages.CasingInventory.ordinal(), Side.CLIENT);
-        wrapper.registerMessage(MessageHandlerHaltAndCatchFire.class, MessageHaltAndCatchFire.class, Messages.HaltAndCatchFire.ordinal(), Side.CLIENT);
-        wrapper.registerMessage(MessageHandlerParticleEffects.class, MessageParticleEffect.class, Messages.ParticleEffects.ordinal(), Side.CLIENT);
-        wrapper.registerMessage(MessageHandlerReceivingPipeLockedState.class, MessageReceivingPipeLockedState.class, Messages.ReceivingPipeLockedState.ordinal(), Side.CLIENT);
-        wrapper.registerMessage(MessageHandlerModuleReadOnlyMemoryDataClient.class, MessageModuleReadOnlyMemoryData.class, Messages.ReadOnlyMemoryData.ordinal(), Side.CLIENT);
-        wrapper.registerMessage(MessageHandlerModuleReadOnlyMemoryDataServer.class, MessageModuleReadOnlyMemoryData.class, Messages.ReadOnlyMemoryData.ordinal(), Side.SERVER);
+    public static PacketDistributor.PacketTarget getTargetPoint(final World world, final double x, final double y, final double z, final int range) {
+        final PacketDistributor.TargetPoint target = new PacketDistributor.TargetPoint(x, y, z, range, world.getDimensionKey());
+        return PacketDistributor.NEAR.with(() -> target);
     }
 
-    public SimpleNetworkWrapper getWrapper() {
-        return wrapper;
-    }
-
-    // --------------------------------------------------------------------- //
-
-    public static NetworkRegistry.TargetPoint getTargetPoint(final World world, final double x, final double y, final double z, final int range) {
-        return new NetworkRegistry.TargetPoint(world.provider.getDimension(), x, y, z, range);
-    }
-
-    public static NetworkRegistry.TargetPoint getTargetPoint(final World world, final BlockPos position, final int range) {
+    public static PacketDistributor.PacketTarget getTargetPoint(final World world, final BlockPos position, final int range) {
         return getTargetPoint(world, position.getX() + 0.5, position.getY() + 0.5, position.getZ() + 0.5, range);
     }
 
-    public static NetworkRegistry.TargetPoint getTargetPoint(final TileEntity tileEntity, final int range) {
-        return getTargetPoint(tileEntity.getWorld(), tileEntity.getPos(), range);
+    public static PacketDistributor.PacketTarget getTargetPoint(final TileEntityComputer tileEntity, final int range) {
+        return getTargetPoint(Objects.requireNonNull(tileEntity.getTileEntityWorld()), tileEntity.getPos(), range);
+    }
+
+    public static PacketDistributor.PacketTarget getTracking(final Casing casing) {
+        final Chunk chunk = casing.getCasingWorld().getChunkAt(casing.getPosition());
+        return PacketDistributor.TRACKING_CHUNK.with(() -> chunk);
     }
 
     // --------------------------------------------------------------------- //
 
-    public static void sendModuleData(final Casing casing, final Face face, final NBTTagCompound data, final byte type) {
+    public static void sendModuleData(final Casing casing, final Face face, final CompoundNBT data, final byte type) {
         getQueueFor(casing).queueData(face, data, type);
     }
 
@@ -112,9 +125,9 @@ public final class Network {
 
     public static void sendPipeEffect(final World world, final double x, final double y, final double z) {
         final BlockPos position = new BlockPos(x, y, z);
-        if (!world.isBlockLoaded(position)) {
-            final IBlockState state = world.getBlockState(position);
-            if (state.isFullCube()) {
+        if (!WorldUtils.isBlockLoaded(world, position)) {
+            final BlockState state = world.getBlockState(position);
+            if (state.isSolid()) {
                 // Skip particle emission when inside a block where they aren't visible anyway.
                 return;
             }
@@ -124,20 +137,24 @@ public final class Network {
     }
 
     // --------------------------------------------------------------------- //
+
+    private static int getNextPacketId() {
+        return nextPacketId++;
+    }
+
+    // --------------------------------------------------------------------- //
     // Message flushing
 
-    @SubscribeEvent
-    public void onServerTick(final TickEvent.ServerTickEvent event) {
+    private static void onServerTick(final TickEvent.ServerTickEvent event) {
         if (event.type == TickEvent.Type.SERVER && event.getPhase() == EventPriority.NORMAL) {
-            flushCasingQueues(Side.SERVER);
+            flushCasingQueues(Dist.DEDICATED_SERVER);
             flushParticleQueue();
         }
     }
 
-    @SubscribeEvent
-    public void onClientTick(final TickEvent.ClientTickEvent event) {
+    private static void onClientTick(final TickEvent.ClientTickEvent event) {
         if (event.type == TickEvent.Type.CLIENT && event.getPhase() == EventPriority.NORMAL) {
-            flushCasingQueues(Side.CLIENT);
+            flushCasingQueues(Dist.CLIENT);
         }
     }
 
@@ -165,8 +182,8 @@ public final class Network {
         particlesSent = 0;
         particleQueue.forEach(Position::sendMessage);
 
-        if (particlesSent > Settings.maxParticlesPerTick) {
-            final int throttle = (int) Math.ceil(particlesSent / (float) Settings.maxParticlesPerTick);
+        if (particlesSent > CommonConfig.maxParticlesPerTick) {
+            final int throttle = (int) Math.ceil(particlesSent / (float) CommonConfig.maxParticlesPerTick);
             particleSendInterval = Math.min(2000, TICK_TIME * throttle);
         } else {
             particleSendInterval = TICK_TIME;
@@ -193,10 +210,9 @@ public final class Network {
         }
 
         private void sendMessage() {
-            final MessageParticleEffect message = new MessageParticleEffect(world, EnumParticleTypes.REDSTONE, x, y, z);
-            final NetworkRegistry.TargetPoint target = new NetworkRegistry.TargetPoint(world.provider.getDimension(), x, y, z, RANGE_LOW);
-            Network.INSTANCE.getWrapper().sendToAllAround(message, target);
-            if (areAnyPlayersNear(target)) {
+            final RedstoneParticleEffectMessage message = new RedstoneParticleEffectMessage(x, y, z);
+            if (areAnyPlayersNear(world, new Vector3d(x, y, z), RANGE_LOW)) {
+                Network.INSTANCE.send(getTargetPoint(world, x, y, z, RANGE_LOW), message);
                 particlesSent++;
             }
         }
@@ -211,16 +227,16 @@ public final class Network {
             }
 
             final Position that = (Position) obj;
-            return world.provider.getDimension() == that.world.provider.getDimension() &&
-                Float.compare(that.x, x) == 0 &&
-                Float.compare(that.y, y) == 0 &&
-                Float.compare(that.z, z) == 0;
+            return Objects.equals(world.getDimensionKey(), that.world.getDimensionKey()) &&
+                   Float.compare(that.x, x) == 0 &&
+                   Float.compare(that.y, y) == 0 &&
+                   Float.compare(that.z, z) == 0;
 
         }
 
         @Override
         public int hashCode() {
-            int result = world.provider.getDimension();
+            int result = world.getDimensionKey().hashCode();
             result = 31 * result + (x != +0.0f ? Float.floatToIntBits(x) : 0);
             result = 31 * result + (y != +0.0f ? Float.floatToIntBits(y) : 0);
             result = 31 * result + (z != +0.0f ? Float.floatToIntBits(z) : 0);
@@ -236,40 +252,40 @@ public final class Network {
     private static int throttleServer = 0;
     private static int throttleClient = 0;
 
-    private static int getPacketsSent(final Side side) {
-        return side == Side.CLIENT ? packetsSentClient : packetsSentServer;
+    private static int getPacketsSent(final Dist side) {
+        return side == Dist.CLIENT ? packetsSentClient : packetsSentServer;
     }
 
-    private static void resetPacketsSent(final Side side) {
-        if (side == Side.CLIENT) {
+    private static void resetPacketsSent(final Dist side) {
+        if (side == Dist.CLIENT) {
             packetsSentClient = 0;
         } else {
             packetsSentServer = 0;
         }
     }
 
-    private static void incrementPacketsSent(final Side side) {
-        if (side == Side.CLIENT) {
+    private static void incrementPacketsSent(final Dist side) {
+        if (side == Dist.CLIENT) {
             packetsSentClient++;
         } else {
             packetsSentServer++;
         }
     }
 
-    private static int getThrottle(final Side side) {
-        return side == Side.CLIENT ? throttleClient : throttleServer;
+    private static int getThrottle(final Dist side) {
+        return side == Dist.CLIENT ? throttleClient : throttleServer;
     }
 
-    private static void setThrottle(final Side side, final int value) {
-        if (side == Side.CLIENT) {
+    private static void setThrottle(final Dist side, final int value) {
+        if (side == Dist.CLIENT) {
             throttleClient = value;
         } else {
             throttleServer = value;
         }
     }
 
-    private static void decrementThrottle(final Side side) {
-        if (side == Side.CLIENT) {
+    private static void decrementThrottle(final Dist side) {
+        if (side == Dist.CLIENT) {
             throttleClient--;
         } else {
             throttleServer--;
@@ -283,8 +299,8 @@ public final class Network {
     private static final Map<Casing, CasingSendQueue> clientQueues = new HashMap<>();
     private static final Map<Casing, CasingSendQueue> serverQueues = new HashMap<>();
 
-    private static Map<Casing, CasingSendQueue> getQueues(final Side side) {
-        if (side == Side.CLIENT) {
+    private static Map<Casing, CasingSendQueue> getQueues(final Dist side) {
+        if (side == Dist.CLIENT) {
             return clientQueues;
         } else {
             return serverQueues;
@@ -293,7 +309,7 @@ public final class Network {
 
     private static CasingSendQueue getQueueFor(final Casing casing) {
         final World world = casing.getCasingWorld();
-        final Side side = world.isRemote ? Side.CLIENT : Side.SERVER;
+        final Dist side = world.isRemote() ? Dist.CLIENT : Dist.DEDICATED_SERVER;
         final Map<Casing, CasingSendQueue> queues = getQueues(side);
         CasingSendQueue queue = queues.get(casing);
         if (queue == null) {
@@ -309,7 +325,7 @@ public final class Network {
         return queue;
     }
 
-    private static void flushCasingQueues(final Side side) {
+    private static void flushCasingQueues(final Dist side) {
         if (getThrottle(side) > 0) {
             decrementThrottle(side);
             return;
@@ -322,8 +338,8 @@ public final class Network {
         clearQueues(queues);
 
         final int sent = getPacketsSent(side);
-        if (sent > Settings.maxPacketsPerTick) {
-            final int throttle = (int) Math.min(40, Math.ceil(sent / (float) Settings.maxPacketsPerTick));
+        if (sent > CommonConfig.maxPacketsPerTick) {
+            final int throttle = (int) Math.min(40, Math.ceil(sent / (float) CommonConfig.maxPacketsPerTick));
             setThrottle(side, throttle);
         }
     }
@@ -351,7 +367,7 @@ public final class Network {
             }
         }
 
-        private void queueData(final Face face, final NBTTagCompound data, final byte type) {
+        private void queueData(final Face face, final CompoundNBT data, final byte type) {
             moduleQueues[face.ordinal()].queueData(data, type);
         }
 
@@ -366,19 +382,19 @@ public final class Network {
          */
         private void flush(final Casing casing) {
             final World world = casing.getCasingWorld();
-            final Side side = world.isRemote ? Side.CLIENT : Side.SERVER;
+            final Dist side = world.isRemote() ? Dist.CLIENT : Dist.DEDICATED_SERVER;
             final ByteBuf data = Unpooled.buffer();
             collectData(data);
             if (data.readableBytes() > 0) {
-                final MessageCasingData message = new MessageCasingData(casing, data);
                 final boolean didSend;
-                if (side == Side.CLIENT) {
-                    Network.INSTANCE.getWrapper().sendToServer(message);
+                if (side == Dist.CLIENT) {
+                    final ClientCasingDataMessage message = new ClientCasingDataMessage(casing, data);
+                    Network.INSTANCE.sendToServer(message);
                     didSend = true;
                 } else {
-                    final NetworkRegistry.TargetPoint point = Network.getTargetPoint(casing.getCasingWorld(), casing.getPosition(), Network.RANGE_HIGH);
-                    Network.INSTANCE.getWrapper().sendToAllAround(message, point);
-                    didSend = areAnyPlayersNear(point);
+                    final ServerCasingDataMessage message = new ServerCasingDataMessage(casing, data);
+                    Network.INSTANCE.send(getTracking(casing), message);
+                    didSend = areAnyPlayersNear(casing.getCasingWorld(), casing.getPosition(), RANGE_HIGH);
                 }
                 if (didSend) {
                     incrementPacketsSent(side);
@@ -391,7 +407,7 @@ public final class Network {
                 final ByteBuf moduleData = moduleQueues[i].collectData();
                 if (moduleData.readableBytes() > 0) {
                     data.writeByte(i);
-                    ByteBufUtils.writeVarShort(data, moduleData.readableBytes());
+                    data.writeShort(moduleData.readableBytes());
                     data.writeBytes(moduleData);
                 }
             }
@@ -411,7 +427,7 @@ public final class Network {
          * @param data the data to enqueue.
          * @param type the type of the data.
          */
-        private void queueData(final NBTTagCompound data, final byte type) {
+        private void queueData(final CompoundNBT data, final byte type) {
             sendQueue.add(new QueueEntryNBT(type, data));
         }
 
@@ -483,9 +499,9 @@ public final class Network {
          * Queue entry for pending NBT data.
          */
         private static final class QueueEntryNBT extends QueueEntry {
-            public final NBTTagCompound data;
+            public final CompoundNBT data;
 
-            private QueueEntryNBT(final byte type, final NBTTagCompound data) {
+            private QueueEntryNBT(final byte type, final CompoundNBT data) {
                 super(type);
                 this.data = data;
             }
@@ -493,16 +509,16 @@ public final class Network {
             @Override
             public void write(final ByteBuf buffer) {
                 final ByteBuf data = Unpooled.buffer();
-                final ByteBufOutputStream bos = new ByteBufOutputStream(data);
-                try {
+                try (final ByteBufOutputStream bos = new ByteBufOutputStream(data)) {
                     CompressedStreamTools.writeCompressed(this.data, bos);
+
                     if (data.readableBytes() > 0) {
                         buffer.writeBoolean(true);
-                        ByteBufUtils.writeVarShort(buffer, data.readableBytes());
+                        buffer.writeShort(data.readableBytes());
                         buffer.writeBytes(data);
                     }
                 } catch (final IOException e) {
-                    TIS3D.getLog().warn("Failed sending packet.", e);
+                    LOGGER.warn("Failed sending packet.", e);
                 }
             }
         }
@@ -522,7 +538,7 @@ public final class Network {
             public void write(final ByteBuf buffer) {
                 if (data.readableBytes() > 0) {
                     buffer.writeBoolean(false);
-                    ByteBufUtils.writeVarShort(buffer, data.readableBytes());
+                    buffer.writeShort(data.readableBytes());
                     buffer.writeBytes(data);
                 }
             }
@@ -537,25 +553,24 @@ public final class Network {
      * Used to determine whether a packet will actually be sent to any
      * clients.
      *
-     * @param target the target point to check for.
+     * @param world    the world to check in.
+     * @param position the position to check for.
+     * @param range    the radius around the position to check for.
      * @return <tt>true</tt> if there are nearby players; <tt>false</tt> otherwise.
      */
-    private static boolean areAnyPlayersNear(final NetworkRegistry.TargetPoint target) {
-        for (final EntityPlayerMP player : FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayers()) {
-            if (player.dimension == target.dimension && player.connection != null) {
-                final double dx = target.x - player.posX;
-                final double dy = target.y - player.posY;
-                final double dz = target.z - player.posZ;
-
-                if (dx * dx + dy * dy + dz * dz < target.range * target.range) {
-                    final NetworkDispatcher dispatcher = player.connection.netManager.channel().attr(NetworkDispatcher.FML_DISPATCHER).get();
-                    if (dispatcher != null) {
-                        return true;
-                    }
+    private static boolean areAnyPlayersNear(final World world, final Vector3d position, final int range) {
+        for (final PlayerEntity player : world.getPlayers()) {
+            if (player instanceof ServerPlayerEntity) {
+                if (position.isWithinDistanceOf(player.getPositionVec(), range)) {
+                    return true;
                 }
             }
         }
         return false;
+    }
+
+    private static boolean areAnyPlayersNear(final World world, final BlockPos position, final int range) {
+        return areAnyPlayersNear(world, Vector3d.copyCentered(position), range);
     }
 
     // --------------------------------------------------------------------- //

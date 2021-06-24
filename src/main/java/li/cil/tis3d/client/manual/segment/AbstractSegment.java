@@ -1,5 +1,6 @@
 package li.cil.tis3d.client.manual.segment;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.FontRenderer;
 
 import javax.annotation.Nullable;
@@ -17,7 +18,7 @@ abstract class AbstractSegment implements Segment {
     }
 
     @Override
-    public Optional<InteractiveSegment> render(final int x, final int y, final int indent, final int maxWidth, final FontRenderer renderer, final int mouseX, final int mouseY) {
+    public Optional<InteractiveSegment> render(final MatrixStack matrixStack, final int x, final int y, final int indent, final int maxWidth, final FontRenderer renderer, final int mouseX, final int mouseY) {
         return Optional.empty();
     }
 

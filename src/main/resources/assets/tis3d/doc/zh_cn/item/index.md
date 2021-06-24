@@ -4,7 +4,6 @@
 
 ## 模块
 - [音频模块](module_audio.md)
-- [捆绑红石模块](module_bundled_redstone.md)
 - [显示模块](module_display.md)
 - [执行模块](module_execution.md)
 - [红外模块](module_infrared.md)

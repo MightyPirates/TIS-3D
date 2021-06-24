@@ -1,6 +1,6 @@
 # 红石模块
 
-![红石力量](item:tis3d:module_redstone)
+![红石力量](item:tis3d:redstone_module)
 
 红石模块可令TIS-3D计算机支持发出和读取红石信号。
 

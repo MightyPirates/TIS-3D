@@ -3,7 +3,7 @@ package li.cil.tis3d.api.module.traits;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.module.Module;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -12,8 +12,9 @@ import net.minecraft.world.World;
  * to the module's {@link Casing} changes.
  * <p>
  * Specifically, this is called from the {@link Casing}'s
- * {@link Block#neighborChanged(IBlockState, World, BlockPos, Block, BlockPos)} method.
+ * {@link Block#neighborChanged(BlockState, World, BlockPos, Block, BlockPos, boolean)} method.
  */
+@SuppressWarnings("deprecation")
 public interface BlockChangeAware extends Module {
     /**
      * Called when a block adjacent to the hosting {@link Casing} changes.

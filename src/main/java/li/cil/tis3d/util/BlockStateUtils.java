@@ -1,16 +1,15 @@
 package li.cil.tis3d.util;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nullable;
 
 public final class BlockStateUtils {
-    @SuppressWarnings("deprecation")
     @Nullable
-    public static IBlockState getBlockStateFromItemStack(final ItemStack stack) {
+    public static BlockState getBlockStateFromItemStack(final ItemStack stack) {
         if (stack.isEmpty()) {
             return null;
         }
@@ -21,15 +20,7 @@ public final class BlockStateUtils {
             return null;
         }
 
-        try {
-            if (stack.getMaxDamage() > 0) {
-                return block.getStateFromMeta(0);
-            } else {
-                return block.getStateFromMeta(stack.getMetadata());
-            }
-        } catch (final Exception | LinkageError ignored) {
-            return block.getDefaultState();
-        }
+        return block.getDefaultState();
     }
 
     // --------------------------------------------------------------------- //

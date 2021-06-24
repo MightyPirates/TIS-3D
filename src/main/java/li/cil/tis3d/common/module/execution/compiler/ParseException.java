@@ -1,18 +1,30 @@
 package li.cil.tis3d.common.module.execution.compiler;
 
+import net.minecraft.util.text.ITextComponent;
+
 /**
  * Thrown by the {@link Compiler} when the specified code contains errors.
  */
 public final class ParseException extends Exception {
+    private final ITextComponent message;
     private final int lineNumber;
     private final int start;
     private final int end;
 
-    public ParseException(final String message, final int lineNumber, final int start, final int end) {
-        super(message);
+    public ParseException(final ITextComponent message, final int lineNumber, final int start, final int end) {
+        this.message = message;
         this.lineNumber = lineNumber;
         this.start = start;
         this.end = end;
+    }
+
+    /**
+     * The potentially localized message that can be displayed to the user.
+     *
+     * @return the error message.
+     */
+    public ITextComponent getDisplayMessage() {
+        return message;
     }
 
     /**

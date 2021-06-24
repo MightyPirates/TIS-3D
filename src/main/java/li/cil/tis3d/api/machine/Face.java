@@ -1,6 +1,6 @@
 package li.cil.tis3d.api.machine;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 
 /**
  * Enumeration over the faces of a {@link Casing}.
@@ -49,7 +49,7 @@ public enum Face {
      * @param facing the facing to convert.
      * @return the {@link Face} representing that facing.
      */
-    public static Face fromEnumFacing(final EnumFacing facing) {
+    public static Face fromDirection(final Direction facing) {
         return VALUES[facing.ordinal()];
     }
 
@@ -57,9 +57,9 @@ public enum Face {
      * Convert a facing from our internal format to Forge's format.
      *
      * @param face the face to convert.
-     * @return the {@link EnumFacing} representing that facing.
+     * @return the {@link Direction} representing that facing.
      */
-    public static EnumFacing toEnumFacing(final Face face) {
-        return EnumFacing.VALUES[face.ordinal()];
+    public static Direction toDirection(final Face face) {
+        return Direction.values()[face.ordinal()];
     }
 }

@@ -1,23 +1,24 @@
 package li.cil.tis3d.client.manual.segment.render;
 
 import li.cil.tis3d.api.manual.InteractiveImageRenderer;
-import li.cil.tis3d.client.renderer.TextureLoader;
+import li.cil.tis3d.client.renderer.Textures;
+import net.minecraft.util.text.ITextComponent;
 
 public final class MissingItemRenderer extends TextureImageRenderer implements InteractiveImageRenderer {
-    private final String tooltip;
+    private final ITextComponent tooltip;
 
-    public MissingItemRenderer(final String tooltip) {
-        super(TextureLoader.LOCATION_GUI_MANUAL_MISSING);
+    public MissingItemRenderer(final ITextComponent tooltip) {
+        super(Textures.LOCATION_GUI_MANUAL_MISSING);
         this.tooltip = tooltip;
     }
 
     @Override
-    public String getTooltip(final String tooltip) {
+    public ITextComponent getTooltip(final ITextComponent tooltip) {
         return this.tooltip;
     }
 
     @Override
-    public boolean onMouseClick(final int mouseX, final int mouseY) {
+    public boolean onMouseClick(final double mouseX, final double mouseY) {
         return false;
     }
 }

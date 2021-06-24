@@ -1,9 +1,8 @@
 package li.cil.tis3d.common.inventory;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
 
 public interface InventoryProxy extends IInventory {
     IInventory getInventory();
@@ -49,17 +48,17 @@ public interface InventoryProxy extends IInventory {
     }
 
     @Override
-    default boolean isUsableByPlayer(final EntityPlayer player) {
+    default boolean isUsableByPlayer(final PlayerEntity player) {
         return getInventory().isUsableByPlayer(player);
     }
 
     @Override
-    default void openInventory(final EntityPlayer player) {
+    default void openInventory(final PlayerEntity player) {
         getInventory().openInventory(player);
     }
 
     @Override
-    default void closeInventory(final EntityPlayer player) {
+    default void closeInventory(final PlayerEntity player) {
         getInventory().closeInventory(player);
     }
 
@@ -69,37 +68,7 @@ public interface InventoryProxy extends IInventory {
     }
 
     @Override
-    default int getField(final int index) {
-        return getInventory().getField(index);
-    }
-
-    @Override
-    default void setField(final int index, final int value) {
-        getInventory().setField(index, value);
-    }
-
-    @Override
-    default int getFieldCount() {
-        return getInventory().getFieldCount();
-    }
-
-    @Override
     default void clear() {
         getInventory().clear();
-    }
-
-    @Override
-    default String getName() {
-        return getInventory().getName();
-    }
-
-    @Override
-    default boolean hasCustomName() {
-        return getInventory().hasCustomName();
-    }
-
-    @Override
-    default ITextComponent getDisplayName() {
-        return getInventory().getDisplayName();
     }
 }

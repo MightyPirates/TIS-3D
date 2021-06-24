@@ -5,40 +5,51 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.traits.BlockChangeAware;
 import li.cil.tis3d.api.module.traits.CasingFaceQuadOverride;
 import li.cil.tis3d.api.prefab.module.AbstractModule;
-import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.util.BlockStateUtils;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockRenderType;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockModelShapes;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
+import net.minecraft.client.renderer.model.BakedQuad;
+import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTUtil;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.model.data.EmptyModelData;
+import net.minecraftforge.client.model.data.IModelData;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 public final class ModuleFacade extends AbstractModule implements BlockChangeAware, CasingFaceQuadOverride {
     // --------------------------------------------------------------------- //
     // Persisted data
 
-    private IBlockState facadeState;
+    private BlockState facadeState;
 
     // --------------------------------------------------------------------- //
     // Computed data
 
+    // Error message when trying to configure with an incompatible block.
+    public static final TranslationTextComponent MESSAGE_FACADE_INVALID_TARGET = new TranslationTextComponent("tis3d.facade.invalid_target");
+
     // Data packet types.
     private static final byte DATA_TYPE_FULL = 0;
+
+    // NBT tag names.
+    private static final String TAG_STATE = "state";
 
     // --------------------------------------------------------------------- //
 
@@ -50,7 +61,7 @@ public final class ModuleFacade extends AbstractModule implements BlockChangeAwa
     // Module
 
     @Override
-    public boolean onActivate(final EntityPlayer player, final EnumHand hand, final float hitX, final float hitY, final float hitZ) {
+    public boolean onActivate(final PlayerEntity player, final Hand hand, final Vector3d hit) {
         if (getCasing().isLocked()) {
             return false;
         }
@@ -60,14 +71,14 @@ public final class ModuleFacade extends AbstractModule implements BlockChangeAwa
             return false;
         }
 
-        final IBlockState state = BlockStateUtils.getBlockStateFromItemStack(stack);
+        final BlockState state = BlockStateUtils.getBlockStateFromItemStack(stack);
         if (state == null) {
             return false;
         }
 
         if (!trySetFacadeState(state)) {
-            if (!getCasing().getCasingWorld().isRemote) {
-                player.sendMessage(new TextComponentTranslation(Constants.MESSAGE_FACADE_INVALID_TARGET));
+            if (!getCasing().getCasingWorld().isRemote()) {
+                player.sendStatusMessage(MESSAGE_FACADE_INVALID_TARGET, true);
             }
 
             // No return false here to avoid popping out module due to invalid block.
@@ -77,32 +88,32 @@ public final class ModuleFacade extends AbstractModule implements BlockChangeAwa
     }
 
     @Override
-    public void onData(final NBTTagCompound nbt) {
+    public void onData(final CompoundNBT nbt) {
         readFromNBT(nbt);
 
         // Force re-render to make change of facade configuration visible.
         final World world = getCasing().getCasingWorld();
         final BlockPos position = getCasing().getPosition();
-        final IBlockState state = world.getBlockState(position);
+        final BlockState state = world.getBlockState(position);
         world.notifyBlockUpdate(position, state, state, 1);
     }
 
     @Override
-    public void readFromNBT(final NBTTagCompound nbt) {
+    public void readFromNBT(final CompoundNBT nbt) {
         super.readFromNBT(nbt);
 
-        facadeState = NBTUtil.readBlockState(nbt);
+        facadeState = NBTUtil.readBlockState(nbt.getCompound(TAG_STATE));
         if (facadeState == Blocks.AIR.getDefaultState()) {
             facadeState = null;
         }
     }
 
     @Override
-    public void writeToNBT(final NBTTagCompound nbt) {
+    public void writeToNBT(final CompoundNBT nbt) {
         super.writeToNBT(nbt);
 
         if (facadeState != null) {
-            NBTUtil.writeBlockState(nbt, facadeState);
+            nbt.put(TAG_STATE, NBTUtil.writeBlockState(facadeState));
         }
     }
 
@@ -125,25 +136,31 @@ public final class ModuleFacade extends AbstractModule implements BlockChangeAwa
     // --------------------------------------------------------------------- //
     // CasingFaceQuadOverride
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Override
-    public List<BakedQuad> getCasingFaceQuads(@Nullable final IBlockState state, final EnumFacing side, final long randomSeed) {
+    public List<BakedQuad> getCasingFaceQuads(@Nullable final BlockState state, @Nullable final Direction side, final Random random) {
         if (facadeState == null) {
-            return null;
+            return Collections.emptyList();
         }
 
-        final BlockModelShapes shapes = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes();
-        return shapes.getModelForState(facadeState).getQuads(facadeState, side, randomSeed);
+        final BlockModelShapes shapes = Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelShapes();
+        final IBakedModel model = shapes.getModel(facadeState);
+        final World world = getCasing().getCasingWorld();
+        final BlockPos position = getCasing().getPosition();
+        final IModelData modelData = model.getModelData(world, position, facadeState, EmptyModelData.INSTANCE);
+        return model.getQuads(facadeState, side, random, modelData);
     }
 
     // --------------------------------------------------------------------- //
 
-    private boolean trySetFacadeState(final IBlockState state) {
-        if (state.getRenderType() != EnumBlockRenderType.MODEL || !state.isOpaqueCube() || state.getBlock().hasTileEntity(state)) {
+    private boolean trySetFacadeState(final BlockState state) {
+        if (state.getRenderType() != BlockRenderType.MODEL ||
+            !state.isOpaqueCube(getCasing().getCasingWorld(), getCasing().getPosition()) ||
+            state.getBlock().hasTileEntity(state)) {
             return false;
         }
 
-        if (!getCasing().getCasingWorld().isRemote) {
+        if (!getCasing().getCasingWorld().isRemote()) {
             facadeState = state;
             sendState();
         }
@@ -152,7 +169,7 @@ public final class ModuleFacade extends AbstractModule implements BlockChangeAwa
     }
 
     private void sendState() {
-        final NBTTagCompound nbt = new NBTTagCompound();
+        final CompoundNBT nbt = new CompoundNBT();
         writeToNBT(nbt);
         getCasing().sendData(getFace(), nbt, DATA_TYPE_FULL);
     }

@@ -5,19 +5,23 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.common.machine.PipeHost;
 import li.cil.tis3d.common.machine.PipeImpl;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import li.cil.tis3d.util.WorldUtils;
+import net.minecraft.block.BlockState;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
-abstract class TileEntityComputer extends TileEntity implements PipeHost {
+public abstract class TileEntityComputer extends TileEntity implements PipeHost {
     // --------------------------------------------------------------------- //
     // Persisted data.
 
@@ -47,12 +51,12 @@ abstract class TileEntityComputer extends TileEntity implements PipeHost {
             //    LEFT        RIGHT       UP          DOWN
         };
         PORT_MAPPING = new Port[][]{
-            {Port.DOWN, Port.DOWN, Port.DOWN, Port.DOWN},   // Y_NEG
-            {Port.UP, Port.UP, Port.UP, Port.UP},     // Y_POS
-            {Port.RIGHT, Port.LEFT, Port.DOWN, Port.UP},     // Z_NEG
-            {Port.RIGHT, Port.LEFT, Port.UP, Port.DOWN},   // Z_POS
+            {Port.DOWN, Port.DOWN, Port.DOWN, Port.DOWN},     // Y_NEG
+            {Port.UP, Port.UP, Port.UP, Port.UP},             // Y_POS
+            {Port.RIGHT, Port.LEFT, Port.DOWN, Port.UP},      // Z_NEG
+            {Port.RIGHT, Port.LEFT, Port.UP, Port.DOWN},      // Z_POS
             {Port.RIGHT, Port.LEFT, Port.RIGHT, Port.RIGHT},  // X_NEG
-            {Port.RIGHT, Port.LEFT, Port.LEFT, Port.LEFT}    // X_POS
+            {Port.RIGHT, Port.LEFT, Port.LEFT, Port.LEFT}     // X_POS
             //    LEFT        RIGHT       UP          DOWN
         };
     }
@@ -65,13 +69,19 @@ abstract class TileEntityComputer extends TileEntity implements PipeHost {
 
     // --------------------------------------------------------------------- //
 
-    TileEntityComputer() {
+    protected TileEntityComputer(final TileEntityType<?> type) {
+        super(type);
+
         for (final Face face : Face.VALUES) {
             for (final Port port : Port.VALUES) {
                 final int pipeIndex = pack(face, port);
                 pipeOverride[pipeIndex] = pipes[pipeIndex] = new PipeImpl(this, face, mapFace(face, port), mapPort(face, port));
             }
         }
+    }
+
+    public World getTileEntityWorld() {
+        return Objects.requireNonNull(getWorld());
     }
 
     /**
@@ -124,7 +134,7 @@ abstract class TileEntityComputer extends TileEntity implements PipeHost {
 
     @Override
     public World getPipeHostWorld() {
-        return getWorld();
+        return getTileEntityWorld();
     }
 
     @Override
@@ -136,62 +146,64 @@ abstract class TileEntityComputer extends TileEntity implements PipeHost {
     // TileEntity
 
     @Override
-    public void readFromNBT(final NBTTagCompound nbt) {
-        super.readFromNBT(nbt);
-        readFromNBTForServer(nbt);
+    public void read(final BlockState state, final CompoundNBT tag) {
+        super.read(state, tag);
+        readFromNBTForServer(tag);
     }
 
     @Override
-    public NBTTagCompound writeToNBT(final NBTTagCompound nbtIn) {
-        final NBTTagCompound nbt = super.writeToNBT(nbtIn);
-        writeToNBTForServer(nbt);
-        return nbt;
+    public CompoundNBT write(final CompoundNBT compound) {
+        final CompoundNBT tag = super.write(compound);
+        writeToNBTForServer(tag);
+        return tag;
     }
 
     @Override
-    public void onDataPacket(final NetworkManager manager, final SPacketUpdateTileEntity packet) {
+    public void onDataPacket(final NetworkManager manager, final SUpdateTileEntityPacket packet) {
         readFromNBTForClient(packet.getNbtCompound());
     }
 
     @Nullable
     @Override
-    public SPacketUpdateTileEntity getUpdatePacket() {
-        final NBTTagCompound nbt = new NBTTagCompound();
+    public SUpdateTileEntityPacket getUpdatePacket() {
+        final CompoundNBT nbt = new CompoundNBT();
         writeToNBTForClient(nbt);
-        return new SPacketUpdateTileEntity(getPos(), 0, nbt);
+        return new SUpdateTileEntityPacket(getPos(), 0, nbt);
     }
 
     @Override
-    public void handleUpdateTag(final NBTTagCompound nbt) {
-        super.readFromNBT(nbt);
-        readFromNBTForClient(nbt);
+    public void handleUpdateTag(final BlockState state, final CompoundNBT tag) {
+        super.handleUpdateTag(state, tag);
+        readFromNBTForClient(tag);
     }
 
     @Override
-    public NBTTagCompound getUpdateTag() {
-        final NBTTagCompound nbt = super.getUpdateTag();
-        writeToNBTForClient(nbt);
-        return nbt;
+    public CompoundNBT getUpdateTag() {
+        final CompoundNBT tag = super.getUpdateTag();
+        writeToNBTForClient(tag);
+        return tag;
     }
 
     // --------------------------------------------------------------------- //
 
     public void checkNeighbors() {
+        final World world = getTileEntityWorld();
+
         // When a neighbor changed, check all neighbors and register them in
         // our tile entity.
-        for (final EnumFacing facing : EnumFacing.VALUES) {
+        for (final Direction facing : Direction.values()) {
             final BlockPos neighborPos = getPos().offset(facing);
-            if (getWorld().isBlockLoaded(neighborPos)) {
+            if (WorldUtils.isBlockLoaded(world, neighborPos)) {
                 // If we have a casing, set it as our neighbor.
-                final TileEntity tileEntity = getWorld().getTileEntity(neighborPos);
+                final TileEntity tileEntity = world.getTileEntity(neighborPos);
                 if (tileEntity instanceof TileEntityComputer) {
-                    setNeighbor(Face.fromEnumFacing(facing), (TileEntityComputer) tileEntity);
+                    setNeighbor(Face.fromDirection(facing), (TileEntityComputer) tileEntity);
                 } else {
-                    setNeighbor(Face.fromEnumFacing(facing), null);
+                    setNeighbor(Face.fromDirection(facing), null);
                 }
             } else {
                 // Neighbor is in unloaded area.
-                setNeighbor(Face.fromEnumFacing(facing), null);
+                setNeighbor(Face.fromDirection(facing), null);
             }
         }
     }
@@ -207,40 +219,40 @@ abstract class TileEntityComputer extends TileEntity implements PipeHost {
         }
     }
 
-    protected void readFromNBTForServer(final NBTTagCompound nbt) {
-        final NBTTagList pipesNbt = nbt.getTagList(TAG_PIPES, Constants.NBT.TAG_COMPOUND);
-        final int pipeCount = Math.min(pipesNbt.tagCount(), pipes.length);
+    protected void readFromNBTForServer(final CompoundNBT nbt) {
+        final ListNBT pipesNbt = nbt.getList(TAG_PIPES, Constants.NBT.TAG_COMPOUND);
+        final int pipeCount = Math.min(pipesNbt.size(), pipes.length);
         for (int i = 0; i < pipeCount; i++) {
-            pipes[i].readFromNBT(pipesNbt.getCompoundTagAt(i));
+            pipes[i].readFromNBT(pipesNbt.getCompound(i));
         }
 
         readFromNBTCommon(nbt);
     }
 
-    protected void writeToNBTForServer(final NBTTagCompound nbt) {
-        final NBTTagList pipesNbt = new NBTTagList();
+    protected void writeToNBTForServer(final CompoundNBT nbt) {
+        final ListNBT pipesNbt = new ListNBT();
         for (final PipeImpl pipe : pipes) {
-            final NBTTagCompound portNbt = new NBTTagCompound();
+            final CompoundNBT portNbt = new CompoundNBT();
             pipe.writeToNBT(portNbt);
-            pipesNbt.appendTag(portNbt);
+            pipesNbt.add(portNbt);
         }
-        nbt.setTag(TAG_PIPES, pipesNbt);
+        nbt.put(TAG_PIPES, pipesNbt);
 
         writeToNBTCommon(nbt);
     }
 
-    protected void readFromNBTForClient(final NBTTagCompound nbt) {
+    protected void readFromNBTForClient(final CompoundNBT nbt) {
         readFromNBTCommon(nbt);
     }
 
-    protected void writeToNBTForClient(final NBTTagCompound nbt) {
+    protected void writeToNBTForClient(final CompoundNBT nbt) {
         writeToNBTCommon(nbt);
     }
 
-    protected void readFromNBTCommon(final NBTTagCompound nbt) {
+    protected void readFromNBTCommon(final CompoundNBT nbt) {
     }
 
-    protected void writeToNBTCommon(final NBTTagCompound nbt) {
+    protected void writeToNBTCommon(final CompoundNBT nbt) {
     }
 
     boolean hasNeighbor(final Face face) {
