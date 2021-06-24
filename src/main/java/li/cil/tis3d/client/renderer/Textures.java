@@ -35,8 +35,6 @@ public final class Textures {
     public static final ResourceLocation LOCATION_OVERLAY_MODULE_TERMINAL = new ResourceLocation(API.MOD_ID, "block/overlay/module_terminal");
     public static final ResourceLocation LOCATION_OVERLAY_MODULE_TIMER = new ResourceLocation(API.MOD_ID, "block/overlay/module_timer");
 
-    public static final ResourceLocation LOCATION_WHITE = new ResourceLocation(API.MOD_ID, "block/overlay/white");
-
     public static void handleTextureStitchEvent(final TextureStitchEvent.Pre event) {
         event.addSprite(LOCATION_OVERLAY_CASING_LOCKED);
         event.addSprite(LOCATION_OVERLAY_CASING_UNLOCKED);
@@ -60,8 +58,6 @@ public final class Textures {
         event.addSprite(LOCATION_OVERLAY_MODULE_STACK);
         event.addSprite(LOCATION_OVERLAY_MODULE_TERMINAL);
         event.addSprite(LOCATION_OVERLAY_MODULE_TIMER);
-
-        event.addSprite(LOCATION_WHITE);
     }
 
     // --------------------------------------------------------------------- //

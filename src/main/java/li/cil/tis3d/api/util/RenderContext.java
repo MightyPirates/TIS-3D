@@ -2,8 +2,7 @@ package li.cil.tis3d.api.util;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import li.cil.tis3d.client.renderer.RenderLayerAccess;
-import li.cil.tis3d.client.renderer.Textures;
+import li.cil.tis3d.client.renderer.ModRenderType;
 import li.cil.tis3d.client.renderer.font.FontRenderer;
 import li.cil.tis3d.util.Color;
 import net.minecraft.client.Minecraft;
@@ -81,18 +80,18 @@ public final class RenderContext {
     public void drawAtlasSpriteLit(final ResourceLocation location) {
         final TextureAtlasSprite sprite = getSprite(location);
         final IVertexBuilder buffer = getBuffer(RenderType.translucentNoCrumbling());
-        drawQuad(buffer, sprite, 0, 0, 1, 1, 0, 0, 1, 1);
+        drawAtlasSprite(buffer, sprite, 0, 0, 1, 1, 0, 0, 16, 16);
     }
 
     public void drawAtlasSpriteUnlit(final ResourceLocation location) {
         final TextureAtlasSprite sprite = getSprite(location);
-        final IVertexBuilder buffer = getBuffer(RenderLayerAccess.getModuleOverlay());
-        drawQuad(buffer, sprite, 0, 0, 1, 1, 0, 0, 1, 1);
+        final IVertexBuilder buffer = getBuffer(ModRenderType.unlitAtlasTexture());
+        drawAtlasSprite(buffer, sprite, 0, 0, 1, 1, 0, 0, 16, 16);
     }
 
     public void drawAtlasSpriteUnlit(final ResourceLocation location, final int argb) {
         final TextureAtlasSprite sprite = getSprite(location);
-        final IVertexBuilder buffer = getBuffer(RenderLayerAccess.getModuleOverlay());
+        final IVertexBuilder buffer = getBuffer(ModRenderType.unlitAtlasTexture());
         final float u0 = sprite.getU(0);
         final float v0 = sprite.getV(0);
         final float u1 = sprite.getU(16);
@@ -100,75 +99,82 @@ public final class RenderContext {
         drawQuad(buffer, 0, 0, 1, 1, u0, v0, u1, v1, argb);
     }
 
-    public void drawQuadUnlit(final IVertexBuilder buffer, final float x, final float y, final float width, final float height, final int argb) {
-        drawQuad(buffer, x, y, width, height, 0, 0, 1, 1, argb);
-    }
-
-    public void drawQuadUnlit(final IVertexBuilder buffer, final float x, final float y, final float width, final float height) {
-        drawQuadUnlit(buffer, x, y, width, height, Color.WHITE);
+    public void drawAtlasSpriteUnlit(final ResourceLocation location, final float x, final float y, final float width, final float height) {
+        final TextureAtlasSprite sprite = getSprite(location);
+        final IVertexBuilder buffer = getBuffer(ModRenderType.unlitAtlasTexture());
+        drawAtlasSprite(buffer, sprite, x, y, width, height, x * 16, y * 16, (x + width) * 16, (y + height) * 16);
     }
 
     public void drawQuadUnlit(final float x, final float y, final float width, final float height, final int argb) {
-        final TextureAtlasSprite sprite = getSprite(Textures.LOCATION_WHITE);
-        final IVertexBuilder buffer = getBuffer(RenderLayerAccess.getModuleOverlay());
-        final float u0 = sprite.getU(0);
-        final float v0 = sprite.getV(0);
-        final float u1 = sprite.getU(16);
-        final float v1 = sprite.getV(16);
-        drawQuad(buffer, x, y, width, height, u0, v0, u1, v1, argb);
+        final IVertexBuilder builder = getBuffer(ModRenderType.unlit());
+        drawQuad(builder, x, y, width, height, 0, 0, 1, 1, argb);
     }
 
-    public void drawAtlasSpriteUnlit(final ResourceLocation location, final float x, final float y, final float width, final float height) {
-        final TextureAtlasSprite sprite = getSprite(location);
-        final IVertexBuilder buffer = getBuffer(RenderLayerAccess.getModuleOverlay());
-        drawQuad(buffer, sprite, x, y, width, height, x, y, x + width, y + height);
+    public void drawQuad(final IVertexBuilder builder, final float x, final float y, final float width, final float height) {
+        drawQuad(builder, x, y, width, height, Color.WHITE);
     }
 
-    private void drawQuad(final IVertexBuilder buffer,
+    public void drawQuad(final IVertexBuilder builder, final float x, final float y, final float width, final float height, final int argb) {
+        drawQuad(builder, x, y, width, height, 0, 0, 1, 1, argb);
+    }
+
+    // --------------------------------------------------------------------- //
+
+    private void drawAtlasSprite(final IVertexBuilder builder, final TextureAtlasSprite sprite,
+                                 final float x, final float y, final float w, final float h,
+                                 final float u0, final float v0, final float u1, final float v1) {
+        drawQuad(builder,
+            x, y, w, h,
+            sprite.getU(u0), sprite.getV(v0),
+            sprite.getU(u1), sprite.getV(v1),
+            Color.WHITE);
+    }
+
+    private void drawQuad(final IVertexBuilder builder,
                           final float x, final float y, final float w, final float h,
                           final float u0, final float v0, final float u1, final float v1,
                           final int argb) {
-        final Matrix4f modMat = getMatrixStack().last().pose();
-        final Matrix3f normMat = getMatrixStack().last().normal();
-        final Vector3f normDir = new Vector3f(0, 0, -1);
+        final Matrix4f pose = getMatrixStack().last().pose();
+        final Matrix3f normal = getMatrixStack().last().normal();
+        final Vector3f up = new Vector3f(0, 0, -1);
 
         final int a = Color.getAlphaU8(argb);
         final int r = Color.getRedU8(argb);
         final int g = Color.getGreenU8(argb);
         final int b = Color.getBlueU8(argb);
 
-        buffer.vertex(modMat, x, y + h, 0).color(r, g, b, a).uv(u0, v1)
-            .overlayCoords(overlay).uv2(light)
-            .normal(normMat, normDir.x(), normDir.y(), normDir.z())
+        builder.vertex(pose, x, y + h, 0)
+            .color(r, g, b, a)
+            .uv(u0, v1)
+            .overlayCoords(overlay)
+            .uv2(light)
+            .normal(normal, up.x(), up.y(), up.z())
             .endVertex();
 
-        buffer.vertex(modMat, x + w, y + h, 0).color(r, g, b, a).uv(u1, v1)
-            .overlayCoords(overlay).uv2(light)
-            .normal(normMat, normDir.x(), normDir.y(), normDir.z())
+        builder.vertex(pose, x + w, y + h, 0)
+            .color(r, g, b, a)
+            .uv(u1, v1)
+            .overlayCoords(overlay)
+            .uv2(light)
+            .normal(normal, up.x(), up.y(), up.z())
             .endVertex();
 
-        buffer.vertex(modMat, x + w, y, 0).color(r, g, b, a).uv(u1, v0)
-            .overlayCoords(overlay).uv2(light)
-            .normal(normMat, normDir.x(), normDir.y(), normDir.z())
+        builder.vertex(pose, x + w, y, 0)
+            .color(r, g, b, a)
+            .uv(u1, v0)
+            .overlayCoords(overlay)
+            .uv2(light)
+            .normal(normal, up.x(), up.y(), up.z())
             .endVertex();
 
-        buffer.vertex(modMat, x, y, 0).color(r, g, b, a).uv(u0, v0)
-            .overlayCoords(overlay).uv2(light)
-            .normal(normMat, normDir.x(), normDir.y(), normDir.z())
+        builder.vertex(pose, x, y, 0)
+            .color(r, g, b, a)
+            .uv(u0, v0)
+            .overlayCoords(overlay)
+            .uv2(light)
+            .normal(normal, up.x(), up.y(), up.z())
             .endVertex();
     }
-
-    private void drawQuad(final IVertexBuilder buffer, final TextureAtlasSprite sprite,
-                          final float x, final float y, final float w, final float h,
-                          final float u0, final float v0, final float u1, final float v1) {
-        drawQuad(buffer,
-            x, y, w, h,
-            sprite.getU(u0 * 16), sprite.getV(v0 * 16),
-            sprite.getU(u1 * 16), sprite.getV(v1 * 16),
-            Color.WHITE);
-    }
-
-    // --------------------------------------------------------------------- //
 
     private static TextureAtlasSprite getSprite(final ResourceLocation location) {
         return Minecraft.getInstance().getTextureAtlas(PlayerContainer.BLOCK_ATLAS).apply(location);

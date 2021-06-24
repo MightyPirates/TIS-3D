@@ -11,7 +11,7 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderContext;
-import li.cil.tis3d.client.renderer.RenderLayerAccess;
+import li.cil.tis3d.client.renderer.ModRenderType;
 import li.cil.tis3d.util.Color;
 import li.cil.tis3d.util.EnumUtils;
 import net.minecraft.client.Minecraft;
@@ -169,7 +169,7 @@ public final class ModuleDisplay extends AbstractModuleWithRotation {
         validateTexture();
 
         final IVertexBuilder buffer = context.getBuffer(getOrCreateRenderLayer());
-        context.drawQuadUnlit(buffer, MARGIN / 32f, MARGIN / 32f, RESOLUTION / 32f, RESOLUTION / 32f);
+        context.drawQuad(buffer, MARGIN / 32f, MARGIN / 32f, RESOLUTION / 32f, RESOLUTION / 32f);
 
         matrixStack.popPose();
     }
@@ -276,7 +276,7 @@ public final class ModuleDisplay extends AbstractModuleWithRotation {
             final DynamicTexture texture = getOrCreateTexture();
             textureId = new ResourceLocation(API.MOD_ID, "dynamic/display_module_" + (++nextTextureId));
             textureManager.register(textureId, texture);
-            renderLayer = RenderLayerAccess.getModuleOverlay(textureId);
+            renderLayer = ModRenderType.unlitTexture(textureId);
         }
 
         return renderLayer;

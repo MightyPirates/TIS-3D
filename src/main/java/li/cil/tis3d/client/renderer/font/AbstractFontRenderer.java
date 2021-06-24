@@ -4,7 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import it.unimi.dsi.fastutil.chars.Char2IntMap;
 import it.unimi.dsi.fastutil.chars.Char2IntOpenHashMap;
-import li.cil.tis3d.client.renderer.RenderLayerAccess;
+import li.cil.tis3d.client.renderer.ModRenderType;
 import li.cil.tis3d.util.Color;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
@@ -67,7 +67,7 @@ public abstract class AbstractFontRenderer implements FontRenderer {
 
     private IVertexBuilder getDefaultBuffer(final IRenderTypeBuffer bufferFactory) {
         if (renderLayer == null) {
-            renderLayer = RenderLayerAccess.getModuleOverlay(getTextureLocation());
+            renderLayer = ModRenderType.unlitTexture(getTextureLocation());
         }
 
         return bufferFactory.getBuffer(renderLayer);
