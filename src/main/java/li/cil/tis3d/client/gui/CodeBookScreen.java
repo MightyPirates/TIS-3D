@@ -146,7 +146,7 @@ public final class CodeBookScreen extends Screen {
         final String pageInfo = String.format("%d/%d", data.getSelectedPage() + 1, data.getPageCount());
         final int x = guiX + PAGE_NUMBER_X - getFontRenderer().width(pageInfo) / 2;
         final int y = guiY + PAGE_NUMBER_Y;
-        getFontRenderer().drawShadow(matrixStack, pageInfo, x, y, COLOR_CODE);
+        getFontRenderer().draw(matrixStack, pageInfo, x, y, COLOR_CODE);
     }
 
     @Override
