@@ -119,17 +119,17 @@ public final class ModuleTimer extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void readFromNBT(final CompoundNBT nbt) {
-        super.readFromNBT(nbt);
+    public void load(final CompoundNBT tag) {
+        super.load(tag);
 
-        timer = nbt.getLong(TAG_TIMER);
+        timer = tag.getLong(TAG_TIMER);
     }
 
     @Override
-    public void writeToNBT(final CompoundNBT nbt) {
-        super.writeToNBT(nbt);
+    public void save(final CompoundNBT tag) {
+        super.save(tag);
 
-        nbt.putLong(TAG_TIMER, timer);
+        tag.putLong(TAG_TIMER, timer);
     }
 
     // --------------------------------------------------------------------- //

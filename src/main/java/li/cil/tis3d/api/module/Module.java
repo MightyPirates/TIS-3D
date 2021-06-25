@@ -201,14 +201,14 @@ public interface Module {
     /**
      * Restore the state of the module from the specified NBT compound.
      *
-     * @param nbt the tag to load the state from.
+     * @param tag the tag to load the state from.
      */
-    void readFromNBT(final CompoundNBT nbt);
+    void load(final CompoundNBT tag);
 
     /**
      * Save the state of the module to the specified NBT compound.
      *
-     * @param nbt the tag to save the state to.
+     * @param tag the tag to save the state to.
      */
-    void writeToNBT(final CompoundNBT nbt);
+    void save(final CompoundNBT tag);
 }

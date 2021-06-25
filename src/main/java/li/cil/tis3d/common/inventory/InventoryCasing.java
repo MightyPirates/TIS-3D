@@ -131,7 +131,7 @@ public final class InventoryCasing extends Inventory implements ISidedInventory 
             final CompoundNBT moduleData;
             if (module != null) {
                 module.onInstalled(stack);
-                module.writeToNBT(moduleData = new CompoundNBT());
+                module.save(moduleData = new CompoundNBT());
             } else {
                 moduleData = null;
             }

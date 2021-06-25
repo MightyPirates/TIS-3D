@@ -186,19 +186,19 @@ public final class ModuleKeypad extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void readFromNBT(final CompoundNBT nbt) {
-        super.readFromNBT(nbt);
+    public void load(final CompoundNBT tag) {
+        super.load(tag);
 
-        if (nbt.contains(TAG_VALUE)) {
-            value = Optional.of(nbt.getShort(TAG_VALUE));
+        if (tag.contains(TAG_VALUE)) {
+            value = Optional.of(tag.getShort(TAG_VALUE));
         }
     }
 
     @Override
-    public void writeToNBT(final CompoundNBT nbt) {
-        super.writeToNBT(nbt);
+    public void save(final CompoundNBT tag) {
+        super.save(tag);
 
-        value.ifPresent(x -> nbt.putShort(TAG_VALUE, x));
+        value.ifPresent(x -> tag.putShort(TAG_VALUE, x));
     }
 
     // --------------------------------------------------------------------- //

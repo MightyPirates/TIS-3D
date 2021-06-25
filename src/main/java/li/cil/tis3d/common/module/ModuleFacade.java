@@ -89,7 +89,7 @@ public final class ModuleFacade extends AbstractModule implements ModuleWithBloc
 
     @Override
     public void onData(final CompoundNBT nbt) {
-        readFromNBT(nbt);
+        load(nbt);
 
         // Force re-render to make change of facade configuration visible.
         final World world = getCasing().getCasingLevel();
@@ -99,21 +99,21 @@ public final class ModuleFacade extends AbstractModule implements ModuleWithBloc
     }
 
     @Override
-    public void readFromNBT(final CompoundNBT nbt) {
-        super.readFromNBT(nbt);
+    public void load(final CompoundNBT tag) {
+        super.load(tag);
 
-        facadeState = NBTUtil.readBlockState(nbt.getCompound(TAG_STATE));
+        facadeState = NBTUtil.readBlockState(tag.getCompound(TAG_STATE));
         if (facadeState == Blocks.AIR.defaultBlockState()) {
             facadeState = null;
         }
     }
 
     @Override
-    public void writeToNBT(final CompoundNBT nbt) {
-        super.writeToNBT(nbt);
+    public void save(final CompoundNBT tag) {
+        super.save(tag);
 
         if (facadeState != null) {
-            nbt.put(TAG_STATE, NBTUtil.writeBlockState(facadeState));
+            tag.put(TAG_STATE, NBTUtil.writeBlockState(facadeState));
         }
     }
 
@@ -170,7 +170,7 @@ public final class ModuleFacade extends AbstractModule implements ModuleWithBloc
 
     private void sendState() {
         final CompoundNBT nbt = new CompoundNBT();
-        writeToNBT(nbt);
+        save(nbt);
         getCasing().sendData(getFace(), nbt, DATA_TYPE_FULL);
     }
 }

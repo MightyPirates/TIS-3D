@@ -68,17 +68,17 @@ public abstract class AbstractModuleWithRotation extends AbstractModule implemen
     // Module
 
     @Override
-    public void readFromNBT(final CompoundNBT nbt) {
-        super.readFromNBT(nbt);
+    public void load(final CompoundNBT tag) {
+        super.load(tag);
 
-        facing = Port.VALUES[Math.max(0, nbt.getByte(TAG_FACING)) % Port.VALUES.length];
+        facing = Port.VALUES[Math.max(0, tag.getByte(TAG_FACING)) % Port.VALUES.length];
     }
 
     @Override
-    public void writeToNBT(final CompoundNBT nbt) {
-        super.writeToNBT(nbt);
+    public void save(final CompoundNBT tag) {
+        super.save(tag);
 
-        nbt.putByte(TAG_FACING, (byte) facing.ordinal());
+        tag.putByte(TAG_FACING, (byte) facing.ordinal());
     }
 
     // --------------------------------------------------------------------- //

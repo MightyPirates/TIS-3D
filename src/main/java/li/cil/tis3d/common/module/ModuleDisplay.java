@@ -175,26 +175,26 @@ public final class ModuleDisplay extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void readFromNBT(final CompoundNBT nbt) {
-        super.readFromNBT(nbt);
+    public void load(final CompoundNBT tag) {
+        super.load(tag);
 
-        final int[] imageNbt = nbt.getIntArray(TAG_IMAGE);
+        final int[] imageNbt = tag.getIntArray(TAG_IMAGE);
         System.arraycopy(imageNbt, 0, image, 0, Math.min(imageNbt.length, image.length));
         imageDirty = true;
 
-        state = EnumUtils.readFromNBT(State.class, TAG_STATE, nbt);
+        state = EnumUtils.readFromNBT(State.class, TAG_STATE, tag);
 
-        final byte[] drawCallNbt = nbt.getByteArray(TAG_DRAW_CALL);
+        final byte[] drawCallNbt = tag.getByteArray(TAG_DRAW_CALL);
         System.arraycopy(drawCallNbt, 0, drawCall, 0, Math.min(drawCallNbt.length, drawCall.length));
     }
 
     @Override
-    public void writeToNBT(final CompoundNBT nbt) {
-        super.writeToNBT(nbt);
+    public void save(final CompoundNBT tag) {
+        super.save(tag);
 
-        nbt.putIntArray(TAG_IMAGE, image);
-        EnumUtils.writeToNBT(state, TAG_STATE, nbt);
-        nbt.putByteArray(TAG_DRAW_CALL, drawCall.clone());
+        tag.putIntArray(TAG_IMAGE, image);
+        EnumUtils.writeToNBT(state, TAG_STATE, tag);
+        tag.putByteArray(TAG_DRAW_CALL, drawCall.clone());
     }
 
     // --------------------------------------------------------------------- //

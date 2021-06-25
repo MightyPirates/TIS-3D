@@ -188,25 +188,25 @@ public final class ModuleSequencer extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void readFromNBT(final CompoundNBT nbt) {
-        super.readFromNBT(nbt);
+    public void load(final CompoundNBT tag) {
+        super.load(tag);
 
-        decodeConfiguration(nbt.getLong(TAG_CONFIGURATION), configuration);
-        position = Math.min(Math.max(nbt.getInt(TAG_POSITION), 0), COL_COUNT - 1);
-        delay = Math.min(Math.max(nbt.getInt(TAG_DELAY), 0), 0xFFFF);
-        stepsRemaining = Math.min(Math.max(nbt.getInt(TAG_STEPS_REMAINING), 0), 0xFFFF);
+        decodeConfiguration(tag.getLong(TAG_CONFIGURATION), configuration);
+        position = Math.min(Math.max(tag.getInt(TAG_POSITION), 0), COL_COUNT - 1);
+        delay = Math.min(Math.max(tag.getInt(TAG_DELAY), 0), 0xFFFF);
+        stepsRemaining = Math.min(Math.max(tag.getInt(TAG_STEPS_REMAINING), 0), 0xFFFF);
 
         initializeOutput();
     }
 
     @Override
-    public void writeToNBT(final CompoundNBT nbt) {
-        super.writeToNBT(nbt);
+    public void save(final CompoundNBT tag) {
+        super.save(tag);
 
-        nbt.putLong(TAG_CONFIGURATION, encodeConfiguration(configuration));
-        nbt.putInt(TAG_POSITION, position);
-        nbt.putInt(TAG_DELAY, delay);
-        nbt.putInt(TAG_STEPS_REMAINING, stepsRemaining);
+        tag.putLong(TAG_CONFIGURATION, encodeConfiguration(configuration));
+        tag.putInt(TAG_POSITION, position);
+        tag.putInt(TAG_DELAY, delay);
+        tag.putInt(TAG_STEPS_REMAINING, stepsRemaining);
     }
 
     // --------------------------------------------------------------------- //

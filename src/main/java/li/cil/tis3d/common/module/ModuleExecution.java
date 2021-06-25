@@ -211,7 +211,7 @@ public final class ModuleExecution extends AbstractModuleWithRotation implements
 
     @Override
     public void onData(final CompoundNBT nbt) {
-        readFromNBT(nbt);
+        this.load(nbt);
     }
 
     @Override
@@ -252,12 +252,12 @@ public final class ModuleExecution extends AbstractModuleWithRotation implements
     }
 
     @Override
-    public void readFromNBT(final CompoundNBT nbt) {
-        super.readFromNBT(nbt);
+    public void load(final CompoundNBT tag) {
+        super.load(tag);
 
-        final CompoundNBT machineNbt = nbt.getCompound(TAG_MACHINE);
+        final CompoundNBT machineNbt = tag.getCompound(TAG_MACHINE);
         getState().readFromNBT(machineNbt);
-        state = EnumUtils.readFromNBT(State.class, TAG_STATE, nbt);
+        state = EnumUtils.readFromNBT(State.class, TAG_STATE, tag);
 
         if (getState().code != null) {
             compile(Arrays.asList(getState().code));
@@ -265,13 +265,13 @@ public final class ModuleExecution extends AbstractModuleWithRotation implements
     }
 
     @Override
-    public void writeToNBT(final CompoundNBT nbt) {
-        super.writeToNBT(nbt);
+    public void save(final CompoundNBT tag) {
+        super.save(tag);
 
         final CompoundNBT machineNbt = new CompoundNBT();
         getState().writeToNBT(machineNbt);
-        nbt.put(TAG_MACHINE, machineNbt);
-        EnumUtils.writeToNBT(state, TAG_STATE, nbt);
+        tag.put(TAG_MACHINE, machineNbt);
+        EnumUtils.writeToNBT(state, TAG_STATE, tag);
     }
 
     // --------------------------------------------------------------------- //
@@ -309,7 +309,7 @@ public final class ModuleExecution extends AbstractModuleWithRotation implements
      */
     private void sendFullState() {
         final CompoundNBT nbt = new CompoundNBT();
-        writeToNBT(nbt);
+        this.save(nbt);
         getCasing().sendData(getFace(), nbt, DATA_TYPE_FULL);
     }
 

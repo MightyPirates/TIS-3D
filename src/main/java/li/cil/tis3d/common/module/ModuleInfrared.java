@@ -104,19 +104,19 @@ public final class ModuleInfrared extends AbstractModule implements ICapabilityP
     }
 
     @Override
-    public void readFromNBT(final CompoundNBT nbt) {
-        super.readFromNBT(nbt);
+    public void load(final CompoundNBT tag) {
+        super.load(tag);
 
         receiveQueue.clear();
-        final int[] receiveQueueNbt = nbt.getIntArray(TAG_RECEIVE_QUEUE);
+        final int[] receiveQueueNbt = tag.getIntArray(TAG_RECEIVE_QUEUE);
         for (final int value : receiveQueueNbt) {
             receiveQueue.addLast((short) value);
         }
     }
 
     @Override
-    public void writeToNBT(final CompoundNBT nbt) {
-        super.writeToNBT(nbt);
+    public void save(final CompoundNBT tag) {
+        super.save(tag);
 
         final int[] receiveQueueArray = new int[receiveQueue.size()];
         int i = 0;
@@ -124,7 +124,7 @@ public final class ModuleInfrared extends AbstractModule implements ICapabilityP
             receiveQueueArray[i++] = value;
         }
         final IntArrayNBT receiveQueueNbt = new IntArrayNBT(receiveQueueArray);
-        nbt.put(TAG_RECEIVE_QUEUE, receiveQueueNbt);
+        tag.put(TAG_RECEIVE_QUEUE, receiveQueueNbt);
     }
 
     // --------------------------------------------------------------------- //

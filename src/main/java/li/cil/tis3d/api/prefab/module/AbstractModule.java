@@ -237,10 +237,10 @@ public abstract class AbstractModule implements Module {
     }
 
     @Override
-    public void readFromNBT(final CompoundNBT nbt) {
+    public void load(final CompoundNBT tag) {
     }
 
     @Override
-    public void writeToNBT(final CompoundNBT nbt) {
+    public void save(final CompoundNBT tag) {
     }
 }

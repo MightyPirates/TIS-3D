@@ -267,7 +267,7 @@ public final class CasingImpl implements Casing {
         final int moduleCount = Math.min(modulesNbt.size(), modules.length);
         for (int i = 0; i < moduleCount; i++) {
             if (modules[i] != null) {
-                modules[i].readFromNBT(modulesNbt.getCompound(i));
+                modules[i].load(modulesNbt.getCompound(i));
             }
         }
 
@@ -288,7 +288,7 @@ public final class CasingImpl implements Casing {
         for (final Module module : modules) {
             final CompoundNBT moduleNbt = new CompoundNBT();
             if (module != null) {
-                module.writeToNBT(moduleNbt);
+                module.save(moduleNbt);
             }
             modulesNbt.add(moduleNbt);
         }

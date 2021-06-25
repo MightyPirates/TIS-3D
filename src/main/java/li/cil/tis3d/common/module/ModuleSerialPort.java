@@ -109,31 +109,31 @@ public final class ModuleSerialPort extends AbstractModule implements ModuleWith
     }
 
     @Override
-    public void readFromNBT(final CompoundNBT nbt) {
-        super.readFromNBT(nbt);
+    public void load(final CompoundNBT tag) {
+        super.load(tag);
 
-        writing = nbt.getShort(TAG_VALUE);
+        writing = tag.getShort(TAG_VALUE);
 
-        if (nbt.contains(TAG_SERIAL_INTERFACE)) {
+        if (tag.contains(TAG_SERIAL_INTERFACE)) {
             if (serialInterface.isPresent()) {
-                serialInterface.get().readFromNBT(nbt.getCompound(TAG_SERIAL_INTERFACE));
+                serialInterface.get().readFromNBT(tag.getCompound(TAG_SERIAL_INTERFACE));
             } else {
-                serialInterfaceNbt = Optional.of(nbt.getCompound(TAG_SERIAL_INTERFACE));
+                serialInterfaceNbt = Optional.of(tag.getCompound(TAG_SERIAL_INTERFACE));
             }
         }
     }
 
     @Override
-    public void writeToNBT(final CompoundNBT nbt) {
-        super.writeToNBT(nbt);
+    public void save(final CompoundNBT tag) {
+        super.save(tag);
 
-        nbt.putShort(TAG_VALUE, writing);
+        tag.putShort(TAG_VALUE, writing);
 
         if (serialInterface.isPresent()) {
             final CompoundNBT serialInterfaceNbt = new CompoundNBT();
             serialInterface.get().writeToNBT(serialInterfaceNbt);
-            if (!nbt.isEmpty()) {
-                nbt.put(TAG_SERIAL_INTERFACE, serialInterfaceNbt);
+            if (!tag.isEmpty()) {
+                tag.put(TAG_SERIAL_INTERFACE, serialInterfaceNbt);
             }
         }
     }

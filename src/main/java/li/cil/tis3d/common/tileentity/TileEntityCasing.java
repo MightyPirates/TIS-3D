@@ -449,7 +449,7 @@ public final class TileEntityCasing extends TileEntityComputer implements SidedI
         inventory.setItem(slot, stack);
         final Module module = casing.getModule(Face.VALUES[slot]);
         if (module != null) {
-            module.readFromNBT(moduleData);
+            module.load(moduleData);
         }
     }
 

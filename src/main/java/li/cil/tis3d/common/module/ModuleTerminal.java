@@ -243,31 +243,31 @@ public final class ModuleTerminal extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void readFromNBT(final CompoundNBT nbt) {
-        super.readFromNBT(nbt);
+    public void load(final CompoundNBT tag) {
+        super.load(tag);
 
-        final ListNBT lines = nbt.getList(TAG_DISPLAY, Constants.NBT.TAG_STRING);
+        final ListNBT lines = tag.getList(TAG_DISPLAY, Constants.NBT.TAG_STRING);
         display.clear();
         for (int tagIndex = 0; tagIndex < lines.size(); tagIndex++) {
             display.add(new StringBuilder(lines.getString(tagIndex)));
         }
 
         output.setLength(0);
-        output.append(nbt.getString(TAG_OUTPUT));
+        output.append(tag.getString(TAG_OUTPUT));
         isInputEnabled = output.length() == 0;
     }
 
     @Override
-    public void writeToNBT(final CompoundNBT nbt) {
-        super.writeToNBT(nbt);
+    public void save(final CompoundNBT tag) {
+        super.save(tag);
 
         final ListNBT lines = new ListNBT();
         for (final StringBuilder line : display) {
             lines.add(StringNBT.valueOf(line.toString()));
         }
-        nbt.put(TAG_DISPLAY, lines);
+        tag.put(TAG_DISPLAY, lines);
 
-        nbt.putString(TAG_OUTPUT, output.toString());
+        tag.putString(TAG_OUTPUT, output.toString());
     }
 
     // --------------------------------------------------------------------- //

@@ -124,31 +124,31 @@ public final class ModuleQueue extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void readFromNBT(final CompoundNBT nbt) {
-        super.readFromNBT(nbt);
+    public void load(final CompoundNBT tag) {
+        super.load(tag);
 
-        final int[] queueNbt = nbt.getIntArray(TAG_QUEUE);
+        final int[] queueNbt = tag.getIntArray(TAG_QUEUE);
         final int count = Math.min(queueNbt.length, queue.length);
         for (int i = 0; i < count; i++) {
             queue[i] = (short) queueNbt[i];
         }
 
-        head = MathHelper.clamp(nbt.getInt(TAG_HEAD), 0, QUEUE_SIZE - 1);
-        tail = MathHelper.clamp(nbt.getInt(TAG_TAIL), 0, QUEUE_SIZE - 1);
+        head = MathHelper.clamp(tag.getInt(TAG_HEAD), 0, QUEUE_SIZE - 1);
+        tail = MathHelper.clamp(tag.getInt(TAG_TAIL), 0, QUEUE_SIZE - 1);
     }
 
     @Override
-    public void writeToNBT(final CompoundNBT nbt) {
-        super.writeToNBT(nbt);
+    public void save(final CompoundNBT tag) {
+        super.save(tag);
 
         final int[] queueNbt = new int[queue.length];
         for (int i = 0; i < queue.length; i++) {
             queueNbt[i] = queue[i];
         }
-        nbt.putIntArray(TAG_QUEUE, queueNbt);
+        tag.putIntArray(TAG_QUEUE, queueNbt);
 
-        nbt.putInt(TAG_HEAD, head);
-        nbt.putInt(TAG_TAIL, tail);
+        tag.putInt(TAG_HEAD, head);
+        tag.putInt(TAG_TAIL, tail);
     }
 
     // --------------------------------------------------------------------- //

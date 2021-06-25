@@ -144,19 +144,19 @@ public final class ModuleRedstone extends AbstractModuleWithRotation implements 
     }
 
     @Override
-    public void readFromNBT(final CompoundNBT nbt) {
-        super.readFromNBT(nbt);
+    public void load(final CompoundNBT tag) {
+        super.load(tag);
 
-        output = (short) Math.max(0, Math.min(15, nbt.getShort(TAG_OUTPUT)));
-        input = (short) Math.max(0, Math.min(15, nbt.getShort(TAG_INPUT)));
+        output = (short) Math.max(0, Math.min(15, tag.getShort(TAG_OUTPUT)));
+        input = (short) Math.max(0, Math.min(15, tag.getShort(TAG_INPUT)));
     }
 
     @Override
-    public void writeToNBT(final CompoundNBT nbt) {
-        super.writeToNBT(nbt);
+    public void save(final CompoundNBT tag) {
+        super.save(tag);
 
-        nbt.putInt(TAG_OUTPUT, output);
-        nbt.putInt(TAG_INPUT, input);
+        tag.putInt(TAG_OUTPUT, output);
+        tag.putInt(TAG_INPUT, input);
     }
 
     // --------------------------------------------------------------------- //

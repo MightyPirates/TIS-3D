@@ -191,21 +191,21 @@ public class ModuleRandomAccessMemory extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void readFromNBT(final CompoundNBT nbt) {
-        super.readFromNBT(nbt);
+    public void load(final CompoundNBT tag) {
+        super.load(tag);
 
-        load(nbt.getByteArray(TAG_MEMORY));
-        address = nbt.getByte(TAG_ADDRESS);
-        state = EnumUtils.readFromNBT(State.class, TAG_STATE, nbt);
+        load(tag.getByteArray(TAG_MEMORY));
+        address = tag.getByte(TAG_ADDRESS);
+        state = EnumUtils.readFromNBT(State.class, TAG_STATE, tag);
     }
 
     @Override
-    public void writeToNBT(final CompoundNBT nbt) {
-        super.writeToNBT(nbt);
+    public void save(final CompoundNBT tag) {
+        super.save(tag);
 
-        nbt.putByteArray(TAG_MEMORY, memory.clone());
-        nbt.putByte(TAG_ADDRESS, address);
-        EnumUtils.writeToNBT(state, TAG_STATE, nbt);
+        tag.putByteArray(TAG_MEMORY, memory.clone());
+        tag.putByte(TAG_ADDRESS, address);
+        EnumUtils.writeToNBT(state, TAG_STATE, tag);
     }
 
     // --------------------------------------------------------------------- //

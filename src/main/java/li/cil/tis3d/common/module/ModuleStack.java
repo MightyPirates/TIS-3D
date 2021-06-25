@@ -120,29 +120,29 @@ public final class ModuleStack extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void readFromNBT(final CompoundNBT nbt) {
-        super.readFromNBT(nbt);
+    public void load(final CompoundNBT tag) {
+        super.load(tag);
 
-        final int[] stackNbt = nbt.getIntArray(TAG_STACK);
+        final int[] stackNbt = tag.getIntArray(TAG_STACK);
         final int count = Math.min(stackNbt.length, stack.length);
         for (int i = 0; i < count; i++) {
             stack[i] = (short) stackNbt[i];
         }
 
-        top = MathHelper.clamp(nbt.getInt(TAG_TOP), -1, STACK_SIZE - 1);
+        top = MathHelper.clamp(tag.getInt(TAG_TOP), -1, STACK_SIZE - 1);
     }
 
     @Override
-    public void writeToNBT(final CompoundNBT nbt) {
-        super.writeToNBT(nbt);
+    public void save(final CompoundNBT tag) {
+        super.save(tag);
 
         final int[] stackNbt = new int[stack.length];
         for (int i = 0; i < stack.length; i++) {
             stackNbt[i] = stack[i];
         }
-        nbt.putIntArray(TAG_STACK, stackNbt);
+        tag.putIntArray(TAG_STACK, stackNbt);
 
-        nbt.putInt(TAG_TOP, top);
+        tag.putInt(TAG_TOP, top);
     }
 
     // --------------------------------------------------------------------- //
