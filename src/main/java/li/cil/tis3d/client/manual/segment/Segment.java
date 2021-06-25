@@ -2,11 +2,14 @@ package li.cil.tis3d.client.manual.segment;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+@OnlyIn(Dist.CLIENT)
 public interface Segment {
     /**
      * Parent segment, i.e. the segment this segment was refined from.

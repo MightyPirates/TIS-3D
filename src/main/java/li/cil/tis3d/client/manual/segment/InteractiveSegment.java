@@ -1,6 +1,8 @@
 package li.cil.tis3d.client.manual.segment;
 
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.Optional;
 
@@ -12,6 +14,7 @@ import java.util.Optional;
  * segment's tooltip, for example. It should also notice the currently hovered
  * segment when a left-click occurs.
  */
+@OnlyIn(Dist.CLIENT)
 public interface InteractiveSegment extends Segment {
     /**
      * The tooltip that should be displayed when this segment is being hovered.

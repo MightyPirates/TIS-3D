@@ -5,9 +5,12 @@ import li.cil.tis3d.client.renderer.font.FontRendererNormal;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.Optional;
 
+@OnlyIn(Dist.CLIENT)
 public final class MonospaceSegment extends BasicTextSegment {
     private static final float FONT_SCALE = 0.5f;
     private static final int OFFSET_Y = 1;

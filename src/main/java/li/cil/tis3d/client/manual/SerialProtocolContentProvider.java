@@ -53,19 +53,18 @@ public final class SerialProtocolContentProvider extends NamespaceContentProvide
 
     private String compileLinkList() {
         final StringBuilder sb = new StringBuilder();
-        final List<SerialProtocolDocumentationReference> references = new ArrayList<>();
+        final Set<SerialProtocolDocumentationReference> references = new HashSet<>();
         for (final SerialInterfaceProvider provider : SerialInterfaceProviders.MODULE_PROVIDER_REGISTRY.get()) {
-            final SerialProtocolDocumentationReference reference = provider.getDocumentationReference();
-            if (reference != null && !references.contains(reference)) {
-                references.add(reference);
-            }
+            final Optional<SerialProtocolDocumentationReference> reference = provider.getDocumentationReference();
+            reference.ifPresent(references::add);
         }
-        references.sort(Comparator.comparing(s -> s.getName().getString()));
-        for (final SerialProtocolDocumentationReference protocol : references) {
-            final String name = protocol.getName().getString();
-            final String link = protocol.getLink();
-            sb.append("- [").append(name).append("](").append(link).append(")\n");
-        }
+        references.stream()
+            .sorted(Comparator.comparing(reference -> reference.getName().getString()))
+            .forEachOrdered(reference -> {
+                final String name = reference.getName().getString();
+                final String link = reference.getLink();
+                sb.append("- [").append(name).append("](").append(link).append(")\n");
+            });
         return sb.toString();
     }
 }

@@ -6,10 +6,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.net.URI;
 import java.util.Optional;
 
+@OnlyIn(Dist.CLIENT)
 public final class LinkSegment extends TextSegment implements InteractiveSegment {
     private static final int NORMAL_COLOR = 0x333399;
     private static final int NORMAL_COLOR_HOVER = 0x6666CC;

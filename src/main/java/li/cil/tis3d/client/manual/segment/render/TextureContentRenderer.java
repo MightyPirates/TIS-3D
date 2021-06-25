@@ -20,6 +20,8 @@ public class TextureContentRenderer implements ContentRenderer {
     private final ResourceLocation location;
     private final ImageTexture texture;
 
+    // --------------------------------------------------------------------- //
+
     public TextureContentRenderer(final ResourceLocation location) {
         this.location = location;
 
@@ -32,6 +34,8 @@ public class TextureContentRenderer implements ContentRenderer {
             manager.register(location, texture);
         }
     }
+
+    // --------------------------------------------------------------------- //
 
     @Override
     public int getWidth() {
@@ -48,6 +52,8 @@ public class TextureContentRenderer implements ContentRenderer {
         Minecraft.getInstance().getTextureManager().bind(location);
         Screen.blit(matrixStack, 0, 0, getWidth(), getHeight(), 0, 0, 1, 1, 1, 1);
     }
+
+    // --------------------------------------------------------------------- //
 
     private static class ImageTexture extends SimpleTexture {
         private int width = 0;

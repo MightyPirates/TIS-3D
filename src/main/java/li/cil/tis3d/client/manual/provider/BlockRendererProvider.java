@@ -27,9 +27,13 @@ public final class BlockRendererProvider extends AbstractRendererProvider {
 
     private static final Map<String, BlockState> BLOCK_STATE_CACHE = new HashMap<>();
 
+    // --------------------------------------------------------------------- //
+
     public BlockRendererProvider() {
         super("block");
     }
+
+    // --------------------------------------------------------------------- //
 
     @Override
     protected Optional<ContentRenderer> doGetRenderer(final String data) {

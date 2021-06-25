@@ -17,11 +17,17 @@ public final class ItemStackContentRenderer implements ContentRenderer {
      */
     private static final int CYCLE_SPEED = 1000;
 
+    // --------------------------------------------------------------------- //
+
     private final ItemStack[] stacks;
+
+    // --------------------------------------------------------------------- //
 
     public ItemStackContentRenderer(final ItemStack... stacks) {
         this.stacks = stacks;
     }
+
+    // --------------------------------------------------------------------- //
 
     @Override
     public int getWidth() {

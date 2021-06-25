@@ -4,9 +4,12 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 /**
  * Creates a serial interface instance for a specified block position.
@@ -32,11 +35,10 @@ public interface SerialInterfaceProvider extends IForgeRegistryEntry<SerialInter
      *
      * @param world    the world containing the position.
      * @param position the position in question.
-     * @param side     the side of the position in question.
+     * @param face     the side of the position in question.
      * @return the interface to use for communicating with the position.
      */
-    @Nullable
-    SerialInterface getInterface(final World world, final BlockPos position, final Direction side);
+    Optional<SerialInterface> getInterface(final World world, final BlockPos position, final Direction face);
 
     /**
      * A reference to a manual entry describing the protocol used by the
@@ -58,8 +60,8 @@ public interface SerialInterfaceProvider extends IForgeRegistryEntry<SerialInter
      *
      * @return the description of the link to the manual page for the interface's protocol.
      */
-    @Nullable
-    SerialProtocolDocumentationReference getDocumentationReference();
+    @OnlyIn(Dist.CLIENT)
+    Optional<SerialProtocolDocumentationReference> getDocumentationReference();
 
     /**
      * Tests whether the specified serial interface is still valid for the specified position.

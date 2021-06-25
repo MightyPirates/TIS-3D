@@ -21,6 +21,8 @@ public final class ItemRendererProvider extends AbstractRendererProvider {
         super("item");
     }
 
+    // --------------------------------------------------------------------- //
+
     @Override
     protected Optional<ContentRenderer> doGetRenderer(final String data) {
         final Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(data));

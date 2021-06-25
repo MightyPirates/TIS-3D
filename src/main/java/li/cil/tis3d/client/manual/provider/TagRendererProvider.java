@@ -21,6 +21,8 @@ public final class TagRendererProvider extends AbstractRendererProvider {
         super("tag");
     }
 
+    // --------------------------------------------------------------------- //
+
     @Override
     protected Optional<ContentRenderer> doGetRenderer(final String data) {
         final ITag<Item> tag = ItemTags.getAllTags().getTag(new ResourceLocation(data));

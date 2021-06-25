@@ -12,6 +12,9 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
+import java.util.Objects;
+import java.util.Optional;
+
 public final class SerialInterfaceProviderFurnace extends ForgeRegistryEntry<SerialInterfaceProvider> implements SerialInterfaceProvider {
     private static final TranslationTextComponent DOCUMENTATION_TITLE = new TranslationTextComponent("tis3d.manual.serial_protocols.furnace");
     private static final String DOCUMENTATION_LINK = "protocols/minecraft_furnace.md";
@@ -26,17 +29,14 @@ public final class SerialInterfaceProviderFurnace extends ForgeRegistryEntry<Ser
     }
 
     @Override
-    public SerialInterface getInterface(final World world, final BlockPos position, final Direction side) {
-        final FurnaceTileEntity furnace = (FurnaceTileEntity) world.getBlockEntity(position);
-        if (furnace == null) {
-            throw new IllegalArgumentException("Provided location does not contain a furnace. Check via worksWith first.");
-        }
-        return new SerialInterfaceFurnace(furnace);
+    public Optional<SerialInterface> getInterface(final World world, final BlockPos position, final Direction face) {
+        final FurnaceTileEntity furnace = Objects.requireNonNull((FurnaceTileEntity) world.getBlockEntity(position));
+        return Optional.of(new SerialInterfaceFurnace(furnace));
     }
 
     @Override
-    public SerialProtocolDocumentationReference getDocumentationReference() {
-        return DOCUMENTATION_REFERENCE;
+    public Optional<SerialProtocolDocumentationReference> getDocumentationReference() {
+        return Optional.of(DOCUMENTATION_REFERENCE);
     }
 
     @Override

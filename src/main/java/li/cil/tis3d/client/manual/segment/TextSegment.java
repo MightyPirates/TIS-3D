@@ -4,6 +4,8 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.tis3d.client.manual.Document;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -12,6 +14,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@OnlyIn(Dist.CLIENT)
 public class TextSegment extends BasicTextSegment {
     private static final int DEFAULT_TEXT_COLOR = 0xFF333333;
 

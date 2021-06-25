@@ -17,6 +17,8 @@ public final class TextureRendererProvider extends AbstractRendererProvider {
         super("texture");
     }
 
+    // --------------------------------------------------------------------- //
+
     @Override
     protected Optional<ContentRenderer> doGetRenderer(final String data) {
         try {

@@ -2,12 +2,15 @@ package li.cil.tis3d.client.manual.segment;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+@OnlyIn(Dist.CLIENT)
 abstract class AbstractSegment implements Segment {
     private Segment next;
 

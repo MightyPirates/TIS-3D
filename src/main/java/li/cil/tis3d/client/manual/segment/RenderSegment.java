@@ -9,9 +9,12 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.Optional;
 
+@OnlyIn(Dist.CLIENT)
 public final class RenderSegment extends AbstractSegment implements InteractiveSegment {
     private final Segment parent;
     private final ITextComponent title;

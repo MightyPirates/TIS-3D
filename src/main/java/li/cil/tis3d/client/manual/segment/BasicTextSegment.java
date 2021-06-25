@@ -3,9 +3,12 @@ package li.cil.tis3d.client.manual.segment;
 import com.google.common.collect.ImmutableSet;
 import li.cil.tis3d.client.manual.Document;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.Set;
 
+@OnlyIn(Dist.CLIENT)
 abstract class BasicTextSegment extends AbstractSegment implements Segment {
     private static final Set<Character> BREAKS = ImmutableSet.of(' ', '.', ',', ':', ';', '!', '?', '_', '=', '-', '+', '*', '/', '\\');
     private static final Set<String> LISTS = ImmutableSet.of("- ", "* ");

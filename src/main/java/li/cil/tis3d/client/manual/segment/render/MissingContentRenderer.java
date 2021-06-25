@@ -10,10 +10,14 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public final class MissingContentRenderer extends TextureContentRenderer implements InteractiveContentRenderer {
     private final ITextComponent tooltip;
 
+    // --------------------------------------------------------------------- //
+
     public MissingContentRenderer(final ITextComponent tooltip) {
         super(Textures.LOCATION_GUI_MANUAL_MISSING);
         this.tooltip = tooltip;
     }
+
+    // --------------------------------------------------------------------- //
 
     @Override
     public ITextComponent getTooltip(final ITextComponent tooltip) {

@@ -12,6 +12,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public final class SerialInterfaceProviders {
@@ -29,13 +30,12 @@ public final class SerialInterfaceProviders {
         MODULE_PROVIDERS.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
 
-    @Nullable
-    public static SerialInterfaceProvider getProviderFor(final World world, final BlockPos position, final Direction side) {
+    public static Optional<SerialInterfaceProvider> getProviderFor(final World world, final BlockPos position, final Direction face) {
         for (final SerialInterfaceProvider provider : MODULE_PROVIDER_REGISTRY.get()) {
-            if (provider.matches(world, position, side)) {
-                return provider;
+            if (provider.matches(world, position, face)) {
+                return Optional.of(provider);
             }
         }
-        return null;
+        return Optional.empty();
     }
 }

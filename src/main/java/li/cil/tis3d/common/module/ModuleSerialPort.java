@@ -157,13 +157,13 @@ public final class ModuleSerialPort extends AbstractModule implements ModuleWith
         final BlockPos neighborPos = getCasing().getPosition().relative(Face.toDirection(getFace()));
         final Direction neighborSide = Face.toDirection(getFace().getOpposite());
         if (WorldUtils.isBlockLoaded(world, neighborPos)) {
-            final SerialInterfaceProvider provider = SerialInterfaceProviders.getProviderFor(world, neighborPos, neighborSide);
-            if (provider != null) {
-                if (!serialInterface.map(s -> provider.stillValid(world, neighborPos, neighborSide, s)).orElse(false)) {
+            final Optional<SerialInterfaceProvider> provider = SerialInterfaceProviders.getProviderFor(world, neighborPos, neighborSide);
+            if (provider.isPresent()) {
+                if (!serialInterface.isPresent() || !provider.get().stillValid(world, neighborPos, neighborSide, serialInterface.get())) {
                     // Either we didn't have an interface for our neighbor yet,
                     // or the interface has become invalid, so create a new one.
                     reset();
-                    serialInterface = Optional.ofNullable(provider.getInterface(world, neighborPos, neighborSide));
+                    serialInterface = provider.get().getInterface(world, neighborPos, neighborSide);
                     if (serialInterface.isPresent() && serialInterfaceNbt.isPresent()) {
                         serialInterface.get().readFromNBT(serialInterfaceNbt.get());
                         serialInterfaceNbt = Optional.empty(); // Done reading, don't re-use.
