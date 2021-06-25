@@ -71,7 +71,6 @@ public abstract class AbstractModule implements Module {
      * @param hitResult the current hit result.
      * @return <tt>true</tt> if the observer is looking at the module, <tt>false</tt> otherwise.
      */
-    @OnlyIn(Dist.CLIENT)
     protected boolean isHitFace(@Nullable final RayTraceResult hitResult) {
         if (hitResult == null) {
             return false;
@@ -104,7 +103,6 @@ public abstract class AbstractModule implements Module {
      * @param hitResult the current hit result.
      * @return the UV coordinate the observer is looking at as the X and Y components.
      */
-    @OnlyIn(Dist.CLIENT)
     @Nullable
     protected Vector3d getLocalHitPosition(@Nullable final RayTraceResult hitResult) {
         if (hitResult == null) {
