@@ -6,7 +6,6 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.traits.ModuleWithRotation;
 import li.cil.tis3d.api.util.TransformUtil;
-import li.cil.tis3d.util.EnumUtils;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.math.vector.Vector3d;
@@ -71,13 +70,15 @@ public abstract class AbstractModuleWithRotation extends AbstractModule implemen
     @Override
     public void readFromNBT(final CompoundNBT nbt) {
         super.readFromNBT(nbt);
-        facing = EnumUtils.readFromNBT(Port.class, TAG_FACING, nbt);
+
+        facing = Port.VALUES[Math.max(0, nbt.getByte(TAG_FACING)) % Port.VALUES.length];
     }
 
     @Override
     public void writeToNBT(final CompoundNBT nbt) {
         super.writeToNBT(nbt);
-        EnumUtils.writeToNBT(facing, TAG_FACING, nbt);
+
+        nbt.putByte(TAG_FACING, (byte) facing.ordinal());
     }
 
     // --------------------------------------------------------------------- //
