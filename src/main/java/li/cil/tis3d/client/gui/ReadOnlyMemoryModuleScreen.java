@@ -15,8 +15,11 @@ import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
 
+@OnlyIn(Dist.CLIENT)
 public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMemoryModuleContainer> {
     private static final int GRID_LEFT = 25;
     private static final int GRID_TOP = 13;

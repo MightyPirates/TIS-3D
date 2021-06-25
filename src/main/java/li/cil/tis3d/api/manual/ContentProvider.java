@@ -1,11 +1,11 @@
 package li.cil.tis3d.api.manual;
 
-import li.cil.tis3d.api.prefab.manual.ResourceContentProvider;
+import li.cil.tis3d.api.prefab.manual.NamespaceContentProvider;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
-import javax.annotation.Nullable;
+import java.util.Optional;
 
 /**
  * This interface allows implementation of content providers for the manual.
@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
  * than content found in resource packs, i.e. content providers will only be
  * queried for missing pages, so to speak.
  *
- * @see ResourceContentProvider
+ * @see NamespaceContentProvider
  */
 @OnlyIn(Dist.CLIENT)
 public interface ContentProvider extends IForgeRegistryEntry<ContentProvider> {
@@ -29,9 +29,9 @@ public interface ContentProvider extends IForgeRegistryEntry<ContentProvider> {
      * If this provider cannot provide the requested path, it should return
      * <tt>null</tt> to indicate so, allowing other providers to be queried.
      *
-     * @param path the path to the manual page we're looking for.
+     * @param path     the path to the manual page we're looking for.
+     * @param language the language of the content to look up.
      * @return the content of the document at that path, or <tt>null</tt>.
      */
-    @Nullable
-    Iterable<String> getContent(final String path);
+    Optional<Iterable<String>> getContent(final String path, final String language);
 }

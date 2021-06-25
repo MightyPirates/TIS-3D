@@ -1,12 +1,14 @@
 package li.cil.tis3d.client.manual;
 
 import li.cil.tis3d.api.API;
+import li.cil.tis3d.api.detail.ManualAPI;
 import li.cil.tis3d.api.manual.ContentProvider;
-import li.cil.tis3d.api.manual.RendererProvider;
 import li.cil.tis3d.api.manual.PathProvider;
+import li.cil.tis3d.api.manual.RendererProvider;
 import li.cil.tis3d.api.manual.Tab;
 import li.cil.tis3d.api.prefab.manual.ItemStackTab;
-import li.cil.tis3d.api.prefab.manual.ResourceContentProvider;
+import li.cil.tis3d.api.prefab.manual.NamespaceContentProvider;
+import li.cil.tis3d.api.prefab.manual.NamespacePathProvider;
 import li.cil.tis3d.api.prefab.manual.TextureTab;
 import li.cil.tis3d.client.manual.provider.*;
 import li.cil.tis3d.common.block.Blocks;
@@ -40,8 +42,8 @@ public final class Manual {
     // --------------------------------------------------------------------- //
 
     public static void initialize() {
-        PATH_PROVIDERS.register("game_registry", ModPathProvider::new);
-        CONTENT_PROVIDERS.register("resources", () -> new ResourceContentProvider(API.MOD_ID, "doc/"));
+        PATH_PROVIDERS.register("game_registry", () -> new NamespacePathProvider(API.MOD_ID));
+        CONTENT_PROVIDERS.register("resources", () -> new NamespaceContentProvider(API.MOD_ID, "doc/"));
         CONTENT_PROVIDERS.register("serial_protocols", SerialProtocolContentProvider::new);
 
         IMAGE_PROVIDERS.register("texture", TextureRendererProvider::new);
@@ -50,19 +52,19 @@ public final class Manual {
         IMAGE_PROVIDERS.register("tag", TagRendererProvider::new);
 
         TABS.register("home", () -> new TextureTab(
-            "%LANGUAGE%/index.md",
+            ManualAPI.LANGUAGE_KEY + "/index.md",
             new TranslationTextComponent("tis3d.manual.home"),
             new ResourceLocation(API.MOD_ID, "textures/gui/manual_home.png")));
         TABS.register("blocks", () -> new ItemStackTab(
-            "%LANGUAGE%/block/index.md",
+            ManualAPI.LANGUAGE_KEY + "/block/index.md",
             new TranslationTextComponent("tis3d.manual.blocks"),
             new ItemStack(Blocks.CONTROLLER.get())));
         TABS.register("modules", () -> new ItemStackTab(
-            "%LANGUAGE%/item/index.md",
+            ManualAPI.LANGUAGE_KEY + "/item/index.md",
             new TranslationTextComponent("tis3d.manual.items"),
             new ItemStack(Items.EXECUTION_MODULE.get())));
         TABS.register("serial_protocols", () -> new TextureTab(
-            "%LANGUAGE%/serial_protocols.md",
+            ManualAPI.LANGUAGE_KEY + "/serial_protocols.md",
             new TranslationTextComponent("tis3d.manual.serial_protocols"),
             new ResourceLocation(API.MOD_ID, "textures/gui/manual_serial_protocols.png")));
 

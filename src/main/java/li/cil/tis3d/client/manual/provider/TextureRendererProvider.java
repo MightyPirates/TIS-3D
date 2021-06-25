@@ -1,28 +1,28 @@
 package li.cil.tis3d.client.manual.provider;
 
-import li.cil.tis3d.api.manual.RendererProvider;
 import li.cil.tis3d.api.manual.ContentRenderer;
+import li.cil.tis3d.api.prefab.manual.AbstractRendererProvider;
 import li.cil.tis3d.client.manual.Strings;
-import li.cil.tis3d.client.manual.segment.render.MissingItemRenderer;
+import li.cil.tis3d.client.manual.segment.render.MissingContentRenderer;
 import li.cil.tis3d.client.manual.segment.render.TextureContentRenderer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.registries.ForgeRegistryEntry;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
-public final class TextureRendererProvider extends ForgeRegistryEntry<RendererProvider> implements RendererProvider {
-    private static final String PREFIX = "resource:";
+import java.util.Optional;
 
-    @Override
-    public boolean matches(final String path) {
-        return path.contains(PREFIX);
+@OnlyIn(Dist.CLIENT)
+public final class TextureRendererProvider extends AbstractRendererProvider {
+    public TextureRendererProvider() {
+        super("texture");
     }
 
     @Override
-    public ContentRenderer getRenderer(final String path) {
-        final String data = path.substring(PREFIX.length());
+    protected Optional<ContentRenderer> doGetRenderer(final String data) {
         try {
-            return new TextureContentRenderer(new ResourceLocation(data));
+            return Optional.of(new TextureContentRenderer(new ResourceLocation(data)));
         } catch (final Throwable t) {
-            return new MissingItemRenderer(Strings.WARNING_IMAGE_MISSING);
+            return Optional.of(new MissingContentRenderer(Strings.WARNING_IMAGE_MISSING));
         }
     }
 }

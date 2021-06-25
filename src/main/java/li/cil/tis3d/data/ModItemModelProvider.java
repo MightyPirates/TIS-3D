@@ -76,22 +76,22 @@ public final class ModItemModelProvider extends ItemModelProvider {
             .end()
             .end();
 
-        module(Items.AUDIO_MODULE, BLOCK_FOLDER + "/overlay/module_audio");
-        module(Items.DISPLAY_MODULE, ITEM_FOLDER + "/module_display");
-        module(Items.EXECUTION_MODULE, BLOCK_FOLDER + "/overlay/module_execution_running");
+        module(Items.AUDIO_MODULE, BLOCK_FOLDER + "/overlay/audio_module");
+        module(Items.DISPLAY_MODULE, ITEM_FOLDER + "/display_module");
+        module(Items.EXECUTION_MODULE, BLOCK_FOLDER + "/overlay/execution_module_running");
         module(Items.FACADE_MODULE, mcLoc(BLOCK_FOLDER + "/iron_block"));
-        module(Items.INFRARED_MODULE, BLOCK_FOLDER + "/overlay/module_infrared");
-        module(Items.KEYPAD_MODULE, BLOCK_FOLDER + "/overlay/module_keypad");
-        module(Items.QUEUE_MODULE, ITEM_FOLDER + "/module_queue");
-        module(Items.RANDOM_MODULE, BLOCK_FOLDER + "/overlay/module_random");
-        module(Items.RANDOM_ACCESS_MEMORY_MODULE, ITEM_FOLDER + "/module_random_access_memory");
-        module(Items.READ_ONLY_MEMORY_MODULE, ITEM_FOLDER + "/module_read_only_memory");
-        module(Items.REDSTONE_MODULE, ITEM_FOLDER + "/module_redstone");
-        module(Items.SEQUENCER_MODULE, ITEM_FOLDER + "/module_sequencer");
-        module(Items.SERIAL_PORT_MODULE, "block/overlay/module_serial_port");
-        module(Items.STACK_MODULE, ITEM_FOLDER + "/module_stack");
-        module(Items.TERMINAL_MODULE, ITEM_FOLDER + "/module_terminal");
-        module(Items.TIMER_MODULE, ITEM_FOLDER + "/module_timer");
+        module(Items.INFRARED_MODULE, BLOCK_FOLDER + "/overlay/infrared_module");
+        module(Items.KEYPAD_MODULE, BLOCK_FOLDER + "/overlay/keypad_module");
+        module(Items.QUEUE_MODULE, ITEM_FOLDER + "/queue_module");
+        module(Items.RANDOM_MODULE, BLOCK_FOLDER + "/overlay/random_module");
+        module(Items.RANDOM_ACCESS_MEMORY_MODULE, ITEM_FOLDER + "/random_access_memory_module");
+        module(Items.READ_ONLY_MEMORY_MODULE, ITEM_FOLDER + "/read_only_memory_module");
+        module(Items.REDSTONE_MODULE, ITEM_FOLDER + "/redstone_module");
+        module(Items.SEQUENCER_MODULE, ITEM_FOLDER + "/sequencer_module");
+        module(Items.SERIAL_PORT_MODULE, BLOCK_FOLDER + "/overlay/serial_port_module");
+        module(Items.STACK_MODULE, ITEM_FOLDER + "/stack_module");
+        module(Items.TERMINAL_MODULE, ITEM_FOLDER + "/terminal_module");
+        module(Items.TIMER_MODULE, ITEM_FOLDER + "/timer_module");
     }
 
     private <T extends Item> void simple(final RegistryObject<T> item) {

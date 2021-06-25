@@ -23,11 +23,11 @@ public final class Items {
 
     // --------------------------------------------------------------------- //
 
-    public static final RegistryObject<Item> BOOK_CODE = register("book_code", ItemBookCode::new);
-    public static final RegistryObject<Item> BOOK_MANUAL = register("book_manual", ItemBookManual::new);
+    public static final RegistryObject<Item> BOOK_CODE = register("code_book", ItemBookCode::new);
+    public static final RegistryObject<Item> BOOK_MANUAL = register("manual", ItemBookManual::new);
 
     public static final RegistryObject<Item> KEY = register("key", ItemKey::new);
-    public static final RegistryObject<Item> KEY_CREATIVE = register("key_creative", ItemKey::new);
+    public static final RegistryObject<Item> KEY_CREATIVE = register("skeleton_key", ItemKey::new);
 
     public static final RegistryObject<Item> PRISM = register("prism");
 

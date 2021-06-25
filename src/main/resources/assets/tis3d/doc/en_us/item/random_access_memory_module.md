@@ -9,7 +9,7 @@ The RAM module follows a simple protocol for reading and writing individual cell
 - When any one of the RAM module's ports completes a write operation, the value stored at the address will be transferred.
 After the address was either read from or written to, the RAM module will then return to reading another address to allow the next read or write operation.
 
-Example for reading a value from address `8` into the accumulator, assuming the RAM module is on the `LEFT` port of an [execution module](module_execution.md):
+Example for reading a value from address `8` into the accumulator, assuming the RAM module is on the `LEFT` port of an [execution module](execution_module.md):
 `MOV 8 LEFT`
 `MOV LEFT ACC`
 

@@ -12,6 +12,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -36,6 +38,7 @@ import java.util.regex.Pattern;
  * Formatting is done by accumulating formatting information over the parent
  * nodes, up to the root.
  */
+@OnlyIn(Dist.CLIENT)
 public final class Document {
     /**
      * Parses a plain text document into a list of segments.
@@ -205,9 +208,9 @@ public final class Document {
         try {
             final String title = m.group(1);
             final String url = m.group(2);
-            final ContentRenderer renderer = ManualAPI.imageFor(url);
-            if (renderer != null) {
-                return new RenderSegment(s, new StringTextComponent(title), renderer);
+            final Optional<ContentRenderer> renderer = ManualAPI.imageFor(url);
+            if (renderer.isPresent()) {
+                return new RenderSegment(s, new StringTextComponent(title), renderer.get());
             } else {
                 return new TextSegment(s, "No renderer found for: " + url);
             }

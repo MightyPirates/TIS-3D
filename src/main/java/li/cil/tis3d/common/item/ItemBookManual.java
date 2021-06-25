@@ -9,6 +9,8 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 
+import java.util.Optional;
+
 /**
  * The manual!
  */
@@ -20,12 +22,10 @@ public final class ItemBookManual extends ModItem {
     public ActionResultType useOn(final ItemUseContext context) {
         final World world = context.getLevel();
         if (world.isClientSide()) {
-            final String path = ManualAPI.pathFor(world, context.getClickedPos(), context.getClickedFace());
-            if (path != null) {
-                ManualAPI.open();
-                ManualAPI.reset();
-                ManualAPI.navigate(path);
-            }
+            ManualAPI.open();
+            ManualAPI.reset();
+            ManualAPI.pathFor(world, context.getClickedPos(), context.getClickedFace())
+                .ifPresent(ManualAPI::navigate);
         }
         return ActionResultType.sidedSuccess(world.isClientSide());
     }

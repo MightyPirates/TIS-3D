@@ -208,8 +208,8 @@ public final class ManualScreen extends Screen {
     }
 
     private void refreshPage() {
-        final Iterable<String> content = ManualAPI.contentFor(ManualAPIImpl.peekPath());
-        document = Document.parse(content != null ? content : Collections.singletonList("Document not found: " + ManualAPIImpl.peekPath()));
+        final Optional<Iterable<String>> content = ManualAPI.contentFor(ManualAPIImpl.peekPath());
+        document = Document.parse(content.orElse(Collections.singletonList("Document not found: " + ManualAPIImpl.peekPath())));
         documentHeight = Document.height(document, documentMaxWidth, getFontRenderer());
         scrollTo(offset());
     }

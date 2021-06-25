@@ -1,5 +1,6 @@
 package li.cil.tis3d.api.manual;
 
+import li.cil.tis3d.api.detail.ManualAPI;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -8,7 +9,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
-import javax.annotation.Nullable;
+import java.util.Optional;
 
 /**
  * Allows providing paths for item stacks and blocks in the world.
@@ -20,9 +21,10 @@ import javax.annotation.Nullable;
  * This way you can easily make entries in your documentation available the
  * same way OpenComputers does it itself.
  * <p>
- * Note that you can use the special variable <tt>%LANGUAGE%</tt> in your
- * paths, for language agnostic paths. These will be resolved to the currently
- * set language, falling back to <tt>en_US</tt>, during actual content lookup.
+ * Note that you can use the special variable {@link ManualAPI#LANGUAGE_KEY} in your
+ * paths for language agnostic paths. These will be resolved to the currently
+ * set language, falling back to {@link ManualAPI#FALLBACK_LANGUAGE}, during actual
+ * content lookup.
  */
 @OnlyIn(Dist.CLIENT)
 public interface PathProvider extends IForgeRegistryEntry<PathProvider> {
@@ -35,8 +37,7 @@ public interface PathProvider extends IForgeRegistryEntry<PathProvider> {
      * @param stack the stack to get the documentation path to.
      * @return the path to the page, <tt>null</tt> if none is known.
      */
-    @Nullable
-    String pathFor(final ItemStack stack);
+    Optional<String> pathFor(final ItemStack stack);
 
     /**
      * Get the path to the documentation page for the provided block.
@@ -46,9 +47,8 @@ public interface PathProvider extends IForgeRegistryEntry<PathProvider> {
      *
      * @param world the world containing the block.
      * @param pos   the position coordinate of the block.
-     * @param side  the face of the block.
+     * @param face  the face of the block.
      * @return the path to the page, <tt>null</tt> if none is known.
      */
-    @Nullable
-    String pathFor(final World world, final BlockPos pos, final Direction side);
+    Optional<String> pathFor(final World world, final BlockPos pos, final Direction face);
 }

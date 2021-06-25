@@ -2,6 +2,6 @@
   "parent": "tis3d:item/module",
   "textures": {
     "layer0": "tis3d:block/casing_module",
-    "layer1": "tis3d:item/module_terminal"
+    "layer1": "tis3d:item/terminal_module"
   }
 }

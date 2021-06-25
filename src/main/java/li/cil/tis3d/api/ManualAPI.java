@@ -1,13 +1,13 @@
 package li.cil.tis3d.api;
 
-import li.cil.tis3d.api.manual.RendererProvider;
 import li.cil.tis3d.api.manual.ContentRenderer;
+import li.cil.tis3d.api.manual.RendererProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
+import java.util.Optional;
 
 /**
  * This API allows interfacing with the in-game manual of OpenComputers.
@@ -29,12 +29,11 @@ public final class ManualAPI {
      * @param path the path to the image to get the renderer for.
      * @return the custom renderer for that path.
      */
-    @Nullable
-    public static ContentRenderer imageFor(final String path) {
+    public static Optional<ContentRenderer> imageFor(final String path) {
         if (API.manualAPI != null) {
             return API.manualAPI.imageFor(path);
         }
-        return null;
+        return Optional.empty();
     }
 
     // ----------------------------------------------------------------------- //
@@ -45,12 +44,11 @@ public final class ManualAPI {
      * @param stack the stack to find the documentation path for.
      * @return the path to the page, <tt>null</tt> if none is known.
      */
-    @Nullable
-    public static String pathFor(final ItemStack stack) {
+    public static Optional<String> pathFor(final ItemStack stack) {
         if (API.manualAPI != null) {
             return API.manualAPI.pathFor(stack);
         }
-        return null;
+        return Optional.empty();
     }
 
     /**
@@ -58,15 +56,14 @@ public final class ManualAPI {
      *
      * @param world the world containing the block.
      * @param pos   the position of the block.
-     * @param side  the face of the block.
+     * @param face  the face of the block.
      * @return the path to the page, <tt>null</tt> if none is known.
      */
-    @Nullable
-    public static String pathFor(final World world, final BlockPos pos, final Direction side) {
+    public static Optional<String> pathFor(final World world, final BlockPos pos, final Direction face) {
         if (API.manualAPI != null) {
-            return API.manualAPI.pathFor(world, pos, side);
+            return API.manualAPI.pathFor(world, pos, face);
         }
-        return null;
+        return Optional.empty();
     }
 
     /**
@@ -75,12 +72,11 @@ public final class ManualAPI {
      * @param path the path of the page to get the content of.
      * @return the content of the page, or <tt>null</tt> if none exists.
      */
-    @Nullable
-    public static Iterable<String> contentFor(final String path) {
+    public static Optional<Iterable<String>> contentFor(final String path) {
         if (API.manualAPI != null) {
             return API.manualAPI.contentFor(path);
         }
-        return null;
+        return Optional.empty();
     }
 
     // ----------------------------------------------------------------------- //

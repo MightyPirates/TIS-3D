@@ -30,7 +30,7 @@ public final class LinkSegment extends TextSegment implements InteractiveSegment
     private boolean isLinkValid() {
         if (!isLinkValidInitialized) {
             isLinkValid = (url.startsWith("http://") || url.startsWith("https://")) ||
-                          ManualAPI.contentFor(ManualAPIImpl.makeRelative(url, ManualAPIImpl.peekPath())) != null;
+                          ManualAPI.contentFor(ManualAPIImpl.makeRelative(url, ManualAPIImpl.peekPath())).isPresent();
             isLinkValidInitialized = true;
         }
         return isLinkValid;

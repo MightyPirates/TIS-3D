@@ -2,7 +2,7 @@
 
 ![Stack overflow](item:tis3d:stack_module)
 
-The stack module is capable of storing up to sixteen (16) values. It can act as expanded memory for [execution modules](module_execution.md), for example.
+The stack module is capable of storing up to sixteen (16) values. It can act as expanded memory for [execution modules](execution_module.md), for example.
 
 While not full, the stack module reads values from all four of its ports and pushes read values on top of the list of stored values. While not empty, the stack module writes the topmost value, i.e. the value that was last pushed to the internal list of values, to all four of its ports. In other words, the queue module is LIFO buffer.
 

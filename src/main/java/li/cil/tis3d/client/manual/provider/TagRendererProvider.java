@@ -1,35 +1,36 @@
 package li.cil.tis3d.client.manual.provider;
 
-import li.cil.tis3d.api.manual.RendererProvider;
 import li.cil.tis3d.api.manual.ContentRenderer;
+import li.cil.tis3d.api.prefab.manual.AbstractRendererProvider;
 import li.cil.tis3d.client.manual.Strings;
 import li.cil.tis3d.client.manual.segment.render.ItemStackContentRenderer;
-import li.cil.tis3d.client.manual.segment.render.MissingItemRenderer;
+import li.cil.tis3d.client.manual.segment.render.MissingContentRenderer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tags.ITag;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.registries.ForgeRegistryEntry;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
-public final class TagRendererProvider extends ForgeRegistryEntry<RendererProvider> implements RendererProvider {
-    private static final String PREFIX = "tag:";
+import java.util.Optional;
 
-    @Override
-    public boolean matches(final String path) {
-        return path.startsWith(PREFIX);
+@OnlyIn(Dist.CLIENT)
+public final class TagRendererProvider extends AbstractRendererProvider {
+    public TagRendererProvider() {
+        super("tag");
     }
 
     @Override
-    public ContentRenderer getRenderer(final String path) {
-        final String data = path.substring(PREFIX.length());
+    protected Optional<ContentRenderer> doGetRenderer(final String data) {
         final ITag<Item> tag = ItemTags.getAllTags().getTag(new ResourceLocation(data));
-        if (tag == null || tag.getValues().isEmpty()) {
-            return new MissingItemRenderer(Strings.WARNING_TAG_MISSING);
+        if (tag != null && !tag.getValues().isEmpty()) {
+            return Optional.of(new ItemStackContentRenderer(tag
+                .getValues().stream()
+                .map(ItemStack::new)
+                .toArray(ItemStack[]::new)));
+        } else {
+            return Optional.of(new MissingContentRenderer(Strings.WARNING_TAG_MISSING));
         }
-        return new ItemStackContentRenderer(tag
-            .getValues().stream()
-            .map(ItemStack::new)
-            .toArray(ItemStack[]::new));
     }
 }

@@ -8,7 +8,7 @@ The timer module continuously reads values from all four of its ports. When a va
 
 As the timer module only writes to its ports when the timer has elapsed, it is therefore possible to wait for a specific amount of time, by setting up the timer and then trying to read a value from it. Due to the blocking nature of port I/O in TIS-3D computers, this will pause exectution until the timer has elapsed.
 
-An interrupt may be implemented by having an [execution module](module_execution.md) read from the timer module using the virtual `ANY` port, therefore allowing concurrent programs to end the read by pushing a value to that [execution module](module_execution.md).
+An interrupt may be implemented by having an [execution module](execution_module.md) read from the timer module using the virtual `ANY` port, therefore allowing concurrent programs to end the read by pushing a value to that [execution module](execution_module.md).
 
 ## Time conversion table
 For the simpl- for simplicity, we provide a lookup table of commonly used times to the value the timer module has to be configured with to wait for that amount of time.

@@ -7,7 +7,6 @@ import li.cil.tis3d.client.gui.ManualScreen;
 import li.cil.tis3d.client.manual.Manual;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.resources.Language;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -18,17 +17,12 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.regex.Pattern;
+import java.util.function.Function;
 
 public final class ManualAPIImpl implements ManualAPI {
     private static final Logger LOGGER = LogManager.getLogger();
 
     // --------------------------------------------------------------------- //
-
-    // Language placeholder replacement.
-    private static final String LANGUAGE_KEY = "%LANGUAGE%";
-    private static final String FALLBACK_LANGUAGE = "en_US";
-    private static final Pattern PATTERN_LANGUAGE_KEY = Pattern.compile(LANGUAGE_KEY);
 
     // Error messages.
     private static final String MESSAGE_CONTENT_LOOKUP_EXCEPTION = "A content provider threw an error when queried.";
@@ -84,48 +78,35 @@ public final class ManualAPIImpl implements ManualAPI {
     // --------------------------------------------------------------------- //
 
     @Override
-    @Nullable
-    public String pathFor(final ItemStack stack) {
+    public Optional<String> pathFor(final ItemStack stack) {
         return pathFor(p -> p.pathFor(stack), MESSAGE_PATH_PROVIDER_ITEM_EXCEPTION);
     }
 
     @Override
-    @Nullable
-    public String pathFor(final World world, final BlockPos pos, final Direction side) {
-        return pathFor(p -> p.pathFor(world, pos, side), MESSAGE_PATH_PROVIDER_BLOCK_EXCEPTION);
+    public Optional<String> pathFor(final World world, final BlockPos pos, final Direction face) {
+        return pathFor(p -> p.pathFor(world, pos, face), MESSAGE_PATH_PROVIDER_BLOCK_EXCEPTION);
     }
 
     @SuppressWarnings("UnstableApiUsage")
     @Override
-    @Nullable
-    public Iterable<String> contentFor(final String path) {
+    public Optional<Iterable<String>> contentFor(final String path) {
         final String cleanPath = Files.simplifyPath(path);
-        final Language currentLanguage = Minecraft.getInstance().getLanguageManager().getSelected();
-        final Optional<Iterable<String>> result = contentForWithRedirects(PATTERN_LANGUAGE_KEY.matcher(cleanPath).replaceAll(currentLanguage.getCode()));
-        if (result.isPresent()) {
-            return result.get();
-        }
-        return contentForWithRedirects(PATTERN_LANGUAGE_KEY.matcher(cleanPath).replaceAll(FALLBACK_LANGUAGE)).orElse(null);
+        final String currentLanguage = Minecraft.getInstance().getLanguageManager().getSelected().getCode();
+        final Optional<Iterable<String>> result = contentForWithRedirects(cleanPath.replace(LANGUAGE_KEY, currentLanguage), currentLanguage, new LinkedHashSet<>());
+        return result.isPresent() ? result : contentForWithRedirects(cleanPath.replace(LANGUAGE_KEY, FALLBACK_LANGUAGE), FALLBACK_LANGUAGE, new LinkedHashSet<>());
     }
 
     @Override
-    @Nullable
-    public ContentRenderer imageFor(final String href) {
+    public Optional<ContentRenderer> imageFor(final String href) {
         final IForgeRegistry<RendererProvider> imageProviders = Manual.IMAGE_PROVIDER_REGISTRY.get();
         for (final RendererProvider provider : imageProviders) {
-            if (provider.matches(href)) {
-                try {
-                    final ContentRenderer image = provider.getRenderer(href);
-                    if (image != null) {
-                        return image;
-                    }
-                } catch (final Throwable t) {
-                    LOGGER.warn(MESSAGE_IMAGE_PROVIDER_EXCEPTION, t);
-                }
+            final Optional<ContentRenderer> renderer = provider.getRenderer(href);
+            if (renderer.isPresent()) {
+                return renderer;
             }
         }
 
-        return null;
+        return Optional.empty();
     }
 
     @Override
@@ -136,7 +117,7 @@ public final class ManualAPIImpl implements ManualAPI {
     @Override
     public void reset() {
         history.clear();
-        history.push(new History(String.format("%s/index.md", LANGUAGE_KEY)));
+        history.push(new History(LANGUAGE_KEY + "/index.md"));
     }
 
     @Override
@@ -173,56 +154,54 @@ public final class ManualAPIImpl implements ManualAPI {
 
     // --------------------------------------------------------------------- //
 
-    @Nullable
-    private String pathFor(final ProviderQuery query, final String warning) {
+    private Optional<String> pathFor(final Function<PathProvider, Optional<String>> query, final String warning) {
         for (final PathProvider provider : Manual.PATH_PROVIDER_REGISTRY.get()) {
             try {
-                final String path = query.pathFor(provider);
-                if (path != null) {
+                final Optional<String> path = query.apply(provider);
+                if (path.isPresent()) {
                     return path;
                 }
             } catch (final Throwable t) {
                 LOGGER.warn(warning, t);
             }
         }
-        return null;
+        return Optional.empty();
     }
 
-    private Optional<Iterable<String>> contentForWithRedirects(final String path) {
-        return contentForWithRedirects(path, new ArrayList<>());
-    }
-
-    private Optional<Iterable<String>> contentForWithRedirects(final String path, final List<String> seen) {
-        if (seen.contains(path)) {
+    private Optional<Iterable<String>> contentForWithRedirects(final String path, final String language, final Set<String> seen) {
+        if (!seen.add(path)) {
             final List<String> message = new ArrayList<>();
             message.add("Redirection loop: ");
             message.addAll(seen);
             message.add(path);
             return Optional.of(message);
         }
-        final Optional<Iterable<String>> content = doContentLookup(path);
 
-        if (content.isPresent()) {
-            final Iterable<String> lines = content.get();
-            final Iterator<String> iterator = lines.iterator();
-            if (iterator.hasNext()) {
-                final String line = iterator.next();
-                if (line.toLowerCase(Locale.US).startsWith("#redirect ")) {
-                    final List<String> newSeen = new ArrayList<>(seen);
-                    newSeen.add(path);
-                    return contentForWithRedirects(makeRelative(line.substring("#redirect ".length()), path), newSeen);
+        try {
+            final Optional<Iterable<String>> content = doContentLookup(path, language);
+
+            if (content.isPresent()) {
+                final Iterable<String> lines = content.get();
+                final Iterator<String> iterator = lines.iterator();
+                if (iterator.hasNext()) {
+                    final String line = iterator.next();
+                    if (line.toLowerCase(Locale.US).startsWith("#redirect ")) {
+                        return contentForWithRedirects(makeRelative(line.substring("#redirect ".length()), path), language, seen);
+                    }
                 }
             }
+            return content; // Empty.
+        } finally {
+            seen.remove(path);
         }
-        return content; // Empty.
     }
 
-    private Optional<Iterable<String>> doContentLookup(final String path) {
+    private Optional<Iterable<String>> doContentLookup(final String path, final String language) {
         for (final ContentProvider provider : Manual.CONTENT_PROVIDER_REGISTRY.get()) {
             try {
-                final Iterable<String> lines = provider.getContent(path);
-                if (lines != null) {
-                    return Optional.of(lines);
+                final Optional<Iterable<String>> lines = provider.getContent(path, language);
+                if (lines.isPresent()) {
+                    return lines;
                 }
             } catch (final Throwable t) {
                 LOGGER.warn(MESSAGE_CONTENT_LOOKUP_EXCEPTION, t);
@@ -240,11 +219,5 @@ public final class ManualAPIImpl implements ManualAPI {
         private History(final String path) {
             this.path = path;
         }
-    }
-
-    @FunctionalInterface
-    private interface ProviderQuery {
-        @Nullable
-        String pathFor(PathProvider provider);
     }
 }

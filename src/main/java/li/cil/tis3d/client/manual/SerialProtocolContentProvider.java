@@ -1,18 +1,13 @@
 package li.cil.tis3d.client.manual;
 
 import li.cil.tis3d.api.API;
-import li.cil.tis3d.api.prefab.manual.ResourceContentProvider;
+import li.cil.tis3d.api.detail.ManualAPI;
+import li.cil.tis3d.api.prefab.manual.NamespaceContentProvider;
 import li.cil.tis3d.api.serial.SerialInterfaceProvider;
 import li.cil.tis3d.api.serial.SerialProtocolDocumentationReference;
 import li.cil.tis3d.common.provider.SerialInterfaceProviders;
-import net.minecraft.client.Minecraft;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.regex.Pattern;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -23,18 +18,12 @@ import java.util.stream.StreamSupport;
  * which is the "template" for the page, and then populates it with the
  * list of known protocols.
  */
-public final class SerialProtocolContentProvider extends ResourceContentProvider {
-    private static final String LANGUAGE_KEY = "%LANGUAGE%";
-    private static final Pattern PATTERN_LANGUAGE_KEY = Pattern.compile(LANGUAGE_KEY);
-    private static final String SERIAL_PROTOCOLS_PATH = "%LANGUAGE%/serial_protocols.md";
-    private static final String SERIAL_PROTOCOLS_TEMPLATE = "%LANGUAGE%/template/serial_protocols.md";
-    private static final Pattern PATTERN_LIST = Pattern.compile("@PROTOCOLS@");
-    private static final Pattern PATTERN_LINE_END = Pattern.compile("\r?\n");
+public final class SerialProtocolContentProvider extends NamespaceContentProvider {
+    private static final String SERIAL_PROTOCOLS_PATH = ManualAPI.LANGUAGE_KEY + "/serial_protocols.md";
+    private static final String SERIAL_PROTOCOLS_TEMPLATE = ManualAPI.LANGUAGE_KEY + "/template/serial_protocols.md";
 
-    // --------------------------------------------------------------------- //
-
-    @Nullable
-    private String cachedList = null;
+    private static final String PATTERN_LIST = "%PROTOCOLS%";
+    private static final String PATTERN_LINE_END = "\r?\n";
 
     // --------------------------------------------------------------------- //
 
@@ -45,47 +34,38 @@ public final class SerialProtocolContentProvider extends ResourceContentProvider
     // --------------------------------------------------------------------- //
 
     @Override
-    @Nullable
-    public Iterable<String> getContent(final String path) {
-        final String language = Minecraft.getInstance().getLanguageManager().getSelected().getCode();
-        final String localizedProtocolsPath = PATTERN_LANGUAGE_KEY.matcher(SERIAL_PROTOCOLS_PATH).replaceAll(language);
+    public Optional<Iterable<String>> getContent(final String path, final String language) {
+        final String localizedProtocolsPath = SERIAL_PROTOCOLS_PATH.replaceAll(ManualAPI.LANGUAGE_KEY, language);
         if (localizedProtocolsPath.equals(path)) {
-            final String localizedTemplatePath = PATTERN_LANGUAGE_KEY.matcher(SERIAL_PROTOCOLS_TEMPLATE).replaceAll(language);
-            return populateTemplate(super.getContent(localizedTemplatePath));
+            final String localizedTemplatePath = SERIAL_PROTOCOLS_TEMPLATE.replaceAll(ManualAPI.LANGUAGE_KEY, language);
+            return super.getContent(localizedTemplatePath, language).
+                map(lines -> StreamSupport.
+                    stream(lines.spliterator(), false).
+                    map(line -> line.replaceAll(PATTERN_LIST, compileLinkList())).
+                    flatMap(expandedLine -> Arrays.stream(expandedLine.split(PATTERN_LINE_END))).
+                    collect(Collectors.toList())
+                );
         }
-        return null;
+        return Optional.empty();
     }
 
     // --------------------------------------------------------------------- //
 
-    @Nullable
-    private Iterable<String> populateTemplate(@Nullable final Iterable<String> template) {
-        if (template == null) {
-            return null;
-        }
-        return StreamSupport.
-            stream(template.spliterator(), false).
-            flatMap(line -> Arrays.stream(PATTERN_LINE_END.split(PATTERN_LIST.matcher(line).replaceAll(compileLinkList())))).
-            collect(Collectors.toList());
-    }
-
     private String compileLinkList() {
-        if (cachedList == null) {
-            final StringBuilder sb = new StringBuilder();
-            final List<SerialProtocolDocumentationReference> references = new ArrayList<>();
-            for (final SerialInterfaceProvider provider : SerialInterfaceProviders.MODULE_PROVIDER_REGISTRY.get()) {
-                final SerialProtocolDocumentationReference reference = provider.getDocumentationReference();
-                if (reference != null && !references.contains(reference)) {
-                    references.add(reference);
-                }
+        final StringBuilder sb = new StringBuilder();
+        final List<SerialProtocolDocumentationReference> references = new ArrayList<>();
+        for (final SerialInterfaceProvider provider : SerialInterfaceProviders.MODULE_PROVIDER_REGISTRY.get()) {
+            final SerialProtocolDocumentationReference reference = provider.getDocumentationReference();
+            if (reference != null && !references.contains(reference)) {
+                references.add(reference);
             }
-            references.sort(Comparator.comparing(s -> s.getName().getString()));
-            for (final SerialProtocolDocumentationReference protocol : references) {
-                sb.append("- [").append(protocol.getName()).append("](").append(protocol.getLink()).append(")\n");
-            }
-            cachedList = sb.toString();
         }
-
-        return cachedList;
+        references.sort(Comparator.comparing(s -> s.getName().getString()));
+        for (final SerialProtocolDocumentationReference protocol : references) {
+            final String name = protocol.getName().getString();
+            final String link = protocol.getLink();
+            sb.append("- [").append(name).append("](").append(link).append(")\n");
+        }
+        return sb.toString();
     }
 }

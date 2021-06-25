@@ -4,7 +4,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
-import javax.annotation.Nullable;
+import java.util.Optional;
 
 /**
  * Image providers are used to render custom content in a page. These are
@@ -21,31 +21,19 @@ import javax.annotation.Nullable;
 @OnlyIn(Dist.CLIENT)
 public interface RendererProvider extends IForgeRegistryEntry<RendererProvider> {
     /**
-     * Tests whether this image provider works for the specified path.
+     * Tries to get an image renderer for the specified data. If the specified
+     * path is not supported, {@link Optional#empty()} is returned.
      * <p>
-     * Specifically, this should at least check if the path starts with the
-     * prefix this provider is responsible for.
-     *
-     * @param path the path to check for.
-     */
-    boolean matches(String path);
-
-    /**
-     * Gets an image renderer for the specified data.
-     * <p>
-     * The data passed here will be part of the image URL following the prefix
-     * that the provider was registered with. So for example, if the provider
-     * was registered for the prefix <tt>custom</tt>, and the image to be
-     * rendered in the Markdown document was <tt>[blah](custom:the data]</tt>,
-     * then the string passed where would be <tt>the data</tt>.
+     * Implementations should check if the path starts with the prefix this provider
+     * is responsible for.
      * <p>
      * If there is no appropriate image renderer (for example, for the built-in
      * item stack renderers: if the item definition is invalid), this should
-     * return <tt>null</tt>, it should <em>never</em> throw an exception.
+     * return an error graphic, it should <em>never</em> throw an exception.
      *
-     * @param data the data part of the image definition.
-     * @return the image renderer for the data, or <tt>null</tt> if none exists.
+     * @param path the path to the requested image content.
+     * @return the image renderer for the data, or {@link Optional#empty()} if
+     * the specified path is not supported.
      */
-    @Nullable
-    ContentRenderer getRenderer(final String data);
+    Optional<ContentRenderer> getRenderer(final String path);
 }

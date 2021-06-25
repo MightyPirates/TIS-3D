@@ -32,7 +32,7 @@ public abstract class AbstractModuleWithRotation extends AbstractModule implemen
     // Computed data
 
     // NBT tag names.
-    private static final String TAG_FACING = "facing";
+    private static final String FACING_TAG = "facing";
 
     // --------------------------------------------------------------------- //
 
@@ -71,14 +71,14 @@ public abstract class AbstractModuleWithRotation extends AbstractModule implemen
     public void load(final CompoundNBT tag) {
         super.load(tag);
 
-        facing = Port.VALUES[Math.max(0, tag.getByte(TAG_FACING)) % Port.VALUES.length];
+        facing = Port.VALUES[Math.max(0, tag.getByte(FACING_TAG)) % Port.VALUES.length];
     }
 
     @Override
     public void save(final CompoundNBT tag) {
         super.save(tag);
 
-        tag.putByte(TAG_FACING, (byte) facing.ordinal());
+        tag.putByte(FACING_TAG, (byte) facing.ordinal());
     }
 
     // --------------------------------------------------------------------- //

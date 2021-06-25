@@ -6,12 +6,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.vector.Vector4f;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 
 /**
  * Simple implementation of a tab icon renderer using an item stack as its graphic.
  */
+@OnlyIn(Dist.CLIENT)
 public class ItemStackTab extends AbstractTab {
     private final ItemStack stack;
 

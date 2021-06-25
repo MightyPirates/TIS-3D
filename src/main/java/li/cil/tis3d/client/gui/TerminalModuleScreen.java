@@ -9,6 +9,8 @@ import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -18,6 +20,7 @@ import org.lwjgl.opengl.GL11;
 /**
  * Invisible GUI for the terminal module, purely used to grab keyboard input.
  */
+@OnlyIn(Dist.CLIENT)
 public final class TerminalModuleScreen extends Screen {
     private final ModuleTerminal module;
 

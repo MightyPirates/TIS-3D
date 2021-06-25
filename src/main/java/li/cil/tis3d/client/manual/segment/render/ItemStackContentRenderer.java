@@ -7,7 +7,10 @@ import li.cil.tis3d.api.manual.ContentRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.vector.Vector4f;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
+@OnlyIn(Dist.CLIENT)
 public final class ItemStackContentRenderer implements ContentRenderer {
     /**
      * How long to show individual stacks, in milliseconds, before switching to the next.

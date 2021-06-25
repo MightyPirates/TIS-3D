@@ -10,9 +10,12 @@ import net.minecraft.client.renderer.texture.Texture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.io.IOException;
 
+@OnlyIn(Dist.CLIENT)
 public class TextureContentRenderer implements ContentRenderer {
     private final ResourceLocation location;
     private final ImageTexture texture;

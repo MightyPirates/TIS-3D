@@ -6,7 +6,7 @@ The key is available for most [casing](../block/casing.md) series and provides a
 
 Keys contain an advanced imprinting mechanism, producing a unique signature for each key.
 
-[Casings](../block/casing.md) locked with a key provide reduced access: modules cannot be removed or installed, and most modules will no longer allow changes to their configuration. Specifically, among the common mainline modules, the [execution module](module_execution.md) will no longer accept new programming. However, the [keypad module](module_keypad.md) will still allow user input.
+[Casings](../block/casing.md) locked with a key provide reduced access: modules cannot be removed or installed, and most modules will no longer allow changes to their configuration. Specifically, among the common mainline modules, the [execution module](execution_module.md) will no longer accept new programming. However, the [keypad module](keypad_module.md) will still allow user input.
 
 Take good care of a key once it was used to lock a [casing](../block/casing.md). If lost, the only way to unlock a [casing](../block/casing.md) is to break and rebuild it.
 

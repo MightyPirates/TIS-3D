@@ -5,12 +5,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 
 /**
  * Simple implementation of a tab icon renderer using a full texture as its graphic.
  */
+@OnlyIn(Dist.CLIENT)
 public class TextureTab extends AbstractTab {
     private final ResourceLocation location;
 

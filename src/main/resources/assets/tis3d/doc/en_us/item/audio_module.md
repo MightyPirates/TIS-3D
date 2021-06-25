@@ -12,4 +12,4 @@ Each value received by the audio module is interpreted as a packed value with th
 - `0x00F0` contains the volume, clamped to [0, 5].
 - `0x000F` contains the instrument, one of {0, 1, 2, 3, 4}.
 
-When generating sounds the bitwise operations of the [execution module](module_execution.md) will prove useful in combining the individual values into one.
+When generating sounds the bitwise operations of the [execution module](execution_module.md) will prove useful in combining the individual values into one.

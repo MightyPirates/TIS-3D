@@ -18,6 +18,11 @@
         0,
         3,
         0
+      ],
+      "scale": [
+        0.625,
+        0.625,
+        0.625
       ]
     },
     "thirdperson_righthand": {
