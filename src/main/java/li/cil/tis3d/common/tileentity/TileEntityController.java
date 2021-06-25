@@ -277,7 +277,7 @@ public final class TileEntityController extends TileEntityComputer implements IT
                     for (final Direction facing : Direction.values()) {
                         final BlockPos neighborPos = getBlockPos().relative(facing);
                         final BlockState neighborState = world.getBlockState(neighborPos);
-                        if (neighborState.canOcclude()) {
+                        if (neighborState.isSolidRender(world, neighborPos)) {
                             continue;
                         }
                         if (world.random.nextFloat() > 0.25f) {
