@@ -2,181 +2,205 @@ package li.cil.tis3d.api.util;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import li.cil.tis3d.client.renderer.ModRenderType;
-import li.cil.tis3d.client.renderer.font.FontRenderer;
-import li.cil.tis3d.util.Color;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Matrix3f;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+/**
+ * Wraps up render context and provides several convenience methods for {@link li.cil.tis3d.api.module.Module} rendering.
+ */
 @OnlyIn(Dist.CLIENT)
-public final class RenderContext {
-    private static final int DETAIL_RENDER_RANGE = 8;
+public interface RenderContext {
+    /**
+     * Gets the current renderer in use for the context in which this module is being rendered.
+     *
+     * @return the current renderer.
+     */
+    TileEntityRendererDispatcher getDispatcher();
 
-    private final TileEntityRendererDispatcher dispatcher;
-    private final MatrixStack matrixStack;
-    private final IRenderTypeBuffer bufferFactory;
-    private final float partialTicks;
-    private final int light;
-    private final int overlay;
+    /**
+     * The matrix stack in use for this context.
+     * <p>
+     * Note that this returns a reference, not a copy, so changing the stack influences how text and quads are rendered.
+     *
+     * @return the current matrix stack.
+     */
+    MatrixStack getMatrixStack();
 
-    // --------------------------------------------------------------------- //
+    /**
+     * Current partial ticks in the active frame, i.e. the fractional tick that has elapsed in rendering time but not
+     * yet in simulation time.
+     *
+     * @return the current partial ticks.
+     */
+    float getPartialTicks();
 
-    public RenderContext(final TileEntityRendererDispatcher dispatcher, final MatrixStack matrixStack,
-                         final IRenderTypeBuffer bufferFactory, final float partialTicks,
-                         final int light, final int overlay) {
-        this.dispatcher = dispatcher;
-        this.matrixStack = matrixStack;
-        this.bufferFactory = bufferFactory;
-        this.partialTicks = partialTicks;
-        this.light = light;
-        this.overlay = overlay;
+    /**
+     * The current render buffer in use for this context.
+     * <p>
+     * Used to obtain buffer builders for batched rendering.
+     *
+     * @return the current buffer.
+     */
+    IRenderTypeBuffer getBuffer();
+
+    /**
+     * Utility method to determine if the observer we are rendering for is close enough so that detailed
+     * rendering should be provided.
+     *
+     * @param position the position for which to check if the observer is close enough.
+     * @return {@code true} if details should be rendered, {@code false} otherwise.
+     */
+    boolean closeEnoughForDetails(BlockPos position);
+
+    /**
+     * Draws a character sequence using the specified font renderer in the current render context.
+     *
+     * @param fontRenderer the font renderer to use.
+     * @param value        the string to draw.
+     * @param argb         the color to tint the text with.
+     */
+    void drawString(FontRenderer fontRenderer, CharSequence value, int argb);
+
+    /**
+     * Draws a 1x1 textured quad using current lighting information.
+     * <p>
+     * The texture referenced by the specified location is expected to live in the block texture atlas.
+     *
+     * @param location the location of the texture to draw.
+     */
+    void drawAtlasQuadLit(ResourceLocation location);
+
+    /**
+     * Draws a 1x1 textured quad at maximum brightness.
+     * <p>
+     * The texture referenced by the specified location is expected to live in the block texture atlas.
+     *
+     * @param location the location of the texture to draw.
+     */
+    void drawAtlasQuadUnlit(final ResourceLocation location);
+
+    /**
+     * Draws a 1x1 textured quad at maximum brightness.
+     * <p>
+     * The texture referenced by the specified location is expected to live in the block texture atlas.
+     *
+     * @param location the location of the texture to draw.
+     * @param argb     the color tint of the quad as an ARGB color.
+     */
+    default void drawAtlasQuadUnlit(final ResourceLocation location, final int argb) {
+        drawAtlasQuadUnlit(location, 0, 0, 1, 1, 0, 0, 1, 1, argb);
     }
 
-    public RenderContext(final RenderContext other, final int light) {
-        this(other.dispatcher, other.matrixStack, other.bufferFactory, other.partialTicks, light, other.overlay);
-    }
+    /**
+     * Draws a textured quad with the specified size at maximum brightness.
+     * <p>
+     * The texture referenced by the specified location is expected to live in the block texture atlas.
+     * <p>
+     * The texture coordinates are in texture-local space, so will typically be in the range of [0, 1].
+     *
+     * @param location the location of the texture to draw.
+     * @param x        the x coordinate of the minimum corner of the quad.
+     * @param y        the y coordinate of the minimum corner of the quad.
+     * @param width    the width of the quad.
+     * @param height   the height of the quad.
+     * @param u0       the u component of the UV coordinate of the minimum corner of the quad.
+     * @param v0       the v component of the UV coordinate of the minimum corner of the quad.
+     * @param u1       the u component of the UV coordinate of the maximum corner of the quad.
+     * @param v1       the v component of the UV coordinate of the maximum corner of the quad.
+     * @param argb     the color tint of the quad as an ARGB color.
+     */
+    void drawAtlasQuadUnlit(ResourceLocation location, float x, float y, float width, float height,
+                            float u0, float v0, float u1, float v1, int argb);
 
-    // --------------------------------------------------------------------- //
+    /**
+     * Draws an unlit quad at maximum brightness.
+     *
+     * @param x      the x coordinate of the minimum corner of the quad.
+     * @param y      the y coordinate of the minimum corner of the quad.
+     * @param width  the width of the quad.
+     * @param height the height of the quad.
+     * @param argb   the color tint of the quad as an ARGB color.
+     */
+    void drawQuadUnlit(float x, float y, float width, float height, int argb);
 
-    public TileEntityRendererDispatcher getDispatcher() {
-        return dispatcher;
-    }
+    /**
+     * Draws a quad with the specified size.
+     *
+     * @param builder the buffer builder to emit the quad into.
+     * @param x       the x coordinate of the minimum corner of the quad.
+     * @param y       the y coordinate of the minimum corner of the quad.
+     * @param width   the width of the quad.
+     * @param height  the height of the quad.
+     */
+    void drawQuad(final IVertexBuilder builder, final float x, final float y, final float width, final float height);
 
-    public MatrixStack getMatrixStack() {
-        return matrixStack;
-    }
-
-    public float getPartialTicks() {
-        return partialTicks;
-    }
-
-    public IVertexBuilder getBuffer(final RenderType layer) {
-        return bufferFactory.getBuffer(layer);
-    }
-
-    public boolean closeEnoughForDetails(final BlockPos position) {
-        return position.closerThan(dispatcher.camera.getPosition(), (float) DETAIL_RENDER_RANGE);
-    }
-
-    public void drawString(final FontRenderer fontRenderer, final CharSequence value) {
-        fontRenderer.drawString(matrixStack, bufferFactory, value);
-    }
-
-    public void drawString(final FontRenderer fontRenderer, final CharSequence value, final int argb, final int maxChars) {
-        fontRenderer.drawString(matrixStack, bufferFactory, value, argb, maxChars);
-    }
-
-    public void drawAtlasSpriteLit(final ResourceLocation location) {
-        final TextureAtlasSprite sprite = getSprite(location);
-        final IVertexBuilder buffer = getBuffer(RenderType.translucentNoCrumbling());
-        drawAtlasSprite(buffer, sprite, 0, 0, 1, 1, 0, 0, 16, 16);
-    }
-
-    public void drawAtlasSpriteUnlit(final ResourceLocation location) {
-        final TextureAtlasSprite sprite = getSprite(location);
-        final IVertexBuilder buffer = getBuffer(ModRenderType.unlitAtlasTexture());
-        drawAtlasSprite(buffer, sprite, 0, 0, 1, 1, 0, 0, 16, 16);
-    }
-
-    public void drawAtlasSpriteUnlit(final ResourceLocation location, final int argb) {
-        final TextureAtlasSprite sprite = getSprite(location);
-        final IVertexBuilder buffer = getBuffer(ModRenderType.unlitAtlasTexture());
-        final float u0 = sprite.getU(0);
-        final float v0 = sprite.getV(0);
-        final float u1 = sprite.getU(16);
-        final float v1 = sprite.getV(16);
-        drawQuad(buffer, 0, 0, 1, 1, u0, v0, u1, v1, argb);
-    }
-
-    public void drawAtlasSpriteUnlit(final ResourceLocation location, final float x, final float y, final float width, final float height) {
-        final TextureAtlasSprite sprite = getSprite(location);
-        final IVertexBuilder buffer = getBuffer(ModRenderType.unlitAtlasTexture());
-        drawAtlasSprite(buffer, sprite, x, y, width, height, x * 16, y * 16, (x + width) * 16, (y + height) * 16);
-    }
-
-    public void drawQuadUnlit(final float x, final float y, final float width, final float height, final int argb) {
-        final IVertexBuilder builder = getBuffer(ModRenderType.unlit());
+    /**
+     * Draws a quad with the specified size and the specified tint.
+     *
+     * @param builder the buffer builder to emit the quad into.
+     * @param x       the x coordinate of the minimum corner of the quad.
+     * @param y       the y coordinate of the minimum corner of the quad.
+     * @param width   the width of the quad.
+     * @param height  the height of the quad.
+     * @param argb    the color tint of the quad as an ARGB color.
+     */
+    default void drawQuad(final IVertexBuilder builder, final float x, final float y,
+                          final float width, final float height, final int argb) {
         drawQuad(builder, x, y, width, height, 0, 0, 1, 1, argb);
     }
 
-    public void drawQuad(final IVertexBuilder builder, final float x, final float y, final float width, final float height) {
-        drawQuad(builder, x, y, width, height, Color.WHITE);
+    /**
+     * Draws a textured quad.
+     * <p>
+     * The texture referenced by the specified location is expected to live in the block texture atlas.
+     * <p>
+     * The texture coordinates are in texture-local space, so will typically be in the range of [0, 1].
+     *
+     * @param builder the buffer builder to emit the quad into.
+     * @param sprite  the texture to draw.
+     * @param x       the x coordinate of the minimum corner of the quad.
+     * @param y       the y coordinate of the minimum corner of the quad.
+     * @param width   the width of the quad.
+     * @param height  the height of the quad.
+     * @param u0      the u component of the UV coordinate of the minimum corner of the quad.
+     * @param v0      the v component of the UV coordinate of the minimum corner of the quad.
+     * @param u1      the u component of the UV coordinate of the maximum corner of the quad.
+     * @param v1      the v component of the UV coordinate of the maximum corner of the quad.
+     * @param argb    the color tint of the quad as an ARGB color.
+     */
+    default void drawAtlasQuad(final IVertexBuilder builder, final TextureAtlasSprite sprite,
+                               final float x, final float y, final float width, final float height,
+                               final float u0, final float v0, final float u1, final float v1, final int argb) {
+        final float atlasU0 = sprite.getU(u0 * 16);
+        final float atlasV0 = sprite.getV(v0 * 16);
+        final float atlasU1 = sprite.getU(u1 * 16);
+        final float atlasV1 = sprite.getV(v1 * 16);
+        drawQuad(builder, x, y, width, height, atlasU0, atlasV0, atlasU1, atlasV1, argb);
     }
 
-    public void drawQuad(final IVertexBuilder builder, final float x, final float y, final float width, final float height, final int argb) {
-        drawQuad(builder, x, y, width, height, 0, 0, 1, 1, argb);
-    }
-
-    // --------------------------------------------------------------------- //
-
-    private void drawAtlasSprite(final IVertexBuilder builder, final TextureAtlasSprite sprite,
-                                 final float x, final float y, final float w, final float h,
-                                 final float u0, final float v0, final float u1, final float v1) {
-        drawQuad(builder,
-            x, y, w, h,
-            sprite.getU(u0), sprite.getV(v0),
-            sprite.getU(u1), sprite.getV(v1),
-            Color.WHITE);
-    }
-
-    private void drawQuad(final IVertexBuilder builder,
-                          final float x, final float y, final float w, final float h,
-                          final float u0, final float v0, final float u1, final float v1,
-                          final int argb) {
-        final Matrix4f pose = getMatrixStack().last().pose();
-        final Matrix3f normal = getMatrixStack().last().normal();
-        final Vector3f up = new Vector3f(0, 0, -1);
-
-        final int a = Color.getAlphaU8(argb);
-        final int r = Color.getRedU8(argb);
-        final int g = Color.getGreenU8(argb);
-        final int b = Color.getBlueU8(argb);
-
-        builder.vertex(pose, x, y + h, 0)
-            .color(r, g, b, a)
-            .uv(u0, v1)
-            .overlayCoords(overlay)
-            .uv2(light)
-            .normal(normal, up.x(), up.y(), up.z())
-            .endVertex();
-
-        builder.vertex(pose, x + w, y + h, 0)
-            .color(r, g, b, a)
-            .uv(u1, v1)
-            .overlayCoords(overlay)
-            .uv2(light)
-            .normal(normal, up.x(), up.y(), up.z())
-            .endVertex();
-
-        builder.vertex(pose, x + w, y, 0)
-            .color(r, g, b, a)
-            .uv(u1, v0)
-            .overlayCoords(overlay)
-            .uv2(light)
-            .normal(normal, up.x(), up.y(), up.z())
-            .endVertex();
-
-        builder.vertex(pose, x, y, 0)
-            .color(r, g, b, a)
-            .uv(u0, v0)
-            .overlayCoords(overlay)
-            .uv2(light)
-            .normal(normal, up.x(), up.y(), up.z())
-            .endVertex();
-    }
-
-    private static TextureAtlasSprite getSprite(final ResourceLocation location) {
-        return Minecraft.getInstance().getTextureAtlas(PlayerContainer.BLOCK_ATLAS).apply(location);
-    }
+    /**
+     * Draws a quad with the specified size and tint.
+     * <p>
+     * The texture coordinates must be resolved to the underlying texture in GPU memory. This means
+     * that for atlas textures they must be in atlas space, for regular textures they must be in
+     * texture-local space.
+     *
+     * @param builder the buffer builder to emit the quad into.
+     * @param x       the x coordinate of the minimum corner of the quad.
+     * @param y       the y coordinate of the minimum corner of the quad.
+     * @param width   the width of the quad.
+     * @param height  the height of the quad.
+     * @param u0      the u component of the UV coordinate of the minimum corner of the quad.
+     * @param v0      the v component of the UV coordinate of the minimum corner of the quad.
+     * @param u1      the u component of the UV coordinate of the maximum corner of the quad.
+     * @param v1      the v component of the UV coordinate of the maximum corner of the quad.
+     * @param argb    the color tint of the quad as an ARGB color.
+     */
+    void drawQuad(IVertexBuilder builder, float x, float y, float width, float height,
+                  float u0, float v0, float u1, float v1, int argb);
 }

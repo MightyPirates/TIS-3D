@@ -1,5 +1,8 @@
 package li.cil.tis3d.util;
 
+/**
+ * Various predefined colors and utility methods to work with colors.
+ */
 public final class Color {
     public static final int WHITE = 0xFFFFFFFF;
     public static final int ORANGE = 0xFFFFCC33;
@@ -54,17 +57,26 @@ public final class Color {
         return COLORS[index % COLORS.length];
     }
 
+    /**
+     * Changes the alpha channel of the specified ARGB color to the specified relative amount.
+     *
+     * @param color the color to change the alpha channel of.
+     * @param alpha the alpha value to apply, in a range of [0, 1].
+     * @return the adjusted color.
+     */
     public static int withAlpha(final int color, final float alpha) {
         return ((int) (Math.max(0, Math.min(1, alpha)) * 0xFF) << 24) | (color & 0xFFFFFF);
     }
 
-    public static int monochrome(final int brightness) {
-        final int component = Math.max(0, Math.min(0xFF, brightness));
-        return 0xFF000000 | (brightness << 16) | (brightness << 8) | brightness;
-    }
-
+    /**
+     * Creates a gray color with the the specified value.
+     *
+     * @param brightness the component value of the color in [0, 1].
+     * @return the gray tone with the specified brightness.
+     */
     public static int monochrome(final float brightness) {
-        return monochrome((int) (brightness * 0xFF));
+        final int component = (int) (Math.max(0, Math.min(1, brightness)) * 0xFF);
+        return 0xFF000000 | (component << 16) | (component << 8) | component;
     }
 
     /**

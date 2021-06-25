@@ -4,6 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import it.unimi.dsi.fastutil.chars.Char2IntMap;
 import it.unimi.dsi.fastutil.chars.Char2IntOpenHashMap;
+import li.cil.tis3d.api.util.FontRenderer;
 import li.cil.tis3d.client.renderer.ModRenderType;
 import li.cil.tis3d.util.Color;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -35,16 +36,11 @@ public abstract class AbstractFontRenderer implements FontRenderer {
 
     // --------------------------------------------------------------------- //
 
-    public void drawString(final MatrixStack matrixStack, final IRenderTypeBuffer bufferFactory, final CharSequence value) {
-        drawString(matrixStack, bufferFactory, value, Color.WHITE, value.length());
-    }
-
-    public void drawString(final MatrixStack matrixStack, final IRenderTypeBuffer bufferFactory, final CharSequence value, final int argb, final int maxChars) {
+    public void drawString(final MatrixStack matrixStack, final IRenderTypeBuffer bufferFactory, final CharSequence value, final int argb) {
         final IVertexBuilder buffer = getDefaultBuffer(bufferFactory);
 
         float tx = 0f;
-        final int end = Math.min(maxChars, value.length());
-        for (int i = 0; i < end; i++) {
+        for (int i = 0; i < value.length(); i++) {
             final char ch = value.charAt(i);
             drawChar(matrixStack, buffer, argb, tx, ch);
             tx += getCharWidth() + getGapU();

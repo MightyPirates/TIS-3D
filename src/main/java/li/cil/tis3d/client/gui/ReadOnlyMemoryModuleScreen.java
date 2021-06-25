@@ -1,7 +1,6 @@
 package li.cil.tis3d.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.client.renderer.Textures;
@@ -231,7 +230,7 @@ public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMe
         matrixStack.pushPose();
         matrixStack.translate(leftPos + GRID_LEFT + 3, topPos + 6, 0);
         for (int col = 0; col < 16; col++) {
-            API.smallFontRenderer.drawString(matrixStack, bufferFactory, String.format("%X", col), Color.GUI_TEXT, 2);
+            API.smallFontRenderer.drawString(matrixStack, bufferFactory, String.format("%X", col), Color.GUI_TEXT);
             matrixStack.translate(CELL_WIDTH, 0, 0);
         }
         matrixStack.popPose();
@@ -240,7 +239,7 @@ public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMe
         matrixStack.pushPose();
         matrixStack.translate(leftPos + 7, topPos + 14, 0);
         for (int row = 0; row < 16; row++) {
-            API.smallFontRenderer.drawString(matrixStack, bufferFactory, String.format("0X%X0", row), Color.GUI_TEXT, 4);
+            API.smallFontRenderer.drawString(matrixStack, bufferFactory, String.format("0X%X0", row), Color.GUI_TEXT);
             matrixStack.translate(0, CELL_HEIGHT, 0);
         }
         matrixStack.popPose();
@@ -259,7 +258,7 @@ public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMe
 
         matrixStack.pushPose();
         matrixStack.translate((float) (leftPos + GRID_LEFT + 3 + 7 * CELL_WIDTH - labelWidth / 2), topPos + GRID_TOP + 1 + 7 * CELL_HEIGHT, 0);
-        API.smallFontRenderer.drawString(matrixStack, bufferFactory, LABEL_INITIALIZING, color, LABEL_INITIALIZING.length());
+        API.smallFontRenderer.drawString(matrixStack, bufferFactory, LABEL_INITIALIZING, color);
         matrixStack.popPose();
     }
 
@@ -288,7 +287,7 @@ public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMe
             final float brightness = (float) Math.min(1, Math.max(0.8, 1 - distance / 32));
             final int color = Color.monochrome(brightness);
 
-            API.smallFontRenderer.drawString(matrixStack, bufferFactory, String.format("%02X", data[i]), color, 2);
+            API.smallFontRenderer.drawString(matrixStack, bufferFactory, String.format("%02X", data[i]), color);
 
             if (col < 0x0F) {
                 matrixStack.translate(CELL_WIDTH, 0, 0);

@@ -47,7 +47,6 @@ public final class TransformUtil {
      * @see Face#fromDirection(Direction)
      * @see Port#fromDirection(Direction)
      */
-    @SuppressWarnings("SuspiciousNameCombination")
     public static Vector3d hitToUV(final Face face, final Port facing, final Vector3d hitPos) {
         final Vector3d uv = hitToUV(face, hitPos);
         switch (face) {

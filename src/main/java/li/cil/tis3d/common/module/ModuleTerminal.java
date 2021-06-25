@@ -12,7 +12,7 @@ import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.gui.TerminalModuleScreen;
 import li.cil.tis3d.client.renderer.Textures;
-import li.cil.tis3d.client.renderer.font.FontRenderer;
+import li.cil.tis3d.api.util.FontRenderer;
 import li.cil.tis3d.util.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -236,7 +236,7 @@ public final class ModuleTerminal extends AbstractModuleWithRotation {
             renderText(context);
         } else {
             // Player too far away for details, draw static overlay.
-            context.drawAtlasSpriteUnlit(Textures.LOCATION_OVERLAY_MODULE_TERMINAL);
+            context.drawAtlasQuadUnlit(Textures.LOCATION_OVERLAY_MODULE_TERMINAL);
         }
 
         matrixStack.popPose();
@@ -325,7 +325,7 @@ public final class ModuleTerminal extends AbstractModuleWithRotation {
     private void renderDisplay(final RenderContext context, final FontRenderer fontRenderer) {
         final MatrixStack matrixStack = context.getMatrixStack();
         for (final StringBuilder line : display) {
-            context.drawString(fontRenderer, line);
+            context.drawString(fontRenderer, line, Color.WHITE);
             matrixStack.translate(0, fontRenderer.getCharHeight(), 0);
         }
     }
@@ -340,7 +340,7 @@ public final class ModuleTerminal extends AbstractModuleWithRotation {
         context.drawQuadUnlit(-2, 2, textWidth + 4, 20, Color.DARK_GRAY);
 
         matrixStack.translate(0, 4, 0);
-        context.drawString(fontRenderer, input);
+        context.drawString(fontRenderer, input, Color.WHITE);
 
         if (isInputEnabled && input.length() < MAX_COLUMNS && System.currentTimeMillis() % 800 > 400) {
             final int w = fontRenderer.getCharWidth();

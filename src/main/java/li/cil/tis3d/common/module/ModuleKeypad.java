@@ -168,7 +168,7 @@ public final class ModuleKeypad extends AbstractModuleWithRotation {
 
         // Draw base texture. Draw half transparent while writing current value,
         // i.e. while no input is possible.
-        context.drawAtlasSpriteUnlit(Textures.LOCATION_OVERLAY_MODULE_KEYPAD, Color.withAlpha(Color.WHITE, value.isPresent() ? 0.5f : 1f));
+        context.drawAtlasQuadUnlit(Textures.LOCATION_OVERLAY_MODULE_KEYPAD, Color.withAlpha(Color.WHITE, value.isPresent() ? 0.5f : 1f));
 
         // Draw overlay for hovered button if we can currently input a value.
         if (!value.isPresent()) {

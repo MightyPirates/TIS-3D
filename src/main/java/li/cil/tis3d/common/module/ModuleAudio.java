@@ -58,7 +58,7 @@ public final class ModuleAudio extends AbstractModule {
             return;
         }
 
-        context.drawAtlasSpriteLit(Textures.LOCATION_OVERLAY_MODULE_AUDIO);
+        context.drawAtlasQuadLit(Textures.LOCATION_OVERLAY_MODULE_AUDIO);
     }
 
     // --------------------------------------------------------------------- //

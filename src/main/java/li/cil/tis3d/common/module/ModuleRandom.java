@@ -44,7 +44,7 @@ public final class ModuleRandom extends AbstractModule {
             return;
         }
 
-        context.drawAtlasSpriteUnlit(Textures.LOCATION_OVERLAY_MODULE_RANDOM);
+        context.drawAtlasQuadUnlit(Textures.LOCATION_OVERLAY_MODULE_RANDOM);
     }
 
     // --------------------------------------------------------------------- //

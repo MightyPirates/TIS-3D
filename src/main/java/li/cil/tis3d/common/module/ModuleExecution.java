@@ -9,9 +9,9 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.traits.ModuleWithBlockChangeListener;
 import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
+import li.cil.tis3d.api.util.FontRenderer;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
-import li.cil.tis3d.client.renderer.font.FontRenderer;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.item.ItemBookCode;
 import li.cil.tis3d.common.item.Items;
@@ -240,7 +240,7 @@ public final class ModuleExecution extends AbstractModuleWithRotation implements
         rotateForRendering(matrixStack);
 
         // Draw status texture.
-        context.drawAtlasSpriteUnlit(RenderData.STATE_LOCATIONS[state.ordinal()]);
+        context.drawAtlasQuadUnlit(RenderData.STATE_LOCATIONS[state.ordinal()]);
 
         // Render detailed state when player is close.
         final MachineState machineState = getState();
@@ -347,10 +347,11 @@ public final class ModuleExecution extends AbstractModuleWithRotation implements
 
         // Draw register info on top.
         final String accLast = String.format("ACC:%4X LAST:%s", machineState.acc, machineState.last.map(Enum::name).orElse("NONE"));
-        context.drawString(fontRenderer, accLast);
+        context.drawString(fontRenderer, accLast, Color.WHITE);
         matrixStack.translate(0, fontRenderer.getCharHeight() + 4, 0);
+
         final String bakState = String.format("BAK:%4X MODE:%s", machineState.bak, state.name());
-        context.drawString(fontRenderer, bakState);
+        context.drawString(fontRenderer, bakState, Color.WHITE);
         matrixStack.translate(0, fontRenderer.getCharHeight() + 4, 0);
 
         drawLine(context, 1, Color.WHITE);
@@ -374,6 +375,7 @@ public final class ModuleExecution extends AbstractModuleWithRotation implements
 
         for (int lineNumber = offset; lineNumber < Math.min(totalLines, offset + maxLines); lineNumber++) {
             final String line = machineState.code[lineNumber];
+            final CharSequence charSequence = line.subSequence(0, Math.min(line.length(), 18));
             if (lineNumber == currentLine) {
                 // Draw current line marker behind text
                 if (state == State.WAIT) {
@@ -384,9 +386,9 @@ public final class ModuleExecution extends AbstractModuleWithRotation implements
                     drawLine(context, fontRenderer.getCharHeight(), Color.WHITE);
                 }
 
-                context.drawString(fontRenderer, line, Color.BLACK, 18);
+                context.drawString(fontRenderer, charSequence, Color.BLACK);
             } else {
-                context.drawString(fontRenderer, line, Color.WHITE, 18);
+                context.drawString(fontRenderer, charSequence, Color.WHITE);
             }
 
             matrixStack.translate(0, fontRenderer.getCharHeight() + 1, 0);

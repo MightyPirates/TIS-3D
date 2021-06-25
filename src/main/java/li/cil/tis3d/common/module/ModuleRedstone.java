@@ -11,6 +11,7 @@ import li.cil.tis3d.api.module.traits.ModuleWithRedstone;
 import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
+import li.cil.tis3d.util.Color;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.World;
@@ -114,7 +115,7 @@ public final class ModuleRedstone extends AbstractModuleWithRotation implements 
         rotateForRendering(matrixStack);
 
         // Draw base overlay.
-        context.drawAtlasSpriteUnlit(Textures.LOCATION_OVERLAY_MODULE_REDSTONE);
+        context.drawAtlasQuadUnlit(Textures.LOCATION_OVERLAY_MODULE_REDSTONE);
 
         if (!getCasing().isEnabled()) {
             matrixStack.popPose();
@@ -125,15 +126,19 @@ public final class ModuleRedstone extends AbstractModuleWithRotation implements 
         final float relativeOutput = output / 15f;
         final float heightOutput = relativeOutput * SHARED_H;
         final float v0Output = SHARED_Y - heightOutput;
-        context.drawAtlasSpriteUnlit(Textures.LOCATION_OVERLAY_MODULE_REDSTONE_BARS,
-            OUTPUT_X, v0Output, SHARED_W, heightOutput);
+        context.drawAtlasQuadUnlit(Textures.LOCATION_OVERLAY_MODULE_REDSTONE_BARS,
+            0, 0, SHARED_W, heightOutput,
+            OUTPUT_X, v0Output, OUTPUT_X + SHARED_W, v0Output + heightOutput,
+            Color.WHITE);
 
         // Draw input bar.
         final float relativeInput = input / 15f;
         final float heightInput = relativeInput * SHARED_H;
         final float v0Input = SHARED_Y - heightInput;
-        context.drawAtlasSpriteUnlit(Textures.LOCATION_OVERLAY_MODULE_REDSTONE_BARS,
-            INPUT_X, v0Input, SHARED_W, heightInput);
+        context.drawAtlasQuadUnlit(Textures.LOCATION_OVERLAY_MODULE_REDSTONE_BARS,
+            INPUT_X, v0Input, SHARED_W, heightInput,
+            INPUT_X, v0Input, INPUT_X + SHARED_W, v0Input + heightInput,
+            Color.WHITE);
 
         matrixStack.popPose();
     }

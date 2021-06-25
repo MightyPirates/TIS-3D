@@ -168,8 +168,8 @@ public final class ModuleDisplay extends AbstractModuleWithRotation {
 
         validateTexture();
 
-        final IVertexBuilder buffer = context.getBuffer(getOrCreateRenderLayer());
-        context.drawQuad(buffer, MARGIN / 32f, MARGIN / 32f, RESOLUTION / 32f, RESOLUTION / 32f);
+        final IVertexBuilder builder = context.getBuffer().getBuffer(getOrCreateRenderLayer());
+        context.drawQuad(builder, MARGIN / 32f, MARGIN / 32f, RESOLUTION / 32f, RESOLUTION / 32f);
 
         matrixStack.popPose();
     }

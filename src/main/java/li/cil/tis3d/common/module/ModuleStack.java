@@ -11,7 +11,8 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
-import li.cil.tis3d.client.renderer.font.FontRenderer;
+import li.cil.tis3d.api.util.FontRenderer;
+import li.cil.tis3d.util.Color;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
@@ -108,7 +109,7 @@ public final class ModuleStack extends AbstractModuleWithRotation {
         matrixStack.pushPose();
         rotateForRendering(matrixStack);
 
-        context.drawAtlasSpriteUnlit(Textures.LOCATION_OVERLAY_MODULE_STACK);
+        context.drawAtlasQuadUnlit(Textures.LOCATION_OVERLAY_MODULE_STACK);
 
         // Render detailed state when player is close.
         if (context.closeEnoughForDetails(getCasing().getPosition())) {
@@ -260,7 +261,7 @@ public final class ModuleStack extends AbstractModuleWithRotation {
         final FontRenderer fontRenderer = API.smallFontRenderer;
 
         for (int i = 0; i <= top; i++) {
-            context.drawString(fontRenderer, String.format("%4X", stack[i]));
+            context.drawString(fontRenderer, String.format("%4X", stack[i]), Color.WHITE);
             matrixStack.translate(0, fontRenderer.getCharHeight() + 1, 0);
             if ((i + 1) % 4 == 0) {
                 matrixStack.translate((fontRenderer.getCharWidth() + 1) * 5, (fontRenderer.getCharHeight() + 1) * -4, 0);

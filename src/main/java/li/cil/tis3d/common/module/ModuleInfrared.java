@@ -100,7 +100,7 @@ public final class ModuleInfrared extends AbstractModule implements ICapabilityP
             return;
         }
 
-        context.drawAtlasSpriteUnlit(Textures.LOCATION_OVERLAY_MODULE_INFRARED);
+        context.drawAtlasQuadUnlit(Textures.LOCATION_OVERLAY_MODULE_INFRARED);
     }
 
     @Override

@@ -105,7 +105,7 @@ public final class ModuleSerialPort extends AbstractModule implements ModuleWith
             return;
         }
 
-        context.drawAtlasSpriteUnlit(Textures.LOCATION_OVERLAY_MODULE_SERIAL_PORT);
+        context.drawAtlasQuadUnlit(Textures.LOCATION_OVERLAY_MODULE_SERIAL_PORT);
     }
 
     @Override

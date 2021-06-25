@@ -155,7 +155,7 @@ public final class ModuleSequencer extends AbstractModuleWithRotation {
         }
 
         // Draw base grid of sequencer entries.
-        context.drawAtlasSpriteUnlit(Textures.LOCATION_OVERLAY_MODULE_SEQUENCER, Color.withAlpha(Color.WHITE, enabled ? 1f : 0.5f));
+        context.drawAtlasQuadUnlit(Textures.LOCATION_OVERLAY_MODULE_SEQUENCER, Color.withAlpha(Color.WHITE, enabled ? 1f : 0.5f));
 
         if (context.closeEnoughForDetails(getCasing().getPosition())) {
             // Draw configuration of sequencer.

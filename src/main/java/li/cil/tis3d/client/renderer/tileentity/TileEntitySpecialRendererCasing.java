@@ -6,6 +6,7 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.api.util.TransformUtil;
+import li.cil.tis3d.client.renderer.RenderContextImpl;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.common.item.Items;
 import li.cil.tis3d.common.tileentity.TileEntityCasing;
@@ -50,7 +51,7 @@ public final class TileEntitySpecialRendererCasing extends TileEntityRenderer<Ti
         matrixStack.pushPose();
         matrixStack.translate(0.5, 0.5, 0.5);
 
-        final RenderContext context = new RenderContext(renderer, matrixStack, bufferFactory, partialTicks, light, overlay);
+        final RenderContextImpl context = new RenderContextImpl(renderer, matrixStack, bufferFactory, partialTicks, light, overlay);
 
         // Render all modules, adjust matrix stack to allow easily rendering an overlay in (0, 0, 0) to (1, 1, 0).
         for (final Face face : Face.VALUES) {
@@ -65,7 +66,7 @@ public final class TileEntitySpecialRendererCasing extends TileEntityRenderer<Ti
                 // Grab neighbor lighting for module rendering because the casing itself is opaque and hence fully dark.
                 final BlockPos neighborPos = casing.getBlockPos().relative(Face.toDirection(face));
                 final int neighborLight = WorldRenderer.getLightColor(renderer.level, neighborPos);
-                drawModuleOverlay(new RenderContext(context, neighborLight), casing, face);
+                drawModuleOverlay(new RenderContextImpl(context, neighborLight), casing, face);
             }
 
             matrixStack.popPose();
@@ -157,11 +158,11 @@ public final class TileEntitySpecialRendererCasing extends TileEntityRenderer<Ti
                 final boolean isClosed = casing.isReceivingPipeLocked(face, port);
                 final ResourceLocation sprite = isClosed ? closedSprite : openSprite;
                 if (sprite != null) {
-                    context.drawAtlasSpriteUnlit(sprite);
+                    context.drawAtlasQuadUnlit(sprite);
                 }
 
                 if (port == lookingAtPort) {
-                    context.drawAtlasSpriteUnlit(Textures.LOCATION_OVERLAY_CASING_PORT_HIGHLIGHT);
+                    context.drawAtlasQuadUnlit(Textures.LOCATION_OVERLAY_CASING_PORT_HIGHLIGHT);
                 }
 
                 matrixStack.translate(0.5, 0.5, 0.5);
@@ -179,7 +180,7 @@ public final class TileEntitySpecialRendererCasing extends TileEntityRenderer<Ti
                 sprite = Textures.LOCATION_OVERLAY_CASING_UNLOCKED;
             }
 
-            context.drawAtlasSpriteUnlit(sprite);
+            context.drawAtlasQuadUnlit(sprite);
         }
 
         return true;
@@ -191,7 +192,7 @@ public final class TileEntitySpecialRendererCasing extends TileEntityRenderer<Ti
         for (final Port port : Port.CLOCKWISE) {
             final boolean isClosed = casing.isReceivingPipeLocked(face, port);
             if (isClosed) {
-                context.drawAtlasSpriteUnlit(Textures.LOCATION_OVERLAY_CASING_PORT_CLOSED_SMALL);
+                context.drawAtlasQuadUnlit(Textures.LOCATION_OVERLAY_CASING_PORT_CLOSED_SMALL);
             }
 
             matrixStack.translate(0.5, 0.5, 0.5);

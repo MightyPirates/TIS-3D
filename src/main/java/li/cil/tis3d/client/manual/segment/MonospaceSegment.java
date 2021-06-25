@@ -46,7 +46,7 @@ public final class MonospaceSegment extends BasicTextSegment {
             matrixStack.translate(currentX, currentY, 0);
             matrixStack.scale(FONT_SCALE, FONT_SCALE, FONT_SCALE);
 
-            FontRendererNormal.INSTANCE.drawString(matrixStack, bufferFactory, part.toUpperCase(), CODE_TEXT_COLOR, Integer.MAX_VALUE);
+            FontRendererNormal.INSTANCE.drawString(matrixStack, bufferFactory, part.toUpperCase(), CODE_TEXT_COLOR);
             matrixStack.popPose();
 
             currentX = x + wrapIndent;

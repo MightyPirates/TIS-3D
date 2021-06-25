@@ -1,6 +1,7 @@
 package li.cil.tis3d.client.renderer.font;
 
 import li.cil.tis3d.api.API;
+import li.cil.tis3d.api.util.FontRenderer;
 import net.minecraft.util.ResourceLocation;
 
 public final class FontRendererSmall extends AbstractFontRenderer {

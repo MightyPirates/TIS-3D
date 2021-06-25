@@ -8,9 +8,7 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.api.util.TransformUtil;
-import li.cil.tis3d.util.WorldUtils;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -70,7 +68,7 @@ public abstract class AbstractModule implements Module {
     /**
      * Utility method for determining whether the player is currently looking at this module.
      *
-     * @param dispatcher the render context.
+     * @param hitResult the current hit result.
      * @return <tt>true</tt> if the observer is looking at the module, <tt>false</tt> otherwise.
      */
     @OnlyIn(Dist.CLIENT)
@@ -103,7 +101,7 @@ public abstract class AbstractModule implements Module {
      * {@link #hitToUV}. Note that this method is overridden in {@link AbstractModuleWithRotation}
      * to also take into account the module's rotation.
      *
-     * @param dispatcher the render context.
+     * @param hitResult the current hit result.
      * @return the UV coordinate the observer is looking at as the X and Y components.
      */
     @OnlyIn(Dist.CLIENT)
@@ -140,7 +138,7 @@ public abstract class AbstractModule implements Module {
      *
      * @param hitPos the hit position to project.
      * @return the projected UV coordinate, with the Z component being 0.
-     * @see #getObserverLookAt(TileEntityRendererDispatcher)
+     * @see #getLocalHitPosition(RayTraceResult)
      * @see Module#onActivate(PlayerEntity, Hand, Vector3d)
      */
     protected Vector3d hitToUV(final Vector3d hitPos) {
@@ -159,7 +157,7 @@ public abstract class AbstractModule implements Module {
     protected boolean isVisible() {
         final World world = getCasing().getCasingLevel();
         final BlockPos neighborPos = getCasing().getPosition().relative(Face.toDirection(getFace()));
-        if (!WorldUtils.isBlockLoaded(world, neighborPos)) {
+        if (!world.isLoaded(neighborPos)) {
             // If the neighbor isn't loaded, we can assume we're also not visible on that side.
             return false;
         }
