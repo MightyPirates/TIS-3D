@@ -4,7 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.common.CommonConfig;
 import li.cil.tis3d.common.Constants;
-import li.cil.tis3d.common.item.ItemBookCode;
+import li.cil.tis3d.common.item.CodeBookItem;
 import li.cil.tis3d.common.item.Items;
 import li.cil.tis3d.common.module.execution.MachineState;
 import li.cil.tis3d.common.module.execution.compiler.Compiler;
@@ -67,7 +67,7 @@ public final class CodeBookScreen extends Screen {
 
     private final PlayerEntity player;
     private final Hand hand;
-    private final ItemBookCode.Data data;
+    private final CodeBookItem.Data data;
     private final List<StringBuilder> lines = new ArrayList<>();
 
     private int guiX = 0;
@@ -82,7 +82,7 @@ public final class CodeBookScreen extends Screen {
         super(new StringTextComponent("Code Book"));
         this.player = player;
         this.hand = hand;
-        this.data = ItemBookCode.Data.loadFromStack(player.getItemInHand(Hand.MAIN_HAND));
+        this.data = CodeBookItem.Data.loadFromStack(player.getItemInHand(Hand.MAIN_HAND));
 
         rebuildLines();
     }

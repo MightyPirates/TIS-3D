@@ -11,8 +11,8 @@ public final class Blocks {
 
     // --------------------------------------------------------------------- //
 
-    public static final RegistryObject<BlockCasing> CASING = BLOCKS.register("casing", BlockCasing::new);
-    public static final RegistryObject<BlockController> CONTROLLER = BLOCKS.register("controller", BlockController::new);
+    public static final RegistryObject<CasingBlock> CASING = BLOCKS.register("casing", CasingBlock::new);
+    public static final RegistryObject<ControllerBlock> CONTROLLER = BLOCKS.register("controller", ControllerBlock::new);
 
     // --------------------------------------------------------------------- //
 

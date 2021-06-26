@@ -1,6 +1,6 @@
 package li.cil.tis3d.common.container;
 
-import li.cil.tis3d.common.item.ItemModuleReadOnlyMemory;
+import li.cil.tis3d.common.item.ReadOnlyMemoryModuleItem;
 import li.cil.tis3d.common.item.Items;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.ServerReadOnlyMemoryModuleDataMessage;
@@ -46,7 +46,7 @@ public final class ReadOnlyMemoryModuleContainer extends Container {
 
         if (player instanceof ServerPlayerEntity) {
             final ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
-            final byte[] data = ItemModuleReadOnlyMemory.loadFromStack(player.getItemInHand(hand));
+            final byte[] data = ReadOnlyMemoryModuleItem.loadFromStack(player.getItemInHand(hand));
             if (!Arrays.equals(data, lastSentData)) {
                 lastSentData = data;
                 final ServerReadOnlyMemoryModuleDataMessage message = new ServerReadOnlyMemoryModuleDataMessage(hand, data);

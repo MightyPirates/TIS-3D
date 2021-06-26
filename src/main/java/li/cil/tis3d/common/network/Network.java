@@ -8,7 +8,7 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.common.CommonConfig;
 import li.cil.tis3d.common.network.message.*;
-import li.cil.tis3d.common.tileentity.TileEntityComputer;
+import li.cil.tis3d.common.tileentity.ComputerTileEntity;
 import li.cil.tis3d.util.WorldUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -104,7 +104,7 @@ public final class Network {
         return getTargetPoint(world, position.getX() + 0.5, position.getY() + 0.5, position.getZ() + 0.5, range);
     }
 
-    public static PacketDistributor.PacketTarget getTargetPoint(final TileEntityComputer tileEntity, final int range) {
+    public static PacketDistributor.PacketTarget getTargetPoint(final ComputerTileEntity tileEntity, final int range) {
         return getTargetPoint(Objects.requireNonNull(tileEntity.getBlockEntityWorld()), tileEntity.getBlockPos(), range);
     }
 
@@ -125,7 +125,7 @@ public final class Network {
 
     public static void sendPipeEffect(final World world, final double x, final double y, final double z) {
         final BlockPos position = new BlockPos(x, y, z);
-        if (!WorldUtils.isBlockLoaded(world, position)) {
+        if (WorldUtils.isLoaded(world, position)) {
             final BlockState state = world.getBlockState(position);
             if (state.isSolidRender(world, position)) {
                 // Skip particle emission when inside a block where they aren't visible anyway.

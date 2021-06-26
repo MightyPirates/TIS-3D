@@ -1,7 +1,6 @@
 package li.cil.manual.client.document.segment;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
 import li.cil.manual.api.Manual;
 import li.cil.manual.client.document.Document;
 import net.minecraft.client.gui.FontRenderer;
@@ -62,7 +61,6 @@ public class TextSegment extends BasicTextSegment {
                 final int cy = currentY;
                 hovered = interactive.flatMap(segment -> segment.checkHovered(mouseX, mouseY, cx, cy, stringWidth(part, renderer), (int) (Document.lineHeight(renderer) * scale)));
             }
-            GlStateManager._color4f(0f, 0f, 0f, 1); // TODO wat?
             matrixStack.pushPose();
             matrixStack.translate(currentX, currentY, 0);
             matrixStack.scale(scale, scale, scale);

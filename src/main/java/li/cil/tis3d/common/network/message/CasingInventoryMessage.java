@@ -1,7 +1,7 @@
 package li.cil.tis3d.common.network.message;
 
 import li.cil.tis3d.api.machine.Casing;
-import li.cil.tis3d.common.tileentity.TileEntityCasing;
+import li.cil.tis3d.common.tileentity.CasingTileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
@@ -33,7 +33,7 @@ public final class CasingInventoryMessage extends AbstractMessageWithPosition {
     protected void handleMessage(final NetworkEvent.Context context) {
         final World world = getClientWorld();
         if (world != null) {
-            withTileEntity(world, TileEntityCasing.class, casing ->
+            withTileEntity(world, CasingTileEntity.class, casing ->
                 casing.setStackAndModuleClient(slot, stack, moduleData));
         }
     }

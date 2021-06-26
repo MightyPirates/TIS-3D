@@ -2,6 +2,7 @@ package li.cil.manual.api.prefab;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import li.cil.manual.api.Manual;
 import li.cil.manual.api.Tab;
 import li.cil.manual.client.document.Document;
@@ -85,7 +86,7 @@ public final class ManualScreen extends Screen {
 
     @Override
     public void render(final MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
-        GlStateManager._enableBlend();
+        RenderSystem.enableBlend();
 
         if (!Objects.equals(currentPath, manual.peek())) {
             refreshPage();

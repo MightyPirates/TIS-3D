@@ -5,7 +5,7 @@ import io.netty.buffer.ByteBufInputStream;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
-import li.cil.tis3d.common.tileentity.TileEntityCasing;
+import li.cil.tis3d.common.tileentity.CasingTileEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.network.PacketBuffer;
@@ -28,7 +28,7 @@ public abstract class AbstractCasingDataMessage extends AbstractMessageWithPosit
     // --------------------------------------------------------------------- //
 
     protected void handleMessage(final World world) {
-        withTileEntity(world, TileEntityCasing.class, casing -> {
+        withTileEntity(world, CasingTileEntity.class, casing -> {
             while (data.readableBytes() > 0) {
                 final Module module = casing.getModule(Face.VALUES[data.readByte()]);
                 final ByteBuf moduleData = data.readBytes(data.readUnsignedShort());

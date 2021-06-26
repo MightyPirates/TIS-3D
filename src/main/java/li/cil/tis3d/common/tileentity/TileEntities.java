@@ -16,8 +16,8 @@ public final class TileEntities {
 
     // --------------------------------------------------------------------- //
 
-    public static final RegistryObject<TileEntityType<TileEntityCasing>> CASING = register(Blocks.CASING, TileEntityCasing::new);
-    public static final RegistryObject<TileEntityType<TileEntityController>> CONTROLLER = register(Blocks.CONTROLLER, TileEntityController::new);
+    public static final RegistryObject<TileEntityType<CasingTileEntity>> CASING = register(Blocks.CASING, CasingTileEntity::new);
+    public static final RegistryObject<TileEntityType<ControllerTileEntity>> CONTROLLER = register(Blocks.CONTROLLER, ControllerTileEntity::new);
 
     // --------------------------------------------------------------------- //
 

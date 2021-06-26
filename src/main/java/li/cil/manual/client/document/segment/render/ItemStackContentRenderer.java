@@ -1,7 +1,6 @@
 package li.cil.manual.client.document.segment.render;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import li.cil.manual.api.ContentRenderer;
 import net.minecraft.client.Minecraft;
@@ -51,14 +50,14 @@ public final class ItemStackContentRenderer implements ContentRenderer {
         // This is *nasty*, but sadly there's no renderItemAndEffectIntoGUI() variant that
         // takes a MatrixStack. Yet.
 
-        GlStateManager._pushMatrix();
-        GlStateManager._scalef(scaleX, scaleY, 1);
+        RenderSystem.pushMatrix();
+        RenderSystem.scalef(scaleX, scaleY, 1);
 
         final Vector4f position = new Vector4f(0, 0, 0, 1);
         position.transform(matrixStack.last().pose());
         mc.getItemRenderer().renderGuiItem(stack, (int) (position.x() / scaleX), (int) (position.y() / scaleY));
 
-        GlStateManager._popMatrix();
+        RenderSystem.popMatrix();
 
         // Unfuck GL state.
         RenderSystem.enableBlend();

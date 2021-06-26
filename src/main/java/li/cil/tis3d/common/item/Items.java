@@ -22,30 +22,30 @@ public final class Items {
 
     // --------------------------------------------------------------------- //
 
-    public static final RegistryObject<Item> BOOK_CODE = register("code_book", ItemBookCode::new);
-    public static final RegistryObject<Item> BOOK_MANUAL = register("manual", ItemBookManual::new);
+    public static final RegistryObject<Item> BOOK_CODE = register("code_book", CodeBookItem::new);
+    public static final RegistryObject<Item> BOOK_MANUAL = register("manual", ManualItem::new);
 
-    public static final RegistryObject<Item> KEY = register("key", ItemKey::new);
-    public static final RegistryObject<Item> KEY_CREATIVE = register("skeleton_key", ItemKey::new);
+    public static final RegistryObject<Item> KEY = register("key", KeyItem::new);
+    public static final RegistryObject<Item> KEY_CREATIVE = register("skeleton_key", KeyItem::new);
 
     public static final RegistryObject<Item> PRISM = register("prism");
 
-    public static final RegistryObject<ItemModule> AUDIO_MODULE = register("audio_module", ItemModule::new);
-    public static final RegistryObject<ItemModule> DISPLAY_MODULE = register("display_module", ItemModule::new);
-    public static final RegistryObject<ItemModule> EXECUTION_MODULE = register("execution_module", ItemModule::new);
-    public static final RegistryObject<ItemModule> FACADE_MODULE = register("facade_module", ItemModule::new);
-    public static final RegistryObject<ItemModule> INFRARED_MODULE = register("infrared_module", ItemModule::new);
-    public static final RegistryObject<ItemModule> KEYPAD_MODULE = register("keypad_module", ItemModule::new);
-    public static final RegistryObject<ItemModule> QUEUE_MODULE = register("queue_module", ItemModule::new);
-    public static final RegistryObject<ItemModule> RANDOM_MODULE = register("random_module", ItemModule::new);
-    public static final RegistryObject<ItemModule> RANDOM_ACCESS_MEMORY_MODULE = register("random_access_memory_module", ItemModule::new);
-    public static final RegistryObject<ItemModuleReadOnlyMemory> READ_ONLY_MEMORY_MODULE = register("read_only_memory_module", ItemModuleReadOnlyMemory::new);
-    public static final RegistryObject<ItemModule> REDSTONE_MODULE = register("redstone_module", ItemModule::new);
-    public static final RegistryObject<ItemModule> SEQUENCER_MODULE = register("sequencer_module", ItemModule::new);
-    public static final RegistryObject<ItemModule> SERIAL_PORT_MODULE = register("serial_port_module", ItemModule::new);
-    public static final RegistryObject<ItemModule> STACK_MODULE = register("stack_module", ItemModule::new);
-    public static final RegistryObject<ItemModule> TERMINAL_MODULE = register("terminal_module", ItemModule::new);
-    public static final RegistryObject<ItemModule> TIMER_MODULE = register("timer_module", ItemModule::new);
+    public static final RegistryObject<ModuleItem> AUDIO_MODULE = register("audio_module", ModuleItem::new);
+    public static final RegistryObject<ModuleItem> DISPLAY_MODULE = register("display_module", ModuleItem::new);
+    public static final RegistryObject<ModuleItem> EXECUTION_MODULE = register("execution_module", ModuleItem::new);
+    public static final RegistryObject<ModuleItem> FACADE_MODULE = register("facade_module", ModuleItem::new);
+    public static final RegistryObject<ModuleItem> INFRARED_MODULE = register("infrared_module", ModuleItem::new);
+    public static final RegistryObject<ModuleItem> KEYPAD_MODULE = register("keypad_module", ModuleItem::new);
+    public static final RegistryObject<ModuleItem> QUEUE_MODULE = register("queue_module", ModuleItem::new);
+    public static final RegistryObject<ModuleItem> RANDOM_MODULE = register("random_module", ModuleItem::new);
+    public static final RegistryObject<ModuleItem> RANDOM_ACCESS_MEMORY_MODULE = register("random_access_memory_module", ModuleItem::new);
+    public static final RegistryObject<ReadOnlyMemoryModuleItem> READ_ONLY_MEMORY_MODULE = register("read_only_memory_module", ReadOnlyMemoryModuleItem::new);
+    public static final RegistryObject<ModuleItem> REDSTONE_MODULE = register("redstone_module", ModuleItem::new);
+    public static final RegistryObject<ModuleItem> SEQUENCER_MODULE = register("sequencer_module", ModuleItem::new);
+    public static final RegistryObject<ModuleItem> SERIAL_PORT_MODULE = register("serial_port_module", ModuleItem::new);
+    public static final RegistryObject<ModuleItem> STACK_MODULE = register("stack_module", ModuleItem::new);
+    public static final RegistryObject<ModuleItem> TERMINAL_MODULE = register("terminal_module", ModuleItem::new);
+    public static final RegistryObject<ModuleItem> TIMER_MODULE = register("timer_module", ModuleItem::new);
 
     // --------------------------------------------------------------------- //
 

@@ -1,6 +1,6 @@
 package li.cil.tis3d.common.network.message;
 
-import li.cil.tis3d.common.item.ItemBookCode;
+import li.cil.tis3d.common.item.CodeBookItem;
 import li.cil.tis3d.common.item.Items;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -34,8 +34,8 @@ public final class CodeBookDataMessage extends AbstractMessage {
 
         final ItemStack stack = player.getItemInHand(hand);
         if (Items.is(stack, Items.BOOK_CODE)) {
-            final ItemBookCode.Data data = ItemBookCode.Data.loadFromNBT(tag);
-            ItemBookCode.Data.saveToStack(stack, data);
+            final CodeBookItem.Data data = CodeBookItem.Data.loadFromNBT(tag);
+            CodeBookItem.Data.saveToStack(stack, data);
         }
     }
 

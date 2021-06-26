@@ -18,7 +18,6 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -158,12 +157,6 @@ public abstract class AbstractModule implements Module {
         if (!world.isLoaded(neighborPos)) {
             // If the neighbor isn't loaded, we can assume we're also not visible on that side.
             return false;
-        }
-
-        final Chunk chunk = world.getChunkAt(neighborPos);
-        if (chunk.isEmpty()) {
-            // If the neighbor chunk is empty, we must assume we're visible.
-            return true;
         }
 
         // Otherwise check if the neighboring block blocks visibility to our face.

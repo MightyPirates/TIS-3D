@@ -133,7 +133,7 @@ public final class Document {
         RenderSystem.disableAlphaTest();
 
         // Clear depth mask, then create masks in foreground above and below scroll area.
-        GlStateManager._clear(GL11.GL_DEPTH_BUFFER_BIT, false);
+        RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, false);
 
         matrixStack.pushPose();
         matrixStack.translate(0, 0, 500);
@@ -165,7 +165,7 @@ public final class Document {
         }
         hovered.ifPresent(InteractiveSegment::notifyHover);
 
-        GlStateManager._clear(GL11.GL_DEPTH_BUFFER_BIT, false);
+        RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, false);
 
         return hovered;
     }

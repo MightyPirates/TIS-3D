@@ -4,7 +4,7 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.ModuleProvider;
-import li.cil.tis3d.common.item.ItemModule;
+import li.cil.tis3d.common.item.ModuleItem;
 import li.cil.tis3d.common.item.Items;
 import li.cil.tis3d.common.module.*;
 import li.cil.tis3d.common.provider.module.SimpleModuleProvider;
@@ -29,22 +29,22 @@ public final class ModuleProviders {
     // --------------------------------------------------------------------- //
 
     public static void initialize() {
-        register(Items.AUDIO_MODULE, ModuleAudio::new);
-        register(Items.DISPLAY_MODULE, ModuleDisplay::new);
-        register(Items.EXECUTION_MODULE, ModuleExecution::new);
-        register(Items.FACADE_MODULE, ModuleFacade::new);
-        register(Items.INFRARED_MODULE, ModuleInfrared::new);
-        register(Items.KEYPAD_MODULE, ModuleKeypad::new);
-        register(Items.QUEUE_MODULE, ModuleQueue::new);
-        register(Items.RANDOM_MODULE, ModuleRandom::new);
-        register(Items.RANDOM_ACCESS_MEMORY_MODULE, ModuleRandomAccessMemory::new);
-        register(Items.READ_ONLY_MEMORY_MODULE, ModuleReadOnlyMemory::new);
-        register(Items.REDSTONE_MODULE, ModuleRedstone::new);
-        register(Items.SEQUENCER_MODULE, ModuleSequencer::new);
-        register(Items.SERIAL_PORT_MODULE, ModuleSerialPort::new);
-        register(Items.STACK_MODULE, ModuleStack::new);
-        register(Items.TERMINAL_MODULE, ModuleTerminal::new);
-        register(Items.TIMER_MODULE, ModuleTimer::new);
+        register(Items.AUDIO_MODULE, AudioModule::new);
+        register(Items.DISPLAY_MODULE, DisplayModule::new);
+        register(Items.EXECUTION_MODULE, ExecutionModule::new);
+        register(Items.FACADE_MODULE, FacadeModule::new);
+        register(Items.INFRARED_MODULE, InfraredModule::new);
+        register(Items.KEYPAD_MODULE, KeypadModule::new);
+        register(Items.QUEUE_MODULE, QueueModule::new);
+        register(Items.RANDOM_MODULE, RandomModule::new);
+        register(Items.RANDOM_ACCESS_MEMORY_MODULE, RandomAccessMemoryModule::new);
+        register(Items.READ_ONLY_MEMORY_MODULE, ReadOnlyMemoryModule::new);
+        register(Items.REDSTONE_MODULE, RedstoneModule::new);
+        register(Items.SEQUENCER_MODULE, SequencerModule::new);
+        register(Items.SERIAL_PORT_MODULE, SerialPortModule::new);
+        register(Items.STACK_MODULE, StackModule::new);
+        register(Items.TERMINAL_MODULE, TerminalModule::new);
+        register(Items.TIMER_MODULE, TimerModule::new);
     }
 
     public static Optional<ModuleProvider> getProviderFor(final ItemStack stack, final Casing casing, final Face face) {
@@ -58,7 +58,7 @@ public final class ModuleProviders {
 
     // --------------------------------------------------------------------- //
 
-    private static <T extends Module> void register(final RegistryObject<? extends ItemModule> item, final BiFunction<Casing, Face, T> factory) {
+    private static <T extends Module> void register(final RegistryObject<? extends ModuleItem> item, final BiFunction<Casing, Face, T> factory) {
         MODULE_PROVIDERS.register(item.getId().getPath(), () -> new SimpleModuleProvider<>(item, factory));
     }
 }

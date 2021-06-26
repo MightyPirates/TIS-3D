@@ -15,7 +15,7 @@ public final class Entities {
 
     // --------------------------------------------------------------------- //
 
-    public static final RegistryObject<EntityType<EntityInfraredPacket>> INFRARED_PACKET = register("robot", EntityInfraredPacket::new, EntityClassification.MISC, b -> b
+    public static final RegistryObject<EntityType<InfraredPacketEntity>> INFRARED_PACKET = register("robot", InfraredPacketEntity::new, EntityClassification.MISC, b -> b
         .sized(0.25f, 0.25f)
         .setTrackingRange(16)
         .setUpdateInterval(1)

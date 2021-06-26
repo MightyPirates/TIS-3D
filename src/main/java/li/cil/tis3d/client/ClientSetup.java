@@ -5,13 +5,13 @@ import li.cil.tis3d.client.gui.ReadOnlyMemoryModuleScreen;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.client.renderer.block.ModuleModelLoader;
 import li.cil.tis3d.client.renderer.entity.NullEntityRenderer;
-import li.cil.tis3d.client.renderer.font.FontRendererNormal;
-import li.cil.tis3d.client.renderer.font.FontRendererSmall;
-import li.cil.tis3d.client.renderer.tileentity.TileEntitySpecialRendererCasing;
-import li.cil.tis3d.client.renderer.tileentity.TileEntitySpecialRendererController;
+import li.cil.tis3d.client.renderer.font.NormalFontRenderer;
+import li.cil.tis3d.client.renderer.font.SmallFontRenderer;
+import li.cil.tis3d.client.renderer.tileentity.CasingTileEntityRenderer;
+import li.cil.tis3d.client.renderer.tileentity.ControllerTileEntityRenderer;
 import li.cil.tis3d.common.container.Containers;
 import li.cil.tis3d.common.entity.Entities;
-import li.cil.tis3d.common.module.ModuleDisplay;
+import li.cil.tis3d.common.module.DisplayModule;
 import li.cil.tis3d.common.tileentity.TileEntities;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.inventory.container.PlayerContainer;
@@ -36,17 +36,17 @@ import java.util.Objects;
 public final class ClientSetup {
     @SubscribeEvent
     public static void handleSetupEvent(final FMLClientSetupEvent event) {
-        API.normalFontRenderer = FontRendererNormal.INSTANCE;
-        API.smallFontRenderer = FontRendererSmall.INSTANCE;
+        API.normalFontRenderer = NormalFontRenderer.INSTANCE;
+        API.smallFontRenderer = SmallFontRenderer.INSTANCE;
 
         ScreenManager.register(Containers.READ_ONLY_MEMORY_MODULE.get(), ReadOnlyMemoryModuleScreen::new);
 
-        ClientRegistry.bindTileEntityRenderer(TileEntities.CASING.get(), TileEntitySpecialRendererCasing::new);
-        ClientRegistry.bindTileEntityRenderer(TileEntities.CONTROLLER.get(), TileEntitySpecialRendererController::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.CASING.get(), CasingTileEntityRenderer::new);
+        ClientRegistry.bindTileEntityRenderer(TileEntities.CONTROLLER.get(), ControllerTileEntityRenderer::new);
 
         RenderingRegistry.registerEntityRenderingHandler(Entities.INFRARED_PACKET.get(), NullEntityRenderer::new);
 
-        MinecraftForge.EVENT_BUS.addListener(ModuleDisplay.TextureDisposer::tick);
+        MinecraftForge.EVENT_BUS.addListener(DisplayModule.TextureDisposer::tick);
     }
 
     @SubscribeEvent

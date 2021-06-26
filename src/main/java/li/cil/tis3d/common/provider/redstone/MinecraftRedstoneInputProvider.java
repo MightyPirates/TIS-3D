@@ -11,7 +11,7 @@ public final class MinecraftRedstoneInputProvider extends ForgeRegistryEntry<Red
     @Override
     public int getInput(final World world, final BlockPos pos, final Direction face) {
         final BlockPos inputPos = pos.relative(face);
-        if (!WorldUtils.isBlockLoaded(world, inputPos)) {
+        if (!WorldUtils.isLoaded(world, inputPos)) {
             return 0;
         }
 

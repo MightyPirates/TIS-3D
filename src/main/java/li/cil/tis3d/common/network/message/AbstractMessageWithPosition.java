@@ -23,7 +23,7 @@ public abstract class AbstractMessageWithPosition extends AbstractMessage {
 
     @SuppressWarnings("unchecked")
     protected <T extends TileEntity> void withTileEntity(final World world, final Class<T> type, final Consumer<T> callback) {
-        if (WorldUtils.isBlockLoaded(world, position)) {
+        if (WorldUtils.isLoaded(world, position)) {
             final TileEntity tileEntity = world.getBlockEntity(position);
             if (tileEntity != null && type.isAssignableFrom(tileEntity.getClass())) {
                 callback.accept((T) tileEntity);

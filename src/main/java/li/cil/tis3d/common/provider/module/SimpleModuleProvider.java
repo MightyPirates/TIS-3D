@@ -4,7 +4,7 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.ModuleProvider;
-import li.cil.tis3d.common.item.ItemModule;
+import li.cil.tis3d.common.item.ModuleItem;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.ForgeRegistryEntry;
@@ -13,10 +13,10 @@ import javax.annotation.Nullable;
 import java.util.function.BiFunction;
 
 public final class SimpleModuleProvider<T extends Module> extends ForgeRegistryEntry<ModuleProvider> implements ModuleProvider {
-    private final RegistryObject<? extends ItemModule> module;
+    private final RegistryObject<? extends ModuleItem> module;
     private final BiFunction<Casing, Face, T> moduleConstructor;
 
-    public SimpleModuleProvider(final RegistryObject<? extends ItemModule> module, final BiFunction<Casing, Face, T> moduleConstructor) {
+    public SimpleModuleProvider(final RegistryObject<? extends ModuleItem> module, final BiFunction<Casing, Face, T> moduleConstructor) {
         this.module = module;
         this.moduleConstructor = moduleConstructor;
     }

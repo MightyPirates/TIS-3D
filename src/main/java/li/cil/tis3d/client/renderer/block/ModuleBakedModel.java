@@ -3,7 +3,7 @@ package li.cil.tis3d.client.renderer.block;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.traits.ModuleWithBakedModel;
-import li.cil.tis3d.common.tileentity.TileEntityCasing;
+import li.cil.tis3d.common.tileentity.CasingTileEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
@@ -100,11 +100,11 @@ public final class ModuleBakedModel implements IDynamicBakedModel {
     @Override
     public IModelData getModelData(@Nonnull final IBlockDisplayReader world, @Nonnull final BlockPos pos, @Nonnull final BlockState state, @Nonnull final IModelData tileData) {
         final TileEntity tileEntity = world.getBlockEntity(pos);
-        if (!(tileEntity instanceof TileEntityCasing)) {
+        if (!(tileEntity instanceof CasingTileEntity)) {
             return tileData;
         }
 
-        final TileEntityCasing casing = (TileEntityCasing) tileEntity;
+        final CasingTileEntity casing = (CasingTileEntity) tileEntity;
         final CasingModules data = new CasingModules();
         for (final Face face : Face.VALUES) {
             final Module module = casing.getModule(face);

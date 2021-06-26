@@ -1,7 +1,7 @@
 package li.cil.tis3d.common.network.message;
 
 import li.cil.tis3d.api.machine.Casing;
-import li.cil.tis3d.common.tileentity.TileEntityCasing;
+import li.cil.tis3d.common.tileentity.CasingTileEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -25,7 +25,7 @@ public final class CasingLockedStateMessage extends AbstractMessageWithPosition 
     protected void handleMessage(final NetworkEvent.Context context) {
         final World world = getClientWorld();
         if (world != null) {
-            withTileEntity(world, TileEntityCasing.class, casing ->
+            withTileEntity(world, CasingTileEntity.class, casing ->
                 casing.setCasingLockedClient(isLocked));
         }
     }

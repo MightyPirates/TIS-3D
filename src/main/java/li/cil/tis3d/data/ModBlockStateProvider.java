@@ -2,7 +2,7 @@ package li.cil.tis3d.data;
 
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Face;
-import li.cil.tis3d.common.block.BlockCasing;
+import li.cil.tis3d.common.block.CasingBlock;
 import li.cil.tis3d.common.block.Blocks;
 import li.cil.tis3d.common.item.Items;
 import net.minecraft.data.DataGenerator;
@@ -30,7 +30,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
         final ModelFile.ExistingModelFile casingModule = models().getExistingFile(MODULE_IN_CASING_MODEL);
 
         final MultiPartBlockStateBuilder casingBuilder = getMultipartBuilder(Blocks.CASING.get());
-        BlockCasing.FACE_TO_PROPERTY.forEach((face, property) -> {
+        CasingBlock.FACE_TO_PROPERTY.forEach((face, property) -> {
             final Direction direction = Face.toDirection(face);
             final int rotationY = (int) direction.toYRot();
             final int rotationX;

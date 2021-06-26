@@ -5,7 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.common.container.ReadOnlyMemoryModuleContainer;
-import li.cil.tis3d.common.module.ModuleRandomAccessMemory;
+import li.cil.tis3d.common.module.RandomAccessMemoryModule;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.ClientReadOnlyMemoryModuleDataMessage;
 import li.cil.tis3d.util.Color;
@@ -27,7 +27,7 @@ public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMe
     private static final int CELL_HEIGHT = 7;
     private static final String LABEL_INITIALIZING = "INITIALIZING...";
 
-    private final byte[] data = new byte[ModuleRandomAccessMemory.MEMORY_SIZE];
+    private final byte[] data = new byte[RandomAccessMemoryModule.MEMORY_SIZE];
 
     private static int selectedCell = 0;
     private boolean highNibble = true;

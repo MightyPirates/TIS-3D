@@ -11,8 +11,8 @@ import li.cil.tis3d.api.module.traits.ModuleWithRedstone;
 import li.cil.tis3d.common.item.Items;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.provider.ModuleProviders;
-import li.cil.tis3d.common.tileentity.TileEntityCasing;
-import li.cil.tis3d.common.tileentity.TileEntityController;
+import li.cil.tis3d.common.tileentity.CasingTileEntity;
+import li.cil.tis3d.common.tileentity.ControllerTileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
@@ -55,18 +55,18 @@ public final class CasingImpl implements Casing {
     /**
      * The tile entity hosting this casing.
      */
-    private final TileEntityCasing tileEntity;
+    private final CasingTileEntity tileEntity;
 
     // --------------------------------------------------------------------- //
 
-    public CasingImpl(final TileEntityCasing tileEntity) {
+    public CasingImpl(final CasingTileEntity tileEntity) {
         this.tileEntity = tileEntity;
     }
 
     /**
      * Calls {@link Module#onEnabled()} on all modules.
      * <p>
-     * Used by the controller when its state changes to {@link TileEntityController.ControllerState#RUNNING}.
+     * Used by the controller when its state changes to {@link ControllerTileEntity.ControllerState#RUNNING}.
      */
     public void onEnabled() {
         for (final Module module : modules) {
@@ -80,7 +80,7 @@ public final class CasingImpl implements Casing {
     /**
      * Calls {@link Module#onDisabled()} on all modules and resets all pipes.
      * <p>
-     * Used by the controller when its state changes from {@link TileEntityController.ControllerState#RUNNING},
+     * Used by the controller when its state changes from {@link ControllerTileEntity.ControllerState#RUNNING},
      * or the controller is reset (scan scheduled), or the controller is unloaded.
      */
     public void onDisabled() {

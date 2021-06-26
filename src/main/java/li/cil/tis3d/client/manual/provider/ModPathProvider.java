@@ -4,7 +4,7 @@ import li.cil.manual.api.Manual;
 import li.cil.manual.api.prefab.NamespacePathProvider;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.client.manual.Manuals;
-import li.cil.tis3d.common.tileentity.TileEntityCasing;
+import li.cil.tis3d.common.tileentity.CasingTileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -27,8 +27,8 @@ public class ModPathProvider extends NamespacePathProvider {
     @Override
     public Optional<String> pathFor(final World world, final BlockPos pos, final Direction face) {
         final TileEntity tileEntity = world.getBlockEntity(pos);
-        if (tileEntity instanceof TileEntityCasing) {
-            final TileEntityCasing casing = (TileEntityCasing) tileEntity;
+        if (tileEntity instanceof CasingTileEntity) {
+            final CasingTileEntity casing = (CasingTileEntity) tileEntity;
             final ItemStack moduleStack = casing.getItem(face.ordinal());
             final Optional<String> path = pathFor(moduleStack);
             if (path.isPresent()) {

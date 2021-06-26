@@ -1,6 +1,6 @@
 package li.cil.tis3d.common.network.message;
 
-import li.cil.tis3d.common.item.ItemModuleReadOnlyMemory;
+import li.cil.tis3d.common.item.ReadOnlyMemoryModuleItem;
 import li.cil.tis3d.common.item.Items;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -26,7 +26,7 @@ public final class ClientReadOnlyMemoryModuleDataMessage extends AbstractReadOnl
         if (player != null) {
             final ItemStack stack = player.getItemInHand(hand);
             if (Items.is(stack, Items.READ_ONLY_MEMORY_MODULE)) {
-                ItemModuleReadOnlyMemory.saveToStack(stack, data);
+                ReadOnlyMemoryModuleItem.saveToStack(stack, data);
             }
         }
     }

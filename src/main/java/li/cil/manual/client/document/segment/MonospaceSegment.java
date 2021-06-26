@@ -2,7 +2,7 @@ package li.cil.manual.client.document.segment;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import li.cil.manual.api.Manual;
-import li.cil.tis3d.client.renderer.font.FontRendererNormal;
+import li.cil.tis3d.client.renderer.font.NormalFontRenderer;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Tessellator;
@@ -51,7 +51,7 @@ public final class MonospaceSegment extends BasicTextSegment {
             matrixStack.translate(currentX, currentY, 0);
             matrixStack.scale(FONT_SCALE, FONT_SCALE, FONT_SCALE);
 
-            FontRendererNormal.INSTANCE.drawString(matrixStack, bufferFactory, part.toUpperCase(), CODE_TEXT_COLOR);
+            NormalFontRenderer.INSTANCE.drawString(matrixStack, bufferFactory, part.toUpperCase(), CODE_TEXT_COLOR);
             matrixStack.popPose();
 
             currentX = x + wrapIndent;
@@ -73,7 +73,7 @@ public final class MonospaceSegment extends BasicTextSegment {
 
     @Override
     protected int stringWidth(final String s, final FontRenderer renderer) {
-        return (int) (FONT_SCALE * s.length() * (FontRendererNormal.INSTANCE.getCharWidth() + 1));
+        return (int) (FONT_SCALE * s.length() * (NormalFontRenderer.INSTANCE.getCharWidth() + 1));
     }
 
     @Override
