@@ -250,8 +250,8 @@ public final class CasingImpl implements Casing {
             }
 
             final Face face = Face.VALUES[index];
-            final ModuleProvider provider = ModuleProviders.getProviderFor(stack, tileEntity, face);
-            if (provider == null) {
+            final Optional<ModuleProvider> provider = ModuleProviders.getProviderFor(stack, tileEntity, face);
+            if (!provider.isPresent()) {
                 if (modules[index] != null) {
                     modules[index].onDisposed();
                 }
@@ -259,7 +259,7 @@ public final class CasingImpl implements Casing {
                 continue;
             }
 
-            final Module module = provider.createModule(stack, tileEntity, face);
+            final Module module = provider.get().createModule(stack, tileEntity, face);
             modules[index] = module;
         }
 

@@ -1,6 +1,5 @@
 package li.cil.tis3d.common.provider;
 
-import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
@@ -9,19 +8,19 @@ import li.cil.tis3d.common.item.ItemModule;
 import li.cil.tis3d.common.item.Items;
 import li.cil.tis3d.common.module.*;
 import li.cil.tis3d.common.provider.module.SimpleModuleProvider;
+import li.cil.tis3d.util.RegistryUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.RegistryObject;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
 
-import javax.annotation.Nullable;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 public final class ModuleProviders {
-    private static final DeferredRegister<ModuleProvider> MODULE_PROVIDERS = DeferredRegister.create(ModuleProvider.class, API.MOD_ID);
+    private static final DeferredRegister<ModuleProvider> MODULE_PROVIDERS = RegistryUtils.create(ModuleProvider.class);
 
     // --------------------------------------------------------------------- //
 
@@ -46,18 +45,15 @@ public final class ModuleProviders {
         register(Items.STACK_MODULE, ModuleStack::new);
         register(Items.TERMINAL_MODULE, ModuleTerminal::new);
         register(Items.TIMER_MODULE, ModuleTimer::new);
-
-        MODULE_PROVIDERS.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
 
-    @Nullable
-    public static ModuleProvider getProviderFor(final ItemStack stack, final Casing casing, final Face face) {
+    public static Optional<ModuleProvider> getProviderFor(final ItemStack stack, final Casing casing, final Face face) {
         for (final ModuleProvider provider : MODULE_PROVIDER_REGISTRY.get()) {
             if (provider.matches(stack, casing, face)) {
-                return provider;
+                return Optional.of(provider);
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     // --------------------------------------------------------------------- //

@@ -19,6 +19,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 /**
  * Inventory implementation for casings, having six slots for modules, one per face.
@@ -94,7 +95,7 @@ public final class InventoryCasing extends Inventory implements ISidedInventory 
     }
 
     private boolean canInstall(final ItemStack stack, final Face face) {
-        return ModuleProviders.getProviderFor(stack, tileEntity, face) != null;
+        return ModuleProviders.getProviderFor(stack, tileEntity, face).isPresent();
     }
 
     // --------------------------------------------------------------------- //
@@ -112,12 +113,12 @@ public final class InventoryCasing extends Inventory implements ISidedInventory 
         }
 
         final Face face = Face.VALUES[index];
-        final ModuleProvider provider = ModuleProviders.getProviderFor(stack, tileEntity, face);
-        if (provider == null) {
+        final Optional<ModuleProvider> provider = ModuleProviders.getProviderFor(stack, tileEntity, face);
+        if (!provider.isPresent()) {
             return;
         }
 
-        final Module module = provider.createModule(stack, tileEntity, face);
+        final Module module = provider.get().createModule(stack, tileEntity, face);
 
         if (module instanceof ModuleWithRotation) {
             ((ModuleWithRotation) module).setFacing(facing);

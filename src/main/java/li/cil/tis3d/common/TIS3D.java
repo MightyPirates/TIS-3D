@@ -1,6 +1,5 @@
 package li.cil.tis3d.common;
 
-import li.cil.manual.client.Bootstrap;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.client.ClientConfig;
 import li.cil.tis3d.client.ClientSetup;
@@ -15,6 +14,7 @@ import li.cil.tis3d.common.provider.SerialInterfaceProviders;
 import li.cil.tis3d.common.tags.BlockTags;
 import li.cil.tis3d.common.tags.ItemTags;
 import li.cil.tis3d.common.tileentity.TileEntities;
+import li.cil.tis3d.util.RegistryUtils;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -27,6 +27,8 @@ public final class TIS3D {
         ConfigManager.add(ClientConfig::new);
         ConfigManager.initialize();
 
+        RegistryUtils.begin();
+
         ItemTags.initialize();
         BlockTags.initialize();
         Blocks.initialize();
@@ -38,10 +40,9 @@ public final class TIS3D {
         ModuleProviders.initialize();
         SerialInterfaceProviders.initialize();
         RedstoneInputProviders.initialize();
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-            Bootstrap.initialize();
-            Manuals.initialize();
-        });
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> Manuals::initialize);
+
+        RegistryUtils.finish();
 
         FMLJavaModLoadingContext.get().getModEventBus().register(CommonSetup.class);
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> FMLJavaModLoadingContext.get().getModEventBus().register(ClientSetup.class));

@@ -1,12 +1,11 @@
 package li.cil.tis3d.common.item;
 
-import li.cil.tis3d.api.API;
 import li.cil.tis3d.common.block.Blocks;
+import li.cil.tis3d.util.RegistryUtils;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.RegistryObject;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -14,7 +13,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public final class Items {
-    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, API.MOD_ID);
+    private static final DeferredRegister<Item> ITEMS = RegistryUtils.create(ForgeRegistries.ITEMS);
 
     // --------------------------------------------------------------------- //
 
@@ -51,7 +50,6 @@ public final class Items {
     // --------------------------------------------------------------------- //
 
     public static void initialize() {
-        ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
 
     public static <T extends Item> boolean is(final ItemStack stack, final RegistryObject<T> item) {

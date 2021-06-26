@@ -1,15 +1,14 @@
 package li.cil.tis3d.common.container;
 
-import li.cil.tis3d.api.API;
+import li.cil.tis3d.util.RegistryUtils;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.fml.RegistryObject;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public final class Containers {
-    private static final DeferredRegister<ContainerType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, API.MOD_ID);
+    private static final DeferredRegister<ContainerType<?>> CONTAINERS = RegistryUtils.create(ForgeRegistries.CONTAINERS);
 
     // --------------------------------------------------------------------- //
 
@@ -18,6 +17,5 @@ public final class Containers {
     // --------------------------------------------------------------------- //
 
     public static void initialize() {
-        CONTAINERS.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
 }

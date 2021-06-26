@@ -11,21 +11,18 @@ import li.cil.tis3d.api.API;
 import li.cil.tis3d.client.manual.provider.ModPathProvider;
 import li.cil.tis3d.common.block.Blocks;
 import li.cil.tis3d.common.item.Items;
+import li.cil.tis3d.util.RegistryUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.RegistryObject;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 
 @OnlyIn(Dist.CLIENT)
 public final class Manuals {
-    private static final DeferredRegister<Tab> TABS = DeferredRegister.create(Tab.class, API.MOD_ID);
-    private static final DeferredRegister<PathProvider> PATH_PROVIDERS = DeferredRegister.create(PathProvider.class, API.MOD_ID);
-    private static final DeferredRegister<ContentProvider> CONTENT_PROVIDERS = DeferredRegister.create(ContentProvider.class, API.MOD_ID);
-    private static final DeferredRegister<Manual> MANUALS = DeferredRegister.create(Manual.class, API.MOD_ID);
+    private static final DeferredRegister<Manual> MANUALS = RegistryUtils.create(Manual.class);
 
     // --------------------------------------------------------------------- //
 
@@ -34,30 +31,29 @@ public final class Manuals {
     // --------------------------------------------------------------------- //
 
     public static void initialize() {
-        PATH_PROVIDERS.register("game_registry", ModPathProvider::new);
-        CONTENT_PROVIDERS.register("resources", () -> new NamespaceContentProvider(API.MOD_ID, "doc"));
-        CONTENT_PROVIDERS.register("serial_protocols", SerialProtocolContentProvider::new);
+        final DeferredRegister<PathProvider> pathProviders = RegistryUtils.create(PathProvider.class);
+        final DeferredRegister<ContentProvider> contentProviders = RegistryUtils.create(ContentProvider.class);
+        final DeferredRegister<Tab> tabs = RegistryUtils.create(Tab.class);
 
-        TABS.register("home", () -> new TextureTab(
+        pathProviders.register("path_provider", ModPathProvider::new);
+        contentProviders.register("content_provider", () -> new NamespaceContentProvider(API.MOD_ID, "doc"));
+        contentProviders.register("serial_protocols", SerialProtocolContentProvider::new);
+
+        tabs.register("home", () -> new TextureTab(
             Manual.LANGUAGE_KEY + "/index.md",
             new TranslationTextComponent("tis3d.manual.home"),
             new ResourceLocation(API.MOD_ID, "textures/gui/manual_home.png")));
-        TABS.register("blocks", () -> new ItemStackTab(
+        tabs.register("blocks", () -> new ItemStackTab(
             Manual.LANGUAGE_KEY + "/block/index.md",
             new TranslationTextComponent("tis3d.manual.blocks"),
             new ItemStack(Blocks.CONTROLLER.get())));
-        TABS.register("modules", () -> new ItemStackTab(
+        tabs.register("modules", () -> new ItemStackTab(
             Manual.LANGUAGE_KEY + "/item/index.md",
             new TranslationTextComponent("tis3d.manual.items"),
             new ItemStack(Items.EXECUTION_MODULE.get())));
-        TABS.register("serial_protocols", () -> new TextureTab(
+        tabs.register("serial_protocols", () -> new TextureTab(
             Manual.LANGUAGE_KEY + "/protocols/index.md",
             new TranslationTextComponent("tis3d.manual.serial_protocols"),
             new ResourceLocation(API.MOD_ID, "textures/gui/manual_serial_protocols.png")));
-
-        TABS.register(FMLJavaModLoadingContext.get().getModEventBus());
-        PATH_PROVIDERS.register(FMLJavaModLoadingContext.get().getModEventBus());
-        CONTENT_PROVIDERS.register(FMLJavaModLoadingContext.get().getModEventBus());
-        MANUALS.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
 }
