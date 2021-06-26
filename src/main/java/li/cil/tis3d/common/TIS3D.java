@@ -1,17 +1,13 @@
 package li.cil.tis3d.common;
 
+import li.cil.manual.client.Bootstrap;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.client.ClientConfig;
 import li.cil.tis3d.client.ClientSetup;
-import li.cil.tis3d.client.manual.Manual;
-import li.cil.tis3d.client.renderer.font.FontRendererNormal;
-import li.cil.tis3d.client.renderer.font.FontRendererSmall;
-import li.cil.tis3d.common.api.InfraredAPIImpl;
-import li.cil.tis3d.common.api.ManualAPIImpl;
+import li.cil.tis3d.client.manual.Manuals;
 import li.cil.tis3d.common.block.Blocks;
 import li.cil.tis3d.common.container.Containers;
 import li.cil.tis3d.common.entity.Entities;
-import li.cil.tis3d.common.item.ItemGroups;
 import li.cil.tis3d.common.item.Items;
 import li.cil.tis3d.common.provider.ModuleProviders;
 import li.cil.tis3d.common.provider.RedstoneInputProviders;
@@ -42,7 +38,10 @@ public final class TIS3D {
         ModuleProviders.initialize();
         SerialInterfaceProviders.initialize();
         RedstoneInputProviders.initialize();
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> Manual::initialize);
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+            Bootstrap.initialize();
+            Manuals.initialize();
+        });
 
         FMLJavaModLoadingContext.get().getModEventBus().register(CommonSetup.class);
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> FMLJavaModLoadingContext.get().getModEventBus().register(ClientSetup.class));

@@ -22,7 +22,6 @@ public final class API {
 
     @OnlyIn(Dist.CLIENT) public static FontRenderer normalFontRenderer;
     @OnlyIn(Dist.CLIENT) public static FontRenderer smallFontRenderer;
-    @OnlyIn(Dist.CLIENT) public static li.cil.tis3d.api.detail.ManualAPI manualAPI;
 
     private API() {
     }

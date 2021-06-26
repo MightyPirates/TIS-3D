@@ -17,7 +17,7 @@ import java.util.Optional;
 
 public final class SerialInterfaceProviderFurnace extends ForgeRegistryEntry<SerialInterfaceProvider> implements SerialInterfaceProvider {
     private static final TranslationTextComponent DOCUMENTATION_TITLE = new TranslationTextComponent("tis3d.manual.serial_protocols.furnace");
-    private static final String DOCUMENTATION_LINK = "protocols/minecraft_furnace.md";
+    private static final String DOCUMENTATION_LINK = "minecraft_furnace.md";
     private static final SerialProtocolDocumentationReference DOCUMENTATION_REFERENCE = new SerialProtocolDocumentationReference(DOCUMENTATION_TITLE, DOCUMENTATION_LINK);
 
     // --------------------------------------------------------------------- //

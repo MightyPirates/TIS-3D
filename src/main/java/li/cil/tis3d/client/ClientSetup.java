@@ -9,7 +9,6 @@ import li.cil.tis3d.client.renderer.font.FontRendererNormal;
 import li.cil.tis3d.client.renderer.font.FontRendererSmall;
 import li.cil.tis3d.client.renderer.tileentity.TileEntitySpecialRendererCasing;
 import li.cil.tis3d.client.renderer.tileentity.TileEntitySpecialRendererController;
-import li.cil.tis3d.common.api.ManualAPIImpl;
 import li.cil.tis3d.common.container.Containers;
 import li.cil.tis3d.common.entity.Entities;
 import li.cil.tis3d.common.module.ModuleDisplay;
@@ -39,7 +38,6 @@ public final class ClientSetup {
     public static void handleSetupEvent(final FMLClientSetupEvent event) {
         API.normalFontRenderer = FontRendererNormal.INSTANCE;
         API.smallFontRenderer = FontRendererSmall.INSTANCE;
-        API.manualAPI = ManualAPIImpl.INSTANCE;
 
         ScreenManager.register(Containers.READ_ONLY_MEMORY_MODULE.get(), ReadOnlyMemoryModuleScreen::new);
 

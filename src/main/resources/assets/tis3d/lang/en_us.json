@@ -1,14 +1,14 @@
 {
     "itemGroup.tis3d.name": "TIS-3D",
 
-    "item.tis3d.book_code": "Code Bible",
-    "item.tis3d.book_code.desc": "§7Use a book on an installed execution module to get a copy.",
-    "item.tis3d.book_manual": "TIS-3D Reference Manual",
-    "item.tis3d.book_manual.desc": "§7Use a book on a controller block to get a copy.",
+    "item.tis3d.code_book": "Code Bible",
+    "item.tis3d.code_book.desc": "§7Use a book on an installed execution module to get a copy.",
+    "item.tis3d.manual": "TIS-3D Reference Manual",
+    "item.tis3d.manual.desc": "§7Use a book on a controller block to get a copy.",
     "item.tis3d.key": "Key",
     "item.tis3d.key.desc": "§7Sneak while holding to toggle receiving ports on a casing's face.",
-    "item.tis3d.key_creative": "Skeleton Key",
-    "item.tis3d.key_creative.desc": "§7Sneak while holding to toggle receiving ports on a casing's face.",
+    "item.tis3d.skeleton_key": "Skeleton Key",
+    "item.tis3d.skeleton_key.desc": "§7Sneak while holding to toggle receiving ports on a casing's face. Can unlock casings locked with regular keys.",
     "item.tis3d.audio_module": "Audio Module",
     "item.tis3d.display_module": "Display Module",
     "item.tis3d.execution_module": "Execution Module",
@@ -56,6 +56,7 @@
     "tis3d.manual.warning.missing.image": "Image not found.",
     "tis3d.manual.warning.missing.item": "Item unavailable.",
     "tis3d.manual.warning.missing.tag": "Tag unavailable.",
+    "tis3d.manual.warning.missing.content_renderer": "No content renderer found for [%s].",
 
     "tis3d.code_book.error_on_next_page": "Error on next page:",
     "tis3d.code_book.error_on_previous_page": "Error on previous page:",

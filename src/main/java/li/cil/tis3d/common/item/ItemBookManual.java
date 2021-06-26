@@ -1,6 +1,7 @@
 package li.cil.tis3d.common.item;
 
-import li.cil.tis3d.api.ManualAPI;
+import li.cil.manual.api.Manual;
+import li.cil.tis3d.client.manual.Manuals;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
@@ -8,8 +9,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
-
-import java.util.Optional;
 
 /**
  * The manual!
@@ -22,10 +21,10 @@ public final class ItemBookManual extends ModItem {
     public ActionResultType useOn(final ItemUseContext context) {
         final World world = context.getLevel();
         if (world.isClientSide()) {
-            ManualAPI.open();
-            ManualAPI.reset();
-            ManualAPI.pathFor(world, context.getClickedPos(), context.getClickedFace())
-                .ifPresent(ManualAPI::navigate);
+            final Manual manual = Manuals.MANUAL.get();
+            manual.reset();
+            manual.pathFor(world, context.getClickedPos(), context.getClickedFace()).ifPresent(manual::push);
+            manual.open();
         }
         return ActionResultType.sidedSuccess(world.isClientSide());
     }
@@ -33,10 +32,11 @@ public final class ItemBookManual extends ModItem {
     @Override
     public ActionResult<ItemStack> use(final World world, final PlayerEntity player, final Hand hand) {
         if (world.isClientSide()) {
+            final Manual manual = Manuals.MANUAL.get();
             if (player.isShiftKeyDown()) {
-                ManualAPI.reset();
+                manual.reset();
             }
-            ManualAPI.open();
+            manual.open();
         }
         return ActionResult.sidedSuccess(player.getItemInHand(hand), world.isClientSide());
     }
