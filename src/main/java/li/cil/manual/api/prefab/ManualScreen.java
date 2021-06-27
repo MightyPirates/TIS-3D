@@ -19,6 +19,7 @@ import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -30,20 +31,21 @@ import java.util.*;
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 @OnlyIn(Dist.CLIENT)
 public final class ManualScreen extends Screen {
-    private static final int documentMaxWidth = 220;
-    private static final int documentMaxHeight = 176;
-    private static final int scrollPosX = 250;
-    private static final int scrollPosY = 48;
-    private static final int scrollWidth = 26;
-    private static final int scrollHeight = 180;
-    private static final int tabPosX = -52;
-    private static final int tabPosY = 40;
-    private static final int tabWidth = 64;
-    private static final int tabHeight = 32;
-    private static final int tabOverlap = 8;
-    private static final int maxTabsPerSide = 7;
-    private static final int windowWidth = 256;
-    private static final int windowHeight = 256;
+    private static final int DOCUMENT_WIDTH = 220;
+    private static final int DOCUMENT_HEIGHT = 176;
+    private static final int SCROLL_BAR_X = 250;
+    private static final int SCROLL_BAR_Y = 48;
+    private static final int SCROLL_BAR_WIDTH = 26;
+    private static final int SCROLL_BAR_HEIGHT = 180;
+    private static final int TAB_ACTIVE_SHIFT_X = 20;
+    private static final int TABS_X = -52 + TAB_ACTIVE_SHIFT_X;
+    private static final int TABS_Y = 40;
+    private static final int TAB_WIDTH = 64;
+    private static final int TAB_HEIGHT = 32;
+    private static final int TAB_OVERlAP = 8;
+    private static final int MAX_TABS = 7;
+    private static final int WINDOW_WIDTH = 256;
+    private static final int WINDOW_HEIGHT = 256;
 
     private final Manual manual;
     private final Style style;
@@ -51,6 +53,7 @@ public final class ManualScreen extends Screen {
 
     private int leftPos = 0;
     private int topPos = 0;
+    private float scrollPos = 0;
 
     private boolean isDragging = false;
     private Segment document = null;
@@ -73,17 +76,17 @@ public final class ManualScreen extends Screen {
     public void init() {
         super.init();
 
-        this.leftPos = (width - windowWidth) / 2;
-        this.topPos = (height - windowHeight) / 2;
+        this.leftPos = (width - WINDOW_WIDTH) / 2;
+        this.topPos = (height - WINDOW_HEIGHT) / 2;
 
         IterableUtils.forEachWithIndex(manual.getTabs(), (i, tab) -> {
-            if (i >= maxTabsPerSide) return;
-            final int x = leftPos + tabPosX;
-            final int y = topPos + tabPosY + i * (tabHeight - tabOverlap);
-            addButton(new TabButton(x, y, tabWidth, tabHeight - tabOverlap - 1, tab, (button) -> manual.push(tab.getPath())));
+            if (i >= MAX_TABS) return;
+            final int x = leftPos + TABS_X;
+            final int y = topPos + TABS_Y + i * (TAB_HEIGHT - TAB_OVERlAP);
+            addButton(new TabButton(x, y, TAB_WIDTH, TAB_HEIGHT - TAB_OVERlAP - 1, tab, (button) -> manual.push(tab.getPath())));
         });
 
-        scrollButton = addButton(new ScrollButton(leftPos + scrollPosX, topPos + scrollPosY, 26, 13));
+        scrollButton = addButton(new ScrollButton(leftPos + SCROLL_BAR_X, topPos + SCROLL_BAR_Y, 26, 13));
     }
 
     @Override
@@ -95,14 +98,17 @@ public final class ManualScreen extends Screen {
             currentPath = manual.peek();
         }
 
+        scrollPos = MathHelper.lerp(partialTicks * 0.5f, scrollPos, getScrollPosition());
+        scrollButton.y = getScrollButtonY();
+
         super.render(matrixStack, mouseX, mouseY, partialTicks);
 
         getMinecraft().getTextureManager().bind(Textures.LOCATION_GUI_MANUAL_BACKGROUND);
-        blit(matrixStack, leftPos, topPos, 0, 0, windowWidth, windowHeight, windowWidth, windowHeight);
+        blit(matrixStack, leftPos, topPos, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT);
 
         scrollButton.active = canScroll();
 
-        currentSegment = Document.render(matrixStack, document, leftPos + 16, topPos + 48, documentMaxWidth, documentMaxHeight, getScrollPosition(), mouseX, mouseY);
+        currentSegment = Document.render(matrixStack, document, leftPos + 16, topPos + 48, DOCUMENT_WIDTH, DOCUMENT_HEIGHT, getSmoothScrollPosition(), mouseX, mouseY);
 
         currentSegment.flatMap(InteractiveSegment::getTooltip).ifPresent(t ->
             renderWrappedToolTip(matrixStack, Collections.singletonList(t), mouseX, mouseY, getFontRenderer()));
@@ -120,7 +126,7 @@ public final class ManualScreen extends Screen {
             return true;
         }
 
-        scroll(delta);
+        scrollBy(delta);
         return true;
     }
 
@@ -149,7 +155,7 @@ public final class ManualScreen extends Screen {
         if (canScroll() && button == 0 && isCoordinateOverScrollBar(mouseX - leftPos, mouseY - topPos)) {
             isDragging = true;
             scrollButton.playDownSound(Minecraft.getInstance().getSoundManager());
-            scrollMouse(mouseY);
+            scrollTo(mouseY);
             return true;
         } else if (button == 0) {
             return currentSegment.map(InteractiveSegment::mouseClicked).orElse(false);
@@ -168,7 +174,7 @@ public final class ManualScreen extends Screen {
         }
 
         if (isDragging) {
-            scrollMouse(mouseY);
+            scrollTo(mouseY);
             return true;
         }
 
@@ -212,37 +218,51 @@ public final class ManualScreen extends Screen {
     }
 
     private int maxScrollPosition() {
-        return documentHeight - documentMaxHeight;
+        return documentHeight - DOCUMENT_HEIGHT;
     }
 
     private void refreshPage() {
         final Optional<Iterable<String>> content = manual.contentFor(manual.peek());
         document = Document.parse(manual, style, content.orElse(Collections.singleton("Page not found: " + manual.peek())));
-        documentHeight = Document.height(document, documentMaxWidth);
-        scrollTo(getScrollPosition());
+        documentHeight = Document.height(document, DOCUMENT_WIDTH);
+        scrollPos = getScrollPosition();
     }
 
-    private void scrollMouse(final double mouseY) {
-        scrollTo((int) Math.round((mouseY - topPos - scrollPosY - 6.5) * maxScrollPosition() / (scrollHeight - 13.0)));
+    private void scrollTo(final double mouseY) {
+        scrollTo((int) Math.round((mouseY - topPos - SCROLL_BAR_Y - 6.5) * maxScrollPosition() / (SCROLL_BAR_HEIGHT - 13.0)), true);
     }
 
-    private void scroll(final double amount) {
-        scrollTo(getScrollPosition() - (int) Math.round(style.getLineHeight() * 3 * amount));
+    private void scrollBy(final double amount) {
+        scrollTo(getScrollPosition() - (int) Math.round(style.getLineHeight() * 3 * amount), false);
     }
 
-    private void scrollTo(final int row) {
+    private void scrollTo(final int row, final boolean immediate) {
         setScrollPosition(Math.max(0, Math.min(maxScrollPosition(), row)));
-        final int yMin = topPos + scrollPosY;
-        if (maxScrollPosition() > 0) {
-            scrollButton.y = yMin + (scrollHeight - 13) * getScrollPosition() / maxScrollPosition();
+        if (immediate) {
+            scrollPos = getScrollPosition();
+        }
+    }
+
+    private int getSmoothScrollPosition() {
+        if (scrollPos < getScrollPosition()) {
+            return (int) Math.ceil(scrollPos);
         } else {
-            scrollButton.y = yMin;
+            return (int) Math.floor(scrollPos);
+        }
+    }
+
+    private int getScrollButtonY() {
+        final int yMin = topPos + SCROLL_BAR_Y;
+        if (maxScrollPosition() > 0) {
+            return yMin + (SCROLL_BAR_HEIGHT - 13) * getSmoothScrollPosition() / maxScrollPosition();
+        } else {
+            return yMin;
         }
     }
 
     private boolean isCoordinateOverScrollBar(final double x, final double y) {
-        return x > scrollPosX && x < scrollPosX + scrollWidth &&
-               y >= scrollPosY && y < scrollPosY + scrollHeight;
+        return x > SCROLL_BAR_X && x < SCROLL_BAR_X + SCROLL_BAR_WIDTH &&
+               y >= SCROLL_BAR_Y && y < SCROLL_BAR_Y + SCROLL_BAR_HEIGHT;
     }
 
     private static final class ScrollOffset {
@@ -255,10 +275,16 @@ public final class ManualScreen extends Screen {
 
     private class TabButton extends Button {
         private final Tab tab;
+        private final int baseX;
+        private float currentX;
+        private int targetX;
 
         TabButton(final int x, final int y, final int w, final int h, final Tab tab, final IPressable action) {
             super(x, y, w, h, StringTextComponent.EMPTY, action);
             this.tab = tab;
+            this.baseX = x;
+            this.currentX = x;
+            this.targetX = x;
         }
 
         @Override
@@ -276,11 +302,25 @@ public final class ManualScreen extends Screen {
 
         @Override
         public void renderButton(final MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
+            if (isHovered()) {
+                targetX = baseX - TAB_ACTIVE_SHIFT_X;
+            } else {
+                targetX = baseX;
+            }
+
+            currentX = MathHelper.lerp(partialTicks * 0.5f, currentX, targetX);
+
+            if (currentX < targetX) {
+                x = (int) Math.ceil(currentX);
+            } else {
+                x = (int) Math.floor(currentX);
+            }
+
             getMinecraft().getTextureManager().bind(Textures.LOCATION_GUI_MANUAL_TAB);
-            blit(matrixStack, x, y, 0, isHovered() ? tabHeight : 0, tabWidth, tabHeight, tabWidth, tabHeight * 2);
+            blit(matrixStack, x, y, 0, isHovered() ? TAB_HEIGHT : 0, TAB_WIDTH, TAB_HEIGHT, TAB_WIDTH, TAB_HEIGHT * 2);
 
             matrixStack.pushPose();
-            matrixStack.translate(x + 30, (float) (y + 4), 0);
+            matrixStack.translate(x + 15, (float) (y + 4), 0);
 
             tab.renderIcon(matrixStack);
 
@@ -331,7 +371,7 @@ public final class ManualScreen extends Screen {
                 return;
             }
             renderTooltip(matrixStack, new StringTextComponent(100 * getScrollPosition() / maxScrollPosition() + "%"),
-                leftPos + scrollPosX + scrollWidth,
+                leftPos + SCROLL_BAR_X + SCROLL_BAR_WIDTH,
                 y + getHeight() + 1);
         }
     }
