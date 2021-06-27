@@ -83,7 +83,7 @@ public final class ManualScreen extends Screen {
             if (i >= MAX_TABS) return;
             final int x = leftPos + TABS_X;
             final int y = topPos + TABS_Y + i * (TAB_HEIGHT - TAB_OVERlAP);
-            addButton(new TabButton(x, y, TAB_WIDTH, TAB_HEIGHT - TAB_OVERlAP - 1, tab, (button) -> manual.push(tab.getPath())));
+            addButton(new TabButton(x, y, tab, (button) -> manual.push(tab.getPath())));
         });
 
         scrollButton = addButton(new ScrollButton(leftPos + SCROLL_BAR_X, topPos + SCROLL_BAR_Y, 26, 13));
@@ -279,8 +279,8 @@ public final class ManualScreen extends Screen {
         private float currentX;
         private int targetX;
 
-        TabButton(final int x, final int y, final int w, final int h, final Tab tab, final IPressable action) {
-            super(x, y, w, h, StringTextComponent.EMPTY, action);
+        TabButton(final int x, final int y, final Tab tab, final IPressable action) {
+            super(x, y, TAB_WIDTH, TAB_HEIGHT - TAB_OVERlAP - 1, StringTextComponent.EMPTY, action);
             this.tab = tab;
             this.baseX = x;
             this.currentX = x;
@@ -315,6 +315,8 @@ public final class ManualScreen extends Screen {
             } else {
                 x = (int) Math.floor(currentX);
             }
+
+            width = TAB_WIDTH - TAB_ACTIVE_SHIFT_X - (x - baseX);
 
             getMinecraft().getTextureManager().bind(Textures.LOCATION_GUI_MANUAL_TAB);
             blit(matrixStack, x, y, 0, isHovered() ? TAB_HEIGHT : 0, TAB_WIDTH, TAB_HEIGHT, TAB_WIDTH, TAB_HEIGHT * 2);
