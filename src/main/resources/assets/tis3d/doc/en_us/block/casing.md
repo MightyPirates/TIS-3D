@@ -1,5 +1,4 @@
 # Casing
-
 ![In case of logic](item:tis3d:casing)
 
 The casing block houses up to six (6) modules, one on each of its faces. Because a casing must be connected to a [controller](controller.md) to function, generally only up to five (5) faces per module are usable; faces between casings or between a casing and a [controller](controller.md) are required for internal communication and cannot contain modules. If a module is present on a face in front of which another casing or a [controller](controller.md) is being placed, the module will automatically be ejected from its casing.

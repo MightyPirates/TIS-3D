@@ -1,5 +1,4 @@
 # RAM Module
-
 ![Not for the daft.](item:tis3d:random_access_memory_module)
 
 The random access memory module (RAM module) permits storing a massive total of 256 values for later retrieval. Each stored value can be accessed individually, hence the name. Note that unlike the TIS-3D computer itself, which sports an impressive 16-Bit value support, the RAM module is limited to 8-Bit values due to the high storage density.

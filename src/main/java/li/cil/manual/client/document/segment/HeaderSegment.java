@@ -38,4 +38,9 @@ public final class HeaderSegment extends TextSegment {
     protected String getFormat() {
         return super.getFormat() + TextFormatting.UNDERLINE;
     }
+
+    @Override
+    protected int getLineHeight() {
+        return (int) (1.4f * super.getLineHeight());
+    }
 }

@@ -1,5 +1,4 @@
 # ROM Module
-
 ![ROM will remember that.](item:tis3d:read_only_memory_module)
 
 The read-only memory module (ROM module) is very similar to the [RAM module](random_access_memory_module.md), in that it stores 256 8-bit values for later retrieval. Access to the stored values works the same way as with the [RAM module](random_access_memory_module.md).

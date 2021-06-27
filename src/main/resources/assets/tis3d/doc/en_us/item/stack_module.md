@@ -1,5 +1,4 @@
 # Stack Module
-
 ![Stack overflow](item:tis3d:stack_module)
 
 The stack module is capable of storing up to sixteen (16) values. It can act as expanded memory for [execution modules](execution_module.md), for example.

@@ -156,14 +156,14 @@ public class TextSegment extends AbstractSegment {
         return tryGetFromParent("", TextSegment::getFormat);
     }
 
+    protected int getLineHeight() {
+        return (int) ((getFont().lineHeight() + 1) * getFontScale() * getScale());
+    }
+
     // ----------------------------------------------------------------------- //
 
     private float getFontScale() {
         return style.getLineHeight() / (float) getFont().lineHeight();
-    }
-
-    private int getLineHeight() {
-        return (int) ((getFont().lineHeight() + 1) * getFontScale() * getScale());
     }
 
     private int getStringWidth(final CharSequence string) {

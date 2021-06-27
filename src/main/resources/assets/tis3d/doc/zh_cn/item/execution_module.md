@@ -1,5 +1,4 @@
 # 执行模块
-
 ![执——行!](item:tis3d:execution_module)
 
 执行模块是编程TIS-3D计算机的主要手段。

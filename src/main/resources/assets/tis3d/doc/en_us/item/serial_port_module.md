@@ -1,5 +1,4 @@
 # Serial Port Module
-
 ![Serialize it](item:tis3d:serial_port_module)
 
 The serial port module provides a common interface for other machines to interact with. The actual serial protocol used varies by machine and is defined by the machine's manufacturer. For a full list of registered protocols, please refer to [Serial Protocols](../protocols/index.md).

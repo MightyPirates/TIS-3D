@@ -1,5 +1,4 @@
 # Terminal Module
-
 ![I'm afraid it's terminal](item:tis3d:terminal_module)
 
 The terminal module provides a more advanced form of input than the [keypad module](keypad_module.md) with a more specific form of output than the [display module](display_module.md).

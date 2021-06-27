@@ -1,5 +1,4 @@
 # Queue Module
-
 ![Very British](item:tis3d:queue_module)
 
 The queue module is capable of storing up to sixteen (16) values. It can act as expanded memory for [execution modules](execution_module.md), for example.

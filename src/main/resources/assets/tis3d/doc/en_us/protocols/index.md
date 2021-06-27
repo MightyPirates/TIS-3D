@@ -1,5 +1,4 @@
 # Serial Protocols
-
 This document contains a list of reported protocols for the [serial port module](../item/serial_port_module.md). The following list is computer-generated and has not been proofread by our editorial office. The publisher of this document does not take any responsibility for personal or material harm resulting of incorrect information in the following.
 
 Known serial protocols:

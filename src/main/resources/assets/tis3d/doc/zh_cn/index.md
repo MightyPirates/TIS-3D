@@ -1,5 +1,4 @@
 # TIS-3D 参考手册
-
 Tessellated Intelligence System是一个大规模并行计算机 架构，由非均匀的互联的异质节点构成。
 Tessellated Intelligence System对于那些需要处理复杂数 据流的应用来说十分合适，如自动金融贸易、大数据收集、以及公民行为分析。
 ———— *TIS-100参考手册*

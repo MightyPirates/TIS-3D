@@ -1,5 +1,4 @@
 # Furnace
-
 ![Something smells burned...](block:minecraft:furnace)
 
 Exploiting the undocumented photo-sensitivity of the serial port module, it is possible to access some basic information on the processes occurring in a common furnace. The protocol for interacting with a furnace supports both read and write operations.

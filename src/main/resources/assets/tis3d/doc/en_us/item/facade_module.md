@@ -1,5 +1,4 @@
 # Facade Module
-
 ![What trickery is this!?](item:tis3d:facade_module)
 
 The facade module has no technical functionality, it serves purely to cover up unused module slots in [casings](../block/casing.md).

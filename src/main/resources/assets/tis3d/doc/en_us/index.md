@@ -1,5 +1,4 @@
 # TIS-3D Reference Manual
-
 "The Tessellated Intelligence System is a massively parallel computer architecture comprised of non/uniformly interconnected heterogeneous nodes. The Tessellated Intelligence System is ideal for applications requiring complex data stream processing, such as automated financial trading, bulk data collection, and civilian behavioral analysis." - *TIS-100 Reference Manual*
 
 TIS-3D is a 3-dimensional interpretation of the TIS design. Its purpose is to allow controlling other machinery and mechanisms in the world, which might otherwise require complex redstone contraptions. Or just to provide an interesting challenge on its own!

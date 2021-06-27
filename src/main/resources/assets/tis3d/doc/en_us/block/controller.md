@@ -1,5 +1,4 @@
 # Controller
-
 ![I have control](item:tis3d:controller)
 
 The controller block is the core of any TIS-3D computer. It provides power to all connected [casings](casing.md) and advances the state of the TIS-3D computer. A controller can be powered using common redstone signals, with higher input values resulting in faster execution speed. As a special case, an input strength of one (1) will result in the TIS-3D computer entering a paused state, i.e. its state will not be advanced, but it will also not be powered down and therefore reset.

@@ -1,5 +1,4 @@
 # Execution Module
-
 ![Execuuuute!](item:tis3d:execution_module)
 
 The execution module is the primary means of programming a TIS-3D computer. When installed in a [casing](../block/casing.md), it can be programmed by using a book on it, containing the code to program it with. For more a more convenient development experience, consider investing in a [Code Bible](code_book.md), the true and tested tool of any professional.

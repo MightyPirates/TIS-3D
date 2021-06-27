@@ -1,5 +1,4 @@
 # Display Module
-
 ![Paint by numbers](item:tis3d:display_module)
 
 The display module provides a highly flexible method of visualizing arbitrary data as a two-dimensional grid of colored cells (*Editor's note*: "pixels" as the kids like to call them). The color of these cells can be changed by providing a sequence of numbers to any of the four ports of the display module, containing a color code and position and size of the rectangle to fill.

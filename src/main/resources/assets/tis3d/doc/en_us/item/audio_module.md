@@ -1,5 +1,4 @@
 # Audio Module
-
 ![Beep boop](item:tis3d:audio_module)
 
 The audio module synthesizes sounds based on numeric triggers. The emitted sound is defined by the value transmitted to the audio module as defined below. If a volume of zero is specified the signal will be discarded.

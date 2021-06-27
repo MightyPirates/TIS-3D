@@ -1,5 +1,4 @@
 # Key
-
 ![Any skeletons around?](item:tis3d:key)
 
 The key is available for most [casing](../block/casing.md) series and provides a convenient way of locking configurations to prevent accidental or malicious interactions with a [casing](../block/casing.md) and the modules installed in it.
