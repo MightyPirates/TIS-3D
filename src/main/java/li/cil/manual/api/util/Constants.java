@@ -1,5 +1,6 @@
 package li.cil.manual.api.util;
 
+import li.cil.manual.api.Manual;
 import li.cil.manual.api.Tab;
 import li.cil.manual.api.provider.ContentProvider;
 import li.cil.manual.api.provider.PathProvider;
@@ -15,7 +16,7 @@ public final class Constants {
     public static final RegistryKey<Registry<PathProvider>> PATH_PROVIDERS = key("path_providers");
     public static final RegistryKey<Registry<RendererProvider>> RENDERER_PROVIDERS = key("renderer_providers");
     public static final RegistryKey<Registry<Tab>> TABS = key("tabs");
-    public static final RegistryKey<Registry<Tab>> MANUALS = key("manuals");
+    public static final RegistryKey<Registry<Manual>> MANUALS = key("manuals");
 
     private static <T> RegistryKey<Registry<T>> key(final String name) {
         return RegistryKey.createRegistryKey(new ResourceLocation(MOD_ID, name));
