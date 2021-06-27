@@ -12,13 +12,17 @@ public final class ItalicSegment extends TextSegment {
         super(manual, style, parent, text);
     }
 
-    @Override
-    protected String getFormat() {
-        return super.getFormat() + TextFormatting.ITALIC;
-    }
+    // --------------------------------------------------------------------- //
 
     @Override
     public String toString() {
         return String.format("*%s*", super.toString());
+    }
+
+    // --------------------------------------------------------------------- //
+
+    @Override
+    protected String getFormat() {
+        return super.getFormat() + TextFormatting.ITALIC;
     }
 }

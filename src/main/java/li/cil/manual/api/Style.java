@@ -21,6 +21,34 @@ public interface Style {
     int getMonospaceTextColor();
 
     /**
+     * Regular color of links.
+     *
+     * @return color of links.
+     */
+    int getRegularLinkColor();
+
+    /**
+     * Color of links while hovered by the cursor.
+     *
+     * @return hovered link color.
+     */
+    int getHoveredLinkColor();
+
+    /**
+     * Regular color of  dead links.
+     *
+     * @return color of dead links.
+     */
+    int getRegularDeadLinkColor();
+
+    /**
+     * Color of dead links while hovered by the cursor.
+     *
+     * @return hovered dead link color.
+     */
+    int getHoveredDeadLinkColor();
+
+    /**
      * The font to use for rendering regular text.
      *
      * @return the regular font.

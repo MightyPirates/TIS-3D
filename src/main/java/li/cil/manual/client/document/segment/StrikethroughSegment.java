@@ -12,13 +12,17 @@ public final class StrikethroughSegment extends TextSegment {
         super(manual, style, parent, text);
     }
 
-    @Override
-    protected String getFormat() {
-        return super.getFormat() + TextFormatting.STRIKETHROUGH;
-    }
+    // --------------------------------------------------------------------- //
 
     @Override
     public String toString() {
         return String.format("~~%s~~", super.toString());
+    }
+
+    // --------------------------------------------------------------------- //
+
+    @Override
+    protected String getFormat() {
+        return super.getFormat() + TextFormatting.STRIKETHROUGH;
     }
 }

@@ -7,6 +7,8 @@ public final class NextSegmentInfo {
     public int absoluteX;
     public int relativeY;
 
+    // --------------------------------------------------------------------- //
+
     public NextSegmentInfo(@Nullable final Segment segment, final int absoluteX, final int relativeY) {
         this.segment = segment;
         this.absoluteX = absoluteX;

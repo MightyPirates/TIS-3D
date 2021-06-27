@@ -19,11 +19,15 @@ public final class RenderSegment extends AbstractSegment implements InteractiveS
     private final ITextComponent title;
     private final ContentRenderer renderer;
 
+    // --------------------------------------------------------------------- //
+
     public RenderSegment(final Manual manual, final Style style, final Segment parent, final ITextComponent title, final ContentRenderer renderer) {
         super(manual, style, parent);
         this.title = title;
         this.renderer = renderer;
     }
+
+    // --------------------------------------------------------------------- //
 
     @Override
     public Optional<ITextComponent> getTooltip() {
@@ -95,6 +99,8 @@ public final class RenderSegment extends AbstractSegment implements InteractiveS
     public String toString() {
         return String.format("![%s](%s)", title, renderer);
     }
+
+    // --------------------------------------------------------------------- //
 
     private int imageWidth(final int segmentX, final int documentWidth) {
         if (segmentX >= documentWidth) {

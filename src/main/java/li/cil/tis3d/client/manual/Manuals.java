@@ -1,6 +1,7 @@
 package li.cil.tis3d.client.manual;
 
 import li.cil.manual.api.Manual;
+import li.cil.manual.api.Style;
 import li.cil.manual.api.Tab;
 import li.cil.manual.api.prefab.ItemStackTab;
 import li.cil.manual.api.prefab.MinecraftFontRenderer;
@@ -8,7 +9,6 @@ import li.cil.manual.api.prefab.NamespaceContentProvider;
 import li.cil.manual.api.prefab.TextureTab;
 import li.cil.manual.api.provider.ContentProvider;
 import li.cil.manual.api.provider.PathProvider;
-import li.cil.manual.api.Style;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.client.manual.provider.ModPathProvider;
 import li.cil.tis3d.client.renderer.font.NormalFontRenderer;
@@ -40,6 +40,26 @@ public final class Manuals {
         @Override
         public int getMonospaceTextColor() {
             return 0xFF404D80;
+        }
+
+        @Override
+        public int getRegularLinkColor() {
+            return 0xFF333399;
+        }
+
+        @Override
+        public int getHoveredLinkColor() {
+            return 0xFF6666CC;
+        }
+
+        @Override
+        public int getRegularDeadLinkColor() {
+            return 0xFF993333;
+        }
+
+        @Override
+        public int getHoveredDeadLinkColor() {
+            return 0xFFCC6666;
         }
 
         @Override

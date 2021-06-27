@@ -12,6 +12,15 @@ public final class MonospaceSegment extends TextSegment {
         super(manual, style, parent, text);
     }
 
+    // --------------------------------------------------------------------- //
+
+    @Override
+    public String toString() {
+        return String.format("`%s`", super.toString());
+    }
+
+    // --------------------------------------------------------------------- //
+
     @Override
     protected boolean isIgnoringLeadingWhitespace() {
         return false;
@@ -25,10 +34,5 @@ public final class MonospaceSegment extends TextSegment {
     @Override
     protected FontRenderer getFont() {
         return style.getMonospaceFont();
-    }
-
-    @Override
-    public String toString() {
-        return String.format("`%s`", super.toString());
     }
 }

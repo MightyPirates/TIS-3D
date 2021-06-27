@@ -14,14 +14,18 @@ import java.util.regex.Pattern;
 abstract class AbstractSegment implements Segment {
     protected final Manual manual;
     protected final Style style;
-    @Nullable protected final Segment parent;
+    @Nullable private final Segment parent;
     protected Segment next;
+
+    // --------------------------------------------------------------------- //
 
     protected AbstractSegment(final Manual manual, final Style style, @Nullable final Segment parent) {
         this.manual = manual;
         this.style = style;
         this.parent = parent;
     }
+
+    // --------------------------------------------------------------------- //
 
     @Override
     public Segment getLineRoot() {
