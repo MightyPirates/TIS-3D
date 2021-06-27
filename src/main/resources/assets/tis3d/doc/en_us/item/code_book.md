@@ -1,5 +1,5 @@
 # Code Bible
-![99 little bugs in the code...](item:tis3d:book_code)
+![99 little bugs in the code...](item:tis3d:code_book)
 
 The code book (or as it is sometimes referred to, the Code Bible), is the best friend of programmers working with a TIS-3D computer. It allows sketching programs in a much more comfortable manner than a simple book and quill would, allows for corrections and makes it much easier to spot potential mistakes in the code.
 
