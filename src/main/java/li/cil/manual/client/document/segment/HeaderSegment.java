@@ -17,7 +17,7 @@ public final class HeaderSegment extends TextSegment {
     public HeaderSegment(final Manual manual, final Style style, final Segment parent, final String text, final int level) {
         super(manual, style, parent, text);
         this.level = level;
-        fontScale = Math.max(2, 5 - level) / 2f;
+        fontScale = Math.max(1, 1.75f - level * 0.25f);
     }
 
     // --------------------------------------------------------------------- //
