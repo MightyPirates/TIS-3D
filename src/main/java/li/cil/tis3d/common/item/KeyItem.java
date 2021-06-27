@@ -1,6 +1,6 @@
 package li.cil.tis3d.common.item;
 
-import li.cil.tis3d.api.machine.Casing;
+import li.cil.tis3d.common.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -28,7 +28,7 @@ public final class KeyItem extends ModItem {
 
     @Override
     public boolean doesSneakBypassUse(final ItemStack stack, final IWorldReader world, final BlockPos pos, final PlayerEntity player) {
-        return world.getBlockEntity(pos) instanceof Casing;
+        return world.getBlockState(pos).getBlock() == Blocks.CASING.get();
     }
 
     @Override

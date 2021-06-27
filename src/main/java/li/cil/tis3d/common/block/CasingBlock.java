@@ -126,7 +126,7 @@ public final class CasingBlock extends Block {
         final ItemStack heldItem = player.getItemInHand(hand);
 
         // Locking or unlocking the casing or a port?
-        if (Items.is(heldItem, Items.KEY)) {
+        if (Items.is(heldItem, Items.KEY) || Items.is(heldItem, Items.KEY_CREATIVE)) {
             if (!world.isClientSide()) {
                 if (casing.isLocked()) {
                     casing.unlock(heldItem);
