@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
  * Simple implementation of a tab icon renderer using an item stack as its graphic.
  */
 @OnlyIn(Dist.CLIENT)
-public class ItemStackTab extends AbstractTab {
+public final class ItemStackTab extends AbstractTab {
     private final ItemStack stack;
 
     public ItemStackTab(final String path, @Nullable final ITextComponent tooltip, final ItemStack stack) {
@@ -31,7 +31,12 @@ public class ItemStackTab extends AbstractTab {
         final Vector4f position = new Vector4f(0, 0, 0, 1);
         position.transform(matrixStack.last().pose());
 
-        Minecraft.getInstance().getItemRenderer().renderGuiItem(stack, (int) position.x(), (int) position.y());
+        RenderSystem.pushMatrix();
+        RenderSystem.translated(position.x(), position.y(), 0);
+
+        Minecraft.getInstance().getItemRenderer().renderGuiItem(stack, 0, 0);
+
+        RenderSystem.popMatrix();
 
         // Unfuck GL state.
         RenderSystem.enableBlend();

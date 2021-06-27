@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
  * Simple implementation of a tab icon renderer using a full texture as its graphic.
  */
 @OnlyIn(Dist.CLIENT)
-public class TextureTab extends AbstractTab {
+public final class TextureTab extends AbstractTab {
     private final ResourceLocation location;
 
     public TextureTab(final String path, @Nullable final ITextComponent tooltip, final ResourceLocation location) {

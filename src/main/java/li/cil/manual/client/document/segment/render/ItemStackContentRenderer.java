@@ -50,12 +50,14 @@ public final class ItemStackContentRenderer implements ContentRenderer {
         // This is *nasty*, but sadly there's no renderItemAndEffectIntoGUI() variant that
         // takes a MatrixStack. Yet.
 
-        RenderSystem.pushMatrix();
-        RenderSystem.scalef(scaleX, scaleY, 1);
-
         final Vector4f position = new Vector4f(0, 0, 0, 1);
         position.transform(matrixStack.last().pose());
-        mc.getItemRenderer().renderGuiItem(stack, (int) (position.x() / scaleX), (int) (position.y() / scaleY));
+
+        RenderSystem.pushMatrix();
+        RenderSystem.translated(position.x(), position.y(), 0);
+        RenderSystem.scalef(scaleX, scaleY, 1);
+
+        mc.getItemRenderer().renderGuiItem(stack, 0, 0);
 
         RenderSystem.popMatrix();
 
