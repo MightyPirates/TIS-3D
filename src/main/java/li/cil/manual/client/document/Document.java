@@ -173,6 +173,7 @@ public final class Document {
             final int segmentHeight = segment.getLineHeight(localX, width);
 
             globalY += relativeY;
+
             current = segment.getNext(localX, lineHeight, width);
 
             final int segmentTop = globalY;
@@ -201,6 +202,11 @@ public final class Document {
                 if (!hovered.isPresent()) {
                     hovered = result;
                 }
+            }
+
+            // We can stop rendering once we run out the bottom of the visible area.
+            if (segmentBottom > visibleBottom) {
+                break;
             }
 
             final boolean isFirstSegmentOnNewLine = current.relativeY > 0;

@@ -14,6 +14,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -28,14 +29,16 @@ public class TextSegment extends AbstractSegment {
     // ----------------------------------------------------------------------- //
 
     private final String text;
-    private final int wrappedIndent;
+    private final List<TextBlock> blockCache = new ArrayList<>();
+    private CacheKey blockCacheKey;
+    private NextSegmentInfo nextCache;
+    private CacheKey nextCacheKey;
 
     // ----------------------------------------------------------------------- //
 
     public TextSegment(final Manual manual, final Style style, @Nullable final Segment parent, final String text) {
         super(manual, style, parent);
         this.text = text;
-        this.wrappedIndent = computeWrappedIndent();
     }
 
     // ----------------------------------------------------------------------- //
@@ -47,24 +50,29 @@ public class TextSegment extends AbstractSegment {
 
     @Override
     public NextSegmentInfo getNext(final int segmentX, final int lineHeight, final int documentWidth) {
-        final NextSegmentInfo info = new NextSegmentInfo(next);
-        forEachBlock(segmentX, lineHeight, documentWidth, block -> {
-            info.absoluteX = block.x + getStringWidth(block.chars);
-            info.relativeY = block.y;
-        });
+        final CacheKey cacheKey = new CacheKey(segmentX, lineHeight, documentWidth);
+        if (!Objects.equals(cacheKey, nextCacheKey)) {
+            nextCache = new NextSegmentInfo(next);
+            forEachBlock(segmentX, lineHeight, documentWidth, block -> {
+                nextCache.absoluteX = block.x + getStringWidth(block.chars);
+                nextCache.relativeY = block.y;
+            });
 
-        // If the next segment belongs to a different hierarchy we force it to a new line.
-        // This is mainly for stuff like lists.
-        if (next != null && next.getLineRoot() != getLineRoot()) {
-            info.absoluteX = 0;
-            if (info.relativeY == 0) {
-                info.relativeY = Math.max(lineHeight, getLineHeight());
-            } else {
-                info.relativeY += getLineHeight();
+            // If the next segment belongs to a different hierarchy we force it to a new line.
+            // This is mainly for stuff like lists.
+            if (next != null && next.getLineRoot() != getLineRoot()) {
+                nextCache.absoluteX = 0;
+                if (nextCache.relativeY == 0) {
+                    nextCache.relativeY = Math.max(lineHeight, getLineHeight());
+                } else {
+                    nextCache.relativeY += getLineHeight();
+                }
             }
+
+            nextCacheKey = cacheKey;
         }
 
-        return info;
+        return nextCache;
     }
 
     @Override
@@ -171,33 +179,45 @@ public class TextSegment extends AbstractSegment {
     }
 
     private void forEachBlock(final int segmentX, final int lineHeight, final int documentWidth, final Consumer<TextBlock> blockConsumer) {
-        String chars = text;
-        if (isIgnoringLeadingWhitespace() && segmentX == 0) {
-            chars = chars.substring(indexOfFirstNonWhitespace(chars));
-        }
+        final CacheKey cacheKey = new CacheKey(segmentX, lineHeight, documentWidth);
+        if (!Objects.equals(cacheKey, blockCacheKey)) {
+            blockCache.clear();
 
-        int currentX = segmentX;
-        int currentY = 0;
-
-        int charCount = computeCharsFittingOnLine(chars, documentWidth - currentX, documentWidth - wrappedIndent);
-        while (chars.length() > 0) {
-            final String blockChars = chars.substring(0, charCount);
-            blockConsumer.accept(new TextBlock(
-                currentX,
-                currentY,
-                blockChars
-            ));
-
-            currentX = wrappedIndent;
-            if (currentY == 0) {
-                currentY = Math.max(lineHeight, getLineHeight());
-            } else {
-                currentY += getLineHeight();
+            String chars = text;
+            if (isIgnoringLeadingWhitespace() && segmentX == 0) {
+                chars = chars.substring(indexOfFirstNonWhitespace(chars));
             }
 
-            chars = chars.substring(charCount);
-            chars = chars.substring(indexOfFirstNonWhitespace(chars));
-            charCount = computeCharsFittingOnLine(chars, documentWidth - currentX, documentWidth - wrappedIndent);
+            final int wrappedIndent = computeWrappedIndent();
+            int currentX = segmentX;
+            int currentY = 0;
+
+            int charCount = computeCharsFittingOnLine(chars, documentWidth - currentX, documentWidth - wrappedIndent);
+            while (chars.length() > 0) {
+                final String blockChars = chars.substring(0, charCount);
+                blockCache.add(new TextBlock(
+                    currentX,
+                    currentY,
+                    blockChars
+                ));
+
+                currentX = wrappedIndent;
+                if (currentY == 0) {
+                    currentY = Math.max(lineHeight, getLineHeight());
+                } else {
+                    currentY += getLineHeight();
+                }
+
+                chars = chars.substring(charCount);
+                chars = chars.substring(indexOfFirstNonWhitespace(chars));
+                charCount = computeCharsFittingOnLine(chars, documentWidth - currentX, documentWidth - wrappedIndent);
+            }
+
+            blockCacheKey = cacheKey;
+        }
+
+        for (final TextBlock block : blockCache) {
+            blockConsumer.accept(block);
         }
     }
 
@@ -284,6 +304,31 @@ public class TextSegment extends AbstractSegment {
 
         public ObjectReference(final T value) {
             this.value = value;
+        }
+    }
+
+    private static final class CacheKey {
+        private final int segmentX;
+        private final int lineHeight;
+        private final int documentWidth;
+
+        public CacheKey(final int segmentX, final int lineHeight, final int documentWidth) {
+            this.segmentX = segmentX;
+            this.lineHeight = lineHeight;
+            this.documentWidth = documentWidth;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            final CacheKey that = (CacheKey) o;
+            return segmentX == that.segmentX && lineHeight == that.lineHeight && documentWidth == that.documentWidth;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(segmentX, lineHeight, documentWidth);
         }
     }
 
