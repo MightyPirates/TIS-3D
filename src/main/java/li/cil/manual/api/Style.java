@@ -72,4 +72,13 @@ public interface Style {
     default int getLineHeight() {
         return getRegularFont().lineHeight();
     }
+
+    /**
+     * Whether to show the url of links as their tooltip.
+     *
+     * @return whether to show link tooltips.
+     */
+    default boolean showLinkTooltip() {
+        return true;
+    }
 }

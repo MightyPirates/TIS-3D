@@ -34,7 +34,11 @@ public final class LinkSegment extends TextSegment implements InteractiveSegment
 
     @Override
     public Optional<ITextComponent> getTooltip() {
-        return Optional.of(new StringTextComponent(url));
+        if (style.showLinkTooltip()) {
+            return Optional.of(new StringTextComponent(url));
+        } else {
+            return Optional.empty();
+        }
     }
 
     @Override
