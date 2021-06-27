@@ -1,4 +1,4 @@
-package li.cil.manual.api;
+package li.cil.manual.api.render;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraftforge.api.distmarker.Dist;

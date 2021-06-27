@@ -34,12 +34,12 @@ public interface ModuleProvider extends IForgeRegistryEntry<ModuleProvider> {
     /**
      * Creates a new module instance for the specified item stack.
      * <p>
-     * Returns <tt>null</tt> if the specified item type is not supported.
+     * Returns {@code null} if the specified item type is not supported.
      *
      * @param stack  the stack to get the module instance for.
      * @param casing the casing the module will be installed in.
      * @param face   the face the module will be installed on.
-     * @return a new module instance, or <tt>null</tt>.
+     * @return a new module instance, or {@code null}.
      */
     @Nullable
     Module createModule(final ItemStack stack, final Casing casing, final Face face);

@@ -70,7 +70,7 @@ public interface Casing {
      * Get the module installed on the specified face of the casing.
      *
      * @param face the face to get the module for.
-     * @return the module installed on that face, or <tt>null</tt>.
+     * @return the module installed on that face, or {@code null}.
      */
     @Nullable
     Module getModule(final Face face);

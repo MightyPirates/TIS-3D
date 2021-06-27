@@ -4,13 +4,16 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import it.unimi.dsi.fastutil.chars.Char2IntMap;
 import it.unimi.dsi.fastutil.chars.Char2IntOpenHashMap;
-import li.cil.tis3d.api.util.FontRenderer;
+import li.cil.manual.api.render.FontRenderer;
 import li.cil.tis3d.client.renderer.ModRenderType;
 import li.cil.tis3d.util.Color;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.text.ITextComponent;
+
+import java.util.Optional;
 
 /**
  * Base implementation for texture based font rendering.
@@ -18,11 +21,11 @@ import net.minecraft.util.math.vector.Matrix4f;
 public abstract class AbstractFontRenderer implements FontRenderer {
     private final Char2IntMap CHAR_MAP;
 
-    private final int COLUMNS = getResolution() / (getCharWidth() + getGapU());
-    private final float U_SIZE = getCharWidth() / (float) getResolution();
-    private final float V_SIZE = getCharHeight() / (float) getResolution();
-    private final float U_STEP = (getCharWidth() + getGapU()) / (float) getResolution();
-    private final float V_STEP = (getCharHeight() + getGapV()) / (float) getResolution();
+    private final int COLUMNS = getResolution() / (charWidth() + getGapU());
+    private final float U_SIZE = charWidth() / (float) getResolution();
+    private final float V_SIZE = lineHeight() / (float) getResolution();
+    private final float U_STEP = (charWidth() + getGapU()) / (float) getResolution();
+    private final float V_STEP = (lineHeight() + getGapV()) / (float) getResolution();
 
     private RenderType renderLayer;
 
@@ -36,28 +39,45 @@ public abstract class AbstractFontRenderer implements FontRenderer {
 
     // --------------------------------------------------------------------- //
 
-    public void drawString(final MatrixStack matrixStack, final IRenderTypeBuffer bufferFactory, final CharSequence value, final int argb) {
+    public void drawBatch(final MatrixStack matrixStack, final IRenderTypeBuffer bufferFactory, final CharSequence value, final int argb) {
         final IVertexBuilder buffer = getDefaultBuffer(bufferFactory);
 
         float tx = 0f;
         for (int i = 0; i < value.length(); i++) {
             final char ch = value.charAt(i);
             drawChar(matrixStack, buffer, argb, tx, ch);
-            tx += getCharWidth() + getGapU();
+            tx += width(" ") + getGapU();
         }
+    }
+
+    @Override
+    public int width(final CharSequence value) {
+        return value.length() * charWidth();
+    }
+
+    @Override
+    public int width(final ITextComponent value) {
+        final MutableInteger count = new MutableInteger();
+        value.visit(s -> {
+            count.value += s.length() * charWidth();
+            return Optional.empty();
+        });
+        return count.value;
     }
 
     // --------------------------------------------------------------------- //
 
-    abstract protected CharSequence getCharacters();
+    protected abstract CharSequence getCharacters();
 
-    abstract protected ResourceLocation getTextureLocation();
+    protected abstract ResourceLocation getTextureLocation();
 
-    abstract protected int getResolution();
+    protected abstract int getResolution();
 
-    abstract protected int getGapU();
+    protected abstract int getGapU();
 
-    abstract protected int getGapV();
+    protected abstract int getGapV();
+
+    protected abstract int charWidth();
 
     // --------------------------------------------------------------------- //
 
@@ -87,15 +107,15 @@ public abstract class AbstractFontRenderer implements FontRenderer {
         final float v = row * V_STEP;
 
         final Matrix4f matrix = matrixStack.last().pose();
-        buffer.vertex(matrix, x, getCharHeight(), 0)
+        buffer.vertex(matrix, x, lineHeight(), 0)
             .color(r, g, b, a)
             .uv(u, v + V_SIZE)
             .endVertex();
-        buffer.vertex(matrix, x + getCharWidth(), getCharHeight(), 0)
+        buffer.vertex(matrix, x + charWidth(), lineHeight(), 0)
             .color(r, g, b, a)
             .uv(u + U_SIZE, v + V_SIZE)
             .endVertex();
-        buffer.vertex(matrix, x + getCharWidth(), 0, 0)
+        buffer.vertex(matrix, x + charWidth(), 0, 0)
             .color(r, g, b, a)
             .uv(u + U_SIZE, v)
             .endVertex();
@@ -110,5 +130,11 @@ public abstract class AbstractFontRenderer implements FontRenderer {
             return CHAR_MAP.get('?');
         }
         return CHAR_MAP.get(ch);
+    }
+
+    // --------------------------------------------------------------------- //
+
+    private static final class MutableInteger {
+        public int value;
     }
 }

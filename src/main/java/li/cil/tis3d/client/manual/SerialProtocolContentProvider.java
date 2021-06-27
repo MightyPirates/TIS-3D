@@ -8,7 +8,7 @@ import li.cil.tis3d.api.serial.SerialProtocolDocumentationReference;
 import li.cil.tis3d.common.provider.SerialInterfaceProviders;
 
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
@@ -38,16 +38,14 @@ public final class SerialProtocolContentProvider extends NamespaceContentProvide
     }
 
     @Override
-    public Optional<Iterable<String>> getContent(final String path, final String language) {
+    public Optional<Stream<String>> getContent(final String path, final String language) {
         final String localizedProtocolsPath = SERIAL_PROTOCOLS_PATH.replaceAll(Manual.LANGUAGE_KEY, language);
         if (localizedProtocolsPath.equals(path)) {
             return super.getContent(localizedProtocolsPath, language).
                 map(lines -> StreamSupport.
                     stream(lines.spliterator(), false).
                     map(line -> line.replaceAll(PATTERN_LIST, compileLinkList())).
-                    flatMap(expandedLine -> Arrays.stream(expandedLine.split(PATTERN_LINE_END))).
-                    collect(Collectors.toList())
-                );
+                    flatMap(expandedLine -> Arrays.stream(expandedLine.split(PATTERN_LINE_END))));
         }
         return Optional.empty();
     }

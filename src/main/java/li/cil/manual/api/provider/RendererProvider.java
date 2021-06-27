@@ -1,7 +1,7 @@
 package li.cil.manual.api.provider;
 
-import li.cil.manual.api.ContentRenderer;
-import li.cil.manual.api.ManualFilter;
+import li.cil.manual.api.render.ContentRenderer;
+import li.cil.manual.api.util.ComparableRegistryEntry;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -20,7 +20,7 @@ import java.util.Optional;
  * resource providing facilities, and display that.
  */
 @OnlyIn(Dist.CLIENT)
-public interface RendererProvider extends ManualFilter<RendererProvider> {
+public interface RendererProvider extends ComparableRegistryEntry<RendererProvider> {
     /**
      * Tries to get an image renderer for the specified data. If the specified
      * path is not supported, {@link Optional#empty()} is returned.

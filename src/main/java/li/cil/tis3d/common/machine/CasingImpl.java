@@ -130,7 +130,7 @@ public final class CasingImpl implements Casing {
      * appropriately if the casing is enabled or disabled, respectively.
      *
      * @param face   the face to install the module on.
-     * @param module the module to install on the face, or <tt>null</tt> for none.
+     * @param module the module to install on the face, or {@code null} for none.
      */
     public void setModule(final Face face, @Nullable final Module module) {
         if (getModule(face) == module) {

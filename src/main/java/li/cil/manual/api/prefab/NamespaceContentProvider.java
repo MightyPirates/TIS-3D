@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * Basic implementation of a content provider based on Minecraft's resource
@@ -38,7 +39,7 @@ public class NamespaceContentProvider extends ForgeRegistryEntry<ContentProvider
     }
 
     @Override
-    public Optional<Iterable<String>> getContent(final String path, final String language) {
+    public Optional<Stream<String>> getContent(final String path, final String language) {
         final IResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
         final ResourceLocation location = new ResourceLocation(namespace, basePath + path);
         try (final InputStream stream = resourceManager.getResource(location).getInputStream()) {
@@ -48,7 +49,7 @@ public class NamespaceContentProvider extends ForgeRegistryEntry<ContentProvider
             while ((line = reader.readLine()) != null) {
                 lines.add(line);
             }
-            return Optional.of(lines);
+            return Optional.of(lines.stream());
         } catch (final Throwable ignored) {
             return Optional.empty();
         }

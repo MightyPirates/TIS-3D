@@ -1,7 +1,7 @@
 package li.cil.manual.client.document.segment.render;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import li.cil.manual.api.ContentRenderer;
+import li.cil.manual.api.render.ContentRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.texture.NativeImage;

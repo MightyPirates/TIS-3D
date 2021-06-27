@@ -1,6 +1,6 @@
 package li.cil.tis3d.api;
 
-import li.cil.tis3d.api.util.FontRenderer;
+import li.cil.manual.api.render.FontRenderer;
 import net.minecraft.item.ItemGroup;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;

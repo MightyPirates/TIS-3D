@@ -1,12 +1,11 @@
 package li.cil.manual.client.document.segment;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import li.cil.manual.api.ContentRenderer;
-import li.cil.manual.api.InteractiveContentRenderer;
 import li.cil.manual.api.Manual;
-import li.cil.manual.client.document.Document;
+import li.cil.manual.api.render.ContentRenderer;
+import li.cil.manual.api.render.InteractiveContentRenderer;
+import li.cil.manual.api.Style;
 import li.cil.tis3d.util.Color;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
@@ -17,96 +16,106 @@ import java.util.Optional;
 
 @OnlyIn(Dist.CLIENT)
 public final class RenderSegment extends AbstractSegment implements InteractiveSegment {
-    private final Segment parent;
     private final ITextComponent title;
-    private final ContentRenderer contentRenderer;
+    private final ContentRenderer renderer;
 
     private int lastX = 0;
     private int lastY = 0;
 
-    public RenderSegment(final Manual manual, final Segment parent, final ITextComponent title, final ContentRenderer contentRenderer) {
-        super(manual);
-        this.parent = parent;
+    public RenderSegment(final Manual manual, final Style style, final Segment parent, final ITextComponent title, final ContentRenderer renderer) {
+        super(manual, style, parent);
         this.title = title;
-        this.contentRenderer = contentRenderer;
+        this.renderer = renderer;
     }
 
     @Override
-    public Segment parent() {
-        return this.parent;
-    }
-
-    @Override
-    public Optional<ITextComponent> tooltip() {
-        if (contentRenderer instanceof InteractiveContentRenderer) {
-            return Optional.of(((InteractiveContentRenderer) contentRenderer).getTooltip(title));
+    public Optional<ITextComponent> getTooltip() {
+        if (renderer instanceof InteractiveContentRenderer) {
+            return Optional.of(((InteractiveContentRenderer) renderer).getTooltip(title));
         } else {
             return Optional.of(title);
         }
     }
 
     @Override
-    public boolean onMouseClick(final double mouseX, final double mouseY) {
-        return contentRenderer instanceof InteractiveContentRenderer &&
-               ((InteractiveContentRenderer) contentRenderer).onMouseClick(mouseX - lastX, mouseY - lastY);
+    public boolean mouseClicked(final double mouseX, final double mouseY) {
+        return renderer instanceof InteractiveContentRenderer && ((InteractiveContentRenderer) renderer).
+            mouseClicked(mouseX - lastX, mouseY - lastY);
     }
 
     @Override
-    public void notifyHover() {
+    public int getLineHeight(final int segmentX, final int documentWidth) {
+        return imageHeight(segmentX, documentWidth);
     }
 
     @Override
-    public int nextY(final int indent, final int maxWidth, final FontRenderer renderer) {
-        return imageHeight(maxWidth) + ((indent > 0) ? Document.lineHeight(renderer) : 0);
-    }
+    public Optional<InteractiveSegment> render(final MatrixStack matrixStack, final int x, final int y, final int segmentX, final int lineHeight, final int documentWidth, final int mouseX, final int mouseY) {
+        final int width = imageWidth(segmentX, documentWidth);
+        final int height = imageHeight(segmentX, documentWidth);
 
-    @Override
-    public int nextX(final int indent, final int maxWidth, final FontRenderer renderer) {
-        return 0;
-    }
+        final boolean wrapBefore = segmentX >= documentWidth;
+        final boolean centerAndWrapAfter = segmentX == 0 || wrapBefore;
 
-    @Override
-    public Optional<InteractiveSegment> render(final MatrixStack matrixStack, final int x, final int y, final int indent, final int maxWidth, final FontRenderer renderer, final int mouseX, final int mouseY) {
-        final int width = imageWidth(maxWidth);
-        final int height = imageHeight(maxWidth);
-        final int xOffset = (maxWidth - width) / 2;
-        final int yOffset = 2 + ((indent > 0) ? Document.lineHeight(renderer) : 0);
-        final float s = scale(maxWidth);
+        final int localX = centerAndWrapAfter ? (documentWidth - width) / 2 : segmentX;
+        final int localY = wrapBefore ? lineHeight : 0;
 
-        lastX = x + xOffset;
-        lastY = y + yOffset;
+        lastX = x + localX;
+        lastY = y + localY;
 
-        final Optional<InteractiveSegment> hovered = checkHovered(mouseX, mouseY, x + xOffset, y + yOffset, width, height);
+        final float scale = scale(segmentX, documentWidth);
 
         matrixStack.pushPose();
-        matrixStack.translate(x + xOffset, y + yOffset, 0);
-        matrixStack.scale(s, s, s);
+        matrixStack.translate(x + localX, y + localY, 0);
+        matrixStack.scale(scale, scale, scale);
 
-        if (hovered.isPresent()) {
-            Screen.fill(matrixStack, 0, 0, contentRenderer.getWidth(), contentRenderer.getHeight(), Color.withAlpha(Color.WHITE, 0.15f));
+        final boolean isHovered = mouseX >= x + localX && mouseX <= x + localX + width &&
+                                  mouseY >= y + localY && mouseY <= y + localY + height;
+        if (isHovered) {
+            Screen.fill(matrixStack, 0, 0, renderer.getWidth(), renderer.getHeight(), Color.withAlpha(Color.CYAN, 0.25f));
         }
 
-        contentRenderer.render(matrixStack, mouseX - x, mouseY - y);
+        renderer.render(matrixStack, mouseX - x, mouseY - y);
 
         matrixStack.popPose();
 
-        return hovered;
+        return isHovered ? Optional.of(this) : Optional.empty();
+    }
+
+    @Override
+    public NextSegmentInfo getNext(final int segmentX, final int lineHeight, final int documentWidth) {
+        final int width = imageWidth(segmentX, documentWidth);
+        final int height = imageHeight(segmentX, documentWidth);
+
+        final boolean wrapBefore = segmentX >= documentWidth;
+        final boolean centerAndWrapAfter = segmentX == 0 || wrapBefore;
+
+        final int localX = centerAndWrapAfter ? (documentWidth - width) / 2 : segmentX;
+        final int localY = wrapBefore ? lineHeight : 0;
+
+        final int absoluteX = centerAndWrapAfter ? 0 : (localX + width);
+        final int relativeY = localY + (centerAndWrapAfter ? height + 1 : 0);
+        return new NextSegmentInfo(next, absoluteX, relativeY);
     }
 
     @Override
     public String toString() {
-        return String.format("![%s](%s)", title, contentRenderer);
+        return String.format("![%s](%s)", title, renderer);
     }
 
-    private float scale(final int maxWidth) {
-        return Math.min(1f, maxWidth / (float) contentRenderer.getWidth());
+    private int imageWidth(final int segmentX, final int documentWidth) {
+        if (segmentX >= documentWidth) {
+            return Math.min(documentWidth, renderer.getWidth());
+        } else {
+            return Math.min(documentWidth - segmentX, renderer.getWidth());
+        }
     }
 
-    private int imageWidth(final int maxWidth) {
-        return Math.min(maxWidth, contentRenderer.getWidth());
+    private int imageHeight(final int segmentX, final int documentWidth) {
+        return MathHelper.ceil(renderer.getHeight() * scale(segmentX, documentWidth));
     }
 
-    private int imageHeight(final int maxWidth) {
-        return MathHelper.ceil(contentRenderer.getHeight() * scale(maxWidth)) + 4;
+    private float scale(final int segmentX, final int documentWidth) {
+        // Only scale down; if necessary, scale down to fill remainder of current line.
+        return Math.min(1, imageWidth(segmentX, documentWidth) / (float) renderer.getWidth());
     }
 }

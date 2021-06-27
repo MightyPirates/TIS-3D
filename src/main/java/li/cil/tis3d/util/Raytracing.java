@@ -28,7 +28,7 @@ public final class Raytracing {
      * @param position the position of the block to perform the intersection check with.
      * @param start    the start of the line to intersect the block with.
      * @param end      the end of the line to intersect the block with.
-     * @return hit information on the intersect, or <tt>null</tt> if there was none.
+     * @return hit information on the intersect, or {@code null} if there was none.
      */
     @Nullable
     public static RayTraceResult intersectIgnoringTransparent(final World world, final BlockPos position, final Vector3d start, final Vector3d end) {
@@ -51,7 +51,7 @@ public final class Raytracing {
      * @param start    the start of the line to trace.
      * @param end      the end of the line to trace.
      * @param callback the method to call for each potential hit to perform collision logic.
-     * @return the first detected hit, or <tt>null</tt> if there was none.
+     * @return the first detected hit, or {@code null} if there was none.
      */
     @Nullable
     public static RayTraceResult raytrace(final World world, final Vector3d start, final Vector3d end, final CollisionDetector callback) {

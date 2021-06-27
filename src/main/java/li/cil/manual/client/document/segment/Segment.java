@@ -1,16 +1,23 @@
 package li.cil.manual.client.document.segment;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
 @OnlyIn(Dist.CLIENT)
 public interface Segment {
+    /**
+     * The root segment, i.e. the parent defining the full line this segment is a part of.
+     * <p>
+     * For the root element this will be the element itself.
+     *
+     * @return the root segment.
+     */
+    Segment getLineRoot();
+
     /**
      * Parent segment, i.e. the segment this segment was refined from.
      * Each line starts as a TextSegment that is refined based into segments
@@ -18,63 +25,48 @@ public interface Segment {
      *
      * @return the parent segment.
      */
-    @Nullable
-    Segment parent();
+    Optional<Segment> getParent();
 
     /**
-     * The root segment, i.e. the original parent of this segment.
+     * The render height of this segment in a single line, given the specified indent
+     * and document width.
+     * <p>
+     * This extra context is necessary because some elements will scale dynamically with
+     * available space, such as texture render segments.
      *
-     * @return the root segment.
+     * @param indent        the current indentation.
+     * @param documentWidth the width of the containing document.
+     * @return the height of the segment.
      */
-    Segment root();
+    int getLineHeight(final int indent, final int documentWidth);
 
     /**
-     * Get the X coordinate at which to render the next segment.
-     * <p>
-     * For flowing/inline segments this will be to the right of the last line
-     * this segment renders, for block segments it will be at the start of
-     * the next line below this segment.
-     * <p>
-     * The coordinates in this context are relative to (0,0).
+     * Gets the next sibling segment and the indent and y position to start rendering
+     * the sibling at, given the current indent and document width, as this segment's
+     * size and wrapping behaviour may depend on the context it is rendered in.
      *
-     * @param indent   the current indentation.
-     * @param maxWidth the maximum width of the document.
-     * @param renderer the font renderer used.
-     * @return the x position of the next segment.
+     * @param segmentX      the current indentation.
+     * @param lineHeight
+     * @param documentWidth the width of the containing document.
+     * @return the next segment in the linked list of segments.
      */
-    int nextX(final int indent, final int maxWidth, final FontRenderer renderer);
-
-    /**
-     * Get the Y coordinate at which to render the next segment.
-     * <p>
-     * For flowing/inline segments this will be the same level as the last line
-     * this segment renders, unless it's the last segment on its line. For block
-     * segments and last-on-line segments this will be the next line after.
-     * <p>
-     * The coordinates in this context are relative to (0,0).
-     *
-     * @param indent   the current indentation.
-     * @param maxWidth the maximum width of the document.
-     * @param renderer the font renderer used.
-     * @return the y position of the next segment.
-     */
-    int nextY(final int indent, final int maxWidth, final FontRenderer renderer);
+    NextSegmentInfo getNext(final int segmentX, final int lineHeight, final int documentWidth);
 
     /**
      * Render the segment at the specified coordinates with the specified
      * properties.
      *
-     * @param matrixStack the current matrix stack.
-     * @param x           the x position to render at.
-     * @param y           the y position to render at.
-     * @param indent      the current indentation.
-     * @param maxWidth    the maximum width of the document.
-     * @param renderer    the font renderer to use.
-     * @param mouseX      the x mouse position.
-     * @param mouseY      the y mouse position.
+     * @param matrixStack   the current matrix stack.
+     * @param x             the x position to render at.
+     * @param y             the y position to render at.
+     * @param segmentX      the current indentation.
+     * @param lineHeight
+     * @param documentWidth the maximum width of the document.
+     * @param mouseX        the x mouse position.
+     * @param mouseY        the y mouse position.
      * @return the hovered interactive segment, if any.
      */
-    Optional<InteractiveSegment> render(final MatrixStack matrixStack, final int x, final int y, final int indent, final int maxWidth, final FontRenderer renderer, final int mouseX, final int mouseY);
+    Optional<InteractiveSegment> render(final MatrixStack matrixStack, final int x, final int y, final int segmentX, final int lineHeight, final int documentWidth, final int mouseX, final int mouseY);
 
     // ----------------------------------------------------------------------- //
 
@@ -86,15 +78,6 @@ public interface Segment {
      * @return a list of child segments.
      */
     Iterable<Segment> refine(final Pattern pattern, final SegmentRefiner refiner);
-
-    /**
-     * Set after construction of document, used for formatting, specifically
-     * to compute the height for last segment on a line (to force a new line).
-     *
-     * @return the next segment in the linked list of segments.
-     */
-    @Nullable
-    Segment next();
 
     void setNext(final Segment segment);
 }

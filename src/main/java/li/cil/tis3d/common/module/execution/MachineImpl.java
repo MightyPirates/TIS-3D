@@ -88,7 +88,7 @@ public final class MachineImpl implements Machine {
     /**
      * Utility method for safely retrieving the current instruction.
      *
-     * @return the currently active instruction, or <tt>null</tt>.
+     * @return the currently active instruction, or {@code null}.
      */
     @Nullable
     private Instruction getInstruction() {

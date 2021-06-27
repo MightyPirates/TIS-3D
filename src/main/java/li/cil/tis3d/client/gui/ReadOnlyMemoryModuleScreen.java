@@ -77,24 +77,24 @@ public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMe
 
         super.render(matrixStack, mouseX, mouseY, partialTicks);
 
-        final BufferBuilder buffer = Tessellator.getInstance().getBuilder();
-        final IRenderTypeBuffer.Impl bufferFactory = IRenderTypeBuffer.immediate(buffer);
+        final BufferBuilder builder = Tessellator.getInstance().getBuilder();
+        final IRenderTypeBuffer.Impl buffer = IRenderTypeBuffer.immediate(builder);
 
         // Draw row and column headers.
-        drawHeaders(matrixStack, bufferFactory);
+        drawHeaders(matrixStack, buffer);
 
         // Draw/fade out initializing info text.
-        drawInitializing(matrixStack, bufferFactory);
+        drawInitializing(matrixStack, buffer);
 
         if (!receivedData) {
-            bufferFactory.endBatch();
+            buffer.endBatch();
             return;
         }
 
         // Draw memory cells being edited.
-        drawMemory(matrixStack, bufferFactory);
+        drawMemory(matrixStack, buffer);
 
-        bufferFactory.endBatch();
+        buffer.endBatch();
 
         // Draw marker around currently selected memory cell.
         drawSelectionBox(matrixStack);
@@ -228,12 +228,12 @@ public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMe
         return col >= 0 && row >= 0 && col <= 0xF && row <= 0xF;
     }
 
-    private void drawHeaders(final MatrixStack matrixStack, final IRenderTypeBuffer.Impl bufferFactory) {
+    private void drawHeaders(final MatrixStack matrixStack, final IRenderTypeBuffer buffer) {
         // Columns headers (top).
         matrixStack.pushPose();
         matrixStack.translate(leftPos + GRID_LEFT + 3, topPos + 6, 0);
         for (int col = 0; col < 16; col++) {
-            API.smallFontRenderer.drawString(matrixStack, bufferFactory, String.format("%X", col), Color.GUI_TEXT);
+            API.smallFontRenderer.drawBatch(matrixStack, buffer, String.format("%X", col), Color.GUI_TEXT);
             matrixStack.translate(CELL_WIDTH, 0, 0);
         }
         matrixStack.popPose();
@@ -242,13 +242,13 @@ public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMe
         matrixStack.pushPose();
         matrixStack.translate(leftPos + 7, topPos + 14, 0);
         for (int row = 0; row < 16; row++) {
-            API.smallFontRenderer.drawString(matrixStack, bufferFactory, String.format("0X%X0", row), Color.GUI_TEXT);
+            API.smallFontRenderer.drawBatch(matrixStack, buffer, String.format("0X%X0", row), Color.GUI_TEXT);
             matrixStack.translate(0, CELL_HEIGHT, 0);
         }
         matrixStack.popPose();
     }
 
-    private void drawInitializing(final MatrixStack matrixStack, final IRenderTypeBuffer.Impl bufferFactory) {
+    private void drawInitializing(final MatrixStack matrixStack, final IRenderTypeBuffer buffer) {
         final float sinceInitialized = (System.currentTimeMillis() - initTime) / 1000f;
         if (receivedData && sinceInitialized > 0.5f) {
             return;
@@ -257,15 +257,15 @@ public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMe
         final float alpha = 1 - sinceInitialized / 0.5f;
         final int color = Color.withAlpha(Color.WHITE, alpha);
 
-        final int labelWidth = API.smallFontRenderer.getCharWidth() * LABEL_INITIALIZING.length();
+        final int labelWidth = API.smallFontRenderer.width(LABEL_INITIALIZING);
 
         matrixStack.pushPose();
         matrixStack.translate((float) (leftPos + GRID_LEFT + 3 + 7 * CELL_WIDTH - labelWidth / 2), topPos + GRID_TOP + 1 + 7 * CELL_HEIGHT, 0);
-        API.smallFontRenderer.drawString(matrixStack, bufferFactory, LABEL_INITIALIZING, color);
+        API.smallFontRenderer.drawBatch(matrixStack, buffer, LABEL_INITIALIZING, color);
         matrixStack.popPose();
     }
 
-    private void drawMemory(final MatrixStack matrixStack, final IRenderTypeBuffer.Impl bufferFactory) {
+    private void drawMemory(final MatrixStack matrixStack, final IRenderTypeBuffer buffer) {
         final int visibleCells = (int) (System.currentTimeMillis() - initTime);
 
         final int selectedX = selectedCell & 0x0F;
@@ -290,7 +290,7 @@ public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMe
             final float brightness = (float) Math.min(1, Math.max(0.8, 1 - distance / 32));
             final int color = Color.monochrome(brightness);
 
-            API.smallFontRenderer.drawString(matrixStack, bufferFactory, String.format("%02X", data[i]), color);
+            API.smallFontRenderer.drawBatch(matrixStack, buffer, String.format("%02X", data[i]), color);
 
             if (col < 0x0F) {
                 matrixStack.translate(CELL_WIDTH, 0, 0);

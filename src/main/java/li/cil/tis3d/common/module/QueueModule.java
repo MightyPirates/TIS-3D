@@ -11,7 +11,7 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
-import li.cil.tis3d.api.util.FontRenderer;
+import li.cil.manual.api.render.FontRenderer;
 import li.cil.tis3d.util.Color;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.MathHelper;
@@ -271,9 +271,9 @@ public final class QueueModule extends AbstractModuleWithRotation {
         final FontRenderer fontRenderer = API.smallFontRenderer;
         for (int i = tail, j = 0; i != head; i = (i + 1) % QUEUE_SIZE, j++) {
             context.drawString(fontRenderer, String.format("%4X", queue[i]), Color.WHITE);
-            matrixStack.translate(0, fontRenderer.getCharHeight() + 1, 0);
+            matrixStack.translate(0, fontRenderer.lineHeight() + 1, 0);
             if ((j + 1) % 4 == 0) {
-                matrixStack.translate((fontRenderer.getCharWidth() + 1) * 5, (fontRenderer.getCharHeight() + 1) * -4, 0);
+                matrixStack.translate((fontRenderer.width(" ") + 1) * 5, (fontRenderer.lineHeight() + 1) * -4, 0);
             }
         }
     }

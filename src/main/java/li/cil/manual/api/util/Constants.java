@@ -1,5 +1,6 @@
-package li.cil.manual.api;
+package li.cil.manual.api.util;
 
+import li.cil.manual.api.Tab;
 import li.cil.manual.api.provider.ContentProvider;
 import li.cil.manual.api.provider.PathProvider;
 import li.cil.manual.api.provider.RendererProvider;

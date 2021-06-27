@@ -23,7 +23,7 @@ public final class InventoryUtils {
      * @param index     the slot of the inventory to drop the item from.
      * @param count     the number of items to drop from the stack in that slot.
      * @param towards   the direction in which to drop the item.
-     * @return the entity representing the dropped item stack, or <tt>null</tt> if the stack was null or empty.
+     * @return the entity representing the dropped item stack, or {@code null} if the stack was null or empty.
      */
     @Nullable
     public static ItemEntity drop(final World world, final BlockPos pos, final IInventory inventory, final int index, final int count, final Direction towards) {
@@ -38,7 +38,7 @@ public final class InventoryUtils {
      * @param pos     the position to spawn the item stack at.
      * @param stack   the item stack to spawn in the world.
      * @param towards the direction in which to drop the item.
-     * @return the entity representing the dropped item stack, or <tt>null</tt> if the stack was null or empty.
+     * @return the entity representing the dropped item stack, or {@code null} if the stack was null or empty.
      */
     @Nullable
     public static ItemEntity spawnStackInWorld(final World world, final BlockPos pos, final ItemStack stack, final Direction towards) {

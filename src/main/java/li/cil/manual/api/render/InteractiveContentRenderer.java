@@ -1,4 +1,4 @@
-package li.cil.manual.api;
+package li.cil.manual.api.render;
 
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -36,5 +36,7 @@ public interface InteractiveContentRenderer extends ContentRenderer {
      * @param mouseY the Y coordinate of the mouse, relative to the element.
      * @return whether the click was handled.
      */
-    boolean onMouseClick(final double mouseX, final double mouseY);
+    default boolean mouseClicked(final double mouseX, final double mouseY) {
+        return false;
+    }
 }

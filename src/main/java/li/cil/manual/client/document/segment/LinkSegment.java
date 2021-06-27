@@ -1,6 +1,7 @@
 package li.cil.manual.client.document.segment;
 
 import li.cil.manual.api.Manual;
+import li.cil.manual.api.Style;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.util.text.ITextComponent;
@@ -10,7 +11,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.net.URI;
 import java.util.Optional;
-import java.util.OptionalInt;
 
 @OnlyIn(Dist.CLIENT)
 public final class LinkSegment extends TextSegment implements InteractiveSegment {
@@ -25,8 +25,8 @@ public final class LinkSegment extends TextSegment implements InteractiveSegment
     private boolean isLinkValidInitialized;
     private long lastHovered = System.currentTimeMillis() - FADE_TIME;
 
-    public LinkSegment(final Manual manual, final Segment parent, final String text, final String url) {
-        super(manual, parent, text);
+    public LinkSegment(final Manual manual, final Style style, final Segment parent, final String text, final String url) {
+        super(manual, style, parent, text);
         this.url = url;
     }
 
@@ -40,7 +40,7 @@ public final class LinkSegment extends TextSegment implements InteractiveSegment
     }
 
     @Override
-    protected OptionalInt color() {
+    protected int getColor() {
         final int color, hoverColor;
         if (isLinkValid()) {
             color = NORMAL_COLOR;
@@ -52,19 +52,19 @@ public final class LinkSegment extends TextSegment implements InteractiveSegment
 
         final int timeSinceHover = (int) (System.currentTimeMillis() - lastHovered);
         if (timeSinceHover > FADE_TIME) {
-            return OptionalInt.of(color);
+            return color;
         } else {
-            return OptionalInt.of(fadeColor(hoverColor, color, timeSinceHover / (float) FADE_TIME));
+            return fadeColor(hoverColor, color, timeSinceHover / (float) FADE_TIME);
         }
     }
 
     @Override
-    public Optional<ITextComponent> tooltip() {
+    public Optional<ITextComponent> getTooltip() {
         return Optional.of(new StringTextComponent(url));
     }
 
     @Override
-    public boolean onMouseClick(final double mouseX, final double mouseY) {
+    public boolean mouseClicked(final double mouseX, final double mouseY) {
         if (url.startsWith("http://") || url.startsWith("https://")) {
             handleUrl(url);
         } else {
@@ -74,7 +74,7 @@ public final class LinkSegment extends TextSegment implements InteractiveSegment
     }
 
     @Override
-    public void notifyHover() {
+    public void mouseHovered() {
         lastHovered = System.currentTimeMillis();
     }
 
@@ -107,6 +107,6 @@ public final class LinkSegment extends TextSegment implements InteractiveSegment
 
     @Override
     public String toString() {
-        return String.format("[%s](%s)", text(), url);
+        return String.format("[%s](%s)", super.toString(), url);
     }
 }

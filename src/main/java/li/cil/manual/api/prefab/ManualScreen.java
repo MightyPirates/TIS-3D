@@ -1,11 +1,11 @@
 package li.cil.manual.api.prefab;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import li.cil.manual.api.Manual;
 import li.cil.manual.api.Tab;
 import li.cil.manual.client.document.Document;
+import li.cil.manual.api.Style;
 import li.cil.manual.client.document.segment.InteractiveSegment;
 import li.cil.manual.client.document.segment.Segment;
 import li.cil.tis3d.client.renderer.Textures;
@@ -46,6 +46,7 @@ public final class ManualScreen extends Screen {
     private static final int windowHeight = 256;
 
     private final Manual manual;
+    private final Style style;
     private String currentPath;
 
     private int leftPos = 0;
@@ -58,9 +59,10 @@ public final class ManualScreen extends Screen {
 
     private ScrollButton scrollButton = null;
 
-    public ManualScreen(final Manual manual) {
+    public ManualScreen(final Manual manual, final Style style) {
         super(new StringTextComponent("Manual"));
         this.manual = manual;
+        this.style = style;
     }
 
     public Manual getManual() {
@@ -100,9 +102,9 @@ public final class ManualScreen extends Screen {
 
         scrollButton.active = canScroll();
 
-        currentSegment = Document.render(matrixStack, document, leftPos + 16, topPos + 48, documentMaxWidth, documentMaxHeight, getScrollPosition(), getFontRenderer(), mouseX, mouseY);
+        currentSegment = Document.render(matrixStack, document, leftPos + 16, topPos + 48, documentMaxWidth, documentMaxHeight, getScrollPosition(), mouseX, mouseY);
 
-        currentSegment.flatMap(InteractiveSegment::tooltip).ifPresent(t ->
+        currentSegment.flatMap(InteractiveSegment::getTooltip).ifPresent(t ->
             renderWrappedToolTip(matrixStack, Collections.singletonList(t), mouseX, mouseY, getFontRenderer()));
 
         for (final Widget widget : this.buttons) {
@@ -150,8 +152,7 @@ public final class ManualScreen extends Screen {
             scrollMouse(mouseY);
             return true;
         } else if (button == 0) {
-            currentSegment.ifPresent(s -> s.onMouseClick(mouseX, mouseY));
-            return true;
+            return currentSegment.map(s -> s.mouseClicked(mouseX, mouseY)).orElse(false);
         } else if (button == 1) {
             manual.pop();
             return true;
@@ -216,8 +217,8 @@ public final class ManualScreen extends Screen {
 
     private void refreshPage() {
         final Optional<Iterable<String>> content = manual.contentFor(manual.peek());
-        document = Document.parse(manual, content.orElse(Collections.singletonList("Page not found: " + manual.peek())));
-        documentHeight = Document.height(document, documentMaxWidth, getFontRenderer());
+        document = Document.parse(manual, style, content.orElse(Collections.singleton("Page not found: " + manual.peek())));
+        documentHeight = Document.height(document, documentMaxWidth);
         scrollTo(getScrollPosition());
     }
 
@@ -226,7 +227,7 @@ public final class ManualScreen extends Screen {
     }
 
     private void scroll(final double amount) {
-        scrollTo(getScrollPosition() - (int) Math.round(Document.lineHeight(getFontRenderer()) * 3 * amount));
+        scrollTo(getScrollPosition() - (int) Math.round(style.getLineHeight() * 3 * amount));
     }
 
     private void scrollTo(final int row) {

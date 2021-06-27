@@ -2,81 +2,107 @@ package li.cil.manual.client.document.segment;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import li.cil.manual.api.Manual;
-import li.cil.manual.client.document.Document;
-import net.minecraft.client.gui.FontRenderer;
+import li.cil.manual.api.Style;
+import li.cil.manual.api.render.FontRenderer;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.apache.commons.lang3.ArrayUtils;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.OptionalInt;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @OnlyIn(Dist.CLIENT)
-public class TextSegment extends BasicTextSegment {
-    private static final int DEFAULT_TEXT_COLOR = 0xFF333333;
+public class TextSegment extends AbstractSegment {
+    private static final char[] BREAKS = {' ', '.', ',', ':', ';', '!', '?', '_', '=', '-', '+', '*', '/', '\\'};
+    private static final CharSequence[] LISTS = {"- ", "* "};
 
-    private final Segment parent;
+    // ----------------------------------------------------------------------- //
+
     private final String text;
+    private final int wrappedIndent;
 
-    public TextSegment(final Manual manual, @Nullable final Segment parent, final String text) {
-        super(manual);
-        this.parent = parent;
+    // ----------------------------------------------------------------------- //
+
+    public TextSegment(final Manual manual, final Style style, @Nullable final Segment parent, final String text) {
+        super(manual, style, parent);
         this.text = text;
+        this.wrappedIndent = computeWrappedIndent();
+    }
+
+    // ----------------------------------------------------------------------- //
+
+    @Override
+    public int getLineHeight(final int indent, final int documentWidth) {
+        return getLineHeight();
     }
 
     @Override
-    @Nullable
-    public Segment parent() {
-        return parent;
-    }
+    public NextSegmentInfo getNext(final int segmentX, final int lineHeight, final int documentWidth) {
+        final NextSegmentInfo info = new NextSegmentInfo(next);
+        forEachBlock(segmentX, lineHeight, documentWidth, block -> {
+            info.absoluteX = block.x + getStringWidth(block.chars);
+            info.relativeY = block.y;
+        });
 
-    @Override
-    protected String text() {
-        return text;
-    }
-
-    @Override
-    public Optional<InteractiveSegment> render(final MatrixStack matrixStack, final int x, final int y, final int indent, final int maxWidth, final FontRenderer renderer, final int mouseX, final int mouseY) {
-        int currentX = x + indent;
-        int currentY = y;
-        String chars = text;
-        if (indent == 0) {
-            chars = chars.substring(indexOfFirstNonWhitespace(chars));
-        }
-        final int wrapIndent = computeWrapIndent(renderer);
-        int numChars = maxChars(chars, maxWidth - indent, maxWidth - wrapIndent, renderer);
-        Optional<InteractiveSegment> hovered = Optional.empty();
-        final float scale = resolvedScale();
-        final String format = resolvedFormat();
-        final int color = resolvedColor();
-        final Optional<InteractiveSegment> interactive = resolvedInteractive();
-        while (chars.length() > 0) {
-            final String part = chars.substring(0, numChars);
-            if (!hovered.isPresent()) {
-                final int cx = currentX;
-                final int cy = currentY;
-                hovered = interactive.flatMap(segment -> segment.checkHovered(mouseX, mouseY, cx, cy, stringWidth(part, renderer), (int) (Document.lineHeight(renderer) * scale)));
+        // If the next segment belongs to a different hierarchy we force it to a new line.
+        // This is mainly for stuff like lists.
+        if (next != null && next.getLineRoot() != getLineRoot()) {
+            info.absoluteX = 0;
+            if (info.relativeY == 0) {
+                info.relativeY = Math.max(lineHeight, getLineHeight());
+            } else {
+                info.relativeY += getLineHeight();
             }
-            matrixStack.pushPose();
-            matrixStack.translate(currentX, currentY, 0);
-            matrixStack.scale(scale, scale, scale);
-            matrixStack.translate(-currentX, -currentY, 0);
+        }
 
-            renderer.draw(matrixStack, format + part, currentX, currentY, color);
+        return info;
+    }
+
+    @Override
+    public Optional<InteractiveSegment> render(final MatrixStack matrixStack, final int x, final int y, final int segmentX, final int lineHeight, final int documentWidth, final int mouseX, final int mouseY) {
+        final String format = getFormat();
+        final float scale = getFontScale() * getScale();
+        final int color = getColor();
+
+        final Optional<InteractiveSegment> interactive = getInteractiveParent();
+        final ObjectReference<Optional<InteractiveSegment>> hovered = new ObjectReference<>(Optional.empty());
+
+        final BufferBuilder builder = Tessellator.getInstance().getBuilder();
+        final IRenderTypeBuffer.Impl buffer = IRenderTypeBuffer.immediate(builder);
+
+        matrixStack.pushPose();
+        matrixStack.translate(x, y, 0);
+
+        forEachBlock(segmentX, lineHeight, documentWidth, block -> {
+            if (!hovered.value.isPresent() &&
+                mouseX >= x + block.x && mouseX <= x + block.x + getStringWidth(block.chars) &&
+                mouseY >= y + block.y && mouseY <= y + block.y + getLineHeight()) {
+                hovered.value = interactive;
+            }
+
+            matrixStack.pushPose();
+            matrixStack.translate(block.x, block.y, 0);
+            matrixStack.scale(scale, scale, scale);
+
+            getFont().drawBatch(matrixStack, buffer, format + block.chars, color);
 
             matrixStack.popPose();
-            currentX = x + wrapIndent;
-            currentY += lineHeight(renderer);
-            chars = chars.substring(numChars);
-            chars = chars.substring(indexOfFirstNonWhitespace(chars));
-            numChars = maxChars(chars, maxWidth - wrapIndent, maxWidth - wrapIndent, renderer);
-        }
+        });
 
-        return hovered;
+        matrixStack.popPose();
+
+        buffer.endBatch();
+
+        return hovered.value;
     }
 
     @Override
@@ -89,94 +115,190 @@ public class TextSegment extends BasicTextSegment {
         while (matcher.find()) {
             // Create segment for leading plain text.
             if (matcher.start() > textStart) {
-                result.add(new TextSegment(manual, this, text.substring(textStart, matcher.start())));
+                result.add(new TextSegment(manual, style, this, text.substring(textStart, matcher.start())));
             }
             textStart = matcher.end();
 
             // Create segment for formatted text.
-            result.add(factory.refine(manual, this, matcher));
+            result.add(factory.refine(manual, style, this, matcher));
         }
 
         // Create segment for remaining plain text.
         if (textStart == 0) {
             result.add(this);
         } else if (textStart < text.length()) {
-            result.add(new TextSegment(manual, this, text.substring(textStart)));
+            result.add(new TextSegment(manual, style, this, text.substring(textStart)));
         }
         return result;
     }
 
-    // ----------------------------------------------------------------------- //
-
     @Override
-    protected int lineHeight(final FontRenderer renderer) {
-        return (int) (super.lineHeight(renderer) * resolvedScale());
-    }
-
-    @Override
-    protected int stringWidth(final String s, final FontRenderer renderer) {
-        return (int) (renderer.width(resolvedFormat() + s) * resolvedScale());
+    public String toString() {
+        return text;
     }
 
     // ----------------------------------------------------------------------- //
 
-    protected OptionalInt color() {
-        return OptionalInt.empty();
+    protected boolean isIgnoringLeadingWhitespace() {
+        return true;
     }
 
-    protected Optional<Float> scale() {
+    protected FontRenderer getFont() {
+        return style.getRegularFont();
+    }
+
+    protected int getColor() {
+        return tryGetFromParent(style.getRegularTextColor(), TextSegment::getColor);
+    }
+
+    protected float getScale() {
+        return tryGetFromParent(1f, TextSegment::getScale);
+    }
+
+    protected String getFormat() {
+        return tryGetFromParent("", TextSegment::getFormat);
+    }
+
+    // ----------------------------------------------------------------------- //
+
+    private float getFontScale() {
+        return style.getLineHeight() / (float) getFont().lineHeight();
+    }
+
+    private int getLineHeight() {
+        return (int) ((getFont().lineHeight() + 1) * getFontScale() * getScale());
+    }
+
+    private int getStringWidth(final CharSequence string) {
+        return (int) (getFont().width(getFormat() + string) * getFontScale() * getScale());
+    }
+
+    private void forEachBlock(final int segmentX, final int lineHeight, final int documentWidth, final Consumer<TextBlock> blockConsumer) {
+        String chars = text;
+        if (isIgnoringLeadingWhitespace() && segmentX == 0) {
+            chars = chars.substring(indexOfFirstNonWhitespace(chars));
+        }
+
+        int currentX = segmentX;
+        int currentY = 0;
+
+        int charCount = computeCharsFittingOnLine(chars, documentWidth - currentX, documentWidth - wrappedIndent);
+        while (chars.length() > 0) {
+            final String blockChars = chars.substring(0, charCount);
+            blockConsumer.accept(new TextBlock(
+                currentX,
+                currentY,
+                blockChars
+            ));
+
+            currentX = wrappedIndent;
+            if (currentY == 0) {
+                currentY = Math.max(lineHeight, getLineHeight());
+            } else {
+                currentY += getLineHeight();
+            }
+
+            chars = chars.substring(charCount);
+            chars = chars.substring(indexOfFirstNonWhitespace(chars));
+            charCount = computeCharsFittingOnLine(chars, documentWidth - currentX, documentWidth - wrappedIndent);
+        }
+    }
+
+    private static int indexOfFirstNonWhitespace(final String s) {
+        for (int i = 0; i < s.length(); i++) {
+            if (!Character.isWhitespace(s.charAt(i))) {
+                return i;
+            }
+        }
+        return s.length();
+    }
+
+    private int computeCharsFittingOnLine(final String string, final int remainingLineWidth, final int documentWidth) {
+        final int fullWidth = getStringWidth(string);
+
+        int count = 0;
+        int lastBreak = -1;
+        while (count < string.length()) {
+            final int nextLargerWidth = getStringWidth(string.substring(0, count + 1));
+            final boolean exceedsLineLength = nextLargerWidth >= remainingLineWidth;
+            if (exceedsLineLength) {
+                final boolean mayUseFullLine = remainingLineWidth == documentWidth;
+                final boolean canFitInLine = fullWidth <= documentWidth;
+                final boolean matchesFullLine = fullWidth == documentWidth;
+                if (lastBreak >= 0) {
+                    return lastBreak + 1; // Can do a soft split.
+                }
+                if (mayUseFullLine && matchesFullLine) {
+                    return string.length(); // Special case for exact match.
+                }
+                if (canFitInLine && !mayUseFullLine) {
+                    return 0; // Wrap line, use next line.
+                }
+                return count; // Gotta split hard.
+            }
+            if (ArrayUtils.contains(BREAKS, string.charAt(count))) {
+                lastBreak = count;
+            }
+            count += 1;
+        }
+        return count;
+    }
+
+    private <T> T tryGetFromParent(final T defaultValue, final Function<TextSegment, T> getter) {
+        final Optional<Segment> parent = getParent();
+        if (parent.isPresent() && parent.get() instanceof TextSegment) {
+            return getter.apply((TextSegment) parent.get());
+        } else {
+            return defaultValue;
+        }
+    }
+
+    private Optional<InteractiveSegment> getInteractiveParent() {
+        Optional<Segment> segment = Optional.of(this);
+        while (segment.isPresent()) {
+            if (segment.get() instanceof InteractiveSegment) {
+                return segment.map(s -> (InteractiveSegment) s);
+            }
+            segment = segment.get().getParent();
+        }
         return Optional.empty();
     }
 
-    protected String format() {
-        return "";
+    private TextSegment getRootTextSegment() {
+        TextSegment textSegment = this;
+        Optional<Segment> parent = getParent();
+        while (parent.isPresent() && parent.get() instanceof TextSegment) {
+            textSegment = (TextSegment) parent.get();
+            parent = parent.get().getParent();
+        }
+        return textSegment;
     }
 
-    private int resolvedColor() {
-        return color().orElseGet(this::parentColor);
+    private int computeWrappedIndent() {
+        final TextSegment textSegment = getRootTextSegment();
+        final CharSequence rootPrefix = textSegment.text.subSequence(0, Math.min(2, textSegment.text.length()));
+        return (ArrayUtils.contains(LISTS, rootPrefix)) ? getFont().width(rootPrefix) : 0;
     }
 
-    private int parentColor() {
-        final Segment parent = parent();
-        if (parent instanceof TextSegment) {
-            return ((TextSegment) parent).resolvedColor();
-        } else {
-            return DEFAULT_TEXT_COLOR;
+    // ----------------------------------------------------------------------- //
+
+    private static final class ObjectReference<T> {
+        public T value;
+
+        public ObjectReference(final T value) {
+            this.value = value;
         }
     }
 
-    private float resolvedScale() {
-        return scale().orElseGet(this::parentScale);
-    }
+    private static final class TextBlock {
+        public final int x;
+        public final int y;
+        public final String chars;
 
-    private float parentScale() {
-        final Segment parent = parent();
-        if (parent instanceof TextSegment) {
-            return scale().orElse(1f) * ((TextSegment) parent).resolvedScale();
-        } else {
-            return 1f;
-        }
-    }
-
-    private String resolvedFormat() {
-        final Segment parent = parent();
-        if (parent instanceof TextSegment) {
-            return ((TextSegment) parent).resolvedFormat() + format();
-        } else {
-            return format();
-        }
-    }
-
-    private Optional<InteractiveSegment> resolvedInteractive() {
-        if (this instanceof InteractiveSegment) {
-            return Optional.of((InteractiveSegment) this);
-        } else {
-            final Segment parent = parent();
-            if (parent instanceof TextSegment) {
-                return ((TextSegment) parent).resolvedInteractive();
-            } else {
-                return Optional.empty();
-            }
+        public TextBlock(final int x, final int y, final String chars) {
+            this.x = x;
+            this.y = y;
+            this.chars = chars;
         }
     }
 }

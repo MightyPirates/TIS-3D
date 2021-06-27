@@ -53,7 +53,7 @@ public interface Module {
      * This is called before the first {@link #onEnabled()}, and also <em>before
      * it is actually set in the containing {@link Casing}</em>. Particularly
      * this means {@link Casing#getModule(Face)} for the module's {@link Face}
-     * will still return <tt>null</tt> in this callback.
+     * will still return {@code null} in this callback.
      * <p>
      * Note that this is only called on the server.
      *

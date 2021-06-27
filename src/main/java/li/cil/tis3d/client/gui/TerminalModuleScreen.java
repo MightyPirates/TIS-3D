@@ -1,7 +1,6 @@
 package li.cil.tis3d.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import li.cil.tis3d.client.ClientConfig;
 import li.cil.tis3d.common.module.TerminalModule;

@@ -3,6 +3,9 @@ package li.cil.manual.api;
 import com.google.common.io.Files;
 import li.cil.manual.api.prefab.ManualScreen;
 import li.cil.manual.api.provider.RendererProvider;
+import li.cil.manual.api.render.ContentRenderer;
+import li.cil.manual.api.util.ComparableRegistryEntry;
+import li.cil.manual.api.util.Constants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.ItemStack;
@@ -43,6 +46,11 @@ public class Manual extends ForgeRegistryEntry<Manual> {
     // ----------------------------------------------------------------------- //
 
     /**
+     * The style to use when rendering the manual.
+     */
+    protected final Style style;
+
+    /**
      * The current navigation history for this manual.
      */
     protected final List<History> history = new ArrayList<>();
@@ -56,7 +64,8 @@ public class Manual extends ForgeRegistryEntry<Manual> {
 
     // ----------------------------------------------------------------------- //
 
-    public Manual() {
+    public Manual(final Style style) {
+        this.style = style;
         reset();
     }
 
@@ -92,7 +101,7 @@ public class Manual extends ForgeRegistryEntry<Manual> {
      * {@link Manual#FALLBACK_LANGUAGE}.
      *
      * @param path the path of the page to get the content of.
-     * @return the content of the page, or <tt>null</tt> if none exists.
+     * @return the content of the page, or {@code null} if none exists.
      */
     public Optional<Iterable<String>> contentFor(final String path) {
         final String language = Minecraft.getInstance().getLanguageManager().getSelected().getCode();
@@ -105,10 +114,10 @@ public class Manual extends ForgeRegistryEntry<Manual> {
      * <p>
      * This will look for {@link RendererProvider}s registered for a prefix in the
      * specified path. If there is no match, or the matched content provider
-     * does not provide a renderer, this will return <tt>null</tt>.
+     * does not provide a renderer, this will return {@code null}.
      *
      * @param path the path to the image to get the renderer for.
-     * @return the custom renderer for that path, or <tt>null</tt> if none exists.
+     * @return the custom renderer for that path, or {@code null} if none exists.
      */
     public Optional<ContentRenderer> imageFor(final String path) {
         return find(Constants.RENDERER_PROVIDERS, provider -> provider.getRenderer(path));
@@ -255,14 +264,14 @@ public class Manual extends ForgeRegistryEntry<Manual> {
     }
 
     protected ManualScreen createScreen() {
-        return new ManualScreen(this);
+        return new ManualScreen(this, style);
     }
 
     protected History createHistoryEntry(final String path) {
         return new History(path);
     }
 
-    protected <TProvider extends ManualFilter<TProvider>, TResult> Optional<TResult> find(final RegistryKey<Registry<TProvider>> key, final Function<TProvider, Optional<TResult>> lookup) {
+    protected <TProvider extends ComparableRegistryEntry<TProvider>, TResult> Optional<TResult> find(final RegistryKey<Registry<TProvider>> key, final Function<TProvider, Optional<TResult>> lookup) {
         return RegistryManager.ACTIVE.getRegistry(key).getValues().stream().
             filter(provider -> provider.matches(this)).
             sorted().map(lookup).filter(Optional::isPresent).findFirst().flatMap(x -> x);
@@ -294,23 +303,29 @@ public class Manual extends ForgeRegistryEntry<Manual> {
             return Optional.of(message);
         }
 
-        final Optional<Iterable<String>> content = find(Constants.CONTENT_PROVIDERS, provider -> provider.getContent(path, language));
+        final Optional<List<String>> content = find(Constants.CONTENT_PROVIDERS, provider -> provider.getContent(path, language)).
+            map(lines -> {
+                final List<String> list = lines.collect(Collectors.toList());
+                while (!list.isEmpty() && StringUtils.isWhitespace(list.get(0))) {
+                    list.remove(0);
+                }
+                while (!list.isEmpty() && StringUtils.isWhitespace(list.get(list.size() - 1))) {
+                    list.remove(list.size() - 1);
+                }
+                return list;
+            });
         if (!content.isPresent()) {
-            return content; // Page not found.
+            return Optional.empty(); // Page not found.
         }
 
         // Read first line only.
-        final Iterable<String> lines = content.get();
-        final Iterator<String> iterator = lines.iterator();
-        if (iterator.hasNext()) {
-            final String line = iterator.next();
-            if (line.toLowerCase().startsWith(REDIRECT_PRAGMA)) {
-                final String redirectPath = line.substring(REDIRECT_PRAGMA.length()).trim();
-                return contentFor(resolve(path, redirectPath), language, seen);
-            }
+        final List<String> lines = content.get();
+        if (lines.size() > 0 && lines.get(0).toLowerCase().startsWith(REDIRECT_PRAGMA)) {
+            final String redirectPath = lines.get(0).substring(REDIRECT_PRAGMA.length()).trim();
+            return contentFor(resolve(path, redirectPath), language, seen);
         }
 
-        return content; // Regular page.
+        return Optional.of(lines); // Regular page.
     }
 
     // --------------------------------------------------------------------- //

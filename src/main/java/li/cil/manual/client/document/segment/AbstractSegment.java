@@ -1,8 +1,7 @@
 package li.cil.manual.client.document.segment;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import li.cil.manual.api.Manual;
-import net.minecraft.client.gui.FontRenderer;
+import li.cil.manual.api.Style;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -14,31 +13,29 @@ import java.util.regex.Pattern;
 @OnlyIn(Dist.CLIENT)
 abstract class AbstractSegment implements Segment {
     protected final Manual manual;
-    private Segment next;
+    protected final Style style;
+    @Nullable protected final Segment parent;
+    protected Segment next;
 
-    protected AbstractSegment(final Manual manual) {
+    protected AbstractSegment(final Manual manual, final Style style, @Nullable final Segment parent) {
         this.manual = manual;
+        this.style = style;
+        this.parent = parent;
     }
 
     @Override
-    public Segment root() {
-        final Segment parent = parent();
-        return parent == null ? this : parent.root();
+    public Segment getLineRoot() {
+        return parent != null ? parent.getLineRoot() : this;
     }
 
     @Override
-    public Optional<InteractiveSegment> render(final MatrixStack matrixStack, final int x, final int y, final int indent, final int maxWidth, final FontRenderer renderer, final int mouseX, final int mouseY) {
-        return Optional.empty();
+    public Optional<Segment> getParent() {
+        return Optional.ofNullable(parent);
     }
 
     @Override
     public Iterable<Segment> refine(final Pattern pattern, final SegmentRefiner refiner) {
         return Collections.singletonList(this);
-    }
-
-    @Override
-    public Segment next() {
-        return next;
     }
 
     @Override

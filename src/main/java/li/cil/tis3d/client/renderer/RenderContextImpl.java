@@ -2,7 +2,7 @@ package li.cil.tis3d.client.renderer;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import li.cil.tis3d.api.util.FontRenderer;
+import li.cil.manual.api.render.FontRenderer;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.util.Color;
 import net.minecraft.client.Minecraft;
@@ -76,7 +76,7 @@ public final class RenderContextImpl implements RenderContext {
 
     @Override
     public void drawString(final FontRenderer fontRenderer, final CharSequence value, final int argb) {
-        fontRenderer.drawString(matrixStack, buffer, value, argb);
+        fontRenderer.drawBatch(matrixStack, buffer, value, argb);
     }
 
     @Override

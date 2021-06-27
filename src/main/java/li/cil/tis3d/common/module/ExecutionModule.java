@@ -9,7 +9,7 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.traits.ModuleWithBlockChangeListener;
 import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
-import li.cil.tis3d.api.util.FontRenderer;
+import li.cil.manual.api.render.FontRenderer;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.common.Constants;
@@ -348,11 +348,11 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
         // Draw register info on top.
         final String accLast = String.format("ACC:%4X LAST:%s", machineState.acc, machineState.last.map(Enum::name).orElse("NONE"));
         context.drawString(fontRenderer, accLast, Color.WHITE);
-        matrixStack.translate(0, fontRenderer.getCharHeight() + 4, 0);
+        matrixStack.translate(0, fontRenderer.lineHeight() + 4, 0);
 
         final String bakState = String.format("BAK:%4X MODE:%s", machineState.bak, state.name());
         context.drawString(fontRenderer, bakState, Color.WHITE);
-        matrixStack.translate(0, fontRenderer.getCharHeight() + 4, 0);
+        matrixStack.translate(0, fontRenderer.lineHeight() + 4, 0);
 
         drawLine(context, 1, Color.WHITE);
 
@@ -360,7 +360,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
 
         // If we have more lines than fit on our "screen", offset so that the
         // current line is in the middle, but don't let last line scroll in.
-        final int maxLines = 50 / (fontRenderer.getCharHeight() + 1);
+        final int maxLines = 50 / (fontRenderer.lineHeight() + 1);
         final int totalLines = machineState.code.length;
         final int currentLine;
         if (!machineState.lineNumbers.isEmpty()) {
@@ -379,11 +379,11 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
             if (lineNumber == currentLine) {
                 // Draw current line marker behind text
                 if (state == State.WAIT) {
-                    drawLine(context, fontRenderer.getCharHeight(), Color.LIGHT_GRAY);
+                    drawLine(context, fontRenderer.lineHeight(), Color.LIGHT_GRAY);
                 } else if (state == State.ERR || compileError != null && compileError.getLineNumber() == currentLine) {
-                    drawLine(context, fontRenderer.getCharHeight(), Color.RED);
+                    drawLine(context, fontRenderer.lineHeight(), Color.RED);
                 } else {
-                    drawLine(context, fontRenderer.getCharHeight(), Color.WHITE);
+                    drawLine(context, fontRenderer.lineHeight(), Color.WHITE);
                 }
 
                 context.drawString(fontRenderer, charSequence, Color.BLACK);
@@ -391,7 +391,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
                 context.drawString(fontRenderer, charSequence, Color.WHITE);
             }
 
-            matrixStack.translate(0, fontRenderer.getCharHeight() + 1, 0);
+            matrixStack.translate(0, fontRenderer.lineHeight() + 1, 0);
         }
 
         matrixStack.popPose();

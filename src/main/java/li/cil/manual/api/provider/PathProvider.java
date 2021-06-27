@@ -1,7 +1,7 @@
 package li.cil.manual.api.provider;
 
 import li.cil.manual.api.Manual;
-import li.cil.manual.api.ManualFilter;
+import li.cil.manual.api.util.ComparableRegistryEntry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -27,28 +27,28 @@ import java.util.Optional;
  * content lookup.
  */
 @OnlyIn(Dist.CLIENT)
-public interface PathProvider extends ManualFilter<PathProvider> {
+public interface PathProvider extends ComparableRegistryEntry<PathProvider> {
     /**
      * Get the path to the documentation page for the provided item stack.
      * <p>
-     * Return <tt>null</tt> if there is no known page for this item, allowing
+     * Return {@code null} if there is no known page for this item, allowing
      * other providers to be queried.
      *
      * @param stack the stack to get the documentation path to.
-     * @return the path to the page, <tt>null</tt> if none is known.
+     * @return the path to the page, {@code null} if none is known.
      */
     Optional<String> pathFor(final ItemStack stack);
 
     /**
      * Get the path to the documentation page for the provided block.
      * <p>
-     * Return <tt>null</tt> if there is no known page for this item, allowing
+     * Return {@code null} if there is no known page for this item, allowing
      * other providers to be queried.
      *
      * @param world the world containing the block.
      * @param pos   the position coordinate of the block.
      * @param face  the face of the block.
-     * @return the path to the page, <tt>null</tt> if none is known.
+     * @return the path to the page, {@code null} if none is known.
      */
     Optional<String> pathFor(final World world, final BlockPos pos, final Direction face);
 }

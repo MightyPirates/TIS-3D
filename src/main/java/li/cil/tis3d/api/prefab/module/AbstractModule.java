@@ -91,7 +91,7 @@ public abstract class AbstractModule implements Module {
 
     /**
      * Utility method for determining the hit coordinate on the module's face the player is
-     * looking at. This will return <tt>null</tt> if the player is not currently looking
+     * looking at. This will return {@code null} if the player is not currently looking
      * at the module.
      * <p>
      * Note that this will return the unadjusted X, Y and Z components. To transform this

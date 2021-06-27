@@ -1,6 +1,6 @@
 package li.cil.manual.client;
 
-import li.cil.manual.api.Constants;
+import li.cil.manual.api.util.Constants;
 import li.cil.manual.api.Manual;
 import li.cil.manual.api.Tab;
 import li.cil.manual.api.provider.ContentProvider;

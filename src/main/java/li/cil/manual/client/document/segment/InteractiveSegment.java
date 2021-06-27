@@ -21,7 +21,7 @@ public interface InteractiveSegment extends Segment {
      *
      * @return the tooltip for this interactive segment, if any.
      */
-    default Optional<ITextComponent> tooltip() {
+    default Optional<ITextComponent> getTooltip() {
         return Optional.empty();
     }
 
@@ -36,14 +36,13 @@ public interface InteractiveSegment extends Segment {
      * @param mouseY the Y coordinate of the mouse cursor.
      * @return whether the click was processed (true) or ignored (false).
      */
-    boolean onMouseClick(final double mouseX, final double mouseY);
+    boolean mouseClicked(final double mouseX, final double mouseY);
 
-    // Called during the render call on the currently hovered interactive segment.
-    // Useful to track hover state, e.g. for link highlighting.
-    void notifyHover();
-
-    // Collision check, test if coordinate is inside this interactive segment.
-    default Optional<InteractiveSegment> checkHovered(final int mouseX, final int mouseY, final int x, final int y, final int w, final int h) {
-        return (mouseX >= x && mouseY >= y && mouseX <= x + w && mouseY <= y + h) ? Optional.of(this) : Optional.empty();
+    /**
+     * Called during the render call on the currently hovered interactive segment.
+     * <p>
+     * Useful to track when the segment was last hovered, e.g. this is used for link highlighting.
+     */
+    default void mouseHovered() {
     }
 }

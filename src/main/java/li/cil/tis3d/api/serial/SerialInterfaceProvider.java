@@ -49,7 +49,7 @@ public interface SerialInterfaceProvider extends IForgeRegistryEntry<SerialInter
      * you'll need to put all your documentation in that one manual entry, or
      * use it as an index.
      * <p>
-     * While it is legal to return <tt>null</tt> here, it is strongly discouraged
+     * While it is legal to return {@code null} here, it is strongly discouraged
      * to not have a manual entry for a protocol used by a serial interface,
      * since this will make it nearly impossible for the player to figure out
      * how to use the interface.

@@ -3,15 +3,19 @@ package li.cil.tis3d.client.manual;
 import li.cil.manual.api.Manual;
 import li.cil.manual.api.Tab;
 import li.cil.manual.api.prefab.ItemStackTab;
+import li.cil.manual.api.prefab.MinecraftFontRenderer;
 import li.cil.manual.api.prefab.NamespaceContentProvider;
 import li.cil.manual.api.prefab.TextureTab;
 import li.cil.manual.api.provider.ContentProvider;
 import li.cil.manual.api.provider.PathProvider;
+import li.cil.manual.api.Style;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.client.manual.provider.ModPathProvider;
+import li.cil.tis3d.client.renderer.font.NormalFontRenderer;
 import li.cil.tis3d.common.block.Blocks;
 import li.cil.tis3d.common.item.Items;
 import li.cil.tis3d.util.RegistryUtils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -22,11 +26,32 @@ import net.minecraftforge.registries.DeferredRegister;
 
 @OnlyIn(Dist.CLIENT)
 public final class Manuals {
+
     private static final DeferredRegister<Manual> MANUALS = RegistryUtils.create(Manual.class);
 
     // --------------------------------------------------------------------- //
 
-    public static final RegistryObject<Manual> MANUAL = MANUALS.register("manual", Manual::new);
+    public static final RegistryObject<Manual> MANUAL = MANUALS.register("manual", () -> new Manual(new Style() {
+        @Override
+        public int getRegularTextColor() {
+            return 0xFF333333;
+        }
+
+        @Override
+        public int getMonospaceTextColor() {
+            return 0xFF404D80;
+        }
+
+        @Override
+        public li.cil.manual.api.render.FontRenderer getRegularFont() {
+            return new MinecraftFontRenderer(Minecraft.getInstance().font);
+        }
+
+        @Override
+        public li.cil.manual.api.render.FontRenderer getMonospaceFont() {
+            return NormalFontRenderer.INSTANCE;
+        }
+    }));
 
     // --------------------------------------------------------------------- //
 

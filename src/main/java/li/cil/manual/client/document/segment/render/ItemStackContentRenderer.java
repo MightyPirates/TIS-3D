@@ -2,7 +2,7 @@ package li.cil.manual.client.document.segment.render;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import li.cil.manual.api.ContentRenderer;
+import li.cil.manual.api.render.ContentRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.vector.Vector4f;

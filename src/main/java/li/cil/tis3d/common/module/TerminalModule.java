@@ -12,7 +12,7 @@ import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.gui.TerminalModuleScreen;
 import li.cil.tis3d.client.renderer.Textures;
-import li.cil.tis3d.api.util.FontRenderer;
+import li.cil.manual.api.render.FontRenderer;
 import li.cil.tis3d.util.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -310,13 +310,13 @@ public final class TerminalModule extends AbstractModuleWithRotation {
         final FontRenderer fontRenderer = API.normalFontRenderer;
 
         final int totalWidth = 12 * 32;
-        final int textWidth = MAX_COLUMNS * fontRenderer.getCharWidth();
+        final int textWidth = MAX_COLUMNS * fontRenderer.width(" ");
         final float offsetX = (totalWidth - textWidth) / 2f;
         matrixStack.translate(offsetX, 10f, 0);
 
         renderDisplay(context, fontRenderer);
 
-        matrixStack.translate(0, (MAX_ROWS - display.size()) * fontRenderer.getCharHeight() + 4, 0);
+        matrixStack.translate(0, (MAX_ROWS - display.size()) * fontRenderer.lineHeight() + 4, 0);
 
         renderInput(context, fontRenderer, textWidth);
     }
@@ -326,7 +326,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
         final MatrixStack matrixStack = context.getMatrixStack();
         for (final StringBuilder line : display) {
             context.drawString(fontRenderer, line, Color.WHITE);
-            matrixStack.translate(0, fontRenderer.getCharHeight(), 0);
+            matrixStack.translate(0, fontRenderer.lineHeight(), 0);
         }
     }
 
@@ -343,8 +343,8 @@ public final class TerminalModule extends AbstractModuleWithRotation {
         context.drawString(fontRenderer, input, Color.WHITE);
 
         if (isInputEnabled && input.length() < MAX_COLUMNS && System.currentTimeMillis() % 800 > 400) {
-            final int w = fontRenderer.getCharWidth();
-            final int h = fontRenderer.getCharHeight();
+            final int w = fontRenderer.width(" ");
+            final int h = fontRenderer.lineHeight();
             final int x = input.length() * w;
             context.drawQuadUnlit(x, 0, w, h, Color.WHITE);
         }

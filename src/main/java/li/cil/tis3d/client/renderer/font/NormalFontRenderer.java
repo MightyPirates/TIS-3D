@@ -13,12 +13,12 @@ public final class NormalFontRenderer extends AbstractFontRenderer {
     // FontRenderer
 
     @Override
-    public int getCharWidth() {
+    public int charWidth() {
         return 9;
     }
 
     @Override
-    public int getCharHeight() {
+    public int lineHeight() {
         return 16;
     }
 

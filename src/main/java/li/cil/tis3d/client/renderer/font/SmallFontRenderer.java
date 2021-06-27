@@ -1,7 +1,7 @@
 package li.cil.tis3d.client.renderer.font;
 
+import li.cil.manual.api.render.FontRenderer;
 import li.cil.tis3d.api.API;
-import li.cil.tis3d.api.util.FontRenderer;
 import net.minecraft.util.ResourceLocation;
 
 public final class SmallFontRenderer extends AbstractFontRenderer {
@@ -14,12 +14,12 @@ public final class SmallFontRenderer extends AbstractFontRenderer {
     // FontRenderer
 
     @Override
-    public int getCharWidth() {
+    public int charWidth() {
         return 3;
     }
 
     @Override
-    public int getCharHeight() {
+    public int lineHeight() {
         return 4;
     }
 
