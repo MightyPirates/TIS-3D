@@ -68,7 +68,7 @@ public class TextSegment extends AbstractSegment {
     }
 
     @Override
-    public Optional<InteractiveSegment> render(final MatrixStack matrixStack, final int x, final int y, final int segmentX, final int lineHeight, final int documentWidth, final int mouseX, final int mouseY) {
+    public Optional<InteractiveSegment> render(final MatrixStack matrixStack, final int segmentX, final int lineHeight, final int documentWidth, final int mouseX, final int mouseY) {
         final String format = getFormat();
         final float scale = getFontScale() * getScale();
         final int color = getColor();
@@ -79,13 +79,12 @@ public class TextSegment extends AbstractSegment {
         final BufferBuilder builder = Tessellator.getInstance().getBuilder();
         final IRenderTypeBuffer.Impl buffer = IRenderTypeBuffer.immediate(builder);
 
-        matrixStack.pushPose();
-        matrixStack.translate(x, y, 0);
-
         forEachBlock(segmentX, lineHeight, documentWidth, block -> {
+            final int blockWidth = getStringWidth(block.chars);
+            final int blockHeight = getLineHeight();
             if (!hovered.value.isPresent() &&
-                mouseX >= x + block.x && mouseX <= x + block.x + getStringWidth(block.chars) &&
-                mouseY >= y + block.y && mouseY <= y + block.y + getLineHeight()) {
+                mouseX >= block.x && mouseX <= block.x + blockWidth &&
+                mouseY >= block.y && mouseY <= block.y + blockHeight) {
                 hovered.value = interactive;
             }
 
@@ -97,8 +96,6 @@ public class TextSegment extends AbstractSegment {
 
             matrixStack.popPose();
         });
-
-        matrixStack.popPose();
 
         buffer.endBatch();
 

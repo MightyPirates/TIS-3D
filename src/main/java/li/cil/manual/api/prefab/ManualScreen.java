@@ -3,9 +3,9 @@ package li.cil.manual.api.prefab;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import li.cil.manual.api.Manual;
+import li.cil.manual.api.Style;
 import li.cil.manual.api.Tab;
 import li.cil.manual.client.document.Document;
-import li.cil.manual.api.Style;
 import li.cil.manual.client.document.segment.InteractiveSegment;
 import li.cil.manual.client.document.segment.Segment;
 import li.cil.tis3d.client.renderer.Textures;
@@ -152,7 +152,7 @@ public final class ManualScreen extends Screen {
             scrollMouse(mouseY);
             return true;
         } else if (button == 0) {
-            return currentSegment.map(s -> s.mouseClicked(mouseX, mouseY)).orElse(false);
+            return currentSegment.map(InteractiveSegment::mouseClicked).orElse(false);
         } else if (button == 1) {
             manual.pop();
             return true;

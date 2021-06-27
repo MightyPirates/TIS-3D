@@ -155,7 +155,7 @@ public final class Document {
         matrixStack.popPose();
 
         matrixStack.pushPose();
-        matrixStack.translate(x, y, 0);
+        matrixStack.translate(x, 0, 0);
 
         // Variables with naming that makes their usage a bit more clear.
         final int visibleLeft = x, visibleRight = x + width;
@@ -178,10 +178,15 @@ public final class Document {
             final int segmentBottom = segmentTop + Math.max(current.relativeY, Math.max(lineHeight, segmentHeight));
 
             if (segmentBottom >= visibleTop && segmentTop <= visibleBottom) {
-                final Optional<InteractiveSegment> result = segment.render(
-                    matrixStack,
-                    0, globalY - y, localX, lineHeight, width,
-                    mouseX - x, mouseY - y);
+                final int localMouseX = mouseX - x;
+                final int localMouseY = mouseY - globalY;
+
+                matrixStack.pushPose();
+                matrixStack.translate(0, globalY, 0);
+
+                final Optional<InteractiveSegment> result = segment.render(matrixStack, localX, lineHeight, width, localMouseX, localMouseY);
+
+                matrixStack.popPose();
 
                 if (!hovered.isPresent()) {
                     hovered = result;

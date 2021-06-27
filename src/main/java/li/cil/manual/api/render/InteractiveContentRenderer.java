@@ -32,11 +32,9 @@ public interface InteractiveContentRenderer extends ContentRenderer {
      * If this returns <tt>false</tt> and the element is a link, the link will
      * be followed. If it returns <tt>true</tt>, it will not.
      *
-     * @param mouseX the X coordinate of the mouse, relative to the element.
-     * @param mouseY the Y coordinate of the mouse, relative to the element.
      * @return whether the click was handled.
      */
-    default boolean mouseClicked(final double mouseX, final double mouseY) {
+    default boolean mouseClicked() {
         return false;
     }
 }

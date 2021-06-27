@@ -2,9 +2,9 @@ package li.cil.manual.client.document.segment;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import li.cil.manual.api.Manual;
+import li.cil.manual.api.Style;
 import li.cil.manual.api.render.ContentRenderer;
 import li.cil.manual.api.render.InteractiveContentRenderer;
-import li.cil.manual.api.Style;
 import li.cil.tis3d.util.Color;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.math.MathHelper;
@@ -18,9 +18,6 @@ import java.util.Optional;
 public final class RenderSegment extends AbstractSegment implements InteractiveSegment {
     private final ITextComponent title;
     private final ContentRenderer renderer;
-
-    private int lastX = 0;
-    private int lastY = 0;
 
     public RenderSegment(final Manual manual, final Style style, final Segment parent, final ITextComponent title, final ContentRenderer renderer) {
         super(manual, style, parent);
@@ -38,9 +35,9 @@ public final class RenderSegment extends AbstractSegment implements InteractiveS
     }
 
     @Override
-    public boolean mouseClicked(final double mouseX, final double mouseY) {
+    public boolean mouseClicked() {
         return renderer instanceof InteractiveContentRenderer && ((InteractiveContentRenderer) renderer).
-            mouseClicked(mouseX - lastX, mouseY - lastY);
+            mouseClicked();
     }
 
     @Override
@@ -49,32 +46,29 @@ public final class RenderSegment extends AbstractSegment implements InteractiveS
     }
 
     @Override
-    public Optional<InteractiveSegment> render(final MatrixStack matrixStack, final int x, final int y, final int segmentX, final int lineHeight, final int documentWidth, final int mouseX, final int mouseY) {
+    public Optional<InteractiveSegment> render(final MatrixStack matrixStack, final int segmentX, final int lineHeight, final int documentWidth, final int mouseX, final int mouseY) {
         final int width = imageWidth(segmentX, documentWidth);
         final int height = imageHeight(segmentX, documentWidth);
 
         final boolean wrapBefore = segmentX >= documentWidth;
         final boolean centerAndWrapAfter = segmentX == 0 || wrapBefore;
 
-        final int localX = centerAndWrapAfter ? (documentWidth - width) / 2 : segmentX;
-        final int localY = wrapBefore ? lineHeight : 0;
-
-        lastX = x + localX;
-        lastY = y + localY;
+        final int x = centerAndWrapAfter ? (documentWidth - width) / 2 : segmentX;
+        final int y = wrapBefore ? lineHeight : 0;
 
         final float scale = scale(segmentX, documentWidth);
 
         matrixStack.pushPose();
-        matrixStack.translate(x + localX, y + localY, 0);
+        matrixStack.translate(x, y, 0);
         matrixStack.scale(scale, scale, scale);
 
-        final boolean isHovered = mouseX >= x + localX && mouseX <= x + localX + width &&
-                                  mouseY >= y + localY && mouseY <= y + localY + height;
+        final boolean isHovered = mouseX >= x && mouseX <= x + width &&
+                                  mouseY >= y && mouseY <= y + height;
         if (isHovered) {
             Screen.fill(matrixStack, 0, 0, renderer.getWidth(), renderer.getHeight(), Color.withAlpha(Color.CYAN, 0.25f));
         }
 
-        renderer.render(matrixStack, mouseX - x, mouseY - y);
+        renderer.render(matrixStack, mouseX, mouseY);
 
         matrixStack.popPose();
 

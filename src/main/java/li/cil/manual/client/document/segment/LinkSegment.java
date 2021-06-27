@@ -64,7 +64,7 @@ public final class LinkSegment extends TextSegment implements InteractiveSegment
     }
 
     @Override
-    public boolean mouseClicked(final double mouseX, final double mouseY) {
+    public boolean mouseClicked() {
         if (url.startsWith("http://") || url.startsWith("https://")) {
             handleUrl(url);
         } else {
@@ -78,13 +78,13 @@ public final class LinkSegment extends TextSegment implements InteractiveSegment
         lastHovered = System.currentTimeMillis();
     }
 
-    private static int fadeColor(final int c1, final int c2, final float t) {
-        final int r1 = (c1 >>> 16) & 0xFF;
-        final int g1 = (c1 >>> 8) & 0xFF;
-        final int b1 = c1 & 0xFF;
-        final int r2 = (c2 >>> 16) & 0xFF;
-        final int g2 = (c2 >>> 8) & 0xFF;
-        final int b2 = c2 & 0xFF;
+    private static int fadeColor(final int color1, final int color2, final float t) {
+        final int r1 = (color1 >>> 16) & 0xFF;
+        final int g1 = (color1 >>> 8) & 0xFF;
+        final int b1 = color1 & 0xFF;
+        final int r2 = (color2 >>> 16) & 0xFF;
+        final int g2 = (color2 >>> 8) & 0xFF;
+        final int b2 = color2 & 0xFF;
         final int r = (int) (r1 + (r2 - r1) * t);
         final int g = (int) (g1 + (g2 - g1) * t);
         final int b = (int) (b1 + (b2 - b1) * t);

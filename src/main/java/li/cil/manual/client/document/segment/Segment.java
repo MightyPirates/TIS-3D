@@ -57,16 +57,14 @@ public interface Segment {
      * properties.
      *
      * @param matrixStack   the current matrix stack.
-     * @param x             the x position to render at.
-     * @param y             the y position to render at.
      * @param segmentX      the current indentation.
-     * @param lineHeight
+     * @param lineHeight    the maximum height of the current line.
      * @param documentWidth the maximum width of the document.
      * @param mouseX        the x mouse position.
      * @param mouseY        the y mouse position.
      * @return the hovered interactive segment, if any.
      */
-    Optional<InteractiveSegment> render(final MatrixStack matrixStack, final int x, final int y, final int segmentX, final int lineHeight, final int documentWidth, final int mouseX, final int mouseY);
+    Optional<InteractiveSegment> render(final MatrixStack matrixStack, final int segmentX, final int lineHeight, final int documentWidth, final int mouseX, final int mouseY);
 
     // ----------------------------------------------------------------------- //
 

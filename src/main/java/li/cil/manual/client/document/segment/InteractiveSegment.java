@@ -32,11 +32,9 @@ public interface InteractiveSegment extends Segment {
      * The mouse coordinates are expected to be in the same frame of reference as
      * the document.
      *
-     * @param mouseX the X coordinate of the mouse cursor.
-     * @param mouseY the Y coordinate of the mouse cursor.
      * @return whether the click was processed (true) or ignored (false).
      */
-    boolean mouseClicked(final double mouseX, final double mouseY);
+    boolean mouseClicked();
 
     /**
      * Called during the render call on the currently hovered interactive segment.
