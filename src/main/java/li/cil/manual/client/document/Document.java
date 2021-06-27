@@ -108,9 +108,10 @@ public final class Document {
             // the last line in the height computation.
             if (current.segment == null) {
                 if (current.relativeY > 0) {
-                    globalY += current.relativeY;
                     if (current.absoluteX > 0) {
-                        globalY += segmentHeight;
+                        globalY += current.relativeY + segmentHeight;
+                    } else {
+                        globalY += current.relativeY;
                     }
                 } else {
                     globalY += lineHeight;
@@ -175,7 +176,16 @@ public final class Document {
             current = segment.getNext(localX, lineHeight, width);
 
             final int segmentTop = globalY;
-            final int segmentBottom = segmentTop + Math.max(current.relativeY, Math.max(lineHeight, segmentHeight));
+            final int segmentBottom;
+            if (current.relativeY > 0) {
+                if (current.absoluteX > 0) {
+                    segmentBottom = segmentTop + current.relativeY + segmentHeight;
+                } else {
+                    segmentBottom = segmentTop + current.relativeY;
+                }
+            } else {
+                segmentBottom = segmentTop + segmentHeight;
+            }
 
             if (segmentBottom >= visibleTop && segmentTop <= visibleBottom) {
                 final int localMouseX = mouseX - x;
