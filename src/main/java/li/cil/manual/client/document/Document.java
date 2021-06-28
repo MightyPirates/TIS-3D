@@ -93,6 +93,13 @@ public final class Document {
         }
 
         root = segments.size() > 0 ? segments.get(0) : new TextSegment(manual, style, null, "");
+
+        if (lastHovered != null) {
+            lastHovered.setMouseHovered(false);
+            lastHovered = null;
+        }
+
+        lastFirstVisible = null;
     }
 
     /**
