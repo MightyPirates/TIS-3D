@@ -10,6 +10,8 @@ import li.cil.manual.client.document.segment.InteractiveSegment;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.util.IterableUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.SimpleSound;
+import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
@@ -98,6 +100,9 @@ public final class ManualScreen extends Screen {
         if (!Objects.equals(currentPath, manual.peek())) {
             refreshPage();
             currentPath = manual.peek();
+
+            final SoundHandler soundHandler = Minecraft.getInstance().getSoundManager();
+            soundHandler.play(SimpleSound.forUI(style.getPageChangeSound(), 1));
         }
 
         scrollPos = MathHelper.lerp(partialTicks * 0.5f, scrollPos, getScrollPosition());
@@ -338,6 +343,10 @@ public final class ManualScreen extends Screen {
             tab.renderIcon(matrixStack);
 
             matrixStack.popPose();
+        }
+
+        @Override
+        public void playDownSound(final SoundHandler soundHandler) {
         }
     }
 

@@ -202,7 +202,6 @@ public class Manual extends ForgeRegistryEntry<Manual> {
         if (screen instanceof ManualScreen && ((ManualScreen) screen).getManual() == this) {
             screen.onClose();
         }
-
     }
 
     /**

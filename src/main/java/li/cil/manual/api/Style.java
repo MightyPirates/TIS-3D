@@ -1,6 +1,8 @@
 package li.cil.manual.api;
 
 import li.cil.manual.api.render.FontRenderer;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
 
 /**
  * Style definition used for rendering manuals.
@@ -80,5 +82,15 @@ public interface Style {
      */
     default boolean showLinkTooltip() {
         return true;
+    }
+
+    /**
+     * The sound to play when the current page in the manual is changed,
+     * e.g. due to a {@link Tab} or a link being clicked.
+     *
+     * @return the page changed sound.
+     */
+    default SoundEvent getPageChangeSound() {
+        return SoundEvents.BOOK_PAGE_TURN;
     }
 }
