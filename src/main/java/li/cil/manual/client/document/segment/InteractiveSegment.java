@@ -37,10 +37,12 @@ public interface InteractiveSegment extends Segment {
     boolean mouseClicked();
 
     /**
-     * Called during the render call on the currently hovered interactive segment.
+     * Sets whether this interactive segment is the one currently hovered in its document.
      * <p>
      * Useful to track when the segment was last hovered, e.g. this is used for link highlighting.
+     *
+     * @param value {@code true} when hovered, {@code false} otherwise.
      */
-    default void mouseHovered() {
+    default void setMouseHovered(final boolean value) {
     }
 }

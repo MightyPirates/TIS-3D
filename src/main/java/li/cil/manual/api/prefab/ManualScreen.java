@@ -7,7 +7,6 @@ import li.cil.manual.api.Style;
 import li.cil.manual.api.Tab;
 import li.cil.manual.client.document.Document;
 import li.cil.manual.client.document.segment.InteractiveSegment;
-import li.cil.manual.client.document.segment.Segment;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.util.IterableUtils;
 import net.minecraft.client.Minecraft;
@@ -49,6 +48,7 @@ public final class ManualScreen extends Screen {
 
     private final Manual manual;
     private final Style style;
+    private final Document document;
     private String currentPath;
 
     private int leftPos = 0;
@@ -56,7 +56,6 @@ public final class ManualScreen extends Screen {
     private float scrollPos = 0;
 
     private boolean isDragging = false;
-    private Segment document = null;
     private int documentHeight = 0;
     private Optional<InteractiveSegment> currentSegment = Optional.empty();
 
@@ -66,6 +65,7 @@ public final class ManualScreen extends Screen {
         super(new StringTextComponent("Manual"));
         this.manual = manual;
         this.style = style;
+        this.document = new Document(style, manual);
     }
 
     public Manual getManual() {
@@ -108,7 +108,15 @@ public final class ManualScreen extends Screen {
 
         scrollButton.active = canScroll();
 
-        currentSegment = Document.render(matrixStack, document, leftPos + 16, topPos + 48, DOCUMENT_WIDTH, DOCUMENT_HEIGHT, getSmoothScrollPosition(), mouseX, mouseY);
+        final int documentX = leftPos + 16;
+        final int documentY = topPos + 48;
+
+        matrixStack.pushPose();
+        matrixStack.translate(documentX, documentY, 0);
+
+        currentSegment = document.render(matrixStack, getSmoothScrollPosition(), DOCUMENT_WIDTH, DOCUMENT_HEIGHT, mouseX - documentX, mouseY - documentY);
+
+        matrixStack.popPose();
 
         currentSegment.flatMap(InteractiveSegment::getTooltip).ifPresent(t ->
             renderWrappedToolTip(matrixStack, Collections.singletonList(t), mouseX, mouseY, getFontRenderer()));
@@ -223,8 +231,8 @@ public final class ManualScreen extends Screen {
 
     private void refreshPage() {
         final Optional<Iterable<String>> content = manual.contentFor(manual.peek());
-        document = Document.parse(manual, style, content.orElse(Collections.singleton("Page not found: " + manual.peek())));
-        documentHeight = Document.height(document, DOCUMENT_WIDTH);
+        document.parse(content.orElse(Collections.singleton("Page not found: " + manual.peek())));
+        documentHeight = document.height(DOCUMENT_WIDTH);
         scrollPos = getScrollPosition();
     }
 

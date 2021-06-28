@@ -5,6 +5,7 @@ import li.cil.manual.api.Style;
 import net.minecraft.util.Util;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -19,6 +20,7 @@ public final class LinkSegment extends TextSegment implements InteractiveSegment
     private final String url;
     private final boolean isWebUrl;
     private final boolean isLinkValid;
+    private boolean isHovered;
     private long lastHovered = System.currentTimeMillis() - FADE_TIME;
 
     // --------------------------------------------------------------------- //
@@ -52,8 +54,11 @@ public final class LinkSegment extends TextSegment implements InteractiveSegment
     }
 
     @Override
-    public void mouseHovered() {
-        lastHovered = System.currentTimeMillis();
+    public void setMouseHovered(final boolean value) {
+        isHovered = value;
+        if (!value) {
+            lastHovered = System.currentTimeMillis();
+        }
     }
 
     @Override
@@ -74,11 +79,20 @@ public final class LinkSegment extends TextSegment implements InteractiveSegment
             hoverColor = style.getHoveredDeadLinkColor();
         }
 
-        final int timeSinceHover = (int) (System.currentTimeMillis() - lastHovered);
-        if (timeSinceHover > FADE_TIME) {
-            return color;
-        } else {
+        final int timeSinceHover = isHovered ? 0 : (int) (System.currentTimeMillis() - lastHovered);
+        if (timeSinceHover <= FADE_TIME) {
             return fadeColor(hoverColor, color, timeSinceHover / (float) FADE_TIME);
+        } else {
+            return color;
+        }
+    }
+
+    @Override
+    protected String getFormat() {
+        if (isHovered) {
+            return super.getFormat() + TextFormatting.UNDERLINE;
+        } else {
+            return super.getFormat();
         }
     }
 

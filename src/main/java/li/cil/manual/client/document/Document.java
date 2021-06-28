@@ -7,8 +7,6 @@ import li.cil.manual.api.Style;
 import li.cil.manual.api.render.ContentRenderer;
 import li.cil.manual.client.document.segment.*;
 import li.cil.tis3d.api.API;
-import net.minecraft.client.MainWindow;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.StringTextComponent;
@@ -17,6 +15,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.opengl.GL11;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -41,15 +40,34 @@ import java.util.regex.Pattern;
  */
 @OnlyIn(Dist.CLIENT)
 public final class Document {
+    private final Manual manual;
+    private final Style style;
+    @Nullable private Segment root;
+    @Nullable private InteractiveSegment lastHovered;
+
+    private int lastScrollY;
+    private int lastGlobalY;
+    @Nullable private NextSegmentInfo lastFirstVisible;
+
+    /**
+     * Creates a new document instance with the specified configuration.
+     *
+     * @param style  the fonts to use when rendering the generated segments.
+     * @param manual the manual the document belongs to.
+     */
+    public Document(final Style style, final Manual manual) {
+        this.manual = manual;
+        this.style = style;
+    }
+
     /**
      * Parses a plain text document into a list of segments.
+     * <p>
+     * This replaces the current content of this document.
      *
-     * @param manual   the manual the document belongs to.
-     * @param style    the fonts to use when rendering the generated segments.
      * @param document iterator over the lines of the document to parse.
-     * @return the first segment of the parsed document.
      */
-    public static Segment parse(final Manual manual, final Style style, final Iterable<String> document) {
+    public void parse(final Iterable<String> document) {
         // Get top-level list of text segments.
         List<Segment> segments = new ArrayList<>();
         for (final String line : document) {
@@ -74,19 +92,22 @@ public final class Document {
             segments.get(i).setNext(segments.get(i + 1));
         }
 
-        return segments.size() > 0 ? segments.get(0) : new TextSegment(manual, style, null, "");
+        root = segments.size() > 0 ? segments.get(0) : new TextSegment(manual, style, null, "");
     }
 
     /**
      * Compute the overall height of a document, e.g. for computation of scroll offsets.
      *
-     * @param document the document to compute the height of.
-     * @param width    the width available for rendering the document.
+     * @param width the width available for rendering the document.
      * @return the height of the document.
      */
-    public static int height(final Segment document, final int width) {
+    public int height(final int width) {
+        if (root == null) {
+            return 0;
+        }
+
         int globalY = 0, lineHeight = 0;
-        NextSegmentInfo current = new NextSegmentInfo(document);
+        NextSegmentInfo current = new NextSegmentInfo(root);
         while (current.segment != null) {
             final Segment segment = current.segment;
             final int localX = current.absoluteX;
@@ -126,19 +147,17 @@ public final class Document {
      * Returns the hovered interactive segment, if any.
      *
      * @param matrixStack the current matrix stack.
-     * @param document    the document to render.
-     * @param x           the x position to render at.
-     * @param y           the y position to render at.
+     * @param scrollY     the vertical scroll offset of the document.
      * @param width       the width of the area to render the document in.
      * @param height      the height of the area to render the document in.
-     * @param scrollY     the vertical scroll offset of the document.
-     * @param mouseX      the x position of the mouse.
-     * @param mouseY      the y position of the mouse.
+     * @param mouseX      the x position of the mouse relative to the document.
+     * @param mouseY      the y position of the mouse relative to the document.
      * @return the interactive segment being hovered, if any.
      */
-    public static Optional<InteractiveSegment> render(final MatrixStack matrixStack, final Segment document, final int x, final int y, final int width, final int height, final int scrollY, final int mouseX, final int mouseY) {
-        final Minecraft mc = Minecraft.getInstance();
-        final MainWindow window = mc.getWindow();
+    public Optional<InteractiveSegment> render(final MatrixStack matrixStack, final int scrollY, final int width, final int height, final int mouseX, final int mouseY) {
+        if (root == null) {
+            return Optional.empty();
+        }
 
         // On some systems/drivers/graphics cards the next calls won't update the
         // depth buffer correctly if alpha test is enabled. Guess how we found out?
@@ -151,22 +170,26 @@ public final class Document {
 
         matrixStack.pushPose();
         matrixStack.translate(0, 0, 500);
-        Screen.fill(matrixStack, 0, 0, window.getWidth(), y, 0);
-        Screen.fill(matrixStack, 0, y + height, window.getWidth(), window.getHeight(), 0);
+        Screen.fill(matrixStack, 0, -1000, width, 0, 0);
+        Screen.fill(matrixStack, 0, height, width, height + 1000, 0);
         matrixStack.popPose();
 
-        matrixStack.pushPose();
-        matrixStack.translate(x, 0, 0);
-
-        // Variables with naming that makes their usage a bit more clear.
-        final int visibleLeft = x, visibleRight = x + width;
-        final int visibleTop = y, visibleBottom = y + height;
-
         // Actual rendering.
+        final boolean isMouseOverDocument = mouseX >= 0 || mouseX <= width || mouseY >= 0 || mouseY <= height;
         Optional<InteractiveSegment> hovered = Optional.empty();
-        int globalY = y - scrollY, lineHeight = 0;
-        NextSegmentInfo current = new NextSegmentInfo(document);
+        int globalY, lineHeight = 0;
+        NextSegmentInfo current;
+        if (scrollY != lastScrollY || lastFirstVisible == null) {
+            current = new NextSegmentInfo(root);
+            lastScrollY = scrollY;
+            globalY = -scrollY;
+            lastFirstVisible = null;
+        } else {
+            globalY = lastGlobalY;
+            current = lastFirstVisible;
+        }
         while (current.segment != null) {
+            final NextSegmentInfo info = current;
             final Segment segment = current.segment;
             final int localX = current.absoluteX;
             final int relativeY = current.relativeY;
@@ -188,24 +211,27 @@ public final class Document {
                 segmentBottom = segmentTop + segmentHeight;
             }
 
-            if (segmentBottom >= visibleTop && segmentTop <= visibleBottom) {
-                final int localMouseX = mouseX - x;
-                final int localMouseY = mouseY - globalY;
+            final boolean isVisible = segmentBottom >= 0 && segmentTop <= height;
+            if (isVisible) {
+                if (lastFirstVisible == null) {
+                    lastGlobalY = globalY - relativeY;
+                    lastFirstVisible = info;
+                }
 
                 matrixStack.pushPose();
                 matrixStack.translate(0, globalY, 0);
 
-                final Optional<InteractiveSegment> result = segment.render(matrixStack, localX, lineHeight, width, localMouseX, localMouseY);
+                final Optional<InteractiveSegment> result = segment.render(matrixStack, localX, lineHeight, width, mouseX, mouseY - globalY);
 
                 matrixStack.popPose();
 
-                if (!hovered.isPresent()) {
+                if (isMouseOverDocument && !hovered.isPresent()) {
                     hovered = result;
                 }
             }
 
             // We can stop rendering once we run out the bottom of the visible area.
-            if (segmentBottom > visibleBottom) {
+            if (segmentTop > height) {
                 break;
             }
 
@@ -217,19 +243,29 @@ public final class Document {
             }
         }
 
-        matrixStack.popPose();
-
-        // Suppress tooltips that are outside the visible area.
-        if (mouseX < visibleLeft || mouseX > visibleRight ||
-            mouseY < visibleTop || mouseY > visibleBottom) {
-            hovered = Optional.empty();
-        }
-
-        hovered.ifPresent(InteractiveSegment::mouseHovered);
+        setHoveredSegment(hovered.orElse(null));
 
         RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, false);
 
         return hovered;
+    }
+
+    // ----------------------------------------------------------------------- //
+
+    private void setHoveredSegment(@Nullable final InteractiveSegment hovered) {
+        if (hovered == lastHovered) {
+            return;
+        }
+
+        if (lastHovered != null) {
+            lastHovered.setMouseHovered(false);
+        }
+
+        lastHovered = hovered;
+
+        if (lastHovered != null) {
+            lastHovered.setMouseHovered(true);
+        }
     }
 
     // ----------------------------------------------------------------------- //
@@ -287,10 +323,5 @@ public final class Document {
             this.pattern = Pattern.compile(pattern);
             this.refiner = refiner;
         }
-    }
-
-    // ----------------------------------------------------------------------- //
-
-    private Document() {
     }
 }
