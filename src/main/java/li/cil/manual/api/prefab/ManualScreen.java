@@ -36,6 +36,8 @@ public final class ManualScreen extends Screen {
     private static final int SCROLL_BAR_Y = 48;
     private static final int SCROLL_BAR_WIDTH = 26;
     private static final int SCROLL_BAR_HEIGHT = 180;
+    private static final int SCROLL_BUTTON_HEIGHT = 13;
+    private static final int SCROLL_BUTTON_WIDTH = 26;
     private static final int TAB_ACTIVE_SHIFT_X = 20;
     private static final int TABS_X = -52 + TAB_ACTIVE_SHIFT_X;
     private static final int TABS_Y = 40;
@@ -86,7 +88,7 @@ public final class ManualScreen extends Screen {
             addButton(new TabButton(x, y, tab, (button) -> manual.push(tab.getPath())));
         });
 
-        scrollButton = addButton(new ScrollButton(leftPos + SCROLL_BAR_X, topPos + SCROLL_BAR_Y, 26, 13));
+        scrollButton = addButton(new ScrollButton(leftPos + SCROLL_BAR_X, topPos + SCROLL_BAR_Y, SCROLL_BUTTON_WIDTH, SCROLL_BUTTON_HEIGHT));
     }
 
     @Override
@@ -233,7 +235,7 @@ public final class ManualScreen extends Screen {
         final Optional<Iterable<String>> content = manual.contentFor(manual.peek());
         document.parse(content.orElse(Collections.singleton("Page not found: " + manual.peek())));
         documentHeight = document.height(DOCUMENT_WIDTH);
-        scrollPos = getScrollPosition();
+        scrollPos = getScrollPosition() - style.getLineHeight() * 3;
     }
 
     private void scrollTo(final double mouseY) {
@@ -262,7 +264,8 @@ public final class ManualScreen extends Screen {
     private int getScrollButtonY() {
         final int yMin = topPos + SCROLL_BAR_Y;
         if (maxScrollPosition() > 0) {
-            return yMin + (SCROLL_BAR_HEIGHT - 13) * getSmoothScrollPosition() / maxScrollPosition();
+            final int yMax = SCROLL_BAR_HEIGHT - SCROLL_BUTTON_HEIGHT;
+            return yMin + Math.max(0, Math.min(yMax, yMax * getSmoothScrollPosition() / maxScrollPosition()));
         } else {
             return yMin;
         }
