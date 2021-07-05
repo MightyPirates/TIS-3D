@@ -1,24 +1,19 @@
 package li.cil.tis3d.client.gui;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.client.manual.Document;
 import li.cil.tis3d.client.manual.segment.InteractiveSegment;
 import li.cil.tis3d.client.manual.segment.Segment;
 import li.cil.tis3d.common.API;
 import li.cil.tis3d.common.api.ManualAPIImpl;
-import li.cil.tis3d.util.FontRendererUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.render.*;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
@@ -26,10 +21,8 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import org.lwjgl.opengl.GL11;
 
-import java.util.Collections;
-import java.util.Optional;
+import java.util.*;
 
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 @Environment(EnvType.CLIENT)
@@ -58,6 +51,7 @@ public final class ManualGui extends Screen {
     private Segment document = null;
     private int documentHeight = 0;
     private Optional<InteractiveSegment> currentSegment = Optional.empty();
+    private final ArrayList<ImageButton> list = new ArrayList<>(MAX_TABS_PER_SIDE);
 
     private ImageButton scrollButton = null;
 
@@ -76,6 +70,7 @@ public final class ManualGui extends Screen {
     public void init() {
         super.init();
 
+        assert client != null;
         final Window window = client.getWindow();
         final ScaledResolution screenSize = new ScaledResolution(window.getScaledWidth(), window.getScaledHeight());
         final ScaledResolution guiSize = new ScaledResolution(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -90,9 +85,11 @@ public final class ManualGui extends Screen {
             final int x = guiLeft + TAB_POS_X;
             final int y = guiTop + TAB_POS_Y + i * (TAB_HEIGHT - TAB_OVERLAP);
             final int id = i;
-            this.addButton(new ImageButton(x, y, TAB_WIDTH, TAB_HEIGHT - TAB_OVERLAP - 1, Textures.LOCATION_GUI_MANUAL_TAB, (button) -> {
-                API.manual.navigate(ManualAPIImpl.getTabs().get(id).path);
-            }).setImageHeight(TAB_HEIGHT).setVerticalImageOffset(-TAB_OVERLAP / 2));
+            list.add(this.addDrawable(
+                new ImageButton(x, y, TAB_WIDTH, TAB_HEIGHT - TAB_OVERLAP - 1, Textures.LOCATION_GUI_MANUAL_TAB,
+                    (button) -> API.manual.navigate(ManualAPIImpl.getTabs().get(id).path))
+                    .setImageHeight(TAB_HEIGHT)
+                ));
         }
 
         scrollButton = new ImageButton(guiLeft + SCROLL_POS_X, guiTop + SCROLL_POS_Y, 26, 13, Textures.LOCATION_GUI_MANUAL_SCROLL, (button) -> {
@@ -103,40 +100,41 @@ public final class ManualGui extends Screen {
                 return false; // Handled in parent mouseClicked
             }
         };
-        this.addButton(scrollButton);
+        this.addDrawable(scrollButton);
 
         refreshPage();
     }
 
     @Override
     public void render(final MatrixStack matrices, final int mouseX, final int mouseY, final float partialTicks) {
-        GlStateManager.enableBlend();
+        RenderSystem.enableBlend();
 
         super.render(matrices, mouseX, mouseY, partialTicks);
 
-        client.getTextureManager().bindTexture(Textures.LOCATION_GUI_MANUAL_BACKGROUND);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderTexture(0, Textures.LOCATION_GUI_MANUAL_BACKGROUND);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         drawTexture(matrices, guiLeft, guiTop, 0, 0, xSize, ySize, WINDOW_WIDTH, WINDOW_HEIGHT);
 
         scrollButton.active = canScroll();
         scrollButton.hoverOverride = isDragging;
 
         for (int i = 0; i < ManualAPIImpl.getTabs().size() && i < MAX_TABS_PER_SIDE; i++) {
-            final ManualAPIImpl.Tab tab = ManualAPIImpl.getTabs().get(i);
-            final ImageButton button = (ImageButton)buttons.get(i);
-            GlStateManager.pushMatrix();
-            GlStateManager.translatef(button.x + 30, (float)(button.y + 4 - TAB_OVERLAP / 2), getZOffset());
-            tab.renderer.render();
-            GlStateManager.popMatrix();
+           final ManualAPIImpl.Tab tab = ManualAPIImpl.getTabs().get(i);
+            final ImageButton button = list.get(i);
+            matrices.push();
+            tab.renderer.render(button.x + 25, (button.y + 9 - TAB_OVERLAP / 2));
+            matrices.pop();
         }
 
         currentSegment = Document.render(matrices, document, guiLeft + 16, guiTop + 48, DOCUMENT_MAX_WIDTH, DOCUMENT_MAX_HEIGHT, offset(), getTextRenderer(), mouseX, mouseY);
 
         if (!isDragging) {
-            currentSegment.ifPresent(s -> s.tooltip().ifPresent(t -> renderTooltip(matrices, new TranslatableText(t), mouseX, mouseY)));
+            currentSegment.flatMap(InteractiveSegment::tooltip).ifPresent(t -> renderTooltip(matrices, new TranslatableText(t), mouseX, mouseY));
 
             for (int i = 0; i < ManualAPIImpl.getTabs().size() && i < MAX_TABS_PER_SIDE; i++) {
                 final ManualAPIImpl.Tab tab = ManualAPIImpl.getTabs().get(i);
-                final ImageButton button = (ImageButton)buttons.get(i);
+                final ImageButton button = list.get(i);
                 if (mouseX > button.x && mouseX < button.x + button.getWidth() && mouseY > button.y && mouseY < button.y + button.getHeight()) {
                     if (tab.tooltip != null) {
                         renderTooltip(matrices, new TranslatableText(tab.tooltip), mouseX, mouseY);
@@ -160,10 +158,12 @@ public final class ManualGui extends Screen {
 
     @Override
     public boolean keyPressed(final int code, final int scancode, final int mods) {
+        if(client == null) return super.keyPressed(code, scancode, mods);
         if (client.options.keyJump.matchesKey(code, scancode)) {
             popPage();
             return true;
         } else if (client.options.keyInventory.matchesKey(code, scancode)) {
+            assert client.player != null;
             client.player.closeScreen();
             return true;
         } else {
@@ -173,10 +173,11 @@ public final class ManualGui extends Screen {
 
     @Override
     public boolean mouseClicked(final double mouseXd, final double mouseYd, final int button) {
+
+        System.out.println("Hello World!");
         if (super.mouseClicked(mouseXd, mouseYd, button)) {
             return true;
         }
-
         final int mouseX = (int)Math.round(mouseXd);
         final int mouseY = (int)Math.round(mouseYd);
 
@@ -254,7 +255,7 @@ public final class ManualGui extends Screen {
         if (ManualAPIImpl.getHistorySize() > 1) {
             ManualAPIImpl.popPath();
             refreshPage();
-        } else {
+        } else if (client != null && client.player != null) {
             client.player.closeScreen();
         }
     }
@@ -285,7 +286,6 @@ public final class ManualGui extends Screen {
     private static class ImageButton extends ButtonWidget {
         private final Identifier image;
         private boolean hoverOverride = false;
-        private int verticalImageOffset = 0;
         private int imageHeightOverride = 0;
 
         ImageButton(final int x, final int y, final int w, final int h, final Identifier image, final PressAction action) {
@@ -295,11 +295,6 @@ public final class ManualGui extends Screen {
 
         ImageButton setImageHeight(final int height) {
             this.imageHeightOverride = height;
-            return this;
-        }
-
-        ImageButton setVerticalImageOffset(final int offset) {
-            this.verticalImageOffset = offset;
             return this;
         }
 
@@ -314,13 +309,16 @@ public final class ManualGui extends Screen {
         @Override
         public void render(final MatrixStack matrices, final int mouseX, final int mouseY, final float partialTicks) {
             if (visible) {
-                MinecraftClient.getInstance().getTextureManager().bindTexture(image);
-                GlStateManager.color4f(1, 1, 1, 1);
+
+                RenderSystem.setShader(GameRenderer::getPositionTexShader);
+                RenderSystem.setShaderTexture(0, image);
+                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
                 hovered = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
 
                 final int x0 = x;
                 final int x1 = x + width;
+                int verticalImageOffset = 0;
                 final int y0 = y + verticalImageOffset;
                 final int y1 = y + verticalImageOffset + ((imageHeightOverride > 0) ? imageHeightOverride : height);
 
@@ -328,10 +326,9 @@ public final class ManualGui extends Screen {
                 final float u1 = u0 + 1;
                 final float v0 = (hoverOverride || isHovered()) ? 0.5f : 0;
                 final float v1 = v0 + 0.5f;
-
                 final Tessellator t = Tessellator.getInstance();
                 final BufferBuilder b = t.getBuffer();
-                b.begin(GL11.GL_QUADS, VertexFormats.POSITION_TEXTURE);
+                b.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
                 b.vertex(x0, y1, getZOffset()).texture(u0, v1).next();
                 b.vertex(x1, y1, getZOffset()).texture(u1, v1).next();
                 b.vertex(x1, y0, getZOffset()).texture(u1, v0).next();

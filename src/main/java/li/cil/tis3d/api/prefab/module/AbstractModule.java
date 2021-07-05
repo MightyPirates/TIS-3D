@@ -16,7 +16,7 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -89,11 +89,7 @@ public abstract class AbstractModule implements Module {
         if (!getCasing().getPosition().equals(blockHitResult.getBlockPos())) {
             return false;
         }
-        if (blockHitResult.getSide() != Face.toDirection(getFace())) {
-            return false;
-        }
-
-        return true;
+        return blockHitResult.getSide() == Face.toDirection(getFace());
     }
 
     /**
@@ -231,7 +227,7 @@ public abstract class AbstractModule implements Module {
     }
 
     @Override
-    public void onData(final CompoundTag nbt) {
+    public void onData(final NbtCompound nbt) {
     }
 
     @Override
@@ -246,10 +242,10 @@ public abstract class AbstractModule implements Module {
     }
 
     @Override
-    public void readFromNBT(final CompoundTag nbt) {
+    public void readFromNBT(final NbtCompound nbt) {
     }
 
     @Override
-    public void writeToNBT(final CompoundTag nbt) {
+    public void writeToNBT(final NbtCompound nbt) {
     }
 }

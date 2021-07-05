@@ -26,9 +26,9 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
@@ -254,10 +254,10 @@ public final class TerminalModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void readFromNBT(final CompoundTag nbt) {
+    public void readFromNBT(final NbtCompound nbt) {
         super.readFromNBT(nbt);
 
-        final ListTag lines = nbt.getList(TAG_DISPLAY, NBTIds.TAG_STRING);
+        final NbtList lines = nbt.getList(TAG_DISPLAY, NBTIds.TAG_STRING);
         display.clear();
         for (int tagIndex = 0; tagIndex < lines.size(); tagIndex++) {
             display.add(new StringBuilder(lines.getString(tagIndex)));
@@ -269,12 +269,12 @@ public final class TerminalModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void writeToNBT(final CompoundTag nbt) {
+    public void writeToNBT(final NbtCompound nbt) {
         super.writeToNBT(nbt);
 
-        final ListTag lines = new ListTag();
+        final NbtList lines = new NbtList();
         for (final StringBuilder line : display) {
-            lines.add(StringTag.of(line.toString()));
+            lines.add(NbtString.of(line.toString()));
         }
         nbt.put(TAG_DISPLAY, lines);
 

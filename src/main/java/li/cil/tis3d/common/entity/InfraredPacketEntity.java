@@ -16,7 +16,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -97,7 +97,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
      * @param value     the value the packet carries.
      */
     public void configure(final Vec3d start, final Vec3d direction, final short value) {
-        updatePosition(start.x, start.y, start.z);
+        setPosition(start.x, start.y, start.z);
         setVelocity(direction.multiply(TRAVEL_SPEED));
         lifetime = DEFAULT_LIFETIME + 1; // First update in next frame.
         this.value = value;
@@ -109,7 +109,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
      */
     public void updateLifetime() {
         if (lifetime-- < 1) {
-            remove();
+            remove(RemovalReason.DISCARDED);
         }
     }
 
@@ -117,7 +117,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
      * Remove flag that the entity is dead; used to revive it when being redirected.
      */
     private void revive() {
-        removed = false;
+        unsetRemoved();
         if (!getEntityWorld().isClient) {
             TickHandlerInfraredPacket.INSTANCE.watchPacket(this);
         }
@@ -138,21 +138,21 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
     }
 
     @Override
-    public void remove() {
-        super.remove();
+    public void remove(Entity.RemovalReason reason) {
+        super.remove(reason);
         if (!getEntityWorld().isClient) {
             TickHandlerInfraredPacket.INSTANCE.unwatchPacket(this);
         }
     }
 
     @Override
-    protected void readCustomDataFromTag(final CompoundTag nbt) {
+    protected void readCustomDataFromNbt(final NbtCompound nbt) {
         lifetime = nbt.getInt(TAG_LIFETIME);
         value = nbt.getShort(TAG_VALUE);
     }
 
     @Override
-    protected void writeCustomDataToTag(final CompoundTag nbt) {
+    protected void writeCustomDataToNbt(final NbtCompound nbt) {
         nbt.putInt(TAG_LIFETIME, lifetime);
         nbt.putShort(TAG_VALUE, value);
     }
@@ -161,7 +161,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
     public void tick() {
         // Enforce lifetime, fail-safe, should be tracked in updateLifetime().
         if (lifetime < 1) {
-            remove();
+            remove(RemovalReason.DISCARDED);
             return;
         }
 
@@ -183,7 +183,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
     }
 
     @Override
-    public boolean canFly() {
+    public boolean isPushedByFluids() {
         return false;
     }
 
@@ -333,7 +333,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
         for (final Entity entity : collisions) {
             if (entity.collides()) {
                 final Box entityBounds = entity.getBoundingBox();
-                final Optional<Vec3d> hit = entityBounds.rayTrace(start, target);
+                final Optional<Vec3d> hit = entityBounds.raycast(start, target);
                 if (hit.isPresent()) {
                     final double sqrDistance = start.squaredDistanceTo(hit.get());
                     if (sqrDistance < bestSqrDistance) {
@@ -367,7 +367,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
         }
 
         // First things first, we ded.
-        remove();
+        remove(RemovalReason.KILLED);
 
         // Next up, notify receiver, if any.
         onInfraredReceiverCollision(hit, block);
@@ -376,7 +376,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
 
     private void onEntityCollision(final EntityHitResult hit) {
         // First things first, we ded.
-        remove();
+        remove(RemovalReason.KILLED);
 
         // Next up, notify receiver, if any.
         onInfraredReceiverCollision(hit, hit.getEntity());

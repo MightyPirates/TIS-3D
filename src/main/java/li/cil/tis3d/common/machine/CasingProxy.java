@@ -6,7 +6,7 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -57,12 +57,12 @@ public interface CasingProxy extends Casing {
     }
 
     @Override
-    default void sendData(final Face face, final CompoundTag data, final byte type) {
+    default void sendData(final Face face, final NbtCompound data, final byte type) {
         getCasing().sendData(face, data, type);
     }
 
     @Override
-    default void sendData(final Face face, final CompoundTag data) {
+    default void sendData(final Face face, final NbtCompound data) {
         getCasing().sendData(face, data);
     }
 

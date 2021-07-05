@@ -30,14 +30,17 @@ import li.cil.tis3d.common.network.Network;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.fabricmc.fabric.api.event.client.ClientTickCallback;
 import net.fabricmc.fabric.api.event.client.player.ClientPickBlockGatherCallback;
+import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -66,11 +69,11 @@ public final class BootstrapClient implements ClientModInitializer {
         // Register event handlers.
         ClientTickCallback.EVENT.register(client -> DisplayModule.LeakDetector.tick());
         ClientTickCallback.EVENT.register(client -> Network.INSTANCE.clientTick());
-        ClientSpriteRegistryCallback.event(SpriteAtlasTexture.BLOCK_ATLAS_TEX).register((spriteAtlasTexture, registry) -> Textures.registerSprites(registry));
+        ClientSpriteRegistryCallback.event(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).register((spriteAtlasTexture, registry) -> Textures.registerSprites(registry));
         ClientPickBlockGatherCallback.EVENT.register(BootstrapClient::handlePickBlock);
 
         // Register entity renderers
-        EntityRendererRegistry.INSTANCE.register(Entities.INFRARED_PACKET, (dispatcher, context) -> new InvisibleEntityRenderer<InfraredPacketEntity>(dispatcher));
+        EntityRendererRegistry.INSTANCE.register(Entities.INFRARED_PACKET, InvisibleEntityRenderer::new);
 
         // Set up block entity renderer for dynamic module content.
         BlockEntityRendererRegistry.INSTANCE.register(CasingBlockEntity.TYPE, CasingBlockEntityRenderer::new);

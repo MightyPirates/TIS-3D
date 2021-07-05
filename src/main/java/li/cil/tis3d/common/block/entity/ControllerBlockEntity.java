@@ -9,14 +9,14 @@ import li.cil.tis3d.util.WorldUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -30,7 +30,7 @@ import java.util.*;
  * Controllers have no real state. They are active when powered by a redstone
  * signal, and can be reset by right-clicking them.
  */
-public final class ControllerBlockEntity extends AbstractComputerBlockEntity implements Tickable {
+public final class ControllerBlockEntity extends AbstractComputerBlockEntity {
     public static BlockEntityType<ControllerBlockEntity> TYPE;
 
     // --------------------------------------------------------------------- //
@@ -140,8 +140,8 @@ public final class ControllerBlockEntity extends AbstractComputerBlockEntity imp
 
     // --------------------------------------------------------------------- //
 
-    public ControllerBlockEntity() {
-        super(TYPE);
+    public ControllerBlockEntity(BlockPos pos, BlockState state) {
+        super(TYPE, pos, state);
     }
 
     // --------------------------------------------------------------------- //
@@ -234,28 +234,28 @@ public final class ControllerBlockEntity extends AbstractComputerBlockEntity imp
     }
 
     @Override
-    protected void readFromNBTForServer(final CompoundTag nbt) {
+    protected void readFromNBTForServer(final NbtCompound nbt) {
         super.readFromNBTForServer(nbt);
 
         hcfCooldown = nbt.getInt(TAG_HCF_COOLDOWN);
     }
 
     @Override
-    protected void writeToNBTForServer(final CompoundTag nbt) {
+    protected void writeToNBTForServer(final NbtCompound nbt) {
         super.writeToNBTForServer(nbt);
 
         nbt.putInt(TAG_HCF_COOLDOWN, hcfCooldown);
     }
 
     @Override
-    public void fromClientTag(final CompoundTag nbt) {
+    public void fromClientTag(final NbtCompound nbt) {
         super.fromClientTag(nbt);
 
         state = ControllerState.VALUES[nbt.getByte(TAG_STATE) & 0xFF];
     }
 
     @Override
-    public CompoundTag toClientTag(final CompoundTag nbt) {
+    public NbtCompound toClientTag(final NbtCompound nbt) {
         super.toClientTag(nbt);
 
         nbt.putByte(TAG_STATE, (byte)state.ordinal());
@@ -266,7 +266,6 @@ public final class ControllerBlockEntity extends AbstractComputerBlockEntity imp
     // --------------------------------------------------------------------- //
     // ITickable
 
-    @Override
     public void tick() {
         final World world = Objects.requireNonNull(getWorld());
 

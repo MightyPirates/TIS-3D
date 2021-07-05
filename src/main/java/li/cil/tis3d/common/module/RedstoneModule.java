@@ -19,7 +19,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.world.World;
 
 public final class RedstoneModule extends AbstractModuleWithRotation implements Redstone {
@@ -156,7 +156,7 @@ public final class RedstoneModule extends AbstractModuleWithRotation implements 
     }
 
     @Override
-    public void readFromNBT(final CompoundTag nbt) {
+    public void readFromNBT(final NbtCompound nbt) {
         super.readFromNBT(nbt);
 
         output = (short)Math.max(0, Math.min(15, nbt.getShort(TAG_OUTPUT)));
@@ -164,7 +164,7 @@ public final class RedstoneModule extends AbstractModuleWithRotation implements 
     }
 
     @Override
-    public void writeToNBT(final CompoundTag nbt) {
+    public void writeToNBT(final NbtCompound nbt) {
         super.writeToNBT(nbt);
 
         nbt.putInt(TAG_OUTPUT, output);

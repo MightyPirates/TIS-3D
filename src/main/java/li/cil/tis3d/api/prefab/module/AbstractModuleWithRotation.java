@@ -9,10 +9,10 @@ import li.cil.tis3d.util.EnumUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
 
 /**
  * This is a utility implementation of a rotatable module.
@@ -53,7 +53,7 @@ public abstract class AbstractModuleWithRotation extends AbstractModule implemen
     @Environment(EnvType.CLIENT)
     protected void rotateForRendering(final MatrixStack matrices) {
         final int rotDeg = 90 * Port.ROTATION[getFacing().ordinal()];
-        final Vector3f rotAxis = new Vector3f(0, 0, Face.toDirection(getFace()).getOffsetY());
+        final Vec3f rotAxis = new Vec3f(0, 0, Face.toDirection(getFace()).getOffsetY());
         final Quaternion rotQ = new Quaternion(rotAxis, rotDeg, true);
 
         matrices.translate(0.5f, 0.5f, 0);
@@ -73,13 +73,13 @@ public abstract class AbstractModuleWithRotation extends AbstractModule implemen
     // Module
 
     @Override
-    public void readFromNBT(final CompoundTag nbt) {
+    public void readFromNBT(final NbtCompound nbt) {
         super.readFromNBT(nbt);
         facing = EnumUtils.readFromNBT(Port.class, TAG_FACING, nbt);
     }
 
     @Override
-    public void writeToNBT(final CompoundTag nbt) {
+    public void writeToNBT(final NbtCompound nbt) {
         super.writeToNBT(nbt);
         EnumUtils.writeToNBT(facing, TAG_FACING, nbt);
     }

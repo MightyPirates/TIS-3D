@@ -7,6 +7,7 @@ import li.cil.tis3d.api.module.traits.Redstone;
 import li.cil.tis3d.api.util.TransformUtil;
 import li.cil.tis3d.common.API;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
+import li.cil.tis3d.common.init.Blocks;
 import li.cil.tis3d.common.init.Items;
 import li.cil.tis3d.common.item.ManualBookItem;
 import li.cil.tis3d.common.mixin.ItemUsageContextAccessors;
@@ -17,7 +18,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -36,11 +40,12 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Block for the module casings.
  */
-public final class CasingBlock extends Block implements BlockEntityProvider {
+public final class CasingBlock extends BlockWithEntity {
     private static final BooleanProperty MODULE_X_NEG = BooleanProperty.of("xneg");
     private static final BooleanProperty MODULE_X_POS = BooleanProperty.of("xpos");
     private static final BooleanProperty MODULE_Y_NEG = BooleanProperty.of("yneg");
@@ -107,9 +112,10 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
     // --------------------------------------------------------------------- //
     // Common
 
+    @Nullable
     @Override
-    public BlockEntity createBlockEntity(final BlockView view) {
-        return new CasingBlockEntity();
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return new CasingBlockEntity(pos, state);
     }
 
     public static boolean activate(final ItemUsageContext context) {
@@ -194,7 +200,7 @@ public final class CasingBlock extends Block implements BlockEntityProvider {
                     if (casing.canInsert(blockHitResult.getSide().ordinal(), heldItem, blockHitResult.getSide())) {
                         if (!world.isClient) {
                             final ItemStack insertedStack;
-                            if (player.abilities.creativeMode) {
+                            if (player.getAbilities().creativeMode) {
                                 insertedStack = heldItem.copy().split(1);
                             } else {
                                 insertedStack = heldItem.split(1);

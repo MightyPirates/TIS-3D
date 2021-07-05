@@ -9,7 +9,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -67,7 +67,7 @@ public class ReadOnlyMemoryModuleItem extends ModuleItem {
      * @param nbt the tag to load the data from.
      * @return the data loaded from the tag.
      */
-    public static byte[] loadFromNBT(@Nullable final CompoundTag nbt) {
+    public static byte[] loadFromNBT(@Nullable final NbtCompound nbt) {
         if (nbt != null) {
             return nbt.getByteArray(TAG_DATA);
         }
@@ -91,9 +91,9 @@ public class ReadOnlyMemoryModuleItem extends ModuleItem {
      * @param data  the data to save to the item stack.
      */
     public static void saveToStack(final ItemStack stack, final byte[] data) {
-        CompoundTag nbt = stack.getTag();
+        NbtCompound nbt = stack.getTag();
         if (nbt == null) {
-            stack.setTag(nbt = new CompoundTag());
+            stack.setTag(nbt = new NbtCompound());
         }
 
         byte[] nbtData = nbt.getByteArray(TAG_DATA);

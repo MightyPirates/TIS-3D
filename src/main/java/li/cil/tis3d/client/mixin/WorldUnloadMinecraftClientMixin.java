@@ -31,13 +31,12 @@ public abstract class WorldUnloadMinecraftClientMixin {
         if (world == null) {
             return;
         }
-
-        for (final BlockEntity blockEntity : world.blockEntities) {
+        /*for (final BlockEntity blockEntity : world.removeBlockEntity();) {
             if (blockEntity instanceof CasingBlockEntity) {
                 final CasingBlockEntity casingBlockEntity = (CasingBlockEntity)blockEntity;
                 final CasingImpl casing = (CasingImpl)casingBlockEntity.getCasing();
                 casing.onDisposed();
             }
-        }
+        }*/
     }
 }

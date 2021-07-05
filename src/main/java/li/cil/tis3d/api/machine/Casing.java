@@ -3,7 +3,7 @@ package li.cil.tis3d.api.machine;
 import io.netty.buffer.ByteBuf;
 import li.cil.tis3d.api.module.Module;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -132,7 +132,7 @@ public interface Casing {
      * @param data the data to send to the client.
      * @param type the type of the data being sent.
      */
-    void sendData(final Face face, final CompoundTag data, final byte type);
+    void sendData(final Face face, final NbtCompound data, final byte type);
 
     /**
      * Call this to send some data from a module to it's other representation.
@@ -154,7 +154,7 @@ public interface Casing {
      * @param face the face the module is installed in.
      * @param data the data to send to the client.
      */
-    void sendData(final Face face, final CompoundTag data);
+    void sendData(final Face face, final NbtCompound data);
 
     /**
      * Call this to send some data from a module to it's other representation.

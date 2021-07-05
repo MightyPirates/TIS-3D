@@ -1,6 +1,7 @@
 package li.cil.tis3d.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.client.render.font.SmallFontRenderer;
 import li.cil.tis3d.common.init.Items;
@@ -10,6 +11,7 @@ import li.cil.tis3d.common.network.message.ReadOnlyMemoryModuleDataMessage;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.LiteralText;
@@ -78,28 +80,28 @@ public final class ReadOnlyMemoryModuleGui extends Screen {
 
     @Override
     public void render(final MatrixStack matrices, final int mouseX, final int mouseY, final float partialTicks) {
-        if (player.removed || !Items.isModuleReadOnlyMemory(player.getStackInHand(hand))) {
+        if (player.isRemoved() || !Items.isModuleReadOnlyMemory(player.getStackInHand(hand))) {
             client.openScreen(null);
             return;
         }
 
         // Background.
-        GlStateManager.color4f(1, 1, 1, 1);
+        //RenderSystem.setShaderColor(1, 1, 1, 1);
         client.getTextureManager().bindTexture(Textures.LOCATION_GUI_MEMORY);
         drawTexture(matrices, guiX, guiY, 0, 0, GUI_WIDTH, GUI_HEIGHT);
 
         // Draw row and column headers.
-        drawHeaders();
+        drawHeaders(matrices);
 
         // Draw/fade out initializing info text.
-        drawInitializing();
+        drawInitializing(matrices);
 
         if (!receivedData) {
             return;
         }
 
         // Draw memory cells being edited.
-        drawMemory();
+        drawMemory(matrices);
 
         // Draw marker around currently selected memory cell.
         drawSelectionBox(matrices);
@@ -234,63 +236,63 @@ public final class ReadOnlyMemoryModuleGui extends Screen {
         return col >= 0 && row >= 0 && col <= 0xF && row <= 0xF;
     }
 
-    private void drawHeaders() {
-        GlStateManager.color4f(0.25f, 0.25f, 0.25f, 1);
+    private void drawHeaders(final MatrixStack matrices) {
+        RenderSystem.setShaderColor(0.25f, 0.25f, 0.25f, 1);
 
         // Columns headers (top).
-        GlStateManager.pushMatrix();
-        GlStateManager.translatef(guiX + GRID_LEFT + 3, guiY + 6, 0);
+        matrices.push();
+        matrices.translate(guiX + GRID_LEFT + 3, guiY + 6, 0);
         for (int col = 0; col < 16; col++) {
             SmallFontRenderer.INSTANCE.drawString(String.format("%X", col));
-            GlStateManager.translatef(CELL_WIDTH, 0, 0);
+            matrices.translate(CELL_WIDTH, 0, 0);
         }
-        GlStateManager.popMatrix();
+        matrices.pop();
 
         // Row headers (left).
-        GlStateManager.pushMatrix();
-        GlStateManager.translatef(guiX + 7, guiY + 14, 0);
+        matrices.push();
+        matrices.translate(guiX + 7, guiY + 14, 0);
         for (int row = 0; row < 16; row++) {
             SmallFontRenderer.INSTANCE.drawString(String.format("0X%X0", row));
-            GlStateManager.translatef(0, CELL_HEIGHT, 0);
+            matrices.translate(0, CELL_HEIGHT, 0);
         }
-        GlStateManager.popMatrix();
+        matrices.pop();
     }
 
-    private void drawInitializing() {
+    private void drawInitializing(final MatrixStack matrices) {
         final float sinceInitialized = (System.currentTimeMillis() - initTime) / 1000f;
         if (receivedData && sinceInitialized > 0.5f) {
             return;
         }
 
-        GlStateManager.color4f(1, 1, 1, 1 - sinceInitialized / 0.5f);
-        GlStateManager.enableBlend();
+        RenderSystem.setShaderColor(1, 1, 1, 1 - sinceInitialized / 0.5f);
+        GlStateManager._enableBlend();
 
         final int labelWidth = SmallFontRenderer.INSTANCE.getCharWidth() * LABEL_INITIALIZING.length();
 
-        GlStateManager.pushMatrix();
-        GlStateManager.translatef((float)(guiX + GRID_LEFT + 3 + 7 * CELL_WIDTH - labelWidth / 2), guiY + GRID_TOP + 1 + 7 * CELL_HEIGHT, 0);
+        matrices.push();
+        matrices.translate((float)(guiX + GRID_LEFT + 3 + 7 * CELL_WIDTH - labelWidth / 2), guiY + GRID_TOP + 1 + 7 * CELL_HEIGHT, 0);
         SmallFontRenderer.INSTANCE.drawString(LABEL_INITIALIZING);
-        GlStateManager.popMatrix();
+        matrices.pop();
     }
 
-    private void drawMemory() {
-        GlStateManager.color4f(1, 1, 1, 1);
+    private void drawMemory(final MatrixStack matrices) {
+        RenderSystem.setShaderColor(1, 1, 1, 1);
 
         final int visibleCells = (int)(System.currentTimeMillis() - initTime);
 
-        GlStateManager.pushMatrix();
-        GlStateManager.translatef(guiX + GRID_LEFT + 1, guiY + GRID_TOP + 1, 0);
+        matrices.push();
+        matrices.translate(guiX + GRID_LEFT + 1, guiY + GRID_TOP + 1, 0);
         for (int i = 0, count = Math.min(visibleCells, data.length); i < count; i++) {
             SmallFontRenderer.INSTANCE.drawString(String.format("%02X", data[i]));
 
             final int col = i & 0x0F;
             if (col < 0x0F) {
-                GlStateManager.translatef(CELL_WIDTH, 0, 0);
+                matrices.translate(CELL_WIDTH, 0, 0);
             } else {
-                GlStateManager.translatef(-CELL_WIDTH * 0x0F, CELL_HEIGHT, 0);
+                matrices.translate(-CELL_WIDTH * 0x0F, CELL_HEIGHT, 0);
             }
         }
-        GlStateManager.popMatrix();
+        matrices.pop();
     }
 
     private void drawSelectionBox(final MatrixStack matrices) {
@@ -305,13 +307,13 @@ public final class ReadOnlyMemoryModuleGui extends Screen {
         final int x = guiX + GRID_LEFT + CELL_WIDTH * col - 1;
         final int y = guiY + GRID_TOP + CELL_HEIGHT * row - 1;
 
-        GlStateManager.pushMatrix();
-        GlStateManager.translatef(x, y, 0);
+        matrices.push();
+        matrices.translate(x, y, 0);
 
         client.getTextureManager().bindTexture(Textures.LOCATION_GUI_MEMORY);
         final int vPos = (int)(client.world.getTime() % 16) * 8;
         drawTexture(matrices, 0, 0, 256 - (CELL_WIDTH + 1), vPos, 11, 8);
 
-        GlStateManager.popMatrix();
+        matrices.pop();
     }
 }

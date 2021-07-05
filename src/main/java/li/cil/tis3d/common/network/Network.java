@@ -25,7 +25,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -80,7 +80,7 @@ public final class Network {
 
     // --------------------------------------------------------------------- //
 
-    public void sendModuleData(final Casing casing, final Face face, final CompoundTag data, final byte type) {
+    public void sendModuleData(final Casing casing, final Face face, final NbtCompound data, final byte type) {
         getQueueFor(casing).queueData(face, data, type);
     }
 
@@ -277,7 +277,7 @@ public final class Network {
         }
 
         private void sendMessage() {
-            final ParticleS2CPacket packet = new ParticleS2CPacket(DustParticleEffect.RED, false, x, y, z, 0, 0, 0, 0, 1);
+            final ParticleS2CPacket packet = new ParticleS2CPacket(DustParticleEffect.DEFAULT, false, x, y, z, 0, 0, 0, 0, 1);
             if (Network.INSTANCE.sendToClientsNearLocation(packet, world, new BlockPos(x, y, z), RANGE_LOW) > 0) {
                 particlesSent++;
             }
@@ -433,7 +433,7 @@ public final class Network {
             }
         }
 
-        private void queueData(final Face face, final CompoundTag data, final byte type) {
+        private void queueData(final Face face, final NbtCompound data, final byte type) {
             moduleQueues[face.ordinal()].queueData(data, type);
         }
 
@@ -492,7 +492,7 @@ public final class Network {
          * @param data the data to enqueue.
          * @param type the type of the data.
          */
-        private void queueData(final CompoundTag data, final byte type) {
+        private void queueData(final NbtCompound data, final byte type) {
             sendQueue.add(new QueueEntryNBT(type, data));
         }
 
@@ -564,9 +564,9 @@ public final class Network {
          * Queue entry for pending NBT data.
          */
         private static final class QueueEntryNBT extends QueueEntry {
-            public final CompoundTag data;
+            public final NbtCompound data;
 
-            private QueueEntryNBT(final byte type, final CompoundTag data) {
+            private QueueEntryNBT(final byte type, final NbtCompound data) {
                 super(type);
                 this.data = data;
             }

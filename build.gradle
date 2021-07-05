@@ -8,7 +8,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath "net.fabricmc:fabric-loom:0.4-SNAPSHOT"
+        classpath "net.fabricmc:fabric-loom:0.8-SNAPSHOT"
     }
 }
 
@@ -20,8 +20,8 @@ apply plugin: 'fabric-loom'
 apply plugin: 'java'
 apply plugin: 'maven-publish'
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_16
+targetCompatibility = JavaVersion.VERSION_16
 
 file "build.properties" withReader {
     def prop = new Properties()
@@ -63,24 +63,19 @@ minecraft {
 dependencies {
     minecraft config.minecraft.version
     mappings config.fabric.mappings
-    modCompile config.fabric.loader
+    modImplementation config.fabric.loader
 
     // Fabric API. This is technically optional, but you probably want it anyway.
-    modCompile config.fabric.api
+    modImplementation config.fabric.api
 
-    compile 'com.google.code.findbugs:jsr305:3.0.2'
+    compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
 }
 
 processResources {
     inputs.property "version", config.mod.version
 
-    from(sourceSets.main.resources.srcDirs) {
-        include "fabric.mod.json"
-        expand "version": config.mod.version
-    }
-
-    from(sourceSets.main.resources.srcDirs) {
-        exclude "fabric.mod.json"
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
     }
 }
 
@@ -124,9 +119,7 @@ curseforge {
         changelogType = "markdown"
         changelog = file("changelog.md")
         addGameVersion config.minecraft.simpleversion
-        addGameVersion "Java 8"
-        addGameVersion "Java 9"
-        addGameVersion "Java 10"
+        addGameVersion "Java 16"
 
         relations {
             requiredLibrary 'fabric-api'

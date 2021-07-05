@@ -1,6 +1,7 @@
 package li.cil.tis3d.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import li.cil.tis3d.client.init.Textures;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.Settings;
@@ -17,10 +18,11 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -93,9 +95,9 @@ public final class CodeBookGui extends Screen {
 
         // Buttons for next / previous page of pages.
 
-        this.addButton(buttonPreviousPage = new ButtonChangePage(guiX + BUTTON_PAGE_CHANGE_PREV_X, guiY + BUTTON_PAGE_CHANGE_Y, PageChangeType.Previous, (button) -> changePage(-1)));
-        this.addButton(buttonNextPage = new ButtonChangePage(guiX + BUTTON_PAGE_CHANGE_NEXT_X, guiY + BUTTON_PAGE_CHANGE_Y, PageChangeType.Next, (button) -> changePage(1)));
-        this.addButton(buttonDeletePage = new ButtonDeletePage(guiX + BUTTON_PAGE_DELETE_X, guiY + BUTTON_PAGE_DELETE_Y, (button) -> {
+        this.addDrawable(buttonPreviousPage = new ButtonChangePage(guiX + BUTTON_PAGE_CHANGE_PREV_X, guiY + BUTTON_PAGE_CHANGE_Y, PageChangeType.Previous, (button) -> changePage(-1)));
+        this.addDrawable(buttonNextPage = new ButtonChangePage(guiX + BUTTON_PAGE_CHANGE_NEXT_X, guiY + BUTTON_PAGE_CHANGE_Y, PageChangeType.Next, (button) -> changePage(1)));
+        this.addDrawable(buttonDeletePage = new ButtonDeletePage(guiX + BUTTON_PAGE_DELETE_X, guiY + BUTTON_PAGE_DELETE_Y, (button) -> {
             data.removePage(data.getSelectedPage());
             rebuildLines();
         }));
@@ -111,7 +113,7 @@ public final class CodeBookGui extends Screen {
         saveProgram();
 
         // Save any changes made and send them to the server.
-        final CompoundTag nbt = new CompoundTag();
+        final NbtCompound nbt = new NbtCompound();
         data.writeToNBT(nbt);
         Network.INSTANCE.sendToServer(new CodeBookDataMessage(nbt, hand));
 
@@ -120,14 +122,15 @@ public final class CodeBookGui extends Screen {
 
     @Override
     public void render(final MatrixStack matrices, final int mouseX, final int mouseY, final float partialTicks) {
-        if (player.removed || !Items.isBookCode(player.getStackInHand(hand))) {
+        if (player.isRemoved() || !Items.isBookCode(player.getStackInHand(hand))) {
             client.openScreen(null);
             return;
         }
 
         // Background.
-        GlStateManager.color4f(1, 1, 1, 1);
-        client.getTextureManager().bindTexture(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+        RenderSystem.setShaderTexture(0, Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         drawTexture(matrices, guiX, guiY, 0, 0, GUI_WIDTH, GUI_HEIGHT);
 
         // Check page change button availability.
@@ -137,7 +140,6 @@ public final class CodeBookGui extends Screen {
         buttonDeletePage.visible = data.getPageCount() > 1 || isCurrentProgramNonEmpty();
 
         super.render(matrices, mouseX, mouseY, partialTicks);
-
         // Draw current program.
         drawProgram(matrices, mouseX, mouseY);
 
@@ -652,7 +654,7 @@ public final class CodeBookGui extends Screen {
                 final List<String> lines = Arrays.asList(Constants.PATTERN_LINES.split(translatedException));
                 tooltip.addAll(lines.stream().map(Text::of).collect(Collectors.toList()));
                 renderTooltip(matrices, tooltip, mouseX, mouseY);
-                GlStateManager.disableLighting();
+                //RenderSystem._setShaderLights(null,null);
             }
         } else {
             // Draw selection position in text.
@@ -679,7 +681,7 @@ public final class CodeBookGui extends Screen {
         Next
     }
 
-    private class ButtonChangePage extends ButtonWidget {
+    private static class ButtonChangePage extends ButtonWidget {
         private static final int TEXTURE_X = 110;
         private static final int TEXTURE_Y = 231;
         private static final int BUTTON_WIDTH = 23;
@@ -699,8 +701,9 @@ public final class CodeBookGui extends Screen {
             }
 
             final boolean isHovered = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
-            GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-            client.getTextureManager().bindTexture(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShaderTexture(0, Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             final int offsetX = isHovered ? BUTTON_WIDTH : 0;
             final int offsetY = type == PageChangeType.Previous ? BUTTON_HEIGHT : 0;
             drawTexture(matrices, x, y, TEXTURE_X + offsetX, TEXTURE_Y + offsetY, BUTTON_WIDTH, BUTTON_HEIGHT);
@@ -724,8 +727,9 @@ public final class CodeBookGui extends Screen {
             }
 
             final boolean isHovered = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
-            GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-            client.getTextureManager().bindTexture(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
+            RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+            RenderSystem.setShaderTexture(0, Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             final int offsetX = isHovered ? BUTTON_WIDTH : 0;
             drawTexture(matrices, x, y, TEXTURE_X + offsetX, TEXTURE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
         }

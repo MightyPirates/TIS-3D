@@ -31,8 +31,8 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -158,11 +158,11 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
         // Vanilla book? If so, make that a code book.
         if (heldItem.getItem() == net.minecraft.item.Items.BOOK) {
             if (!player.getEntityWorld().isClient) {
-                if (!player.abilities.creativeMode) {
+                if (!player.getAbilities().creativeMode) {
                     heldItem.split(1);
                 }
                 final ItemStack bookCode = new ItemStack(Items.BOOK_CODE);
-                if (player.inventory.insertStack(bookCode)) {
+                if (player.getInventory().insertStack(bookCode)) {
                     player.playerScreenHandler.sendContentUpdates();
                 }
                 if (bookCode.getCount() > 0) {
@@ -217,7 +217,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
     }
 
     @Override
-    public void onData(final CompoundTag nbt) {
+    public void onData(final NbtCompound nbt) {
         readFromNBT(nbt);
     }
 
@@ -262,15 +262,15 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
     }
 
     @Override
-    public void readFromNBT(final CompoundTag nbt) {
+    public void readFromNBT(final NbtCompound nbt) {
         super.readFromNBT(nbt);
 
-        final CompoundTag machineNbt = nbt.getCompound(TAG_MACHINE);
+        final NbtCompound machineNbt = nbt.getCompound(TAG_MACHINE);
         getState().readFromNBT(machineNbt);
         state = EnumUtils.readFromNBT(State.class, TAG_STATE, nbt);
 
         if (nbt.contains(TAG_COMPILE_ERROR)) {
-            final CompoundTag errorNbt = nbt.getCompound(TAG_COMPILE_ERROR);
+            final NbtCompound errorNbt = nbt.getCompound(TAG_COMPILE_ERROR);
             compileError = new ParseException(errorNbt.getString(TAG_MESSAGE), errorNbt.getInt(TAG_LINE_NUMBER), errorNbt.getInt(TAG_START), errorNbt.getInt(TAG_END));
         } else {
             compileError = null;
@@ -278,16 +278,16 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
     }
 
     @Override
-    public void writeToNBT(final CompoundTag nbt) {
+    public void writeToNBT(final NbtCompound nbt) {
         super.writeToNBT(nbt);
 
-        final CompoundTag machineNbt = new CompoundTag();
+        final NbtCompound machineNbt = new NbtCompound();
         getState().writeToNBT(machineNbt);
         nbt.put(TAG_MACHINE, machineNbt);
         EnumUtils.writeToNBT(state, TAG_STATE, nbt);
 
         if (compileError != null) {
-            final CompoundTag errorNbt = new CompoundTag();
+            final NbtCompound errorNbt = new NbtCompound();
             errorNbt.putString(TAG_MESSAGE, compileError.getMessage());
             errorNbt.putInt(TAG_LINE_NUMBER, compileError.getLineNumber());
             errorNbt.putInt(TAG_START, compileError.getStart());
@@ -332,7 +332,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
      * Send the full state to the client.
      */
     private void sendFullState() {
-        final CompoundTag nbt = new CompoundTag();
+        final NbtCompound nbt = new NbtCompound();
         writeToNBT(nbt);
         getCasing().sendData(getFace(), nbt, DATA_TYPE_FULL);
     }
@@ -474,12 +474,12 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
 
         @Override
         public Iterable<String> codeFor(final ItemStack stack) {
-            final CompoundTag nbt = stack.getTag();
+            final NbtCompound nbt = stack.getTag();
             if (nbt == null) {
                 return null;
             }
 
-            final ListTag pages = nbt.getList("pages", NBTIds.TAG_STRING);
+            final NbtList pages = nbt.getList("pages", NBTIds.TAG_STRING);
             if (pages.size() < 1) {
                 return null;
             }

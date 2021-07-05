@@ -2,6 +2,7 @@ package li.cil.tis3d.api.manual;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.util.math.MatrixStack;
 
 /**
  * This allows implementing custom image renderers.
@@ -19,7 +20,7 @@ public interface ImageRenderer {
      * The width of the area this renderer uses.
      * <p>
      * This is used to offset the OpenGL state properly before calling
-     * {@link #render(int, int)}, to correctly align the image horizontally.
+     * {@link #render(MatrixStack, int, int)}, to correctly align the image horizontally.
      *
      * @return the width of the rendered image.
      */
@@ -29,7 +30,7 @@ public interface ImageRenderer {
      * The height of the area this renderer uses.
      * <p>
      * This is used to offset the OpenGL state properly before calling
-     * {@link #render(int, int)}, as well as to know where to resume rendering
+     * {@link #render(MatrixStack, int, int)}, as well as to know where to resume rendering
      * other content below the image.
      *
      * @return the height of the rendered image.
@@ -47,5 +48,5 @@ public interface ImageRenderer {
      * @param mouseX the X position of the mouse relative to the element.
      * @param mouseY the Y position of the mouse relative to the element.
      */
-    void render(final int mouseX, final int mouseY);
+    void render(final MatrixStack matrices, final int mouseX, final int mouseY);
 }

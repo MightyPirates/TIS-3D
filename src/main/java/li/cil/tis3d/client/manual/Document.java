@@ -2,6 +2,7 @@ package li.cil.tis3d.client.manual;
 
 import com.google.common.base.Strings;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import li.cil.tis3d.api.manual.ImageRenderer;
 import li.cil.tis3d.client.manual.segment.*;
 import li.cil.tis3d.common.API;
@@ -9,9 +10,14 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL15;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,37 +126,42 @@ public final class Document {
         final MinecraftClient mc = MinecraftClient.getInstance();
         final Window window = mc.getWindow();
 
-        GlStateManager.pushLightingAttributes();
+        //GlStateManager.pushLightingAttributes();
+        //GL15.glPushAttrib(8256);
 
         // On some systems/drivers/graphics cards the next calls won't update the
         // depth buffer correctly if alpha test is enabled. Guess how we found out?
         // By noticing that on those systems it only worked while chat messages
         // were visible. Yeah. I know.
-        GlStateManager.disableAlphaTest();
+        //GlStateManager._disableDepthTest();
+
+        RenderSystem.clearColor(1, 1, 1, 1);
+        RenderSystem.clear(GL15.GL_DEPTH_BUFFER_BIT, false);
+        RenderSystem.enableDepthTest();
+        RenderSystem.depthFunc(GL15.GL_LEQUAL);
+        RenderSystem.depthMask(true);
+        RenderSystem.colorMask(false, false, false, false);
 
         // Clear depth mask, then create masks in foreground above and below scroll area.
-        GlStateManager.color4f(1, 1, 1, 1);
-        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT, false);
-        GlStateManager.enableDepthTest();
-        GlStateManager.depthFunc(GL11.GL_LEQUAL);
-        GlStateManager.depthMask(true);
-        GlStateManager.colorMask(false, false, false, false);
 
-        GlStateManager.pushMatrix();
-        GlStateManager.translatef(0, 0, 500);
-        GL11.glBegin(GL11.GL_QUADS);
-        GL11.glVertex2f(0, y);
-        GL11.glVertex2f(window.getFramebufferWidth(), y);
-        GL11.glVertex2f(window.getFramebufferWidth(), 0);
-        GL11.glVertex2f(0, 0);
-        GL11.glVertex2f(0, window.getFramebufferHeight());
-        GL11.glVertex2f(window.getFramebufferWidth(), window.getFramebufferHeight());
-        GL11.glVertex2f(window.getFramebufferWidth(), y + maxHeight);
-        GL11.glVertex2f(0, y + maxHeight);
-        GL11.glEnd();
-        GlStateManager.popMatrix();
-        GlStateManager.colorMask(true, true, true, true);
+        matrices.push();
+        matrices.translate(0, 0, 500);
 
+        final Tessellator t = Tessellator.getInstance();
+        final BufferBuilder b = t.getBuffer();
+        b.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
+        b.vertex(0, y,400);
+        b.vertex(window.getFramebufferWidth(), y, 400);
+        b.vertex(window.getFramebufferWidth(), 0, 400);
+        b.vertex(0, 0, 400);
+        b.vertex(0, window.getFramebufferHeight(), 400);
+        b.vertex(window.getFramebufferWidth(), window.getFramebufferHeight(), 400);
+        b.vertex(window.getFramebufferWidth(), y + maxHeight, 400);
+        b.vertex(0, y + maxHeight, 400);
+        t.draw();
+
+        matrices.pop();
+        RenderSystem.colorMask(true, true, true, true);
         // Actual rendering.
         Optional<InteractiveSegment> hovered = Optional.empty();
         int indent = 0;
@@ -162,7 +173,7 @@ public final class Document {
             final int segmentHeight = segment.nextY(indent, maxWidth, renderer);
             if (currentY + segmentHeight >= minY && currentY <= maxY) {
                 final Optional<InteractiveSegment> result = segment.render(matrices, x, currentY, indent, maxWidth, renderer, mouseX, mouseY);
-                if (!hovered.isPresent()) {
+                if (hovered.isEmpty()) {
                     hovered = result;
                 }
             }
@@ -175,10 +186,9 @@ public final class Document {
         }
         hovered.ifPresent(InteractiveSegment::notifyHover);
 
-        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT, false);
-        GlStateManager.popAttributes();
-        GlStateManager.bindTexture(0);
-
+        RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, false);
+        GlStateManager._bindTexture(0);
+        matrices.push();
         return hovered;
     }
 

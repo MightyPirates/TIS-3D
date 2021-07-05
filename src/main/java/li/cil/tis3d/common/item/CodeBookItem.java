@@ -14,9 +14,9 @@ import net.minecraft.item.BookItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -261,10 +261,10 @@ public final class CodeBookItem extends BookItem {
          *
          * @param nbt the tag to load the data from.
          */
-        public void readFromNBT(final CompoundTag nbt) {
+        public void readFromNBT(final NbtCompound nbt) {
             pages.clear();
 
-            final ListTag pagesNbt = nbt.getList(TAG_PAGES, NBTIds.TAG_STRING);
+            final NbtList pagesNbt = nbt.getList(TAG_PAGES, NBTIds.TAG_STRING);
             for (int index = 0; index < pagesNbt.size(); index++) {
                 pages.add(Arrays.asList(Constants.PATTERN_LINES.split(pagesNbt.getString(index))));
             }
@@ -278,13 +278,13 @@ public final class CodeBookItem extends BookItem {
          *
          * @param nbt the tag to save the data to.
          */
-        public void writeToNBT(final CompoundTag nbt) {
-            final ListTag pagesNbt = new ListTag();
+        public void writeToNBT(final NbtCompound nbt) {
+            final NbtList pagesNbt = new NbtList();
             int removed = 0;
             for (int index = 0; index < pages.size(); index++) {
                 final List<String> program = pages.get(index);
                 if (program.size() > 1 || program.get(0).length() > 0) {
-                    pagesNbt.add(StringTag.of(String.join("\n", program)));
+                    pagesNbt.add(NbtString.of(String.join("\n", program)));
                 } else if (index < selectedPage) {
                     removed++;
                 }
@@ -320,7 +320,7 @@ public final class CodeBookItem extends BookItem {
          * @param nbt the tag to load the data from.
          * @return the data loaded from the tag.
          */
-        public static Data loadFromNBT(@Nullable final CompoundTag nbt) {
+        public static Data loadFromNBT(@Nullable final NbtCompound nbt) {
             final Data data = new Data();
             if (nbt != null) {
                 data.readFromNBT(nbt);
@@ -345,9 +345,9 @@ public final class CodeBookItem extends BookItem {
          * @param data  the data to save to the item stack.
          */
         public static void saveToStack(final ItemStack stack, final Data data) {
-            CompoundTag nbt = stack.getTag();
+            NbtCompound nbt = stack.getTag();
             if (nbt == null) {
-                stack.setTag(nbt = new CompoundTag());
+                stack.setTag(nbt = new NbtCompound());
             }
             data.writeToNBT(nbt);
         }

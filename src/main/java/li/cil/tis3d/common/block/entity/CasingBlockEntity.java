@@ -21,12 +21,13 @@ import li.cil.tis3d.common.network.message.PipeLockedStateMessage;
 import li.cil.tis3d.util.InventoryUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -77,8 +78,8 @@ public final class CasingBlockEntity extends AbstractComputerBlockEntity impleme
 
     // --------------------------------------------------------------------- //
 
-    public CasingBlockEntity() {
-        super(TYPE);
+    public CasingBlockEntity(BlockPos pos, BlockState state) {
+        super(TYPE, pos, state);
     }
 
     // --------------------------------------------------------------------- //
@@ -337,9 +338,8 @@ public final class CasingBlockEntity extends AbstractComputerBlockEntity impleme
         dispose();
     }
 
-    @Override
-    public double getSquaredRenderDistance() {
-        return Network.RANGE_HIGH * Network.RANGE_HIGH;
+    public double getRenderDistance() {
+        return Network.RANGE_HIGH;
     }
 
     // --------------------------------------------------------------------- //
@@ -358,7 +358,7 @@ public final class CasingBlockEntity extends AbstractComputerBlockEntity impleme
     }
 
     @Override
-    public void fromClientTag(final CompoundTag nbt) {
+    public void fromClientTag(final NbtCompound nbt) {
         super.fromClientTag(nbt);
 
         final World world = Objects.requireNonNull(getWorld());
@@ -368,7 +368,7 @@ public final class CasingBlockEntity extends AbstractComputerBlockEntity impleme
     }
 
     @Override
-    public CompoundTag toClientTag(final CompoundTag nbt) {
+    public NbtCompound toClientTag(final NbtCompound nbt) {
         super.toClientTag(nbt);
 
         nbt.putBoolean(TAG_ENABLED, isEnabled);
@@ -377,33 +377,33 @@ public final class CasingBlockEntity extends AbstractComputerBlockEntity impleme
     }
 
     @Override
-    protected void readFromNBTCommon(final CompoundTag nbt) {
+    protected void readFromNBTCommon(final NbtCompound nbt) {
         super.readFromNBTCommon(nbt);
 
         decompressClosed(nbt.getByteArray(TAG_LOCKED), locked);
 
-        final CompoundTag inventoryNbt = nbt.getCompound(TAG_INVENTORY);
+        final NbtCompound inventoryNbt = nbt.getCompound(TAG_INVENTORY);
         inventory.readFromNBT(inventoryNbt);
 
-        final CompoundTag casingNbt = nbt.getCompound(TAG_CASING);
+        final NbtCompound casingNbt = nbt.getCompound(TAG_CASING);
         casing.readFromNBT(casingNbt);
     }
 
     @Override
-    protected void writeToNBTCommon(final CompoundTag nbt) {
+    protected void writeToNBTCommon(final NbtCompound nbt) {
         super.writeToNBTCommon(nbt);
 
         nbt.putByteArray(TAG_LOCKED, compressClosed(locked));
 
         // Needed on the client also, for picking and for actually instantiating
         // the installed modules on the client side (to find the provider).
-        final CompoundTag inventoryNbt = new CompoundTag();
+        final NbtCompound inventoryNbt = new NbtCompound();
         inventory.writeToNBT(inventoryNbt);
         nbt.put(TAG_INVENTORY, inventoryNbt);
 
         // Needed on the client also, to allow initializing client side modules
         // immediately after creation.
-        final CompoundTag casingNbt = new CompoundTag();
+        final NbtCompound casingNbt = new NbtCompound();
         casing.writeToNBT(casingNbt);
         nbt.put(TAG_CASING, casingNbt);
     }
@@ -432,7 +432,7 @@ public final class CasingBlockEntity extends AbstractComputerBlockEntity impleme
      * @param moduleData the original state of the module on the server, if present.
      */
     @Environment(EnvType.CLIENT)
-    public void setStackAndModuleClient(final int slot, final ItemStack stack, final CompoundTag moduleData) {
+    public void setStackAndModuleClient(final int slot, final ItemStack stack, final NbtCompound moduleData) {
         inventory.setStack(slot, stack);
         final Module module = casing.getModule(Face.VALUES[slot]);
         if (module != null) {

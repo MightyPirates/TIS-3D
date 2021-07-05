@@ -7,7 +7,7 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.util.EnumUtils;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 
 /**
@@ -113,13 +113,13 @@ public final class PipeImpl implements Pipe {
         }
     }
 
-    public void readFromNBT(final CompoundTag nbt) {
+    public void readFromNBT(final NbtCompound nbt) {
         readState = EnumUtils.readFromNBT(State.class, TAG_READ_STATE, nbt);
         writeState = EnumUtils.readFromNBT(State.class, TAG_WRITE_STATE, nbt);
         value = nbt.getShort(TAG_VALUE);
     }
 
-    public void writeToNBT(final CompoundTag nbt) {
+    public void writeToNBT(final NbtCompound nbt) {
         EnumUtils.writeToNBT(readState, TAG_READ_STATE, nbt);
         EnumUtils.writeToNBT(writeState, TAG_WRITE_STATE, nbt);
         nbt.putShort(TAG_VALUE, value);
