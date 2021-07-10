@@ -1,6 +1,5 @@
-* Fixed: broken side addressing introduced when PC register was added.
-
-This was built against Minecraft 1.16.2 and requires Fabric Loader 0.9.0 and Fabric API 0.18.
+* Changed: default max casing limit is now 16.
+* Fixed: state of just placed controller not updating when removing extra controller next to it.
 
 Known issues:
 * Infrared packets currently do not correctly traverse portals.

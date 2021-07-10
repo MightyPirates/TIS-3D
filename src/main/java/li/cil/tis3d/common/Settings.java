@@ -27,7 +27,7 @@ public final class Settings {
     /**
      * The maximum number of casings that may be connected to a controller.
      */
-    public static int maxCasingsPerController = 8;
+    public static int maxCasingsPerController = 16;
 
     /**
      * The maximum number of lines a program may have.
