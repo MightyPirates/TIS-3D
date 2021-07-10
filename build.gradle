@@ -7,15 +7,9 @@ plugins {
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
-file "build.properties" withReader {
-    def prop = new Properties()
-    prop.load(it)
-    ext.config = new ConfigSlurper().parse prop
-}
-
-version = config.mod.version
-group = config.mod.group
-archivesBaseName = config.mod.name
+version = project.mod_version
+group = project.mod_group
+archivesBaseName = project.mod_name
 
 def getGitRef() {
     try {
@@ -38,21 +32,21 @@ else
     version += "+" + getGitRef()
 
 ext.simpleVersion = version
-version = "MC${config.minecraft.simpleversion}-Fabric-${project.version}"
+version = "MC${project.minecraft_version}-Fabric-${project.version}"
 
 dependencies {
-    minecraft "com.mojang:minecraft:${config.minecraft.version}"
-    mappings "net.fabricmc:yarn:${config.fabric.mappings}"
-    modImplementation "net.fabricmc:fabric-loader:{config.fabric.loader}"
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.fabric_mappings}"
+    modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader}"
 
     // Fabric API. This is technically optional, but you probably want it anyway.
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${config.fabric.api}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api}"
 
     compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
 }
 
 processResources {
-    inputs.property "version", config.mod.version
+    inputs.property "version", project.mod_version
 
     filesMatching("fabric.mod.json") {
         expand "version": project.version
@@ -94,11 +88,11 @@ publishing {
 curseforge {
     apiKey = project.hasProperty("curseForgeApiKey") ? project.curseForgeApiKey : ""
     project {
-        id = config.curse.project.id
-        releaseType = config.curse.project.releaseType
+        id = project.curse_project_id
+        releaseType = project.curse_project_releasetype
         changelogType = "markdown"
         changelog = file("changelog.md")
-        addGameVersion config.minecraft.version
+        addGameVersion project.minecraft_version
         addGameVersion "Fabric"
         addGameVersion "Java 8"
         addGameVersion "Java 9"
