@@ -180,5 +180,8 @@ curseforge {
         addGameVersion "Forge"
         addGameVersion minecraft_version
         addGameVersion "Java 8"
+        relations {
+            requiredDependency "markdownmanual"
+        }
     }
 }
