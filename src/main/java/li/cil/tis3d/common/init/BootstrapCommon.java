@@ -2,13 +2,15 @@ package li.cil.tis3d.common.init;
 
 import li.cil.tis3d.api.CommonAPI;
 import li.cil.tis3d.api.ExtInitializer;
-import li.cil.tis3d.api.ManualCommonAPI;
 import li.cil.tis3d.api.ModuleAPI;
 import li.cil.tis3d.client.manual.provider.GameRegistryPathProvider;
 import li.cil.tis3d.common.API;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.Settings;
-import li.cil.tis3d.common.api.*;
+import li.cil.tis3d.common.api.InfraredAPIImpl;
+import li.cil.tis3d.common.api.ManualAPIImpl;
+import li.cil.tis3d.common.api.ModuleAPIImpl;
+import li.cil.tis3d.common.api.SerialAPIImpl;
 import li.cil.tis3d.common.event.TickHandlerInfraredPacket;
 import li.cil.tis3d.common.integration.Integration;
 import li.cil.tis3d.common.module.*;
@@ -33,7 +35,7 @@ public final class BootstrapCommon implements ModInitializer {
         //noinspection Convert2MethodRef
         API.itemGroup = FabricItemGroupBuilder.create(Constants.NAME_ITEM_GROUP).
             // Gotta be a lambda or items get initialized before item group is set.
-                icon(() -> Items.CONTROLLER.getStackForRender()).
+                icon(() -> Items.CONTROLLER.getDefaultStack()).
                 build();
 
         final ModuleAPI moduleAPI = new ModuleAPIImpl();

@@ -19,13 +19,13 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -83,32 +83,32 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
     }
 
     private void setupMatrix(final Face face, final MatrixStack matrices) {
-        final Vector3f axis;
+        final Vec3f axis;
         final int degree;
 
         switch (face) {
             case Y_NEG:
-                axis = Vector3f.POSITIVE_X;
+                axis = Vec3f.POSITIVE_X;
                 degree = -90;
                 break;
             case Y_POS:
-                axis = Vector3f.POSITIVE_X;
+                axis = Vec3f.POSITIVE_X;
                 degree = 90;
                 break;
             case Z_NEG:
-                axis = Vector3f.POSITIVE_Y;
+                axis = Vec3f.POSITIVE_Y;
                 degree = 0;
                 break;
             case Z_POS:
-                axis = Vector3f.POSITIVE_Y;
+                axis = Vec3f.POSITIVE_Y;
                 degree = 180;
                 break;
             case X_NEG:
-                axis = Vector3f.POSITIVE_Y;
+                axis = Vec3f.POSITIVE_Y;
                 degree = 90;
                 break;
             case X_POS:
-                axis = Vector3f.POSITIVE_Y;
+                axis = Vec3f.POSITIVE_Y;
                 degree = -90;
                 break;
             default:
@@ -169,7 +169,7 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
                 }
 
                 matrices.translate(0.5f, 0.5f, 0.5f);
-                matrices.multiply(new Quaternion(Vector3f.POSITIVE_Z, 90, true));
+                matrices.multiply(new Quaternion(Vec3f.POSITIVE_Z, 90, true));
                 matrices.translate(-0.5f, -0.5f, -0.5f);
             }
             matrices.pop();
@@ -204,7 +204,7 @@ public final class CasingBlockEntityRenderer extends BlockEntityRenderer<CasingB
             }
 
             matrices.translate(0.5f, 0.5f, 0.5f);
-            matrices.multiply(new Quaternion(Vector3f.POSITIVE_Z, 90, true));
+            matrices.multiply(new Quaternion(Vec3f.POSITIVE_Z, 90, true));
             matrices.translate(-0.5f, -0.5f, -0.5f);
         }
         matrices.pop();

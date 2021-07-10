@@ -61,12 +61,12 @@ minecraft {
 }
 
 dependencies {
-    minecraft config.minecraft.version
-    mappings config.fabric.mappings
-    modCompile config.fabric.loader
+    minecraft "com.mojang:minecraft:${config.minecraft.version}"
+    mappings "net.fabricmc:yarn:${config.fabric.mappings}"
+    modCompile "net.fabricmc:fabric-loader:{config.fabric.loader}"
 
     // Fabric API. This is technically optional, but you probably want it anyway.
-    modCompile config.fabric.api
+    modCompile "net.fabricmc.fabric-api:fabric-api:${config.fabric.api}"
 
     compile 'com.google.code.findbugs:jsr305:3.0.2'
 }
@@ -123,7 +123,7 @@ curseforge {
         releaseType = config.curse.project.releaseType
         changelogType = "markdown"
         changelog = file("changelog.md")
-        addGameVersion config.minecraft.simpleversion
+        addGameVersion config.minecraft.version
         addGameVersion "Fabric"
         addGameVersion "Java 8"
         addGameVersion "Java 9"

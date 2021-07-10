@@ -66,7 +66,7 @@ public final class BootstrapClient implements ClientModInitializer {
         // Register event handlers.
         ClientTickCallback.EVENT.register(client -> DisplayModule.LeakDetector.tick());
         ClientTickCallback.EVENT.register(client -> Network.INSTANCE.clientTick());
-        ClientSpriteRegistryCallback.event(SpriteAtlasTexture.BLOCK_ATLAS_TEX).register((spriteAtlasTexture, registry) -> Textures.registerSprites(registry));
+        ClientSpriteRegistryCallback.event(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).register((spriteAtlasTexture, registry) -> Textures.registerSprites(registry));
         ClientPickBlockGatherCallback.EVENT.register(BootstrapClient::handlePickBlock);
 
         // Register entity renderers

@@ -1,6 +1,5 @@
 package li.cil.tis3d.common.module;
 
-import li.cil.tis3d.api.InfraredAPI;
 import li.cil.tis3d.api.infrared.InfraredPacket;
 import li.cil.tis3d.api.infrared.InfraredReceiver;
 import li.cil.tis3d.api.machine.Casing;
@@ -20,8 +19,8 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.IntArrayTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtIntArray;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -110,7 +109,7 @@ public final class InfraredModule extends AbstractModule implements InfraredRece
     }
 
     @Override
-    public void readFromNBT(final CompoundTag nbt) {
+    public void readFromNBT(final NbtCompound nbt) {
         super.readFromNBT(nbt);
 
         receiveQueue.clear();
@@ -121,7 +120,7 @@ public final class InfraredModule extends AbstractModule implements InfraredRece
     }
 
     @Override
-    public void writeToNBT(final CompoundTag nbt) {
+    public void writeToNBT(final NbtCompound nbt) {
         super.writeToNBT(nbt);
 
         final int[] receiveQueueArray = new int[receiveQueue.size()];
@@ -129,7 +128,7 @@ public final class InfraredModule extends AbstractModule implements InfraredRece
         for (final int value : receiveQueue) {
             receiveQueueArray[i++] = value;
         }
-        final IntArrayTag receiveQueueNbt = new IntArrayTag(receiveQueueArray);
+        final NbtIntArray receiveQueueNbt = new NbtIntArray(receiveQueueArray);
         nbt.put(TAG_RECEIVE_QUEUE, receiveQueueNbt);
     }
 

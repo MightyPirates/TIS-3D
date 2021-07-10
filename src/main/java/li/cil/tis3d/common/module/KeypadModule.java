@@ -17,7 +17,7 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
@@ -80,7 +80,7 @@ public final class KeypadModule extends AbstractModuleWithRotation {
             value = Optional.empty();
 
             // Tell clients we can input again.
-            getCasing().sendData(getFace(), new CompoundTag(), DATA_TYPE_VALUE);
+            getCasing().sendData(getFace(), new NbtCompound(), DATA_TYPE_VALUE);
         }
     }
 
@@ -97,7 +97,7 @@ public final class KeypadModule extends AbstractModuleWithRotation {
     @Override
     public void onWriteComplete(final Port port) {
         // Tell clients we can input again.
-        getCasing().sendData(getFace(), new CompoundTag(), DATA_TYPE_VALUE);
+        getCasing().sendData(getFace(), new NbtCompound(), DATA_TYPE_VALUE);
     }
 
     @Override
@@ -130,7 +130,7 @@ public final class KeypadModule extends AbstractModuleWithRotation {
             }
             final short number = buttonToNumber(button);
 
-            final CompoundTag nbt = new CompoundTag();
+            final NbtCompound nbt = new NbtCompound();
             nbt.putShort(TAG_VALUE, number);
             getCasing().sendData(getFace(), nbt, DATA_TYPE_VALUE);
         }
@@ -139,7 +139,7 @@ public final class KeypadModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void onData(final CompoundTag nbt) {
+    public void onData(final NbtCompound nbt) {
         final World world = getCasing().getCasingWorld();
         if (world.isClient) {
             // Got state on which key is currently 'pressed'.
@@ -195,7 +195,7 @@ public final class KeypadModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void readFromNBT(final CompoundTag nbt) {
+    public void readFromNBT(final NbtCompound nbt) {
         super.readFromNBT(nbt);
 
         if (nbt.contains(TAG_VALUE)) {
@@ -204,7 +204,7 @@ public final class KeypadModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void writeToNBT(final CompoundTag nbt) {
+    public void writeToNBT(final NbtCompound nbt) {
         super.writeToNBT(nbt);
 
         value.ifPresent(x -> nbt.putShort(TAG_VALUE, x));

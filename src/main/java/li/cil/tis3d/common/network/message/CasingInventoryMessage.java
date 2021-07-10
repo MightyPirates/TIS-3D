@@ -3,16 +3,17 @@ package li.cil.tis3d.common.network.message;
 import io.netty.buffer.ByteBuf;
 import li.cil.tis3d.api.machine.Casing;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
+
 import javax.annotation.Nullable;
 
 public final class CasingInventoryMessage extends AbstractMessageWithLocation {
     private int slot;
     private ItemStack stack;
-    private CompoundTag moduleData;
+    private NbtCompound moduleData;
 
-    public CasingInventoryMessage(final Casing casing, final int slot, final ItemStack stack, @Nullable final CompoundTag moduleData) {
+    public CasingInventoryMessage(final Casing casing, final int slot, final ItemStack stack, @Nullable final NbtCompound moduleData) {
         super(casing.getCasingWorld(), casing.getPosition());
         this.slot = slot;
         this.stack = stack;
@@ -33,8 +34,8 @@ public final class CasingInventoryMessage extends AbstractMessageWithLocation {
         return stack;
     }
 
-    public CompoundTag getModuleData() {
-        return moduleData != null ? moduleData : new CompoundTag();
+    public NbtCompound getModuleData() {
+        return moduleData != null ? moduleData : new NbtCompound();
     }
 
     // --------------------------------------------------------------------- //
@@ -48,7 +49,7 @@ public final class CasingInventoryMessage extends AbstractMessageWithLocation {
 
         slot = packet.readByte() & 0xFF;
         stack = packet.readItemStack();
-        moduleData = packet.readCompoundTag();
+        moduleData = packet.readNbt();
     }
 
     @Override
@@ -59,6 +60,6 @@ public final class CasingInventoryMessage extends AbstractMessageWithLocation {
 
         packet.writeByte(slot);
         packet.writeItemStack(stack);
-        packet.writeCompoundTag(moduleData);
+        packet.writeNbt(moduleData);
     }
 }

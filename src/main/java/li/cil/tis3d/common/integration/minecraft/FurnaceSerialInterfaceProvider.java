@@ -6,7 +6,7 @@ import li.cil.tis3d.api.serial.SerialProtocolDocumentationReference;
 import li.cil.tis3d.common.mixin.AbstractFurnaceBlockEntityAccessors;
 import li.cil.tis3d.util.EnumUtils;
 import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -146,12 +146,12 @@ public final class FurnaceSerialInterfaceProvider implements SerialInterfaceProv
         }
 
         @Override
-        public void readFromNBT(final CompoundTag nbt) {
+        public void readFromNBT(final NbtCompound nbt) {
             mode = EnumUtils.readFromNBT(SerialInterfaceFurnace.Mode.class, TAG_MODE, nbt);
         }
 
         @Override
-        public void writeToNBT(final CompoundTag nbt) {
+        public void writeToNBT(final NbtCompound nbt) {
             EnumUtils.writeToNBT(mode, TAG_MODE, nbt);
         }
     }

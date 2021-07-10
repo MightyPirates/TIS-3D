@@ -23,7 +23,7 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 
 import javax.annotation.Nullable;
@@ -193,7 +193,7 @@ public final class DisplayModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void readFromNBT(final CompoundTag nbt) {
+    public void readFromNBT(final NbtCompound nbt) {
         super.readFromNBT(nbt);
 
         final int[] imageNbt = nbt.getIntArray(TAG_IMAGE);
@@ -207,7 +207,7 @@ public final class DisplayModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void writeToNBT(final CompoundTag nbt) {
+    public void writeToNBT(final NbtCompound nbt) {
         super.writeToNBT(nbt);
 
         nbt.putIntArray(TAG_IMAGE, image);

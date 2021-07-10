@@ -11,7 +11,7 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 
@@ -163,10 +163,10 @@ public interface Module {
      * this way and vice versa).
      *
      * @param nbt the received data.
-     * @see Casing#sendData(Face, CompoundTag, byte)
-     * @see Casing#sendData(Face, CompoundTag)
+     * @see Casing#sendData(Face, NbtCompound, byte)
+     * @see Casing#sendData(Face, NbtCompound)
      */
-    void onData(final CompoundTag nbt);
+    void onData(final NbtCompound nbt);
 
     /**
      * Called with data sent from the remote instance of the module.
@@ -213,12 +213,12 @@ public interface Module {
      *
      * @param nbt the tag to load the state from.
      */
-    void readFromNBT(final CompoundTag nbt);
+    void readFromNBT(final NbtCompound nbt);
 
     /**
      * Save the state of the module to the specified NBT compound.
      *
      * @param nbt the tag to save the state to.
      */
-    void writeToNBT(final CompoundTag nbt);
+    void writeToNBT(final NbtCompound nbt);
 }

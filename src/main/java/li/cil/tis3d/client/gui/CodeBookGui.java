@@ -20,7 +20,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -111,7 +111,7 @@ public final class CodeBookGui extends Screen {
         saveProgram();
 
         // Save any changes made and send them to the server.
-        final CompoundTag nbt = new CompoundTag();
+        final NbtCompound nbt = new NbtCompound();
         data.writeToNBT(nbt);
         Network.INSTANCE.sendToServer(new CodeBookDataMessage(nbt, hand));
 

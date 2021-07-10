@@ -1,15 +1,15 @@
 package li.cil.tis3d.common.network.message;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Hand;
 
 public final class CodeBookDataMessage extends AbstractMessage {
-    private CompoundTag nbt;
+    private NbtCompound nbt;
     private Hand hand;
 
-    public CodeBookDataMessage(final CompoundTag nbt, final Hand hand) {
+    public CodeBookDataMessage(final NbtCompound nbt, final Hand hand) {
         this.nbt = nbt;
         this.hand = hand;
     }
@@ -20,7 +20,7 @@ public final class CodeBookDataMessage extends AbstractMessage {
 
     // --------------------------------------------------------------------- //
 
-    public CompoundTag getNbt() {
+    public NbtCompound getNbt() {
         return nbt;
     }
 
@@ -34,14 +34,14 @@ public final class CodeBookDataMessage extends AbstractMessage {
     @Override
     public void fromBytes(final ByteBuf buf) {
         final PacketByteBuf buffer = new PacketByteBuf(buf);
-        nbt = buffer.readCompoundTag();
+        nbt = buffer.readNbt();
         hand = buffer.readEnumConstant(Hand.class);
     }
 
     @Override
     public void toBytes(final ByteBuf buf) {
         final PacketByteBuf buffer = new PacketByteBuf(buf);
-        buffer.writeCompoundTag(nbt);
+        buffer.writeNbt(nbt);
         buffer.writeEnumConstant(hand);
     }
 }

@@ -1,7 +1,6 @@
 package li.cil.tis3d.common.machine;
 
 import io.netty.buffer.ByteBuf;
-import li.cil.tis3d.api.ModuleAPI;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
@@ -17,8 +16,8 @@ import li.cil.tis3d.util.NBTIds;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -240,7 +239,7 @@ public final class CasingImpl implements Casing {
      *
      * @param nbt the data to load.
      */
-    public void readFromNBT(final CompoundTag nbt) {
+    public void readFromNBT(final NbtCompound nbt) {
         for (int index = 0; index < blockEntity.size(); index++) {
             final ItemStack stack = blockEntity.getStack(index);
             if (stack.isEmpty()) {
@@ -265,7 +264,7 @@ public final class CasingImpl implements Casing {
             modules[index] = module;
         }
 
-        final ListTag modulesNbt = nbt.getList(TAG_MODULES, NBTIds.TAG_COMPOUND);
+        final NbtList modulesNbt = nbt.getList(TAG_MODULES, NBTIds.TAG_COMPOUND);
         final int moduleCount = Math.min(modulesNbt.size(), modules.length);
         for (int i = 0; i < moduleCount; i++) {
             if (modules[i] != null) {
@@ -285,10 +284,10 @@ public final class CasingImpl implements Casing {
      *
      * @param nbt the tag to write the data to.
      */
-    public void writeToNBT(final CompoundTag nbt) {
-        final ListTag modulesNbt = new ListTag();
+    public void writeToNBT(final NbtCompound nbt) {
+        final NbtList modulesNbt = new NbtList();
         for (final Module module : modules) {
-            final CompoundTag moduleNbt = new CompoundTag();
+            final NbtCompound moduleNbt = new NbtCompound();
             if (module != null) {
                 module.writeToNBT(moduleNbt);
             }
@@ -347,12 +346,12 @@ public final class CasingImpl implements Casing {
     }
 
     @Override
-    public void sendData(final Face face, final CompoundTag data, final byte type) {
+    public void sendData(final Face face, final NbtCompound data, final byte type) {
         Network.INSTANCE.sendModuleData(this, face, data, type);
     }
 
     @Override
-    public void sendData(final Face face, final CompoundTag data) {
+    public void sendData(final Face face, final NbtCompound data) {
         sendData(face, data, (byte)-1);
     }
 
@@ -375,7 +374,7 @@ public final class CasingImpl implements Casing {
      * @return the key, if present.
      */
     private static Optional<UUID> getKeyFromStack(final ItemStack stack) {
-        final CompoundTag nbt = stack.getTag();
+        final NbtCompound nbt = stack.getTag();
         if (nbt == null) {
             return Optional.empty();
         }
@@ -392,9 +391,9 @@ public final class CasingImpl implements Casing {
      * @param key   the key to store on the stack.
      */
     private static void setKeyForStack(final ItemStack stack, final UUID key) {
-        CompoundTag nbt = stack.getTag();
+        NbtCompound nbt = stack.getTag();
         if (nbt == null) {
-            stack.setTag(nbt = new CompoundTag());
+            stack.setTag(nbt = new NbtCompound());
         }
         nbt.putLong(TAG_KEY_MS, key.getMostSignificantBits());
         nbt.putLong(TAG_KEY_LS, key.getLeastSignificantBits());

@@ -1,6 +1,5 @@
 package li.cil.tis3d.common.inventory;
 
-import li.cil.tis3d.api.ModuleAPI;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
@@ -14,7 +13,7 @@ import li.cil.tis3d.common.network.message.CasingInventoryMessage;
 import net.minecraft.block.BlockState;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
@@ -130,10 +129,10 @@ public final class CasingInventory extends ArrayInventory implements SidedInvent
             // Rationale: module may initialize data from stack while contents of stack
             // are not synchronized to client, or do some fancy server-side only setup
             // based on the stack. The possibilities are endless. This is robust.
-            final CompoundTag moduleData;
+            final NbtCompound moduleData;
             if (module != null) {
                 module.onInstalled(stack);
-                module.writeToNBT(moduleData = new CompoundTag());
+                module.writeToNBT(moduleData = new NbtCompound());
             } else {
                 moduleData = null;
             }

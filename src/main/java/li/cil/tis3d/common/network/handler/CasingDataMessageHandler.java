@@ -9,7 +9,7 @@ import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.network.message.CasingDataMessage;
 import net.fabricmc.fabric.api.network.PacketContext;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 
 import java.io.IOException;
@@ -35,7 +35,7 @@ public final class CasingDataMessageHandler extends AbstractMessageHandlerWithLo
                     if (isNbt) {
                         try {
                             final ByteBufInputStream bis = new ByteBufInputStream(packet);
-                            final CompoundTag nbt = NbtIo.readCompressed(bis);
+                            final NbtCompound nbt = NbtIo.readCompressed(bis);
                             module.onData(nbt);
                         } catch (final IOException e) {
                             TIS3D.getLog().warn("Invalid packet received.", e);
