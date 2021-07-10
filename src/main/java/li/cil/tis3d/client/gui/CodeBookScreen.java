@@ -126,6 +126,8 @@ public final class CodeBookScreen extends Screen {
             return;
         }
 
+        renderBackground(matrixStack);
+
         // Background.
         getMinecraft().getTextureManager().bind(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
         blit(matrixStack, guiX, guiY, 0, 0, GUI_WIDTH, GUI_HEIGHT);
