@@ -435,6 +435,11 @@ public final class ControllerBlockEntity extends AbstractComputerBlockEntity imp
      * the {@link #casings} field on success.
      */
     private void scan() {
+        // Ensure our neighbors list is up-to-date. Need to do this first, so we
+        // do this even if scans fail, otherwise we may fail to initialize a scan
+        // when our neighbors change (e.g. duplicate controller removed).
+        checkNeighbors();
+
         final World world = Objects.requireNonNull(getWorld());
 
         // List of processed tile entities to avoid loops.
@@ -502,7 +507,6 @@ public final class ControllerBlockEntity extends AbstractComputerBlockEntity imp
 
         // Ensure our parts know their neighbors.
         casings.forEach(CasingBlockEntity::checkNeighbors);
-        checkNeighbors();
         casings.forEach(AbstractComputerBlockEntity::rebuildOverrides);
         rebuildOverrides();
 
