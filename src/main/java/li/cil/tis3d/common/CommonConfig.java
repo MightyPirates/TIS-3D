@@ -31,10 +31,10 @@ public final class CommonConfig {
     /**
      * The maximum number of casings that may be connected to a controller.
      */
-    @Path("controller") @Min(1) @Max(16)
+    @Path("controller") @Min(1) @Max(64)
     @Comment("The maximum number of casings a single controller supports.")
     @Translation("maxCasings")
-    public static int maxCasingsPerController = 8;
+    public static int maxCasingsPerController = 16;
 
     /**
      * The maximum number of lines a program may have.
