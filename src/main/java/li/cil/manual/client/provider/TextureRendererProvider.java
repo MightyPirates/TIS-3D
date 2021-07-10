@@ -1,8 +1,8 @@
 package li.cil.manual.client.provider;
 
 import li.cil.manual.api.render.ContentRenderer;
-import li.cil.manual.api.Manual;
-import li.cil.manual.api.prefab.AbstractRendererProvider;
+import li.cil.manual.api.ManualModel;
+import li.cil.manual.api.prefab.provider.AbstractRendererProvider;
 import li.cil.manual.client.document.Strings;
 import li.cil.manual.client.document.segment.render.MissingContentRenderer;
 import li.cil.manual.client.document.segment.render.TextureContentRenderer;
@@ -21,7 +21,7 @@ public final class TextureRendererProvider extends AbstractRendererProvider {
     // --------------------------------------------------------------------- //
 
     @Override
-    public boolean matches(final Manual manual) {
+    public boolean matches(final ManualModel manual) {
         return true;
     }
 

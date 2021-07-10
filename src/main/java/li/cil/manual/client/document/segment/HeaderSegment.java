@@ -1,7 +1,7 @@
 package li.cil.manual.client.document.segment;
 
-import li.cil.manual.api.Manual;
-import li.cil.manual.api.Style;
+import li.cil.manual.api.ManualModel;
+import li.cil.manual.api.ManualStyle;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -14,7 +14,7 @@ public final class HeaderSegment extends TextSegment {
 
     // --------------------------------------------------------------------- //
 
-    public HeaderSegment(final Manual manual, final Style style, final Segment parent, final String text, final int level) {
+    public HeaderSegment(final ManualModel manual, final ManualStyle style, final Segment parent, final String text, final int level) {
         super(manual, style, parent, text);
         this.level = level;
         fontScale = Math.max(1, 1.75f - level * 0.25f);

@@ -1,7 +1,7 @@
 package li.cil.tis3d.client.manual;
 
-import li.cil.manual.api.Manual;
-import li.cil.manual.api.prefab.NamespaceContentProvider;
+import li.cil.manual.api.ManualModel;
+import li.cil.manual.api.prefab.provider.NamespaceContentProvider;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.serial.SerialInterfaceProvider;
 import li.cil.tis3d.api.serial.SerialProtocolDocumentationReference;
@@ -19,7 +19,7 @@ import java.util.stream.StreamSupport;
  * list of known protocols.
  */
 public final class SerialProtocolContentProvider extends NamespaceContentProvider {
-    private static final String SERIAL_PROTOCOLS_PATH = Manual.LANGUAGE_KEY + "/protocols/index.md";
+    private static final String SERIAL_PROTOCOLS_PATH = ManualModel.LANGUAGE_KEY + "/protocols/index.md";
 
     private static final String PATTERN_LIST = "%PROTOCOLS%";
     private static final String PATTERN_LINE_END = "\r?\n";
@@ -39,7 +39,7 @@ public final class SerialProtocolContentProvider extends NamespaceContentProvide
 
     @Override
     public Optional<Stream<String>> getContent(final String path, final String language) {
-        final String localizedProtocolsPath = SERIAL_PROTOCOLS_PATH.replaceAll(Manual.LANGUAGE_KEY, language);
+        final String localizedProtocolsPath = SERIAL_PROTOCOLS_PATH.replaceAll(ManualModel.LANGUAGE_KEY, language);
         if (localizedProtocolsPath.equals(path)) {
             return super.getContent(localizedProtocolsPath, language).
                 map(lines -> StreamSupport.

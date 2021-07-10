@@ -1,4 +1,4 @@
-package li.cil.manual.api.prefab;
+package li.cil.manual.api.prefab.provider;
 
 import li.cil.manual.api.render.ContentRenderer;
 import li.cil.manual.api.provider.RendererProvider;

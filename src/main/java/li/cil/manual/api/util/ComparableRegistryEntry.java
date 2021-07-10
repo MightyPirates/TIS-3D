@@ -1,6 +1,6 @@
 package li.cil.manual.api.util;
 
-import li.cil.manual.api.Manual;
+import li.cil.manual.api.ManualModel;
 import li.cil.manual.api.provider.ContentProvider;
 import li.cil.manual.api.provider.PathProvider;
 import li.cil.manual.api.provider.RendererProvider;
@@ -24,7 +24,7 @@ public interface ComparableRegistryEntry<T> extends IForgeRegistryEntry<T>, Comp
      * @param manual the manual to check.
      * @return {@code true} if this instance applies to the manual, {@code false} otherwise.
      */
-    default boolean matches(final Manual manual) {
+    default boolean matches(final ManualModel manual) {
         final ResourceLocation entryId = this.getRegistryName();
         final ResourceLocation manualId = manual.getRegistryName();
         return entryId != null && manualId != null &&

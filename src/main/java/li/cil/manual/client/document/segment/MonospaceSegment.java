@@ -1,14 +1,14 @@
 package li.cil.manual.client.document.segment;
 
-import li.cil.manual.api.Manual;
+import li.cil.manual.api.ManualModel;
 import li.cil.manual.api.render.FontRenderer;
-import li.cil.manual.api.Style;
+import li.cil.manual.api.ManualStyle;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public final class MonospaceSegment extends TextSegment {
-    public MonospaceSegment(final Manual manual, final Style style, final Segment parent, final String text) {
+    public MonospaceSegment(final ManualModel manual, final ManualStyle style, final Segment parent, final String text) {
         super(manual, style, parent, text);
     }
 

@@ -1,6 +1,6 @@
-package li.cil.manual.api.prefab;
+package li.cil.manual.api.prefab.provider;
 
-import li.cil.manual.api.Manual;
+import li.cil.manual.api.ManualModel;
 import li.cil.manual.api.provider.PathProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -20,10 +20,10 @@ import java.util.Optional;
 public class NamespacePathProvider extends ForgeRegistryEntry<PathProvider> implements PathProvider {
     private static final String NAMESPACE = "%NAMESPACE%";
     private static final String PATH = "%PATH%";
-    private static final String BLOCK_PATH_WITH_NAMESPACE = Manual.LANGUAGE_KEY + "/%NAMESPACE%/block/%PATH%.md";
-    private static final String BLOCK_PATH = Manual.LANGUAGE_KEY + "/block/%PATH%.md";
-    private static final String ITEM_PATH_WITH_NAMESPACE = Manual.LANGUAGE_KEY + "/%NAMESPACE%/item/%PATH%.md";
-    private static final String ITEM_PATH = Manual.LANGUAGE_KEY + "/item/%PATH%.md";
+    private static final String BLOCK_PATH_WITH_NAMESPACE = ManualModel.LANGUAGE_KEY + "/%NAMESPACE%/block/%PATH%.md";
+    private static final String BLOCK_PATH = ManualModel.LANGUAGE_KEY + "/block/%PATH%.md";
+    private static final String ITEM_PATH_WITH_NAMESPACE = ManualModel.LANGUAGE_KEY + "/%NAMESPACE%/item/%PATH%.md";
+    private static final String ITEM_PATH = ManualModel.LANGUAGE_KEY + "/item/%PATH%.md";
 
     private final String namespace;
     private final boolean keepNamespaceInPath;

@@ -1,4 +1,4 @@
-package li.cil.manual.api.prefab;
+package li.cil.manual.api.prefab.tab;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;

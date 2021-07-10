@@ -3,8 +3,8 @@ package li.cil.manual.client.provider;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import li.cil.manual.api.render.ContentRenderer;
-import li.cil.manual.api.Manual;
-import li.cil.manual.api.prefab.AbstractRendererProvider;
+import li.cil.manual.api.ManualModel;
+import li.cil.manual.api.prefab.provider.AbstractRendererProvider;
 import li.cil.manual.client.document.Strings;
 import li.cil.manual.client.document.segment.render.ItemStackContentRenderer;
 import li.cil.manual.client.document.segment.render.MissingContentRenderer;
@@ -37,7 +37,7 @@ public final class BlockRendererProvider extends AbstractRendererProvider {
     // --------------------------------------------------------------------- //
 
     @Override
-    public boolean matches(final Manual manual) {
+    public boolean matches(final ManualModel manual) {
         return true;
     }
 

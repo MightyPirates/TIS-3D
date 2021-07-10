@@ -1,7 +1,7 @@
 package li.cil.tis3d.client.manual.provider;
 
-import li.cil.manual.api.Manual;
-import li.cil.manual.api.prefab.NamespacePathProvider;
+import li.cil.manual.api.ManualModel;
+import li.cil.manual.api.prefab.provider.NamespacePathProvider;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.client.manual.Manuals;
 import li.cil.tis3d.common.tileentity.CasingTileEntity;
@@ -20,7 +20,7 @@ public class ModPathProvider extends NamespacePathProvider {
     }
 
     @Override
-    public boolean matches(final Manual manual) {
+    public boolean matches(final ManualModel manual) {
         return Objects.equals(manual, Manuals.MANUAL.get());
     }
 

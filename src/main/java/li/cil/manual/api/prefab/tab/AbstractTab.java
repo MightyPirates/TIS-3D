@@ -1,4 +1,4 @@
-package li.cil.manual.api.prefab;
+package li.cil.manual.api.prefab.tab;
 
 import li.cil.manual.api.Tab;
 import net.minecraft.util.text.ITextComponent;

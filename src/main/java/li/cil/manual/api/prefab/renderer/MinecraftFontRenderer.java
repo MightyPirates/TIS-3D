@@ -1,4 +1,4 @@
-package li.cil.manual.api.prefab;
+package li.cil.manual.api.prefab.renderer;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import li.cil.manual.api.render.FontRenderer;

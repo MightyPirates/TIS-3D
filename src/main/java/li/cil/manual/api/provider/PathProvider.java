@@ -1,6 +1,6 @@
 package li.cil.manual.api.provider;
 
-import li.cil.manual.api.Manual;
+import li.cil.manual.api.prefab.Manual;
 import li.cil.manual.api.util.ComparableRegistryEntry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;

@@ -1,4 +1,4 @@
-package li.cil.manual.api.prefab;
+package li.cil.manual.api.prefab.provider;
 
 import com.google.common.base.Charsets;
 import li.cil.manual.api.provider.ContentProvider;

@@ -1,13 +1,12 @@
-package li.cil.manual.api;
+package li.cil.manual.api.prefab;
 
 import com.google.common.io.Files;
-import li.cil.manual.api.prefab.ManualScreen;
-import li.cil.manual.api.provider.RendererProvider;
+import li.cil.manual.api.ManualModel;
+import li.cil.manual.api.Tab;
 import li.cil.manual.api.render.ContentRenderer;
 import li.cil.manual.api.util.ComparableRegistryEntry;
 import li.cil.manual.api.util.Constants;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.RegistryKey;
@@ -25,30 +24,17 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+/**
+ * Simple implementation of the {@link ManualModel} interface which should cover most use-cases.
+ */
 @OnlyIn(Dist.CLIENT)
-public class Manual extends ForgeRegistryEntry<Manual> {
-    /**
-     * The default language key in paths that will replaced by the actual language content will
-     * be looked up for, typically the currently used language in the game.
-     */
-    public static final String LANGUAGE_KEY = "%LANGUAGE%";
-
-    /**
-     * The language content look-up falls back to when no content is found for the currently active language.
-     */
-    public static final String FALLBACK_LANGUAGE = "en_us";
-
+public class Manual extends ForgeRegistryEntry<ManualModel> implements ManualModel {
     /**
      * The magic first characters indicating a redirect in a document, with the target path following.
      */
     private static final String REDIRECT_PRAGMA = "#redirect ";
 
     // ----------------------------------------------------------------------- //
-
-    /**
-     * The style to use when rendering the manual.
-     */
-    protected final Style style;
 
     /**
      * The current navigation history for this manual.
@@ -64,45 +50,32 @@ public class Manual extends ForgeRegistryEntry<Manual> {
 
     // ----------------------------------------------------------------------- //
 
-    public Manual(final Style style) {
-        this.style = style;
+    public Manual() {
         reset();
     }
 
     // ----------------------------------------------------------------------- //
 
     /**
-     * Look up the documentation path for the specified item stack.
-     *
-     * @param stack the stack to find the documentation path for.
-     * @return the path to the page, {@code null} if none is known.
+     * {@inheritDoc}
      */
+    @Override
     public Optional<String> pathFor(final ItemStack stack) {
         return find(Constants.PATH_PROVIDERS, provider -> provider.pathFor(stack));
     }
 
     /**
-     * Look up the documentation for the specified block in the world.
-     *
-     * @param world the world containing the block.
-     * @param pos   the position of the block.
-     * @param face  the face of the block.
-     * @return the path to the page, {@code null} if none is known.
+     * {@inheritDoc}
      */
+    @Override
     public Optional<String> pathFor(final World world, final BlockPos pos, final Direction face) {
         return find(Constants.PATH_PROVIDERS, provider -> provider.pathFor(world, pos, face));
     }
 
     /**
-     * Get the content of the documentation page at the specified location.
-     * <p>
-     * The provided path may contain the special variable {@link Manual#LANGUAGE_KEY},
-     * which will be resolved to the currently set language, falling back to
-     * {@link Manual#FALLBACK_LANGUAGE}.
-     *
-     * @param path the path of the page to get the content of.
-     * @return the content of the page, or {@code null} if none exists.
+     * {@inheritDoc}
      */
+    @Override
     public Optional<Iterable<String>> contentFor(final String path) {
         final String language = Minecraft.getInstance().getLanguageManager().getSelected().getCode();
         final Optional<Iterable<String>> content = contentFor(path.replace(LANGUAGE_KEY, language), language, new LinkedHashSet<>());
@@ -110,24 +83,17 @@ public class Manual extends ForgeRegistryEntry<Manual> {
     }
 
     /**
-     * Get the image renderer for the specified image path.
-     * <p>
-     * This will look for {@link RendererProvider}s registered for a prefix in the
-     * specified path. If there is no match, or the matched content provider
-     * does not provide a renderer, this will return {@code null}.
-     *
-     * @param path the path to the image to get the renderer for.
-     * @return the custom renderer for that path, or {@code null} if none exists.
+     * {@inheritDoc}
      */
+    @Override
     public Optional<ContentRenderer> imageFor(final String path) {
         return find(Constants.RENDERER_PROVIDERS, provider -> provider.getRenderer(path));
     }
 
     /**
-     * Gets the list of tabs that should be shown for this manual.
-     *
-     * @return the list of tabs.
+     * {@inheritDoc}
      */
+    @Override
     public Iterable<Tab> getTabs() {
         return StreamSupport.stream(RegistryManager.ACTIVE.getRegistry(Constants.TABS).spliterator(), false).
             filter(tab -> tab.matches(this)).
@@ -137,17 +103,9 @@ public class Manual extends ForgeRegistryEntry<Manual> {
     // ----------------------------------------------------------------------- //
 
     /**
-     * Open the manual for the specified player.
-     * <p>
-     * If you wish to display a specific page, call {@link #push(String)} with the path to the page to show.
+     * {@inheritDoc}
      */
-    public void open() {
-        Minecraft.getInstance().setScreen(createScreen());
-    }
-
-    /**
-     * Clears the navigation history of the manual and pushes the default start page to the page stack.
-     */
+    @Override
     public void reset() {
         history.clear();
         history.add(createHistoryEntry(StringUtils.stripStart(getStartPage(), "/")));
@@ -155,17 +113,9 @@ public class Manual extends ForgeRegistryEntry<Manual> {
     }
 
     /**
-     * Pushes the page at the specified path in the manual onto the navigation history, causing it
-     * to be shown if the screen is visible or will be made visible by calling {@link #open()}.
-     * <p>
-     * This may fail and result in no operation if the page on top the navigation history is the
-     * page at the specified path.
-     * <p>
-     * Note that paths must not start with a leading slash ({@code /}).
-     *
-     * @param path the path to navigate to.
-     * @throws IllegalArgumentException if {code path} starts with a slash.
+     * {@inheritDoc}
      */
+    @Override
     public void push(final String path) {
         if (path.startsWith("/")) throw new IllegalArgumentException("Path must not start with a slash.");
         if (Objects.equals(history.get(historyIndex).path, path)) {
@@ -188,37 +138,38 @@ public class Manual extends ForgeRegistryEntry<Manual> {
     }
 
     /**
-     * Tries to pop the top page from the navigation history.
-     * <p>
-     * This will never pop the last remaining page in the navigation history.
+     * {@inheritDoc}
+     *
+     * @return
      */
-    public void pop() {
-        if (historyIndex > 0) {
-            historyIndex--;
-            return;
+    @Override
+    public boolean pop() {
+        if (historyIndex <= 0) {
+            return false;
         }
 
-        final Screen screen = Minecraft.getInstance().screen;
-        if (screen instanceof ManualScreen && ((ManualScreen) screen).getManual() == this) {
-            screen.onClose();
-        }
+        historyIndex--;
+        return true;
     }
 
     /**
-     * Returns the path of the page currently on top of the page navigation stack.
-     *
-     * @return the path of the current page.
+     * {@inheritDoc}
      */
+    @Override
     public String peek() {
         return history.get(historyIndex).path;
     }
 
     /**
-     * Allows obtaining some typed userdata associated with the current manual page.
-     *
-     * @param type the type of the value to get.
-     * @param <T>  the generic type of the value to get.
-     * @return a value of the specified type, associated with the current page, if any.
+     * {@inheritDoc}
+     */
+    @Override
+    public String resolve(final String path) {
+        return resolve(peek(), path);
+    }
+
+    /**
+     * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
     public <T> Optional<T> getUserData(final Class<T> type) {
@@ -226,44 +177,16 @@ public class Manual extends ForgeRegistryEntry<Manual> {
     }
 
     /**
-     * Associates the specified user data with the current manual page.
-     *
-     * @param value the value to associate with the current page.
-     * @param <T>   the generic type of the value.
+     * {@inheritDoc}
      */
     public <T> void setUserData(final T value) {
         history.get(historyIndex).userData.put(value.getClass(), value);
-    }
-
-    /**
-     * Resolves a path relative to the current page.
-     * <p>
-     * If the specified path is an absolute path, returns the path unchanged. Otherwise
-     * returns the absolute path to the page at the specified relative path based on the
-     * current page's path.
-     * <p>
-     * Example:
-     * <pre>
-     * // peek() -> "home/index.md"
-     * resolve("rel/path.md") // -> "home/re/path.md"
-     * resolve("/abs/path.md") // -> "abs/path.md"
-     * </pre>
-     *
-     * @param path the path to resolve.
-     * @return the resolved path.
-     */
-    public String resolve(final String path) {
-        return resolve(peek(), path);
     }
 
     // ----------------------------------------------------------------------- //
 
     protected String getStartPage() {
         return LANGUAGE_KEY + "/index.md";
-    }
-
-    protected ManualScreen createScreen() {
-        return new ManualScreen(this, style);
     }
 
     protected History createHistoryEntry(final String path) {

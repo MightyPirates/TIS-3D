@@ -1,21 +1,18 @@
 package li.cil.tis3d.client.manual;
 
-import li.cil.manual.api.Manual;
-import li.cil.manual.api.Style;
+import li.cil.manual.api.ManualModel;
+import li.cil.manual.api.prefab.Manual;
 import li.cil.manual.api.Tab;
-import li.cil.manual.api.prefab.ItemStackTab;
-import li.cil.manual.api.prefab.MinecraftFontRenderer;
-import li.cil.manual.api.prefab.NamespaceContentProvider;
-import li.cil.manual.api.prefab.TextureTab;
+import li.cil.manual.api.prefab.provider.NamespaceContentProvider;
+import li.cil.manual.api.prefab.tab.ItemStackTab;
+import li.cil.manual.api.prefab.tab.TextureTab;
 import li.cil.manual.api.provider.ContentProvider;
 import li.cil.manual.api.provider.PathProvider;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.client.manual.provider.ModPathProvider;
-import li.cil.tis3d.client.renderer.font.NormalFontRenderer;
 import li.cil.tis3d.common.block.Blocks;
 import li.cil.tis3d.common.item.Items;
 import li.cil.tis3d.util.RegistryUtils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -26,52 +23,11 @@ import net.minecraftforge.registries.DeferredRegister;
 
 @OnlyIn(Dist.CLIENT)
 public final class Manuals {
-
-    private static final DeferredRegister<Manual> MANUALS = RegistryUtils.create(Manual.class);
+    private static final DeferredRegister<ManualModel> MANUALS = RegistryUtils.create(ManualModel.class);
 
     // --------------------------------------------------------------------- //
 
-    public static final RegistryObject<Manual> MANUAL = MANUALS.register("manual", () -> new Manual(new Style() {
-        @Override
-        public int getRegularTextColor() {
-            return 0xFF333333;
-        }
-
-        @Override
-        public int getMonospaceTextColor() {
-            return 0xFF404D80;
-        }
-
-        @Override
-        public int getRegularLinkColor() {
-            return 0xFF333399;
-        }
-
-        @Override
-        public int getHoveredLinkColor() {
-            return 0xFF6666CC;
-        }
-
-        @Override
-        public int getRegularDeadLinkColor() {
-            return 0xFF993333;
-        }
-
-        @Override
-        public int getHoveredDeadLinkColor() {
-            return 0xFFCC6666;
-        }
-
-        @Override
-        public li.cil.manual.api.render.FontRenderer getRegularFont() {
-            return new MinecraftFontRenderer(Minecraft.getInstance().font);
-        }
-
-        @Override
-        public li.cil.manual.api.render.FontRenderer getMonospaceFont() {
-            return NormalFontRenderer.INSTANCE;
-        }
-    }));
+    public static final RegistryObject<ManualModel> MANUAL = MANUALS.register("manual", Manual::new);
 
     // --------------------------------------------------------------------- //
 
@@ -85,19 +41,19 @@ public final class Manuals {
         contentProviders.register("serial_protocols", SerialProtocolContentProvider::new);
 
         tabs.register("home", () -> new TextureTab(
-            Manual.LANGUAGE_KEY + "/index.md",
+                ManualModel.LANGUAGE_KEY + "/index.md",
             new TranslationTextComponent("tis3d.manual.home"),
             new ResourceLocation(API.MOD_ID, "textures/gui/manual_home.png")));
         tabs.register("blocks", () -> new ItemStackTab(
-            Manual.LANGUAGE_KEY + "/block/index.md",
+                ManualModel.LANGUAGE_KEY + "/block/index.md",
             new TranslationTextComponent("tis3d.manual.blocks"),
             new ItemStack(Blocks.CONTROLLER.get())));
         tabs.register("modules", () -> new ItemStackTab(
-            Manual.LANGUAGE_KEY + "/item/index.md",
+                ManualModel.LANGUAGE_KEY + "/item/index.md",
             new TranslationTextComponent("tis3d.manual.items"),
             new ItemStack(Items.EXECUTION_MODULE.get())));
         tabs.register("serial_protocols", () -> new TextureTab(
-            Manual.LANGUAGE_KEY + "/protocols/index.md",
+                ManualModel.LANGUAGE_KEY + "/protocols/index.md",
             new TranslationTextComponent("tis3d.manual.serial_protocols"),
             new ResourceLocation(API.MOD_ID, "textures/gui/manual_serial_protocols.png")));
     }

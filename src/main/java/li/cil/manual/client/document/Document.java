@@ -2,8 +2,8 @@ package li.cil.manual.client.document;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import li.cil.manual.api.Manual;
-import li.cil.manual.api.Style;
+import li.cil.manual.api.ManualModel;
+import li.cil.manual.api.ManualStyle;
 import li.cil.manual.api.render.ContentRenderer;
 import li.cil.manual.client.document.segment.*;
 import li.cil.tis3d.api.API;
@@ -40,8 +40,8 @@ import java.util.regex.Pattern;
  */
 @OnlyIn(Dist.CLIENT)
 public final class Document {
-    private final Manual manual;
-    private final Style style;
+    private final ManualModel manual;
+    private final ManualStyle style;
     @Nullable private Segment root;
     @Nullable private InteractiveSegment lastHovered;
 
@@ -55,7 +55,7 @@ public final class Document {
      * @param style  the fonts to use when rendering the generated segments.
      * @param manual the manual the document belongs to.
      */
-    public Document(final Style style, final Manual manual) {
+    public Document(final ManualStyle style, final ManualModel manual) {
         this.manual = manual;
         this.style = style;
     }
@@ -166,19 +166,16 @@ public final class Document {
             return Optional.empty();
         }
 
-        // On some systems/drivers/graphics cards the next calls won't update the
-        // depth buffer correctly if alpha test is enabled. Guess how we found out?
-        // By noticing that on those systems it only worked while chat messages
-        // were visible. Yeah. I know.
-        RenderSystem.disableAlphaTest();
-
         // Clear depth mask, then create masks in foreground above and below scroll area.
         RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, false);
 
+        // Tow options here, disable alpha testing or disable color output. We pick the former.
+        RenderSystem.disableAlphaTest();
+
         matrixStack.pushPose();
         matrixStack.translate(0, 0, 500);
-        Screen.fill(matrixStack, 0, -1000, width, 0, 0);
-        Screen.fill(matrixStack, 0, height, width, height + 1000, 0);
+        Screen.fill(matrixStack, -10, -1000, width + 20, 0, 0);
+        Screen.fill(matrixStack, -10, height, width + 20, height + 1000, 0);
         matrixStack.popPose();
 
         // Actual rendering.
@@ -253,6 +250,7 @@ public final class Document {
         setHoveredSegment(hovered.orElse(null));
 
         RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, false);
+        RenderSystem.enableAlphaTest();
 
         return hovered;
     }
@@ -277,31 +275,31 @@ public final class Document {
 
     // ----------------------------------------------------------------------- //
 
-    private static Segment HeaderSegment(final Manual m, final Style f, final Segment s, final Matcher t) {
+    private static Segment HeaderSegment(final ManualModel m, final ManualStyle f, final Segment s, final Matcher t) {
         return new HeaderSegment(m, f, s, t.group(2), t.group(1).length());
     }
 
-    private static Segment CodeSegment(final Manual m, final Style f, final Segment s, final Matcher t) {
+    private static Segment CodeSegment(final ManualModel m, final ManualStyle f, final Segment s, final Matcher t) {
         return new MonospaceSegment(m, f, s, t.group(2));
     }
 
-    private static Segment LinkSegment(final Manual m, final Style f, final Segment s, final Matcher t) {
+    private static Segment LinkSegment(final ManualModel m, final ManualStyle f, final Segment s, final Matcher t) {
         return new LinkSegment(m, f, s, t.group(1), t.group(2));
     }
 
-    private static Segment BoldSegment(final Manual m, final Style f, final Segment s, final Matcher t) {
+    private static Segment BoldSegment(final ManualModel m, final ManualStyle f, final Segment s, final Matcher t) {
         return new BoldSegment(m, f, s, t.group(2));
     }
 
-    private static Segment ItalicSegment(final Manual m, final Style f, final Segment s, final Matcher t) {
+    private static Segment ItalicSegment(final ManualModel m, final ManualStyle f, final Segment s, final Matcher t) {
         return new ItalicSegment(m, f, s, t.group(2));
     }
 
-    private static Segment StrikethroughSegment(final Manual m, final Style f, final Segment s, final Matcher t) {
+    private static Segment StrikethroughSegment(final ManualModel m, final ManualStyle f, final Segment s, final Matcher t) {
         return new StrikethroughSegment(m, f, s, t.group(1));
     }
 
-    private static Segment ImageSegment(final Manual m, final Style f, final Segment s, final Matcher t) {
+    private static Segment ImageSegment(final ManualModel m, final ManualStyle f, final Segment s, final Matcher t) {
         final String title = t.group(1);
         final String url = t.group(2);
         final Optional<ContentRenderer> renderer = m.imageFor(url);

@@ -1,6 +1,6 @@
 package li.cil.manual.api.provider;
 
-import li.cil.manual.api.prefab.NamespaceContentProvider;
+import li.cil.manual.api.prefab.provider.NamespaceContentProvider;
 import li.cil.manual.api.util.ComparableRegistryEntry;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;

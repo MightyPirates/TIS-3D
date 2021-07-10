@@ -1,8 +1,8 @@
 package li.cil.manual.client.document.segment;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import li.cil.manual.api.Manual;
-import li.cil.manual.api.Style;
+import li.cil.manual.api.ManualModel;
+import li.cil.manual.api.ManualStyle;
 import li.cil.manual.api.render.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -36,7 +36,7 @@ public class TextSegment extends AbstractSegment {
 
     // ----------------------------------------------------------------------- //
 
-    public TextSegment(final Manual manual, final Style style, @Nullable final Segment parent, final String text) {
+    public TextSegment(final ManualModel manual, final ManualStyle style, @Nullable final Segment parent, final String text) {
         super(manual, style, parent);
         this.text = text;
     }
