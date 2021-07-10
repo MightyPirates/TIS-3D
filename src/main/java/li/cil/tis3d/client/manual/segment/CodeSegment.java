@@ -1,6 +1,7 @@
 package li.cil.tis3d.client.manual.segment;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import li.cil.tis3d.client.render.font.NormalFontRenderer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -34,6 +35,8 @@ public final class CodeSegment extends BasicTextSegment {
 
     @Override
     public Optional<InteractiveSegment> render(final MatrixStack matrices, final int x, final int y, final int indent, final int maxWidth, final TextRenderer renderer, final int mouseX, final int mouseY) {
+        RenderSystem.enableDepthTest();
+
         int currentX = x + indent;
         int currentY = y + OFFSET_Y;
         String chars = text();
@@ -44,7 +47,7 @@ public final class CodeSegment extends BasicTextSegment {
             GlStateManager.color4f(0.25f, 0.3f, 0.5f, 1);
             GlStateManager.pushMatrix();
             GlStateManager.translatef(currentX, currentY, 0);
-            GlStateManager.scalef(FONT_SCALE, FONT_SCALE, FONT_SCALE);
+            GlStateManager.scalef(FONT_SCALE, FONT_SCALE, 1);
             NormalFontRenderer.INSTANCE.drawString(part.toUpperCase());
             GlStateManager.popMatrix();
             currentX = x + wrapIndent;

@@ -60,7 +60,7 @@ public class TextSegment extends BasicTextSegment {
             GlStateManager.color4f(0f, 0f, 0f, 1);
             GlStateManager.pushMatrix();
             GlStateManager.translatef(currentX, currentY, 0);
-            GlStateManager.scalef(scale, scale, scale);
+            GlStateManager.scalef(scale, scale, 1);
             GlStateManager.translatef(-currentX, -currentY, 0);
             renderer.draw(matrices, format + part, currentX, currentY, color);
             GlStateManager.popMatrix();
