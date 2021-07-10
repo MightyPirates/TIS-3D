@@ -349,11 +349,11 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
 
         final ByteBuf data = Unpooled.buffer();
 
-        data.writeShort((short)getState().pc);
+        data.writeShort((short) getState().pc);
         data.writeShort(getState().acc);
         data.writeShort(getState().bak);
         data.writeBoolean(getState().last.isPresent());
-        getState().last.ifPresent(port -> data.writeByte((byte)port.ordinal()));
+        getState().last.ifPresent(port -> data.writeByte((byte) port.ordinal()));
         data.writeByte(state.ordinal());
 
         getCasing().sendData(getFace(), data, DATA_TYPE_INCREMENTAL);
@@ -368,7 +368,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
         matrices.scale(1 / 128f, 1 / 128f, 1);
         matrices.translate(1, 1, 0);
 
-        final AbstractFontRenderer fontRenderer = (AbstractFontRenderer)SmallFontRenderer.INSTANCE;
+        final AbstractFontRenderer fontRenderer = (AbstractFontRenderer) SmallFontRenderer.INSTANCE;
         final VertexConsumer vcFont = fontRenderer.chooseVertexConsumer(vcp);
 
         // Draw register info on top.
@@ -423,7 +423,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
             }
 
             fontRenderer.drawString(matrices.peek(), vcFont, light, overlay,
-                                    color, line, 18);
+                color, line, 18);
 
             final int yDelta = fontRenderer.getCharHeight() + 1;
             yDeltaSum += yDelta;
@@ -434,14 +434,14 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
 
         final VertexConsumer vcColor = vcp.getBuffer(RenderLayer.getSolid());
         drawLine(matrices.peek(), vcColor, light, overlay,
-                 ColorUtils.WHITE, 1);
+            ColorUtils.WHITE, 1);
 
         if (currentLineOffset != -1) {
             // Draw current line marker behind text
             matrices.translate(0, currentLineOffset, 0.005f / 2);
 
             drawLine(matrices.peek(), vcColor, light, overlay,
-                     currentLineBgColor, fontRenderer.getCharHeight());
+                currentLineBgColor, fontRenderer.getCharHeight());
         }
     }
 
@@ -455,8 +455,8 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
                                  final int light, final int overlay,
                                  final int color, final int height) {
         RenderUtil.drawColorQuad(matrices, vcColor,
-                                 -0.5f, -0.5f, 72, height + 1,
-                                 color, light, overlay);
+            -0.5f, -0.5f, 72, height + 1,
+            color, light, overlay);
     }
 
     // --------------------------------------------------------------------- //
@@ -488,19 +488,17 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
 
             final List<String> code = new ArrayList<>();
             for (int page = 0; page < pages.size(); page++) {
-                String line = "";
+                String line = pages.getString(page);
                 if (stack.getItem() == net.minecraft.item.Items.WRITTEN_BOOK) {
-                    String string = pages.getString(page);
                     try {
-                        StringVisitable stringVisitable = Text.Serializer.fromJson(string);
+                        final StringVisitable stringVisitable = Text.Serializer.fromJson(line);
                         if (stringVisitable != null) {
-                           line = stringVisitable.getString();
+                            line = stringVisitable.getString();
                         }
-                     } catch (Exception var4) {
-                     }
-                } else if (stack.getItem() == net.minecraft.item.Items.WRITABLE_BOOK) {
-                    line = pages.getString(page);
+                    } catch (final Exception ignored) {
+                    }
                 }
+                line = line.replaceAll("§[a-z0-9]", "");
                 Collections.addAll(code, Constants.PATTERN_LINES.split(line));
             }
             return code;
