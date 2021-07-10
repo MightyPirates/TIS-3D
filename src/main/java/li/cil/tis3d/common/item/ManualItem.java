@@ -56,6 +56,7 @@ public final class ManualItem extends AbstractManualItem {
         };
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     protected ManualScreenStyle getScreenStyle() {
         return new ManualScreenStyle() {
