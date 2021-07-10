@@ -177,6 +177,7 @@ curseforge {
         releaseType = curse_project_releaseType
         changelogType = "markdown"
         changelog = file("changelog.md")
+        addGameVersion "Forge"
         addGameVersion minecraft_version
         addGameVersion "Java 8"
     }
