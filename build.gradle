@@ -158,7 +158,7 @@ artifacts {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            version "MC${minecraft_version}-Forge-${semver}"
+            version "MC${minecraft_version}-Forge-${version}"
             artifact jar
             artifact apiJar
         }
