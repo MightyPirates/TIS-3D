@@ -3,7 +3,7 @@ package li.cil.tis3d.client.renderer.font;
 import li.cil.tis3d.api.API;
 import net.minecraft.util.ResourceLocation;
 
-public final class NormalFontRenderer extends AbstractFontRenderer {
+public final class NormalFontRenderer extends BitmapFontRenderer {
     public static final NormalFontRenderer INSTANCE = new NormalFontRenderer();
 
     private static final ResourceLocation LOCATION_FONT_TEXTURE = new ResourceLocation(API.MOD_ID, "textures/font/normal.png");

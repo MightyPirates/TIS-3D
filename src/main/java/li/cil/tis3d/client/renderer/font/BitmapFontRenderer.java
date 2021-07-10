@@ -18,7 +18,7 @@ import java.util.Optional;
 /**
  * Base implementation for texture based font rendering.
  */
-public abstract class AbstractFontRenderer implements FontRenderer {
+public abstract class BitmapFontRenderer implements FontRenderer {
     private final Char2IntMap CHAR_MAP;
 
     private final int COLUMNS = getResolution() / (charWidth() + getGapU());
@@ -29,7 +29,7 @@ public abstract class AbstractFontRenderer implements FontRenderer {
 
     private RenderType renderLayer;
 
-    AbstractFontRenderer() {
+    BitmapFontRenderer() {
         CHAR_MAP = new Char2IntOpenHashMap();
         final CharSequence chars = getCharacters();
         for (int index = 0; index < chars.length(); index++) {
