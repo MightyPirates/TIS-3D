@@ -33,6 +33,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.text.StringVisitable;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -486,7 +488,20 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
 
             final List<String> code = new ArrayList<>();
             for (int page = 0; page < pages.size(); page++) {
-                Collections.addAll(code, Constants.PATTERN_LINES.split(pages.getString(page)));
+                String line = "";
+                if (stack.getItem() == net.minecraft.item.Items.WRITTEN_BOOK) {
+                    String string = pages.getString(page);
+                    try {
+                        StringVisitable stringVisitable = Text.Serializer.fromJson(string);
+                        if (stringVisitable != null) {
+                           line = stringVisitable.getString();
+                        }
+                     } catch (Exception var4) {
+                     }
+                } else if (stack.getItem() == net.minecraft.item.Items.WRITABLE_BOOK) {
+                    line = pages.getString(page);
+                }
+                Collections.addAll(code, Constants.PATTERN_LINES.split(line));
             }
             return code;
         }
