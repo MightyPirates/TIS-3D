@@ -3,13 +3,13 @@ package li.cil.tis3d.common.module;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import li.cil.manual.api.render.FontRenderer;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.traits.ModuleWithBlockChangeListener;
 import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
-import li.cil.manual.api.render.FontRenderer;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.common.Constants;
@@ -30,6 +30,8 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.ITextProperties;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -437,7 +439,18 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
 
             final List<String> code = new ArrayList<>();
             for (int page = 0; page < pages.size(); page++) {
-                Collections.addAll(code, Constants.PATTERN_LINES.split(pages.getString(page)));
+                String line = pages.getString(page);
+                if (Items.is(stack, net.minecraft.item.Items.WRITTEN_BOOK)) {
+                    try {
+                        final ITextProperties stringVisitable = ITextComponent.Serializer.fromJson(line);
+                        if (stringVisitable != null) {
+                            line = stringVisitable.getString();
+                        }
+                    } catch (final Exception ignored) {
+                    }
+                }
+                line = line.replaceAll("§[a-z0-9]", "");
+                Collections.addAll(code, Constants.PATTERN_LINES.split(line));
             }
             return code;
         }
