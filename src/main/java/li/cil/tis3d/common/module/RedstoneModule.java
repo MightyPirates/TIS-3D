@@ -127,7 +127,7 @@ public final class RedstoneModule extends AbstractModuleWithRotation implements 
         final float heightOutput = relativeOutput * SHARED_H;
         final float v0Output = SHARED_Y - heightOutput;
         context.drawAtlasQuadUnlit(Textures.LOCATION_OVERLAY_MODULE_REDSTONE_BARS,
-            0, 0, SHARED_W, heightOutput,
+            OUTPUT_X, v0Output, SHARED_W, heightOutput,
             OUTPUT_X, v0Output, OUTPUT_X + SHARED_W, v0Output + heightOutput,
             Color.WHITE);
 
