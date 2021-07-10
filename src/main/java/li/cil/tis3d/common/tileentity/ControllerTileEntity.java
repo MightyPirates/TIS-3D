@@ -432,6 +432,11 @@ public final class ControllerTileEntity extends ComputerTileEntity implements IT
      * the {@link #casings} field on success.
      */
     private void scan() {
+        // Ensure our neighbors list is up-to-date. Need to do this first, so we
+        // do this even if scans fail, otherwise we may fail to initialize a scan
+        // when our neighbors change (e.g. duplicate controller removed).
+        checkNeighbors();
+
         final World world = getBlockEntityWorld();
 
         // List of processed tile entities to avoid loops.
@@ -499,7 +504,6 @@ public final class ControllerTileEntity extends ComputerTileEntity implements IT
 
         // Ensure our parts know their neighbors.
         casings.forEach(CasingTileEntity::checkNeighbors);
-        checkNeighbors();
         casings.forEach(ComputerTileEntity::rebuildOverrides);
         rebuildOverrides();
 
