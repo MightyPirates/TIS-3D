@@ -60,8 +60,6 @@ public final class CodeBookScreen extends Screen {
     private static final int COLOR_CODE_SELECTED = 0xFFEEEEEE;
     private static final int COLOR_SELECTION = 0xCC333399;
 
-    private static final int MAX_CHARS_PER_LINE = 33;
-
     private ButtonChangePage buttonNextPage;
     private ButtonChangePage buttonPreviousPage;
     private ButtonDeletePage buttonDeletePage;
@@ -278,7 +276,7 @@ public final class CodeBookScreen extends Screen {
                     final StringBuilder currLine = lines.get(line);
                     final StringBuilder nextLine = lines.get(line + 1);
 
-                    if (currLine.length() + nextLine.length() < MAX_CHARS_PER_LINE) {
+                    if (currLine.length() + nextLine.length() < Constants.MAX_CHARS_PER_LINE) {
                         currLine.append(nextLine);
                         lines.remove(line + 1);
                     }
@@ -296,7 +294,7 @@ public final class CodeBookScreen extends Screen {
                     final StringBuilder prevLine = lines.get(line - 1);
                     final StringBuilder currLine = lines.get(line);
 
-                    if (prevLine.length() + currLine.length() < MAX_CHARS_PER_LINE) {
+                    if (prevLine.length() + currLine.length() < Constants.MAX_CHARS_PER_LINE) {
                         prevLine.append(currLine);
                         lines.remove(line);
                     }
@@ -379,7 +377,7 @@ public final class CodeBookScreen extends Screen {
         final int line = indexToLine(getSelectionStart());
         final int column = indexToColumn(getSelectionStart());
 
-        if (lines.get(line).length() < MAX_CHARS_PER_LINE) {
+        if (lines.get(line).length() < Constants.MAX_CHARS_PER_LINE) {
             lines.get(line).insert(column, String.valueOf(codePoint).toUpperCase(Locale.US));
             selectionStart = selectionEnd = selectionEnd + 1;
         }
@@ -554,11 +552,11 @@ public final class CodeBookScreen extends Screen {
         if (pastedLines.length - 1 + lines.size() > Constants.MAX_LINES_PER_PAGE) {
             return false; // Invalid paste, too many resulting lines.
         }
-        if (pastedLines[0].length() + lines.get(selectedLine).length() > MAX_CHARS_PER_LINE) {
+        if (pastedLines[0].length() + lines.get(selectedLine).length() > Constants.MAX_CHARS_PER_LINE) {
             return false; // Invalid paste, combined first line and current line too long.
         }
         for (final String pastedLine : pastedLines) {
-            if (pastedLine.length() > MAX_CHARS_PER_LINE) {
+            if (pastedLine.length() > Constants.MAX_CHARS_PER_LINE) {
                 return false; // Invalid paste, a line is too long.
             }
         }
@@ -645,11 +643,11 @@ public final class CodeBookScreen extends Screen {
             if (isErrorOnPreviousPage) {
                 localLineNumber = 0;
                 startX = columnToX(localLineNumber, 0);
-                rawEndX = columnToX(localLineNumber, MAX_CHARS_PER_LINE);
+                rawEndX = columnToX(localLineNumber, Constants.MAX_CHARS_PER_LINE);
             } else if (isErrorOnNextPage) {
                 localLineNumber = lines.size() - 1;
                 startX = columnToX(localLineNumber, 0);
-                rawEndX = columnToX(localLineNumber, MAX_CHARS_PER_LINE);
+                rawEndX = columnToX(localLineNumber, Constants.MAX_CHARS_PER_LINE);
             } else {
                 localLineNumber = exception.getLineNumber();
                 startX = columnToX(localLineNumber, exception.getStart());

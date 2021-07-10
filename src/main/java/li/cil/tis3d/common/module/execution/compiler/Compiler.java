@@ -3,6 +3,7 @@ package li.cil.tis3d.common.module.execution.compiler;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import li.cil.tis3d.common.CommonConfig;
+import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.module.execution.MachineState;
 import li.cil.tis3d.common.module.execution.compiler.instruction.*;
 import li.cil.tis3d.common.module.execution.instruction.*;
@@ -46,8 +47,8 @@ public final class Compiler {
             final Map<String, String> defines = new HashMap<>();
             for (int lineNumber = 0; lineNumber < lines.length; lineNumber++) {
                 // Enforce max line length.
-                if (lines[lineNumber].length() > CommonConfig.maxColumnsPerLine) {
-                    throw new ParseException(Strings.MESSAGE_TOO_MANY_COLUMNS, lineNumber, CommonConfig.maxColumnsPerLine, CommonConfig.maxColumnsPerLine);
+                if (lines[lineNumber].length() > Constants.MAX_CHARS_PER_LINE) {
+                    throw new ParseException(Strings.MESSAGE_TOO_MANY_COLUMNS, lineNumber, Constants.MAX_CHARS_PER_LINE, Constants.MAX_CHARS_PER_LINE);
                 }
 
                 // Check for defines, also trims whitespace.
