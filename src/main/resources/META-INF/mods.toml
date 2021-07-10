@@ -14,15 +14,6 @@ description = '''
 TIS-100 inspired low-tech computing for Minecraft.
 '''
 
-[[mods]]
-modId = "markdown_manual"
-version = "1.0.0"
-displayName = "Markdown Manual"
-authors = "Sangar"
-description = '''
-Library mod providing a convenient way of defining in-game manuals.
-'''
-
 [[dependencies.tis3d]]
 modId = "forge"
 mandatory = true

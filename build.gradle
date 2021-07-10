@@ -45,11 +45,14 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
 repositories {
     maven { url "http://dvs1.progwml6.com/files/maven" } // JEI
-    maven { url "http://maven.cil.li/" } // Markdown Manual
+    maven { url "http://maven.cil.li/" } // MarkdownManual
 }
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+
+    compileOnly fg.deobf("li.cil.markdown_manual:MarkdownManual:MC${minecraft_version}-Forge-${manual_version}:api")
+    runtimeOnly fg.deobf("li.cil.markdown_manual:MarkdownManual:MC${minecraft_version}-Forge-${manual_version}")
 
     compileOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}:${jei_version}:api")
     runtimeOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}:${jei_version}")
@@ -155,6 +158,7 @@ artifacts {
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            version "MC${minecraft_version}-Forge-${semver}"
             artifact jar
             artifact apiJar
         }
