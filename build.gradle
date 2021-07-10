@@ -124,6 +124,7 @@ curseforge {
         changelogType = "markdown"
         changelog = file("changelog.md")
         addGameVersion config.minecraft.simpleversion
+        addGameVersion "Fabric"
         addGameVersion "Java 8"
         addGameVersion "Java 9"
         addGameVersion "Java 10"
