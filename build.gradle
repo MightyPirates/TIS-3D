@@ -1,24 +1,8 @@
-buildscript {
-    repositories {
-        jcenter()
-        maven {
-            name = 'Fabric'
-            url = 'https://maven.fabricmc.net/'
-        }
-        gradlePluginPortal()
-    }
-    dependencies {
-        classpath "net.fabricmc:fabric-loom:0.4-SNAPSHOT"
-    }
-}
-
 plugins {
+    id 'fabric-loom' version '0.7-SNAPSHOT'
+    id 'maven-publish'
     id "com.matthewprenger.cursegradle" version "1.4.0"
 }
-
-apply plugin: 'fabric-loom'
-apply plugin: 'java'
-apply plugin: 'maven-publish'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
@@ -56,31 +40,22 @@ else
 ext.simpleVersion = version
 version = "MC${config.minecraft.simpleversion}-Fabric-${project.version}"
 
-minecraft {
-    refmapName = "tis3d.refmap.json"
-}
-
 dependencies {
     minecraft "com.mojang:minecraft:${config.minecraft.version}"
     mappings "net.fabricmc:yarn:${config.fabric.mappings}"
-    modCompile "net.fabricmc:fabric-loader:{config.fabric.loader}"
+    modImplementation "net.fabricmc:fabric-loader:{config.fabric.loader}"
 
     // Fabric API. This is technically optional, but you probably want it anyway.
-    modCompile "net.fabricmc.fabric-api:fabric-api:${config.fabric.api}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${config.fabric.api}"
 
-    compile 'com.google.code.findbugs:jsr305:3.0.2'
+    compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
 }
 
 processResources {
     inputs.property "version", config.mod.version
 
-    from(sourceSets.main.resources.srcDirs) {
-        include "fabric.mod.json"
-        expand "version": config.mod.version
-    }
-
-    from(sourceSets.main.resources.srcDirs) {
-        exclude "fabric.mod.json"
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
     }
 }
 
