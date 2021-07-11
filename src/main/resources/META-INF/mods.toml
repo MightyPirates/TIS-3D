@@ -29,5 +29,5 @@ side = "BOTH"
 [[dependencies.tis3d]]
 modId = "markdown_manual"
 mandatory = true
-versionRange = "[1.0.0,)"
+versionRange = "[${manual_version_min},)"
 side = "CLIENT"

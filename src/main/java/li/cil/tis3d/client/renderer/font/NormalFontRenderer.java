@@ -1,5 +1,6 @@
 package li.cil.tis3d.client.renderer.font;
 
+import li.cil.manual.api.prefab.renderer.BitmapFontRenderer;
 import li.cil.tis3d.api.API;
 import net.minecraft.util.ResourceLocation;
 
