@@ -50,4 +50,7 @@ public abstract class RegistryUtils {
 
         ENTRIES.clear();
     }
+
+    private RegistryUtils() {
+    }
 }
