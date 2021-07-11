@@ -153,7 +153,7 @@ public interface Module {
      * @param hit    the relative position that was clicked.
      * @return <tt>true</tt> if the click was handled, <tt>false</tt> otherwise.
      */
-    boolean onActivate(final PlayerEntity player, final Hand hand, final Vector3d hit);
+    boolean use(final PlayerEntity player, final Hand hand, final Vector3d hit);
 
     /**
      * Called with NBT data sent from the remote instance of the module.

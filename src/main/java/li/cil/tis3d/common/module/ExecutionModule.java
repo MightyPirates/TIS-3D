@@ -144,7 +144,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
     }
 
     @Override
-    public boolean onActivate(final PlayerEntity player, final Hand hand, final Vector3d hit) {
+    public boolean use(final PlayerEntity player, final Hand hand, final Vector3d hit) {
         final ItemStack heldItem = player.getItemInHand(hand);
 
         // Vanilla book? If so, make that a code book.

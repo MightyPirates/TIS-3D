@@ -136,7 +136,7 @@ public abstract class AbstractModule implements Module {
      * @param hitPos the hit position to project.
      * @return the projected UV coordinate, with the Z component being 0.
      * @see #getLocalHitPosition(RayTraceResult)
-     * @see Module#onActivate(PlayerEntity, Hand, Vector3d)
+     * @see Module#use(PlayerEntity, Hand, Vector3d)
      */
     protected Vector3d hitToUV(final Vector3d hitPos) {
         return TransformUtil.hitToUV(getFace(), hitPos);
@@ -210,7 +210,7 @@ public abstract class AbstractModule implements Module {
     }
 
     @Override
-    public boolean onActivate(final PlayerEntity player, final Hand hand, final Vector3d hit) {
+    public boolean use(final PlayerEntity player, final Hand hand, final Vector3d hit) {
         return false;
     }
 

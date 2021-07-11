@@ -122,7 +122,7 @@ public class RandomAccessMemoryModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public boolean onActivate(final PlayerEntity player, final Hand hand, final Vector3d hit) {
+    public boolean use(final PlayerEntity player, final Hand hand, final Vector3d hit) {
         final ItemStack heldItem = player.getItemInHand(hand);
         if (!Items.is(heldItem, Items.READ_ONLY_MEMORY_MODULE)) {
             return false;

@@ -147,7 +147,7 @@ public final class CasingBlock extends Block {
 
         // Let the module handle the activation.
         final Module module = casing.getModule(Face.fromDirection(side));
-        if (module != null && module.onActivate(player, hand, localHitPos)) {
+        if (module != null && module.use(player, hand, localHitPos)) {
             return ActionResultType.sidedSuccess(world.isClientSide());
         }
 

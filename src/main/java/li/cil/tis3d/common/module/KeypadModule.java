@@ -99,7 +99,7 @@ public final class KeypadModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public boolean onActivate(final PlayerEntity player, final Hand hand, final Vector3d hit) {
+    public boolean use(final PlayerEntity player, final Hand hand, final Vector3d hit) {
         if (player.isShiftKeyDown()) {
             return false;
         }

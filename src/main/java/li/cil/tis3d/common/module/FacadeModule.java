@@ -61,7 +61,7 @@ public final class FacadeModule extends AbstractModule implements ModuleWithBloc
     // Module
 
     @Override
-    public boolean onActivate(final PlayerEntity player, final Hand hand, final Vector3d hit) {
+    public boolean use(final PlayerEntity player, final Hand hand, final Vector3d hit) {
         if (getCasing().isLocked()) {
             return false;
         }
