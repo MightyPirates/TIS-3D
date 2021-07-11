@@ -18,20 +18,20 @@ apply plugin: 'maven-publish'
 
 def getGitRef() {
     try {
-        def stdout = new ByteArrayOutputStream()
+        final def stdout = new ByteArrayOutputStream()
         exec {
             commandLine 'git', 'rev-parse', '--short', 'HEAD'
             standardOutput = stdout
         }
         return stdout.toString().trim()
-    } catch (Throwable e) {
+    } catch (final Throwable ignored) {
         return "unknown"
     }
 }
 
 final def semver = "${version_major}.${version_minor}.${version_patch}"
 
-String build_number = System.getenv("PROMOTED_NUMBER");
+String build_number = System.getenv("PROMOTED_NUMBER")
 if (build_number == null)
     build_number = System.getenv("BUILD_NUMBER")
 if (build_number == null)
@@ -146,7 +146,7 @@ jar {
 }
 
 task apiJar(type: Jar) {
-    classifier = 'api'
+    archiveClassifier.set('api')
     from sourceSets.main.allSource
     from sourceSets.main.output
     include 'li/cil/tis3d/api/**'
