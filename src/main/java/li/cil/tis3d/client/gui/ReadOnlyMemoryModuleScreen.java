@@ -37,8 +37,8 @@ public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMe
     public ReadOnlyMemoryModuleScreen(final ReadOnlyMemoryModuleContainer container, final PlayerInventory playerInventory, final ITextComponent title) {
         super(container, playerInventory, title);
 
-        width = 190;
-        height = 130;
+        imageWidth = 190;
+        imageHeight = 130;
     }
 
     public void setData(final byte[] data) {
@@ -104,7 +104,7 @@ public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMe
     protected void renderBg(final MatrixStack matrixStack, final float partialTicks, final int x, final int y) {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         getMinecraft().getTextureManager().bind(Textures.LOCATION_GUI_MEMORY);
-        blit(matrixStack, x, y, 0, 0, width, height);
+        blit(matrixStack, leftPos, topPos, 0, 0, imageWidth, imageHeight);
     }
 
     @Override
