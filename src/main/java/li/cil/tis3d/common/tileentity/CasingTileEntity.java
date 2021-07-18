@@ -36,6 +36,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.util.Constants.BlockFlags;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
@@ -359,7 +360,7 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
 
         final World world = getBlockEntityWorld();
         final BlockState state = world.getBlockState(getBlockPos());
-        world.sendBlockUpdated(getBlockPos(), state, state, 2);
+        world.sendBlockUpdated(getBlockPos(), state, state, BlockFlags.BLOCK_UPDATE);
     }
 
     @Override

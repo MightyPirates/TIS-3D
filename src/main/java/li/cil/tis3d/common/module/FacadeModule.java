@@ -27,6 +27,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.common.util.Constants.BlockFlags;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -95,7 +96,7 @@ public final class FacadeModule extends AbstractModule implements ModuleWithBloc
         final World world = getCasing().getCasingLevel();
         final BlockPos position = getCasing().getPosition();
         final BlockState state = world.getBlockState(position);
-        world.sendBlockUpdated(position, state, state, 3);
+        world.sendBlockUpdated(position, state, state, BlockFlags.DEFAULT);
     }
 
     @Override
