@@ -2,8 +2,8 @@ package li.cil.tis3d.common.module;
 
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
-import li.cil.tis3d.api.module.traits.ModuleWithBlockChangeListener;
 import li.cil.tis3d.api.module.traits.ModuleWithBakedModel;
+import li.cil.tis3d.api.module.traits.ModuleWithBlockChangeListener;
 import li.cil.tis3d.api.prefab.module.AbstractModule;
 import li.cil.tis3d.util.BlockStateUtils;
 import net.minecraft.block.BlockRenderType;
@@ -14,7 +14,6 @@ import net.minecraft.client.renderer.BlockModelShapes;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.util.Direction;
@@ -67,12 +66,7 @@ public final class FacadeModule extends AbstractModule implements ModuleWithBloc
             return false;
         }
 
-        final ItemStack stack = player.getItemInHand(hand);
-        if (stack.isEmpty()) {
-            return false;
-        }
-
-        final BlockState state = BlockStateUtils.getBlockStateFromItemStack(stack);
+        final BlockState state = BlockStateUtils.getBlockStateFromItemStack(player.getItemInHand(hand));
         if (state == null) {
             return false;
         }
