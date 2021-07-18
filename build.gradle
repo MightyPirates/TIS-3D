@@ -9,12 +9,12 @@ buildscript {
 }
 
 plugins {
+    id 'idea'
+    id 'maven-publish'
     id "com.matthewprenger.cursegradle" version "1.4.0"
 }
 
 apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'eclipse'
-apply plugin: 'maven-publish'
 
 def getGitRef() {
     try {
@@ -44,8 +44,8 @@ archivesBaseName = "${mod_name.replace(' ', '-')}-MC${minecraft_version}-Forge"
 java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
 repositories {
-    maven { url "http://dvs1.progwml6.com/files/maven" } // JEI
-    maven { url "http://maven.cil.li/" } // MarkdownManual
+    maven { url "https://dvs1.progwml6.com/files/maven" } // JEI
+    maven { url "https://maven.cil.li/" } // MarkdownManual
 }
 
 dependencies {
@@ -183,6 +183,14 @@ curseforge {
         addGameVersion "Java 8"
         relations {
             requiredDependency "markdownmanual"
+        }
+    }
+}
+
+idea {
+    module {
+        for (final String exclude in ['run', 'out', 'logs', 'src/generated']) {
+            excludeDirs += file(exclude)
         }
     }
 }
