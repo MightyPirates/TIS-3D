@@ -74,8 +74,8 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
      */
     private short value;
 
-    public InfraredPacketEntity(final EntityType<?> type, final Level world) {
-        super(type, world);
+    public InfraredPacketEntity(final EntityType<?> type, final Level level) {
+        super(type, level);
         setNoGravity(true);
     }
 
@@ -114,7 +114,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
     @Override
     public void revive() {
         super.revive();
-        if (!getCommandSenderWorld().isClientSide()) {
+        if (!level.isClientSide()) {
             InfraredPacketTickHandler.watchPacket(this);
         }
     }
@@ -124,7 +124,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
     @Override
     protected void defineSynchedData() {
         getEntityData().define(DATA_VALUE, 0);
-        if (!getCommandSenderWorld().isClientSide()) {
+        if (!level.isClientSide()) {
             InfraredPacketTickHandler.watchPacket(this);
         }
     }
@@ -241,8 +241,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
     }
 
     private void emitParticles(@Nullable final HitResult hit) {
-        final Level world = getCommandSenderWorld();
-        if (!(world instanceof final ServerLevel serverWorld)) {
+        if (!(level instanceof final ServerLevel serverLevel)) {
             // Entities regularly die too quickly for the client to have a
             // chance to simulate them, so we trigger the particles from
             // the server. Kinda meh, but whatever works.
@@ -255,7 +254,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
         final double t = random.nextDouble();
         final Vec3 delta = hit == null ? getDeltaMovement() : hit.getLocation().subtract(position());
         final Vec3 pos = position().add(delta.scale(t));
-        serverWorld.sendParticles(DustParticleOptions.REDSTONE, pos.x, pos.y, pos.z, 1, 0, 0, 0, 0);
+        serverLevel.sendParticles(DustParticleOptions.REDSTONE, pos.x, pos.y, pos.z, 1, 0, 0, 0, 0);
     }
 
     @Nullable
@@ -271,15 +270,14 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
 
     @Nullable
     private HitResult checkCollision() {
-        final Level world = getCommandSenderWorld();
         final Vec3 start = position();
         final Vec3 target = start.add(getDeltaMovement());
 
         // Check for block collisions.
-        final HitResult blockHit = Raytracing.raytrace(world, start, target, Raytracing::intersectIgnoringTransparent);
+        final HitResult blockHit = Raytracing.raytrace(level, start, target, Raytracing::intersectIgnoringTransparent);
 
         // Check for entity collisions.
-        final HitResult entityHit = checkEntityCollision(world, start, target);
+        final HitResult entityHit = checkEntityCollision(level, start, target);
 
         // If we have both, pick the closer one.
         if (blockHit != null && blockHit.getType() != HitResult.Type.MISS &&
@@ -303,12 +301,12 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
     }
 
     @Nullable
-    private HitResult checkEntityCollision(final Level world, final Vec3 start, final Vec3 target) {
+    private HitResult checkEntityCollision(final Level level, final Vec3 start, final Vec3 target) {
         Entity entityHit = null;
         Vec3 entityHitVec = null;
         double bestSqrDistance = Double.POSITIVE_INFINITY;
 
-        final List<Entity> collisions = world.getEntities(this, getBoundingBox().expandTowards(getDeltaMovement()));
+        final List<Entity> collisions = level.getEntities(this, getBoundingBox().expandTowards(getDeltaMovement()));
         for (final Entity entity : collisions) {
             if (entity.canBeCollidedWith()) {
                 final AABB entityBounds = entity.getBoundingBox();

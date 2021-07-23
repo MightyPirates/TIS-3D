@@ -11,7 +11,7 @@ import li.cil.tis3d.api.serial.SerialInterfaceProvider;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.common.provider.SerialInterfaceProviders;
-import li.cil.tis3d.util.WorldUtils;
+import li.cil.tis3d.util.LevelUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -149,17 +149,17 @@ public final class SerialPortModule extends AbstractModule implements ModuleWith
         }
         isScanScheduled = false;
 
-        final Level world = getCasing().getCasingLevel();
+        final Level level = getCasing().getCasingLevel();
         final BlockPos neighborPos = getCasing().getPosition().relative(Face.toDirection(getFace()));
         final Direction neighborSide = Face.toDirection(getFace().getOpposite());
-        if (WorldUtils.isLoaded(world, neighborPos)) {
-            final Optional<SerialInterfaceProvider> provider = SerialInterfaceProviders.getProviderFor(world, neighborPos, neighborSide);
+        if (LevelUtils.isLoaded(level, neighborPos)) {
+            final Optional<SerialInterfaceProvider> provider = SerialInterfaceProviders.getProviderFor(level, neighborPos, neighborSide);
             if (provider.isPresent()) {
-                if (!serialInterface.isPresent() || !provider.get().stillValid(world, neighborPos, neighborSide, serialInterface.get())) {
+                if (!serialInterface.isPresent() || !provider.get().stillValid(level, neighborPos, neighborSide, serialInterface.get())) {
                     // Either we didn't have an interface for our neighbor yet,
                     // or the interface has become invalid, so create a new one.
                     reset();
-                    serialInterface = provider.get().getInterface(world, neighborPos, neighborSide);
+                    serialInterface = provider.get().getInterface(level, neighborPos, neighborSide);
                     if (serialInterface.isPresent() && serialInterfaceNbt.isPresent()) {
                         serialInterface.get().readFromNBT(serialInterfaceNbt.get());
                         serialInterfaceNbt = Optional.empty(); // Done reading, don't re-use.

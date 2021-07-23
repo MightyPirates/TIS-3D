@@ -62,14 +62,14 @@ public final class CasingInventory extends Inventory implements WorldlyContainer
     @Override
     public void setChanged() {
         tileEntity.setChanged();
-        final Level world = tileEntity.getBlockEntityWorld();
-        if (!world.isClientSide()) {
+        final Level level = tileEntity.getBlockEntityLevel();
+        if (!level.isClientSide()) {
             BlockState state = tileEntity.getBlockState();
             for (final Face face : Face.VALUES) {
                 final BooleanProperty property = CasingBlock.FACE_TO_PROPERTY.get(face);
                 state = state.setValue(property, !items[face.ordinal()].isEmpty());
             }
-            world.setBlockAndUpdate(tileEntity.getBlockPos(), state);
+            level.setBlockAndUpdate(tileEntity.getBlockPos(), state);
         }
     }
 

@@ -105,8 +105,8 @@ public final class SequencerModule extends AbstractModuleWithRotation {
         // Handle input on the client and send it to the server for higher
         // hit position resolution (MC sends this to the server at a super
         // low resolution for some reason).
-        final Level world = getCasing().getCasingLevel();
-        if (world.isClientSide()) {
+        final Level level = getCasing().getCasingLevel();
+        if (level.isClientSide()) {
             final Vec3 uv = hitToUV(hit);
             final int col = uvToCol((float) uv.x);
             final int row = uvToRow((float) uv.y);

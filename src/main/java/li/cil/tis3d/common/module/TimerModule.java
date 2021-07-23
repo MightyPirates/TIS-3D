@@ -30,7 +30,7 @@ public final class TimerModule extends AbstractModuleWithRotation {
     // --------------------------------------------------------------------- //
     // Persisted data
 
-    // The world time the timer elapses at.
+    // The game time the timer elapses at.
     private long timer;
 
     // --------------------------------------------------------------------- //
@@ -60,8 +60,8 @@ public final class TimerModule extends AbstractModuleWithRotation {
     @Override
     public void step() {
         if (!hasElapsed) {
-            final long worldTime = getCasing().getCasingLevel().getGameTime();
-            if (worldTime >= timer) {
+            final long gameTime = getCasing().getCasingLevel().getGameTime();
+            if (gameTime >= timer) {
                 hasElapsed = true;
             }
         }
@@ -106,8 +106,8 @@ public final class TimerModule extends AbstractModuleWithRotation {
 
         // Render detailed state when player is close.
         if (!hasElapsed && context.closeEnoughForDetails(getCasing().getPosition())) {
-            final long worldTime = context.getDispatcher().level.getGameTime();
-            final float remaining = (float) (timer - worldTime) - context.getPartialTicks();
+            final long gameTime = context.getDispatcher().level.getGameTime();
+            final float remaining = (float) (timer - gameTime) - context.getPartialTicks();
             if (remaining <= 0) {
                 hasElapsed = true;
             } else {
@@ -140,9 +140,9 @@ public final class TimerModule extends AbstractModuleWithRotation {
      * @param value the value to set the timer to.
      */
     private void setTimer(final short value) {
-        final long worldTime = getCasing().getCasingLevel().getGameTime();
-        timer = worldTime + (value & 0xFFFF);
-        hasElapsed = timer == worldTime;
+        final long gameTime = getCasing().getCasingLevel().getGameTime();
+        timer = gameTime + (value & 0xFFFF);
+        hasElapsed = timer == gameTime;
 
         if (!hasElapsed) {
             cancelWrite();

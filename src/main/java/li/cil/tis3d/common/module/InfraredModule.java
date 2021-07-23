@@ -60,12 +60,12 @@ public final class InfraredModule extends AbstractModule implements ICapabilityP
 
     @Override
     public void step() {
-        final Level world = getCasing().getCasingLevel();
+        final Level level = getCasing().getCasingLevel();
 
         stepOutput();
         stepInput();
 
-        lastStep = world.getGameTime();
+        lastStep = level.getGameTime();
     }
 
     @Override
@@ -148,8 +148,8 @@ public final class InfraredModule extends AbstractModule implements ICapabilityP
             return;
         }
 
-        final Level world = getCasing().getCasingLevel();
-        if (world.isClientSide()) {
+        final Level level = getCasing().getCasingLevel();
+        if (level.isClientSide()) {
             return;
         }
 
@@ -191,8 +191,8 @@ public final class InfraredModule extends AbstractModule implements ICapabilityP
             }
             if (receivingPipe.canTransfer()) {
                 // Don't actually read more values if we already sent a packet this tick.
-                final Level world = getCasing().getCasingLevel();
-                if (world.getGameTime() > lastStep) {
+                final Level level = getCasing().getCasingLevel();
+                if (level.getGameTime() > lastStep) {
                     emitInfraredPacket(receivingPipe.read());
                 }
             }
@@ -208,10 +208,10 @@ public final class InfraredModule extends AbstractModule implements ICapabilityP
         final Direction facing = Face.toDirection(getFace());
         final BlockPos blockPos = getCasing().getPosition().relative(facing);
 
-        final Level world = getCasing().getCasingLevel();
+        final Level level = getCasing().getCasingLevel();
         final Vec3 position = new Vec3(blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5);
         final Vec3 direction = new Vec3(facing.getStepX(), facing.getStepY(), facing.getStepZ());
 
-        InfraredAPI.sendPacket(world, position, direction, value);
+        InfraredAPI.sendPacket(level, position, direction, value);
     }
 }

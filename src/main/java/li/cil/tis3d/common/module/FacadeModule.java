@@ -88,10 +88,10 @@ public final class FacadeModule extends AbstractModule implements ModuleWithBloc
         load(data);
 
         // Force re-render to make change of facade configuration visible.
-        final Level world = getCasing().getCasingLevel();
+        final Level level = getCasing().getCasingLevel();
         final BlockPos position = getCasing().getPosition();
-        final BlockState state = world.getBlockState(position);
-        world.sendBlockUpdated(position, state, state, BlockFlags.DEFAULT);
+        final BlockState state = level.getBlockState(position);
+        level.sendBlockUpdated(position, state, state, BlockFlags.DEFAULT);
     }
 
     @Override
@@ -134,17 +134,17 @@ public final class FacadeModule extends AbstractModule implements ModuleWithBloc
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public List<BakedQuad> getQuads(@Nullable final BlockState state, @Nullable final Direction side, final Random random) {
+    public List<BakedQuad> getQuads(@Nullable final BlockState state, @Nullable final Direction face, final Random random) {
         if (facadeState == null) {
             return Collections.emptyList();
         }
 
         final BlockModelShaper shapes = Minecraft.getInstance().getBlockRenderer().getBlockModelShaper();
         final BakedModel model = shapes.getBlockModel(facadeState);
-        final Level world = getCasing().getCasingLevel();
+        final Level level = getCasing().getCasingLevel();
         final BlockPos position = getCasing().getPosition();
-        final IModelData modelData = model.getModelData(world, position, facadeState, EmptyModelData.INSTANCE);
-        return model.getQuads(facadeState, side, random, modelData);
+        final IModelData modelData = model.getModelData(level, position, facadeState, EmptyModelData.INSTANCE);
+        return model.getQuads(facadeState, face, random, modelData);
     }
 
     // --------------------------------------------------------------------- //

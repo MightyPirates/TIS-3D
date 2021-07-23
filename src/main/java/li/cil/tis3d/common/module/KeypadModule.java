@@ -118,8 +118,8 @@ public final class KeypadModule extends AbstractModuleWithRotation {
         // Handle input on the client and send it to the server for higher
         // hit position resolution (MC sends this to the server at a super
         // low resolution for some reason).
-        final Level world = getCasing().getCasingLevel();
-        if (world.isClientSide()) {
+        final Level level = getCasing().getCasingLevel();
+        if (level.isClientSide()) {
             final Vec3 uv = hitToUV(hit);
             final int button = uvToButton((float) uv.x, (float) uv.y);
             if (button == -1) {
@@ -138,8 +138,8 @@ public final class KeypadModule extends AbstractModuleWithRotation {
 
     @Override
     public void onData(final CompoundTag data) {
-        final Level world = getCasing().getCasingLevel();
-        if (world.isClientSide()) {
+        final Level level = getCasing().getCasingLevel();
+        if (level.isClientSide()) {
             // Got state on which key is currently 'pressed'.
             if (data.contains(TAG_VALUE)) {
                 value = Optional.of(data.getShort(TAG_VALUE));

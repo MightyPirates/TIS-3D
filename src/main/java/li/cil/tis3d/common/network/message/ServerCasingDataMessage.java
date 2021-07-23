@@ -20,9 +20,9 @@ public final class ServerCasingDataMessage extends AbstractCasingDataMessage {
 
     @Override
     protected void handleMessage(final NetworkEvent.Context context) {
-        final Level world = getClientWorld();
-        if (world != null) {
-            handleMessage(world);
+        final Level level = getClientLevel();
+        if (level != null) {
+            handleMessage(level);
         }
     }
 }

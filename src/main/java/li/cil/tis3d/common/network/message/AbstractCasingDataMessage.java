@@ -27,8 +27,8 @@ public abstract class AbstractCasingDataMessage extends AbstractMessageWithPosit
 
     // --------------------------------------------------------------------- //
 
-    protected void handleMessage(final Level world) {
-        withTileEntity(world, CasingTileEntity.class, casing -> {
+    protected void handleMessage(final Level level) {
+        withTileEntity(level, CasingTileEntity.class, casing -> {
             while (data.readableBytes() > 0) {
                 final Module module = casing.getModule(Face.VALUES[data.readByte()]);
                 final ByteBuf moduleData = data.readBytes(data.readUnsignedShort());

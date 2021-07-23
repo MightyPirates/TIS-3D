@@ -103,7 +103,7 @@ public interface Module {
      * <p>
      * This is intended for freeing up resources (e.g. allocated texture or
      * audio memory). Unlike {@link #onDisabled()} this is only called once
-     * on a module, at the very end of its life. Avoid world interaction in
+     * on a module, at the very end of its life. Avoid level interaction in
      * this callback to avoid loading the chunk again.
      * <p>
      * This is called on the server <em>and</em> the client.
@@ -142,7 +142,7 @@ public interface Module {
      * Called when a player right-clicks the module while installed in a casing.
      * <p>
      * The face is implicitly given by the face the module is installed in,
-     * as is the world via the casing's world.
+     * as is the level via the casing's level.
      * <p>
      * Note that there should be some way in which a click can be ignored, e.g.
      * by a player sneaking, otherwise the module cannot be removed from the

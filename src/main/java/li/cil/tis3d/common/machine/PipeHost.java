@@ -9,7 +9,7 @@ import net.minecraft.world.level.Level;
  * Abstraction layer for pipe containers, provides positional awareness.
  */
 public interface PipeHost {
-    Level getPipeHostWorld();
+    Level getPipeHostLevel();
 
     BlockPos getPipeHostPosition();
 

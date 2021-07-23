@@ -118,13 +118,13 @@ public final class TerminalModule extends AbstractModuleWithRotation {
         stepOutput();
         stepInput();
 
-        final Level world = getCasing().getCasingLevel();
-        if (sendBuffer != null && world.getGameTime() > lastSendTick) {
+        final Level level = getCasing().getCasingLevel();
+        if (sendBuffer != null && level.getGameTime() > lastSendTick) {
             getCasing().sendData(getFace(), sendBuffer);
             sendBuffer = null;
         }
 
-        lastSendTick = world.getGameTime();
+        lastSendTick = level.getGameTime();
     }
 
     @Override
@@ -181,8 +181,8 @@ public final class TerminalModule extends AbstractModuleWithRotation {
             return true;
         }
 
-        final Level world = player.getCommandSenderWorld();
-        if (world.isClientSide()) {
+        final Level level = player.level;
+        if (level.isClientSide()) {
             openScreen();
         }
 
@@ -470,9 +470,9 @@ public final class TerminalModule extends AbstractModuleWithRotation {
     }
 
     private void bell() {
-        final Level world = getCasing().getCasingLevel();
-        if (!world.isClientSide()) {
-            world.playSound(null, getCasing().getPosition(), SoundEvents.NOTE_BLOCK_PLING, SoundSource.BLOCKS, 0.3f, 2f);
+        final Level level = getCasing().getCasingLevel();
+        if (!level.isClientSide()) {
+            level.playSound(null, getCasing().getPosition(), SoundEvents.NOTE_BLOCK_PLING, SoundSource.BLOCKS, 0.3f, 2f);
         }
     }
 

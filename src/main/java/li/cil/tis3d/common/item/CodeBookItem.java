@@ -32,16 +32,16 @@ public final class CodeBookItem extends ModItem {
     // Item
 
     @Override
-    public InteractionResultHolder<ItemStack> use(final Level world, final Player player, final InteractionHand hand) {
-        if (world.isClientSide()) {
+    public InteractionResultHolder<ItemStack> use(final Level level, final Player player, final InteractionHand hand) {
+        if (level.isClientSide()) {
             openScreen(player, hand);
         }
-        return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), world.isClientSide());
+        return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), level.isClientSide());
     }
 
     @Override
-    public boolean doesSneakBypassUse(final ItemStack stack, final LevelReader world, final BlockPos pos, final Player player) {
-        return world.getBlockEntity(pos) instanceof Casing;
+    public boolean doesSneakBypassUse(final ItemStack stack, final LevelReader level, final BlockPos pos, final Player player) {
+        return level.getBlockEntity(pos) instanceof Casing;
     }
 
     // --------------------------------------------------------------------- //

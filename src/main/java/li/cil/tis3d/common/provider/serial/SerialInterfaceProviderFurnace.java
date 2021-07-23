@@ -24,13 +24,13 @@ public final class SerialInterfaceProviderFurnace extends ForgeRegistryEntry<Ser
     // SerialInterfaceProvider
 
     @Override
-    public boolean matches(final Level world, final BlockPos position, final Direction side) {
-        return world.getBlockEntity(position) instanceof FurnaceBlockEntity;
+    public boolean matches(final Level level, final BlockPos position, final Direction side) {
+        return level.getBlockEntity(position) instanceof FurnaceBlockEntity;
     }
 
     @Override
-    public Optional<SerialInterface> getInterface(final Level world, final BlockPos position, final Direction face) {
-        final FurnaceBlockEntity furnace = Objects.requireNonNull((FurnaceBlockEntity) world.getBlockEntity(position));
+    public Optional<SerialInterface> getInterface(final Level level, final BlockPos position, final Direction face) {
+        final FurnaceBlockEntity furnace = Objects.requireNonNull((FurnaceBlockEntity) level.getBlockEntity(position));
         return Optional.of(new SerialInterfaceFurnace(furnace));
     }
 
@@ -40,7 +40,7 @@ public final class SerialInterfaceProviderFurnace extends ForgeRegistryEntry<Ser
     }
 
     @Override
-    public boolean stillValid(final Level world, final BlockPos position, final Direction side, final SerialInterface serialInterface) {
+    public boolean stillValid(final Level level, final BlockPos position, final Direction side, final SerialInterface serialInterface) {
         return serialInterface instanceof SerialInterfaceFurnace;
     }
 

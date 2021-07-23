@@ -1,6 +1,6 @@
 package li.cil.tis3d.common.network.message;
 
-import li.cil.tis3d.util.WorldUtils;
+import li.cil.tis3d.util.LevelUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.Level;
@@ -22,9 +22,9 @@ public abstract class AbstractMessageWithPosition extends AbstractMessage {
     // --------------------------------------------------------------------- //
 
     @SuppressWarnings("unchecked")
-    protected <T extends BlockEntity> void withTileEntity(final Level world, final Class<T> type, final Consumer<T> callback) {
-        if (WorldUtils.isLoaded(world, position)) {
-            final BlockEntity tileEntity = world.getBlockEntity(position);
+    protected <T extends BlockEntity> void withTileEntity(final Level level, final Class<T> type, final Consumer<T> callback) {
+        if (LevelUtils.isLoaded(level, position)) {
+            final BlockEntity tileEntity = level.getBlockEntity(position);
             if (tileEntity != null && type.isAssignableFrom(tileEntity.getClass())) {
                 callback.accept((T) tileEntity);
             }

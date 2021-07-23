@@ -27,8 +27,8 @@ public final class KeyItem extends ModItem {
     }
 
     @Override
-    public boolean doesSneakBypassUse(final ItemStack stack, final LevelReader world, final BlockPos pos, final Player player) {
-        return world.getBlockState(pos).getBlock() == Blocks.CASING.get();
+    public boolean doesSneakBypassUse(final ItemStack stack, final LevelReader level, final BlockPos pos, final Player player) {
+        return level.getBlockState(pos).getBlock() == Blocks.CASING.get();
     }
 
     @Override

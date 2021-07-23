@@ -5,7 +5,7 @@ import li.cil.tis3d.api.machine.HaltAndCatchFireException;
 import li.cil.tis3d.common.CommonConfig;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.HaltAndCatchFireMessage;
-import li.cil.tis3d.util.WorldUtils;
+import li.cil.tis3d.util.LevelUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -169,12 +169,12 @@ public final class ControllerTileEntity extends ComputerTileEntity {
      * cause additional steps when not in the paused step!
      */
     public void forceStep() {
-        final Level world = getBlockEntityWorld();
+        final Level level = getBlockEntityLevel();
         if (state == ControllerState.RUNNING) {
             forceStep = true;
             final Vec3 pos = Vec3.atCenterOf(getBlockPos());
-            world.playSound(null, pos.x(), pos.y(), pos.z(),
-                SoundEvents.STONE_BUTTON_CLICK_ON, SoundSource.BLOCKS, 0.2f, 0.8f + world.random.nextFloat() * 0.1f);
+            level.playSound(null, pos.x(), pos.y(), pos.z(),
+                SoundEvents.STONE_BUTTON_CLICK_ON, SoundSource.BLOCKS, 0.2f, 0.8f + level.random.nextFloat() * 0.1f);
         }
     }
 
@@ -182,8 +182,8 @@ public final class ControllerTileEntity extends ComputerTileEntity {
      * Reset the controller, pause for a moment and catch fire.
      */
     public void haltAndCatchFire() {
-        final Level world = getBlockEntityWorld();
-        if (!world.isClientSide()) {
+        final Level level = getBlockEntityLevel();
+        if (!level.isClientSide()) {
             state = ControllerState.READY;
             casings.forEach(CasingTileEntity::onDisabled);
             final HaltAndCatchFireMessage message = new HaltAndCatchFireMessage(getBlockPos());
@@ -200,7 +200,7 @@ public final class ControllerTileEntity extends ComputerTileEntity {
     public void setRemoved() {
         super.setRemoved();
 
-        if (getBlockEntityWorld().isClientSide()) {
+        if (getBlockEntityLevel().isClientSide()) {
             return;
         }
 
@@ -270,39 +270,39 @@ public final class ControllerTileEntity extends ComputerTileEntity {
     }
 
     private void clientTick() {
-        final Level world = getBlockEntityWorld();
+        final Level level = getBlockEntityLevel();
 
         if (hcfCooldown > 0) {
             --hcfCooldown;
 
             // TODO WTF is this, server on client check, huh??
-            if (world instanceof final ServerLevel serverWorld) {
+            if (level instanceof final ServerLevel serverLevel) {
                 // Spawn some fire particles! No actual fire, that'd be... problematic.
                 for (final Direction facing : Direction.values()) {
                     final BlockPos neighborPos = getBlockPos().relative(facing);
-                    final BlockState neighborState = world.getBlockState(neighborPos);
-                    if (neighborState.isSolidRender(world, neighborPos)) {
+                    final BlockState neighborState = level.getBlockState(neighborPos);
+                    if (neighborState.isSolidRender(level, neighborPos)) {
                         continue;
                     }
-                    if (world.random.nextFloat() > 0.25f) {
+                    if (level.random.nextFloat() > 0.25f) {
                         continue;
                     }
-                    final float ox = neighborPos.getX() + world.random.nextFloat();
-                    final float oy = neighborPos.getY() + world.random.nextFloat();
-                    final float oz = neighborPos.getZ() + world.random.nextFloat();
-                    serverWorld.sendParticles(ParticleTypes.FLAME, ox, oy, oz, 5, 0, 0, 0, 0);
+                    final float ox = neighborPos.getX() + level.random.nextFloat();
+                    final float oy = neighborPos.getY() + level.random.nextFloat();
+                    final float oz = neighborPos.getZ() + level.random.nextFloat();
+                    serverLevel.sendParticles(ParticleTypes.FLAME, ox, oy, oz, 5, 0, 0, 0, 0);
                 }
             }
         }
     }
 
     private void serverTick() {
-        final Level world = getBlockEntityWorld();
+        final Level level = getBlockEntityLevel();
 
         if (state != lastSentState) {
-            final LevelChunk chunk = world.getChunkAt(getBlockPos());
-            final BlockState blockState = world.getBlockState(getBlockPos());
-            world.markAndNotifyBlock(getBlockPos(), chunk, blockState, blockState, 7, 512);
+            final LevelChunk chunk = level.getChunkAt(getBlockPos());
+            final BlockState blockState = level.getBlockState(getBlockPos());
+            level.markAndNotifyBlock(getBlockPos(), chunk, blockState, blockState, 7, 512);
             lastSentState = state;
         }
 
@@ -343,7 +343,7 @@ public final class ControllerTileEntity extends ComputerTileEntity {
             forceStep = forceStep && power == 1;
 
             // Are we powered?
-            if (!world.hasNeighborSignal(getBlockPos())) {
+            if (!level.hasNeighborSignal(getBlockPos())) {
                 // Nope, fall back to ready state, disable modules.
                 state = ControllerState.READY;
                 casings.forEach(CasingTileEntity::onDisabled);
@@ -361,7 +361,7 @@ public final class ControllerTileEntity extends ComputerTileEntity {
                     if (power < 15) {
                         // Stepping slower than 100%.
                         final int delay = 15 - power;
-                        if (world.getGameTime() % delay == 0 || forceStep) {
+                        if (level.getGameTime() % delay == 0 || forceStep) {
                             step();
                         }
                     } else {
@@ -388,35 +388,35 @@ public final class ControllerTileEntity extends ComputerTileEntity {
      * queue if they're a controller or casing and haven't been checked yet (or
      * added to the queue yet).
      * <p>
-     * This returns a boolean value indicating whether a world border has been
+     * This returns a boolean value indicating whether a level border has been
      * hit. In this case we abort the search and wait, to avoid potentially
      * partially loaded multi-blocks.
      * <p>
      * Note that this is also used in {@link CasingTileEntity} for the reverse
      * search when trying to notify a controller.
      * <p>
-     * <em>Important</em>: we have to pass along a valid world object here
-     * instead of relying on the passed tile entity's world, since we may
+     * <em>Important</em>: we have to pass along a valid level object here
+     * instead of relying on the passed tile entity's level, since we may
      * have caused tile entity creation in rare cases (e.g. broken saves
      * where tile entities were not restored during load), which will not have
-     * their world set if this is called from the update loop (where newly
+     * their level set if this is called from the update loop (where newly
      * created tile entities are added to a separate list, and will be added
-     * to their chunk and thus get their world set later on).
+     * to their chunk and thus get their level set later on).
      *
-     * @param world      the world we're scanning for tile entities in.
+     * @param level      the level we're scanning for tile entities in.
      * @param tileEntity the tile entity to get the neighbors for.
      * @param processed  the list of processed tile entities.
      * @param queue      the list of pending tile entities.
      * @return <tt>true</tt> if all neighbors could be checked, <tt>false</tt> otherwise.
      */
-    static boolean addNeighbors(final Level world, final BlockEntity tileEntity, final Set<BlockEntity> processed, final Queue<BlockEntity> queue) {
+    static boolean addNeighbors(final Level level, final BlockEntity tileEntity, final Set<BlockEntity> processed, final Queue<BlockEntity> queue) {
         for (final Direction facing : Direction.values()) {
             final BlockPos neighborPos = tileEntity.getBlockPos().relative(facing);
-            if (!WorldUtils.isLoaded(world, neighborPos)) {
+            if (!LevelUtils.isLoaded(level, neighborPos)) {
                 return false;
             }
 
-            final BlockEntity neighborTileEntity = world.getBlockEntity(neighborPos);
+            final BlockEntity neighborTileEntity = level.getBlockEntity(neighborPos);
             if (neighborTileEntity == null) {
                 continue;
             }
@@ -442,7 +442,7 @@ public final class ControllerTileEntity extends ComputerTileEntity {
         // when our neighbors change (e.g. duplicate controller removed).
         checkNeighbors();
 
-        final Level world = getBlockEntityWorld();
+        final Level level = getBlockEntityLevel();
 
         // List of processed tile entities to avoid loops.
         final Set<BlockEntity> processed = new HashSet<>();
@@ -462,7 +462,7 @@ public final class ControllerTileEntity extends ComputerTileEntity {
             if (tileEntity instanceof ControllerTileEntity) {
                 if (tileEntity == this) {
                     // Special case: first iteration, add the neighbors.
-                    if (!addNeighbors(world, tileEntity, processed, queue)) {
+                    if (!addNeighbors(level, tileEntity, processed, queue)) {
                         clear(ControllerState.INCOMPLETE);
                         return;
                     }
@@ -481,13 +481,13 @@ public final class ControllerTileEntity extends ComputerTileEntity {
                 // Register as the controller with the casing and add neighbors.
                 final CasingTileEntity casing = (CasingTileEntity) tileEntity;
                 newCasings.add(casing);
-                addNeighbors(world, casing, processed, queue);
+                addNeighbors(level, casing, processed, queue);
             }
         }
 
         // Special handling in case we triggered tile entity creation while
         // scanning (see comment on addNeighbors), re-scan next tick when
-        // they all have their world object set... but only exit after having
+        // they all have their level object set... but only exit after having
         // touched all of them, to make sure they've been created.
         if (newCasings.stream().anyMatch(c -> !c.hasLevel())) {
             return;
@@ -527,11 +527,11 @@ public final class ControllerTileEntity extends ComputerTileEntity {
      * @return the accumulative redstone signal.
      */
     private int computePower() {
-        final Level world = getBlockEntityWorld();
+        final Level level = getBlockEntityLevel();
 
         int acc = 0;
         for (final Direction facing : Direction.values()) {
-            acc += Math.max(0, Math.min(15, world.getSignal(getBlockPos().relative(facing), facing)));
+            acc += Math.max(0, Math.min(15, level.getSignal(getBlockPos().relative(facing), facing)));
         }
         return acc;
     }

@@ -20,10 +20,10 @@ public interface RedstoneInputProvider extends IForgeRegistryEntry<RedstoneInput
     /**
      * Get the redstone level provided to the specified face of a block at the specified position.
      *
-     * @param world the world containing the block in question.
-     * @param pos   the position of the block.
-     * @param face  the face of the block.
+     * @param level    the level containing the block in question.
+     * @param position the position of the block.
+     * @param face     the face of the block.
      * @return the redstone level going into the face of the block.
      */
-    int getInput(final Level world, final BlockPos pos, final Direction face);
+    int getInput(final Level level, final BlockPos position, final Direction face);
 }

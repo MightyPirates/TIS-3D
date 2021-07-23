@@ -28,10 +28,10 @@ public interface ModuleWithBakedModel {
      * logic.
      *
      * @param state  the casing's block state.
-     * @param side   the side to obtain replacement quads for.
+     * @param face   the side to obtain replacement quads for.
      * @param random the random seed to use for the quad generation.
      * @return the list of replacement quads, or <c>null</c> to use the default casing quads.
      */
     @OnlyIn(Dist.CLIENT)
-    List<BakedQuad> getQuads(final @Nullable BlockState state, @Nullable final Direction side, final Random random);
+    List<BakedQuad> getQuads(final @Nullable BlockState state, @Nullable final Direction face, final Random random);
 }

@@ -26,9 +26,9 @@ public final class SerialInterfaceProviders {
         MODULE_PROVIDERS.register("furnace", SerialInterfaceProviderFurnace::new);
     }
 
-    public static Optional<SerialInterfaceProvider> getProviderFor(final Level world, final BlockPos position, final Direction face) {
+    public static Optional<SerialInterfaceProvider> getProviderFor(final Level level, final BlockPos position, final Direction face) {
         for (final SerialInterfaceProvider provider : MODULE_PROVIDER_REGISTRY.get()) {
-            if (provider.matches(world, position, face)) {
+            if (provider.matches(level, position, face)) {
                 return Optional.of(provider);
             }
         }

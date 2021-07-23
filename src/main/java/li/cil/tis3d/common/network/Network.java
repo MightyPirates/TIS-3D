@@ -9,7 +9,7 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.common.CommonConfig;
 import li.cil.tis3d.common.network.message.*;
 import li.cil.tis3d.common.tileentity.ComputerTileEntity;
-import li.cil.tis3d.util.WorldUtils;
+import li.cil.tis3d.util.LevelUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
@@ -95,17 +95,17 @@ public final class Network {
 
     // --------------------------------------------------------------------- //
 
-    public static PacketDistributor.PacketTarget getTargetPoint(final Level world, final double x, final double y, final double z, final int range) {
-        final PacketDistributor.TargetPoint target = new PacketDistributor.TargetPoint(x, y, z, range, world.dimension());
+    public static PacketDistributor.PacketTarget getTargetPoint(final Level level, final double x, final double y, final double z, final int range) {
+        final PacketDistributor.TargetPoint target = new PacketDistributor.TargetPoint(x, y, z, range, level.dimension());
         return PacketDistributor.NEAR.with(() -> target);
     }
 
-    public static PacketDistributor.PacketTarget getTargetPoint(final Level world, final BlockPos position, final int range) {
-        return getTargetPoint(world, position.getX() + 0.5, position.getY() + 0.5, position.getZ() + 0.5, range);
+    public static PacketDistributor.PacketTarget getTargetPoint(final Level level, final BlockPos position, final int range) {
+        return getTargetPoint(level, position.getX() + 0.5, position.getY() + 0.5, position.getZ() + 0.5, range);
     }
 
     public static PacketDistributor.PacketTarget getTargetPoint(final ComputerTileEntity tileEntity, final int range) {
-        return getTargetPoint(Objects.requireNonNull(tileEntity.getBlockEntityWorld()), tileEntity.getBlockPos(), range);
+        return getTargetPoint(Objects.requireNonNull(tileEntity.getBlockEntityLevel()), tileEntity.getBlockPos(), range);
     }
 
     public static PacketDistributor.PacketTarget getTracking(final Casing casing) {
@@ -123,17 +123,17 @@ public final class Network {
         getQueueFor(casing).queueData(face, data, type);
     }
 
-    public static void sendPipeEffect(final Level world, final double x, final double y, final double z) {
+    public static void sendPipeEffect(final Level level, final double x, final double y, final double z) {
         final BlockPos position = new BlockPos(x, y, z);
-        if (WorldUtils.isLoaded(world, position)) {
-            final BlockState state = world.getBlockState(position);
-            if (state.isSolidRender(world, position)) {
+        if (LevelUtils.isLoaded(level, position)) {
+            final BlockState state = level.getBlockState(position);
+            if (state.isSolidRender(level, position)) {
                 // Skip particle emission when inside a block where they aren't visible anyway.
                 return;
             }
         }
 
-        queueParticleEffect(world, (float) x, (float) y, (float) z);
+        queueParticleEffect(level, (float) x, (float) y, (float) z);
     }
 
     // --------------------------------------------------------------------- //
@@ -167,8 +167,8 @@ public final class Network {
     private static int particlesSent = 0;
     private static int particleSendInterval = TICK_TIME;
 
-    private static void queueParticleEffect(final Level world, final float x, final float y, final float z) {
-        final Position position = new Position(world, x, y, z);
+    private static void queueParticleEffect(final Level level, final float x, final float y, final float z) {
+        final Position position = new Position(level, x, y, z);
         particleQueue.add(position);
     }
 
@@ -197,13 +197,13 @@ public final class Network {
      * when currently throttling.
      */
     private static final class Position {
-        private final Level world;
+        private final Level level;
         private final float x;
         private final float y;
         private final float z;
 
-        private Position(final Level world, final float x, final float y, final float z) {
-            this.world = world;
+        private Position(final Level level, final float x, final float y, final float z) {
+            this.level = level;
             this.x = x;
             this.y = y;
             this.z = z;
@@ -211,8 +211,8 @@ public final class Network {
 
         private void sendMessage() {
             final RedstoneParticleEffectMessage message = new RedstoneParticleEffectMessage(x, y, z);
-            if (areAnyPlayersNear(world, new Vec3(x, y, z), RANGE_LOW)) {
-                Network.INSTANCE.send(getTargetPoint(world, x, y, z, RANGE_LOW), message);
+            if (areAnyPlayersNear(level, new Vec3(x, y, z), RANGE_LOW)) {
+                Network.INSTANCE.send(getTargetPoint(level, x, y, z, RANGE_LOW), message);
                 particlesSent++;
             }
         }
@@ -227,7 +227,7 @@ public final class Network {
             }
 
             final Position that = (Position) obj;
-            return Objects.equals(world.dimension(), that.world.dimension()) &&
+            return Objects.equals(level.dimension(), that.level.dimension()) &&
                    Float.compare(that.x, x) == 0 &&
                    Float.compare(that.y, y) == 0 &&
                    Float.compare(that.z, z) == 0;
@@ -236,7 +236,7 @@ public final class Network {
 
         @Override
         public int hashCode() {
-            int result = world.dimension().hashCode();
+            int result = level.dimension().hashCode();
             result = 31 * result + (x != +0.0f ? Float.floatToIntBits(x) : 0);
             result = 31 * result + (y != +0.0f ? Float.floatToIntBits(y) : 0);
             result = 31 * result + (z != +0.0f ? Float.floatToIntBits(z) : 0);
@@ -308,8 +308,8 @@ public final class Network {
     }
 
     private static CasingSendQueue getQueueFor(final Casing casing) {
-        final Level world = casing.getCasingLevel();
-        final Dist side = world.isClientSide() ? Dist.CLIENT : Dist.DEDICATED_SERVER;
+        final Level level = casing.getCasingLevel();
+        final Dist side = level.isClientSide() ? Dist.CLIENT : Dist.DEDICATED_SERVER;
         final Map<Casing, CasingSendQueue> queues = getQueues(side);
         CasingSendQueue queue = queues.get(casing);
         if (queue == null) {
@@ -381,8 +381,8 @@ public final class Network {
          * @param casing the casing this queue belongs to.
          */
         private void flush(final Casing casing) {
-            final Level world = casing.getCasingLevel();
-            final Dist side = world.isClientSide() ? Dist.CLIENT : Dist.DEDICATED_SERVER;
+            final Level level = casing.getCasingLevel();
+            final Dist side = level.isClientSide() ? Dist.CLIENT : Dist.DEDICATED_SERVER;
             final ByteBuf data = Unpooled.buffer();
             collectData(data);
             if (data.readableBytes() > 0) {
@@ -553,13 +553,13 @@ public final class Network {
      * Used to determine whether a packet will actually be sent to any
      * clients.
      *
-     * @param world    the world to check in.
+     * @param level    the level to check in.
      * @param position the position to check for.
      * @param range    the radius around the position to check for.
      * @return <tt>true</tt> if there are nearby players; <tt>false</tt> otherwise.
      */
-    private static boolean areAnyPlayersNear(final Level world, final Vec3 position, final int range) {
-        for (final Player player : world.players()) {
+    private static boolean areAnyPlayersNear(final Level level, final Vec3 position, final int range) {
+        for (final Player player : level.players()) {
             if (player instanceof ServerPlayer) {
                 if (position.closerThan(player.position(), range)) {
                     return true;
@@ -569,8 +569,8 @@ public final class Network {
         return false;
     }
 
-    private static boolean areAnyPlayersNear(final Level world, final BlockPos position, final int range) {
-        return areAnyPlayersNear(world, Vec3.atCenterOf(position), range);
+    private static boolean areAnyPlayersNear(final Level level, final BlockPos position, final int range) {
+        return areAnyPlayersNear(level, Vec3.atCenterOf(position), range);
     }
 
     // --------------------------------------------------------------------- //

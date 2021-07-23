@@ -57,8 +57,8 @@ public final class RandomModule extends AbstractModule {
     private void stepOutput(final Port port) {
         final Pipe sendingPipe = getCasing().getSendingPipe(getFace(), port);
         if (!sendingPipe.isWriting()) {
-            final Level world = getCasing().getCasingLevel();
-            final Random random = world.random;
+            final Level level = getCasing().getCasingLevel();
+            final Random random = level.random;
             final short value = (short) random.nextInt(0xFFFF + 1);
             sendingPipe.beginWrite(value);
         }

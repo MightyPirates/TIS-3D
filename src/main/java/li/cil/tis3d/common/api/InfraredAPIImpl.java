@@ -12,11 +12,11 @@ import net.minecraft.world.phys.Vec3;
  */
 public final class InfraredAPIImpl implements InfraredAPI {
     @Override
-    public InfraredPacket sendPacket(final Level world, final Vec3 position, final Vec3 direction, final short value) {
-        final InfraredPacketEntity entity = Entities.INFRARED_PACKET.get().create(world);
+    public InfraredPacket sendPacket(final Level level, final Vec3 position, final Vec3 direction, final short value) {
+        final InfraredPacketEntity entity = Entities.INFRARED_PACKET.get().create(level);
         if (entity != null) {
             entity.configure(position, direction.normalize(), value);
-            world.addFreshEntity(entity);
+            level.addFreshEntity(entity);
         }
         return entity;
     }

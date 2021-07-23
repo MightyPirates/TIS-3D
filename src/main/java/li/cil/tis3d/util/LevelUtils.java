@@ -4,13 +4,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 
-public final class WorldUtils {
+public final class LevelUtils {
     /**
      * Check whether a block is within a loaded chunk.
      * <p>
      * This differs from {@link Level#isLoaded(BlockPos)} in such that this treats out of bounds chunks as loaded.
      *
-     * @param level the world to check in.
+     * @param level the level to check in.
      * @param pos   the block position to check at.
      * @return whether the block is loaded.
      */
@@ -21,6 +21,6 @@ public final class WorldUtils {
 
     // --------------------------------------------------------------------- //
 
-    private WorldUtils() {
+    private LevelUtils() {
     }
 }

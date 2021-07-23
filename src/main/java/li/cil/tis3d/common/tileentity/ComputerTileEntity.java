@@ -5,7 +5,7 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.common.machine.PipeHost;
 import li.cil.tis3d.common.machine.PipeImpl;
-import li.cil.tis3d.util.WorldUtils;
+import li.cil.tis3d.util.LevelUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -80,7 +80,7 @@ public abstract class ComputerTileEntity extends BlockEntity implements PipeHost
         }
     }
 
-    public Level getBlockEntityWorld() {
+    public Level getBlockEntityLevel() {
         return Objects.requireNonNull(getLevel());
     }
 
@@ -133,8 +133,8 @@ public abstract class ComputerTileEntity extends BlockEntity implements PipeHost
     // PipeHost
 
     @Override
-    public Level getPipeHostWorld() {
-        return getBlockEntityWorld();
+    public Level getPipeHostLevel() {
+        return getBlockEntityLevel();
     }
 
     @Override
@@ -187,15 +187,15 @@ public abstract class ComputerTileEntity extends BlockEntity implements PipeHost
     // --------------------------------------------------------------------- //
 
     public void checkNeighbors() {
-        final Level world = getBlockEntityWorld();
+        final Level level = getBlockEntityLevel();
 
         // When a neighbor changed, check all neighbors and register them in
         // our tile entity.
         for (final Direction facing : Direction.values()) {
             final BlockPos neighborPos = getBlockPos().relative(facing);
-            if (WorldUtils.isLoaded(world, neighborPos)) {
+            if (LevelUtils.isLoaded(level, neighborPos)) {
                 // If we have a casing, set it as our neighbor.
-                final BlockEntity tileEntity = world.getBlockEntity(neighborPos);
+                final BlockEntity tileEntity = level.getBlockEntity(neighborPos);
                 if (tileEntity instanceof ComputerTileEntity) {
                     setNeighbor(Face.fromDirection(facing), (ComputerTileEntity) tileEntity);
                 } else {

@@ -98,8 +98,8 @@ public final class ModuleBakedModel implements IDynamicBakedModel {
 
     @Nonnull
     @Override
-    public IModelData getModelData(@Nonnull final BlockAndTintGetter world, @Nonnull final BlockPos pos, @Nonnull final BlockState state, @Nonnull final IModelData tileData) {
-        final BlockEntity tileEntity = world.getBlockEntity(pos);
+    public IModelData getModelData(@Nonnull final BlockAndTintGetter level, @Nonnull final BlockPos pos, @Nonnull final BlockState state, @Nonnull final IModelData tileData) {
+        final BlockEntity tileEntity = level.getBlockEntity(pos);
         if (!(tileEntity instanceof final CasingTileEntity casing)) {
             return tileData;
         }

@@ -77,14 +77,8 @@ public abstract class AbstractModule implements Module {
         }
 
         final BlockPos pos = blockHitResult.getBlockPos();
-        if (!Objects.equals(getCasing().getPosition(), pos)) {
-            return false;
-        }
-        if (blockHitResult.getDirection() != Face.toDirection(getFace())) {
-            return false;
-        }
-
-        return true;
+        return Objects.equals(getCasing().getPosition(), pos) &&
+               blockHitResult.getDirection() == Face.toDirection(getFace());
     }
 
     /**
@@ -146,16 +140,16 @@ public abstract class AbstractModule implements Module {
      * @return whether the module is currently visible.
      */
     protected boolean isVisible() {
-        final Level world = getCasing().getCasingLevel();
+        final Level level = getCasing().getCasingLevel();
         final BlockPos neighborPos = getCasing().getPosition().relative(Face.toDirection(getFace()));
-        if (!world.isLoaded(neighborPos)) {
+        if (!level.isLoaded(neighborPos)) {
             // If the neighbor isn't loaded, we can assume we're also not visible on that side.
             return false;
         }
 
         // Otherwise check if the neighboring block blocks visibility to our face.
-        final BlockState neighborState = world.getBlockState(neighborPos);
-        return !neighborState.isSolidRender(world, neighborPos);
+        final BlockState neighborState = level.getBlockState(neighborPos);
+        return !neighborState.isSolidRender(level, neighborPos);
     }
 
     // --------------------------------------------------------------------- //

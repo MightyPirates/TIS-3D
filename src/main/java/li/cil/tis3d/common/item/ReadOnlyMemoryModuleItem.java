@@ -32,9 +32,8 @@ public final class ReadOnlyMemoryModuleItem extends ModuleItem {
     // Item
 
     @Override
-    public InteractionResultHolder<ItemStack> use(final Level world, final Player player, final InteractionHand hand) {
-        if (!world.isClientSide() && player instanceof ServerPlayer) {
-            final ServerPlayer serverPlayer = (ServerPlayer) player;
+    public InteractionResultHolder<ItemStack> use(final Level level, final Player player, final InteractionHand hand) {
+        if (!level.isClientSide() && player instanceof final ServerPlayer serverPlayer) {
             NetworkHooks.openGui(serverPlayer, new MenuProvider() {
                 @Override
                 public Component getDisplayName() {
@@ -47,12 +46,12 @@ public final class ReadOnlyMemoryModuleItem extends ModuleItem {
                 }
             }, buffer -> buffer.writeEnum(hand));
         }
-        return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), world.isClientSide());
+        return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), level.isClientSide());
     }
 
     @Override
-    public boolean doesSneakBypassUse(final ItemStack stack, final LevelReader world, final BlockPos pos, final Player player) {
-        return world.getBlockEntity(pos) instanceof Casing;
+    public boolean doesSneakBypassUse(final ItemStack stack, final LevelReader level, final BlockPos pos, final Player player) {
+        return level.getBlockEntity(pos) instanceof Casing;
     }
 
     // --------------------------------------------------------------------- //

@@ -18,14 +18,14 @@ import javax.annotation.Nullable;
  */
 public interface Casing {
     /**
-     * The world this casing resides in.
+     * The level this casing resides in.
      *
-     * @return the world the casing lives in.
+     * @return the level the casing lives in.
      */
     Level getCasingLevel();
 
     /**
-     * The position of the casing in the world it exists in.
+     * The position of the casing in the level it exists in.
      *
      * @return the position of the casing.
      */

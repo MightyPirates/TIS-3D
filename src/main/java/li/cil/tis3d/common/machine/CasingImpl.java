@@ -304,7 +304,7 @@ public final class CasingImpl implements Casing {
 
     @Override
     public Level getCasingLevel() {
-        return tileEntity.getBlockEntityWorld();
+        return tileEntity.getBlockEntityLevel();
     }
 
     @Override

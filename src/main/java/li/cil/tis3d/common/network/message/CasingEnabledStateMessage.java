@@ -23,9 +23,9 @@ public final class CasingEnabledStateMessage extends AbstractMessageWithPosition
 
     @Override
     protected void handleMessage(final NetworkEvent.Context context) {
-        final Level world = getClientWorld();
-        if (world != null) {
-            withTileEntity(world, CasingTileEntity.class, casing ->
+        final Level level = getClientLevel();
+        if (level != null) {
+            withTileEntity(level, CasingTileEntity.class, casing ->
                 casing.setEnabledClient(isEnabled));
         }
     }

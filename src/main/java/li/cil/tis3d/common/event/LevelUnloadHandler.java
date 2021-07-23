@@ -4,14 +4,14 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
 
-public final class WorldUnloadHandler {
+public final class LevelUnloadHandler {
     public static void initialize() {
-        MinecraftForge.EVENT_BUS.addListener(WorldUnloadHandler::onWorldUnload);
+        MinecraftForge.EVENT_BUS.addListener(LevelUnloadHandler::onLevelUnload);
     }
 
     // --------------------------------------------------------------------- //
 
-    private static void onWorldUnload(final WorldEvent.Unload event) {
+    private static void onLevelUnload(final WorldEvent.Unload event) {
         if (event.getWorld() instanceof Level level) {
             // TODO
 //            final ChunkSource chunkSource = level.getChunkSource();

@@ -38,14 +38,14 @@ public abstract class AbstractMessage {
     public abstract void toBytes(final FriendlyByteBuf buffer);
 
     @Nullable
-    protected Level getServerWorld(final NetworkEvent.Context context) {
+    protected Level getServerLevel(final NetworkEvent.Context context) {
         final ServerPlayer sender = context.getSender();
         return sender != null ? sender.getLevel() : null;
     }
 
     @OnlyIn(Dist.CLIENT)
     @Nullable
-    protected Level getClientWorld() {
+    protected Level getClientLevel() {
         return Minecraft.getInstance().level;
     }
 }

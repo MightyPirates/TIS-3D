@@ -44,11 +44,11 @@ public final class AudioModule extends AbstractModule {
 
     @Override
     public void step() {
-        final Level world = getCasing().getCasingLevel();
+        final Level level = getCasing().getCasingLevel();
 
         stepInput();
 
-        lastStep = world.getGameTime();
+        lastStep = level.getGameTime();
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -75,8 +75,8 @@ public final class AudioModule extends AbstractModule {
             }
             if (receivingPipe.canTransfer()) {
                 // Don't actually read more values if we already sent a packet this tick.
-                final Level world = getCasing().getCasingLevel();
-                if (world.getGameTime() > lastStep) {
+                final Level level = getCasing().getCasingLevel();
+                if (level.getGameTime() > lastStep) {
                     playNote(receivingPipe.read());
                 }
             }
@@ -100,10 +100,10 @@ public final class AudioModule extends AbstractModule {
         }
 
         // Send event to check if the sound may be played / should be modulated.
-        final Level world = getCasing().getCasingLevel();
+        final Level level = getCasing().getCasingLevel();
         final BlockPos pos = getCasing().getPosition();
         NoteBlockInstrument instrument = NoteBlockInstrument.values()[instrumentId];
-        final NoteBlockEvent.Play event = new NoteBlockEvent.Play(world, pos, world.getBlockState(pos), noteId, instrument);
+        final NoteBlockEvent.Play event = new NoteBlockEvent.Play(level, pos, level.getBlockState(pos), noteId, instrument);
         if (!MinecraftForge.EVENT_BUS.post(event)) {
             // Not cancelled, get pitch, sound effect name.
             final int note = event.getVanillaNoteId();
@@ -117,10 +117,9 @@ public final class AudioModule extends AbstractModule {
             final double z = pos.getZ() + 0.5 + facing.getStepZ() * 0.6;
 
             // Let there be sound!
-            world.playSound(null, x, y, z, instrument.getSoundEvent(), SoundSource.BLOCKS, volume, pitch);
-            if (world instanceof ServerLevel) {
-                final ServerLevel serverWorld = (ServerLevel) world;
-                serverWorld.sendParticles(ParticleTypes.NOTE, x, y, z, 1, 0, 0, 0, 0);
+            level.playSound(null, x, y, z, instrument.getSoundEvent(), SoundSource.BLOCKS, volume, pitch);
+            if (level instanceof final ServerLevel serverLevel) {
+                serverLevel.sendParticles(ParticleTypes.NOTE, x, y, z, 1, 0, 0, 0, 0);
             }
         }
     }

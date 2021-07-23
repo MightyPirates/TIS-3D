@@ -66,18 +66,18 @@ public final class RedstoneModule extends AbstractModuleWithRotation implements 
 
     @Override
     public void step() {
-        final Level world = getCasing().getCasingLevel();
+        final Level level = getCasing().getCasingLevel();
 
         for (final Port port : Port.VALUES) {
             stepOutput(port);
             stepInput(port);
         }
 
-        if (scheduledNeighborUpdate && world.getGameTime() > lastStep) {
+        if (scheduledNeighborUpdate && level.getGameTime() > lastStep) {
             notifyNeighbors();
         }
 
-        lastStep = world.getGameTime();
+        lastStep = level.getGameTime();
     }
 
     @Override
@@ -170,8 +170,8 @@ public final class RedstoneModule extends AbstractModuleWithRotation implements 
     @Override
     public void setRedstoneInput(final short value) {
         // We never call this on the client side, but other might...
-        final Level world = getCasing().getCasingLevel();
-        if (world.isClientSide()) {
+        final Level level = getCasing().getCasingLevel();
+        if (level.isClientSide()) {
             return;
         }
 
@@ -236,7 +236,7 @@ public final class RedstoneModule extends AbstractModuleWithRotation implements 
         // If the value changed, make sure we're saved.
         getCasing().setChanged();
 
-        // Notify neighbors, avoid multiple world updates per tick.
+        // Notify neighbors, avoid multiple block updates per tick.
         scheduledNeighborUpdate = true;
 
         sendData();
@@ -246,11 +246,11 @@ public final class RedstoneModule extends AbstractModuleWithRotation implements 
      * Notify all neighbors of a block update, to let them realize our output changed.
      */
     private void notifyNeighbors() {
-        final Level world = getCasing().getCasingLevel();
+        final Level level = getCasing().getCasingLevel();
 
         scheduledNeighborUpdate = false;
-        final Block blockType = world.getBlockState(getCasing().getPosition()).getBlock();
-        world.updateNeighborsAt(getCasing().getPosition(), blockType);
+        final Block blockType = level.getBlockState(getCasing().getPosition()).getBlock();
+        level.updateNeighborsAt(getCasing().getPosition(), blockType);
     }
 
     /**

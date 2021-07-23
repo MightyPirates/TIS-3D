@@ -62,12 +62,12 @@ public final class ControllerBlock extends BaseEntityBlock {
 
     @SuppressWarnings("deprecation")
     @Override
-    public InteractionResult use(final BlockState state, final Level world, final BlockPos pos, final Player player, final InteractionHand hand, final BlockHitResult hit) {
+    public InteractionResult use(final BlockState state, final Level level, final BlockPos pos, final Player player, final InteractionHand hand, final BlockHitResult hit) {
         final ItemStack heldItem = player.getItemInHand(hand);
         if (!heldItem.isEmpty()) {
             final Item item = heldItem.getItem();
             if (item == net.minecraft.world.item.Items.BOOK) {
-                if (!world.isClientSide()) {
+                if (!level.isClientSide()) {
                     if (!player.getAbilities().instabuild) {
                         heldItem.split(1);
                     }
@@ -80,20 +80,20 @@ public final class ControllerBlock extends BaseEntityBlock {
                     }
                 }
 
-                return InteractionResult.sidedSuccess(world.isClientSide());
+                return InteractionResult.sidedSuccess(level.isClientSide());
             }
         }
 
-        final BlockEntity tileEntity = world.getBlockEntity(pos);
+        final BlockEntity tileEntity = level.getBlockEntity(pos);
         if (tileEntity instanceof final ControllerTileEntity controller) {
-            if (!world.isClientSide()) {
+            if (!level.isClientSide()) {
                 controller.forceStep();
             }
 
-            return InteractionResult.sidedSuccess(world.isClientSide());
+            return InteractionResult.sidedSuccess(level.isClientSide());
         }
 
-        return super.use(state, world, pos, player, hand, hit);
+        return super.use(state, level, pos, player, hand, hit);
     }
 
     // --------------------------------------------------------------------- //
@@ -107,8 +107,8 @@ public final class ControllerBlock extends BaseEntityBlock {
 
     @SuppressWarnings("deprecation")
     @Override
-    public int getAnalogOutputSignal(final BlockState state, final Level world, final BlockPos pos) {
-        final BlockEntity tileEntity = world.getBlockEntity(pos);
+    public int getAnalogOutputSignal(final BlockState state, final Level level, final BlockPos pos) {
+        final BlockEntity tileEntity = level.getBlockEntity(pos);
         if (tileEntity instanceof final ControllerTileEntity controller) {
             return controller.getState() == ControllerTileEntity.ControllerState.READY ? 15 : 0;
         }
@@ -120,11 +120,11 @@ public final class ControllerBlock extends BaseEntityBlock {
 
     @SuppressWarnings("deprecation")
     @Override
-    public void neighborChanged(final BlockState state, final Level world, final BlockPos pos, final Block block, final BlockPos fromPos, final boolean isMoving) {
-        final BlockEntity tileEntity = world.getBlockEntity(pos);
+    public void neighborChanged(final BlockState state, final Level level, final BlockPos pos, final Block block, final BlockPos fromPos, final boolean isMoving) {
+        final BlockEntity tileEntity = level.getBlockEntity(pos);
         if (tileEntity instanceof final ControllerTileEntity controller) {
             controller.checkNeighbors();
         }
-        super.neighborChanged(state, world, pos, block, fromPos, isMoving);
+        super.neighborChanged(state, level, pos, block, fromPos, isMoving);
     }
 }

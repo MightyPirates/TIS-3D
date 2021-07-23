@@ -225,7 +225,7 @@ public final class PipeImpl implements Pipe {
         final double z = oz * 0.55 + position.getZ() + 0.5;
         final double extraOffsetY = oy < 0 ? -0.2 : (oy > 0) ? 0.1 : 0;
 
-        Network.sendPipeEffect(host.getPipeHostWorld(), x, y + extraOffsetY, z);
+        Network.sendPipeEffect(host.getPipeHostLevel(), x, y + extraOffsetY, z);
     }
 
     // --------------------------------------------------------------------- //

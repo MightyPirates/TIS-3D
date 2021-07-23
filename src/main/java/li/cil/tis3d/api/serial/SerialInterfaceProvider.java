@@ -22,22 +22,22 @@ public interface SerialInterfaceProvider extends IForgeRegistryEntry<SerialInter
     /**
      * Checks whether the provider supports the specified block position.
      *
-     * @param world    the world containing the position.
+     * @param level    the level containing the position.
      * @param position the position in question.
      * @param side     the side of the position in question.
      * @return whether a {@link SerialInterface} can be provided for the position.
      */
-    boolean matches(final Level world, final BlockPos position, final Direction side);
+    boolean matches(final Level level, final BlockPos position, final Direction side);
 
     /**
      * Creates a new serial interface instance for the specified position.
      *
-     * @param world    the world containing the position.
+     * @param level    the level containing the position.
      * @param position the position in question.
      * @param face     the side of the position in question.
      * @return the interface to use for communicating with the position.
      */
-    Optional<SerialInterface> getInterface(final Level world, final BlockPos position, final Direction face);
+    Optional<SerialInterface> getInterface(final Level level, final BlockPos position, final Direction face);
 
     /**
      * A reference to a manual entry describing the protocol used by the
@@ -75,11 +75,11 @@ public interface SerialInterfaceProvider extends IForgeRegistryEntry<SerialInter
      * of serial interface that would be created via {@link #getInterface(Level, BlockPos, Direction)},
      * otherwise this should return <tt>true</tt>.
      *
-     * @param world           the world containing the position.
+     * @param level           the level containing the position.
      * @param position        the position in question.
      * @param side            the side of the position in question.
      * @param serialInterface the interface to validate.
      * @return <tt>true</tt> if the interface is still valid, <tt>false</tt> if a new one should be created.
      */
-    boolean stillValid(final Level world, final BlockPos position, final Direction side, final SerialInterface serialInterface);
+    boolean stillValid(final Level level, final BlockPos position, final Direction side, final SerialInterface serialInterface);
 }

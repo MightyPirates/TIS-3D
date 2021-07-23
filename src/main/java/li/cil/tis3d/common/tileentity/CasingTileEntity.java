@@ -162,7 +162,7 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
     }
 
     public void scheduleScan() {
-        if (getBlockEntityWorld().isClientSide()) {
+        if (getBlockEntityLevel().isClientSide()) {
             return;
         }
         if (getController() != null) {
@@ -250,7 +250,7 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
 
         // Ensure there are no modules installed between two casings.
         if (hasNeighbor(face)) {
-            InventoryUtils.drop(getBlockEntityWorld(), getBlockPos(), this, face.ordinal(), getMaxStackSize(), Face.toDirection(face));
+            InventoryUtils.drop(getBlockEntityLevel(), getBlockPos(), this, face.ordinal(), getMaxStackSize(), Face.toDirection(face));
         }
 
         if (neighbor instanceof ControllerTileEntity) {
@@ -288,7 +288,7 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
 
     @Override
     public boolean stillValid(final Player player) {
-        if (getBlockEntityWorld().getBlockEntity(getBlockPos()) != this) {
+        if (getBlockEntityLevel().getBlockEntity(getBlockPos()) != this) {
             return false;
         }
 
@@ -318,7 +318,7 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
     public void setRemoved() {
         super.setRemoved();
 
-        if (!getBlockEntityWorld().isClientSide()) {
+        if (!getBlockEntityLevel().isClientSide()) {
             onDisabled();
         }
 
@@ -356,9 +356,9 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
     public void onDataPacket(final Connection manager, final ClientboundBlockEntityDataPacket packet) {
         super.onDataPacket(manager, packet);
 
-        final Level world = getBlockEntityWorld();
-        final BlockState state = world.getBlockState(getBlockPos());
-        world.sendBlockUpdated(getBlockPos(), state, state, BlockFlags.BLOCK_UPDATE);
+        final Level level = getBlockEntityLevel();
+        final BlockState state = level.getBlockState(getBlockPos());
+        level.sendBlockUpdated(getBlockPos(), state, state, BlockFlags.BLOCK_UPDATE);
     }
 
     // --------------------------------------------------------------------- //
@@ -475,7 +475,7 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
 
     @Nullable
     private ControllerTileEntity findController() {
-        final Level world = getBlockEntityWorld();
+        final Level level = getBlockEntityLevel();
 
         // List of processed tile entities to avoid loops.
         final Set<BlockEntity> processed = new HashSet<>();
@@ -508,7 +508,7 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
                 }
 
                 // Keep looking...
-                if (!ControllerTileEntity.addNeighbors(world, tileEntity, processed, queue)) {
+                if (!ControllerTileEntity.addNeighbors(level, tileEntity, processed, queue)) {
                     // Hit end of loaded area, so scheduling would just result in
                     // error again anyway. Do *not* disable casings, keep last
                     // known valid state when all parts were loaded.
@@ -538,7 +538,7 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
         final CasingLockedStateMessage message = new CasingLockedStateMessage(this, isLocked());
         Network.INSTANCE.send(Network.getTracking(this), message);
 
-        getBlockEntityWorld().playSound(null, getBlockPos(),
+        getBlockEntityLevel().playSound(null, getBlockPos(),
             SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.3f, isLocked() ? 0.5f : 0.6f);
     }
 
@@ -546,7 +546,7 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
         final ReceivingPipeLockedStateMessage message = new ReceivingPipeLockedStateMessage(this, face, port, isReceivingPipeLocked(face, port));
         Network.INSTANCE.send(Network.getTracking(this), message);
 
-        getBlockEntityWorld().playSound(null, getBlockPos(),
+        getBlockEntityLevel().playSound(null, getBlockPos(),
             SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.3f, isReceivingPipeLocked(face, port) ? 0.5f : 0.6f);
     }
 

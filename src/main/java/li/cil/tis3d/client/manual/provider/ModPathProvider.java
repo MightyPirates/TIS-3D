@@ -25,8 +25,8 @@ public class ModPathProvider extends NamespacePathProvider {
     }
 
     @Override
-    public Optional<String> pathFor(final Level world, final BlockPos pos, final Direction face) {
-        final BlockEntity tileEntity = world.getBlockEntity(pos);
+    public Optional<String> pathFor(final Level level, final BlockPos pos, final Direction face) {
+        final BlockEntity tileEntity = level.getBlockEntity(pos);
         if (tileEntity instanceof final CasingTileEntity casing) {
             final ItemStack moduleStack = casing.getItem(face.ordinal());
             final Optional<String> path = pathFor(moduleStack);
@@ -35,6 +35,6 @@ public class ModPathProvider extends NamespacePathProvider {
             }
         }
 
-        return super.pathFor(world, pos, face);
+        return super.pathFor(level, pos, face);
     }
 }
