@@ -3,8 +3,8 @@ package li.cil.tis3d.common.module.execution.compiler.instruction;
 import li.cil.tis3d.common.module.execution.compiler.ParseException;
 import li.cil.tis3d.common.module.execution.compiler.Validator;
 import li.cil.tis3d.common.module.execution.instruction.Instruction;
-import li.cil.tis3d.common.module.execution.instruction.MoveInstruction;
 import li.cil.tis3d.common.module.execution.instruction.MoveImmediateInstruction;
+import li.cil.tis3d.common.module.execution.instruction.MoveInstruction;
 import li.cil.tis3d.common.module.execution.target.Target;
 
 import java.util.List;

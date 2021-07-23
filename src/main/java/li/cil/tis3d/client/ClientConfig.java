@@ -1,8 +1,10 @@
 package li.cil.tis3d.client;
 
+import li.cil.tis3d.common.ConfigManager.Comment;
+import li.cil.tis3d.common.ConfigManager.Path;
+import li.cil.tis3d.common.ConfigManager.Translation;
+import li.cil.tis3d.common.ConfigManager.Type;
 import net.minecraftforge.fml.config.ModConfig;
-
-import static li.cil.tis3d.common.ConfigManager.*;
 
 @Type(ModConfig.Type.CLIENT)
 public final class ClientConfig {

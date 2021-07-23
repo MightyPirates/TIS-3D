@@ -1,13 +1,13 @@
 package li.cil.tis3d.common.module.execution;
 
 import li.cil.tis3d.api.machine.Port;
-import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.CommonConfig;
+import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.module.execution.compiler.Compiler;
 import li.cil.tis3d.common.module.execution.compiler.ParseException;
 import li.cil.tis3d.common.module.execution.instruction.Instruction;
 import li.cil.tis3d.util.EnumUtils;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 
 import java.util.*;
 
@@ -124,7 +124,7 @@ public final class MachineState {
 
     // --------------------------------------------------------------------- //
 
-    public void readFromNBT(final CompoundNBT nbt) {
+    public void readFromNBT(final CompoundTag nbt) {
         if (nbt.contains(TAG_CODE)) {
             try {
                 Compiler.compile(Arrays.asList(Constants.PATTERN_LINES.split(nbt.getString(TAG_CODE))), this);
@@ -146,7 +146,7 @@ public final class MachineState {
         pcPrev = nbt.getInt(TAG_PC_PREV);
     }
 
-    public void writeToNBT(final CompoundNBT nbt) {
+    public void writeToNBT(final CompoundTag nbt) {
         nbt.putInt(TAG_PC, pc);
         nbt.putShort(TAG_ACC, acc);
         nbt.putShort(TAG_BAK, bak);

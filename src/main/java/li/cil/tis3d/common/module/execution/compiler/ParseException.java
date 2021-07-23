@@ -1,17 +1,17 @@
 package li.cil.tis3d.common.module.execution.compiler;
 
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
 
 /**
  * Thrown by the {@link Compiler} when the specified code contains errors.
  */
 public final class ParseException extends Exception {
-    private final ITextComponent message;
+    private final Component message;
     private final int lineNumber;
     private final int start;
     private final int end;
 
-    public ParseException(final ITextComponent message, final int lineNumber, final int start, final int end) {
+    public ParseException(final Component message, final int lineNumber, final int start, final int end) {
         this.message = message;
         this.lineNumber = lineNumber;
         this.start = start;
@@ -23,7 +23,7 @@ public final class ParseException extends Exception {
      *
      * @return the error message.
      */
-    public ITextComponent getDisplayMessage() {
+    public Component getDisplayMessage() {
         return message;
     }
 

@@ -2,11 +2,12 @@ package li.cil.tis3d.api.machine;
 
 import io.netty.buffer.ByteBuf;
 import li.cil.tis3d.api.module.Module;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 
@@ -21,7 +22,7 @@ public interface Casing {
      *
      * @return the world the casing lives in.
      */
-    World getCasingLevel();
+    Level getCasingLevel();
 
     /**
      * The position of the casing in the world it exists in.
@@ -47,7 +48,7 @@ public interface Casing {
      * at a signal strength one.
      * <p>
      * This is useful for contextual behavior in modules while rendering or in
-     * the activation callback {@link Module#use(PlayerEntity, Hand, net.minecraft.util.math.vector.Vector3d)}.
+     * the activation callback {@link Module#use(Player, InteractionHand, Vec3)}.
      *
      * @return whether the casing is currently enabled.
      */
@@ -58,7 +59,7 @@ public interface Casing {
      * <p>
      * Casings can be locked, preventing players to remove modules from the
      * casing or add modules to the casing. Some modules may choose to also
-     * ignore {@link Module#use(PlayerEntity, Hand, net.minecraft.util.math.vector.Vector3d)}
+     * ignore {@link Module#use(Player, InteractionHand, Vec3)}
      * calls while their casing is locks (such as the execution module to
      * prevent reprogramming).
      *
@@ -131,7 +132,7 @@ public interface Casing {
      * @param data the data to send to the client.
      * @param type the type of the data being sent.
      */
-    void sendData(final Face face, final CompoundNBT data, final byte type);
+    void sendData(final Face face, final CompoundTag data, final byte type);
 
     /**
      * Call this to send some data from a module to it's other representation.
@@ -153,7 +154,7 @@ public interface Casing {
      * @param face the face the module is installed in.
      * @param data the data to send to the client.
      */
-    void sendData(final Face face, final CompoundNBT data);
+    void sendData(final Face face, final CompoundTag data);
 
     /**
      * Call this to send some data from a module to it's other representation.

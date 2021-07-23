@@ -1,8 +1,9 @@
 package li.cil.tis3d.common.module;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import li.cil.manual.api.render.FontRenderer;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
@@ -11,10 +12,9 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
-import li.cil.manual.api.render.FontRenderer;
 import li.cil.tis3d.util.Color;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -109,7 +109,7 @@ public final class QueueModule extends AbstractModuleWithRotation {
             return;
         }
 
-        final MatrixStack matrixStack = context.getMatrixStack();
+        final PoseStack matrixStack = context.getMatrixStack();
         matrixStack.pushPose();
         rotateForRendering(matrixStack);
 
@@ -124,7 +124,7 @@ public final class QueueModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void load(final CompoundNBT tag) {
+    public void load(final CompoundTag tag) {
         super.load(tag);
 
         final int[] queueNbt = tag.getIntArray(TAG_QUEUE);
@@ -133,12 +133,12 @@ public final class QueueModule extends AbstractModuleWithRotation {
             queue[i] = (short) queueNbt[i];
         }
 
-        head = MathHelper.clamp(tag.getInt(TAG_HEAD), 0, QUEUE_SIZE - 1);
-        tail = MathHelper.clamp(tag.getInt(TAG_TAIL), 0, QUEUE_SIZE - 1);
+        head = Mth.clamp(tag.getInt(TAG_HEAD), 0, QUEUE_SIZE - 1);
+        tail = Mth.clamp(tag.getInt(TAG_TAIL), 0, QUEUE_SIZE - 1);
     }
 
     @Override
-    public void save(final CompoundNBT tag) {
+    public void save(final CompoundTag tag) {
         super.save(tag);
 
         final int[] queueNbt = new int[queue.length];
@@ -261,7 +261,7 @@ public final class QueueModule extends AbstractModuleWithRotation {
 
     @OnlyIn(Dist.CLIENT)
     private void drawState(final RenderContext context) {
-        final MatrixStack matrixStack = context.getMatrixStack();
+        final PoseStack matrixStack = context.getMatrixStack();
 
         // Offset to start drawing at top left of inner area, slightly inset.
         matrixStack.translate(3 / 16f, 5 / 16f, 0);

@@ -1,24 +1,23 @@
 package li.cil.tis3d.client.renderer;
 
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import li.cil.tis3d.api.API;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.renderer.vertex.VertexFormat;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.lwjgl.opengl.GL11;
 
 import java.util.function.Function;
 
 @OnlyIn(Dist.CLIENT)
 public abstract class ModRenderType extends RenderType {
     private static final RenderType UNLIT_ATLAS_TEXTURE = create("atlas_module_overlay",
-        DefaultVertexFormats.POSITION_COLOR_TEX,
+        DefaultVertexFormat.POSITION_COLOR_TEX,
         builder -> builder.setTextureState(BLOCK_SHEET_MIPPED));
 
     private static final RenderType UNLIT = create("module_overlay",
-        DefaultVertexFormats.POSITION_COLOR,
+        DefaultVertexFormat.POSITION_COLOR,
         builder -> builder);
 
     // --------------------------------------------------------------------- //
@@ -54,22 +53,22 @@ public abstract class ModRenderType extends RenderType {
      */
     public static RenderType unlitTexture(final ResourceLocation texture) {
         return create("texture_module_overlay",
-            DefaultVertexFormats.POSITION_COLOR_TEX,
-            builder -> builder.setTextureState(new TextureState(texture, false, false)));
+            DefaultVertexFormat.POSITION_COLOR_TEX,
+            builder -> builder.setTextureState(new TextureStateShard(texture, false, false)));
     }
 
     // --------------------------------------------------------------------- //
 
-    private static RenderType create(final String name, final VertexFormat format, final Function<State.Builder, State.Builder> parameters) {
+    private static RenderType create(final String name, final VertexFormat format, final Function<CompositeState.CompositeStateBuilder, CompositeState.CompositeStateBuilder> parameters) {
         return create(API.MOD_ID + "/" + name,
             format,
-            GL11.GL_QUADS, 256,
+            VertexFormat.Mode.QUADS, 256,
             false,
             false,
-            parameters.apply(State.builder())
+            parameters.apply(CompositeState.builder())
                 .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                .setDiffuseLightingState(NO_DIFFUSE_LIGHTING)
-                .setAlphaState(DEFAULT_ALPHA)
+//                .setDiffuseLightingState(NO_DIFFUSE_LIGHTING) // todo
+//                .setAlphaState(DEFAULT_ALPHA)
                 .setLightmapState(NO_LIGHTMAP)
                 .setOutputState(TRANSLUCENT_TARGET)
                 .setWriteMaskState(COLOR_WRITE)
@@ -79,7 +78,7 @@ public abstract class ModRenderType extends RenderType {
     // --------------------------------------------------------------------- //
 
     private ModRenderType() {
-        super("", DefaultVertexFormats.POSITION, 0, 256, false, false, () -> {}, () -> {});
+        super("", DefaultVertexFormat.POSITION, VertexFormat.Mode.QUADS, 256, false, false, () -> {}, () -> {});
         throw new UnsupportedOperationException("No meant to be instantiated.");
     }
 }

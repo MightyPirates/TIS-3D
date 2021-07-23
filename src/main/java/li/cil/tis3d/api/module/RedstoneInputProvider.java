@@ -1,9 +1,8 @@
 package li.cil.tis3d.api.module;
 
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
 /**
@@ -14,7 +13,8 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
  * to provide custom providers for custom redstone signal transportation methods, such
  * as cables.
  * <p>
- * Additional providers may be registered with the {@link Registry} <tt>tis3d:redstone_inputs</tt>.
+ * Additional providers may be registered with the {@link net.minecraft.core.Registry}
+ * <tt>tis3d:redstone_inputs</tt>.
  */
 public interface RedstoneInputProvider extends IForgeRegistryEntry<RedstoneInputProvider> {
     /**
@@ -25,5 +25,5 @@ public interface RedstoneInputProvider extends IForgeRegistryEntry<RedstoneInput
      * @param face  the face of the block.
      * @return the redstone level going into the face of the block.
      */
-    int getInput(final World world, final BlockPos pos, final Direction face);
+    int getInput(final Level world, final BlockPos pos, final Direction face);
 }

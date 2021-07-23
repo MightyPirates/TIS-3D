@@ -1,8 +1,8 @@
 package li.cil.tis3d.api.detail;
 
 import li.cil.tis3d.api.infrared.InfraredPacket;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 
@@ -20,5 +20,5 @@ public interface InfraredAPI {
      * @return the packet that was spawned.
      */
     @Nullable
-    InfraredPacket sendPacket(final World world, final Vector3d position, final Vector3d direction, final short value);
+    InfraredPacket sendPacket(final Level world, final Vec3 position, final Vec3 direction, final short value);
 }

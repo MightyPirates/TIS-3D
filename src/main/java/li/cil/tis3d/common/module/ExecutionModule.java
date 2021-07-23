@@ -1,6 +1,6 @@
 package li.cil.tis3d.common.module;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import li.cil.manual.api.render.FontRenderer;
@@ -22,17 +22,17 @@ import li.cil.tis3d.common.module.execution.compiler.ParseException;
 import li.cil.tis3d.common.module.execution.compiler.Strings;
 import li.cil.tis3d.util.Color;
 import li.cil.tis3d.util.EnumUtils;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.ITextProperties;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants.NBT;
@@ -144,17 +144,17 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
     }
 
     @Override
-    public boolean use(final PlayerEntity player, final Hand hand, final Vector3d hit) {
+    public boolean use(final Player player, final InteractionHand hand, final Vec3 hit) {
         final ItemStack heldItem = player.getItemInHand(hand);
 
         // Vanilla book? If so, make that a code book.
-        if (Items.is(heldItem, net.minecraft.item.Items.BOOK)) {
+        if (Items.is(heldItem, net.minecraft.world.item.Items.BOOK)) {
             if (!player.getCommandSenderWorld().isClientSide()) {
-                if (!player.abilities.instabuild) {
+                if (!player.getAbilities().instabuild) {
                     heldItem.split(1);
                 }
                 final ItemStack bookCode = new ItemStack(Items.BOOK_CODE.get());
-                if (player.inventory.add(bookCode)) {
+                if (player.getInventory().add(bookCode)) {
                     player.containerMenu.broadcastChanges();
                 }
                 if (bookCode.getCount() > 0) {
@@ -199,7 +199,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
         }
 
         // Compile the code into our machine state.
-        final World world = getCasing().getCasingLevel();
+        final Level world = getCasing().getCasingLevel();
         if (!world.isClientSide()) {
             compile(code);
             if (compileError != null) {
@@ -212,8 +212,8 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
     }
 
     @Override
-    public void onData(final CompoundNBT nbt) {
-        this.load(nbt);
+    public void onData(final CompoundTag data) {
+        this.load(data);
     }
 
     @Override
@@ -237,7 +237,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
             return;
         }
 
-        final MatrixStack matrixStack = context.getMatrixStack();
+        final PoseStack matrixStack = context.getMatrixStack();
         matrixStack.pushPose();
         rotateForRendering(matrixStack);
 
@@ -254,10 +254,10 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
     }
 
     @Override
-    public void load(final CompoundNBT tag) {
+    public void load(final CompoundTag tag) {
         super.load(tag);
 
-        final CompoundNBT machineNbt = tag.getCompound(TAG_MACHINE);
+        final CompoundTag machineNbt = tag.getCompound(TAG_MACHINE);
         getState().readFromNBT(machineNbt);
         state = EnumUtils.readFromNBT(State.class, TAG_STATE, tag);
 
@@ -267,10 +267,10 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
     }
 
     @Override
-    public void save(final CompoundNBT tag) {
+    public void save(final CompoundTag tag) {
         super.save(tag);
 
-        final CompoundNBT machineNbt = new CompoundNBT();
+        final CompoundTag machineNbt = new CompoundTag();
         getState().writeToNBT(machineNbt);
         tag.put(TAG_MACHINE, machineNbt);
         EnumUtils.writeToNBT(state, TAG_STATE, tag);
@@ -310,7 +310,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
      * Send the full state to the client.
      */
     private void sendFullState() {
-        final CompoundNBT nbt = new CompoundNBT();
+        final CompoundTag nbt = new CompoundTag();
         this.save(nbt);
         getCasing().sendData(getFace(), nbt, DATA_TYPE_FULL);
     }
@@ -337,7 +337,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
 
     @OnlyIn(Dist.CLIENT)
     private void renderState(final RenderContext context, final MachineState machineState) {
-        final MatrixStack matrixStack = context.getMatrixStack();
+        final PoseStack matrixStack = context.getMatrixStack();
         matrixStack.pushPose();
 
         // Offset to start drawing at top left of inner area, slightly inset.
@@ -421,18 +421,18 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
     private static final class SourceCodeProviderVanilla implements SourceCodeProvider {
         @Override
         public boolean worksFor(final ItemStack stack) {
-            return Items.is(stack, net.minecraft.item.Items.WRITTEN_BOOK) ||
-                   Items.is(stack, net.minecraft.item.Items.WRITABLE_BOOK);
+            return Items.is(stack, net.minecraft.world.item.Items.WRITTEN_BOOK) ||
+                   Items.is(stack, net.minecraft.world.item.Items.WRITABLE_BOOK);
         }
 
         @Override
         public Iterable<String> codeFor(final ItemStack stack) {
-            final CompoundNBT nbt = stack.getTag();
+            final CompoundTag nbt = stack.getTag();
             if (nbt == null) {
                 return null;
             }
 
-            final ListNBT pages = nbt.getList("pages", NBT.TAG_STRING);
+            final ListTag pages = nbt.getList("pages", NBT.TAG_STRING);
             if (pages.isEmpty()) {
                 return null;
             }
@@ -440,9 +440,9 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
             final List<String> code = new ArrayList<>();
             for (int page = 0; page < pages.size(); page++) {
                 String line = pages.getString(page);
-                if (Items.is(stack, net.minecraft.item.Items.WRITTEN_BOOK)) {
+                if (Items.is(stack, net.minecraft.world.item.Items.WRITTEN_BOOK)) {
                     try {
-                        final ITextProperties stringVisitable = ITextComponent.Serializer.fromJson(line);
+                        final FormattedText stringVisitable = Component.Serializer.fromJson(line);
                         if (stringVisitable != null) {
                             line = stringVisitable.getString();
                         }

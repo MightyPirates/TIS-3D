@@ -1,6 +1,6 @@
 {
-   "pack": {
-      "pack_format": 4,
-      "description": "TIS-3D mod resource pack"
-   }
+    "pack": {
+        "description": "TIS-3D Resources",
+        "pack_format": 6
+    }
 }

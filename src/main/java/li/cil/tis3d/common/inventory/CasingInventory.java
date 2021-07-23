@@ -10,13 +10,13 @@ import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.CasingInventoryMessage;
 import li.cil.tis3d.common.provider.ModuleProviders;
 import li.cil.tis3d.common.tileentity.CasingTileEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.inventory.ISidedInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.util.Direction;
-import net.minecraft.world.World;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -24,7 +24,7 @@ import java.util.Optional;
 /**
  * Inventory implementation for casings, having six slots for modules, one per face.
  */
-public final class CasingInventory extends Inventory implements ISidedInventory {
+public final class CasingInventory extends Inventory implements WorldlyContainer {
     private final CasingTileEntity tileEntity;
 
     public CasingInventory(final CasingTileEntity tileEntity) {
@@ -62,7 +62,7 @@ public final class CasingInventory extends Inventory implements ISidedInventory 
     @Override
     public void setChanged() {
         tileEntity.setChanged();
-        final World world = tileEntity.getBlockEntityWorld();
+        final Level world = tileEntity.getBlockEntityWorld();
         if (!world.isClientSide()) {
             BlockState state = tileEntity.getBlockState();
             for (final Face face : Face.VALUES) {
@@ -129,10 +129,10 @@ public final class CasingInventory extends Inventory implements ISidedInventory 
             // Rationale: module may initialize data from stack while contents of stack
             // are not synchronized to client, or do some fancy server-side only setup
             // based on the stack. The possibilities are endless. This is robust.
-            final CompoundNBT moduleData;
+            final CompoundTag moduleData;
             if (module != null) {
                 module.onInstalled(stack);
-                module.save(moduleData = new CompoundNBT());
+                module.save(moduleData = new CompoundTag());
             } else {
                 moduleData = null;
             }

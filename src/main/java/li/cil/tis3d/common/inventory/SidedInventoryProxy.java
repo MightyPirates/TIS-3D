@@ -1,14 +1,14 @@
 package li.cil.tis3d.common.inventory;
 
-import net.minecraft.inventory.ISidedInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
+import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
 
-public interface SidedInventoryProxy extends InventoryProxy, ISidedInventory {
+public interface SidedInventoryProxy extends InventoryProxy, WorldlyContainer {
     @Override
-    ISidedInventory getInventory();
+    WorldlyContainer getInventory();
 
     @Override
     default int[] getSlotsForFace(final Direction facing) {

@@ -1,13 +1,13 @@
 package li.cil.tis3d.api.util;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import li.cil.manual.api.render.FontRenderer;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -21,7 +21,7 @@ public interface RenderContext {
      *
      * @return the current renderer.
      */
-    TileEntityRendererDispatcher getDispatcher();
+    BlockEntityRenderDispatcher getDispatcher();
 
     /**
      * The matrix stack in use for this context.
@@ -30,7 +30,7 @@ public interface RenderContext {
      *
      * @return the current matrix stack.
      */
-    MatrixStack getMatrixStack();
+    PoseStack getMatrixStack();
 
     /**
      * Current partial ticks in the active frame, i.e. the fractional tick that has elapsed in rendering time but not
@@ -47,7 +47,7 @@ public interface RenderContext {
      *
      * @return the current buffer.
      */
-    IRenderTypeBuffer getBuffer();
+    MultiBufferSource getBuffer();
 
     /**
      * Utility method to determine if the observer we are rendering for is close enough so that detailed
@@ -138,7 +138,7 @@ public interface RenderContext {
      * @param width   the width of the quad.
      * @param height  the height of the quad.
      */
-    void drawQuad(final IVertexBuilder builder, final float x, final float y, final float width, final float height);
+    void drawQuad(final VertexConsumer builder, final float x, final float y, final float width, final float height);
 
     /**
      * Draws a quad with the specified size and the specified tint.
@@ -150,7 +150,7 @@ public interface RenderContext {
      * @param height  the height of the quad.
      * @param argb    the color tint of the quad as an ARGB color.
      */
-    default void drawQuad(final IVertexBuilder builder, final float x, final float y,
+    default void drawQuad(final VertexConsumer builder, final float x, final float y,
                           final float width, final float height, final int argb) {
         drawQuad(builder, x, y, width, height, 0, 0, 1, 1, argb);
     }
@@ -174,7 +174,7 @@ public interface RenderContext {
      * @param v1      the v component of the UV coordinate of the maximum corner of the quad.
      * @param argb    the color tint of the quad as an ARGB color.
      */
-    default void drawAtlasQuad(final IVertexBuilder builder, final TextureAtlasSprite sprite,
+    default void drawAtlasQuad(final VertexConsumer builder, final TextureAtlasSprite sprite,
                                final float x, final float y, final float width, final float height,
                                final float u0, final float v0, final float u1, final float v1, final int argb) {
         final float atlasU0 = sprite.getU(u0 * 16);
@@ -202,6 +202,6 @@ public interface RenderContext {
      * @param v1      the v component of the UV coordinate of the maximum corner of the quad.
      * @param argb    the color tint of the quad as an ARGB color.
      */
-    void drawQuad(IVertexBuilder builder, float x, float y, float width, float height,
+    void drawQuad(VertexConsumer builder, float x, float y, float width, float height,
                   float u0, float v0, float u1, float v1, int argb);
 }

@@ -3,9 +3,9 @@ package li.cil.tis3d.common.provider;
 import li.cil.tis3d.api.serial.SerialInterfaceProvider;
 import li.cil.tis3d.common.provider.serial.SerialInterfaceProviderFurnace;
 import li.cil.tis3d.util.RegistryUtils;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
@@ -26,7 +26,7 @@ public final class SerialInterfaceProviders {
         MODULE_PROVIDERS.register("furnace", SerialInterfaceProviderFurnace::new);
     }
 
-    public static Optional<SerialInterfaceProvider> getProviderFor(final World world, final BlockPos position, final Direction face) {
+    public static Optional<SerialInterfaceProvider> getProviderFor(final Level world, final BlockPos position, final Direction face) {
         for (final SerialInterfaceProvider provider : MODULE_PROVIDER_REGISTRY.get()) {
             if (provider.matches(world, position, face)) {
                 return Optional.of(provider);

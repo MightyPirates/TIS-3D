@@ -1,7 +1,7 @@
 package li.cil.tis3d.api;
 
 import li.cil.manual.api.render.FontRenderer;
-import net.minecraft.item.ItemGroup;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -17,7 +17,7 @@ public final class API {
     // --------------------------------------------------------------------- //
 
     // Set in TIS-3D constructor, prefer using static entry point classes instead where possible.
-    public static ItemGroup itemGroup;
+    public static CreativeModeTab itemGroup;
     public static li.cil.tis3d.api.detail.InfraredAPI infraredAPI;
 
     @OnlyIn(Dist.CLIENT) public static FontRenderer normalFontRenderer;

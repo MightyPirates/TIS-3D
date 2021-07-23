@@ -1,7 +1,7 @@
 package li.cil.tis3d.common.item;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
 
@@ -21,7 +21,7 @@ public class ModuleItem extends ModItem {
 
     @Nullable
     @Override
-    public CompoundNBT getShareTag(final ItemStack stack) {
+    public CompoundTag getShareTag(final ItemStack stack) {
         return null;
     }
 }

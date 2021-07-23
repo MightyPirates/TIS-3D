@@ -4,12 +4,17 @@ import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.common.block.Blocks;
-import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.LootTableProvider;
-import net.minecraft.data.loot.BlockLootTables;
-import net.minecraft.loot.*;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.data.loot.BlockLoot;
+import net.minecraft.data.loot.LootTableProvider;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.storage.loot.BuiltInLootTables;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.LootTables;
+import net.minecraft.world.level.storage.loot.ValidationContext;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -24,26 +29,26 @@ public class ModLootTableProvider extends LootTableProvider {
     }
 
     @Override
-    protected void validate(final Map<ResourceLocation, LootTable> map, final ValidationTracker validationtracker) {
+    protected void validate(final Map<ResourceLocation, LootTable> map, final ValidationContext validationContext) {
         final Set<ResourceLocation> modLootTableIds =
-            LootTables
+            BuiltInLootTables
                 .all()
                 .stream()
                 .filter(lootTable -> Objects.equals(lootTable.getNamespace(), API.MOD_ID))
                 .collect(Collectors.toSet());
 
         for (final ResourceLocation id : Sets.difference(modLootTableIds, map.keySet()))
-            validationtracker.reportProblem("Missing mod loot table: " + id);
+            validationContext.reportProblem("Missing mod loot table: " + id);
 
-        map.forEach((location, table) -> LootTableManager.validate(validationtracker, location, table));
+        map.forEach((location, table) -> LootTables.validate(validationContext, location, table));
     }
 
     @Override
-    protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootParameterSet>> getTables() {
-        return Collections.singletonList(Pair.of(ModBlockLootTables::new, LootParameterSets.BLOCK));
+    protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> getTables() {
+        return Collections.singletonList(Pair.of(ModBlockLootTables::new, LootContextParamSets.BLOCK));
     }
 
-    public static final class ModBlockLootTables extends BlockLootTables {
+    public static final class ModBlockLootTables extends BlockLoot {
         @Override
         protected void addTables() {
             dropSelf(Blocks.CASING.get());

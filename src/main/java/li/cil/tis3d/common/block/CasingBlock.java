@@ -9,33 +9,40 @@ import li.cil.tis3d.common.item.Items;
 import li.cil.tis3d.common.tileentity.CasingTileEntity;
 import li.cil.tis3d.common.tileentity.TileEntities;
 import li.cil.tis3d.util.InventoryUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.Util;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
+import javax.annotation.Nullable;
 import java.util.EnumMap;
 
 /**
  * Block for the module casings.
  */
-public final class CasingBlock extends Block {
+public final class CasingBlock extends BaseEntityBlock {
     public static final BooleanProperty MODULE_X_NEG = BooleanProperty.create("xneg");
     public static final BooleanProperty MODULE_X_POS = BooleanProperty.create("xpos");
     public static final BooleanProperty MODULE_Y_NEG = BooleanProperty.create("yneg");
@@ -73,7 +80,7 @@ public final class CasingBlock extends Block {
     // State
 
     @Override
-    protected void createBlockStateDefinition(final StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(final StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         for (final BooleanProperty value : FACE_TO_PROPERTY.values()) {
             builder.add(value);
@@ -84,12 +91,10 @@ public final class CasingBlock extends Block {
     // Client
 
     @Override
-    public ItemStack getPickBlock(final BlockState state, final RayTraceResult hit, final IBlockReader world, final BlockPos pos, final PlayerEntity player) {
+    public ItemStack getPickBlock(final BlockState state, final HitResult hit, final BlockGetter world, final BlockPos pos, final Player player) {
         // Allow picking modules installed in the casing.
-        final TileEntity tileEntity = world.getBlockEntity(pos);
-        if (tileEntity instanceof CasingTileEntity && hit instanceof BlockRayTraceResult) {
-            final CasingTileEntity casing = (CasingTileEntity) tileEntity;
-            final BlockRayTraceResult blockHit = (BlockRayTraceResult) hit;
+        final BlockEntity tileEntity = world.getBlockEntity(pos);
+        if (tileEntity instanceof final CasingTileEntity casing && hit instanceof final BlockHitResult blockHit) {
             final ItemStack stack = casing.getItem(blockHit.getDirection().ordinal());
             if (!stack.isEmpty()) {
                 return stack.copy();
@@ -99,30 +104,33 @@ public final class CasingBlock extends Block {
     }
 
     // --------------------------------------------------------------------- //
+    // BaseEntityBlock
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(final BlockPos pos, final BlockState state) {
+        return TileEntities.CASING.get().create(pos, state);
+    }
+
+    @Override
+    public RenderShape getRenderShape(final BlockState state) {
+        return RenderShape.MODEL;
+    }
+
+    // --------------------------------------------------------------------- //
     // Common
-
-    @Override
-    public boolean hasTileEntity(final BlockState state) {
-        return true;
-    }
-
-    @Override
-    public TileEntity createTileEntity(final BlockState state, final IBlockReader world) {
-        return TileEntities.CASING.get().create();
-    }
 
     @SuppressWarnings("deprecation")
     @Override
-    public ActionResultType use(final BlockState state, final World world, final BlockPos pos, final PlayerEntity player, final Hand hand, final BlockRayTraceResult hit) {
-        final TileEntity tileEntity = world.getBlockEntity(pos);
-        if (!(tileEntity instanceof CasingTileEntity)) {
+    public InteractionResult use(final BlockState state, final Level world, final BlockPos pos, final Player player, final InteractionHand hand, final BlockHitResult hit) {
+        final BlockEntity tileEntity = world.getBlockEntity(pos);
+        if (!(tileEntity instanceof final CasingTileEntity casing)) {
             return super.use(state, world, pos, player, hand, hit);
         }
 
         final BlockPos hitPos = hit.getBlockPos();
-        final Vector3d localHitPos = hit.getLocation().subtract(hitPos.getX(), hitPos.getY(), hitPos.getZ());
+        final Vec3 localHitPos = hit.getLocation().subtract(hitPos.getX(), hitPos.getY(), hitPos.getZ());
         final Direction side = hit.getDirection();
-        final CasingTileEntity casing = (CasingTileEntity) tileEntity;
         final ItemStack heldItem = player.getItemInHand(hand);
 
         // Locking or unlocking the casing or a port?
@@ -135,20 +143,20 @@ public final class CasingBlock extends Block {
                         casing.lock(heldItem);
                     } else {
                         final Face face = Face.fromDirection(side);
-                        final Vector3d uv = TransformUtil.hitToUV(face, localHitPos);
+                        final Vec3 uv = TransformUtil.hitToUV(face, localHitPos);
                         final Port port = Port.fromUVQuadrant(uv);
 
                         casing.setReceivingPipeLocked(face, port, !casing.isReceivingPipeLocked(face, port));
                     }
                 }
             }
-            return ActionResultType.sidedSuccess(world.isClientSide());
+            return InteractionResult.sidedSuccess(world.isClientSide());
         }
 
         // Let the module handle the activation.
         final Module module = casing.getModule(Face.fromDirection(side));
         if (module != null && module.use(player, hand, localHitPos)) {
-            return ActionResultType.sidedSuccess(world.isClientSide());
+            return InteractionResult.sidedSuccess(world.isClientSide());
         }
 
         // Don't allow changing modules while casing is locked.
@@ -165,16 +173,16 @@ public final class CasingBlock extends Block {
                 if (entity != null) {
                     entity.setNoPickUpDelay();
                     entity.playerTouch(player);
-                    world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.PISTON_CONTRACT, SoundCategory.BLOCKS, 0.2f, 0.8f + world.random.nextFloat() * 0.1f);
+                    world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.PISTON_CONTRACT, SoundSource.BLOCKS, 0.2f, 0.8f + world.random.nextFloat() * 0.1f);
                 }
             }
-            return ActionResultType.sidedSuccess(world.isClientSide());
+            return InteractionResult.sidedSuccess(world.isClientSide());
         } else if (!heldItem.isEmpty()) {
             // Installing a new module in the casing.
             if (casing.canPlaceItemThroughFace(side.ordinal(), heldItem, side)) {
                 if (!world.isClientSide()) {
                     final ItemStack insertedStack;
-                    if (player.abilities.instabuild) {
+                    if (player.getAbilities().instabuild) {
                         insertedStack = heldItem.copy().split(1);
                     } else {
                         insertedStack = heldItem.split(1);
@@ -185,9 +193,9 @@ public final class CasingBlock extends Block {
                     } else {
                         casing.setItem(side.ordinal(), insertedStack);
                     }
-                    world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.PISTON_EXTEND, SoundCategory.BLOCKS, 0.2f, 0.8f + world.random.nextFloat() * 0.1f);
+                    world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.PISTON_EXTEND, SoundSource.BLOCKS, 0.2f, 0.8f + world.random.nextFloat() * 0.1f);
                 }
-                return ActionResultType.sidedSuccess(world.isClientSide());
+                return InteractionResult.sidedSuccess(world.isClientSide());
             }
         }
         return super.use(state, world, pos, player, hand, hit);
@@ -195,11 +203,11 @@ public final class CasingBlock extends Block {
 
     @SuppressWarnings("deprecation")
     @Override
-    public void onRemove(final BlockState state, final World world, final BlockPos pos, final BlockState newState, final boolean isMoving) {
+    public void onRemove(final BlockState state, final Level world, final BlockPos pos, final BlockState newState, final boolean isMoving) {
         if (!state.is(newState.getBlock())) {
-            final TileEntity tileentity = world.getBlockEntity(pos);
-            if (tileentity instanceof CasingTileEntity) {
-                InventoryHelper.dropContents(world, pos, (IInventory) tileentity);
+            final BlockEntity blockEntity = world.getBlockEntity(pos);
+            if (blockEntity instanceof CasingTileEntity casing) {
+                Containers.dropContents(world, pos, casing);
                 world.updateNeighbourForOutputSignal(pos, this);
             }
             super.onRemove(state, world, pos, newState, isMoving);
@@ -217,16 +225,15 @@ public final class CasingBlock extends Block {
 
     @SuppressWarnings("deprecation")
     @Override
-    public int getAnalogOutputSignal(final BlockState state, final World world, final BlockPos pos) {
-        return Container.getRedstoneSignalFromBlockEntity(world.getBlockEntity(pos));
+    public int getAnalogOutputSignal(final BlockState state, final Level world, final BlockPos pos) {
+        return AbstractContainerMenu.getRedstoneSignalFromBlockEntity(world.getBlockEntity(pos));
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    public int getSignal(final BlockState blockState, final IBlockReader world, final BlockPos pos, final Direction side) {
-        final TileEntity tileentity = world.getBlockEntity(pos);
-        if (tileentity instanceof CasingTileEntity) {
-            final CasingTileEntity casing = (CasingTileEntity) tileentity;
+    public int getSignal(final BlockState blockState, final BlockGetter world, final BlockPos pos, final Direction side) {
+        final BlockEntity blockEntity = world.getBlockEntity(pos);
+        if (blockEntity instanceof final CasingTileEntity casing) {
             final Module module = casing.getModule(Face.fromDirection(side.getOpposite()));
             if (module instanceof ModuleWithRedstone) {
                 return ((ModuleWithRedstone) module).getRedstoneOutput();
@@ -246,10 +253,9 @@ public final class CasingBlock extends Block {
 
     @SuppressWarnings("deprecation")
     @Override
-    public void neighborChanged(final BlockState state, final World world, final BlockPos pos, final Block block, final BlockPos fromPos, final boolean isMoving) {
-        final TileEntity tileEntity = world.getBlockEntity(pos);
-        if (tileEntity instanceof CasingTileEntity) {
-            final CasingTileEntity casing = (CasingTileEntity) tileEntity;
+    public void neighborChanged(final BlockState state, final Level world, final BlockPos pos, final Block block, final BlockPos fromPos, final boolean isMoving) {
+        final BlockEntity blockEntity = world.getBlockEntity(pos);
+        if (blockEntity instanceof final CasingTileEntity casing) {
             casing.checkNeighbors();
             casing.notifyModulesOfBlockChange(fromPos);
             casing.markRedstoneDirty();

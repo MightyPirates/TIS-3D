@@ -18,6 +18,6 @@ public final class Capabilities {
     // --------------------------------------------------------------------- //
 
     private static <T> void register(final Class<T> type) {
-        CapabilityManager.INSTANCE.register(type, new NullStorage<>(), () -> null);
+        CapabilityManager.INSTANCE.register(type);
     }
 }

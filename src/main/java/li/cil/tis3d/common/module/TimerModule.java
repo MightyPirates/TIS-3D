@@ -1,6 +1,6 @@
 package li.cil.tis3d.common.module;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import li.cil.manual.api.render.FontRenderer;
@@ -13,7 +13,7 @@ import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.util.Color;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -98,7 +98,7 @@ public final class TimerModule extends AbstractModuleWithRotation {
             return;
         }
 
-        final MatrixStack matrixStack = context.getMatrixStack();
+        final PoseStack matrixStack = context.getMatrixStack();
         matrixStack.pushPose();
         rotateForRendering(matrixStack);
 
@@ -119,14 +119,14 @@ public final class TimerModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void load(final CompoundNBT tag) {
+    public void load(final CompoundTag tag) {
         super.load(tag);
 
         timer = tag.getLong(TAG_TIMER);
     }
 
     @Override
-    public void save(final CompoundNBT tag) {
+    public void save(final CompoundTag tag) {
         super.save(tag);
 
         tag.putLong(TAG_TIMER, timer);
@@ -209,7 +209,7 @@ public final class TimerModule extends AbstractModuleWithRotation {
         final int width = fontRenderer.width(time);
         final int height = fontRenderer.lineHeight();
 
-        final MatrixStack matrixStack = context.getMatrixStack();
+        final PoseStack matrixStack = context.getMatrixStack();
         matrixStack.translate(0.5f, 0.5f, 0);
         matrixStack.scale(1 / 80f, 1 / 80f, 1);
         matrixStack.translate(-width / 2f + 1, -height / 2f + 1, 0);

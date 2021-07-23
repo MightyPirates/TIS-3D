@@ -1,11 +1,11 @@
 package li.cil.tis3d.common.inventory;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
-public interface InventoryProxy extends IInventory {
-    IInventory getInventory();
+public interface InventoryProxy extends Container {
+    Container getInventory();
 
     @Override
     default int getContainerSize() {
@@ -48,17 +48,17 @@ public interface InventoryProxy extends IInventory {
     }
 
     @Override
-    default boolean stillValid(final PlayerEntity player) {
+    default boolean stillValid(final Player player) {
         return getInventory().stillValid(player);
     }
 
     @Override
-    default void startOpen(final PlayerEntity player) {
+    default void startOpen(final Player player) {
         getInventory().startOpen(player);
     }
 
     @Override
-    default void stopOpen(final PlayerEntity player) {
+    default void stopOpen(final Player player) {
         getInventory().stopOpen(player);
     }
 

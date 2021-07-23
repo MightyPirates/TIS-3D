@@ -12,10 +12,10 @@ import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.common.provider.SerialInterfaceProviders;
 import li.cil.tis3d.util.WorldUtils;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -39,7 +39,7 @@ public final class SerialPortModule extends AbstractModule implements ModuleWith
     private static final String TAG_SERIAL_INTERFACE = "serialInterface";
 
     private Optional<SerialInterface> serialInterface = Optional.empty();
-    private Optional<CompoundNBT> serialInterfaceNbt = Optional.empty();
+    private Optional<CompoundTag> serialInterfaceNbt = Optional.empty();
     private boolean isScanScheduled = true;
 
     // --------------------------------------------------------------------- //
@@ -105,7 +105,7 @@ public final class SerialPortModule extends AbstractModule implements ModuleWith
     }
 
     @Override
-    public void load(final CompoundNBT tag) {
+    public void load(final CompoundTag tag) {
         super.load(tag);
 
         writing = tag.getShort(TAG_VALUE);
@@ -120,13 +120,13 @@ public final class SerialPortModule extends AbstractModule implements ModuleWith
     }
 
     @Override
-    public void save(final CompoundNBT tag) {
+    public void save(final CompoundTag tag) {
         super.save(tag);
 
         tag.putShort(TAG_VALUE, writing);
 
         if (serialInterface.isPresent()) {
-            final CompoundNBT serialInterfaceNbt = new CompoundNBT();
+            final CompoundTag serialInterfaceNbt = new CompoundTag();
             serialInterface.get().writeToNBT(serialInterfaceNbt);
             if (!tag.isEmpty()) {
                 tag.put(TAG_SERIAL_INTERFACE, serialInterfaceNbt);
@@ -149,7 +149,7 @@ public final class SerialPortModule extends AbstractModule implements ModuleWith
         }
         isScanScheduled = false;
 
-        final World world = getCasing().getCasingLevel();
+        final Level world = getCasing().getCasingLevel();
         final BlockPos neighborPos = getCasing().getPosition().relative(Face.toDirection(getFace()));
         final Direction neighborSide = Face.toDirection(getFace().getOpposite());
         if (WorldUtils.isLoaded(world, neighborPos)) {

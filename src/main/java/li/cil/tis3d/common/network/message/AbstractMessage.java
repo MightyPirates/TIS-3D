@@ -1,12 +1,12 @@
 package li.cil.tis3d.common.network.message;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.world.World;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,7 +19,7 @@ public abstract class AbstractMessage {
     protected AbstractMessage() {
     }
 
-    protected AbstractMessage(final PacketBuffer buffer) {
+    protected AbstractMessage(final FriendlyByteBuf buffer) {
         fromBytes(buffer);
     }
 
@@ -33,19 +33,19 @@ public abstract class AbstractMessage {
 
     protected abstract void handleMessage(final NetworkEvent.Context context);
 
-    public abstract void fromBytes(final PacketBuffer buffer);
+    public abstract void fromBytes(final FriendlyByteBuf buffer);
 
-    public abstract void toBytes(final PacketBuffer buffer);
+    public abstract void toBytes(final FriendlyByteBuf buffer);
 
     @Nullable
-    protected World getServerWorld(final NetworkEvent.Context context) {
-        final ServerPlayerEntity sender = context.getSender();
+    protected Level getServerWorld(final NetworkEvent.Context context) {
+        final ServerPlayer sender = context.getSender();
         return sender != null ? sender.getLevel() : null;
     }
 
     @OnlyIn(Dist.CLIENT)
     @Nullable
-    protected World getClientWorld() {
+    protected Level getClientWorld() {
         return Minecraft.getInstance().level;
     }
 }

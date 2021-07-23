@@ -5,7 +5,9 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.IConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -68,7 +70,7 @@ public final class ConfigManager {
     // --------------------------------------------------------------------- //
 
     private static final Map<Class<?>, ConfigFieldParser> PARSERS = new HashMap<>();
-    private static final Map<ForgeConfigSpec, ConfigDefinition> CONFIGS = new HashMap<>();
+    private static final Map<IConfigSpec<ForgeConfigSpec>, ConfigDefinition> CONFIGS = new HashMap<>();
 
     static {
         PARSERS.put(int.class, ConfigManager::parseIntField);
@@ -101,7 +103,7 @@ public final class ConfigManager {
     // --------------------------------------------------------------------- //
 
     @SubscribeEvent
-    public static void handleModConfigEvent(final ModConfig.ModConfigEvent event) {
+    public static void handleModConfigEvent(final ModConfigEvent event) {
         final ConfigDefinition config = CONFIGS.get(event.getConfig().getSpec());
         if (config != null) {
             config.apply();
@@ -234,15 +236,7 @@ public final class ConfigManager {
         ConfigFieldPair<?> apply(final Object instance, final Field field, final String path, final ForgeConfigSpec.Builder builder) throws IllegalAccessException;
     }
 
-    private static final class ConfigDefinition {
-        public final Object instance;
-        public final ArrayList<ConfigFieldPair<?>> values;
-
-        public ConfigDefinition(final Object instance, final ArrayList<ConfigFieldPair<?>> values) {
-            this.instance = instance;
-            this.values = values;
-        }
-
+    private record ConfigDefinition(Object instance, ArrayList<ConfigFieldPair<?>> values) {
         public void apply() {
             for (final ConfigFieldPair<?> pair : values) {
                 pair.apply(instance);

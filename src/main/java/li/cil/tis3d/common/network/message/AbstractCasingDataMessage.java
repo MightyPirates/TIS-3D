@@ -6,10 +6,10 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.common.tileentity.CasingTileEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtIo;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.Level;
 
 import java.io.IOException;
 
@@ -21,13 +21,13 @@ public abstract class AbstractCasingDataMessage extends AbstractMessageWithPosit
         this.data = data;
     }
 
-    public AbstractCasingDataMessage(final PacketBuffer buffer) {
+    public AbstractCasingDataMessage(final FriendlyByteBuf buffer) {
         super(buffer);
     }
 
     // --------------------------------------------------------------------- //
 
-    protected void handleMessage(final World world) {
+    protected void handleMessage(final Level world) {
         withTileEntity(world, CasingTileEntity.class, casing -> {
             while (data.readableBytes() > 0) {
                 final Module module = casing.getModule(Face.VALUES[data.readByte()]);
@@ -39,7 +39,7 @@ public abstract class AbstractCasingDataMessage extends AbstractMessageWithPosit
                         if (isNbt) {
                             try {
                                 final ByteBufInputStream bis = new ByteBufInputStream(packet);
-                                final CompoundNBT nbt = CompressedStreamTools.readCompressed(bis);
+                                final CompoundTag nbt = NbtIo.readCompressed(bis);
                                 module.onData(nbt);
                             } catch (final IOException e) {
                                 LOGGER.warn("Invalid packet received.", e);
@@ -57,7 +57,7 @@ public abstract class AbstractCasingDataMessage extends AbstractMessageWithPosit
     // AbstractMessage
 
     @Override
-    public void fromBytes(final PacketBuffer buffer) {
+    public void fromBytes(final FriendlyByteBuf buffer) {
         super.fromBytes(buffer);
 
         final int count = buffer.readInt();
@@ -65,7 +65,7 @@ public abstract class AbstractCasingDataMessage extends AbstractMessageWithPosit
     }
 
     @Override
-    public void toBytes(final PacketBuffer buffer) {
+    public void toBytes(final FriendlyByteBuf buffer) {
         super.toBytes(buffer);
 
         buffer.writeInt(data.readableBytes());

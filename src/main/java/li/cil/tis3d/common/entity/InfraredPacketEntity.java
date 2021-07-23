@@ -6,29 +6,29 @@ import li.cil.tis3d.common.capabilities.Capabilities;
 import li.cil.tis3d.common.event.InfraredPacketTickHandler;
 import li.cil.tis3d.common.module.InfraredModule;
 import li.cil.tis3d.util.Raytracing;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.IPacket;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.particles.RedstoneParticleData;
-import net.minecraft.tileentity.EndGatewayTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.*;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.TheEndGatewayBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.*;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.fmllegacy.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -59,7 +59,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
     private static final String TAG_LIFETIME = "lifetime";
 
     // Data watcher ids.
-    private static final DataParameter<Integer> DATA_VALUE = EntityDataManager.defineId(InfraredPacketEntity.class, DataSerializers.INT);
+    private static final EntityDataAccessor<Integer> DATA_VALUE = SynchedEntityData.defineId(InfraredPacketEntity.class, EntityDataSerializers.INT);
 
     // --------------------------------------------------------------------- //
     // Persisted data
@@ -74,7 +74,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
      */
     private short value;
 
-    public InfraredPacketEntity(final EntityType<?> type, final World world) {
+    public InfraredPacketEntity(final EntityType<?> type, final Level world) {
         super(type, world);
         setNoGravity(true);
     }
@@ -91,7 +91,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
      * @param direction the direction in which the packet was emitted.
      * @param value     the value the packet carries.
      */
-    public void configure(final Vector3d start, final Vector3d direction, final short value) {
+    public void configure(final Vec3 start, final Vec3 direction, final short value) {
         setPos(start.x, start.y, start.z);
         setDeltaMovement(direction.scale(TRAVEL_SPEED));
         lifetime = DEFAULT_LIFETIME + 1; // First update in next frame.
@@ -104,7 +104,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
      */
     public void updateLifetime() {
         if (lifetime-- < 1) {
-            remove();
+            discard();
         }
     }
 
@@ -130,27 +130,27 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
     }
 
     @Override
-    public void remove() {
-        super.remove();
-        if (!getCommandSenderWorld().isClientSide()) {
+    public void remove(final RemovalReason reason) {
+        super.remove(reason);
+        if (!level.isClientSide()) {
             InfraredPacketTickHandler.unwatchPacket(this);
         }
     }
 
     @Override
-    protected void readAdditionalSaveData(final CompoundNBT tag) {
+    protected void readAdditionalSaveData(final CompoundTag tag) {
         lifetime = tag.getInt(TAG_LIFETIME);
         value = tag.getShort(TAG_VALUE);
     }
 
     @Override
-    protected void addAdditionalSaveData(final CompoundNBT tag) {
+    protected void addAdditionalSaveData(final CompoundTag tag) {
         tag.putInt(TAG_LIFETIME, lifetime);
         tag.putShort(TAG_VALUE, value);
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
@@ -158,7 +158,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
     public void tick() {
         // Enforce lifetime, fail-safe, should be tracked in updateLifetime().
         if (lifetime < 1) {
-            remove();
+            discard();
             return;
         }
 
@@ -166,7 +166,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
         super.tick();
 
         // Check for collisions and handle them.
-        final RayTraceResult hit = checkCollisions();
+        final HitResult hit = checkCollisions();
 
         // Emit some particles.
         emitParticles(hit);
@@ -210,17 +210,17 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
     }
 
     @Override
-    public Vector3d getPacketPosition() {
+    public Vec3 getPacketPosition() {
         return position();
     }
 
     @Override
-    public Vector3d getPacketDirection() {
+    public Vec3 getPacketDirection() {
         return getDeltaMovement().normalize();
     }
 
     @Override
-    public void redirectPacket(final Vector3d position, final Vector3d direction, final int addedLifetime) {
+    public void redirectPacket(final Vec3 position, final Vec3 direction, final int addedLifetime) {
         lifetime += addedLifetime;
         if (lifetime > 0) {
             // Revive!
@@ -236,13 +236,13 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
 
     // --------------------------------------------------------------------- //
 
-    private void setPositionAndUpdateBounds(final Vector3d pos) {
+    private void setPositionAndUpdateBounds(final Vec3 pos) {
         setPos(pos.x, pos.y, pos.z);
     }
 
-    private void emitParticles(@Nullable final RayTraceResult hit) {
-        final World world = getCommandSenderWorld();
-        if (!(world instanceof ServerWorld)) {
+    private void emitParticles(@Nullable final HitResult hit) {
+        final Level world = getCommandSenderWorld();
+        if (!(world instanceof final ServerLevel serverWorld)) {
             // Entities regularly die too quickly for the client to have a
             // chance to simulate them, so we trigger the particles from
             // the server. Kinda meh, but whatever works.
@@ -252,39 +252,38 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
         // Spawn particle effect somewhere between current position and either the
         // position where the packet collided with something, or along the movement
         // direction (i.e. where the packet will be next).
-        final ServerWorld serverWorld = (ServerWorld) world;
         final double t = random.nextDouble();
-        final Vector3d delta = hit == null ? getDeltaMovement() : hit.getLocation().subtract(position());
-        final Vector3d pos = position().add(delta.scale(t));
-        serverWorld.sendParticles(RedstoneParticleData.REDSTONE, pos.x, pos.y, pos.z, 1, 0, 0, 0, 0);
+        final Vec3 delta = hit == null ? getDeltaMovement() : hit.getLocation().subtract(position());
+        final Vec3 pos = position().add(delta.scale(t));
+        serverWorld.sendParticles(DustParticleOptions.REDSTONE, pos.x, pos.y, pos.z, 1, 0, 0, 0, 0);
     }
 
     @Nullable
-    private RayTraceResult checkCollisions() {
-        final RayTraceResult hit = checkCollision();
-        if (hit instanceof BlockRayTraceResult) {
-            onBlockCollision((BlockRayTraceResult) hit);
-        } else if (hit instanceof EntityRayTraceResult) {
-            onEntityCollision((EntityRayTraceResult) hit);
+    private HitResult checkCollisions() {
+        final HitResult hit = checkCollision();
+        if (hit instanceof BlockHitResult) {
+            onBlockCollision((BlockHitResult) hit);
+        } else if (hit instanceof EntityHitResult) {
+            onEntityCollision((EntityHitResult) hit);
         }
         return hit;
     }
 
     @Nullable
-    private RayTraceResult checkCollision() {
-        final World world = getCommandSenderWorld();
-        final Vector3d start = position();
-        final Vector3d target = start.add(getDeltaMovement());
+    private HitResult checkCollision() {
+        final Level world = getCommandSenderWorld();
+        final Vec3 start = position();
+        final Vec3 target = start.add(getDeltaMovement());
 
         // Check for block collisions.
-        final RayTraceResult blockHit = Raytracing.raytrace(world, start, target, Raytracing::intersectIgnoringTransparent);
+        final HitResult blockHit = Raytracing.raytrace(world, start, target, Raytracing::intersectIgnoringTransparent);
 
         // Check for entity collisions.
-        final RayTraceResult entityHit = checkEntityCollision(world, start, target);
+        final HitResult entityHit = checkEntityCollision(world, start, target);
 
         // If we have both, pick the closer one.
-        if (blockHit != null && blockHit.getType() != RayTraceResult.Type.MISS &&
-            entityHit != null && entityHit.getType() != RayTraceResult.Type.MISS) {
+        if (blockHit != null && blockHit.getType() != HitResult.Type.MISS &&
+            entityHit != null && entityHit.getType() != HitResult.Type.MISS) {
             if (blockHit.getLocation().distanceToSqr(start) < entityHit.getLocation().distanceToSqr(start)) {
                 return blockHit;
             } else {
@@ -304,16 +303,16 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
     }
 
     @Nullable
-    private RayTraceResult checkEntityCollision(final World world, final Vector3d start, final Vector3d target) {
+    private HitResult checkEntityCollision(final Level world, final Vec3 start, final Vec3 target) {
         Entity entityHit = null;
-        Vector3d entityHitVec = null;
+        Vec3 entityHitVec = null;
         double bestSqrDistance = Double.POSITIVE_INFINITY;
 
         final List<Entity> collisions = world.getEntities(this, getBoundingBox().expandTowards(getDeltaMovement()));
         for (final Entity entity : collisions) {
             if (entity.canBeCollidedWith()) {
-                final AxisAlignedBB entityBounds = entity.getBoundingBox();
-                final Optional<Vector3d> hit = entityBounds.clip(start, target);
+                final AABB entityBounds = entity.getBoundingBox();
+                final Optional<Vec3> hit = entityBounds.clip(start, target);
                 if (hit.isPresent()) {
                     final double sqrDistance = start.distanceToSqr(hit.get());
                     if (sqrDistance < bestSqrDistance) {
@@ -325,30 +324,28 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
             }
         }
 
-        return entityHit != null ? new EntityRayTraceResult(entityHit, entityHitVec) : null;
+        return entityHit != null ? new EntityHitResult(entityHit, entityHitVec) : null;
     }
 
-    private void onBlockCollision(final BlockRayTraceResult hit) {
-        final World world = level;
-
+    private void onBlockCollision(final BlockHitResult hit) {
         final BlockPos pos = hit.getBlockPos();
-        final BlockState blockState = world.getBlockState(pos);
+        final BlockState blockState = level.getBlockState(pos);
         final Block block = blockState.getBlock();
 
         // Traveling through a portal?
-        final TileEntity tileEntity = world.getBlockEntity(pos);
+        final BlockEntity tileEntity = level.getBlockEntity(pos);
         if (blockState.is(Blocks.NETHER_PORTAL)) {
             handleInsidePortal(pos);
             return;
         } else if (blockState.is(Blocks.END_GATEWAY)) {
-            if (tileEntity instanceof EndGatewayTileEntity && EndGatewayTileEntity.canEntityTeleport(this)) {
-                ((EndGatewayTileEntity) tileEntity).teleportEntity(this);
+            if (tileEntity instanceof TheEndGatewayBlockEntity endGateway && TheEndGatewayBlockEntity.canEntityTeleport(this)) {
+                TheEndGatewayBlockEntity.teleportEntity(level, pos, blockState, this, endGateway);
                 return;
             }
         }
 
         // First things first, we ded.
-        remove();
+        discard();
 
         // Next up, notify receiver, if any.
         if (block instanceof InfraredReceiver) {
@@ -357,15 +354,15 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
         onCapabilityProviderCollision(hit, hit.getDirection(), tileEntity);
     }
 
-    private void onEntityCollision(final EntityRayTraceResult hit) {
+    private void onEntityCollision(final EntityHitResult hit) {
         // First things first, we ded.
-        remove();
+        discard();
 
         // Next up, notify receiver, if any.
         onCapabilityProviderCollision(hit, null, hit.getEntity());
     }
 
-    private void onCapabilityProviderCollision(final RayTraceResult hit, @Nullable final Direction side, @Nullable final ICapabilityProvider provider) {
+    private void onCapabilityProviderCollision(final HitResult hit, @Nullable final Direction side, @Nullable final ICapabilityProvider provider) {
         if (provider instanceof InfraredReceiver) {
             ((InfraredReceiver) provider).onInfraredPacket(this, hit);
         } else if (provider != null) {

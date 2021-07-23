@@ -1,9 +1,9 @@
 package li.cil.tis3d.common.network.message;
 
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.particles.RedstoneParticleData;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 public final class RedstoneParticleEffectMessage extends AbstractMessage {
     private double x;
@@ -16,7 +16,7 @@ public final class RedstoneParticleEffectMessage extends AbstractMessage {
         this.z = z;
     }
 
-    public RedstoneParticleEffectMessage(final PacketBuffer buffer) {
+    public RedstoneParticleEffectMessage(final FriendlyByteBuf buffer) {
         super(buffer);
     }
 
@@ -25,21 +25,21 @@ public final class RedstoneParticleEffectMessage extends AbstractMessage {
 
     @Override
     protected void handleMessage(final NetworkEvent.Context context) {
-        final World world = getClientWorld();
+        final Level world = getClientWorld();
         if (world != null) {
-            world.addParticle(RedstoneParticleData.REDSTONE, x, y, z, 0, 0, 0);
+            world.addParticle(DustParticleOptions.REDSTONE, x, y, z, 0, 0, 0);
         }
     }
 
     @Override
-    public void fromBytes(final PacketBuffer buffer) {
+    public void fromBytes(final FriendlyByteBuf buffer) {
         x = buffer.readDouble();
         y = buffer.readDouble();
         z = buffer.readDouble();
     }
 
     @Override
-    public void toBytes(final PacketBuffer buffer) {
+    public void toBytes(final FriendlyByteBuf buffer) {
         buffer.writeDouble(x);
         buffer.writeDouble(y);
         buffer.writeDouble(z);

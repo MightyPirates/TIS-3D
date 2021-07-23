@@ -1,7 +1,6 @@
 package li.cil.tis3d.api.infrared;
 
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * Represents an infrared packet carrying a single value.
@@ -21,14 +20,14 @@ public interface InfraredPacket {
      *
      * @return the current position of the packet.
      */
-    Vector3d getPacketPosition();
+    Vec3 getPacketPosition();
 
     /**
      * Get the normalized direction the packet is currently heading.
      *
      * @return the current heading of the packet.
      */
-    Vector3d getPacketDirection();
+    Vec3 getPacketDirection();
 
     /**
      * Instead of consuming the packet, this can be used to redirect the
@@ -47,5 +46,5 @@ public interface InfraredPacket {
      * @param direction     the new direction the packet should be heading.
      * @param addedLifetime how many ticks to add to the packet's lifetime.
      */
-    void redirectPacket(final Vector3d position, final Vector3d direction, final int addedLifetime);
+    void redirectPacket(final Vec3 position, final Vec3 direction, final int addedLifetime);
 }

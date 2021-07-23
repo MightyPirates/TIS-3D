@@ -1,14 +1,14 @@
 package li.cil.tis3d.client.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import li.cil.tis3d.client.ClientConfig;
 import li.cil.tis3d.common.module.TerminalModule;
 import li.cil.tis3d.util.Color;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.Hand;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.InteractionHand;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -25,7 +25,7 @@ public final class TerminalModuleScreen extends Screen {
     private final TerminalModule module;
 
     public TerminalModuleScreen(final TerminalModule module) {
-        super(StringTextComponent.EMPTY);
+        super(TextComponent.EMPTY);
         this.module = module;
     }
 
@@ -50,9 +50,9 @@ public final class TerminalModuleScreen extends Screen {
     }
 
     @Override
-    public void render(final MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
+    public void render(final PoseStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
         // To be on the safe side (see manual.Document#render).
-        RenderSystem.disableAlphaTest();
+//        RenderSystem.disableAlphaTest(); // todo
 
         RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, false);
         RenderSystem.enableDepthTest();
@@ -110,9 +110,9 @@ public final class TerminalModuleScreen extends Screen {
     private void writeToModule(final char value) {
         module.writeToInput(value);
 
-        final ClientPlayerEntity player = getMinecraft().player;
+        final LocalPlayer player = getMinecraft().player;
         if (ClientConfig.animateTypingHand && player != null) {
-            player.swing(Hand.MAIN_HAND);
+            player.swing(InteractionHand.MAIN_HAND);
         }
     }
 

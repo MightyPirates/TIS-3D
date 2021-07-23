@@ -13,11 +13,11 @@ import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.provider.ModuleProviders;
 import li.cil.tis3d.common.tileentity.CasingTileEntity;
 import li.cil.tis3d.common.tileentity.ControllerTileEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
@@ -238,7 +238,7 @@ public final class CasingImpl implements Casing {
      *
      * @param nbt the data to load.
      */
-    public void readFromNBT(final CompoundNBT nbt) {
+    public void readFromNBT(final CompoundTag nbt) {
         for (int index = 0; index < tileEntity.getContainerSize(); index++) {
             final ItemStack stack = tileEntity.getItem(index);
             if (stack.isEmpty()) {
@@ -263,7 +263,7 @@ public final class CasingImpl implements Casing {
             modules[index] = module;
         }
 
-        final ListNBT modulesNbt = nbt.getList(TAG_MODULES, Constants.NBT.TAG_COMPOUND);
+        final ListTag modulesNbt = nbt.getList(TAG_MODULES, Constants.NBT.TAG_COMPOUND);
         final int moduleCount = Math.min(modulesNbt.size(), modules.length);
         for (int i = 0; i < moduleCount; i++) {
             if (modules[i] != null) {
@@ -283,10 +283,10 @@ public final class CasingImpl implements Casing {
      *
      * @param nbt the tag to write the data to.
      */
-    public void writeToNBT(final CompoundNBT nbt) {
-        final ListNBT modulesNbt = new ListNBT();
+    public void writeToNBT(final CompoundTag nbt) {
+        final ListTag modulesNbt = new ListTag();
         for (final Module module : modules) {
-            final CompoundNBT moduleNbt = new CompoundNBT();
+            final CompoundTag moduleNbt = new CompoundTag();
             if (module != null) {
                 module.save(moduleNbt);
             }
@@ -303,7 +303,7 @@ public final class CasingImpl implements Casing {
     // Casing
 
     @Override
-    public World getCasingLevel() {
+    public Level getCasingLevel() {
         return tileEntity.getBlockEntityWorld();
     }
 
@@ -344,12 +344,12 @@ public final class CasingImpl implements Casing {
     }
 
     @Override
-    public void sendData(final Face face, final CompoundNBT data, final byte type) {
+    public void sendData(final Face face, final CompoundTag data, final byte type) {
         Network.sendModuleData(this, face, data, type);
     }
 
     @Override
-    public void sendData(final Face face, final CompoundNBT data) {
+    public void sendData(final Face face, final CompoundTag data) {
         sendData(face, data, (byte) -1);
     }
 
@@ -372,7 +372,7 @@ public final class CasingImpl implements Casing {
      * @return the key, if present.
      */
     private static Optional<UUID> getKeyFromStack(final ItemStack stack) {
-        final CompoundNBT nbt = stack.getTag();
+        final CompoundTag nbt = stack.getTag();
         if (nbt == null) {
             return Optional.empty();
         }
@@ -389,7 +389,7 @@ public final class CasingImpl implements Casing {
      * @param key   the key to store on the stack.
      */
     private static void setKeyForStack(final ItemStack stack, final UUID key) {
-        final CompoundNBT nbt = stack.getOrCreateTag();
+        final CompoundTag nbt = stack.getOrCreateTag();
         nbt.putUUID(TAG_KEY, key);
     }
 }

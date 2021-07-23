@@ -1,6 +1,6 @@
 package li.cil.tis3d.api.machine;
 
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
 
 /**
  * Enumeration over the faces of a {@link Casing}.

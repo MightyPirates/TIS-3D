@@ -1,10 +1,10 @@
 package li.cil.tis3d.common.inventory;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.util.Constants;
 
 import java.util.Arrays;
@@ -12,7 +12,7 @@ import java.util.Arrays;
 /**
  * Base implementation of an array based inventory.
  */
-public class Inventory implements IInventory {
+public class Inventory implements Container {
     private static final String TAG_ITEMS = "inventory";
 
     protected final ItemStack[] items;
@@ -23,24 +23,24 @@ public class Inventory implements IInventory {
 
     // --------------------------------------------------------------------- //
 
-    public void readFromNBT(final CompoundNBT nbt) {
-        final ListNBT itemList = nbt.getList(TAG_ITEMS, Constants.NBT.TAG_COMPOUND);
+    public void readFromNBT(final CompoundTag tag) {
+        final ListTag itemList = tag.getList(TAG_ITEMS, Constants.NBT.TAG_COMPOUND);
         final int count = Math.min(itemList.size(), items.length);
         for (int index = 0; index < count; index++) {
             items[index] = ItemStack.of(itemList.getCompound(index));
         }
     }
 
-    public void writeToNBT(final CompoundNBT nbt) {
-        final ListNBT itemList = new ListNBT();
+    public void writeToNBT(final CompoundTag tag) {
+        final ListTag itemList = new ListTag();
         for (final ItemStack stack : items) {
-            final CompoundNBT stackTag = new CompoundNBT();
+            final CompoundTag stackTag = new CompoundTag();
             if (stack != null) {
                 stack.save(stackTag);
             }
             itemList.add(stackTag);
         }
-        nbt.put(TAG_ITEMS, itemList);
+        tag.put(TAG_ITEMS, itemList);
     }
 
     // --------------------------------------------------------------------- //
@@ -117,7 +117,7 @@ public class Inventory implements IInventory {
     }
 
     @Override
-    public boolean stillValid(final PlayerEntity player) {
+    public boolean stillValid(final Player player) {
         return true;
     }
 

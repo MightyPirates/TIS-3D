@@ -4,19 +4,19 @@ import li.cil.tis3d.api.serial.SerialInterface;
 import li.cil.tis3d.api.serial.SerialInterfaceProvider;
 import li.cil.tis3d.api.serial.SerialProtocolDocumentationReference;
 import li.cil.tis3d.util.EnumUtils;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.FurnaceTileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.FurnaceBlockEntity;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import java.util.Objects;
 import java.util.Optional;
 
 public final class SerialInterfaceProviderFurnace extends ForgeRegistryEntry<SerialInterfaceProvider> implements SerialInterfaceProvider {
-    private static final TranslationTextComponent DOCUMENTATION_TITLE = new TranslationTextComponent("tis3d.manual.serial_protocols.furnace");
+    private static final TranslatableComponent DOCUMENTATION_TITLE = new TranslatableComponent("tis3d.manual.serial_protocols.furnace");
     private static final String DOCUMENTATION_LINK = "minecraft_furnace.md";
     private static final SerialProtocolDocumentationReference DOCUMENTATION_REFERENCE = new SerialProtocolDocumentationReference(DOCUMENTATION_TITLE, DOCUMENTATION_LINK);
 
@@ -24,13 +24,13 @@ public final class SerialInterfaceProviderFurnace extends ForgeRegistryEntry<Ser
     // SerialInterfaceProvider
 
     @Override
-    public boolean matches(final World world, final BlockPos position, final Direction side) {
-        return world.getBlockEntity(position) instanceof FurnaceTileEntity;
+    public boolean matches(final Level world, final BlockPos position, final Direction side) {
+        return world.getBlockEntity(position) instanceof FurnaceBlockEntity;
     }
 
     @Override
-    public Optional<SerialInterface> getInterface(final World world, final BlockPos position, final Direction face) {
-        final FurnaceTileEntity furnace = Objects.requireNonNull((FurnaceTileEntity) world.getBlockEntity(position));
+    public Optional<SerialInterface> getInterface(final Level world, final BlockPos position, final Direction face) {
+        final FurnaceBlockEntity furnace = Objects.requireNonNull((FurnaceBlockEntity) world.getBlockEntity(position));
         return Optional.of(new SerialInterfaceFurnace(furnace));
     }
 
@@ -40,7 +40,7 @@ public final class SerialInterfaceProviderFurnace extends ForgeRegistryEntry<Ser
     }
 
     @Override
-    public boolean stillValid(final World world, final BlockPos position, final Direction side, final SerialInterface serialInterface) {
+    public boolean stillValid(final Level world, final BlockPos position, final Direction side, final SerialInterface serialInterface) {
         return serialInterface instanceof SerialInterfaceFurnace;
     }
 
@@ -54,10 +54,10 @@ public final class SerialInterfaceProviderFurnace extends ForgeRegistryEntry<Ser
             PercentageProgress
         }
 
-        private final FurnaceTileEntity furnace;
+        private final FurnaceBlockEntity furnace;
         private Mode mode = Mode.PercentageFuel;
 
-        SerialInterfaceFurnace(final FurnaceTileEntity furnace) {
+        SerialInterfaceFurnace(final FurnaceBlockEntity furnace) {
             this.furnace = furnace;
         }
 
@@ -111,13 +111,13 @@ public final class SerialInterfaceProviderFurnace extends ForgeRegistryEntry<Ser
         }
 
         @Override
-        public void readFromNBT(final CompoundNBT nbt) {
+        public void readFromNBT(final CompoundTag nbt) {
             mode = EnumUtils.readFromNBT(SerialInterfaceFurnace.Mode.class, TAG_MODE, nbt);
         }
 
         @Override
-        public void writeToNBT(final CompoundNBT nbt) {
-            EnumUtils.writeToNBT(mode, TAG_MODE, nbt);
+        public void writeToNBT(final CompoundTag tag) {
+            EnumUtils.writeToNBT(mode, TAG_MODE, tag);
         }
     }
 }

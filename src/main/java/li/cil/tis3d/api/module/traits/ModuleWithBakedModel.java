@@ -1,8 +1,8 @@
 package li.cil.tis3d.api.module.traits;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.util.Direction;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.data.IModelData;
@@ -17,14 +17,14 @@ import java.util.Random;
  * <p>
  * Used for example by the facade module. Note that returning anything non-null will lead to <em>only</em> the
  * returned quads being used. Also note that this is called directly from
- * {@link net.minecraft.client.renderer.model.IBakedModel#getQuads(BlockState, Direction, Random, IModelData)},
+ * {@link net.minecraft.client.resources.model.BakedModel#getQuads(BlockState, Direction, Random, IModelData)},
  * so calls to this method may not come from the main thread.
  */
 public interface ModuleWithBakedModel {
     /**
      * Called to obtain quads to use for the specified side instead of the casing's default ones. May return
      * <c>null</c> to not override the default quads. Will be called directly from the casing's
-     * {@link net.minecraft.client.renderer.model.IBakedModel#getQuads(BlockState, Direction, Random, IModelData)}
+     * {@link net.minecraft.client.resources.model.BakedModel#getQuads(BlockState, Direction, Random, IModelData)}
      * logic.
      *
      * @param state  the casing's block state.

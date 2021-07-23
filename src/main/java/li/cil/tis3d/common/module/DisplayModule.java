@@ -1,7 +1,8 @@
 package li.cil.tis3d.common.module;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.API;
@@ -17,10 +18,9 @@ import li.cil.tis3d.util.EnumUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.client.renderer.texture.NativeImage;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.TickEvent;
@@ -162,20 +162,20 @@ public final class DisplayModule extends AbstractModuleWithRotation {
             return;
         }
 
-        final MatrixStack matrixStack = context.getMatrixStack();
+        final PoseStack matrixStack = context.getMatrixStack();
         matrixStack.pushPose();
         rotateForRendering(matrixStack);
 
         validateTexture();
 
-        final IVertexBuilder builder = context.getBuffer().getBuffer(getOrCreateRenderLayer());
+        final VertexConsumer builder = context.getBuffer().getBuffer(getOrCreateRenderLayer());
         context.drawQuad(builder, MARGIN / 32f, MARGIN / 32f, RESOLUTION / 32f, RESOLUTION / 32f);
 
         matrixStack.popPose();
     }
 
     @Override
-    public void load(final CompoundNBT tag) {
+    public void load(final CompoundTag tag) {
         super.load(tag);
 
         final int[] imageNbt = tag.getIntArray(TAG_IMAGE);
@@ -189,7 +189,7 @@ public final class DisplayModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void save(final CompoundNBT tag) {
+    public void save(final CompoundTag tag) {
         super.save(tag);
 
         tag.putIntArray(TAG_IMAGE, image);

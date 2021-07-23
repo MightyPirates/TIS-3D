@@ -1,14 +1,12 @@
 package li.cil.tis3d.api.serial;
 
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
-import javax.annotation.Nullable;
 import java.util.Optional;
 
 /**
@@ -17,7 +15,8 @@ import java.util.Optional;
  * Implementation will typically check for the presence of a specific tile
  * entity and create a wrapper for the tile entity.
  * <p>
- * Additional providers may be registered with the {@link Registry} <tt>tis3d:serial_interfaces</tt>.
+ * Additional providers may be registered with the {@link net.minecraft.core.Registry}
+ * <tt>tis3d:serial_interfaces</tt>.
  */
 public interface SerialInterfaceProvider extends IForgeRegistryEntry<SerialInterfaceProvider> {
     /**
@@ -28,7 +27,7 @@ public interface SerialInterfaceProvider extends IForgeRegistryEntry<SerialInter
      * @param side     the side of the position in question.
      * @return whether a {@link SerialInterface} can be provided for the position.
      */
-    boolean matches(final World world, final BlockPos position, final Direction side);
+    boolean matches(final Level world, final BlockPos position, final Direction side);
 
     /**
      * Creates a new serial interface instance for the specified position.
@@ -38,7 +37,7 @@ public interface SerialInterfaceProvider extends IForgeRegistryEntry<SerialInter
      * @param face     the side of the position in question.
      * @return the interface to use for communicating with the position.
      */
-    Optional<SerialInterface> getInterface(final World world, final BlockPos position, final Direction face);
+    Optional<SerialInterface> getInterface(final Level world, final BlockPos position, final Direction face);
 
     /**
      * A reference to a manual entry describing the protocol used by the
@@ -73,7 +72,7 @@ public interface SerialInterfaceProvider extends IForgeRegistryEntry<SerialInter
      * <p>
      * Generally this this should return <tt>false</tt> if the interface is not
      * once provided by this provider, or more generally, if it is the same kind
-     * of serial interface that would be created via {@link #getInterface(World, BlockPos, Direction)},
+     * of serial interface that would be created via {@link #getInterface(Level, BlockPos, Direction)},
      * otherwise this should return <tt>true</tt>.
      *
      * @param world           the world containing the position.
@@ -82,5 +81,5 @@ public interface SerialInterfaceProvider extends IForgeRegistryEntry<SerialInter
      * @param serialInterface the interface to validate.
      * @return <tt>true</tt> if the interface is still valid, <tt>false</tt> if a new one should be created.
      */
-    boolean stillValid(final World world, final BlockPos position, final Direction side, final SerialInterface serialInterface);
+    boolean stillValid(final Level world, final BlockPos position, final Direction side, final SerialInterface serialInterface);
 }

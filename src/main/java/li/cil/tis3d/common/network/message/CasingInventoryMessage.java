@@ -2,27 +2,27 @@ package li.cil.tis3d.common.network.message;
 
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.common.tileentity.CasingTileEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import javax.annotation.Nullable;
 
 public final class CasingInventoryMessage extends AbstractMessageWithPosition {
     private int slot;
     private ItemStack stack;
-    private CompoundNBT moduleData;
+    private CompoundTag moduleData;
 
-    public CasingInventoryMessage(final Casing casing, final int slot, final ItemStack stack, @Nullable final CompoundNBT moduleData) {
+    public CasingInventoryMessage(final Casing casing, final int slot, final ItemStack stack, @Nullable final CompoundTag moduleData) {
         super(casing.getPosition());
         this.slot = slot;
         this.stack = stack;
         this.moduleData = moduleData;
     }
 
-    public CasingInventoryMessage(final PacketBuffer buffer) {
+    public CasingInventoryMessage(final FriendlyByteBuf buffer) {
         super(buffer);
     }
 
@@ -31,7 +31,7 @@ public final class CasingInventoryMessage extends AbstractMessageWithPosition {
 
     @Override
     protected void handleMessage(final NetworkEvent.Context context) {
-        final World world = getClientWorld();
+        final Level world = getClientWorld();
         if (world != null) {
             withTileEntity(world, CasingTileEntity.class, casing ->
                 casing.setStackAndModuleClient(slot, stack, moduleData));
@@ -39,7 +39,7 @@ public final class CasingInventoryMessage extends AbstractMessageWithPosition {
     }
 
     @Override
-    public void fromBytes(final PacketBuffer buffer) {
+    public void fromBytes(final FriendlyByteBuf buffer) {
         super.fromBytes(buffer);
 
         slot = buffer.readUnsignedByte();
@@ -48,7 +48,7 @@ public final class CasingInventoryMessage extends AbstractMessageWithPosition {
     }
 
     @Override
-    public void toBytes(final PacketBuffer buffer) {
+    public void toBytes(final FriendlyByteBuf buffer) {
         super.toBytes(buffer);
 
         buffer.writeByte(slot);

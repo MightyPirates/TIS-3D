@@ -1,18 +1,18 @@
 package li.cil.tis3d.common.network.message;
 
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Hand;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.InteractionHand;
 
 public abstract class AbstractReadOnlyMemoryModuleDataMessage extends AbstractMessage {
-    protected Hand hand;
+    protected InteractionHand hand;
     protected byte[] data;
 
-    protected AbstractReadOnlyMemoryModuleDataMessage(final Hand hand, final byte[] data) {
+    protected AbstractReadOnlyMemoryModuleDataMessage(final InteractionHand hand, final byte[] data) {
         this.hand = hand;
         this.data = data;
     }
 
-    protected AbstractReadOnlyMemoryModuleDataMessage(final PacketBuffer buffer) {
+    protected AbstractReadOnlyMemoryModuleDataMessage(final FriendlyByteBuf buffer) {
         super(buffer);
     }
 
@@ -20,14 +20,14 @@ public abstract class AbstractReadOnlyMemoryModuleDataMessage extends AbstractMe
     // AbstractMessage
 
     @Override
-    public void fromBytes(final PacketBuffer buffer) {
-        hand = buffer.readEnum(Hand.class);
+    public void fromBytes(final FriendlyByteBuf buffer) {
+        hand = buffer.readEnum(InteractionHand.class);
         data = new byte[buffer.readInt()];
         buffer.readBytes(data);
     }
 
     @Override
-    public void toBytes(final PacketBuffer buffer) {
+    public void toBytes(final FriendlyByteBuf buffer) {
         buffer.writeEnum(hand);
         buffer.writeInt(data.length);
         buffer.writeBytes(data);

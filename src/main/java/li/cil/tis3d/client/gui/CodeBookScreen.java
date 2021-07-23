@@ -1,6 +1,7 @@
 package li.cil.tis3d.client.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.item.CodeBookItem;
@@ -12,16 +13,17 @@ import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.CodeBookDataMessage;
 import li.cil.tis3d.util.Color;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Hand;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
@@ -36,11 +38,11 @@ import java.util.stream.Collectors;
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 @OnlyIn(Dist.CLIENT)
 public final class CodeBookScreen extends Screen {
-    private static final TranslationTextComponent ERROR_ON_PREVIOUS_PAGE_TOOLTIP = new TranslationTextComponent("tis3d.code_book.error_on_previous_page");
-    private static final TranslationTextComponent ERROR_ON_NEXT_PAGE_TOOLTIP = new TranslationTextComponent("tis3d.code_book.error_on_next_page");
-    private static final TranslationTextComponent PREVIOUS_PAGE_TOOLTIP = new TranslationTextComponent("tis3d.code_book.previous_page");
-    private static final TranslationTextComponent NEXT_PAGE_TOOLTIP = new TranslationTextComponent("tis3d.code_book.next_page");
-    private static final TranslationTextComponent DELETE_PAGE_TOOLTIP = new TranslationTextComponent("tis3d.code_book.delete_page");
+    private static final TranslatableComponent ERROR_ON_PREVIOUS_PAGE_TOOLTIP = new TranslatableComponent("tis3d.code_book.error_on_previous_page");
+    private static final TranslatableComponent ERROR_ON_NEXT_PAGE_TOOLTIP = new TranslatableComponent("tis3d.code_book.error_on_next_page");
+    private static final TranslatableComponent PREVIOUS_PAGE_TOOLTIP = new TranslatableComponent("tis3d.code_book.previous_page");
+    private static final TranslatableComponent NEXT_PAGE_TOOLTIP = new TranslatableComponent("tis3d.code_book.next_page");
+    private static final TranslatableComponent DELETE_PAGE_TOOLTIP = new TranslatableComponent("tis3d.code_book.delete_page");
 
     private static final int GUI_WIDTH = 218;
     private static final int GUI_HEIGHT = 230;
@@ -64,8 +66,8 @@ public final class CodeBookScreen extends Screen {
     private ButtonChangePage buttonPreviousPage;
     private ButtonDeletePage buttonDeletePage;
 
-    private final PlayerEntity player;
-    private final Hand hand;
+    private final Player player;
+    private final InteractionHand hand;
     private final CodeBookItem.Data data;
     private final List<StringBuilder> lines = new ArrayList<>();
 
@@ -77,11 +79,11 @@ public final class CodeBookScreen extends Screen {
 
     // --------------------------------------------------------------------- //
 
-    public CodeBookScreen(final PlayerEntity player, final Hand hand) {
-        super(new StringTextComponent("Code Book"));
+    public CodeBookScreen(final Player player, final InteractionHand hand) {
+        super(new TextComponent("Code Book"));
         this.player = player;
         this.hand = hand;
-        this.data = CodeBookItem.Data.loadFromStack(player.getItemInHand(Hand.MAIN_HAND));
+        this.data = CodeBookItem.Data.loadFromStack(player.getItemInHand(InteractionHand.MAIN_HAND));
 
         rebuildLines();
     }
@@ -97,9 +99,9 @@ public final class CodeBookScreen extends Screen {
         guiY = 2;
 
         // Buttons for next / previous page of pages.
-        buttonPreviousPage = addButton(new ButtonChangePage(guiX + BUTTON_PAGE_CHANGE_PREV_X, guiY + BUTTON_PAGE_CHANGE_Y, PageChangeType.Previous, button -> changePage(-1)));
-        buttonNextPage = addButton(new ButtonChangePage(guiX + BUTTON_PAGE_CHANGE_NEXT_X, guiY + BUTTON_PAGE_CHANGE_Y, PageChangeType.Next, button -> changePage(1)));
-        buttonDeletePage = addButton(new ButtonDeletePage(guiX + BUTTON_PAGE_DELETE_X, guiY + BUTTON_PAGE_DELETE_Y, button -> deletePage()));
+        buttonPreviousPage = addRenderableWidget(new ButtonChangePage(guiX + BUTTON_PAGE_CHANGE_PREV_X, guiY + BUTTON_PAGE_CHANGE_Y, PageChangeType.Previous, button -> changePage(-1)));
+        buttonNextPage = addRenderableWidget(new ButtonChangePage(guiX + BUTTON_PAGE_CHANGE_NEXT_X, guiY + BUTTON_PAGE_CHANGE_Y, PageChangeType.Next, button -> changePage(1)));
+        buttonDeletePage = addRenderableWidget(new ButtonDeletePage(guiX + BUTTON_PAGE_DELETE_X, guiY + BUTTON_PAGE_DELETE_Y, button -> deletePage()));
 
         getMinecraft().keyboardHandler.setSendRepeatsToGui(true);
     }
@@ -112,15 +114,15 @@ public final class CodeBookScreen extends Screen {
         saveProgram();
 
         // Save any changes made and send them to the server.
-        final CompoundNBT nbt = new CompoundNBT();
-        data.writeToNBT(nbt);
-        Network.INSTANCE.sendToServer(new CodeBookDataMessage(hand, nbt));
+        final CompoundTag tag = new CompoundTag();
+        data.writeToNBT(tag);
+        Network.INSTANCE.sendToServer(new CodeBookDataMessage(hand, tag));
 
         getMinecraft().keyboardHandler.setSendRepeatsToGui(false);
     }
 
     @Override
-    public void render(final MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
+    public void render(final PoseStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
         if (!player.isAlive() || !Items.is(player.getItemInHand(hand), Items.BOOK_CODE)) {
             Minecraft.getInstance().setScreen(null);
             return;
@@ -129,7 +131,8 @@ public final class CodeBookScreen extends Screen {
         renderBackground(matrixStack);
 
         // Background.
-        getMinecraft().getTextureManager().bind(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderTexture(0, Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
         blit(matrixStack, guiX, guiY, 0, 0, GUI_WIDTH, GUI_HEIGHT);
 
         // Check page change button availability.
@@ -396,14 +399,14 @@ public final class CodeBookScreen extends Screen {
 
     @Nullable
     @Override
-    public IGuiEventListener getFocused() {
+    public GuiEventListener getFocused() {
         // We don't want space to trigger buttons, all input is interpreted as text input in this UI.
         return null;
     }
 
     // --------------------------------------------------------------------- //
 
-    private FontRenderer getFontRenderer() {
+    private Font getFontRenderer() {
         return font;
     }
 
@@ -600,7 +603,7 @@ public final class CodeBookScreen extends Screen {
         recompile();
     }
 
-    private void drawProgram(final MatrixStack matrixStack, final int mouseX, final int mouseY) {
+    private void drawProgram(final PoseStack matrixStack, final int mouseX, final int mouseY) {
         int position = 0;
         for (int lineNumber = 0; lineNumber < lines.size(); lineNumber++) {
             final StringBuilder line = lines.get(lineNumber);
@@ -665,14 +668,14 @@ public final class CodeBookScreen extends Screen {
 
             // Part two of error handling, draw tooltip, *on top* of blinking cursor.
             if (mouseX >= startX && mouseX <= endX && mouseY >= startY && mouseY <= startY + getFontRenderer().lineHeight) {
-                final List<ITextComponent> tooltip = new ArrayList<>();
+                final List<Component> tooltip = new ArrayList<>();
                 if (isErrorOnPreviousPage) {
                     tooltip.add(ERROR_ON_PREVIOUS_PAGE_TOOLTIP);
                 } else if (isErrorOnNextPage) {
                     tooltip.add(ERROR_ON_NEXT_PAGE_TOOLTIP);
                 }
                 tooltip.add(exception.getDisplayMessage());
-                renderWrappedToolTip(matrixStack, tooltip, mouseX, mouseY, getFontRenderer());
+                renderComponentToolTip(matrixStack, tooltip, mouseX, mouseY, getFontRenderer());
             }
         } else {
             // Draw selection position in text.
@@ -680,7 +683,7 @@ public final class CodeBookScreen extends Screen {
         }
     }
 
-    private void drawTextCursor(final MatrixStack matrixStack) {
+    private void drawTextCursor(final PoseStack matrixStack) {
         if (System.currentTimeMillis() % 800 <= 400) {
             final int line = indexToLine(selectionEnd);
             final int column = indexToColumn(selectionEnd);
@@ -707,14 +710,15 @@ public final class CodeBookScreen extends Screen {
 
         private final PageChangeType type;
 
-        ButtonChangePage(final int x, final int y, final PageChangeType type, final IPressable action) {
-            super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, StringTextComponent.EMPTY, action);
+        ButtonChangePage(final int x, final int y, final PageChangeType type, final OnPress action) {
+            super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, TextComponent.EMPTY, action);
             this.type = type;
         }
 
         @Override
-        public void renderButton(final MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
-            getMinecraft().getTextureManager().bind(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
+        public void renderButton(final PoseStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShaderTexture(0, Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
             final int offsetX = isHovered() ? BUTTON_WIDTH : 0;
             final int offsetY = type == PageChangeType.Previous ? BUTTON_HEIGHT : 0;
             blit(matrixStack, x, y, TEXTURE_X + offsetX, TEXTURE_Y + offsetY, BUTTON_WIDTH, BUTTON_HEIGHT);
@@ -725,8 +729,8 @@ public final class CodeBookScreen extends Screen {
         }
 
         @Override
-        public void renderToolTip(final MatrixStack matrixStack, final int mouseX, final int mouseY) {
-            final ITextComponent tooltip = type == PageChangeType.Previous
+        public void renderToolTip(final PoseStack matrixStack, final int mouseX, final int mouseY) {
+            final Component tooltip = type == PageChangeType.Previous
                 ? PREVIOUS_PAGE_TOOLTIP
                 : NEXT_PAGE_TOOLTIP;
             renderTooltip(matrixStack, tooltip, mouseX, mouseY);
@@ -739,13 +743,14 @@ public final class CodeBookScreen extends Screen {
         private static final int BUTTON_WIDTH = 14;
         private static final int BUTTON_HEIGHT = 14;
 
-        ButtonDeletePage(final int x, final int y, final IPressable action) {
-            super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, StringTextComponent.EMPTY, action);
+        ButtonDeletePage(final int x, final int y, final OnPress action) {
+            super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, TextComponent.EMPTY, action);
         }
 
         @Override
-        public void renderButton(final MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
-            getMinecraft().getTextureManager().bind(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
+        public void renderButton(final PoseStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShaderTexture(0, Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
             final int offsetX = isHovered() ? BUTTON_WIDTH : 0;
             blit(matrixStack, x, y, TEXTURE_X + offsetX, TEXTURE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
 
@@ -755,7 +760,7 @@ public final class CodeBookScreen extends Screen {
         }
 
         @Override
-        public void renderToolTip(final MatrixStack matrixStack, final int mouseX, final int mouseY) {
+        public void renderToolTip(final PoseStack matrixStack, final int mouseX, final int mouseY) {
             renderTooltip(matrixStack, DELETE_PAGE_TOOLTIP, mouseX, mouseY);
         }
     }

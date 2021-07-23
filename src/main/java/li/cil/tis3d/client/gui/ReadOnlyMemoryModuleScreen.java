@@ -1,7 +1,9 @@
 package li.cil.tis3d.client.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.common.container.ReadOnlyMemoryModuleContainer;
@@ -9,18 +11,17 @@ import li.cil.tis3d.common.module.RandomAccessMemoryModule;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.ClientReadOnlyMemoryModuleDataMessage;
 import li.cil.tis3d.util.Color;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.glfw.GLFW;
 
 @OnlyIn(Dist.CLIENT)
-public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMemoryModuleContainer> {
+public final class ReadOnlyMemoryModuleScreen extends AbstractContainerScreen<ReadOnlyMemoryModuleContainer> {
     private static final int GRID_LEFT = 25;
     private static final int GRID_TOP = 13;
     private static final int CELL_WIDTH = 10;
@@ -34,7 +35,7 @@ public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMe
     private boolean receivedData;
     private long initTime;
 
-    public ReadOnlyMemoryModuleScreen(final ReadOnlyMemoryModuleContainer container, final PlayerInventory playerInventory, final ITextComponent title) {
+    public ReadOnlyMemoryModuleScreen(final ReadOnlyMemoryModuleContainer container, final Inventory playerInventory, final Component title) {
         super(container, playerInventory, title);
 
         imageWidth = 190;
@@ -72,13 +73,13 @@ public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMe
     }
 
     @Override
-    public void render(final MatrixStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
+    public void render(final PoseStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
         renderBackground(matrixStack);
 
         super.render(matrixStack, mouseX, mouseY, partialTicks);
 
-        final BufferBuilder builder = Tessellator.getInstance().getBuilder();
-        final IRenderTypeBuffer.Impl buffer = IRenderTypeBuffer.immediate(builder);
+        final BufferBuilder builder = Tesselator.getInstance().getBuilder();
+        final MultiBufferSource.BufferSource buffer = MultiBufferSource.immediate(builder);
 
         // Draw row and column headers.
         drawHeaders(matrixStack, buffer);
@@ -101,14 +102,14 @@ public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMe
     }
 
     @Override
-    protected void renderBg(final MatrixStack matrixStack, final float partialTicks, final int x, final int y) {
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        getMinecraft().getTextureManager().bind(Textures.LOCATION_GUI_MEMORY);
+    protected void renderBg(final PoseStack matrixStack, final float partialTicks, final int x, final int y) {
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderTexture(0, Textures.LOCATION_GUI_MEMORY);
         blit(matrixStack, leftPos, topPos, 0, 0, imageWidth, imageHeight);
     }
 
     @Override
-    protected void renderLabels(final MatrixStack matrixStack, final int x, final int y) {
+    protected void renderLabels(final PoseStack matrixStack, final int x, final int y) {
         // Suppress rendering of labels.
     }
 
@@ -228,7 +229,7 @@ public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMe
         return col >= 0 && row >= 0 && col <= 0xF && row <= 0xF;
     }
 
-    private void drawHeaders(final MatrixStack matrixStack, final IRenderTypeBuffer buffer) {
+    private void drawHeaders(final PoseStack matrixStack, final MultiBufferSource buffer) {
         // Columns headers (top).
         matrixStack.pushPose();
         matrixStack.translate(leftPos + GRID_LEFT + 3, topPos + 6, 0);
@@ -248,7 +249,7 @@ public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMe
         matrixStack.popPose();
     }
 
-    private void drawInitializing(final MatrixStack matrixStack, final IRenderTypeBuffer buffer) {
+    private void drawInitializing(final PoseStack matrixStack, final MultiBufferSource buffer) {
         final float sinceInitialized = (System.currentTimeMillis() - initTime) / 1000f;
         if (receivedData && sinceInitialized > 0.5f) {
             return;
@@ -265,7 +266,7 @@ public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMe
         matrixStack.popPose();
     }
 
-    private void drawMemory(final MatrixStack matrixStack, final IRenderTypeBuffer buffer) {
+    private void drawMemory(final PoseStack matrixStack, final MultiBufferSource buffer) {
         final int visibleCells = (int) (System.currentTimeMillis() - initTime);
 
         final int selectedX = selectedCell & 0x0F;
@@ -301,7 +302,7 @@ public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMe
         matrixStack.popPose();
     }
 
-    private void drawSelectionBox(final MatrixStack matrixStack) {
+    private void drawSelectionBox(final PoseStack matrixStack) {
         final int visibleCells = (int) (System.currentTimeMillis() - initTime) * 2;
         if (selectedCell > visibleCells) {
             return;
@@ -316,7 +317,8 @@ public final class ReadOnlyMemoryModuleScreen extends ContainerScreen<ReadOnlyMe
         matrixStack.pushPose();
         matrixStack.translate(x, y, 0);
 
-        getMinecraft().getTextureManager().bind(Textures.LOCATION_GUI_MEMORY);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderTexture(0, Textures.LOCATION_GUI_MEMORY);
         final int vPos = (int) (getMinecraft().level.getGameTime() % 16) * 8;
         blit(matrixStack, 0, 0, 256 - (CELL_WIDTH + 1), vPos, 11, 8);
 

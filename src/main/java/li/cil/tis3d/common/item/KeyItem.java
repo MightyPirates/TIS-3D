@@ -1,11 +1,11 @@
 package li.cil.tis3d.common.item;
 
 import li.cil.tis3d.common.block.Blocks;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorldReader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.LevelReader;
 
 import javax.annotation.Nullable;
 
@@ -22,12 +22,12 @@ public final class KeyItem extends ModItem {
 
     @Nullable
     @Override
-    public CompoundNBT getShareTag(final ItemStack stack) {
+    public CompoundTag getShareTag(final ItemStack stack) {
         return null;
     }
 
     @Override
-    public boolean doesSneakBypassUse(final ItemStack stack, final IWorldReader world, final BlockPos pos, final PlayerEntity player) {
+    public boolean doesSneakBypassUse(final ItemStack stack, final LevelReader world, final BlockPos pos, final Player player) {
         return world.getBlockState(pos).getBlock() == Blocks.CASING.get();
     }
 

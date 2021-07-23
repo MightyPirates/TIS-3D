@@ -5,11 +5,11 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.util.RenderContext;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -153,7 +153,7 @@ public interface Module {
      * @param hit    the relative position that was clicked.
      * @return <tt>true</tt> if the click was handled, <tt>false</tt> otherwise.
      */
-    boolean use(final PlayerEntity player, final Hand hand, final Vector3d hit);
+    boolean use(final Player player, final InteractionHand hand, final Vec3 hit);
 
     /**
      * Called with NBT data sent from the remote instance of the module.
@@ -162,11 +162,11 @@ public interface Module {
      * side sent the message (i.e. the client can send messages to the server
      * this way and vice versa).
      *
-     * @param nbt the received data.
-     * @see Casing#sendData(Face, CompoundNBT, byte)
-     * @see Casing#sendData(Face, CompoundNBT)
+     * @param data the received data.
+     * @see Casing#sendData(Face, CompoundTag, byte)
+     * @see Casing#sendData(Face, CompoundTag)
      */
-    void onData(final CompoundNBT nbt);
+    void onData(final CompoundTag data);
 
     /**
      * Called with data sent from the remote instance of the module.
@@ -203,12 +203,12 @@ public interface Module {
      *
      * @param tag the tag to load the state from.
      */
-    void load(final CompoundNBT tag);
+    void load(final CompoundTag tag);
 
     /**
      * Save the state of the module to the specified NBT compound.
      *
      * @param tag the tag to save the state to.
      */
-    void save(final CompoundNBT tag);
+    void save(final CompoundTag tag);
 }

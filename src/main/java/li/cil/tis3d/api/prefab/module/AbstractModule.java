@@ -8,20 +8,21 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.api.util.TransformUtil;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * Base implementation of a module, taking care of the boilerplate code.
@@ -70,16 +71,13 @@ public abstract class AbstractModule implements Module {
      * @param hitResult the current hit result.
      * @return <tt>true</tt> if the observer is looking at the module, <tt>false</tt> otherwise.
      */
-    protected boolean isHitFace(@Nullable final RayTraceResult hitResult) {
-        if (hitResult == null) {
-            return false;
-        }
-        if (hitResult.getType() != RayTraceResult.Type.BLOCK) {
+    protected boolean isHitFace(@Nullable final HitResult hitResult) {
+        if (!(hitResult instanceof BlockHitResult blockHitResult)) {
             return false;
         }
 
-        final BlockRayTraceResult blockHitResult = (BlockRayTraceResult) hitResult;
-        if (!getCasing().getPosition().equals(blockHitResult.getBlockPos())) {
+        final BlockPos pos = blockHitResult.getBlockPos();
+        if (!Objects.equals(getCasing().getPosition(), pos)) {
             return false;
         }
         if (blockHitResult.getDirection() != Face.toDirection(getFace())) {
@@ -103,17 +101,13 @@ public abstract class AbstractModule implements Module {
      * @return the UV coordinate the observer is looking at as the X and Y components.
      */
     @Nullable
-    protected Vector3d getLocalHitPosition(@Nullable final RayTraceResult hitResult) {
-        if (hitResult == null) {
-            return null;
-        }
-        if (hitResult.getType() != RayTraceResult.Type.BLOCK) {
+    protected Vec3 getLocalHitPosition(@Nullable final HitResult hitResult) {
+        if (!(hitResult instanceof BlockHitResult blockHitResult)) {
             return null;
         }
 
-        final BlockRayTraceResult blockHitResult = (BlockRayTraceResult) hitResult;
         final BlockPos pos = blockHitResult.getBlockPos();
-        if (!getCasing().getPosition().equals(pos)) {
+        if (!Objects.equals(getCasing().getPosition(), pos)) {
             return null;
         }
         if (blockHitResult.getDirection() != Face.toDirection(getFace())) {
@@ -135,10 +129,10 @@ public abstract class AbstractModule implements Module {
      *
      * @param hitPos the hit position to project.
      * @return the projected UV coordinate, with the Z component being 0.
-     * @see #getLocalHitPosition(RayTraceResult)
-     * @see Module#use(PlayerEntity, Hand, Vector3d)
+     * @see #getLocalHitPosition(HitResult)
+     * @see Module#use(Player, InteractionHand, Vec3)
      */
-    protected Vector3d hitToUV(final Vector3d hitPos) {
+    protected Vec3 hitToUV(final Vec3 hitPos) {
         return TransformUtil.hitToUV(getFace(), hitPos);
     }
 
@@ -152,7 +146,7 @@ public abstract class AbstractModule implements Module {
      * @return whether the module is currently visible.
      */
     protected boolean isVisible() {
-        final World world = getCasing().getCasingLevel();
+        final Level world = getCasing().getCasingLevel();
         final BlockPos neighborPos = getCasing().getPosition().relative(Face.toDirection(getFace()));
         if (!world.isLoaded(neighborPos)) {
             // If the neighbor isn't loaded, we can assume we're also not visible on that side.
@@ -210,12 +204,12 @@ public abstract class AbstractModule implements Module {
     }
 
     @Override
-    public boolean use(final PlayerEntity player, final Hand hand, final Vector3d hit) {
+    public boolean use(final Player player, final InteractionHand hand, final Vec3 hit) {
         return false;
     }
 
     @Override
-    public void onData(final CompoundNBT nbt) {
+    public void onData(final CompoundTag data) {
     }
 
     @Override
@@ -228,10 +222,10 @@ public abstract class AbstractModule implements Module {
     }
 
     @Override
-    public void load(final CompoundNBT tag) {
+    public void load(final CompoundTag tag) {
     }
 
     @Override
-    public void save(final CompoundNBT tag) {
+    public void save(final CompoundTag tag) {
     }
 }

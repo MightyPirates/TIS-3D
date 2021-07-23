@@ -1,6 +1,6 @@
 package li.cil.tis3d.common.module;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.machine.Casing;
@@ -9,15 +9,15 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderContext;
-import li.cil.tis3d.common.item.ReadOnlyMemoryModuleItem;
 import li.cil.tis3d.common.item.Items;
+import li.cil.tis3d.common.item.ReadOnlyMemoryModuleItem;
 import li.cil.tis3d.util.Color;
 import li.cil.tis3d.util.EnumUtils;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -122,7 +122,7 @@ public class RandomAccessMemoryModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public boolean use(final PlayerEntity player, final Hand hand, final Vector3d hit) {
+    public boolean use(final Player player, final InteractionHand hand, final Vec3 hit) {
         final ItemStack heldItem = player.getItemInHand(hand);
         if (!Items.is(heldItem, Items.READ_ONLY_MEMORY_MODULE)) {
             return false;
@@ -168,7 +168,7 @@ public class RandomAccessMemoryModule extends AbstractModuleWithRotation {
             return;
         }
 
-        final MatrixStack matrixStack = context.getMatrixStack();
+        final PoseStack matrixStack = context.getMatrixStack();
         matrixStack.pushPose();
         rotateForRendering(matrixStack);
 
@@ -191,7 +191,7 @@ public class RandomAccessMemoryModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void load(final CompoundNBT tag) {
+    public void load(final CompoundTag tag) {
         super.load(tag);
 
         load(tag.getByteArray(TAG_MEMORY));
@@ -200,7 +200,7 @@ public class RandomAccessMemoryModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void save(final CompoundNBT tag) {
+    public void save(final CompoundTag tag) {
         super.save(tag);
 
         tag.putByteArray(TAG_MEMORY, memory.clone());

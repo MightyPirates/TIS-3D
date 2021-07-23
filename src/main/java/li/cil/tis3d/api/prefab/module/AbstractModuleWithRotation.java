@@ -1,14 +1,14 @@
 package li.cil.tis3d.api.prefab.module;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Quaternion;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.traits.ModuleWithRotation;
 import li.cil.tis3d.api.util.TransformUtil;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.vector.Quaternion;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -49,7 +49,7 @@ public abstract class AbstractModuleWithRotation extends AbstractModule implemen
      * @param matrixStack the current matrix stack.
      */
     @OnlyIn(Dist.CLIENT)
-    protected void rotateForRendering(final MatrixStack matrixStack) {
+    protected void rotateForRendering(final PoseStack matrixStack) {
         final int rotation = Port.ROTATION[getFacing().ordinal()];
         matrixStack.translate(0.5f, 0.5f, 0);
         matrixStack.mulPose(new Quaternion(0, 0, 90 * rotation * Face.toDirection(getFace()).getStepY(), true));
@@ -60,7 +60,7 @@ public abstract class AbstractModuleWithRotation extends AbstractModule implemen
     // General utility
 
     @Override
-    protected Vector3d hitToUV(final Vector3d hitPos) {
+    protected Vec3 hitToUV(final Vec3 hitPos) {
         return TransformUtil.hitToUV(getFace(), getFacing(), hitPos);
     }
 
@@ -68,14 +68,14 @@ public abstract class AbstractModuleWithRotation extends AbstractModule implemen
     // Module
 
     @Override
-    public void load(final CompoundNBT tag) {
+    public void load(final CompoundTag tag) {
         super.load(tag);
 
         facing = Port.VALUES[Math.max(0, tag.getByte(FACING_TAG)) % Port.VALUES.length];
     }
 
     @Override
-    public void save(final CompoundNBT tag) {
+    public void save(final CompoundTag tag) {
         super.save(tag);
 
         tag.putByte(FACING_TAG, (byte) facing.ordinal());

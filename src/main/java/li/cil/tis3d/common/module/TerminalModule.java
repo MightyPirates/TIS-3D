@@ -1,8 +1,9 @@
 package li.cil.tis3d.common.module;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import li.cil.manual.api.render.FontRenderer;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
@@ -12,19 +13,18 @@ import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.gui.TerminalModuleScreen;
 import li.cil.tis3d.client.renderer.Textures;
-import li.cil.manual.api.render.FontRenderer;
 import li.cil.tis3d.util.Color;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.StringNBT;
-import net.minecraft.util.Hand;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
@@ -118,7 +118,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
         stepOutput();
         stepInput();
 
-        final World world = getCasing().getCasingLevel();
+        final Level world = getCasing().getCasingLevel();
         if (sendBuffer != null && world.getGameTime() > lastSendTick) {
             getCasing().sendData(getFace(), sendBuffer);
             sendBuffer = null;
@@ -170,7 +170,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public boolean use(final PlayerEntity player, final Hand hand, final Vector3d hit) {
+    public boolean use(final Player player, final InteractionHand hand, final Vec3 hit) {
         if (player.isShiftKeyDown()) {
             return false;
         }
@@ -181,7 +181,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
             return true;
         }
 
-        final World world = player.getCommandSenderWorld();
+        final Level world = player.getCommandSenderWorld();
         if (world.isClientSide()) {
             openScreen();
         }
@@ -227,7 +227,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
             return;
         }
 
-        final MatrixStack matrixStack = context.getMatrixStack();
+        final PoseStack matrixStack = context.getMatrixStack();
         matrixStack.pushPose();
         rotateForRendering(matrixStack);
 
@@ -243,10 +243,10 @@ public final class TerminalModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void load(final CompoundNBT tag) {
+    public void load(final CompoundTag tag) {
         super.load(tag);
 
-        final ListNBT lines = tag.getList(TAG_DISPLAY, Constants.NBT.TAG_STRING);
+        final ListTag lines = tag.getList(TAG_DISPLAY, Constants.NBT.TAG_STRING);
         display.clear();
         for (int tagIndex = 0; tagIndex < lines.size(); tagIndex++) {
             display.add(new StringBuilder(lines.getString(tagIndex)));
@@ -258,12 +258,12 @@ public final class TerminalModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void save(final CompoundNBT tag) {
+    public void save(final CompoundTag tag) {
         super.save(tag);
 
-        final ListNBT lines = new ListNBT();
+        final ListTag lines = new ListTag();
         for (final StringBuilder line : display) {
-            lines.add(StringNBT.valueOf(line.toString()));
+            lines.add(StringTag.valueOf(line.toString()));
         }
         tag.put(TAG_DISPLAY, lines);
 
@@ -303,7 +303,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
 
     @OnlyIn(Dist.CLIENT)
     private void renderText(final RenderContext context) {
-        final MatrixStack matrixStack = context.getMatrixStack();
+        final PoseStack matrixStack = context.getMatrixStack();
         matrixStack.translate(2f / 16f, 2f / 16f, 0);
         matrixStack.scale(1 / 512f, 1 / 512f, 1);
 
@@ -323,7 +323,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
 
     @OnlyIn(Dist.CLIENT)
     private void renderDisplay(final RenderContext context, final FontRenderer fontRenderer) {
-        final MatrixStack matrixStack = context.getMatrixStack();
+        final PoseStack matrixStack = context.getMatrixStack();
         for (final StringBuilder line : display) {
             context.drawString(fontRenderer, line, Color.WHITE);
             matrixStack.translate(0, fontRenderer.lineHeight(), 0);
@@ -332,7 +332,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
 
     @OnlyIn(Dist.CLIENT)
     private void renderInput(final RenderContext context, final FontRenderer fontRenderer, final int textWidth) {
-        final MatrixStack matrixStack = context.getMatrixStack();
+        final PoseStack matrixStack = context.getMatrixStack();
 
         final int color = Color.withAlpha(Color.WHITE, isInputEnabled ? 1f : 0.5f);
 
@@ -359,8 +359,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
     private void closeGui() {
         final Minecraft mc = Minecraft.getInstance();
         final Screen screen = mc.screen;
-        if (screen instanceof TerminalModuleScreen) {
-            final TerminalModuleScreen gui = (TerminalModuleScreen) screen;
+        if (screen instanceof final TerminalModuleScreen gui) {
             if (gui.isFor(this)) {
                 gui.onClose();
             }
@@ -471,9 +470,9 @@ public final class TerminalModule extends AbstractModuleWithRotation {
     }
 
     private void bell() {
-        final World world = getCasing().getCasingLevel();
+        final Level world = getCasing().getCasingLevel();
         if (!world.isClientSide()) {
-            world.playSound(null, getCasing().getPosition(), SoundEvents.NOTE_BLOCK_PLING, SoundCategory.BLOCKS, 0.3f, 2f);
+            world.playSound(null, getCasing().getPosition(), SoundEvents.NOTE_BLOCK_PLING, SoundSource.BLOCKS, 0.3f, 2f);
         }
     }
 

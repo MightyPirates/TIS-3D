@@ -4,16 +4,16 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.client.gui.CodeBookScreen;
 import li.cil.tis3d.common.Constants;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.StringNBT;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -32,22 +32,22 @@ public final class CodeBookItem extends ModItem {
     // Item
 
     @Override
-    public ActionResult<ItemStack> use(final World world, final PlayerEntity player, final Hand hand) {
+    public InteractionResultHolder<ItemStack> use(final Level world, final Player player, final InteractionHand hand) {
         if (world.isClientSide()) {
             openScreen(player, hand);
         }
-        return ActionResult.sidedSuccess(player.getItemInHand(hand), world.isClientSide());
+        return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), world.isClientSide());
     }
 
     @Override
-    public boolean doesSneakBypassUse(final ItemStack stack, final IWorldReader world, final BlockPos pos, final PlayerEntity player) {
+    public boolean doesSneakBypassUse(final ItemStack stack, final LevelReader world, final BlockPos pos, final Player player) {
         return world.getBlockEntity(pos) instanceof Casing;
     }
 
     // --------------------------------------------------------------------- //
 
     @OnlyIn(Dist.CLIENT)
-    private void openScreen(final PlayerEntity player, final Hand hand) {
+    private void openScreen(final Player player, final InteractionHand hand) {
         Minecraft.getInstance().setScreen(new CodeBookScreen(player, hand));
     }
 
@@ -240,10 +240,10 @@ public final class CodeBookItem extends ModItem {
          *
          * @param nbt the tag to load the data from.
          */
-        public void readFromNBT(final CompoundNBT nbt) {
+        public void readFromNBT(final CompoundTag nbt) {
             pages.clear();
 
-            final ListNBT pagesNbt = nbt.getList(TAG_PAGES, net.minecraftforge.common.util.Constants.NBT.TAG_STRING);
+            final ListTag pagesNbt = nbt.getList(TAG_PAGES, net.minecraftforge.common.util.Constants.NBT.TAG_STRING);
             for (int index = 0; index < pagesNbt.size(); index++) {
                 pages.add(Arrays.asList(Constants.PATTERN_LINES.split(pagesNbt.getString(index))));
             }
@@ -257,13 +257,13 @@ public final class CodeBookItem extends ModItem {
          *
          * @param nbt the tag to save the data to.
          */
-        public void writeToNBT(final CompoundNBT nbt) {
-            final ListNBT pagesNbt = new ListNBT();
+        public void writeToNBT(final CompoundTag nbt) {
+            final ListTag pagesNbt = new ListTag();
             int removed = 0;
             for (int index = 0; index < pages.size(); index++) {
                 final List<String> program = pages.get(index);
                 if (program.size() > 1 || program.get(0).length() > 0) {
-                    pagesNbt.add(StringNBT.valueOf(String.join("\n", program)));
+                    pagesNbt.add(StringTag.valueOf(String.join("\n", program)));
                 } else if (index < selectedPage) {
                     removed++;
                 }
@@ -299,7 +299,7 @@ public final class CodeBookItem extends ModItem {
          * @param nbt the tag to load the data from.
          * @return the data loaded from the tag.
          */
-        public static Data loadFromNBT(@Nullable final CompoundNBT nbt) {
+        public static Data loadFromNBT(@Nullable final CompoundTag nbt) {
             final Data data = new Data();
             if (nbt != null) {
                 data.readFromNBT(nbt);

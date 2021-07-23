@@ -2,15 +2,15 @@ package li.cil.tis3d.data;
 
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.common.item.Items;
-import net.minecraft.client.renderer.model.BlockModel;
+import net.minecraft.client.renderer.block.model.BlockModel;
+import net.minecraft.core.Direction;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.item.Item;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.client.model.generators.ModelBuilder;
 import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.fmllegacy.RegistryObject;
 
 public final class ModItemModelProvider extends ItemModelProvider {
     private static final String MODULE_ITEM_MODEL_NAME = "module";

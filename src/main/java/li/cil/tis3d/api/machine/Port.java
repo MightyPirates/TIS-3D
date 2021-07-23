@@ -1,7 +1,7 @@
 package li.cil.tis3d.api.machine;
 
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * The ports that can be available on a module.
@@ -96,7 +96,7 @@ public enum Port {
      * @param uv the UV coordinate in <code>(0,0,0)</code> to <code>(1,1,0)</code>.
      * @return the port of the quadrant the coordinate lies in.
      */
-    public static Port fromUVQuadrant(final Vector3d uv) {
+    public static Port fromUVQuadrant(final Vec3 uv) {
         // Make coordinate relative to center of face.
         final double u = uv.x - 0.5;
         final double v = uv.y - 0.5;

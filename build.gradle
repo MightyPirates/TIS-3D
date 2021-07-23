@@ -41,7 +41,10 @@ version = "${semver}+${build_number}"
 group = 'li.cil.tis3d'
 archivesBaseName = 'tis3d'
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+java.toolchain {
+    languageVersion = JavaLanguageVersion.of(16)
+    vendor = JvmVendorSpec.ADOPTOPENJDK
+}
 
 repositories {
     maven { url 'https://maven.cil.li/' } // MarkdownManual
@@ -54,8 +57,8 @@ dependencies {
     compileOnly fg.deobf("li.cil.markdown_manual:markdown_manual-${minecraft_version}-forge:${manual_version}:api")
     runtimeOnly fg.deobf("li.cil.markdown_manual:markdown_manual-${minecraft_version}-forge:${manual_version}")
 
-    compileOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}:${jei_version}:api")
-    runtimeOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}:${jei_version}")
+//    compileOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}:${jei_version}:api")
+//    runtimeOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}:${jei_version}")
 }
 
 minecraft {

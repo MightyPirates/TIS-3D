@@ -2,9 +2,9 @@ package li.cil.tis3d.common.network.message;
 
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.common.tileentity.CasingTileEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 public final class CasingEnabledStateMessage extends AbstractMessageWithPosition {
     private boolean isEnabled;
@@ -14,7 +14,7 @@ public final class CasingEnabledStateMessage extends AbstractMessageWithPosition
         this.isEnabled = isEnabled;
     }
 
-    public CasingEnabledStateMessage(final PacketBuffer buffer) {
+    public CasingEnabledStateMessage(final FriendlyByteBuf buffer) {
         super(buffer);
     }
 
@@ -23,7 +23,7 @@ public final class CasingEnabledStateMessage extends AbstractMessageWithPosition
 
     @Override
     protected void handleMessage(final NetworkEvent.Context context) {
-        final World world = getClientWorld();
+        final Level world = getClientWorld();
         if (world != null) {
             withTileEntity(world, CasingTileEntity.class, casing ->
                 casing.setEnabledClient(isEnabled));
@@ -31,14 +31,14 @@ public final class CasingEnabledStateMessage extends AbstractMessageWithPosition
     }
 
     @Override
-    public void fromBytes(final PacketBuffer buffer) {
+    public void fromBytes(final FriendlyByteBuf buffer) {
         super.fromBytes(buffer);
 
         isEnabled = buffer.readBoolean();
     }
 
     @Override
-    public void toBytes(final PacketBuffer buffer) {
+    public void toBytes(final FriendlyByteBuf buffer) {
         super.toBytes(buffer);
 
         buffer.writeBoolean(isEnabled);

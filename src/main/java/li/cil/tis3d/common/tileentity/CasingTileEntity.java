@@ -19,19 +19,19 @@ import li.cil.tis3d.common.network.message.CasingLockedStateMessage;
 import li.cil.tis3d.common.network.message.ReceivingPipeLockedStateMessage;
 import li.cil.tis3d.common.provider.RedstoneInputProviders;
 import li.cil.tis3d.util.InventoryUtils;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.ISidedInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
@@ -83,8 +83,8 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
 
     // --------------------------------------------------------------------- //
 
-    public CasingTileEntity() {
-        super(TileEntities.CASING.get());
+    public CasingTileEntity(final BlockPos pos, final BlockState state) {
+        super(TileEntities.CASING.get(), pos, state);
     }
 
     /**
@@ -230,8 +230,7 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
 
         for (final Face face : Face.VALUES) {
             final Module module = getCasing().getModule(face);
-            if (module instanceof ModuleWithRedstone) {
-                final ModuleWithRedstone redstoneModule = (ModuleWithRedstone) module;
+            if (module instanceof final ModuleWithRedstone redstoneModule) {
                 final short signal = (short) RedstoneInputProviders.getRedstoneInput(module);
                 redstoneModule.setRedstoneInput(signal);
             }
@@ -288,7 +287,7 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
     // IInventory
 
     @Override
-    public boolean stillValid(final PlayerEntity player) {
+    public boolean stillValid(final Player player) {
         if (getBlockEntityWorld().getBlockEntity(getBlockPos()) != this) {
             return false;
         }
@@ -300,7 +299,7 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
     // SidedInventoryProxy
 
     @Override
-    public ISidedInventory getInventory() {
+    public WorldlyContainer getInventory() {
         return inventory;
     }
 
@@ -346,8 +345,7 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
         }
 
         final Module module = getModule(Face.fromDirection(facing));
-        if (module instanceof ICapabilityProvider) {
-            final ICapabilityProvider capabilityProvider = (ICapabilityProvider) module;
+        if (module instanceof final ICapabilityProvider capabilityProvider) {
             return capabilityProvider.getCapability(capability, facing);
         }
 
@@ -355,17 +353,12 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
     }
 
     @Override
-    public void onDataPacket(final NetworkManager manager, final SUpdateTileEntityPacket packet) {
+    public void onDataPacket(final Connection manager, final ClientboundBlockEntityDataPacket packet) {
         super.onDataPacket(manager, packet);
 
-        final World world = getBlockEntityWorld();
+        final Level world = getBlockEntityWorld();
         final BlockState state = world.getBlockState(getBlockPos());
         world.sendBlockUpdated(getBlockPos(), state, state, BlockFlags.BLOCK_UPDATE);
-    }
-
-    @Override
-    public double getViewDistance() {
-        return Network.RANGE_HIGH * Network.RANGE_HIGH;
     }
 
     // --------------------------------------------------------------------- //
@@ -377,47 +370,47 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
     }
 
     @Override
-    protected void readFromNBTForClient(final CompoundNBT nbt) {
+    protected void readFromNBTForClient(final CompoundTag nbt) {
         super.readFromNBTForClient(nbt);
 
         isEnabled = nbt.getBoolean(TAG_ENABLED);
     }
 
     @Override
-    protected void writeToNBTForClient(final CompoundNBT nbt) {
+    protected void writeToNBTForClient(final CompoundTag nbt) {
         super.writeToNBTForClient(nbt);
 
         nbt.putBoolean(TAG_ENABLED, isEnabled);
     }
 
     @Override
-    protected void readFromNBTCommon(final CompoundNBT nbt) {
+    protected void readFromNBTCommon(final CompoundTag nbt) {
         super.readFromNBTCommon(nbt);
 
         decompressClosed(nbt.getByteArray(TAG_LOCKED), locked);
 
-        final CompoundNBT inventoryNbt = nbt.getCompound(TAG_INVENTORY);
+        final CompoundTag inventoryNbt = nbt.getCompound(TAG_INVENTORY);
         inventory.readFromNBT(inventoryNbt);
 
-        final CompoundNBT casingNbt = nbt.getCompound(TAG_CASING);
+        final CompoundTag casingNbt = nbt.getCompound(TAG_CASING);
         casing.readFromNBT(casingNbt);
     }
 
     @Override
-    protected void writeToNBTCommon(final CompoundNBT nbt) {
+    protected void writeToNBTCommon(final CompoundTag nbt) {
         super.writeToNBTCommon(nbt);
 
         nbt.putByteArray(TAG_LOCKED, compressClosed(locked));
 
         // Needed on the client also, for picking and for actually instantiating
         // the installed modules on the client side (to find the provider).
-        final CompoundNBT inventoryNbt = new CompoundNBT();
+        final CompoundTag inventoryNbt = new CompoundTag();
         inventory.writeToNBT(inventoryNbt);
         nbt.put(TAG_INVENTORY, inventoryNbt);
 
         // Needed on the client also, to allow initializing client side modules
         // immediately after creation.
-        final CompoundNBT casingNbt = new CompoundNBT();
+        final CompoundTag casingNbt = new CompoundTag();
         casing.writeToNBT(casingNbt);
         nbt.put(TAG_CASING, casingNbt);
     }
@@ -446,7 +439,7 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
      * @param moduleData the original state of the module on the server, if present.
      */
     @OnlyIn(Dist.CLIENT)
-    public void setStackAndModuleClient(final int slot, final ItemStack stack, final CompoundNBT moduleData) {
+    public void setStackAndModuleClient(final int slot, final ItemStack stack, final CompoundTag moduleData) {
         inventory.setItem(slot, stack);
         final Module module = casing.getModule(Face.VALUES[slot]);
         if (module != null) {
@@ -482,12 +475,12 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
 
     @Nullable
     private ControllerTileEntity findController() {
-        final World world = getBlockEntityWorld();
+        final Level world = getBlockEntityWorld();
 
         // List of processed tile entities to avoid loops.
-        final Set<TileEntity> processed = new HashSet<>();
+        final Set<BlockEntity> processed = new HashSet<>();
         // List of pending tile entities that still need to be scanned.
-        final Queue<TileEntity> queue = new ArrayDeque<>();
+        final Queue<BlockEntity> queue = new ArrayDeque<>();
 
         // Number of casings we encountered for optional early exit.
         int casings = 0;
@@ -496,7 +489,7 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
         processed.add(this);
         queue.add(this);
         while (!queue.isEmpty()) {
-            final TileEntity tileEntity = queue.remove();
+            final BlockEntity tileEntity = queue.remove();
             if (tileEntity.isRemoved()) {
                 continue;
             }
@@ -546,7 +539,7 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
         Network.INSTANCE.send(Network.getTracking(this), message);
 
         getBlockEntityWorld().playSound(null, getBlockPos(),
-            SoundEvents.LEVER_CLICK, SoundCategory.BLOCKS, 0.3f, isLocked() ? 0.5f : 0.6f);
+            SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.3f, isLocked() ? 0.5f : 0.6f);
     }
 
     private void sendReceivingPipeLockedState(final Face face, final Port port) {
@@ -554,7 +547,7 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
         Network.INSTANCE.send(Network.getTracking(this), message);
 
         getBlockEntityWorld().playSound(null, getBlockPos(),
-            SoundEvents.LEVER_CLICK, SoundCategory.BLOCKS, 0.3f, isReceivingPipeLocked(face, port) ? 0.5f : 0.6f);
+            SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.3f, isReceivingPipeLocked(face, port) ? 0.5f : 0.6f);
     }
 
     private static void decompressClosed(final byte[] compressed, final boolean[][] decompressed) {

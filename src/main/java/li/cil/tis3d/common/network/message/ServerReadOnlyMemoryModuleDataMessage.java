@@ -2,17 +2,17 @@ package li.cil.tis3d.common.network.message;
 
 import li.cil.tis3d.client.gui.ReadOnlyMemoryModuleScreen;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Hand;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.InteractionHand;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 public final class ServerReadOnlyMemoryModuleDataMessage extends AbstractReadOnlyMemoryModuleDataMessage {
-    public ServerReadOnlyMemoryModuleDataMessage(final Hand hand, final byte[] data) {
+    public ServerReadOnlyMemoryModuleDataMessage(final InteractionHand hand, final byte[] data) {
         super(hand, data);
     }
 
-    public ServerReadOnlyMemoryModuleDataMessage(final PacketBuffer buffer) {
+    public ServerReadOnlyMemoryModuleDataMessage(final FriendlyByteBuf buffer) {
         super(buffer);
     }
 

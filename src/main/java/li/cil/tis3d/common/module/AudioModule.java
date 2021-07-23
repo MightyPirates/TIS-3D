@@ -7,13 +7,13 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModule;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.state.properties.NoteBlockInstrument;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
@@ -44,7 +44,7 @@ public final class AudioModule extends AbstractModule {
 
     @Override
     public void step() {
-        final World world = getCasing().getCasingLevel();
+        final Level world = getCasing().getCasingLevel();
 
         stepInput();
 
@@ -75,7 +75,7 @@ public final class AudioModule extends AbstractModule {
             }
             if (receivingPipe.canTransfer()) {
                 // Don't actually read more values if we already sent a packet this tick.
-                final World world = getCasing().getCasingLevel();
+                final Level world = getCasing().getCasingLevel();
                 if (world.getGameTime() > lastStep) {
                     playNote(receivingPipe.read());
                 }
@@ -100,7 +100,7 @@ public final class AudioModule extends AbstractModule {
         }
 
         // Send event to check if the sound may be played / should be modulated.
-        final World world = getCasing().getCasingLevel();
+        final Level world = getCasing().getCasingLevel();
         final BlockPos pos = getCasing().getPosition();
         NoteBlockInstrument instrument = NoteBlockInstrument.values()[instrumentId];
         final NoteBlockEvent.Play event = new NoteBlockEvent.Play(world, pos, world.getBlockState(pos), noteId, instrument);
@@ -117,9 +117,9 @@ public final class AudioModule extends AbstractModule {
             final double z = pos.getZ() + 0.5 + facing.getStepZ() * 0.6;
 
             // Let there be sound!
-            world.playSound(null, x, y, z, instrument.getSoundEvent(), SoundCategory.BLOCKS, volume, pitch);
-            if (world instanceof ServerWorld) {
-                final ServerWorld serverWorld = (ServerWorld) world;
+            world.playSound(null, x, y, z, instrument.getSoundEvent(), SoundSource.BLOCKS, volume, pitch);
+            if (world instanceof ServerLevel) {
+                final ServerLevel serverWorld = (ServerLevel) world;
                 serverWorld.sendParticles(ParticleTypes.NOTE, x, y, z, 1, 0, 0, 0, 0);
             }
         }

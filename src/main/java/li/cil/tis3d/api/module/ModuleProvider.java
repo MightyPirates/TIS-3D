@@ -2,8 +2,7 @@ package li.cil.tis3d.api.module;
 
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nullable;
@@ -18,7 +17,8 @@ import javax.annotation.Nullable;
  * queried is not guaranteed to be deterministic. As such, there should be no two providers
  * that can support the same {@link ItemStack}.
  * <p>
- * Additional providers may be registered with the {@link Registry} <tt>tis3d:modules</tt>.
+ * Additional providers may be registered with the {@link net.minecraft.core.Registry}
+ * <tt>tis3d:modules</tt>.
  */
 public interface ModuleProvider extends IForgeRegistryEntry<ModuleProvider> {
     /**

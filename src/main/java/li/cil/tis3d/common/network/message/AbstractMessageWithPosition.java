@@ -1,10 +1,10 @@
 package li.cil.tis3d.common.network.message;
 
 import li.cil.tis3d.util.WorldUtils;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.function.Consumer;
 
@@ -15,16 +15,16 @@ public abstract class AbstractMessageWithPosition extends AbstractMessage {
         this.position = position;
     }
 
-    AbstractMessageWithPosition(final PacketBuffer buffer) {
+    AbstractMessageWithPosition(final FriendlyByteBuf buffer) {
         super(buffer);
     }
 
     // --------------------------------------------------------------------- //
 
     @SuppressWarnings("unchecked")
-    protected <T extends TileEntity> void withTileEntity(final World world, final Class<T> type, final Consumer<T> callback) {
+    protected <T extends BlockEntity> void withTileEntity(final Level world, final Class<T> type, final Consumer<T> callback) {
         if (WorldUtils.isLoaded(world, position)) {
-            final TileEntity tileEntity = world.getBlockEntity(position);
+            final BlockEntity tileEntity = world.getBlockEntity(position);
             if (tileEntity != null && type.isAssignableFrom(tileEntity.getClass())) {
                 callback.accept((T) tileEntity);
             }
@@ -35,12 +35,12 @@ public abstract class AbstractMessageWithPosition extends AbstractMessage {
     // AbstractMessage
 
     @Override
-    public void fromBytes(final PacketBuffer buffer) {
+    public void fromBytes(final FriendlyByteBuf buffer) {
         position = buffer.readBlockPos();
     }
 
     @Override
-    public void toBytes(final PacketBuffer buffer) {
+    public void toBytes(final FriendlyByteBuf buffer) {
         buffer.writeBlockPos(position);
     }
 }

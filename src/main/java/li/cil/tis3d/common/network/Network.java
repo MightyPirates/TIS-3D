@@ -10,25 +10,25 @@ import li.cil.tis3d.common.CommonConfig;
 import li.cil.tis3d.common.network.message.*;
 import li.cil.tis3d.common.tileentity.ComputerTileEntity;
 import li.cil.tis3d.util.WorldUtils;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtIo;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraftforge.fmllegacy.network.NetworkDirection;
+import net.minecraftforge.fmllegacy.network.NetworkRegistry;
+import net.minecraftforge.fmllegacy.network.PacketDistributor;
+import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -85,7 +85,7 @@ public final class Network {
         MinecraftForge.EVENT_BUS.addListener(Network::onServerTick);
     }
 
-    private static <T extends AbstractMessage> void registerMessage(final Class<T> type, final Function<PacketBuffer, T> decoder, final NetworkDirection direction) {
+    private static <T extends AbstractMessage> void registerMessage(final Class<T> type, final Function<FriendlyByteBuf, T> decoder, final NetworkDirection direction) {
         INSTANCE.messageBuilder(type, getNextPacketId(), direction)
             .encoder(AbstractMessage::toBytes)
             .decoder(decoder)
@@ -95,12 +95,12 @@ public final class Network {
 
     // --------------------------------------------------------------------- //
 
-    public static PacketDistributor.PacketTarget getTargetPoint(final World world, final double x, final double y, final double z, final int range) {
+    public static PacketDistributor.PacketTarget getTargetPoint(final Level world, final double x, final double y, final double z, final int range) {
         final PacketDistributor.TargetPoint target = new PacketDistributor.TargetPoint(x, y, z, range, world.dimension());
         return PacketDistributor.NEAR.with(() -> target);
     }
 
-    public static PacketDistributor.PacketTarget getTargetPoint(final World world, final BlockPos position, final int range) {
+    public static PacketDistributor.PacketTarget getTargetPoint(final Level world, final BlockPos position, final int range) {
         return getTargetPoint(world, position.getX() + 0.5, position.getY() + 0.5, position.getZ() + 0.5, range);
     }
 
@@ -109,13 +109,13 @@ public final class Network {
     }
 
     public static PacketDistributor.PacketTarget getTracking(final Casing casing) {
-        final Chunk chunk = casing.getCasingLevel().getChunkAt(casing.getPosition());
+        final LevelChunk chunk = casing.getCasingLevel().getChunkAt(casing.getPosition());
         return PacketDistributor.TRACKING_CHUNK.with(() -> chunk);
     }
 
     // --------------------------------------------------------------------- //
 
-    public static void sendModuleData(final Casing casing, final Face face, final CompoundNBT data, final byte type) {
+    public static void sendModuleData(final Casing casing, final Face face, final CompoundTag data, final byte type) {
         getQueueFor(casing).queueData(face, data, type);
     }
 
@@ -123,7 +123,7 @@ public final class Network {
         getQueueFor(casing).queueData(face, data, type);
     }
 
-    public static void sendPipeEffect(final World world, final double x, final double y, final double z) {
+    public static void sendPipeEffect(final Level world, final double x, final double y, final double z) {
         final BlockPos position = new BlockPos(x, y, z);
         if (WorldUtils.isLoaded(world, position)) {
             final BlockState state = world.getBlockState(position);
@@ -167,7 +167,7 @@ public final class Network {
     private static int particlesSent = 0;
     private static int particleSendInterval = TICK_TIME;
 
-    private static void queueParticleEffect(final World world, final float x, final float y, final float z) {
+    private static void queueParticleEffect(final Level world, final float x, final float y, final float z) {
         final Position position = new Position(world, x, y, z);
         particleQueue.add(position);
     }
@@ -197,12 +197,12 @@ public final class Network {
      * when currently throttling.
      */
     private static final class Position {
-        private final World world;
+        private final Level world;
         private final float x;
         private final float y;
         private final float z;
 
-        private Position(final World world, final float x, final float y, final float z) {
+        private Position(final Level world, final float x, final float y, final float z) {
             this.world = world;
             this.x = x;
             this.y = y;
@@ -211,7 +211,7 @@ public final class Network {
 
         private void sendMessage() {
             final RedstoneParticleEffectMessage message = new RedstoneParticleEffectMessage(x, y, z);
-            if (areAnyPlayersNear(world, new Vector3d(x, y, z), RANGE_LOW)) {
+            if (areAnyPlayersNear(world, new Vec3(x, y, z), RANGE_LOW)) {
                 Network.INSTANCE.send(getTargetPoint(world, x, y, z, RANGE_LOW), message);
                 particlesSent++;
             }
@@ -308,7 +308,7 @@ public final class Network {
     }
 
     private static CasingSendQueue getQueueFor(final Casing casing) {
-        final World world = casing.getCasingLevel();
+        final Level world = casing.getCasingLevel();
         final Dist side = world.isClientSide() ? Dist.CLIENT : Dist.DEDICATED_SERVER;
         final Map<Casing, CasingSendQueue> queues = getQueues(side);
         CasingSendQueue queue = queues.get(casing);
@@ -367,7 +367,7 @@ public final class Network {
             }
         }
 
-        private void queueData(final Face face, final CompoundNBT data, final byte type) {
+        private void queueData(final Face face, final CompoundTag data, final byte type) {
             moduleQueues[face.ordinal()].queueData(data, type);
         }
 
@@ -381,7 +381,7 @@ public final class Network {
          * @param casing the casing this queue belongs to.
          */
         private void flush(final Casing casing) {
-            final World world = casing.getCasingLevel();
+            final Level world = casing.getCasingLevel();
             final Dist side = world.isClientSide() ? Dist.CLIENT : Dist.DEDICATED_SERVER;
             final ByteBuf data = Unpooled.buffer();
             collectData(data);
@@ -427,7 +427,7 @@ public final class Network {
          * @param data the data to enqueue.
          * @param type the type of the data.
          */
-        private void queueData(final CompoundNBT data, final byte type) {
+        private void queueData(final CompoundTag data, final byte type) {
             sendQueue.add(new QueueEntryNBT(type, data));
         }
 
@@ -499,9 +499,9 @@ public final class Network {
          * Queue entry for pending NBT data.
          */
         private static final class QueueEntryNBT extends QueueEntry {
-            public final CompoundNBT data;
+            public final CompoundTag data;
 
-            private QueueEntryNBT(final byte type, final CompoundNBT data) {
+            private QueueEntryNBT(final byte type, final CompoundTag data) {
                 super(type);
                 this.data = data;
             }
@@ -510,7 +510,7 @@ public final class Network {
             public void write(final ByteBuf buffer) {
                 final ByteBuf data = Unpooled.buffer();
                 try (final ByteBufOutputStream bos = new ByteBufOutputStream(data)) {
-                    CompressedStreamTools.writeCompressed(this.data, bos);
+                    NbtIo.writeCompressed(this.data, bos);
 
                     if (data.readableBytes() > 0) {
                         buffer.writeBoolean(true);
@@ -558,9 +558,9 @@ public final class Network {
      * @param range    the radius around the position to check for.
      * @return <tt>true</tt> if there are nearby players; <tt>false</tt> otherwise.
      */
-    private static boolean areAnyPlayersNear(final World world, final Vector3d position, final int range) {
-        for (final PlayerEntity player : world.players()) {
-            if (player instanceof ServerPlayerEntity) {
+    private static boolean areAnyPlayersNear(final Level world, final Vec3 position, final int range) {
+        for (final Player player : world.players()) {
+            if (player instanceof ServerPlayer) {
                 if (position.closerThan(player.position(), range)) {
                     return true;
                 }
@@ -569,8 +569,8 @@ public final class Network {
         return false;
     }
 
-    private static boolean areAnyPlayersNear(final World world, final BlockPos position, final int range) {
-        return areAnyPlayersNear(world, Vector3d.atCenterOf(position), range);
+    private static boolean areAnyPlayersNear(final Level world, final BlockPos position, final int range) {
+        return areAnyPlayersNear(world, Vec3.atCenterOf(position), range);
     }
 
     // --------------------------------------------------------------------- //

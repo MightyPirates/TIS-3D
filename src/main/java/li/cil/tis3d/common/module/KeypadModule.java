@@ -1,6 +1,6 @@
 package li.cil.tis3d.common.module;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
@@ -9,13 +9,13 @@ import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.util.Color;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Hand;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -78,7 +78,7 @@ public final class KeypadModule extends AbstractModuleWithRotation {
             value = Optional.empty();
 
             // Tell clients we can input again.
-            getCasing().sendData(getFace(), new CompoundNBT(), DATA_TYPE_VALUE);
+            getCasing().sendData(getFace(), new CompoundTag(), DATA_TYPE_VALUE);
         }
     }
 
@@ -95,11 +95,11 @@ public final class KeypadModule extends AbstractModuleWithRotation {
     @Override
     public void onWriteComplete(final Port port) {
         // Tell clients we can input again.
-        getCasing().sendData(getFace(), new CompoundNBT(), DATA_TYPE_VALUE);
+        getCasing().sendData(getFace(), new CompoundTag(), DATA_TYPE_VALUE);
     }
 
     @Override
-    public boolean use(final PlayerEntity player, final Hand hand, final Vector3d hit) {
+    public boolean use(final Player player, final InteractionHand hand, final Vec3 hit) {
         if (player.isShiftKeyDown()) {
             return false;
         }
@@ -118,9 +118,9 @@ public final class KeypadModule extends AbstractModuleWithRotation {
         // Handle input on the client and send it to the server for higher
         // hit position resolution (MC sends this to the server at a super
         // low resolution for some reason).
-        final World world = getCasing().getCasingLevel();
+        final Level world = getCasing().getCasingLevel();
         if (world.isClientSide()) {
-            final Vector3d uv = hitToUV(hit);
+            final Vec3 uv = hitToUV(hit);
             final int button = uvToButton((float) uv.x, (float) uv.y);
             if (button == -1) {
                 // No button here.
@@ -128,7 +128,7 @@ public final class KeypadModule extends AbstractModuleWithRotation {
             }
             final short number = buttonToNumber(button);
 
-            final CompoundNBT nbt = new CompoundNBT();
+            final CompoundTag nbt = new CompoundTag();
             nbt.putShort(TAG_VALUE, number);
             getCasing().sendData(getFace(), nbt, DATA_TYPE_VALUE);
         }
@@ -137,21 +137,21 @@ public final class KeypadModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void onData(final CompoundNBT nbt) {
-        final World world = getCasing().getCasingLevel();
+    public void onData(final CompoundTag data) {
+        final Level world = getCasing().getCasingLevel();
         if (world.isClientSide()) {
             // Got state on which key is currently 'pressed'.
-            if (nbt.contains(TAG_VALUE)) {
-                value = Optional.of(nbt.getShort(TAG_VALUE));
+            if (data.contains(TAG_VALUE)) {
+                value = Optional.of(data.getShort(TAG_VALUE));
             } else {
                 value = Optional.empty();
             }
-        } else if (!value.isPresent() && nbt.contains(TAG_VALUE)) {
+        } else if (!value.isPresent() && data.contains(TAG_VALUE)) {
             // Got an input and don't have one yet.
-            final short newValue = nbt.getShort(TAG_VALUE);
+            final short newValue = data.getShort(TAG_VALUE);
             value = Optional.of(newValue);
-            getCasing().sendData(getFace(), nbt, DATA_TYPE_VALUE);
-            getCasing().getCasingLevel().playSound(null, getCasing().getPosition(), SoundEvents.LEVER_CLICK, SoundCategory.BLOCKS, 0.3f, VALUE_TO_PITCH[newValue]);
+            getCasing().sendData(getFace(), data, DATA_TYPE_VALUE);
+            getCasing().getCasingLevel().playSound(null, getCasing().getPosition(), SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.3f, VALUE_TO_PITCH[newValue]);
         }
     }
 
@@ -162,7 +162,7 @@ public final class KeypadModule extends AbstractModuleWithRotation {
             return;
         }
 
-        final MatrixStack matrixStack = context.getMatrixStack();
+        final PoseStack matrixStack = context.getMatrixStack();
         matrixStack.pushPose();
         rotateForRendering(matrixStack);
 
@@ -172,9 +172,9 @@ public final class KeypadModule extends AbstractModuleWithRotation {
 
         // Draw overlay for hovered button if we can currently input a value.
         if (!value.isPresent()) {
-            final Vector3d hitPos = getLocalHitPosition(context.getDispatcher().cameraHitResult);
+            final Vec3 hitPos = getLocalHitPosition(context.getDispatcher().cameraHitResult);
             if (hitPos != null) {
-                final Vector3d uv = hitToUV(hitPos);
+                final Vec3 uv = hitToUV(hitPos);
                 final int button = uvToButton((float) uv.x, (float) uv.y);
                 if (button >= 0) {
                     drawButtonOverlay(context, button);
@@ -186,7 +186,7 @@ public final class KeypadModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void load(final CompoundNBT tag) {
+    public void load(final CompoundTag tag) {
         super.load(tag);
 
         if (tag.contains(TAG_VALUE)) {
@@ -195,7 +195,7 @@ public final class KeypadModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void save(final CompoundNBT tag) {
+    public void save(final CompoundTag tag) {
         super.save(tag);
 
         value.ifPresent(x -> tag.putShort(TAG_VALUE, x));

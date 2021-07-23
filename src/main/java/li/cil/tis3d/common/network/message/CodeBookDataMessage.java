@@ -2,23 +2,23 @@ package li.cil.tis3d.common.network.message;
 
 import li.cil.tis3d.common.item.CodeBookItem;
 import li.cil.tis3d.common.item.Items;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Hand;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 public final class CodeBookDataMessage extends AbstractMessage {
-    private Hand hand;
-    private CompoundNBT tag;
+    private InteractionHand hand;
+    private CompoundTag tag;
 
-    public CodeBookDataMessage(final Hand hand, final CompoundNBT tag) {
+    public CodeBookDataMessage(final InteractionHand hand, final CompoundTag tag) {
         this.hand = hand;
         this.tag = tag;
     }
 
-    public CodeBookDataMessage(final PacketBuffer buffer) {
+    public CodeBookDataMessage(final FriendlyByteBuf buffer) {
         super(buffer);
     }
 
@@ -27,7 +27,7 @@ public final class CodeBookDataMessage extends AbstractMessage {
 
     @Override
     protected void handleMessage(final NetworkEvent.Context context) {
-        final ServerPlayerEntity player = context.getSender();
+        final ServerPlayer player = context.getSender();
         if (player == null) {
             return;
         }
@@ -40,13 +40,13 @@ public final class CodeBookDataMessage extends AbstractMessage {
     }
 
     @Override
-    public void fromBytes(final PacketBuffer buffer) {
-        hand = buffer.readEnum(Hand.class);
+    public void fromBytes(final FriendlyByteBuf buffer) {
+        hand = buffer.readEnum(InteractionHand.class);
         tag = buffer.readNbt();
     }
 
     @Override
-    public void toBytes(final PacketBuffer buffer) {
+    public void toBytes(final FriendlyByteBuf buffer) {
         buffer.writeEnum(hand);
         buffer.writeNbt(tag);
     }

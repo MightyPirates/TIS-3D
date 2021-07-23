@@ -8,12 +8,12 @@ import li.cil.tis3d.client.manual.Manuals;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.client.renderer.font.NormalFontRenderer;
 import li.cil.tis3d.util.TooltipUtils;
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -32,7 +32,7 @@ public final class ManualItem extends AbstractManualItem {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void appendHoverText(final ItemStack stack, @Nullable final World world, final List<ITextComponent> tooltip, final ITooltipFlag flag) {
+    public void appendHoverText(final ItemStack stack, @Nullable final Level world, final List<Component> tooltip, final TooltipFlag flag) {
         super.appendHoverText(stack, world, tooltip, flag);
         TooltipUtils.tryAddDescription(stack, tooltip);
     }
@@ -76,28 +76,28 @@ public final class ManualItem extends AbstractManualItem {
             }
 
             @Override
-            public Rectangle2d getDocumentRect() {
-                return new Rectangle2d(16, 48, 220, 176);
+            public Rect2i getDocumentRect() {
+                return new Rect2i(16, 48, 220, 176);
             }
 
             @Override
-            public Rectangle2d getScrollBarRect() {
-                return new Rectangle2d(250, 48, 20, 180);
+            public Rect2i getScrollBarRect() {
+                return new Rect2i(250, 48, 20, 180);
             }
 
             @Override
-            public Rectangle2d getScrollButtonRect() {
-                return new Rectangle2d(0, 0, 26, 13);
+            public Rect2i getScrollButtonRect() {
+                return new Rect2i(0, 0, 26, 13);
             }
 
             @Override
-            public Rectangle2d getTabAreaRect() {
-                return new Rectangle2d(-52, 40, 64, 224);
+            public Rect2i getTabAreaRect() {
+                return new Rect2i(-52, 40, 64, 224);
             }
 
             @Override
-            public Rectangle2d getTabRect() {
-                return new Rectangle2d(0, 0, 64, 32);
+            public Rect2i getTabRect() {
+                return new Rect2i(0, 0, 64, 32);
             }
 
             @Override

@@ -13,9 +13,10 @@ import li.cil.tis3d.common.container.Containers;
 import li.cil.tis3d.common.entity.Entities;
 import li.cil.tis3d.common.module.DisplayModule;
 import li.cil.tis3d.common.tileentity.TileEntities;
-import net.minecraft.client.gui.ScreenManager;
-import net.minecraft.inventory.container.PlayerContainer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -23,9 +24,8 @@ import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fmlclient.registry.RenderingRegistry;
 
 import java.util.Objects;
 
@@ -39,10 +39,10 @@ public final class ClientSetup {
         API.normalFontRenderer = NormalFontRenderer.INSTANCE;
         API.smallFontRenderer = SmallFontRenderer.INSTANCE;
 
-        ScreenManager.register(Containers.READ_ONLY_MEMORY_MODULE.get(), ReadOnlyMemoryModuleScreen::new);
+        MenuScreens.register(Containers.READ_ONLY_MEMORY_MODULE.get(), ReadOnlyMemoryModuleScreen::new);
 
-        ClientRegistry.bindTileEntityRenderer(TileEntities.CASING.get(), CasingTileEntityRenderer::new);
-        ClientRegistry.bindTileEntityRenderer(TileEntities.CONTROLLER.get(), ControllerTileEntityRenderer::new);
+        BlockEntityRenderers.register(TileEntities.CASING.get(), CasingTileEntityRenderer::new);
+        BlockEntityRenderers.register(TileEntities.CONTROLLER.get(), ControllerTileEntityRenderer::new);
 
         RenderingRegistry.registerEntityRenderingHandler(Entities.INFRARED_PACKET.get(), NullEntityRenderer::new);
 
@@ -56,7 +56,7 @@ public final class ClientSetup {
 
     @SubscribeEvent
     public static void handleTextureStitchEvent(final TextureStitchEvent.Pre event) {
-        if (Objects.equals(event.getMap().location(), PlayerContainer.BLOCK_ATLAS)) {
+        if (Objects.equals(event.getMap().location(), InventoryMenu.BLOCK_ATLAS)) {
             Textures.handleTextureStitchEvent(event);
         }
     }

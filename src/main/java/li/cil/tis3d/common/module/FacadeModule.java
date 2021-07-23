@@ -6,22 +6,23 @@ import li.cil.tis3d.api.module.traits.ModuleWithBakedModel;
 import li.cil.tis3d.api.module.traits.ModuleWithBlockChangeListener;
 import li.cil.tis3d.api.prefab.module.AbstractModule;
 import li.cil.tis3d.util.BlockStateUtils;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BlockModelShapes;
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.NBTUtil;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.client.renderer.block.BlockModelShaper;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.data.EmptyModelData;
@@ -43,7 +44,7 @@ public final class FacadeModule extends AbstractModule implements ModuleWithBloc
     // Computed data
 
     // Error message when trying to configure with an incompatible block.
-    public static final TranslationTextComponent MESSAGE_FACADE_INVALID_TARGET = new TranslationTextComponent("tis3d.facade.invalid_target");
+    public static final TranslatableComponent MESSAGE_FACADE_INVALID_TARGET = new TranslatableComponent("tis3d.facade.invalid_target");
 
     // Data packet types.
     private static final byte DATA_TYPE_FULL = 0;
@@ -61,7 +62,7 @@ public final class FacadeModule extends AbstractModule implements ModuleWithBloc
     // Module
 
     @Override
-    public boolean use(final PlayerEntity player, final Hand hand, final Vector3d hit) {
+    public boolean use(final Player player, final InteractionHand hand, final Vec3 hit) {
         if (getCasing().isLocked()) {
             return false;
         }
@@ -83,32 +84,32 @@ public final class FacadeModule extends AbstractModule implements ModuleWithBloc
     }
 
     @Override
-    public void onData(final CompoundNBT nbt) {
-        load(nbt);
+    public void onData(final CompoundTag data) {
+        load(data);
 
         // Force re-render to make change of facade configuration visible.
-        final World world = getCasing().getCasingLevel();
+        final Level world = getCasing().getCasingLevel();
         final BlockPos position = getCasing().getPosition();
         final BlockState state = world.getBlockState(position);
         world.sendBlockUpdated(position, state, state, BlockFlags.DEFAULT);
     }
 
     @Override
-    public void load(final CompoundNBT tag) {
+    public void load(final CompoundTag tag) {
         super.load(tag);
 
-        facadeState = NBTUtil.readBlockState(tag.getCompound(TAG_STATE));
+        facadeState = NbtUtils.readBlockState(tag.getCompound(TAG_STATE));
         if (facadeState == Blocks.AIR.defaultBlockState()) {
             facadeState = null;
         }
     }
 
     @Override
-    public void save(final CompoundNBT tag) {
+    public void save(final CompoundTag tag) {
         super.save(tag);
 
         if (facadeState != null) {
-            tag.put(TAG_STATE, NBTUtil.writeBlockState(facadeState));
+            tag.put(TAG_STATE, NbtUtils.writeBlockState(facadeState));
         }
     }
 
@@ -138,9 +139,9 @@ public final class FacadeModule extends AbstractModule implements ModuleWithBloc
             return Collections.emptyList();
         }
 
-        final BlockModelShapes shapes = Minecraft.getInstance().getBlockRenderer().getBlockModelShaper();
-        final IBakedModel model = shapes.getBlockModel(facadeState);
-        final World world = getCasing().getCasingLevel();
+        final BlockModelShaper shapes = Minecraft.getInstance().getBlockRenderer().getBlockModelShaper();
+        final BakedModel model = shapes.getBlockModel(facadeState);
+        final Level world = getCasing().getCasingLevel();
         final BlockPos position = getCasing().getPosition();
         final IModelData modelData = model.getModelData(world, position, facadeState, EmptyModelData.INSTANCE);
         return model.getQuads(facadeState, side, random, modelData);
@@ -149,9 +150,9 @@ public final class FacadeModule extends AbstractModule implements ModuleWithBloc
     // --------------------------------------------------------------------- //
 
     private boolean trySetFacadeState(final BlockState state) {
-        if (state.getRenderShape() != BlockRenderType.MODEL ||
+        if (state.getRenderShape() != RenderShape.MODEL ||
             !state.isSolidRender(getCasing().getCasingLevel(), getCasing().getPosition()) ||
-            state.getBlock().hasTileEntity(state)) {
+            state.getBlock() instanceof EntityBlock) {
             return false;
         }
 
@@ -164,7 +165,7 @@ public final class FacadeModule extends AbstractModule implements ModuleWithBloc
     }
 
     private void sendState() {
-        final CompoundNBT nbt = new CompoundNBT();
+        final CompoundTag nbt = new CompoundTag();
         save(nbt);
         getCasing().sendData(getFace(), nbt, DATA_TYPE_FULL);
     }

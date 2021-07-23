@@ -2,16 +2,16 @@ package li.cil.tis3d.common.network.message;
 
 import io.netty.buffer.ByteBuf;
 import li.cil.tis3d.api.machine.Casing;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 public final class ClientCasingDataMessage extends AbstractCasingDataMessage {
     public ClientCasingDataMessage(final Casing casing, final ByteBuf data) {
         super(casing, data);
     }
 
-    public ClientCasingDataMessage(final PacketBuffer buffer) {
+    public ClientCasingDataMessage(final FriendlyByteBuf buffer) {
         super(buffer);
     }
 
@@ -20,7 +20,7 @@ public final class ClientCasingDataMessage extends AbstractCasingDataMessage {
 
     @Override
     protected void handleMessage(final NetworkEvent.Context context) {
-        final World world = getServerWorld(context);
+        final Level world = getServerWorld(context);
         if (world != null) {
             handleMessage(world);
         }

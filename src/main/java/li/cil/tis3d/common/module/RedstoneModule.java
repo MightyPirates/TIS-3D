@@ -1,6 +1,6 @@
 package li.cil.tis3d.common.module;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.machine.Casing;
@@ -12,9 +12,9 @@ import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.util.Color;
-import net.minecraft.block.Block;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -66,7 +66,7 @@ public final class RedstoneModule extends AbstractModuleWithRotation implements 
 
     @Override
     public void step() {
-        final World world = getCasing().getCasingLevel();
+        final Level world = getCasing().getCasingLevel();
 
         for (final Port port : Port.VALUES) {
             stepOutput(port);
@@ -110,7 +110,7 @@ public final class RedstoneModule extends AbstractModuleWithRotation implements 
     @OnlyIn(Dist.CLIENT)
     @Override
     public void render(final RenderContext context) {
-        final MatrixStack matrixStack = context.getMatrixStack();
+        final PoseStack matrixStack = context.getMatrixStack();
         matrixStack.pushPose();
         rotateForRendering(matrixStack);
 
@@ -144,7 +144,7 @@ public final class RedstoneModule extends AbstractModuleWithRotation implements 
     }
 
     @Override
-    public void load(final CompoundNBT tag) {
+    public void load(final CompoundTag tag) {
         super.load(tag);
 
         output = (short) Math.max(0, Math.min(15, tag.getShort(TAG_OUTPUT)));
@@ -152,7 +152,7 @@ public final class RedstoneModule extends AbstractModuleWithRotation implements 
     }
 
     @Override
-    public void save(final CompoundNBT tag) {
+    public void save(final CompoundTag tag) {
         super.save(tag);
 
         tag.putInt(TAG_OUTPUT, output);
@@ -170,7 +170,7 @@ public final class RedstoneModule extends AbstractModuleWithRotation implements 
     @Override
     public void setRedstoneInput(final short value) {
         // We never call this on the client side, but other might...
-        final World world = getCasing().getCasingLevel();
+        final Level world = getCasing().getCasingLevel();
         if (world.isClientSide()) {
             return;
         }
@@ -246,7 +246,7 @@ public final class RedstoneModule extends AbstractModuleWithRotation implements 
      * Notify all neighbors of a block update, to let them realize our output changed.
      */
     private void notifyNeighbors() {
-        final World world = getCasing().getCasingLevel();
+        final Level world = getCasing().getCasingLevel();
 
         scheduledNeighborUpdate = false;
         final Block blockType = world.getBlockState(getCasing().getPosition()).getBlock();

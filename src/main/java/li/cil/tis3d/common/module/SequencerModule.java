@@ -1,6 +1,6 @@
 package li.cil.tis3d.common.module;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.machine.Casing;
@@ -11,11 +11,11 @@ import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.util.Color;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -97,7 +97,7 @@ public final class SequencerModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public boolean use(final PlayerEntity player, final Hand hand, final Vector3d hit) {
+    public boolean use(final Player player, final InteractionHand hand, final Vec3 hit) {
         if (player.isShiftKeyDown()) {
             return false;
         }
@@ -105,9 +105,9 @@ public final class SequencerModule extends AbstractModuleWithRotation {
         // Handle input on the client and send it to the server for higher
         // hit position resolution (MC sends this to the server at a super
         // low resolution for some reason).
-        final World world = getCasing().getCasingLevel();
+        final Level world = getCasing().getCasingLevel();
         if (world.isClientSide()) {
-            final Vector3d uv = hitToUV(hit);
+            final Vec3 uv = hitToUV(hit);
             final int col = uvToCol((float) uv.x);
             final int row = uvToRow((float) uv.y);
             if (col >= 0 && row >= 0) {
@@ -140,7 +140,7 @@ public final class SequencerModule extends AbstractModuleWithRotation {
             return;
         }
 
-        final MatrixStack matrixStack = context.getMatrixStack();
+        final PoseStack matrixStack = context.getMatrixStack();
         matrixStack.pushPose();
         rotateForRendering(matrixStack);
 
@@ -172,9 +172,9 @@ public final class SequencerModule extends AbstractModuleWithRotation {
         }
 
         // Draw selection overlay for focused cell, if any.
-        final Vector3d hitPos = getLocalHitPosition(context.getDispatcher().cameraHitResult);
+        final Vec3 hitPos = getLocalHitPosition(context.getDispatcher().cameraHitResult);
         if (hitPos != null) {
-            final Vector3d uv = hitToUV(hitPos);
+            final Vec3 uv = hitToUV(hitPos);
             final int col = uvToCol((float) uv.x);
             final int row = uvToRow((float) uv.y);
             if (col >= 0 && row >= 0) {
@@ -188,7 +188,7 @@ public final class SequencerModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void load(final CompoundNBT tag) {
+    public void load(final CompoundTag tag) {
         super.load(tag);
 
         decodeConfiguration(tag.getLong(TAG_CONFIGURATION), configuration);
@@ -200,7 +200,7 @@ public final class SequencerModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void save(final CompoundNBT tag) {
+    public void save(final CompoundTag tag) {
         super.save(tag);
 
         tag.putLong(TAG_CONFIGURATION, encodeConfiguration(configuration));

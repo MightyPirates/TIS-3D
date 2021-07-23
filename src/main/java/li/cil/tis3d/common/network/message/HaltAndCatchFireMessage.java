@@ -1,17 +1,17 @@
 package li.cil.tis3d.common.network.message;
 
 import li.cil.tis3d.common.tileentity.ControllerTileEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 public final class HaltAndCatchFireMessage extends AbstractMessageWithPosition {
     public HaltAndCatchFireMessage(final BlockPos position) {
         super(position);
     }
 
-    public HaltAndCatchFireMessage(final PacketBuffer buffer) {
+    public HaltAndCatchFireMessage(final FriendlyByteBuf buffer) {
         super(buffer);
     }
 
@@ -20,7 +20,7 @@ public final class HaltAndCatchFireMessage extends AbstractMessageWithPosition {
 
     @Override
     protected void handleMessage(final NetworkEvent.Context context) {
-        final World world = getClientWorld();
+        final Level world = getClientWorld();
         if (world != null) {
             withTileEntity(world, ControllerTileEntity.class, ControllerTileEntity::haltAndCatchFire);
         }

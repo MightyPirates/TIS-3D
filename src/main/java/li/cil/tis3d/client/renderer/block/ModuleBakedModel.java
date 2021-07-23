@@ -4,15 +4,15 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.traits.ModuleWithBakedModel;
 import li.cil.tis3d.common.tileentity.CasingTileEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemOverrideList;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockDisplayReader;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.IDynamicBakedModel;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
@@ -25,11 +25,11 @@ import java.util.List;
 import java.util.Random;
 
 public final class ModuleBakedModel implements IDynamicBakedModel {
-    private final IBakedModel proxy;
+    private final BakedModel proxy;
 
     // --------------------------------------------------------------------- //
 
-    ModuleBakedModel(final IBakedModel proxy) {
+    ModuleBakedModel(final BakedModel proxy) {
         this.proxy = proxy;
     }
 
@@ -92,19 +92,18 @@ public final class ModuleBakedModel implements IDynamicBakedModel {
     }
 
     @Override
-    public ItemOverrideList getOverrides() {
+    public ItemOverrides getOverrides() {
         return proxy.getOverrides();
     }
 
     @Nonnull
     @Override
-    public IModelData getModelData(@Nonnull final IBlockDisplayReader world, @Nonnull final BlockPos pos, @Nonnull final BlockState state, @Nonnull final IModelData tileData) {
-        final TileEntity tileEntity = world.getBlockEntity(pos);
-        if (!(tileEntity instanceof CasingTileEntity)) {
+    public IModelData getModelData(@Nonnull final BlockAndTintGetter world, @Nonnull final BlockPos pos, @Nonnull final BlockState state, @Nonnull final IModelData tileData) {
+        final BlockEntity tileEntity = world.getBlockEntity(pos);
+        if (!(tileEntity instanceof final CasingTileEntity casing)) {
             return tileData;
         }
 
-        final CasingTileEntity casing = (CasingTileEntity) tileEntity;
         final CasingModules data = new CasingModules();
         for (final Face face : Face.VALUES) {
             final Module module = casing.getModule(face);

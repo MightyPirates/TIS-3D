@@ -1,12 +1,12 @@
 package li.cil.tis3d.util;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
 
@@ -18,7 +18,7 @@ public final class Raytracing {
     @FunctionalInterface
     public interface CollisionDetector {
         @Nullable
-        RayTraceResult intersect(final World world, final BlockPos position, final Vector3d start, final Vector3d end);
+        HitResult intersect(final Level world, final BlockPos position, final Vec3 start, final Vec3 end);
     }
 
     /**
@@ -31,7 +31,7 @@ public final class Raytracing {
      * @return hit information on the intersect, or {@code null} if there was none.
      */
     @Nullable
-    public static RayTraceResult intersectIgnoringTransparent(final World world, final BlockPos position, final Vector3d start, final Vector3d end) {
+    public static HitResult intersectIgnoringTransparent(final Level world, final BlockPos position, final Vec3 start, final Vec3 end) {
         final BlockState state = world.getBlockState(position);
         if (state.isSolidRender(world, position)) {
             final VoxelShape shape = state.getOcclusionShape(world, position);
@@ -54,16 +54,16 @@ public final class Raytracing {
      * @return the first detected hit, or {@code null} if there was none.
      */
     @Nullable
-    public static RayTraceResult raytrace(final World world, final Vector3d start, final Vector3d end, final CollisionDetector callback) {
+    public static HitResult raytrace(final Level world, final Vec3 start, final Vec3 end, final CollisionDetector callback) {
         // Adapted from http://jsfiddle.net/wivlaro/mkaWf/6/
 
-        final int startPosX = MathHelper.floor(start.x);
-        final int startPosY = MathHelper.floor(start.y);
-        final int startPosZ = MathHelper.floor(start.z);
+        final int startPosX = Mth.floor(start.x);
+        final int startPosY = Mth.floor(start.y);
+        final int startPosZ = Mth.floor(start.z);
 
-        final int endPosX = MathHelper.floor(end.x);
-        final int endPosY = MathHelper.floor(end.y);
-        final int endPosZ = MathHelper.floor(end.z);
+        final int endPosX = Mth.floor(end.x);
+        final int endPosY = Mth.floor(end.y);
+        final int endPosZ = Mth.floor(end.z);
 
         final int stepX = Integer.compare(endPosX, startPosX);
         final int stepY = Integer.compare(endPosY, startPosY);
@@ -101,8 +101,8 @@ public final class Raytracing {
         while (--emergencyExit > 0) {
             // Check if we're colliding with the block.
             final BlockPos position = new BlockPos(currentPosX, currentPosY, currentPosZ);
-            final RayTraceResult hit = callback.intersect(world, position, start, end);
-            if (hit != null && hit.getType() != RayTraceResult.Type.MISS) {
+            final HitResult hit = callback.intersect(world, position, start, end);
+            if (hit != null && hit.getType() != HitResult.Type.MISS) {
                 return hit;
             }
 

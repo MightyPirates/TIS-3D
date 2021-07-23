@@ -1,18 +1,18 @@
 package li.cil.tis3d.api.serial;
 
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
 
 /**
  * Represents a reference to a manual page describing a protocol used by
  * a {@link SerialInterface}.
  */
 public final class SerialProtocolDocumentationReference {
-    private final ITextComponent name;
+    private final Component name;
     private final String link;
 
     // --------------------------------------------------------------------- //
 
-    public SerialProtocolDocumentationReference(final ITextComponent name, final String link) {
+    public SerialProtocolDocumentationReference(final Component name, final String link) {
         this.name = name;
         this.link = link;
     }
@@ -20,7 +20,7 @@ public final class SerialProtocolDocumentationReference {
     /**
      * The name of the reference, i.e. the text of the link in the manual.
      */
-    public ITextComponent getName() {
+    public Component getName() {
         return name;
     }
 

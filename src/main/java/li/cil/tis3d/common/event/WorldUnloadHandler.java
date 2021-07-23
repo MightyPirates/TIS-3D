@@ -1,9 +1,6 @@
 package li.cil.tis3d.common.event;
 
-import li.cil.tis3d.common.machine.CasingImpl;
-import li.cil.tis3d.common.tileentity.CasingTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
 
@@ -15,14 +12,19 @@ public final class WorldUnloadHandler {
     // --------------------------------------------------------------------- //
 
     private static void onWorldUnload(final WorldEvent.Unload event) {
-        if (event.getWorld() instanceof World) {
-            for (final TileEntity tileEntity : ((World) event.getWorld()).blockEntityList) {
-                if (tileEntity instanceof CasingTileEntity) {
-                    final CasingTileEntity tileEntityCasing = (CasingTileEntity) tileEntity;
-                    final CasingImpl casing = (CasingImpl) tileEntityCasing.getCasing();
-                    casing.onDisposed();
-                }
-            }
+        if (event.getWorld() instanceof Level level) {
+            // TODO
+//            final ChunkSource chunkSource = level.getChunkSource();
+//            if (chunkSource instanceof ServerChunkCache serverChunkCache) {
+//                serverChunkCache.
+//            }
+//            for (final BlockEntity tileEntity : ((Level) event.getWorld()).blockEntityList) {
+//                if (tileEntity instanceof CasingTileEntity) {
+//                    final CasingTileEntity tileEntityCasing = (CasingTileEntity) tileEntity;
+//                    final CasingImpl casing = (CasingImpl) tileEntityCasing.getCasing();
+//                    casing.onDisposed();
+//                }
+//            }
         }
     }
 }

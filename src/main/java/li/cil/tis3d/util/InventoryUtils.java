@@ -1,11 +1,11 @@
 package li.cil.tis3d.util;
 
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -26,7 +26,7 @@ public final class InventoryUtils {
      * @return the entity representing the dropped item stack, or {@code null} if the stack was null or empty.
      */
     @Nullable
-    public static ItemEntity drop(final World world, final BlockPos pos, final IInventory inventory, final int index, final int count, final Direction towards) {
+    public static ItemEntity drop(final Level world, final BlockPos pos, final Container inventory, final int index, final int count, final Direction towards) {
         final ItemStack stack = inventory.removeItem(index, count);
         return spawnStackInWorld(world, pos, stack, towards);
     }
@@ -41,7 +41,7 @@ public final class InventoryUtils {
      * @return the entity representing the dropped item stack, or {@code null} if the stack was null or empty.
      */
     @Nullable
-    public static ItemEntity spawnStackInWorld(final World world, final BlockPos pos, final ItemStack stack, final Direction towards) {
+    public static ItemEntity spawnStackInWorld(final Level world, final BlockPos pos, final ItemStack stack, final Direction towards) {
         if (stack.isEmpty()) {
             return null;
         }

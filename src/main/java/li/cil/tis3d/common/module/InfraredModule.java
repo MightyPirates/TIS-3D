@@ -12,13 +12,13 @@ import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.common.CommonConfig;
 import li.cil.tis3d.common.capabilities.Capabilities;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.IntArrayNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.IntArrayTag;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
@@ -60,7 +60,7 @@ public final class InfraredModule extends AbstractModule implements ICapabilityP
 
     @Override
     public void step() {
-        final World world = getCasing().getCasingLevel();
+        final Level world = getCasing().getCasingLevel();
 
         stepOutput();
         stepInput();
@@ -104,7 +104,7 @@ public final class InfraredModule extends AbstractModule implements ICapabilityP
     }
 
     @Override
-    public void load(final CompoundNBT tag) {
+    public void load(final CompoundTag tag) {
         super.load(tag);
 
         receiveQueue.clear();
@@ -115,7 +115,7 @@ public final class InfraredModule extends AbstractModule implements ICapabilityP
     }
 
     @Override
-    public void save(final CompoundNBT tag) {
+    public void save(final CompoundTag tag) {
         super.save(tag);
 
         final int[] receiveQueueArray = new int[receiveQueue.size()];
@@ -123,7 +123,7 @@ public final class InfraredModule extends AbstractModule implements ICapabilityP
         for (final int value : receiveQueue) {
             receiveQueueArray[i++] = value;
         }
-        final IntArrayNBT receiveQueueNbt = new IntArrayNBT(receiveQueueArray);
+        final IntArrayTag receiveQueueNbt = new IntArrayTag(receiveQueueArray);
         tag.put(TAG_RECEIVE_QUEUE, receiveQueueNbt);
     }
 
@@ -143,12 +143,12 @@ public final class InfraredModule extends AbstractModule implements ICapabilityP
     // InfraredReceiver
 
     @Override
-    public void onInfraredPacket(final InfraredPacket packet, final RayTraceResult hit) {
+    public void onInfraredPacket(final InfraredPacket packet, final HitResult hit) {
         if (!getCasing().isEnabled()) {
             return;
         }
 
-        final World world = getCasing().getCasingLevel();
+        final Level world = getCasing().getCasingLevel();
         if (world.isClientSide()) {
             return;
         }
@@ -191,7 +191,7 @@ public final class InfraredModule extends AbstractModule implements ICapabilityP
             }
             if (receivingPipe.canTransfer()) {
                 // Don't actually read more values if we already sent a packet this tick.
-                final World world = getCasing().getCasingLevel();
+                final Level world = getCasing().getCasingLevel();
                 if (world.getGameTime() > lastStep) {
                     emitInfraredPacket(receivingPipe.read());
                 }
@@ -208,9 +208,9 @@ public final class InfraredModule extends AbstractModule implements ICapabilityP
         final Direction facing = Face.toDirection(getFace());
         final BlockPos blockPos = getCasing().getPosition().relative(facing);
 
-        final World world = getCasing().getCasingLevel();
-        final Vector3d position = new Vector3d(blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5);
-        final Vector3d direction = new Vector3d(facing.getStepX(), facing.getStepY(), facing.getStepZ());
+        final Level world = getCasing().getCasingLevel();
+        final Vec3 position = new Vec3(blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5);
+        final Vec3 direction = new Vec3(facing.getStepX(), facing.getStepY(), facing.getStepZ());
 
         InfraredAPI.sendPacket(world, position, direction, value);
     }

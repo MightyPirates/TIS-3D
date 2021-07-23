@@ -1,6 +1,8 @@
 package li.cil.tis3d.client.renderer.tileentity;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
@@ -9,19 +11,19 @@ import li.cil.tis3d.api.util.TransformUtil;
 import li.cil.tis3d.client.renderer.RenderContextImpl;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.common.item.Items;
+import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.tileentity.CasingTileEntity;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.WorldRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Quaternion;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.logging.log4j.LogManager;
@@ -38,19 +40,26 @@ import java.util.Set;
  * block states for static individual texturing).
  */
 @OnlyIn(Dist.CLIENT)
-public final class CasingTileEntityRenderer extends TileEntityRenderer<CasingTileEntity> {
+public final class CasingTileEntityRenderer implements BlockEntityRenderer<CasingTileEntity> {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private static final double Z_FIGHT_BUFFER = 0.001;
     private final static Set<Class<?>> BLACKLIST = new HashSet<>();
 
-    public CasingTileEntityRenderer(final TileEntityRendererDispatcher renderer) {
-        super(renderer);
+    private final BlockEntityRenderDispatcher renderer;
+
+    public CasingTileEntityRenderer(final BlockEntityRendererProvider.Context context) {
+        renderer = context.getBlockEntityRenderDispatcher();
     }
 
     @Override
-    public void render(final CasingTileEntity casing, final float partialTicks, final MatrixStack matrixStack,
-                       final IRenderTypeBuffer bufferFactory, final int light, final int overlay) {
+    public int getViewDistance() {
+        return Network.RANGE_HIGH;
+    }
+
+    @Override
+    public void render(final CasingTileEntity casing, final float partialTicks, final PoseStack matrixStack,
+                       final MultiBufferSource bufferFactory, final int light, final int overlay) {
         matrixStack.pushPose();
         matrixStack.translate(0.5, 0.5, 0.5);
 
@@ -68,7 +77,7 @@ public final class CasingTileEntityRenderer extends TileEntityRenderer<CasingTil
             if (!isObserverHoldingKey() || !drawConfigOverlay(context, casing, face)) {
                 // Grab neighbor lighting for module rendering because the casing itself is opaque and hence fully dark.
                 final BlockPos neighborPos = casing.getBlockPos().relative(Face.toDirection(face));
-                final int neighborLight = WorldRenderer.getLightColor(renderer.level, neighborPos);
+                final int neighborLight = LevelRenderer.getLightColor(renderer.level, neighborPos);
                 drawModuleOverlay(new RenderContextImpl(context, neighborLight), casing, face);
             }
 
@@ -79,45 +88,44 @@ public final class CasingTileEntityRenderer extends TileEntityRenderer<CasingTil
     }
 
     private boolean isBackFace(final BlockPos position, final Face face) {
-        final Vector3d cameraPosition = renderer.camera.getPosition();
-        final Vector3d blockCenter = Vector3d.atCenterOf(position);
-        final Vector3d faceNormal = Vector3d.atLowerCornerOf(Face.toDirection(face).getNormal());
-        final Vector3d faceCenter = blockCenter.add(faceNormal.scale(0.5));
-        final Vector3d cameraToFaceCenter = faceCenter.subtract(cameraPosition);
+        final Vec3 cameraPosition = renderer.camera.getPosition();
+        final Vec3 blockCenter = Vec3.atCenterOf(position);
+        final Vec3 faceNormal = Vec3.atLowerCornerOf(Face.toDirection(face).getNormal());
+        final Vec3 faceCenter = blockCenter.add(faceNormal.scale(0.5));
+        final Vec3 cameraToFaceCenter = faceCenter.subtract(cameraPosition);
         return faceNormal.dot(cameraToFaceCenter) > 0;
     }
 
-    private void setupMatrix(final Face face, final MatrixStack matrixStack) {
+    private void setupMatrix(final Face face, final PoseStack matrixStack) {
         final Vector3f axis;
         final int degree;
 
         switch (face) {
-            case Y_NEG:
+            case Y_NEG -> {
                 axis = Vector3f.XP;
                 degree = -90;
-                break;
-            case Y_POS:
+            }
+            case Y_POS -> {
                 axis = Vector3f.XP;
                 degree = 90;
-                break;
-            case Z_NEG:
+            }
+            case Z_NEG -> {
                 axis = Vector3f.YP;
                 degree = 0;
-                break;
-            case Z_POS:
+            }
+            case Z_POS -> {
                 axis = Vector3f.YP;
                 degree = 180;
-                break;
-            case X_NEG:
+            }
+            case X_NEG -> {
                 axis = Vector3f.YP;
                 degree = 90;
-                break;
-            case X_POS:
+            }
+            case X_POS -> {
                 axis = Vector3f.YP;
                 degree = -90;
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid face");
+            }
+            default -> throw new IllegalArgumentException("Invalid face");
         }
 
         matrixStack.mulPose(new Quaternion(axis, degree, true));
@@ -141,12 +149,12 @@ public final class CasingTileEntityRenderer extends TileEntityRenderer<CasingTil
                 closedSprite = Textures.LOCATION_OVERLAY_CASING_PORT_CLOSED;
                 openSprite = Textures.LOCATION_OVERLAY_CASING_PORT_OPEN;
 
-                final RayTraceResult hit = renderer.cameraHitResult;
-                assert hit.getType() == RayTraceResult.Type.BLOCK : "renderer.cameraHitResult.getType() is not of type BLOCK even though it was in isObserverLookingAt";
-                assert hit instanceof BlockRayTraceResult : "renderer.cameraHitResult is not a BlockRayTraceResult even though it was in isObserverLookingAt";
-                final BlockRayTraceResult blockHit = (BlockRayTraceResult) hit;
+                final HitResult hit = renderer.cameraHitResult;
+                assert hit.getType() == HitResult.Type.BLOCK : "renderer.cameraHitResult.getType() is not of type BLOCK even though it was in isObserverLookingAt";
+                assert hit instanceof BlockHitResult : "renderer.cameraHitResult is not a BlockRayTraceResult even though it was in isObserverLookingAt";
+                final BlockHitResult blockHit = (BlockHitResult) hit;
                 final BlockPos pos = blockHit.getBlockPos();
-                final Vector3d uv = TransformUtil.hitToUV(face, blockHit.getLocation().subtract(pos.getX(), pos.getY(), pos.getZ()));
+                final Vec3 uv = TransformUtil.hitToUV(face, blockHit.getLocation().subtract(pos.getX(), pos.getY(), pos.getZ()));
                 lookingAtPort = Port.fromUVQuadrant(uv);
             } else {
                 closedSprite = Textures.LOCATION_OVERLAY_CASING_PORT_CLOSED_SMALL;
@@ -155,7 +163,7 @@ public final class CasingTileEntityRenderer extends TileEntityRenderer<CasingTil
                 lookingAtPort = null;
             }
 
-            final MatrixStack matrixStack = context.getMatrixStack();
+            final PoseStack matrixStack = context.getMatrixStack();
             matrixStack.pushPose();
             for (final Port port : Port.CLOCKWISE) {
                 final boolean isClosed = casing.isReceivingPipeLocked(face, port);
@@ -190,7 +198,7 @@ public final class CasingTileEntityRenderer extends TileEntityRenderer<CasingTil
     }
 
     private void drawModuleOverlay(final RenderContext context, final CasingTileEntity casing, final Face face) {
-        final MatrixStack matrixStack = context.getMatrixStack();
+        final PoseStack matrixStack = context.getMatrixStack();
         matrixStack.pushPose();
         for (final Port port : Port.CLOCKWISE) {
             final boolean isClosed = casing.isReceivingPipeLocked(face, port);
@@ -239,12 +247,11 @@ public final class CasingTileEntityRenderer extends TileEntityRenderer<CasingTil
     }
 
     private boolean isObserverLookingAt(final BlockPos pos, final Face face) {
-        final RayTraceResult hit = renderer.cameraHitResult;
-        if (!(hit instanceof BlockRayTraceResult)) {
+        final HitResult hit = renderer.cameraHitResult;
+        if (!(hit instanceof final BlockHitResult blockHit)) {
             return false;
         }
 
-        final BlockRayTraceResult blockHit = (BlockRayTraceResult) hit;
         if (Face.fromDirection(blockHit.getDirection()) != face) {
             return false;
         }

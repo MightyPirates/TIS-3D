@@ -2,12 +2,12 @@ package li.cil.tis3d.data;
 
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Face;
-import li.cil.tis3d.common.block.CasingBlock;
 import li.cil.tis3d.common.block.Blocks;
+import li.cil.tis3d.common.block.CasingBlock;
 import li.cil.tis3d.common.item.Items;
+import net.minecraft.core.Direction;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.client.model.generators.MultiPartBlockStateBuilder;

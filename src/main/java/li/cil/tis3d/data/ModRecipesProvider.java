@@ -2,16 +2,20 @@ package li.cil.tis3d.data;
 
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.common.item.Items;
-import net.minecraft.advancements.criterion.InventoryChangeTrigger;
-import net.minecraft.advancements.criterion.ItemPredicate;
-import net.minecraft.data.*;
-import net.minecraft.item.Item;
-import net.minecraft.tags.ITag;
+import net.minecraft.advancements.critereon.InventoryChangeTrigger;
+import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.data.DataGenerator;
+import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.ShapelessRecipeBuilder;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.Tags;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.fmllegacy.RegistryObject;
 
 import java.util.function.Consumer;
 
@@ -21,7 +25,7 @@ public class ModRecipesProvider extends RecipeProvider {
     }
 
     @Override
-    protected void buildShapelessRecipes(final Consumer<IFinishedRecipe> consumer) {
+    protected void buildCraftingRecipes(final Consumer<FinishedRecipe> consumer) {
         ShapedRecipeBuilder
             .shaped(Items.CASING.get(), 8)
             .pattern("IRI")
@@ -66,7 +70,7 @@ public class ModRecipesProvider extends RecipeProvider {
             .unlockedBy("has_execution_module", inventoryChange(Items.EXECUTION_MODULE.get()))
             .save(consumer);
 
-        module(Items.AUDIO_MODULE, 2, net.minecraft.item.Items.NOTE_BLOCK)
+        module(Items.AUDIO_MODULE, 2, net.minecraft.world.item.Items.NOTE_BLOCK)
             .unlockedBy("has_sequencer_module", inventoryChange(Items.SEQUENCER_MODULE.get()))
             .save(consumer);
         module(Items.DISPLAY_MODULE, 2, Items.PRISM.get())
@@ -75,9 +79,9 @@ public class ModRecipesProvider extends RecipeProvider {
         module(Items.EXECUTION_MODULE, 2, Tags.Items.INGOTS_GOLD)
             .unlockedBy("has_redstone_module", inventoryChange(Items.REDSTONE_MODULE.get()))
             .save(consumer);
-        module(Items.FACADE_MODULE, 8, net.minecraft.item.Items.PAPER)
+        module(Items.FACADE_MODULE, 8, net.minecraft.world.item.Items.PAPER)
             .save(consumer);
-        module(Items.INFRARED_MODULE, 2, net.minecraft.item.Items.SPIDER_EYE)
+        module(Items.INFRARED_MODULE, 2, net.minecraft.world.item.Items.SPIDER_EYE)
             .unlockedBy("has_redstone_module", inventoryChange(Items.REDSTONE_MODULE.get()))
             .save(consumer);
         module(Items.KEYPAD_MODULE, 2, ItemTags.BUTTONS)
@@ -92,7 +96,7 @@ public class ModRecipesProvider extends RecipeProvider {
         module(Items.READ_ONLY_MEMORY_MODULE, 2, li.cil.tis3d.common.tags.ItemTags.BOOKS)
             .unlockedBy("has_stack_module", inventoryChange(Items.STACK_MODULE.get()))
             .save(consumer);
-        module(Items.REDSTONE_MODULE, 2, net.minecraft.item.Items.REPEATER)
+        module(Items.REDSTONE_MODULE, 2, net.minecraft.world.item.Items.REPEATER)
             .save(consumer);
         module(Items.SEQUENCER_MODULE, 2, ItemTags.MUSIC_DISCS)
             .unlockedBy("has_queue", inventoryChange(Items.QUEUE_MODULE.get()))
@@ -139,7 +143,7 @@ public class ModRecipesProvider extends RecipeProvider {
             .define('S', item);
     }
 
-    private static ShapedRecipeBuilder module(final RegistryObject<? extends Item> module, final int count, final ITag<Item> tag) {
+    private static ShapedRecipeBuilder module(final RegistryObject<? extends Item> module, final int count, final Tag<Item> tag) {
         return module(module, count)
             .define('S', tag);
     }
@@ -156,11 +160,11 @@ public class ModRecipesProvider extends RecipeProvider {
             .unlockedBy("has_casing", inventoryChange(Items.CASING.get()));
     }
 
-    private static InventoryChangeTrigger.Instance inventoryChange(final ITag<Item> tag) {
-        return InventoryChangeTrigger.Instance.hasItems(ItemPredicate.Builder.item().of(tag).build());
+    private static InventoryChangeTrigger.TriggerInstance inventoryChange(final Tag<Item> tag) {
+        return InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(tag).build());
     }
 
-    private static InventoryChangeTrigger.Instance inventoryChange(final IItemProvider item) {
-        return InventoryChangeTrigger.Instance.hasItems(item);
+    private static InventoryChangeTrigger.TriggerInstance inventoryChange(final ItemLike item) {
+        return InventoryChangeTrigger.TriggerInstance.hasItems(item);
     }
 }

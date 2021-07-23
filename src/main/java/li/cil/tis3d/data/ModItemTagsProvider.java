@@ -2,10 +2,10 @@ package li.cil.tis3d.data;
 
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.common.tags.BlockTags;
-import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.ItemTagsProvider;
-import net.minecraft.item.Items;
+import net.minecraft.data.tags.BlockTagsProvider;
+import net.minecraft.data.tags.ItemTagsProvider;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 import static li.cil.tis3d.common.item.Items.*;

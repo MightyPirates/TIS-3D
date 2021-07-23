@@ -4,9 +4,9 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.common.tileentity.CasingTileEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 public final class ReceivingPipeLockedStateMessage extends AbstractMessageWithPosition {
     private Face face;
@@ -21,7 +21,7 @@ public final class ReceivingPipeLockedStateMessage extends AbstractMessageWithPo
     }
 
     @SuppressWarnings("unused") // For deserialization.
-    public ReceivingPipeLockedStateMessage(final PacketBuffer buffer) {
+    public ReceivingPipeLockedStateMessage(final FriendlyByteBuf buffer) {
         super(buffer);
     }
 
@@ -29,7 +29,7 @@ public final class ReceivingPipeLockedStateMessage extends AbstractMessageWithPo
 
     @Override
     protected void handleMessage(final NetworkEvent.Context context) {
-        final World world = getClientWorld();
+        final Level world = getClientWorld();
         if (world != null) {
             withTileEntity(world, CasingTileEntity.class, casing ->
                 casing.setReceivingPipeLockedClient(face, port, isLocked));
@@ -43,7 +43,7 @@ public final class ReceivingPipeLockedStateMessage extends AbstractMessageWithPo
     // It's an infrequent message, so this is totally overkill. But it's fun!
 
     @Override
-    public void fromBytes(final PacketBuffer buffer) {
+    public void fromBytes(final FriendlyByteBuf buffer) {
         super.fromBytes(buffer);
 
         final byte compressed = buffer.readByte();
@@ -53,7 +53,7 @@ public final class ReceivingPipeLockedStateMessage extends AbstractMessageWithPo
     }
 
     @Override
-    public void toBytes(final PacketBuffer buffer) {
+    public void toBytes(final FriendlyByteBuf buffer) {
         super.toBytes(buffer);
 
         final byte compressed = (byte) ((face.ordinal() << 3) |

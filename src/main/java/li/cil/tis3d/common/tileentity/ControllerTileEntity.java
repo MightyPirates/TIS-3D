@@ -6,22 +6,21 @@ import li.cil.tis3d.common.CommonConfig;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.HaltAndCatchFireMessage;
 import li.cil.tis3d.util.WorldUtils;
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.fmllegacy.network.PacketDistributor;
 
 import java.util.*;
 
@@ -35,7 +34,7 @@ import java.util.*;
  * Controllers have no real state. They are active when powered by a redstone
  * signal, and can be reset by right-clicking them.
  */
-public final class ControllerTileEntity extends ComputerTileEntity implements ITickableTileEntity {
+public final class ControllerTileEntity extends ComputerTileEntity {
     // --------------------------------------------------------------------- //
     // Computed data
 
@@ -89,11 +88,11 @@ public final class ControllerTileEntity extends ComputerTileEntity implements IT
         /**
          * The message to display for this status.
          */
-        public final ITextComponent message;
+        public final Component message;
 
         ControllerState(final boolean isError) {
             this.isError = isError;
-            this.message = new TranslationTextComponent(API.MOD_ID + ".controller.status." + name().toLowerCase(Locale.US));
+            this.message = new TranslatableComponent(API.MOD_ID + ".controller.status." + name().toLowerCase(Locale.US));
         }
 
         // --------------------------------------------------------------------- //
@@ -142,8 +141,8 @@ public final class ControllerTileEntity extends ComputerTileEntity implements IT
 
     // --------------------------------------------------------------------- //
 
-    public ControllerTileEntity() {
-        super(TileEntities.CONTROLLER.get());
+    public ControllerTileEntity(final BlockPos pos, final BlockState state) {
+        super(TileEntities.CONTROLLER.get(), pos, state);
     }
 
     /**
@@ -170,12 +169,12 @@ public final class ControllerTileEntity extends ComputerTileEntity implements IT
      * cause additional steps when not in the paused step!
      */
     public void forceStep() {
-        final World world = getBlockEntityWorld();
+        final Level world = getBlockEntityWorld();
         if (state == ControllerState.RUNNING) {
             forceStep = true;
-            final Vector3d pos = Vector3d.atCenterOf(getBlockPos());
+            final Vec3 pos = Vec3.atCenterOf(getBlockPos());
             world.playSound(null, pos.x(), pos.y(), pos.z(),
-                SoundEvents.STONE_BUTTON_CLICK_ON, SoundCategory.BLOCKS, 0.2f, 0.8f + world.random.nextFloat() * 0.1f);
+                SoundEvents.STONE_BUTTON_CLICK_ON, SoundSource.BLOCKS, 0.2f, 0.8f + world.random.nextFloat() * 0.1f);
         }
     }
 
@@ -183,7 +182,7 @@ public final class ControllerTileEntity extends ComputerTileEntity implements IT
      * Reset the controller, pause for a moment and catch fire.
      */
     public void haltAndCatchFire() {
-        final World world = getBlockEntityWorld();
+        final Level world = getBlockEntityWorld();
         if (!world.isClientSide()) {
             state = ControllerState.READY;
             casings.forEach(CasingTileEntity::onDisabled);
@@ -232,70 +231,76 @@ public final class ControllerTileEntity extends ComputerTileEntity implements IT
     // TileEntityComputer
 
     @Override
-    protected void readFromNBTForServer(final CompoundNBT nbt) {
+    protected void readFromNBTForServer(final CompoundTag nbt) {
         super.readFromNBTForServer(nbt);
 
         hcfCooldown = nbt.getInt(TAG_HCF_COOLDOWN);
     }
 
     @Override
-    protected void writeToNBTForServer(final CompoundNBT nbt) {
+    protected void writeToNBTForServer(final CompoundTag nbt) {
         super.writeToNBTForServer(nbt);
 
         nbt.putInt(TAG_HCF_COOLDOWN, hcfCooldown);
     }
 
     @Override
-    protected void readFromNBTForClient(final CompoundNBT nbt) {
+    protected void readFromNBTForClient(final CompoundTag nbt) {
         super.readFromNBTForClient(nbt);
 
         state = ControllerState.VALUES[nbt.getByte(TAG_STATE) & 0xFF];
     }
 
     @Override
-    protected void writeToNBTForClient(final CompoundNBT nbt) {
+    protected void writeToNBTForClient(final CompoundTag nbt) {
         super.writeToNBTForClient(nbt);
 
         nbt.putByte(TAG_STATE, (byte) state.ordinal());
     }
 
     // --------------------------------------------------------------------- //
-    // ITickableTileEntity
+    // Ticking
 
-    @Override
-    public void tick() {
-        final World world = getBlockEntityWorld();
+    public static void clientTick(final Level level, final BlockPos pos, final BlockState state, final ControllerTileEntity tileEntity) {
+        tileEntity.clientTick();
+    }
 
-        // Only update multi-block and casings on the server.
-        if (world.isClientSide()) {
-            if (hcfCooldown > 0) {
-                --hcfCooldown;
+    public static void serverTick(final Level level, final BlockPos pos, final BlockState state, final ControllerTileEntity tileEntity) {
+        tileEntity.serverTick();
+    }
 
-                if (world instanceof ServerWorld) {
-                    final ServerWorld serverWorld = (ServerWorld) world;
-                    // Spawn some fire particles! No actual fire, that'd be... problematic.
-                    for (final Direction facing : Direction.values()) {
-                        final BlockPos neighborPos = getBlockPos().relative(facing);
-                        final BlockState neighborState = world.getBlockState(neighborPos);
-                        if (neighborState.isSolidRender(world, neighborPos)) {
-                            continue;
-                        }
-                        if (world.random.nextFloat() > 0.25f) {
-                            continue;
-                        }
-                        final float ox = neighborPos.getX() + world.random.nextFloat();
-                        final float oy = neighborPos.getY() + world.random.nextFloat();
-                        final float oz = neighborPos.getZ() + world.random.nextFloat();
-                        serverWorld.sendParticles(ParticleTypes.FLAME, ox, oy, oz, 5, 0, 0, 0, 0);
+    private void clientTick() {
+        final Level world = getBlockEntityWorld();
+
+        if (hcfCooldown > 0) {
+            --hcfCooldown;
+
+            // TODO WTF is this, server on client check, huh??
+            if (world instanceof final ServerLevel serverWorld) {
+                // Spawn some fire particles! No actual fire, that'd be... problematic.
+                for (final Direction facing : Direction.values()) {
+                    final BlockPos neighborPos = getBlockPos().relative(facing);
+                    final BlockState neighborState = world.getBlockState(neighborPos);
+                    if (neighborState.isSolidRender(world, neighborPos)) {
+                        continue;
                     }
+                    if (world.random.nextFloat() > 0.25f) {
+                        continue;
+                    }
+                    final float ox = neighborPos.getX() + world.random.nextFloat();
+                    final float oy = neighborPos.getY() + world.random.nextFloat();
+                    final float oz = neighborPos.getZ() + world.random.nextFloat();
+                    serverWorld.sendParticles(ParticleTypes.FLAME, ox, oy, oz, 5, 0, 0, 0, 0);
                 }
             }
-
-            return;
         }
+    }
+
+    private void serverTick() {
+        final Level world = getBlockEntityWorld();
 
         if (state != lastSentState) {
-            final Chunk chunk = world.getChunkAt(getBlockPos());
+            final LevelChunk chunk = world.getChunkAt(getBlockPos());
             final BlockState blockState = world.getBlockState(getBlockPos());
             world.markAndNotifyBlock(getBlockPos(), chunk, blockState, blockState, 7, 512);
             lastSentState = state;
@@ -404,14 +409,14 @@ public final class ControllerTileEntity extends ComputerTileEntity implements IT
      * @param queue      the list of pending tile entities.
      * @return <tt>true</tt> if all neighbors could be checked, <tt>false</tt> otherwise.
      */
-    static boolean addNeighbors(final World world, final TileEntity tileEntity, final Set<TileEntity> processed, final Queue<TileEntity> queue) {
+    static boolean addNeighbors(final Level world, final BlockEntity tileEntity, final Set<BlockEntity> processed, final Queue<BlockEntity> queue) {
         for (final Direction facing : Direction.values()) {
             final BlockPos neighborPos = tileEntity.getBlockPos().relative(facing);
             if (!WorldUtils.isLoaded(world, neighborPos)) {
                 return false;
             }
 
-            final TileEntity neighborTileEntity = world.getBlockEntity(neighborPos);
+            final BlockEntity neighborTileEntity = world.getBlockEntity(neighborPos);
             if (neighborTileEntity == null) {
                 continue;
             }
@@ -437,12 +442,12 @@ public final class ControllerTileEntity extends ComputerTileEntity implements IT
         // when our neighbors change (e.g. duplicate controller removed).
         checkNeighbors();
 
-        final World world = getBlockEntityWorld();
+        final Level world = getBlockEntityWorld();
 
         // List of processed tile entities to avoid loops.
-        final Set<TileEntity> processed = new HashSet<>();
+        final Set<BlockEntity> processed = new HashSet<>();
         // List of pending tile entities that still need to be scanned.
-        final Queue<TileEntity> queue = new ArrayDeque<>();
+        final Queue<BlockEntity> queue = new ArrayDeque<>();
         // List of new found casings.
         final List<CasingTileEntity> newCasings = new ArrayList<>(CommonConfig.maxCasingsPerController);
 
@@ -450,7 +455,7 @@ public final class ControllerTileEntity extends ComputerTileEntity implements IT
         processed.add(this);
         queue.add(this);
         while (!queue.isEmpty()) {
-            final TileEntity tileEntity = queue.remove();
+            final BlockEntity tileEntity = queue.remove();
 
             // Check what we have. We only add controllers and casings to this list,
             // so we can skip the type check in the else branch.
@@ -522,7 +527,7 @@ public final class ControllerTileEntity extends ComputerTileEntity implements IT
      * @return the accumulative redstone signal.
      */
     private int computePower() {
-        final World world = getBlockEntityWorld();
+        final Level world = getBlockEntityWorld();
 
         int acc = 0;
         for (final Direction facing : Direction.values()) {
