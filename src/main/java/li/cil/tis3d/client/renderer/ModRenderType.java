@@ -3,6 +3,7 @@ package li.cil.tis3d.client.renderer;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import li.cil.tis3d.api.API;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -14,11 +15,14 @@ import java.util.function.Function;
 public abstract class ModRenderType extends RenderType {
     private static final RenderType UNLIT_ATLAS_TEXTURE = create("atlas_module_overlay",
         DefaultVertexFormat.POSITION_COLOR_TEX,
-        builder -> builder.setTextureState(BLOCK_SHEET_MIPPED));
+        builder -> builder
+            .setShaderState(new ShaderStateShard(GameRenderer::getPositionTexColorShader))
+            .setTextureState(BLOCK_SHEET_MIPPED));
 
     private static final RenderType UNLIT = create("module_overlay",
         DefaultVertexFormat.POSITION_COLOR,
-        builder -> builder);
+        builder -> builder
+            .setShaderState(new ShaderStateShard(GameRenderer::getPositionColorShader)));
 
     // --------------------------------------------------------------------- //
 
@@ -54,7 +58,9 @@ public abstract class ModRenderType extends RenderType {
     public static RenderType unlitTexture(final ResourceLocation texture) {
         return create("texture_module_overlay",
             DefaultVertexFormat.POSITION_COLOR_TEX,
-            builder -> builder.setTextureState(new TextureStateShard(texture, false, false)));
+            builder -> builder
+                .setShaderState(new ShaderStateShard(GameRenderer::getPositionColorTexShader))
+                .setTextureState(new TextureStateShard(texture, false, false)));
     }
 
     // --------------------------------------------------------------------- //
@@ -79,6 +85,6 @@ public abstract class ModRenderType extends RenderType {
 
     private ModRenderType() {
         super("", DefaultVertexFormat.POSITION, VertexFormat.Mode.QUADS, 256, false, false, () -> {}, () -> {});
-        throw new UnsupportedOperationException("No meant to be instantiated.");
+        throw new UnsupportedOperationException("Not meant to be instantiated.");
     }
 }
