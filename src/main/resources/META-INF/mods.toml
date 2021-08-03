@@ -17,7 +17,7 @@ TIS-100 inspired low-tech computing for Minecraft.
 [[dependencies.tis3d]]
 modId = "forge"
 mandatory = true
-versionRange = "[37.0.0,)"
+versionRange = "[37.0.9,)"
 ordering = "NONE"
 side = "BOTH"
 [[dependencies.tis3d]]
