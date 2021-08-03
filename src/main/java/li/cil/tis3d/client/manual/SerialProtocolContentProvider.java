@@ -1,15 +1,16 @@
 package li.cil.tis3d.client.manual;
 
 import li.cil.manual.api.ManualModel;
-import li.cil.manual.api.prefab.provider.NamespaceContentProvider;
+import li.cil.manual.api.content.Document;
+import li.cil.manual.api.prefab.provider.NamespaceDocumentProvider;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.serial.SerialInterfaceProvider;
 import li.cil.tis3d.api.serial.SerialProtocolDocumentationReference;
 import li.cil.tis3d.common.provider.SerialInterfaceProviders;
 
 import java.util.*;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+
+import static java.util.Arrays.asList;
 
 /**
  * This content provider kicks in to serve one specific page, the one
@@ -18,7 +19,7 @@ import java.util.stream.StreamSupport;
  * which is the "template" for the page, and then populates it with the
  * list of known protocols.
  */
-public final class SerialProtocolContentProvider extends NamespaceContentProvider {
+public final class SerialProtocolContentProvider extends NamespaceDocumentProvider {
     private static final String SERIAL_PROTOCOLS_PATH = ManualModel.LANGUAGE_KEY + "/protocols/index.md";
 
     private static final String PATTERN_LIST = "%PROTOCOLS%";
@@ -38,14 +39,17 @@ public final class SerialProtocolContentProvider extends NamespaceContentProvide
     }
 
     @Override
-    public Optional<Stream<String>> getContent(final String path, final String language) {
+    public Optional<Document> getDocument(final String path, final String language) {
         final String localizedProtocolsPath = SERIAL_PROTOCOLS_PATH.replaceAll(ManualModel.LANGUAGE_KEY, language);
         if (localizedProtocolsPath.equals(path)) {
-            return super.getContent(localizedProtocolsPath, language).
-                map(lines -> StreamSupport.
-                    stream(lines.spliterator(), false).
-                    map(line -> line.replaceAll(PATTERN_LIST, compileLinkList())).
-                    flatMap(expandedLine -> Arrays.stream(expandedLine.split(PATTERN_LINE_END))));
+            return super.getDocument(localizedProtocolsPath, language).
+                map(document -> {
+                    final List<String> expandedLines = new ArrayList<>(document.getLines().size());
+                    for (final String line : document.getLines()) {
+                        expandedLines.addAll(asList(line.replaceAll(PATTERN_LIST, compileLinkList()).split(PATTERN_LINE_END)));
+                    }
+                    return new Document(expandedLines, document.getLocation());
+                });
         }
         return Optional.empty();
     }

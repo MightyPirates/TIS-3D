@@ -38,8 +38,8 @@ if (build_number == null)
     build_number = getGitRef()
 
 version = "${semver}+${build_number}"
-group = mod_group
-archivesBaseName = "${mod_name.replace(' ', '-')}-MC${minecraft_version}-Forge"
+group = 'li.cil.tis3d'
+archivesBaseName = "TIS-3D-MC${minecraft_version}-Forge"
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
@@ -63,13 +63,8 @@ processResources {
         include 'META-INF/mods.toml'
 
         expand([
-            'mod_version'          : version,
-            'mod_name'             : mod_name,
-            'mod_url'              : mod_url,
-            'mod_issues_url'       : mod_issues_url,
-            'forge_version_min'    : forge_version_min,
-            'minecraft_version_min': minecraft_version_min,
-            'manual_version_min'   : manual_version,
+            'mod_version'       : version,
+            'manual_version_min': manual_version,
         ])
     }
 }
