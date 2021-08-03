@@ -19,13 +19,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fmlclient.registry.RenderingRegistry;
 
 import java.util.Objects;
 
@@ -44,8 +44,6 @@ public final class ClientSetup {
         BlockEntityRenderers.register(TileEntities.CASING.get(), CasingTileEntityRenderer::new);
         BlockEntityRenderers.register(TileEntities.CONTROLLER.get(), ControllerTileEntityRenderer::new);
 
-        RenderingRegistry.registerEntityRenderingHandler(Entities.INFRARED_PACKET.get(), NullEntityRenderer::new);
-
         MinecraftForge.EVENT_BUS.addListener(DisplayModule.TextureDisposer::tick);
     }
 
@@ -59,5 +57,10 @@ public final class ClientSetup {
         if (Objects.equals(event.getMap().location(), InventoryMenu.BLOCK_ATLAS)) {
             Textures.handleTextureStitchEvent(event);
         }
+    }
+
+    @SubscribeEvent
+    public static void handleEntityRendererRegisterEvent(final EntityRenderersEvent.RegisterRenderers event) {
+        event.registerEntityRenderer(Entities.INFRARED_PACKET.get(), NullEntityRenderer::new);
     }
 }
