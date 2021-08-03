@@ -128,9 +128,9 @@ public final class KeypadModule extends AbstractModuleWithRotation {
             }
             final short number = buttonToNumber(button);
 
-            final CompoundTag nbt = new CompoundTag();
-            nbt.putShort(TAG_VALUE, number);
-            getCasing().sendData(getFace(), nbt, DATA_TYPE_VALUE);
+            final CompoundTag tag = new CompoundTag();
+            tag.putShort(TAG_VALUE, number);
+            getCasing().sendData(getFace(), tag, DATA_TYPE_VALUE);
         }
 
         return true;

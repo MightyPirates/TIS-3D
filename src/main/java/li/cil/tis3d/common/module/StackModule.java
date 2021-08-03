@@ -123,10 +123,10 @@ public final class StackModule extends AbstractModuleWithRotation {
     public void load(final CompoundTag tag) {
         super.load(tag);
 
-        final int[] stackNbt = tag.getIntArray(TAG_STACK);
-        final int count = Math.min(stackNbt.length, stack.length);
+        final int[] stackTag = tag.getIntArray(TAG_STACK);
+        final int count = Math.min(stackTag.length, stack.length);
         for (int i = 0; i < count; i++) {
-            stack[i] = (short) stackNbt[i];
+            stack[i] = (short) stackTag[i];
         }
 
         top = Mth.clamp(tag.getInt(TAG_TOP), -1, STACK_SIZE - 1);
@@ -136,11 +136,11 @@ public final class StackModule extends AbstractModuleWithRotation {
     public void save(final CompoundTag tag) {
         super.save(tag);
 
-        final int[] stackNbt = new int[stack.length];
+        final int[] stackTag = new int[stack.length];
         for (int i = 0; i < stack.length; i++) {
-            stackNbt[i] = stack[i];
+            stackTag[i] = stack[i];
         }
-        tag.putIntArray(TAG_STACK, stackNbt);
+        tag.putIntArray(TAG_STACK, stackTag);
 
         tag.putInt(TAG_TOP, top);
     }

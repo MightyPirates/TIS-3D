@@ -23,7 +23,7 @@ public class Inventory implements Container {
 
     // --------------------------------------------------------------------- //
 
-    public void readFromNBT(final CompoundTag tag) {
+    public void load(final CompoundTag tag) {
         final ListTag itemList = tag.getList(TAG_ITEMS, Constants.NBT.TAG_COMPOUND);
         final int count = Math.min(itemList.size(), items.length);
         for (int index = 0; index < count; index++) {
@@ -31,7 +31,7 @@ public class Inventory implements Container {
         }
     }
 
-    public void writeToNBT(final CompoundTag tag) {
+    public void save(final CompoundTag tag) {
         final ListTag itemList = new ListTag();
         for (final ItemStack stack : items) {
             final CompoundTag stackTag = new CompoundTag();

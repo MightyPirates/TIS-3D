@@ -115,7 +115,7 @@ public final class CodeBookScreen extends Screen {
 
         // Save any changes made and send them to the server.
         final CompoundTag tag = new CompoundTag();
-        data.writeToNBT(tag);
+        data.save(tag);
         Network.INSTANCE.sendToServer(new CodeBookDataMessage(hand, tag));
 
         getMinecraft().keyboardHandler.setSendRepeatsToGui(false);

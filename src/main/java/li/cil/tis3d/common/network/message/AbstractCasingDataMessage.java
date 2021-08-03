@@ -33,14 +33,14 @@ public abstract class AbstractCasingDataMessage extends AbstractMessageWithPosit
                 final Module module = casing.getModule(Face.VALUES[data.readByte()]);
                 final ByteBuf moduleData = data.readBytes(data.readUnsignedShort());
                 while (moduleData.readableBytes() > 0) {
-                    final boolean isNbt = moduleData.readBoolean();
+                    final boolean isCompoundTag = moduleData.readBoolean();
                     final ByteBuf packet = moduleData.readBytes(moduleData.readUnsignedShort());
                     if (module != null) {
-                        if (isNbt) {
+                        if (isCompoundTag) {
                             try {
                                 final ByteBufInputStream bis = new ByteBufInputStream(packet);
-                                final CompoundTag nbt = NbtIo.readCompressed(bis);
-                                module.onData(nbt);
+                                final CompoundTag tag = NbtIo.readCompressed(bis);
+                                module.onData(tag);
                             } catch (final IOException e) {
                                 LOGGER.warn("Invalid packet received.", e);
                             }

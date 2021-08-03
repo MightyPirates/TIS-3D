@@ -127,10 +127,10 @@ public final class QueueModule extends AbstractModuleWithRotation {
     public void load(final CompoundTag tag) {
         super.load(tag);
 
-        final int[] queueNbt = tag.getIntArray(TAG_QUEUE);
-        final int count = Math.min(queueNbt.length, queue.length);
+        final int[] queueTag = tag.getIntArray(TAG_QUEUE);
+        final int count = Math.min(queueTag.length, queue.length);
         for (int i = 0; i < count; i++) {
-            queue[i] = (short) queueNbt[i];
+            queue[i] = (short) queueTag[i];
         }
 
         head = Mth.clamp(tag.getInt(TAG_HEAD), 0, QUEUE_SIZE - 1);
@@ -141,11 +141,11 @@ public final class QueueModule extends AbstractModuleWithRotation {
     public void save(final CompoundTag tag) {
         super.save(tag);
 
-        final int[] queueNbt = new int[queue.length];
+        final int[] queueTag = new int[queue.length];
         for (int i = 0; i < queue.length; i++) {
-            queueNbt[i] = queue[i];
+            queueTag[i] = queue[i];
         }
-        tag.putIntArray(TAG_QUEUE, queueNbt);
+        tag.putIntArray(TAG_QUEUE, queueTag);
 
         tag.putInt(TAG_HEAD, head);
         tag.putInt(TAG_TAIL, tail);

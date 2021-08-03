@@ -57,14 +57,14 @@ public final class ReadOnlyMemoryModuleItem extends ModuleItem {
     // --------------------------------------------------------------------- //
 
     /**
-     * Load ROM data from the specified NBT tag.
+     * Load ROM data from the specified tag.
      *
-     * @param nbt the tag to load the data from.
+     * @param tag the tag to load the data from.
      * @return the data loaded from the tag.
      */
-    public static byte[] loadFromNBT(@Nullable final CompoundTag nbt) {
-        if (nbt != null) {
-            return nbt.getByteArray(TAG_DATA);
+    public static byte[] loadFromTag(@Nullable final CompoundTag tag) {
+        if (tag != null) {
+            return tag.getByteArray(TAG_DATA);
         }
         return EMPTY_DATA;
     }
@@ -76,7 +76,7 @@ public final class ReadOnlyMemoryModuleItem extends ModuleItem {
      * @return the data loaded from the stack.
      */
     public static byte[] loadFromStack(final ItemStack stack) {
-        return loadFromNBT(stack.getTag());
+        return loadFromTag(stack.getTag());
     }
 
     /**
@@ -86,14 +86,14 @@ public final class ReadOnlyMemoryModuleItem extends ModuleItem {
      * @param data  the data to save to the item stack.
      */
     public static void saveToStack(final ItemStack stack, final byte[] data) {
-        final CompoundTag nbt = stack.getOrCreateTag();
+        final CompoundTag tag = stack.getOrCreateTag();
 
-        byte[] nbtData = nbt.getByteArray(TAG_DATA);
-        if (nbtData.length != data.length) {
-            nbtData = new byte[data.length];
+        byte[] tagData = tag.getByteArray(TAG_DATA);
+        if (tagData.length != data.length) {
+            tagData = new byte[data.length];
         }
 
-        System.arraycopy(data, 0, nbtData, 0, data.length);
-        nbt.putByteArray(TAG_DATA, nbtData);
+        System.arraycopy(data, 0, tagData, 0, data.length);
+        tag.putByteArray(TAG_DATA, tagData);
     }
 }

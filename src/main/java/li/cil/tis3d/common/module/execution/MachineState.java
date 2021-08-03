@@ -124,10 +124,10 @@ public final class MachineState {
 
     // --------------------------------------------------------------------- //
 
-    public void readFromNBT(final CompoundTag nbt) {
-        if (nbt.contains(TAG_CODE)) {
+    public void load(final CompoundTag tag) {
+        if (tag.contains(TAG_CODE)) {
             try {
-                Compiler.compile(Arrays.asList(Constants.PATTERN_LINES.split(nbt.getString(TAG_CODE))), this);
+                Compiler.compile(Arrays.asList(Constants.PATTERN_LINES.split(tag.getString(TAG_CODE))), this);
             } catch (final ParseException ignored) {
                 // Silent because this is also used to send code to the
                 // clients to visualize errors, and code is also saved
@@ -135,26 +135,26 @@ public final class MachineState {
             }
         }
 
-        pc = nbt.getInt(TAG_PC);
-        acc = nbt.getShort(TAG_ACC);
-        bak = nbt.getShort(TAG_BAK);
-        if (nbt.contains(TAG_LAST)) {
-            last = Optional.of(EnumUtils.readFromNBT(Port.class, TAG_LAST, nbt));
+        pc = tag.getInt(TAG_PC);
+        acc = tag.getShort(TAG_ACC);
+        bak = tag.getShort(TAG_BAK);
+        if (tag.contains(TAG_LAST)) {
+            last = Optional.of(EnumUtils.load(Port.class, TAG_LAST, tag));
         } else {
             last = Optional.empty();
         }
-        pcPrev = nbt.getInt(TAG_PC_PREV);
+        pcPrev = tag.getInt(TAG_PC_PREV);
     }
 
-    public void writeToNBT(final CompoundTag nbt) {
-        nbt.putInt(TAG_PC, pc);
-        nbt.putShort(TAG_ACC, acc);
-        nbt.putShort(TAG_BAK, bak);
-        last.ifPresent(port -> EnumUtils.writeToNBT(port, TAG_LAST, nbt));
-        nbt.putInt(TAG_PC_PREV, pcPrev);
+    public void save(final CompoundTag tag) {
+        tag.putInt(TAG_PC, pc);
+        tag.putShort(TAG_ACC, acc);
+        tag.putShort(TAG_BAK, bak);
+        last.ifPresent(port -> EnumUtils.save(port, TAG_LAST, tag));
+        tag.putInt(TAG_PC_PREV, pcPrev);
 
         if (code != null) {
-            nbt.putString(TAG_CODE, String.join("\n", code));
+            tag.putString(TAG_CODE, String.join("\n", code));
         }
     }
 }

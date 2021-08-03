@@ -111,13 +111,13 @@ public final class SerialInterfaceProviderFurnace extends ForgeRegistryEntry<Ser
         }
 
         @Override
-        public void readFromNBT(final CompoundTag nbt) {
-            mode = EnumUtils.readFromNBT(SerialInterfaceFurnace.Mode.class, TAG_MODE, nbt);
+        public void load(final CompoundTag tag) {
+            mode = EnumUtils.load(SerialInterfaceFurnace.Mode.class, TAG_MODE, tag);
         }
 
         @Override
-        public void writeToNBT(final CompoundTag tag) {
-            EnumUtils.writeToNBT(mode, TAG_MODE, tag);
+        public void save(final CompoundTag tag) {
+            EnumUtils.save(mode, TAG_MODE, tag);
         }
     }
 }

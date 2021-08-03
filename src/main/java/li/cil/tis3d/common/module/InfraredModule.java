@@ -108,8 +108,8 @@ public final class InfraredModule extends AbstractModule implements ICapabilityP
         super.load(tag);
 
         receiveQueue.clear();
-        final int[] receiveQueueNbt = tag.getIntArray(TAG_RECEIVE_QUEUE);
-        for (final int value : receiveQueueNbt) {
+        final int[] receiveQueueTag = tag.getIntArray(TAG_RECEIVE_QUEUE);
+        for (final int value : receiveQueueTag) {
             receiveQueue.addLast((short) value);
         }
     }
@@ -123,8 +123,8 @@ public final class InfraredModule extends AbstractModule implements ICapabilityP
         for (final int value : receiveQueue) {
             receiveQueueArray[i++] = value;
         }
-        final IntArrayTag receiveQueueNbt = new IntArrayTag(receiveQueueArray);
-        tag.put(TAG_RECEIVE_QUEUE, receiveQueueNbt);
+        final IntArrayTag receiveQueueTag = new IntArrayTag(receiveQueueArray);
+        tag.put(TAG_RECEIVE_QUEUE, receiveQueueTag);
     }
 
     // --------------------------------------------------------------------- //

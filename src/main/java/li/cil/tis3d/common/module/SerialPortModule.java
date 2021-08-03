@@ -39,7 +39,7 @@ public final class SerialPortModule extends AbstractModule implements ModuleWith
     private static final String TAG_SERIAL_INTERFACE = "serialInterface";
 
     private Optional<SerialInterface> serialInterface = Optional.empty();
-    private Optional<CompoundTag> serialInterfaceNbt = Optional.empty();
+    private Optional<CompoundTag> serialInterfaceTag = Optional.empty();
     private boolean isScanScheduled = true;
 
     // --------------------------------------------------------------------- //
@@ -112,9 +112,9 @@ public final class SerialPortModule extends AbstractModule implements ModuleWith
 
         if (tag.contains(TAG_SERIAL_INTERFACE)) {
             if (serialInterface.isPresent()) {
-                serialInterface.get().readFromNBT(tag.getCompound(TAG_SERIAL_INTERFACE));
+                serialInterface.get().load(tag.getCompound(TAG_SERIAL_INTERFACE));
             } else {
-                serialInterfaceNbt = Optional.of(tag.getCompound(TAG_SERIAL_INTERFACE));
+                serialInterfaceTag = Optional.of(tag.getCompound(TAG_SERIAL_INTERFACE));
             }
         }
     }
@@ -126,10 +126,10 @@ public final class SerialPortModule extends AbstractModule implements ModuleWith
         tag.putShort(TAG_VALUE, writing);
 
         if (serialInterface.isPresent()) {
-            final CompoundTag serialInterfaceNbt = new CompoundTag();
-            serialInterface.get().writeToNBT(serialInterfaceNbt);
+            final CompoundTag serialInterfaceTag = new CompoundTag();
+            serialInterface.get().save(serialInterfaceTag);
             if (!tag.isEmpty()) {
-                tag.put(TAG_SERIAL_INTERFACE, serialInterfaceNbt);
+                tag.put(TAG_SERIAL_INTERFACE, serialInterfaceTag);
             }
         }
     }
@@ -160,9 +160,9 @@ public final class SerialPortModule extends AbstractModule implements ModuleWith
                     // or the interface has become invalid, so create a new one.
                     reset();
                     serialInterface = provider.get().getInterface(level, neighborPos, neighborSide);
-                    if (serialInterface.isPresent() && serialInterfaceNbt.isPresent()) {
-                        serialInterface.get().readFromNBT(serialInterfaceNbt.get());
-                        serialInterfaceNbt = Optional.empty(); // Done reading, don't re-use.
+                    if (serialInterface.isPresent() && serialInterfaceTag.isPresent()) {
+                        serialInterface.get().load(serialInterfaceTag.get());
+                        serialInterfaceTag = Optional.empty(); // Done reading, don't re-use.
                     }
                 } // else: interface still valid.
             } else {

@@ -113,16 +113,16 @@ public final class PipeImpl implements Pipe {
         }
     }
 
-    public void readFromNBT(final CompoundTag nbt) {
-        readState = EnumUtils.readFromNBT(State.class, TAG_READ_STATE, nbt);
-        writeState = EnumUtils.readFromNBT(State.class, TAG_WRITE_STATE, nbt);
-        value = nbt.getShort(TAG_VALUE);
+    public void load(final CompoundTag tag) {
+        readState = EnumUtils.load(State.class, TAG_READ_STATE, tag);
+        writeState = EnumUtils.load(State.class, TAG_WRITE_STATE, tag);
+        value = tag.getShort(TAG_VALUE);
     }
 
-    public void writeToNBT(final CompoundTag nbt) {
-        EnumUtils.writeToNBT(readState, TAG_READ_STATE, nbt);
-        EnumUtils.writeToNBT(writeState, TAG_WRITE_STATE, nbt);
-        nbt.putShort(TAG_VALUE, value);
+    public void save(final CompoundTag tag) {
+        EnumUtils.save(readState, TAG_READ_STATE, tag);
+        EnumUtils.save(writeState, TAG_WRITE_STATE, tag);
+        tag.putShort(TAG_VALUE, value);
     }
 
     private void finishTransfer() {

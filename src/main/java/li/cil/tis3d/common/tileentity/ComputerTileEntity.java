@@ -148,39 +148,39 @@ public abstract class ComputerTileEntity extends BlockEntity implements PipeHost
     @Override
     public void load(final CompoundTag tag) {
         super.load(tag);
-        readFromNBTForServer(tag);
+        loadServer(tag);
     }
 
     @Override
     public CompoundTag save(final CompoundTag compound) {
         final CompoundTag tag = super.save(compound);
-        writeToNBTForServer(tag);
+        saveServer(tag);
         return tag;
     }
 
     @Override
     public void onDataPacket(final Connection manager, final ClientboundBlockEntityDataPacket packet) {
-        readFromNBTForClient(packet.getTag());
+        loadClient(packet.getTag());
     }
 
     @Nullable
     @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
-        final CompoundTag nbt = new CompoundTag();
-        writeToNBTForClient(nbt);
-        return new ClientboundBlockEntityDataPacket(getBlockPos(), 0, nbt);
+        final CompoundTag tag = new CompoundTag();
+        saveClient(tag);
+        return new ClientboundBlockEntityDataPacket(getBlockPos(), 0, tag);
     }
 
     @Override
     public void handleUpdateTag(final CompoundTag tag) {
         super.handleUpdateTag(tag);
-        readFromNBTForClient(tag);
+        loadClient(tag);
     }
 
     @Override
     public CompoundTag getUpdateTag() {
         final CompoundTag tag = super.getUpdateTag();
-        writeToNBTForClient(tag);
+        saveClient(tag);
         return tag;
     }
 
@@ -219,40 +219,40 @@ public abstract class ComputerTileEntity extends BlockEntity implements PipeHost
         }
     }
 
-    protected void readFromNBTForServer(final CompoundTag nbt) {
-        final ListTag pipesNbt = nbt.getList(TAG_PIPES, Constants.NBT.TAG_COMPOUND);
-        final int pipeCount = Math.min(pipesNbt.size(), pipes.length);
+    protected void loadServer(final CompoundTag tag) {
+        final ListTag pipesTag = tag.getList(TAG_PIPES, Constants.NBT.TAG_COMPOUND);
+        final int pipeCount = Math.min(pipesTag.size(), pipes.length);
         for (int i = 0; i < pipeCount; i++) {
-            pipes[i].readFromNBT(pipesNbt.getCompound(i));
+            pipes[i].load(pipesTag.getCompound(i));
         }
 
-        readFromNBTCommon(nbt);
+        loadCommon(tag);
     }
 
-    protected void writeToNBTForServer(final CompoundTag nbt) {
-        final ListTag pipesNbt = new ListTag();
+    protected void saveServer(final CompoundTag tag) {
+        final ListTag pipesTag = new ListTag();
         for (final PipeImpl pipe : pipes) {
-            final CompoundTag portNbt = new CompoundTag();
-            pipe.writeToNBT(portNbt);
-            pipesNbt.add(portNbt);
+            final CompoundTag portTag = new CompoundTag();
+            pipe.save(portTag);
+            pipesTag.add(portTag);
         }
-        nbt.put(TAG_PIPES, pipesNbt);
+        tag.put(TAG_PIPES, pipesTag);
 
-        writeToNBTCommon(nbt);
+        saveCommon(tag);
     }
 
-    protected void readFromNBTForClient(final CompoundTag nbt) {
-        readFromNBTCommon(nbt);
+    protected void loadClient(final CompoundTag tag) {
+        loadCommon(tag);
     }
 
-    protected void writeToNBTForClient(final CompoundTag nbt) {
-        writeToNBTCommon(nbt);
+    protected void saveClient(final CompoundTag tag) {
+        saveCommon(tag);
     }
 
-    protected void readFromNBTCommon(final CompoundTag nbt) {
+    protected void loadCommon(final CompoundTag tag) {
     }
 
-    protected void writeToNBTCommon(final CompoundTag nbt) {
+    protected void saveCommon(final CompoundTag tag) {
     }
 
     boolean hasNeighbor(final Face face) {

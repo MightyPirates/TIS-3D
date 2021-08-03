@@ -124,7 +124,7 @@ public interface Casing {
      * that's only sent every so often. For data you expect may be sent
      * each tick, prefer using the more light-weight {@link ByteBuf}.
      * <p>
-     * <em>Important</em>: the passed NBT tag is <em>not</em> copied, it is
+     * <em>Important</em>: the passed tag is <em>not</em> copied, it is
      * stored by reference. If you intend to modify the tag after passing
      * it to this method, pass a copy of it instead.
      *
@@ -147,7 +147,7 @@ public interface Casing {
      * that's only sent every so often. For data you expect may be sent
      * each tick, prefer using the more light-weight {@link ByteBuf}.
      * <p>
-     * <em>Important</em>: the passed NBT tag is <em>not</em> copied, it is
+     * <em>Important</em>: the passed tag is <em>not</em> copied, it is
      * stored by reference. If you intend to modify the tag after passing
      * it to this method, pass a copy of it instead.
      *

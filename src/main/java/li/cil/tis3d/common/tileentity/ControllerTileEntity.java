@@ -127,7 +127,7 @@ public final class ControllerTileEntity extends ComputerTileEntity {
      * <p>
      * This only matters if the machine is currently paused; in particular,
      * this is ignored if the machine is currently powered down. Therefore
-     * there's not need to save the value to NBT, either.
+     * there's not need to save the value, either.
      */
     private boolean forceStep;
 
@@ -231,31 +231,31 @@ public final class ControllerTileEntity extends ComputerTileEntity {
     // TileEntityComputer
 
     @Override
-    protected void readFromNBTForServer(final CompoundTag nbt) {
-        super.readFromNBTForServer(nbt);
+    protected void loadServer(final CompoundTag tag) {
+        super.loadServer(tag);
 
-        hcfCooldown = nbt.getInt(TAG_HCF_COOLDOWN);
+        hcfCooldown = tag.getInt(TAG_HCF_COOLDOWN);
     }
 
     @Override
-    protected void writeToNBTForServer(final CompoundTag nbt) {
-        super.writeToNBTForServer(nbt);
+    protected void saveServer(final CompoundTag tag) {
+        super.saveServer(tag);
 
-        nbt.putInt(TAG_HCF_COOLDOWN, hcfCooldown);
+        tag.putInt(TAG_HCF_COOLDOWN, hcfCooldown);
     }
 
     @Override
-    protected void readFromNBTForClient(final CompoundTag nbt) {
-        super.readFromNBTForClient(nbt);
+    protected void loadClient(final CompoundTag tag) {
+        super.loadClient(tag);
 
-        state = ControllerState.VALUES[nbt.getByte(TAG_STATE) & 0xFF];
+        state = ControllerState.VALUES[tag.getByte(TAG_STATE) & 0xFF];
     }
 
     @Override
-    protected void writeToNBTForClient(final CompoundTag nbt) {
-        super.writeToNBTForClient(nbt);
+    protected void saveClient(final CompoundTag tag) {
+        super.saveClient(tag);
 
-        nbt.putByte(TAG_STATE, (byte) state.ordinal());
+        tag.putByte(TAG_STATE, (byte) state.ordinal());
     }
 
     // --------------------------------------------------------------------- //

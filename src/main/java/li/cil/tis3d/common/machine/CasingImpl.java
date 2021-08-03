@@ -41,7 +41,7 @@ public final class CasingImpl implements Casing {
     /**
      * The key the casing is currently locked with. If this is set, players
      * cannot add or remove modules from the casing. A key with the correct
-     * UUID in its NBT tag is required to unlock a casing.
+     * UUID in its tag is required to unlock a casing.
      */
     private UUID lock = null;
 
@@ -234,11 +234,11 @@ public final class CasingImpl implements Casing {
     }
 
     /**
-     * Restore data of all modules and pipes from the specified NBT tag.
+     * Restore data of all modules and pipes from the specified tag.
      *
-     * @param nbt the data to load.
+     * @param tag the data to load.
      */
-    public void readFromNBT(final CompoundTag nbt) {
+    public void load(final CompoundTag tag) {
         for (int index = 0; index < tileEntity.getContainerSize(); index++) {
             final ItemStack stack = tileEntity.getItem(index);
             if (stack.isEmpty()) {
@@ -263,39 +263,39 @@ public final class CasingImpl implements Casing {
             modules[index] = module;
         }
 
-        final ListTag modulesNbt = nbt.getList(TAG_MODULES, Constants.NBT.TAG_COMPOUND);
-        final int moduleCount = Math.min(modulesNbt.size(), modules.length);
+        final ListTag modulesTag = tag.getList(TAG_MODULES, Constants.NBT.TAG_COMPOUND);
+        final int moduleCount = Math.min(modulesTag.size(), modules.length);
         for (int i = 0; i < moduleCount; i++) {
             if (modules[i] != null) {
-                modules[i].load(modulesNbt.getCompound(i));
+                modules[i].load(modulesTag.getCompound(i));
             }
         }
 
-        if (nbt.hasUUID(TAG_KEY)) {
-            lock = nbt.getUUID(TAG_KEY);
+        if (tag.hasUUID(TAG_KEY)) {
+            lock = tag.getUUID(TAG_KEY);
         } else {
             lock = null;
         }
     }
 
     /**
-     * Write the state of all modules and pipes to the specified NBT tag.
+     * Write the state of all modules and pipes to the specified tag.
      *
-     * @param nbt the tag to write the data to.
+     * @param tag the tag to write the data to.
      */
-    public void writeToNBT(final CompoundTag nbt) {
-        final ListTag modulesNbt = new ListTag();
+    public void save(final CompoundTag tag) {
+        final ListTag modulesTag = new ListTag();
         for (final Module module : modules) {
-            final CompoundTag moduleNbt = new CompoundTag();
+            final CompoundTag moduleTag = new CompoundTag();
             if (module != null) {
-                module.save(moduleNbt);
+                module.save(moduleTag);
             }
-            modulesNbt.add(moduleNbt);
+            modulesTag.add(moduleTag);
         }
-        nbt.put(TAG_MODULES, modulesNbt);
+        tag.put(TAG_MODULES, modulesTag);
 
         if (lock != null) {
-            nbt.putUUID(TAG_KEY, lock);
+            tag.putUUID(TAG_KEY, lock);
         }
     }
 
@@ -372,14 +372,14 @@ public final class CasingImpl implements Casing {
      * @return the key, if present.
      */
     private static Optional<UUID> getKeyFromStack(final ItemStack stack) {
-        final CompoundTag nbt = stack.getTag();
-        if (nbt == null) {
+        final CompoundTag tag = stack.getTag();
+        if (tag == null) {
             return Optional.empty();
         }
-        if (!nbt.hasUUID(TAG_KEY)) {
+        if (!tag.hasUUID(TAG_KEY)) {
             return Optional.empty();
         }
-        return Optional.of(nbt.getUUID(TAG_KEY));
+        return Optional.of(tag.getUUID(TAG_KEY));
     }
 
     /**
@@ -389,7 +389,7 @@ public final class CasingImpl implements Casing {
      * @param key   the key to store on the stack.
      */
     private static void setKeyForStack(final ItemStack stack, final UUID key) {
-        final CompoundTag nbt = stack.getOrCreateTag();
-        nbt.putUUID(TAG_KEY, key);
+        final CompoundTag tag = stack.getOrCreateTag();
+        tag.putUUID(TAG_KEY, key);
     }
 }

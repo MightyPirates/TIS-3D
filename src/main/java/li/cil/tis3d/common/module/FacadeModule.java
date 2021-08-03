@@ -165,8 +165,8 @@ public final class FacadeModule extends AbstractModule implements ModuleWithBloc
     }
 
     private void sendState() {
-        final CompoundTag nbt = new CompoundTag();
-        save(nbt);
-        getCasing().sendData(getFace(), nbt, DATA_TYPE_FULL);
+        final CompoundTag tag = new CompoundTag();
+        save(tag);
+        getCasing().sendData(getFace(), tag, DATA_TYPE_FULL);
     }
 }

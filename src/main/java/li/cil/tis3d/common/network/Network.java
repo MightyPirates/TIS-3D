@@ -428,7 +428,7 @@ public final class Network {
          * @param type the type of the data.
          */
         private void queueData(final CompoundTag data, final byte type) {
-            sendQueue.add(new QueueEntryNBT(type, data));
+            sendQueue.add(new QueueEntryCompoundTag(type, data));
         }
 
         /**
@@ -496,12 +496,12 @@ public final class Network {
         }
 
         /**
-         * Queue entry for pending NBT data.
+         * Queue entry for pending tag data.
          */
-        private static final class QueueEntryNBT extends QueueEntry {
+        private static final class QueueEntryCompoundTag extends QueueEntry {
             public final CompoundTag data;
 
-            private QueueEntryNBT(final byte type, final CompoundTag data) {
+            private QueueEntryCompoundTag(final byte type, final CompoundTag data) {
                 super(type);
                 this.data = data;
             }

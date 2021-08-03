@@ -156,7 +156,7 @@ public interface Module {
     boolean use(final Player player, final InteractionHand hand, final Vec3 hit);
 
     /**
-     * Called with NBT data sent from the remote instance of the module.
+     * Called with data sent from the remote instance of the module.
      * <p>
      * This can be called on both the server and the client, depending on which
      * side sent the message (i.e. the client can send messages to the server
@@ -199,14 +199,14 @@ public interface Module {
     // --------------------------------------------------------------------- //
 
     /**
-     * Restore the state of the module from the specified NBT compound.
+     * Restore the state of the module from the specified tag.
      *
      * @param tag the tag to load the state from.
      */
     void load(final CompoundTag tag);
 
     /**
-     * Save the state of the module to the specified NBT compound.
+     * Save the state of the module to the specified tag.
      *
      * @param tag the tag to save the state to.
      */

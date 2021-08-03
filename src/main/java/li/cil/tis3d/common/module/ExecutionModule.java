@@ -257,9 +257,9 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
     public void load(final CompoundTag tag) {
         super.load(tag);
 
-        final CompoundTag machineNbt = tag.getCompound(TAG_MACHINE);
-        getState().readFromNBT(machineNbt);
-        state = EnumUtils.readFromNBT(State.class, TAG_STATE, tag);
+        final CompoundTag machineTag = tag.getCompound(TAG_MACHINE);
+        getState().load(machineTag);
+        state = EnumUtils.load(State.class, TAG_STATE, tag);
 
         if (getState().code != null) {
             compile(Arrays.asList(getState().code));
@@ -270,10 +270,10 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
     public void save(final CompoundTag tag) {
         super.save(tag);
 
-        final CompoundTag machineNbt = new CompoundTag();
-        getState().writeToNBT(machineNbt);
-        tag.put(TAG_MACHINE, machineNbt);
-        EnumUtils.writeToNBT(state, TAG_STATE, tag);
+        final CompoundTag machineTag = new CompoundTag();
+        getState().save(machineTag);
+        tag.put(TAG_MACHINE, machineTag);
+        EnumUtils.save(state, TAG_STATE, tag);
     }
 
     // --------------------------------------------------------------------- //
@@ -310,9 +310,9 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
      * Send the full state to the client.
      */
     private void sendFullState() {
-        final CompoundTag nbt = new CompoundTag();
-        this.save(nbt);
-        getCasing().sendData(getFace(), nbt, DATA_TYPE_FULL);
+        final CompoundTag tag = new CompoundTag();
+        this.save(tag);
+        getCasing().sendData(getFace(), tag, DATA_TYPE_FULL);
     }
 
     /**
@@ -427,12 +427,12 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
 
         @Override
         public Iterable<String> codeFor(final ItemStack stack) {
-            final CompoundTag nbt = stack.getTag();
-            if (nbt == null) {
+            final CompoundTag tag = stack.getTag();
+            if (tag == null) {
                 return null;
             }
 
-            final ListTag pages = nbt.getList("pages", NBT.TAG_STRING);
+            final ListTag pages = tag.getList("pages", NBT.TAG_STRING);
             if (pages.isEmpty()) {
                 return null;
             }

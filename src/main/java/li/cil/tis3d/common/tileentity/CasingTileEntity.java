@@ -370,49 +370,49 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
     }
 
     @Override
-    protected void readFromNBTForClient(final CompoundTag nbt) {
-        super.readFromNBTForClient(nbt);
+    protected void loadClient(final CompoundTag tag) {
+        super.loadClient(tag);
 
-        isEnabled = nbt.getBoolean(TAG_ENABLED);
+        isEnabled = tag.getBoolean(TAG_ENABLED);
     }
 
     @Override
-    protected void writeToNBTForClient(final CompoundTag nbt) {
-        super.writeToNBTForClient(nbt);
+    protected void saveClient(final CompoundTag tag) {
+        super.saveClient(tag);
 
-        nbt.putBoolean(TAG_ENABLED, isEnabled);
+        tag.putBoolean(TAG_ENABLED, isEnabled);
     }
 
     @Override
-    protected void readFromNBTCommon(final CompoundTag nbt) {
-        super.readFromNBTCommon(nbt);
+    protected void loadCommon(final CompoundTag tag) {
+        super.loadCommon(tag);
 
-        decompressClosed(nbt.getByteArray(TAG_LOCKED), locked);
+        decompressClosed(tag.getByteArray(TAG_LOCKED), locked);
 
-        final CompoundTag inventoryNbt = nbt.getCompound(TAG_INVENTORY);
-        inventory.readFromNBT(inventoryNbt);
+        final CompoundTag inventoryTag = tag.getCompound(TAG_INVENTORY);
+        inventory.load(inventoryTag);
 
-        final CompoundTag casingNbt = nbt.getCompound(TAG_CASING);
-        casing.readFromNBT(casingNbt);
+        final CompoundTag casingTag = tag.getCompound(TAG_CASING);
+        casing.load(casingTag);
     }
 
     @Override
-    protected void writeToNBTCommon(final CompoundTag nbt) {
-        super.writeToNBTCommon(nbt);
+    protected void saveCommon(final CompoundTag tag) {
+        super.saveCommon(tag);
 
-        nbt.putByteArray(TAG_LOCKED, compressClosed(locked));
+        tag.putByteArray(TAG_LOCKED, compressClosed(locked));
 
         // Needed on the client also, for picking and for actually instantiating
         // the installed modules on the client side (to find the provider).
-        final CompoundTag inventoryNbt = new CompoundTag();
-        inventory.writeToNBT(inventoryNbt);
-        nbt.put(TAG_INVENTORY, inventoryNbt);
+        final CompoundTag inventoryTag = new CompoundTag();
+        inventory.save(inventoryTag);
+        tag.put(TAG_INVENTORY, inventoryTag);
 
         // Needed on the client also, to allow initializing client side modules
         // immediately after creation.
-        final CompoundTag casingNbt = new CompoundTag();
-        casing.writeToNBT(casingNbt);
-        nbt.put(TAG_CASING, casingNbt);
+        final CompoundTag casingTag = new CompoundTag();
+        casing.save(casingTag);
+        tag.put(TAG_CASING, casingTag);
     }
 
     // --------------------------------------------------------------------- //

@@ -97,11 +97,11 @@ public interface SerialInterface {
 
     /**
      * Called when the serial port module is saved, allows storing state of the
-     * serial interface to be restored using {@link #readFromNBT(CompoundTag)}.
+     * serial interface to be restored using {@link #load(CompoundTag)}.
      *
      * @param tag the tag to write the interface's state to.
      */
-    void writeToNBT(final CompoundTag tag);
+    void save(final CompoundTag tag);
 
     /**
      * Called when a serial port module is created and an earlier interface had
@@ -113,7 +113,7 @@ public interface SerialInterface {
      * actually belonged to another interface). Note that such incorrect
      * assignments can typically only happen if the save-game was tampered with.
      *
-     * @param nbt the tag to restore the interface's state from.
+     * @param tag the tag to restore the interface's state from.
      */
-    void readFromNBT(final CompoundTag nbt);
+    void load(final CompoundTag tag);
 }

@@ -34,7 +34,7 @@ public final class CodeBookDataMessage extends AbstractMessage {
 
         final ItemStack stack = player.getItemInHand(hand);
         if (Items.is(stack, Items.BOOK_CODE)) {
-            final CodeBookItem.Data data = CodeBookItem.Data.loadFromNBT(tag);
+            final CodeBookItem.Data data = CodeBookItem.Data.loadFromTag(tag);
             CodeBookItem.Data.saveToStack(stack, data);
         }
     }

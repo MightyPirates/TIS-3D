@@ -236,41 +236,41 @@ public final class CodeBookItem extends ModItem {
         }
 
         /**
-         * Load data from the specified NBT tag.
+         * Load data from the specified tag.
          *
-         * @param nbt the tag to load the data from.
+         * @param tag the tag to load the data from.
          */
-        public void readFromNBT(final CompoundTag nbt) {
+        public void load(final CompoundTag tag) {
             pages.clear();
 
-            final ListTag pagesNbt = nbt.getList(TAG_PAGES, net.minecraftforge.common.util.Constants.NBT.TAG_STRING);
-            for (int index = 0; index < pagesNbt.size(); index++) {
-                pages.add(Arrays.asList(Constants.PATTERN_LINES.split(pagesNbt.getString(index))));
+            final ListTag pagesTag = tag.getList(TAG_PAGES, net.minecraftforge.common.util.Constants.NBT.TAG_STRING);
+            for (int index = 0; index < pagesTag.size(); index++) {
+                pages.add(Arrays.asList(Constants.PATTERN_LINES.split(pagesTag.getString(index))));
             }
 
-            selectedPage = nbt.getInt(TAG_SELECTED);
+            selectedPage = tag.getInt(TAG_SELECTED);
             validateSelectedPage();
         }
 
         /**
-         * Store the data to the specified NBT tag.
+         * Store the data to the specified tag.
          *
-         * @param nbt the tag to save the data to.
+         * @param tag the tag to save the data to.
          */
-        public void writeToNBT(final CompoundTag nbt) {
-            final ListTag pagesNbt = new ListTag();
+        public void save(final CompoundTag tag) {
+            final ListTag pagesTag = new ListTag();
             int removed = 0;
             for (int index = 0; index < pages.size(); index++) {
                 final List<String> program = pages.get(index);
                 if (program.size() > 1 || program.get(0).length() > 0) {
-                    pagesNbt.add(StringTag.valueOf(String.join("\n", program)));
+                    pagesTag.add(StringTag.valueOf(String.join("\n", program)));
                 } else if (index < selectedPage) {
                     removed++;
                 }
             }
-            nbt.put(TAG_PAGES, pagesNbt);
+            tag.put(TAG_PAGES, pagesTag);
 
-            nbt.putInt(TAG_SELECTED, selectedPage - removed);
+            tag.putInt(TAG_SELECTED, selectedPage - removed);
         }
 
         // --------------------------------------------------------------------- //
@@ -294,15 +294,15 @@ public final class CodeBookItem extends ModItem {
         // --------------------------------------------------------------------- //
 
         /**
-         * Load code book data from the specified NBT tag.
+         * Load code book data from the specified tag.
          *
-         * @param nbt the tag to load the data from.
+         * @param tag the tag to load the data from.
          * @return the data loaded from the tag.
          */
-        public static Data loadFromNBT(@Nullable final CompoundTag nbt) {
+        public static Data loadFromTag(@Nullable final CompoundTag tag) {
             final Data data = new Data();
-            if (nbt != null) {
-                data.readFromNBT(nbt);
+            if (tag != null) {
+                data.load(tag);
             }
             return data;
         }
@@ -314,7 +314,7 @@ public final class CodeBookItem extends ModItem {
          * @return the data loaded from the stack.
          */
         public static Data loadFromStack(final ItemStack stack) {
-            return loadFromNBT(stack.getTag());
+            return loadFromTag(stack.getTag());
         }
 
         /**
@@ -324,7 +324,7 @@ public final class CodeBookItem extends ModItem {
          * @param data  the data to save to the item stack.
          */
         public static void saveToStack(final ItemStack stack, final Data data) {
-            data.writeToNBT(stack.getOrCreateTag());
+            data.save(stack.getOrCreateTag());
         }
 
         // --------------------------------------------------------------------- //

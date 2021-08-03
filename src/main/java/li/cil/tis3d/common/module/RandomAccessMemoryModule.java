@@ -196,7 +196,7 @@ public class RandomAccessMemoryModule extends AbstractModuleWithRotation {
 
         load(tag.getByteArray(TAG_MEMORY));
         address = tag.getByte(TAG_ADDRESS);
-        state = EnumUtils.readFromNBT(State.class, TAG_STATE, tag);
+        state = EnumUtils.load(State.class, TAG_STATE, tag);
     }
 
     @Override
@@ -205,7 +205,7 @@ public class RandomAccessMemoryModule extends AbstractModuleWithRotation {
 
         tag.putByteArray(TAG_MEMORY, memory.clone());
         tag.putByte(TAG_ADDRESS, address);
-        EnumUtils.writeToNBT(state, TAG_STATE, tag);
+        EnumUtils.save(state, TAG_STATE, tag);
     }
 
     // --------------------------------------------------------------------- //
