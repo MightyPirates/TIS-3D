@@ -6,7 +6,7 @@
     "item.tis3d.key": "Chave",
     "item.tis3d.key_creative": "Chave Mestra",
     "item.tis3d.module_audio": "Módulo de Áudio",
-    "item.tis3d.module_bundled_redstone": "Módulo de Redstone Integrado",
+    "item.tis3d.module_bundled_redstone": "Módulo de Redstone Integrada",
     "item.tis3d.module_display": "Módulo de Display",
     "item.tis3d.module_execution": "Módulo de Execução",
     "item.tis3d.module_infrared": "Módulo de Infravermelho",
@@ -20,7 +20,7 @@
     "item.tis3d.module_serial_port": "Módulo de Porta Seriada",
     "item.tis3d.module_stack": "Módulo de Pilha",
     "item.tis3d.module_terminal": "Módulo de Terminal",
-    "item.tis3d.module_timer": "Módulo de Temporizador",
+    "item.tis3d.module_timer": "Módulo Temporizador",
     "item.tis3d.prism": "Prisma",
 
     "block.tis3d.casing": "Carcaça",
@@ -53,7 +53,7 @@
     "tis3d.book_code.error_on_next_page": "Erro na próxima página:",
     "tis3d.book_code.error_on_previous_page": "Erro na página anterior:",
 
-    "tis3d.tooltip.book_code": "§7Use um livro em um módulo de execução instalado para obter uma cópia.",
-    "tis3d.tooltip.book_manual": "§7Use um livro em um controlador para obter uma cópia.",
+    "tis3d.tooltip.book_code": "§7Use um livro em um módulo de execução já instalado para copiá-lo.",
+    "tis3d.tooltip.book_manual": "§7Use um livro em um controlador para copiá-lo.",
     "tis3d.tooltip.key": "§7Agache enquanto segura para alternar as portas de entrada da face de uma carcaça."
 }
