@@ -5,7 +5,7 @@ license = "MIT"
 
 [[mods]]
 modId = "tis3d"
-version = "${mod_version}"
+version = "${file.jarVersion}"
 displayName = "TIS-3D"
 displayURL = "https://github.com/MightyPirates/TIS-3D"
 #logoFile = "logo.png"
@@ -29,5 +29,5 @@ side = "BOTH"
 [[dependencies.tis3d]]
 modId = "markdown_manual"
 mandatory = true
-versionRange = "[${manual_version_min},)"
+versionRange = "[1.1.0,)"
 side = "CLIENT"
