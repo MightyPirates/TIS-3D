@@ -25,7 +25,7 @@ To add a dependency to TIS-3D for use in your mod, add the following to your `bu
 ```groovy
 repositories {
   maven {
-    url = "http://maven.cil.li/"
+    url = 'https://maven.cil.li/'
   }
 }
 dependencies {
