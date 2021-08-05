@@ -7,6 +7,8 @@ import li.cil.tis3d.api.module.traits.ModuleWithBlockChangeListener;
 import li.cil.tis3d.api.prefab.module.AbstractModule;
 import li.cil.tis3d.util.BlockStateUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
@@ -17,6 +19,7 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
@@ -25,13 +28,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.common.util.Constants.BlockFlags;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
 import java.util.List;
+import java.util.OptionalInt;
 import java.util.Random;
 
 public final class FacadeModule extends AbstractModule implements ModuleWithBlockChangeListener, ModuleWithBakedModel {
@@ -132,19 +134,37 @@ public final class FacadeModule extends AbstractModule implements ModuleWithBloc
     // --------------------------------------------------------------------- //
     // CasingFaceQuadOverride
 
-    @OnlyIn(Dist.CLIENT)
     @Override
-    public List<BakedQuad> getQuads(@Nullable final BlockState state, @Nullable final Direction face, final Random random) {
-        if (facadeState == null) {
-            return Collections.emptyList();
-        }
+    public boolean hasModel() {
+        return facadeState != null;
+    }
 
+    @Override
+    public IModelData getModelData(final BlockAndTintGetter world, final BlockPos pos, final BlockState state, final IModelData data) {
         final BlockModelShaper shapes = Minecraft.getInstance().getBlockRenderer().getBlockModelShaper();
         final BakedModel model = shapes.getBlockModel(facadeState);
-        final Level level = getCasing().getCasingLevel();
+        return model.getModelData(world, pos, facadeState, data);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public List<BakedQuad> getQuads(@Nullable final BlockState state, @Nullable final Direction face, final Random random, final IModelData data) {
+        final BlockModelShaper shapes = Minecraft.getInstance().getBlockRenderer().getBlockModelShaper();
+        final BakedModel model = shapes.getBlockModel(facadeState);
+        final Level world = getCasing().getCasingLevel();
         final BlockPos position = getCasing().getPosition();
-        final IModelData modelData = model.getModelData(level, position, facadeState, EmptyModelData.INSTANCE);
+        final IModelData modelData = model.getModelData(world, position, facadeState, data);
         return model.getQuads(facadeState, face, random, modelData);
+    }
+
+    @Override
+    public boolean canRenderInLayer(@Nullable final RenderType layer) {
+        return layer == null || ItemBlockRenderTypes.canRenderInLayer(facadeState, layer);
+    }
+
+    @Override
+    public OptionalInt getTintColor(@Nullable final BlockAndTintGetter level, @Nullable final BlockPos pos, final int tintIndex) {
+        return OptionalInt.of(Minecraft.getInstance().getBlockColors().getColor(facadeState, level, pos, tintIndex));
     }
 
     // --------------------------------------------------------------------- //

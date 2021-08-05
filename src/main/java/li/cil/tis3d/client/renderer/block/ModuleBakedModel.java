@@ -4,6 +4,7 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.traits.ModuleWithBakedModel;
 import li.cil.tis3d.common.tileentity.CasingTileEntity;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -13,6 +14,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.data.IDynamicBakedModel;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
@@ -21,6 +23,7 @@ import net.minecraftforge.client.model.data.ModelProperty;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -38,31 +41,48 @@ public final class ModuleBakedModel implements IDynamicBakedModel {
 
     @Nonnull
     @Override
-    public List<BakedQuad> getQuads(@Nullable final BlockState state, @Nullable final Direction side, @Nonnull final Random random, @Nonnull final IModelData extraData) {
-        final ArrayList<BakedQuad> quads = new ArrayList<>();
+    public List<BakedQuad> getQuads(@Nullable final BlockState state, @Nullable final Direction side, final Random random, final IModelData extraData) {
+        final RenderType layer = MinecraftForgeClient.getRenderLayer();
 
         final CasingModules modules = extraData.getData(CasingModules.CASING_MODULES_PROPERTY);
-        if (modules != null) {
-            if (side != null) {
-                final ModuleWithBakedModel module = modules.getModule(Face.fromDirection(side));
-                if (module != null) {
-                    quads.addAll(module.getQuads(state, side, random));
-                }
-            } else {
-                for (final Face face : Face.VALUES) {
-                    final ModuleWithBakedModel module = modules.getModule(face);
-                    if (module != null) {
-                        quads.addAll(module.getQuads(state, null, random));
+        if (side != null) {
+            if (modules != null) {
+                final Face face = Face.fromDirection(side);
+                final ModuleWithBakedModel module = modules.getModule(face);
+                if (module != null && module.hasModel()) {
+                    if (module.canRenderInLayer(layer)) {
+                        return module.getQuads(state, side, random, modules.getModuleData(face));
+                    } else {
+                        return Collections.emptyList();
                     }
                 }
             }
-        }
 
-        if (quads.isEmpty()) {
-            return proxy.getQuads(state, side, random, extraData);
-        }
+            if (layer.equals(RenderType.solid())) {
+                return proxy.getQuads(state, side, random, extraData);
+            } else {
+                return Collections.emptyList();
+            }
+        } else {
+            final ArrayList<BakedQuad> quads = new ArrayList<>();
 
-        return quads;
+            if (modules != null) {
+                for (final Face face : Face.VALUES) {
+                    final ModuleWithBakedModel module = modules.getModule(face);
+                    if (module != null && module.hasModel()) {
+                        if (module.canRenderInLayer(layer)) {
+                            quads.addAll(module.getQuads(state, null, random, modules.getModuleData(face)));
+                        }
+                    }
+                }
+            }
+
+            if (layer.equals(RenderType.solid())) {
+                quads.addAll(proxy.getQuads(state, null, random, extraData));
+            }
+
+            return quads;
+        }
     }
 
     @Override
@@ -98,7 +118,7 @@ public final class ModuleBakedModel implements IDynamicBakedModel {
 
     @Nonnull
     @Override
-    public IModelData getModelData(@Nonnull final BlockAndTintGetter level, @Nonnull final BlockPos pos, @Nonnull final BlockState state, @Nonnull final IModelData tileData) {
+    public IModelData getModelData(final BlockAndTintGetter level, final BlockPos pos, final BlockState state, final IModelData tileData) {
         final BlockEntity tileEntity = level.getBlockEntity(pos);
         if (!(tileEntity instanceof final CasingTileEntity casing)) {
             return tileData;
@@ -107,8 +127,10 @@ public final class ModuleBakedModel implements IDynamicBakedModel {
         final CasingModules data = new CasingModules();
         for (final Face face : Face.VALUES) {
             final Module module = casing.getModule(face);
-            if (module instanceof ModuleWithBakedModel) {
-                data.setModule(face, (ModuleWithBakedModel) module);
+            if (module instanceof final ModuleWithBakedModel moduleWithModel) {
+                if (moduleWithModel.hasModel()) {
+                    data.setModule(face, moduleWithModel, moduleWithModel.getModelData(level, pos, state, tileData));
+                }
             }
         }
 
@@ -127,6 +149,7 @@ public final class ModuleBakedModel implements IDynamicBakedModel {
         public static final ModelProperty<CasingModules> CASING_MODULES_PROPERTY = new ModelProperty<>();
 
         private final ModuleWithBakedModel[] modules = new ModuleWithBakedModel[Face.VALUES.length];
+        private final IModelData[] moduleData = new IModelData[Face.VALUES.length];
 
         public boolean isEmpty() {
             for (final ModuleWithBakedModel module : modules) {
@@ -138,13 +161,18 @@ public final class ModuleBakedModel implements IDynamicBakedModel {
             return true;
         }
 
-        public void setModule(final Face face, final ModuleWithBakedModel module) {
+        public void setModule(final Face face, final ModuleWithBakedModel module, final IModelData data) {
             modules[face.ordinal()] = module;
+            moduleData[face.ordinal()] = data;
         }
 
         @Nullable
         public ModuleWithBakedModel getModule(final Face face) {
             return modules[face.ordinal()];
+        }
+
+        public IModelData getModuleData(final Face face) {
+            return moduleData[face.ordinal()];
         }
     }
 }

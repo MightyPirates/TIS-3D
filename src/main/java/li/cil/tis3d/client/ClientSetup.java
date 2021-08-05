@@ -4,16 +4,20 @@ import li.cil.tis3d.api.API;
 import li.cil.tis3d.client.gui.ReadOnlyMemoryModuleScreen;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.client.renderer.block.ModuleModelLoader;
+import li.cil.tis3d.client.renderer.color.CasingBlockColor;
 import li.cil.tis3d.client.renderer.entity.NullEntityRenderer;
 import li.cil.tis3d.client.renderer.font.NormalFontRenderer;
 import li.cil.tis3d.client.renderer.font.SmallFontRenderer;
 import li.cil.tis3d.client.renderer.tileentity.CasingTileEntityRenderer;
 import li.cil.tis3d.client.renderer.tileentity.ControllerTileEntityRenderer;
+import li.cil.tis3d.common.block.Blocks;
 import li.cil.tis3d.common.container.Containers;
 import li.cil.tis3d.common.entity.Entities;
 import li.cil.tis3d.common.module.DisplayModule;
 import li.cil.tis3d.common.tileentity.TileEntities;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -45,6 +49,11 @@ public final class ClientSetup {
         BlockEntityRenderers.register(TileEntities.CONTROLLER.get(), ControllerTileEntityRenderer::new);
 
         MinecraftForge.EVENT_BUS.addListener(DisplayModule.TextureDisposer::tick);
+
+        event.enqueueWork(() -> {
+            ItemBlockRenderTypes.setRenderLayer(Blocks.CASING.get(), (RenderType) -> true);
+            Minecraft.getInstance().getBlockColors().register(new CasingBlockColor(), Blocks.CASING.get());
+        });
     }
 
     @SubscribeEvent
