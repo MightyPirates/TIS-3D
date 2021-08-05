@@ -39,7 +39,6 @@ if (build_number == null)
 
 version = "${semver}+${build_number}"
 group = 'li.cil.tis3d'
-archivesBaseName = 'tis3d'
 
 java.toolchain {
     languageVersion = JavaLanguageVersion.of(16)
