@@ -29,7 +29,7 @@ repositories {
   }
 }
 dependencies {
-  compile "li.cil.tis3d:TIS-3D:${config.tis3d.version}"
+  compile "li.cil.tis3d:tis3d-1.16.5-forge:${config.tis3d.version}"
 }
 ```
 
