@@ -3,7 +3,7 @@ package li.cil.tis3d.client.renderer;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import li.cil.tis3d.api.API;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -16,13 +16,13 @@ public abstract class ModRenderType extends RenderType {
     private static final RenderType UNLIT_ATLAS_TEXTURE = create("atlas_module_overlay",
         DefaultVertexFormat.POSITION_COLOR_TEX,
         builder -> builder
-            .setShaderState(new ShaderStateShard(GameRenderer::getPositionTexColorShader))
+            .setShaderState(RenderStateShard.POSITION_COLOR_TEX_SHADER)
             .setTextureState(BLOCK_SHEET_MIPPED));
 
     private static final RenderType UNLIT = create("module_overlay",
         DefaultVertexFormat.POSITION_COLOR,
         builder -> builder
-            .setShaderState(new ShaderStateShard(GameRenderer::getPositionColorShader)));
+            .setShaderState(RenderStateShard.POSITION_COLOR_SHADER));
 
     // --------------------------------------------------------------------- //
 
@@ -59,7 +59,7 @@ public abstract class ModRenderType extends RenderType {
         return create("texture_module_overlay",
             DefaultVertexFormat.POSITION_COLOR_TEX,
             builder -> builder
-                .setShaderState(new ShaderStateShard(GameRenderer::getPositionColorTexShader))
+                .setShaderState(RenderStateShard.POSITION_COLOR_TEX_SHADER)
                 .setTextureState(new TextureStateShard(texture, false, false)));
     }
 
@@ -73,9 +73,6 @@ public abstract class ModRenderType extends RenderType {
             false,
             parameters.apply(CompositeState.builder())
                 .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-//                .setDiffuseLightingState(NO_DIFFUSE_LIGHTING) // todo
-//                .setAlphaState(DEFAULT_ALPHA)
-                .setLightmapState(NO_LIGHTMAP)
                 .setOutputState(TRANSLUCENT_TARGET)
                 .setWriteMaskState(COLOR_WRITE)
                 .createCompositeState(false));
