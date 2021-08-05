@@ -51,9 +51,6 @@ public final class TerminalModuleScreen extends Screen {
 
     @Override
     public void render(final PoseStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
-        // To be on the safe side (see manual.Document#render).
-//        RenderSystem.disableAlphaTest(); // todo
-
         RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, false);
         RenderSystem.enableDepthTest();
         RenderSystem.depthFunc(GL11.GL_LEQUAL);
@@ -62,7 +59,7 @@ public final class TerminalModuleScreen extends Screen {
         matrixStack.pushPose();
         matrixStack.translate(0, 0, 500);
 
-        fill(matrixStack, 8, 8, width - 8, height - 8, 0);
+        fill(matrixStack, 8, 8, width - 8, height - 8, 0xFFFFFFFF);
 
         matrixStack.popPose();
         RenderSystem.depthMask(false);
