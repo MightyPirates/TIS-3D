@@ -1,1 +1,1 @@
-* Fixed ROM module UI background rendering.
+* Fixed facade rendering for some blocks.
