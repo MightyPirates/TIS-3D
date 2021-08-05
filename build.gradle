@@ -51,8 +51,8 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    compileOnly fg.deobf("li.cil.markdown_manual:MarkdownManual-MC${minecraft_version}-Forge:${manual_version}:api")
-    runtimeOnly fg.deobf("li.cil.markdown_manual:MarkdownManual-MC${minecraft_version}-Forge:${manual_version}")
+    compileOnly fg.deobf("li.cil.markdown_manual:markdown_manual-${minecraft_version}-forge:${manual_version}:api")
+    runtimeOnly fg.deobf("li.cil.markdown_manual:markdown_manual-${minecraft_version}-forge:${manual_version}")
 
     compileOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}:${jei_version}:api")
     runtimeOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}:${jei_version}")
