@@ -1,1 +1,1 @@
-* Ported to MC 1.17.1.
+* Fixed potential NRE with facade modules.
