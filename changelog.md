@@ -1,1 +1,1 @@
-* Fixed facade rendering for some blocks.
+* Fixed potential NRE with facade modules.
