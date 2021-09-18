@@ -58,7 +58,7 @@ public final class ModuleBakedModel implements IDynamicBakedModel {
                 }
             }
 
-            if (layer.equals(RenderType.solid())) {
+            if (layer != null && layer.equals(RenderType.solid())) {
                 return proxy.getQuads(state, side, random, extraData);
             } else {
                 return Collections.emptyList();
@@ -77,7 +77,7 @@ public final class ModuleBakedModel implements IDynamicBakedModel {
                 }
             }
 
-            if (layer.equals(RenderType.solid())) {
+            if (layer != null && layer.equals(RenderType.solid())) {
                 quads.addAll(proxy.getQuads(state, null, random, extraData));
             }
 
