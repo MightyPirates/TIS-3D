@@ -5,7 +5,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.Tag;
 import java.util.Arrays;
 
 /**

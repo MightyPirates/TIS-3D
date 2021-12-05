@@ -29,7 +29,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.data.IModelData;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
 
 import javax.annotation.Nullable;
 import java.util.List;

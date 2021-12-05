@@ -47,8 +47,7 @@ java.toolchain {
 }
 
 repositories {
-    mavenLocal()
-//    maven { url 'https://maven.cil.li/' } // MarkdownManual
+    maven { url 'https://maven.cil.li/' } // MarkdownManual
     maven { url 'https://dvs1.progwml6.com/files/maven' } // JEI
 }
 
