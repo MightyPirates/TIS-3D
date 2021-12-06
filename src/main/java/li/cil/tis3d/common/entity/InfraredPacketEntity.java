@@ -311,7 +311,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
 
         final List<Entity> collisions = world.getEntities(this, getBoundingBox().expandTowards(getDeltaMovement()));
         for (final Entity entity : collisions) {
-            if (entity.canBeCollidedWith()) {
+            if (entity.isPickable()) {
                 final AxisAlignedBB entityBounds = entity.getBoundingBox();
                 final Optional<Vector3d> hit = entityBounds.clip(start, target);
                 if (hit.isPresent()) {
