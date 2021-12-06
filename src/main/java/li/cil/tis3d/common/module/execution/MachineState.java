@@ -111,11 +111,9 @@ public final class MachineState {
     }
 
     /**
-     * Hard reset the machine state.
+     * Clear code storage of the machine state. Retains run state.
      */
     public void clear() {
-        reset();
-
         instructions.clear();
         labels.clear();
         code = null;
