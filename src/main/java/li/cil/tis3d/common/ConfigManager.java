@@ -71,6 +71,7 @@ public final class ConfigManager {
     private static final Map<ForgeConfigSpec, ConfigDefinition> CONFIGS = new HashMap<>();
 
     static {
+        PARSERS.put(boolean.class, ConfigManager::parseBooleanField);
         PARSERS.put(int.class, ConfigManager::parseIntField);
         PARSERS.put(long.class, ConfigManager::parseLongField);
         PARSERS.put(double.class, ConfigManager::parseDoubleField);
@@ -128,6 +129,19 @@ public final class ConfigManager {
                 LOGGER.error("Failed accessing field [{}.{}], ignoring.", field.getDeclaringClass().getName(), field.getName());
             }
         }
+    }
+
+    private static ConfigFieldPair<?> parseBooleanField(final Object instance, final Field field, final String path, final ForgeConfigSpec.Builder builder) throws IllegalAccessException {
+        final boolean defaultValue = field.getBoolean(instance);
+        final String[] comment = getComment(field);
+        final String translation = getTranslation(field);
+
+        final ForgeConfigSpec.BooleanValue configValue = builder
+            .comment(comment)
+            .translation(translation)
+            .define(path, defaultValue);
+
+        return new ConfigFieldPair<>(field, configValue);
     }
 
     private static ConfigFieldPair<?> parseIntField(final Object instance, final Field field, final String path, final ForgeConfigSpec.Builder builder) throws IllegalAccessException {
