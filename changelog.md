@@ -1,1 +1,2 @@
-* Fixed potential NRE with facade modules.
+* Fixed execution modules resetting after load.
+
