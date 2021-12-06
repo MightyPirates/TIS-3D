@@ -13,4 +13,12 @@ public final class ClientConfig {
     @Comment("Whether to swing the player's arm while typing on a terminal module.")
     @Translation("animateTyping")
     public static boolean animateTypingHand = true;
+
+    /**
+     * Whether to automatically convert code to upper-case in the code bible.
+     */
+    @Path("code_book")
+    @Comment("Whether to automatically convert code to upper-case in the code bible.")
+    @Translation("autoCodeUpperCase")
+    public static boolean autoCodeUpperCase = true;
 }
