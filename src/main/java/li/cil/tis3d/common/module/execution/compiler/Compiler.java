@@ -29,6 +29,8 @@ public final class Compiler {
      * @throws ParseException if the specified code contains syntax errors.
      */
     public static void compile(final Iterable<String> code, final MachineState state) throws ParseException {
+        state.clear();
+
         final String[] lines = Iterables.toArray(code, String.class);
         if (lines.length > CommonConfig.maxLinesPerProgram) {
             throw new ParseException(Strings.MESSAGE_TOO_MANY_LINES, CommonConfig.maxLinesPerProgram, 0, 0);
