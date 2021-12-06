@@ -201,6 +201,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
         // Compile the code into our machine state.
         final World world = getCasing().getCasingLevel();
         if (!world.isClientSide()) {
+            getState().clear();
             compile(code);
             if (compileError != null) {
                 player.displayClientMessage(Strings.getCompileError(compileError), false);
@@ -299,7 +300,6 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
     private void compile(final Iterable<String> code) {
         compileError = null;
         try {
-            getState().clear();
             Compiler.compile(code, getState());
         } catch (final ParseException e) {
             compileError = e;
