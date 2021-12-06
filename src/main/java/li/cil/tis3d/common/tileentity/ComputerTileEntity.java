@@ -151,12 +151,11 @@ public abstract class ComputerTileEntity extends BlockEntity implements PipeHost
         loadServer(tag);
     }
 
-    @Override
-    public CompoundTag save(final CompoundTag compound) {
-        final CompoundTag tag = super.save(compound);
-        saveServer(tag);
-        return tag;
-    }
+	@Override
+	protected void saveAdditional(CompoundTag nbt) {
+        saveServer(nbt);
+		super.saveAdditional(nbt);
+	}
 
     @Override
     public void onDataPacket(final Connection manager, final ClientboundBlockEntityDataPacket packet) {
