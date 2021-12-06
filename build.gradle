@@ -166,7 +166,7 @@ curseforge {
         changelog = file('changelog.md')
         addGameVersion 'Forge'
         addGameVersion minecraft_version
-        addGameVersion 'Java 16'
+        addGameVersion 'Java 17'
         relations {
             requiredDependency 'markdownmanual'
         }
