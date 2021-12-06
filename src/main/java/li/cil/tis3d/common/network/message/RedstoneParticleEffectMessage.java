@@ -3,7 +3,7 @@ package li.cil.tis3d.common.network.message;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 
 public final class RedstoneParticleEffectMessage extends AbstractMessage {
     private double x;

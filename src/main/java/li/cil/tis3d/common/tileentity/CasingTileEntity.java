@@ -32,11 +32,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.Constants.BlockFlags;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
@@ -358,7 +358,7 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
 
         final Level level = getBlockEntityLevel();
         final BlockState state = level.getBlockState(getBlockPos());
-        level.sendBlockUpdated(getBlockPos(), state, state, BlockFlags.BLOCK_UPDATE);
+        level.sendBlockUpdated(getBlockPos(), state, state, Block.UPDATE_CLIENTS);
     }
 
     // --------------------------------------------------------------------- //

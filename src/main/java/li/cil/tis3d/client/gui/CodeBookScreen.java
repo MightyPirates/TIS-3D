@@ -684,7 +684,7 @@ public final class CodeBookScreen extends Screen {
                     tooltip.add(ERROR_ON_NEXT_PAGE_TOOLTIP);
                 }
                 tooltip.add(exception.getDisplayMessage());
-                renderComponentToolTip(matrixStack, tooltip, mouseX, mouseY, getFontRenderer());
+                renderComponentTooltip(matrixStack, tooltip, mouseX, mouseY, getFontRenderer());
             }
         } else {
             // Draw selection position in text.
@@ -728,11 +728,11 @@ public final class CodeBookScreen extends Screen {
         public void renderButton(final PoseStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderTexture(0, Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
-            final int offsetX = isHovered() ? BUTTON_WIDTH : 0;
+            final int offsetX = isHoveredOrFocused() ? BUTTON_WIDTH : 0;
             final int offsetY = type == PageChangeType.Previous ? BUTTON_HEIGHT : 0;
             blit(matrixStack, x, y, TEXTURE_X + offsetX, TEXTURE_Y + offsetY, BUTTON_WIDTH, BUTTON_HEIGHT);
 
-            if (isHovered()) {
+            if (isHoveredOrFocused()) {
                 renderToolTip(matrixStack, mouseX, mouseY);
             }
         }
@@ -760,10 +760,10 @@ public final class CodeBookScreen extends Screen {
         public void renderButton(final PoseStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderTexture(0, Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
-            final int offsetX = isHovered() ? BUTTON_WIDTH : 0;
+            final int offsetX = isHoveredOrFocused() ? BUTTON_WIDTH : 0;
             blit(matrixStack, x, y, TEXTURE_X + offsetX, TEXTURE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
 
-            if (isHovered()) {
+            if (isHoveredOrFocused()) {
                 renderToolTip(matrixStack, mouseX, mouseY);
             }
         }

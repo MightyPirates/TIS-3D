@@ -42,7 +42,7 @@ public final class ModuleBakedModel implements IDynamicBakedModel {
     @Nonnull
     @Override
     public List<BakedQuad> getQuads(@Nullable final BlockState state, @Nullable final Direction side, final Random random, final IModelData extraData) {
-        final RenderType layer = MinecraftForgeClient.getRenderLayer();
+        final RenderType layer = MinecraftForgeClient.getRenderType();
 
         final CasingModules modules = extraData.getData(CasingModules.CASING_MODULES_PROPERTY);
         if (side != null) {

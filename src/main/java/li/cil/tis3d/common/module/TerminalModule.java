@@ -19,6 +19,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -27,7 +28,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.util.Constants;
 
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -246,7 +246,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
     public void load(final CompoundTag tag) {
         super.load(tag);
 
-        final ListTag lines = tag.getList(TAG_DISPLAY, Constants.NBT.TAG_STRING);
+        final ListTag lines = tag.getList(TAG_DISPLAY, Tag.TAG_STRING);
         display.clear();
         for (int tagIndex = 0; tagIndex < lines.size(); tagIndex++) {
             display.add(new StringBuilder(lines.getString(tagIndex)));

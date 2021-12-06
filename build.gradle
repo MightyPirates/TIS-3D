@@ -15,6 +15,7 @@ plugins {
 }
 
 apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'eclipse'
 
 def getGitRef() {
     try {
@@ -41,7 +42,7 @@ version = "${semver}+${build_number}"
 group = 'li.cil.tis3d'
 
 java.toolchain {
-    languageVersion = JavaLanguageVersion.of(16)
+    languageVersion = JavaLanguageVersion.of(17)
     vendor = JvmVendorSpec.ADOPTOPENJDK
 }
 
@@ -52,7 +53,6 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-
     compileOnly fg.deobf("li.cil.markdown_manual:markdown_manual-${minecraft_version}-forge:${manual_version}:api")
     runtimeOnly fg.deobf("li.cil.markdown_manual:markdown_manual-${minecraft_version}-forge:${manual_version}")
 
@@ -166,7 +166,7 @@ curseforge {
         changelog = file('changelog.md')
         addGameVersion 'Forge'
         addGameVersion minecraft_version
-        addGameVersion 'Java 16'
+        addGameVersion 'Java 17'
         relations {
             requiredDependency 'markdownmanual'
         }

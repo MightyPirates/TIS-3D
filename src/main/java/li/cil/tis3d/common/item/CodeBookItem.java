@@ -8,6 +8,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -243,7 +244,7 @@ public final class CodeBookItem extends ModItem {
         public void load(final CompoundTag tag) {
             pages.clear();
 
-            final ListTag pagesTag = tag.getList(TAG_PAGES, net.minecraftforge.common.util.Constants.NBT.TAG_STRING);
+            final ListTag pagesTag = tag.getList(TAG_PAGES, Tag.TAG_STRING);
             for (int index = 0; index < pagesTag.size(); index++) {
                 pages.add(Arrays.asList(Constants.PATTERN_LINES.split(pagesTag.getString(index))));
             }

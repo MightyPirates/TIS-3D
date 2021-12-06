@@ -10,7 +10,7 @@ import li.cil.tis3d.common.module.*;
 import li.cil.tis3d.common.provider.module.SimpleModuleProvider;
 import li.cil.tis3d.util.RegistryUtils;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
