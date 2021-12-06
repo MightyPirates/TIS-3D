@@ -5,8 +5,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.util.Constants;
-
+import net.minecraft.nbt.*;
 import java.util.Arrays;
 
 /**
@@ -24,7 +23,7 @@ public class Inventory implements Container {
     // --------------------------------------------------------------------- //
 
     public void load(final CompoundTag tag) {
-        final ListTag itemList = tag.getList(TAG_ITEMS, Constants.NBT.TAG_COMPOUND);
+        final ListTag itemList = tag.getList(TAG_ITEMS, Tag.TAG_COMPOUND);
         final int count = Math.min(itemList.size(), items.length);
         for (int index = 0; index < count; index++) {
             items[index] = ItemStack.of(itemList.getCompound(index));

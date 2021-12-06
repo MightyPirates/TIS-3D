@@ -91,7 +91,7 @@ public final class CasingBlock extends BaseEntityBlock {
     // Client
 
     @Override
-    public ItemStack getPickBlock(final BlockState state, final HitResult hit, final BlockGetter level, final BlockPos pos, final Player player) {
+    public ItemStack getCloneItemStack(final BlockState state, final HitResult hit, final BlockGetter level, final BlockPos pos, final Player player) {
         // Allow picking modules installed in the casing.
         final BlockEntity tileEntity = level.getBlockEntity(pos);
         if (tileEntity instanceof final CasingTileEntity casing && hit instanceof final BlockHitResult blockHit) {
@@ -100,7 +100,7 @@ public final class CasingBlock extends BaseEntityBlock {
                 return stack.copy();
             }
         }
-        return super.getPickBlock(state, hit, level, pos, player);
+        return super.getCloneItemStack(state, hit, level, pos, player);
     }
 
     // --------------------------------------------------------------------- //

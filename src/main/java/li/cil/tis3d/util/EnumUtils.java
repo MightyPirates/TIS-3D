@@ -2,7 +2,7 @@ package li.cil.tis3d.util;
 
 import li.cil.tis3d.api.API;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.*;
 import org.apache.logging.log4j.LogManager;
 
 /**
@@ -10,7 +10,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public final class EnumUtils {
     public static <T extends Enum<T>> T load(final Class<T> clazz, final String tagName, final CompoundTag tag) {
-        if (tag.contains(tagName, Constants.NBT.TAG_STRING)) {
+        if (tag.contains(tagName, Tag.TAG_STRING)) {
             // Backwards compatibility.
             try {
                 return Enum.valueOf(clazz, tag.getString(tagName));

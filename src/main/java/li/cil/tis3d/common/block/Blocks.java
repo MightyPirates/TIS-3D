@@ -2,7 +2,7 @@ package li.cil.tis3d.common.block;
 
 import li.cil.tis3d.util.RegistryUtils;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 

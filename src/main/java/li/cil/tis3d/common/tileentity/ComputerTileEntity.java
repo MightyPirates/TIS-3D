@@ -10,13 +10,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.*;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -168,7 +168,7 @@ public abstract class ComputerTileEntity extends BlockEntity implements PipeHost
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
         final CompoundTag tag = new CompoundTag();
         saveClient(tag);
-        return new ClientboundBlockEntityDataPacket(getBlockPos(), 0, tag);
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
@@ -220,7 +220,7 @@ public abstract class ComputerTileEntity extends BlockEntity implements PipeHost
     }
 
     protected void loadServer(final CompoundTag tag) {
-        final ListTag pipesTag = tag.getList(TAG_PIPES, Constants.NBT.TAG_COMPOUND);
+        final ListTag pipesTag = tag.getList(TAG_PIPES, Tag.TAG_COMPOUND);
         final int pipeCount = Math.min(pipesTag.size(), pipes.length);
         for (int i = 0; i < pipeCount; i++) {
             pipes[i].load(pipesTag.getCompound(i));

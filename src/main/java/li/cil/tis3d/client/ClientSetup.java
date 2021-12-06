@@ -63,7 +63,7 @@ public final class ClientSetup {
 
     @SubscribeEvent
     public static void handleTextureStitchEvent(final TextureStitchEvent.Pre event) {
-        if (Objects.equals(event.getMap().location(), InventoryMenu.BLOCK_ATLAS)) {
+        if (Objects.equals(event.getAtlas().location(), InventoryMenu.BLOCK_ATLAS)) {
             Textures.handleTextureStitchEvent(event);
         }
     }

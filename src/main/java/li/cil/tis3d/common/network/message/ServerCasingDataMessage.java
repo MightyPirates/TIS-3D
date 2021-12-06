@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import li.cil.tis3d.api.machine.Casing;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 
 public final class ServerCasingDataMessage extends AbstractCasingDataMessage {
     public ServerCasingDataMessage(final Casing casing, final ByteBuf data) {

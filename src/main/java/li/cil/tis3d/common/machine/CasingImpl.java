@@ -16,11 +16,11 @@ import li.cil.tis3d.common.tileentity.ControllerTileEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -263,7 +263,7 @@ public final class CasingImpl implements Casing {
             modules[index] = module;
         }
 
-        final ListTag modulesTag = tag.getList(TAG_MODULES, Constants.NBT.TAG_COMPOUND);
+        final ListTag modulesTag = tag.getList(TAG_MODULES, Tag.TAG_COMPOUND);
         final int moduleCount = Math.min(modulesTag.size(), modules.length);
         for (int i = 0; i < moduleCount; i++) {
             if (modules[i] != null) {
