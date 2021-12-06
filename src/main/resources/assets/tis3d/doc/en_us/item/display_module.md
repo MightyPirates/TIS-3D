@@ -6,7 +6,7 @@ The display module provides a highly flexible method of visualizing arbitrary da
 The display module continuously reads values from all four of its ports and accumulates five values into a single draw call. Once all five values required for a draw call have been received, the described rectangle is applied to the color grid.
 
 ## Draw Call Specification
-Each sequence of five received by the display module is interpreted as a draw call with the components: color, column, row, width and height. The grid is quadratic and has twenty-eight (28) columns and rows. Color values are from a fixed palette. The exact color values may vary by vendor, however the general color names follow the physical spectrum of this world:
+Each sequence of five received by the display module is interpreted as a draw call with the components: color, column, row, width and height. The grid is quadratic and has twenty-four (24) columns and rows. Color values are from a fixed palette. The exact color values may vary by vendor, however the general color names follow the physical spectrum of this world:
 - `0`: White
 - `1`: Orange
 - `2`: Magenta
