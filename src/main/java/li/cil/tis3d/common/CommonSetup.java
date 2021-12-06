@@ -2,7 +2,6 @@ package li.cil.tis3d.common;
 
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.common.api.InfraredAPIImpl;
-import li.cil.tis3d.common.capabilities.Capabilities;
 import li.cil.tis3d.common.event.InfraredPacketTickHandler;
 import li.cil.tis3d.common.event.LevelUnloadHandler;
 import li.cil.tis3d.common.item.ItemGroups;
@@ -15,8 +14,6 @@ public final class CommonSetup {
     public static void handleSetupEvent(final FMLCommonSetupEvent event) {
         API.itemGroup = ItemGroups.COMMON;
         API.infraredAPI = new InfraredAPIImpl();
-
-        Capabilities.initialize();
 
         Network.initialize();
         InfraredPacketTickHandler.initialize();

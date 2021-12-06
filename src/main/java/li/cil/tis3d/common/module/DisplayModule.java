@@ -113,7 +113,7 @@ public final class DisplayModule extends AbstractModuleWithRotation {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void finalize() {
+    protected void finalize() {
         TextureDisposer.add(texture);
     }
 
