@@ -2,6 +2,7 @@ package li.cil.tis3d.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import li.cil.tis3d.client.ClientConfig;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.common.Constants;
 import li.cil.tis3d.common.item.CodeBookItem;
@@ -138,7 +139,7 @@ public final class CodeBookScreen extends Screen {
         // Check page change button availability.
         buttonPreviousPage.visible = data.getSelectedPage() > 0 && data.getPageCount() > 0;
         buttonNextPage.visible = (data.getSelectedPage() < data.getPageCount() - 1) ||
-                                 (data.getSelectedPage() == data.getPageCount() - 1 && isCurrentProgramNonEmpty());
+            (data.getSelectedPage() == data.getPageCount() - 1 && isCurrentProgramNonEmpty());
         buttonDeletePage.visible = data.getPageCount() > 1 || isCurrentProgramNonEmpty();
 
         super.render(matrixStack, mouseX, mouseY, partialTicks);
@@ -347,12 +348,12 @@ public final class CodeBookScreen extends Screen {
                     return true;
                 }
 
-                lines.get(line).insert(indexToColumn(column), pastedLines[0].toUpperCase(Locale.US));
+                lines.get(line).insert(indexToColumn(column), applyCodeStyle(pastedLines[0]));
                 lines.addAll(line + 1, Arrays.stream(pastedLines).
                     skip(1).
-                    map(l -> l.toUpperCase(Locale.US)).
+                    map(CodeBookScreen::applyCodeStyle).
                     map(StringBuilder::new).
-                    collect(Collectors.toList()));
+                    toList());
 
                 selectionStart = selectionEnd = selectionEnd + pastedLines[0].length();
                 for (int i = 1; i < pastedLines.length; i++) {
@@ -383,7 +384,7 @@ public final class CodeBookScreen extends Screen {
         final int column = indexToColumn(getSelectionStart());
 
         if (lines.get(line).length() < Constants.MAX_CHARS_PER_LINE) {
-            lines.get(line).insert(column, String.valueOf(codePoint).toUpperCase(Locale.US));
+            lines.get(line).insert(column, applyCodeStyle(String.valueOf(codePoint)));
             selectionStart = selectionEnd = selectionEnd + 1;
         }
 
@@ -405,6 +406,14 @@ public final class CodeBookScreen extends Screen {
     }
 
     // --------------------------------------------------------------------- //
+
+    private static String applyCodeStyle(final String value) {
+        if (ClientConfig.autoCodeUpperCase) {
+            return value.toUpperCase(Locale.US);
+        } else {
+            return value;
+        }
+    }
 
     private Font getFontRenderer() {
         return font;
@@ -495,7 +504,7 @@ public final class CodeBookScreen extends Screen {
 
     private boolean isInCodeArea(final double mouseX, final double mouseY) {
         return mouseX >= guiX + CODE_POS_X - CODE_MARGIN && mouseX <= guiX + CODE_POS_X + CODE_WIDTH + CODE_MARGIN &&
-               mouseY >= guiY + CODE_POS_Y - CODE_MARGIN && mouseY <= guiY + CODE_POS_Y + getFontRenderer().lineHeight * Constants.MAX_LINES_PER_PAGE + CODE_MARGIN;
+            mouseY >= guiY + CODE_POS_Y - CODE_MARGIN && mouseY <= guiY + CODE_POS_Y + getFontRenderer().lineHeight * Constants.MAX_LINES_PER_PAGE + CODE_MARGIN;
     }
 
     private boolean isCurrentProgramNonEmpty() {
@@ -598,7 +607,7 @@ public final class CodeBookScreen extends Screen {
 
         final List<String> program = data.getPage(data.getSelectedPage());
         lines.clear();
-        program.forEach(line -> lines.add(new StringBuilder(line.toUpperCase(Locale.US))));
+        program.forEach(line -> lines.add(new StringBuilder(applyCodeStyle(line))));
 
         recompile();
     }
