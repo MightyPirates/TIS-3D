@@ -48,7 +48,7 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    implementation fg.deobf("curse.maven:markdownmanual-502485:3414387")
+    implementation fg.deobf("curse.maven:markdownmanual-502485:3414389")
 
     // Just for in-dev convenience. Mod doesn't use any JEI APIs.
     implementation fg.deobf("curse.maven:jei-238222:3550017")
