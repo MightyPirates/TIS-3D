@@ -15,6 +15,7 @@ plugins {
 }
 
 apply plugin: 'net.minecraftforge.gradle'
+apply from: 'minecraft.gradle'
 
 def getGitRef() {
     try {
@@ -29,15 +30,7 @@ def getGitRef() {
     }
 }
 
-final def semver = "${version_major}.${version_minor}.${version_patch}"
-
-String build_number = System.getenv('PROMOTED_NUMBER')
-if (build_number == null)
-    build_number = System.getenv('BUILD_NUMBER')
-if (build_number == null)
-    build_number = getGitRef()
-
-version = "${semver}+${build_number}"
+version = "${semver}+${getGitRef()}"
 group = 'li.cil.tis3d'
 
 java.toolchain {
@@ -46,22 +39,23 @@ java.toolchain {
 }
 
 repositories {
-    maven { url 'https://maven.cil.li/' } // MarkdownManual
-    maven { url 'https://dvs1.progwml6.com/files/maven' } // JEI
+    maven {
+        url 'https://cursemaven.com'
+        content { includeGroup "curse.maven" }
+    }
 }
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    compileOnly fg.deobf("li.cil.markdown_manual:markdown_manual-${minecraft_version}-forge:${manual_version}:api")
-    runtimeOnly fg.deobf("li.cil.markdown_manual:markdown_manual-${minecraft_version}-forge:${manual_version}")
+    implementation fg.deobf("curse.maven:markdownmanual-502485:3414387")
 
-//    compileOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}:${jei_version}:api")
-//    runtimeOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}:${jei_version}")
+    // Just for in-dev convenience. Mod doesn't use any JEI APIs.
+    implementation fg.deobf("curse.maven:jei-238222:3550017")
 }
 
 minecraft {
-    mappings channel: mappings_channel, version: mappings_version
+    mappings channel: 'official', version: minecraft_version
 
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
@@ -146,24 +140,32 @@ artifacts {
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            groupId = project.group
+            artifactId = project.name
+            version = semver
             artifact jar
             artifact apiJar
         }
     }
     repositories {
         maven {
-            url System.getenv('MAVEN_PATH')
+            name = "GitHubPackages"
+            url = System.getenv("GITHUB_MAVEN_URL") ?: ""
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
         }
     }
 }
 
 curseforge {
-    apiKey = project.hasProperty('curseForgeApiKey') ? project.curseForgeApiKey : ''
+    apiKey = System.getenv('CURSEFORGE_API_KEY') ?: ""
     project {
         id = curse_project_id
         releaseType = curse_project_releaseType
         changelogType = 'markdown'
-        changelog = file('changelog.md')
+        changelog = System.getenv("CHANGELOG") ?: "Changelog not available."
         addGameVersion 'Forge'
         addGameVersion minecraft_version
         addGameVersion 'Java 16'
