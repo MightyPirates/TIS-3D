@@ -30,6 +30,6 @@ repositories {
     }
 }
 dependencies {
-    implementation "curse.maven:tis3d-238603:3553103"
+    implementation fg.deobf("curse.maven:tis3d-238603:3553103")
 }
 ```
