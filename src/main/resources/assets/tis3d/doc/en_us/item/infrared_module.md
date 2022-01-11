@@ -1,7 +1,7 @@
 # Infrared Module
 ![Seeing red](item:tis3d:infrared_module)
 
-The infrared module provides short range, line-of-sight wireless transmission of values, either inside an appropriately structured TIS-3D computer, or between different TIS-3D computers. This allows fast communication between multiple systems, avoiding the generally lossy alternative of transferring data over redstone.
+The infrared module provides short range, line-of-sight wireless transmission of values, either inside an appropriately structured TIS-3D computer, or between different TIS-3D computers. This allows fast communication between multiple systems, avoiding the generally lossy alternative of transferring data over redstone. The maximum reliable distance between paired modules is vendor specific, but is usually close to 50 meters.
 
 The infrared module reads values from all four of its ports and emits an infrared packet with the read value as its payload. The infrared module writes the value of the last received infrared packet to all four of its ports.
 
