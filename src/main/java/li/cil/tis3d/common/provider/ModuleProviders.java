@@ -10,21 +10,21 @@ import li.cil.tis3d.common.module.*;
 import li.cil.tis3d.common.provider.module.SimpleModuleProvider;
 import li.cil.tis3d.util.RegistryUtils;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 public final class ModuleProviders {
-    private static final DeferredRegister<ModuleProvider> MODULE_PROVIDERS = RegistryUtils.create(ModuleProvider.class);
+    private static final DeferredRegister<ModuleProvider> MODULE_PROVIDERS = RegistryUtils.getInitializerFor(ModuleProvider.REGISTRY);
 
     // --------------------------------------------------------------------- //
 
-    public static final Supplier<IForgeRegistry<ModuleProvider>> MODULE_PROVIDER_REGISTRY = MODULE_PROVIDERS.makeRegistry("modules", RegistryBuilder::new);
+    public static final Supplier<IForgeRegistry<ModuleProvider>> MODULE_PROVIDER_REGISTRY = MODULE_PROVIDERS.makeRegistry(ModuleProvider.class, RegistryBuilder::new);
 
     // --------------------------------------------------------------------- //
 

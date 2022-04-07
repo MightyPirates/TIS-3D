@@ -14,11 +14,11 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 public final class SerialInterfaceProviders {
-    private static final DeferredRegister<SerialInterfaceProvider> MODULE_PROVIDERS = RegistryUtils.create(SerialInterfaceProvider.class);
+    private static final DeferredRegister<SerialInterfaceProvider> MODULE_PROVIDERS = RegistryUtils.getInitializerFor(SerialInterfaceProvider.REGISTRY);
 
     // --------------------------------------------------------------------- //
 
-    public static final Supplier<IForgeRegistry<SerialInterfaceProvider>> MODULE_PROVIDER_REGISTRY = MODULE_PROVIDERS.makeRegistry("serial_interfaces", RegistryBuilder::new);
+    public static final Supplier<IForgeRegistry<SerialInterfaceProvider>> MODULE_PROVIDER_REGISTRY = MODULE_PROVIDERS.makeRegistry(SerialInterfaceProvider.class, RegistryBuilder::new);
 
     // --------------------------------------------------------------------- //
 

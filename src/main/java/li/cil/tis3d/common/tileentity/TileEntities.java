@@ -10,7 +10,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public final class TileEntities {
-    private static final DeferredRegister<BlockEntityType<?>> TILES = RegistryUtils.create(ForgeRegistries.BLOCK_ENTITIES);
+    private static final DeferredRegister<BlockEntityType<?>> TILES = RegistryUtils.getInitializerFor(ForgeRegistries.BLOCK_ENTITIES);
 
     // --------------------------------------------------------------------- //
 

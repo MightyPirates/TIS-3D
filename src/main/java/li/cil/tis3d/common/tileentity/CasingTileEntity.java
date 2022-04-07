@@ -292,7 +292,7 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
             return false;
         }
 
-        return getBlockPos().closerThan(player.position(), 8);
+        return getBlockPos().closerToCenterThan(player.position(), 8);
     }
 
     // --------------------------------------------------------------------- //

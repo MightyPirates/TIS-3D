@@ -13,7 +13,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public final class Items {
-    private static final DeferredRegister<Item> ITEMS = RegistryUtils.create(ForgeRegistries.ITEMS);
+    private static final DeferredRegister<Item> ITEMS = RegistryUtils.getInitializerFor(ForgeRegistries.ITEMS);
 
     // --------------------------------------------------------------------- //
 

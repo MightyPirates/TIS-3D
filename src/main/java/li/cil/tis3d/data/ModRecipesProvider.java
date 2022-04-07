@@ -11,7 +11,7 @@ import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.Tags;
@@ -143,7 +143,7 @@ public class ModRecipesProvider extends RecipeProvider {
             .define('S', item);
     }
 
-    private static ShapedRecipeBuilder module(final RegistryObject<? extends Item> module, final int count, final Tag<Item> tag) {
+    private static ShapedRecipeBuilder module(final RegistryObject<? extends Item> module, final int count, final TagKey<Item> tag) {
         return module(module, count)
             .define('S', tag);
     }
@@ -160,7 +160,7 @@ public class ModRecipesProvider extends RecipeProvider {
             .unlockedBy("has_casing", inventoryChange(Items.CASING.get()));
     }
 
-    private static InventoryChangeTrigger.TriggerInstance inventoryChange(final Tag<Item> tag) {
+    private static InventoryChangeTrigger.TriggerInstance inventoryChange(final TagKey<Item> tag) {
         return InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(tag).build());
     }
 

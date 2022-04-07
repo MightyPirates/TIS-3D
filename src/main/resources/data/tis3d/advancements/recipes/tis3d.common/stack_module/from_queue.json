@@ -11,7 +11,9 @@
       "conditions": {
         "items": [
           {
-            "item": "tis3d:queue_module"
+            "items": [
+              "tis3d:queue_module"
+            ]
           }
         ]
       }

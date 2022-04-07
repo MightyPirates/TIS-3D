@@ -1,7 +1,11 @@
 package li.cil.tis3d.api.module;
 
+import li.cil.tis3d.api.API;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
@@ -17,6 +21,11 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
  * <tt>tis3d:redstone_inputs</tt>.
  */
 public interface RedstoneInputProvider extends IForgeRegistryEntry<RedstoneInputProvider> {
+    /**
+     * The registry name of the registry holding redstone input providers.
+     */
+    ResourceKey<Registry<RedstoneInputProvider>> REGISTRY = ResourceKey.createRegistryKey(new ResourceLocation(API.MOD_ID, "redstone_input_provider"));
+
     /**
      * Get the redstone level provided to the specified face of a block at the specified position.
      *

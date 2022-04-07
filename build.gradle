@@ -39,6 +39,10 @@ java.toolchain {
     vendor = JvmVendorSpec.ADOPTOPENJDK
 }
 
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'utf-8'
+}
+
 repositories {
     maven {
         url 'https://cursemaven.com'
@@ -49,10 +53,10 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    implementation fg.deobf("curse.maven:markdownmanual-502485:3565800")
+    implementation fg.deobf("curse.maven:markdownmanual-502485:3738124")
 
     // Just for in-dev convenience. Mod doesn't use any JEI APIs.
-    implementation fg.deobf("curse.maven:jei-238222:3564650")
+    implementation fg.deobf("curse.maven:jei-238222:3735570")
 }
 
 minecraft {

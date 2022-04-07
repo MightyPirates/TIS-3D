@@ -229,7 +229,7 @@ public final class CasingTileEntityRenderer implements BlockEntityRenderer<Casin
     }
 
     private boolean isObserverKindaClose(final CasingTileEntity casing) {
-        return casing.getBlockPos().closerThan(renderer.camera.getPosition(), 16);
+        return casing.getBlockPos().closerToCenterThan(renderer.camera.getPosition(), 16);
     }
 
     private boolean isObserverHoldingKey() {

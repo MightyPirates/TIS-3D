@@ -14,11 +14,11 @@ import net.minecraftforge.registries.RegistryBuilder;
 import java.util.function.Supplier;
 
 public final class RedstoneInputProviders {
-    private static final DeferredRegister<RedstoneInputProvider> REDSTONE_INPUT_PROVIDERS = RegistryUtils.create(RedstoneInputProvider.class);
+    private static final DeferredRegister<RedstoneInputProvider> REDSTONE_INPUT_PROVIDERS = RegistryUtils.getInitializerFor(RedstoneInputProvider.REGISTRY);
 
     // --------------------------------------------------------------------- //
 
-    public static final Supplier<IForgeRegistry<RedstoneInputProvider>> REDSTONE_INPUT_PROVIDER_REGISTRY = REDSTONE_INPUT_PROVIDERS.makeRegistry("redstone_inputs", RegistryBuilder::new);
+    public static final Supplier<IForgeRegistry<RedstoneInputProvider>> REDSTONE_INPUT_PROVIDER_REGISTRY = REDSTONE_INPUT_PROVIDERS.makeRegistry(RedstoneInputProvider.class, RegistryBuilder::new);
 
     // --------------------------------------------------------------------- //
 

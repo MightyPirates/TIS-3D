@@ -1,7 +1,11 @@
 package li.cil.tis3d.api.serial;
 
+import li.cil.tis3d.api.API;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -19,6 +23,11 @@ import java.util.Optional;
  * <tt>tis3d:serial_interfaces</tt>.
  */
 public interface SerialInterfaceProvider extends IForgeRegistryEntry<SerialInterfaceProvider> {
+    /**
+     * The registry name of the registry holding serial interface providers.
+     */
+    ResourceKey<Registry<SerialInterfaceProvider>> REGISTRY = ResourceKey.createRegistryKey(new ResourceLocation(API.MOD_ID, "serial_interface_provider"));
+
     /**
      * Checks whether the provider supports the specified block position.
      *

@@ -71,7 +71,7 @@ public final class RenderContextImpl implements RenderContext {
 
     @Override
     public boolean closeEnoughForDetails(final BlockPos position) {
-        return position.closerThan(dispatcher.camera.getPosition(), (float) DETAIL_RENDER_RANGE);
+        return position.closerToCenterThan(dispatcher.camera.getPosition(), (float) DETAIL_RENDER_RANGE);
     }
 
     @Override
