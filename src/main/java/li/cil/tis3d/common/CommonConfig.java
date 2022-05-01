@@ -39,8 +39,8 @@ public final class CommonConfig {
     /**
      * The maximum number of lines a program may have.
      */
-    @Path("module.execution") @Min(1) @Max(200)
-    @Comment("The maximum number of lines an ASM program for an execution node may have.")
+    @Path("module.execution") @Min(0) @Max(200)
+    @Comment("The maximum number of lines an ASM program for an execution node may have. Use zero to remove the limit.")
     @Translation("maxLinesPerProgram")
     public static int maxLinesPerProgram = 40;
 
