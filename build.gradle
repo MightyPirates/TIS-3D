@@ -12,6 +12,7 @@ plugins {
     id 'idea'
     id 'maven-publish'
     id 'com.matthewprenger.cursegradle' version '1.4.0'
+    id 'com.modrinth.minotaur' version '2.2.0'
 }
 
 apply plugin: 'net.minecraftforge.gradle'

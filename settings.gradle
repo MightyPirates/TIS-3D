@@ -1,8 +1,8 @@
-apply from: 'minecraft.gradle'
-rootProject.name = "tis3d-${minecraft_version}-${minecraft_sdk}"
-
 pluginManagement {
     repositories {
         gradlePluginPortal()
     }
 }
+
+apply from: 'minecraft.gradle'
+rootProject.name = "tis3d-${minecraft_version}-${minecraft_sdk}"
