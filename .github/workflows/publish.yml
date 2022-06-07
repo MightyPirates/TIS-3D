@@ -58,5 +58,5 @@ jobs:
       - name: Publish to modrinth
         run: ./gradlew -Psemver='${{ steps.split_tag.outputs._1 }}' modrinth
         env:
-          CURSEFORGE_API_KEY: ${{ secrets.MODRINTH_API_KEY }}
+          MODRINTH_API_KEY: ${{ secrets.MODRINTH_API_KEY }}
           CHANGELOG: ${{ github.event.release.body }}
