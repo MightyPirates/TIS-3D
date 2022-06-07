@@ -180,6 +180,20 @@ curseforge {
     }
 }
 
+modrinth {
+    token = System.getenv("MODRINTH_API_KEY") ?: ""
+    projectId = modrinth_project_id
+    changelog = System.getenv("CHANGELOG") ?: "Changelog not available."
+    versionNumber = semver
+    versionName = "${rootProject.name}-${version}"
+    versionType = 'release'
+    uploadFile = jar
+    gameVersions = [minecraft_version]
+    dependencies {
+        required.project "P7dR8mSH" // Markdown Manual
+    }
+}
+
 idea {
     module {
         for (final String exclude in ['run', 'out', 'logs', 'src/generated']) {
