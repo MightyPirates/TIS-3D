@@ -11,8 +11,8 @@ import li.cil.tis3d.api.module.traits.ModuleWithRedstone;
 import li.cil.tis3d.common.item.Items;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.provider.ModuleProviders;
-import li.cil.tis3d.common.tileentity.CasingTileEntity;
-import li.cil.tis3d.common.tileentity.ControllerTileEntity;
+import li.cil.tis3d.common.block.entity.CasingBlockEntity;
+import li.cil.tis3d.common.block.entity.ControllerBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -55,18 +55,18 @@ public final class CasingImpl implements Casing {
     /**
      * The tile entity hosting this casing.
      */
-    private final CasingTileEntity tileEntity;
+    private final CasingBlockEntity blockEntity;
 
     // --------------------------------------------------------------------- //
 
-    public CasingImpl(final CasingTileEntity tileEntity) {
-        this.tileEntity = tileEntity;
+    public CasingImpl(final CasingBlockEntity blockEntity) {
+        this.blockEntity = blockEntity;
     }
 
     /**
      * Calls {@link Module#onEnabled()} on all modules.
      * <p>
-     * Used by the controller when its state changes to {@link ControllerTileEntity.ControllerState#RUNNING}.
+     * Used by the controller when its state changes to {@link ControllerBlockEntity.ControllerState#RUNNING}.
      */
     public void onEnabled() {
         for (final Module module : modules) {
@@ -80,7 +80,7 @@ public final class CasingImpl implements Casing {
     /**
      * Calls {@link Module#onDisabled()} on all modules and resets all pipes.
      * <p>
-     * Used by the controller when its state changes from {@link ControllerTileEntity.ControllerState#RUNNING},
+     * Used by the controller when its state changes from {@link ControllerBlockEntity.ControllerState#RUNNING},
      * or the controller is reset (scan scheduled), or the controller is unloaded.
      */
     public void onDisabled() {
@@ -89,7 +89,7 @@ public final class CasingImpl implements Casing {
                 module.onDisabled();
             }
         }
-        for (final Pipe pipe : tileEntity.getPipes()) {
+        for (final Pipe pipe : blockEntity.getPipes()) {
             pipe.cancelRead();
             pipe.cancelWrite();
         }
@@ -139,7 +139,7 @@ public final class CasingImpl implements Casing {
 
         // End-of-life notification for module if it was active.
         final Module oldModule = getModule(face);
-        if (tileEntity.isEnabled() && oldModule != null && !getCasingLevel().isClientSide()) {
+        if (blockEntity.isEnabled() && oldModule != null && !getCasingLevel().isClientSide()) {
             oldModule.onDisabled();
         }
 
@@ -152,8 +152,8 @@ public final class CasingImpl implements Casing {
         // Reset redstone output if the previous module was redstone capable.
         if (hadRedstone) {
             if (!getCasingLevel().isClientSide()) {
-                tileEntity.setChanged();
-                getCasingLevel().updateNeighborsAt(getPosition(), tileEntity.getBlockState().getBlock());
+                blockEntity.setChanged();
+                getCasingLevel().updateNeighborsAt(getPosition(), blockEntity.getBlockState().getBlock());
             }
         }
 
@@ -168,11 +168,11 @@ public final class CasingImpl implements Casing {
         }
 
         // Activate the module if the controller is active.
-        if (tileEntity.isEnabled() && module != null && !getCasingLevel().isClientSide()) {
+        if (blockEntity.isEnabled() && module != null && !getCasingLevel().isClientSide()) {
             module.onEnabled();
         }
 
-        tileEntity.setChanged();
+        blockEntity.setChanged();
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -239,8 +239,8 @@ public final class CasingImpl implements Casing {
      * @param tag the data to load.
      */
     public void load(final CompoundTag tag) {
-        for (int index = 0; index < tileEntity.getContainerSize(); index++) {
-            final ItemStack stack = tileEntity.getItem(index);
+        for (int index = 0; index < blockEntity.getContainerSize(); index++) {
+            final ItemStack stack = blockEntity.getItem(index);
             if (stack.isEmpty()) {
                 if (modules[index] != null) {
                     modules[index].onDisposed();
@@ -250,7 +250,7 @@ public final class CasingImpl implements Casing {
             }
 
             final Face face = Face.VALUES[index];
-            final Optional<ModuleProvider> provider = ModuleProviders.getProviderFor(stack, tileEntity, face);
+            final Optional<ModuleProvider> provider = ModuleProviders.getProviderFor(stack, blockEntity, face);
             if (!provider.isPresent()) {
                 if (modules[index] != null) {
                     modules[index].onDisposed();
@@ -259,7 +259,7 @@ public final class CasingImpl implements Casing {
                 continue;
             }
 
-            final Module module = provider.get().createModule(stack, tileEntity, face);
+            final Module module = provider.get().createModule(stack, blockEntity, face);
             modules[index] = module;
         }
 
@@ -304,22 +304,22 @@ public final class CasingImpl implements Casing {
 
     @Override
     public Level getCasingLevel() {
-        return tileEntity.getBlockEntityLevel();
+        return blockEntity.getBlockEntityLevel();
     }
 
     @Override
     public BlockPos getPosition() {
-        return tileEntity.getBlockPos();
+        return blockEntity.getBlockPos();
     }
 
     @Override
     public void setChanged() {
-        tileEntity.setChanged();
+        blockEntity.setChanged();
     }
 
     @Override
     public boolean isEnabled() {
-        return tileEntity.isCasingEnabled();
+        return blockEntity.isCasingEnabled();
     }
 
     @Override
@@ -335,12 +335,12 @@ public final class CasingImpl implements Casing {
 
     @Override
     public Pipe getReceivingPipe(final Face face, final Port port) {
-        return tileEntity.getReceivingPipe(face, port);
+        return blockEntity.getReceivingPipe(face, port);
     }
 
     @Override
     public Pipe getSendingPipe(final Face face, final Port port) {
-        return tileEntity.getSendingPipe(face, port);
+        return blockEntity.getSendingPipe(face, port);
     }
 
     @Override

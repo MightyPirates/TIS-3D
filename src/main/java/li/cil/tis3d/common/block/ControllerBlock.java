@@ -1,8 +1,8 @@
 package li.cil.tis3d.common.block;
 
 import li.cil.tis3d.common.item.Items;
-import li.cil.tis3d.common.tileentity.ControllerTileEntity;
-import li.cil.tis3d.common.tileentity.TileEntities;
+import li.cil.tis3d.common.block.entity.ControllerBlockEntity;
+import li.cil.tis3d.common.block.entity.BlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -40,15 +40,15 @@ public final class ControllerBlock extends BaseEntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(final BlockPos pos, final BlockState state) {
-        return TileEntities.CONTROLLER.get().create(pos, state);
+        return BlockEntities.CONTROLLER.get().create(pos, state);
     }
 
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(final Level level, final BlockState state, final BlockEntityType<T> type) {
         if (level.isClientSide()) {
-            return createTickerHelper(type, TileEntities.CONTROLLER.get(), ControllerTileEntity::clientTick);
+            return createTickerHelper(type, BlockEntities.CONTROLLER.get(), ControllerBlockEntity::clientTick);
         } else {
-            return createTickerHelper(type, TileEntities.CONTROLLER.get(), ControllerTileEntity::serverTick);
+            return createTickerHelper(type, BlockEntities.CONTROLLER.get(), ControllerBlockEntity::serverTick);
         }
     }
 
@@ -84,8 +84,8 @@ public final class ControllerBlock extends BaseEntityBlock {
             }
         }
 
-        final BlockEntity tileEntity = level.getBlockEntity(pos);
-        if (tileEntity instanceof final ControllerTileEntity controller) {
+        final BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof final ControllerBlockEntity controller) {
             if (!level.isClientSide()) {
                 controller.forceStep();
             }
@@ -108,9 +108,9 @@ public final class ControllerBlock extends BaseEntityBlock {
     @SuppressWarnings("deprecation")
     @Override
     public int getAnalogOutputSignal(final BlockState state, final Level level, final BlockPos pos) {
-        final BlockEntity tileEntity = level.getBlockEntity(pos);
-        if (tileEntity instanceof final ControllerTileEntity controller) {
-            return controller.getState() == ControllerTileEntity.ControllerState.READY ? 15 : 0;
+        final BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof final ControllerBlockEntity controller) {
+            return controller.getState() == ControllerBlockEntity.ControllerState.READY ? 15 : 0;
         }
         return 0;
     }
@@ -121,8 +121,8 @@ public final class ControllerBlock extends BaseEntityBlock {
     @SuppressWarnings("deprecation")
     @Override
     public void neighborChanged(final BlockState state, final Level level, final BlockPos pos, final Block block, final BlockPos fromPos, final boolean isMoving) {
-        final BlockEntity tileEntity = level.getBlockEntity(pos);
-        if (tileEntity instanceof final ControllerTileEntity controller) {
+        final BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof final ControllerBlockEntity controller) {
             controller.checkNeighbors();
         }
         super.neighborChanged(state, level, pos, block, fromPos, isMoving);

@@ -13,7 +13,7 @@ import li.cil.tis3d.common.provider.RedstoneInputProviders;
 import li.cil.tis3d.common.provider.SerialInterfaceProviders;
 import li.cil.tis3d.common.tags.BlockTags;
 import li.cil.tis3d.common.tags.ItemTags;
-import li.cil.tis3d.common.tileentity.TileEntities;
+import li.cil.tis3d.common.block.entity.BlockEntities;
 import li.cil.tis3d.util.RegistryUtils;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
@@ -33,7 +33,7 @@ public final class TIS3D {
         BlockTags.initialize();
         Blocks.initialize();
         Items.initialize();
-        TileEntities.initialize();
+        BlockEntities.initialize();
         Entities.initialize();
         Containers.initialize();
 

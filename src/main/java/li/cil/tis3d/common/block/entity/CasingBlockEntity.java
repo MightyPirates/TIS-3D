@@ -1,4 +1,4 @@
-package li.cil.tis3d.common.tileentity;
+package li.cil.tis3d.common.block.entity;
 
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
@@ -56,7 +56,7 @@ import java.util.*;
  * Casings do not tick. The modules installed in them are driven by a
  * controller (transitively) connected to their casing.
  */
-public final class CasingTileEntity extends ComputerTileEntity implements SidedInventoryProxy, CasingProxy {
+public final class CasingBlockEntity extends ComputerBlockEntity implements SidedInventoryProxy, CasingProxy {
     // --------------------------------------------------------------------- //
     // Persisted data
 
@@ -77,14 +77,14 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
     private static final String TAG_INVENTORY = "inventory";
     private static final String TAG_LOCKED = "locked";
 
-    private ControllerTileEntity controller;
+    private ControllerBlockEntity controller;
     private boolean isEnabled;
     private boolean redstoneDirty = true;
 
     // --------------------------------------------------------------------- //
 
-    public CasingTileEntity(final BlockPos pos, final BlockState state) {
-        super(TileEntities.CASING.get(), pos, state);
+    public CasingBlockEntity(final BlockPos pos, final BlockState state) {
+        super(BlockEntities.CASING.get(), pos, state);
     }
 
     /**
@@ -153,11 +153,11 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
     // Networking
 
     @Nullable
-    public ControllerTileEntity getController() {
+    public ControllerBlockEntity getController() {
         return controller;
     }
 
-    public void setController(@Nullable final ControllerTileEntity controller) {
+    public void setController(@Nullable final ControllerBlockEntity controller) {
         this.controller = controller;
     }
 
@@ -171,7 +171,7 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
             // If we don't have a controller there either isn't one, or
             // the controller is in an error state. In the latter case we
             // have ot actively look for a controller and notify it.
-            final ControllerTileEntity controller = findController();
+            final ControllerBlockEntity controller = findController();
             if (controller != null) {
                 controller.scheduleScan();
             }
@@ -245,7 +245,7 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
     // PipeHost
 
     @Override
-    protected void setNeighbor(final Face face, @Nullable final ComputerTileEntity neighbor) {
+    protected void setNeighbor(final Face face, @Nullable final ComputerBlockEntity neighbor) {
         super.setNeighbor(face, neighbor);
 
         // Ensure there are no modules installed between two casings.
@@ -253,7 +253,7 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
             InventoryUtils.drop(getBlockEntityLevel(), getBlockPos(), this, face.ordinal(), getMaxStackSize(), Face.toDirection(face));
         }
 
-        if (neighbor instanceof ControllerTileEntity) {
+        if (neighbor instanceof ControllerBlockEntity) {
             // If we have a controller and it's not our controller, tell our
             // controller to do a re-scan (because now we have more than one
             // controller, which is invalid). The other one will scan anyway.
@@ -312,7 +312,7 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
     }
 
     // --------------------------------------------------------------------- //
-    // TileEntity
+    // BlockEntity
 
     @Override
     public void setRemoved() {
@@ -362,7 +362,7 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
     }
 
     // --------------------------------------------------------------------- //
-    // TileEntityComputer
+    // BlockEntityComputer
 
     @Override
     public Pipe getReceivingPipe(final Face face, final Port port) {
@@ -474,7 +474,7 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
     // --------------------------------------------------------------------- //
 
     @Nullable
-    private ControllerTileEntity findController() {
+    private ControllerBlockEntity findController() {
         final Level level = getBlockEntityLevel();
 
         // List of processed tile entities to avoid loops.
@@ -489,16 +489,16 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
         processed.add(this);
         queue.add(this);
         while (!queue.isEmpty()) {
-            final BlockEntity tileEntity = queue.remove();
-            if (tileEntity.isRemoved()) {
+            final BlockEntity blockEntity = queue.remove();
+            if (blockEntity.isRemoved()) {
                 continue;
             }
 
             // Check what we have. We only add controllers and casings to this list,
             // so we can skip the type check in the else branch.
-            if (tileEntity instanceof ControllerTileEntity) {
-                return (ControllerTileEntity) tileEntity;
-            } else /* if (tileEntity instanceof TileEntityCasing) */ {
+            if (blockEntity instanceof ControllerBlockEntity) {
+                return (ControllerBlockEntity) blockEntity;
+            } else /* if (blockEntity instanceof BlockEntityCasing) */ {
                 // We only allow a certain number of casings per multi-block, so
                 // we can early exit if there are too many (because even if we
                 // notified the controller, it'd enter an error state again anyway).
@@ -508,7 +508,7 @@ public final class CasingTileEntity extends ComputerTileEntity implements SidedI
                 }
 
                 // Keep looking...
-                if (!ControllerTileEntity.addNeighbors(level, tileEntity, processed, queue)) {
+                if (!ControllerBlockEntity.addNeighbors(level, blockEntity, processed, queue)) {
                     // Hit end of loaded area, so scheduling would just result in
                     // error again anyway. Do *not* disable casings, keep last
                     // known valid state when all parts were loaded.

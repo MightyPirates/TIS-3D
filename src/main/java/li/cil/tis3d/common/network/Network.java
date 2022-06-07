@@ -8,7 +8,7 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.common.CommonConfig;
 import li.cil.tis3d.common.network.message.*;
-import li.cil.tis3d.common.tileentity.ComputerTileEntity;
+import li.cil.tis3d.common.block.entity.ComputerBlockEntity;
 import li.cil.tis3d.util.LevelUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -104,8 +104,8 @@ public final class Network {
         return getTargetPoint(level, position.getX() + 0.5, position.getY() + 0.5, position.getZ() + 0.5, range);
     }
 
-    public static PacketDistributor.PacketTarget getTargetPoint(final ComputerTileEntity tileEntity, final int range) {
-        return getTargetPoint(Objects.requireNonNull(tileEntity.getBlockEntityLevel()), tileEntity.getBlockPos(), range);
+    public static PacketDistributor.PacketTarget getTargetPoint(final ComputerBlockEntity blockEntity, final int range) {
+        return getTargetPoint(Objects.requireNonNull(blockEntity.getBlockEntityLevel()), blockEntity.getBlockPos(), range);
     }
 
     public static PacketDistributor.PacketTarget getTracking(final Casing casing) {

@@ -6,8 +6,8 @@ import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.traits.ModuleWithRedstone;
 import li.cil.tis3d.api.util.TransformUtil;
 import li.cil.tis3d.common.item.Items;
-import li.cil.tis3d.common.tileentity.CasingTileEntity;
-import li.cil.tis3d.common.tileentity.TileEntities;
+import li.cil.tis3d.common.block.entity.CasingBlockEntity;
+import li.cil.tis3d.common.block.entity.BlockEntities;
 import li.cil.tis3d.util.InventoryUtils;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
@@ -93,8 +93,8 @@ public final class CasingBlock extends BaseEntityBlock {
     @Override
     public ItemStack getCloneItemStack(final BlockState state, final HitResult hit, final BlockGetter level, final BlockPos pos, final Player player) {
         // Allow picking modules installed in the casing.
-        final BlockEntity tileEntity = level.getBlockEntity(pos);
-        if (tileEntity instanceof final CasingTileEntity casing && hit instanceof final BlockHitResult blockHit) {
+        final BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof final CasingBlockEntity casing && hit instanceof final BlockHitResult blockHit) {
             final ItemStack stack = casing.getItem(blockHit.getDirection().ordinal());
             if (!stack.isEmpty()) {
                 return stack.copy();
@@ -109,7 +109,7 @@ public final class CasingBlock extends BaseEntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(final BlockPos pos, final BlockState state) {
-        return TileEntities.CASING.get().create(pos, state);
+        return BlockEntities.CASING.get().create(pos, state);
     }
 
     @Override
@@ -123,8 +123,8 @@ public final class CasingBlock extends BaseEntityBlock {
     @SuppressWarnings("deprecation")
     @Override
     public InteractionResult use(final BlockState state, final Level level, final BlockPos pos, final Player player, final InteractionHand hand, final BlockHitResult hit) {
-        final BlockEntity tileEntity = level.getBlockEntity(pos);
-        if (!(tileEntity instanceof final CasingTileEntity casing)) {
+        final BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (!(blockEntity instanceof final CasingBlockEntity casing)) {
             return super.use(state, level, pos, player, hand, hit);
         }
 
@@ -206,7 +206,7 @@ public final class CasingBlock extends BaseEntityBlock {
     public void onRemove(final BlockState state, final Level level, final BlockPos pos, final BlockState newState, final boolean isMoving) {
         if (!state.is(newState.getBlock())) {
             final BlockEntity blockEntity = level.getBlockEntity(pos);
-            if (blockEntity instanceof CasingTileEntity casing) {
+            if (blockEntity instanceof CasingBlockEntity casing) {
                 Containers.dropContents(level, pos, casing);
                 level.updateNeighbourForOutputSignal(pos, this);
             }
@@ -233,7 +233,7 @@ public final class CasingBlock extends BaseEntityBlock {
     @Override
     public int getSignal(final BlockState blockState, final BlockGetter level, final BlockPos pos, final Direction side) {
         final BlockEntity blockEntity = level.getBlockEntity(pos);
-        if (blockEntity instanceof final CasingTileEntity casing) {
+        if (blockEntity instanceof final CasingBlockEntity casing) {
             final Module module = casing.getModule(Face.fromDirection(side.getOpposite()));
             if (module instanceof ModuleWithRedstone) {
                 return ((ModuleWithRedstone) module).getRedstoneOutput();
@@ -255,7 +255,7 @@ public final class CasingBlock extends BaseEntityBlock {
     @Override
     public void neighborChanged(final BlockState state, final Level level, final BlockPos pos, final Block block, final BlockPos fromPos, final boolean isMoving) {
         final BlockEntity blockEntity = level.getBlockEntity(pos);
-        if (blockEntity instanceof final CasingTileEntity casing) {
+        if (blockEntity instanceof final CasingBlockEntity casing) {
             casing.checkNeighbors();
             casing.notifyModulesOfBlockChange(fromPos);
             casing.markRedstoneDirty();

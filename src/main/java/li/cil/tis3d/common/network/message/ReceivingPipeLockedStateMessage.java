@@ -3,7 +3,7 @@ package li.cil.tis3d.common.network.message;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
-import li.cil.tis3d.common.tileentity.CasingTileEntity;
+import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkEvent;
@@ -31,7 +31,7 @@ public final class ReceivingPipeLockedStateMessage extends AbstractMessageWithPo
     protected void handleMessage(final NetworkEvent.Context context) {
         final Level level = getClientLevel();
         if (level != null) {
-            withTileEntity(level, CasingTileEntity.class, casing ->
+            withBlockEntity(level, CasingBlockEntity.class, casing ->
                 casing.setReceivingPipeLockedClient(face, port, isLocked));
         }
     }

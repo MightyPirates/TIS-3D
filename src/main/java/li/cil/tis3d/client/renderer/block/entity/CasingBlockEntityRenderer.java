@@ -1,4 +1,4 @@
-package li.cil.tis3d.client.renderer.tileentity;
+package li.cil.tis3d.client.renderer.block.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Quaternion;
@@ -12,7 +12,7 @@ import li.cil.tis3d.client.renderer.RenderContextImpl;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.common.item.Items;
 import li.cil.tis3d.common.network.Network;
-import li.cil.tis3d.common.tileentity.CasingTileEntity;
+import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
@@ -40,7 +40,7 @@ import java.util.Set;
  * block states for static individual texturing).
  */
 @OnlyIn(Dist.CLIENT)
-public final class CasingTileEntityRenderer implements BlockEntityRenderer<CasingTileEntity> {
+public final class CasingBlockEntityRenderer implements BlockEntityRenderer<CasingBlockEntity> {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private static final double Z_FIGHT_BUFFER = 0.001;
@@ -48,7 +48,7 @@ public final class CasingTileEntityRenderer implements BlockEntityRenderer<Casin
 
     private final BlockEntityRenderDispatcher renderer;
 
-    public CasingTileEntityRenderer(final BlockEntityRendererProvider.Context context) {
+    public CasingBlockEntityRenderer(final BlockEntityRendererProvider.Context context) {
         renderer = context.getBlockEntityRenderDispatcher();
     }
 
@@ -58,7 +58,7 @@ public final class CasingTileEntityRenderer implements BlockEntityRenderer<Casin
     }
 
     @Override
-    public void render(final CasingTileEntity casing, final float partialTicks, final PoseStack matrixStack,
+    public void render(final CasingBlockEntity casing, final float partialTicks, final PoseStack matrixStack,
                        final MultiBufferSource bufferFactory, final int light, final int overlay) {
         matrixStack.pushPose();
         matrixStack.translate(0.5, 0.5, 0.5);
@@ -133,7 +133,7 @@ public final class CasingTileEntityRenderer implements BlockEntityRenderer<Casin
         matrixStack.scale(-1, -1, 1);
     }
 
-    private boolean drawConfigOverlay(final RenderContext context, final CasingTileEntity casing, final Face face) {
+    private boolean drawConfigOverlay(final RenderContext context, final CasingBlockEntity casing, final Face face) {
         // Only bother rendering the overlay if the player is nearby.
         if (!isObserverKindaClose(casing)) {
             return false;
@@ -197,7 +197,7 @@ public final class CasingTileEntityRenderer implements BlockEntityRenderer<Casin
         return true;
     }
 
-    private void drawModuleOverlay(final RenderContext context, final CasingTileEntity casing, final Face face) {
+    private void drawModuleOverlay(final RenderContext context, final CasingBlockEntity casing, final Face face) {
         final PoseStack matrixStack = context.getMatrixStack();
         matrixStack.pushPose();
         for (final Port port : Port.CLOCKWISE) {
@@ -228,7 +228,7 @@ public final class CasingTileEntityRenderer implements BlockEntityRenderer<Casin
         }
     }
 
-    private boolean isObserverKindaClose(final CasingTileEntity casing) {
+    private boolean isObserverKindaClose(final CasingBlockEntity casing) {
         return casing.getBlockPos().closerToCenterThan(renderer.camera.getPosition(), 16);
     }
 

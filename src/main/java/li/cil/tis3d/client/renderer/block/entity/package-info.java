@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package li.cil.tis3d.client.renderer.tileentity;
+package li.cil.tis3d.client.renderer.block.entity;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 

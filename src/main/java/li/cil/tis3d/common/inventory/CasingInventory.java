@@ -9,7 +9,7 @@ import li.cil.tis3d.common.block.CasingBlock;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.CasingInventoryMessage;
 import li.cil.tis3d.common.provider.ModuleProviders;
-import li.cil.tis3d.common.tileentity.CasingTileEntity;
+import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.WorldlyContainer;
@@ -25,11 +25,11 @@ import java.util.Optional;
  * Inventory implementation for casings, having six slots for modules, one per face.
  */
 public final class CasingInventory extends Inventory implements WorldlyContainer {
-    private final CasingTileEntity tileEntity;
+    private final CasingBlockEntity blockEntity;
 
-    public CasingInventory(final CasingTileEntity tileEntity) {
+    public CasingInventory(final CasingBlockEntity blockEntity) {
         super(Face.VALUES.length);
-        this.tileEntity = tileEntity;
+        this.blockEntity = blockEntity;
     }
 
     // Copy-paste of parent setInventorySlotContents, but allows passing along module facing.
@@ -61,15 +61,15 @@ public final class CasingInventory extends Inventory implements WorldlyContainer
 
     @Override
     public void setChanged() {
-        tileEntity.setChanged();
-        final Level level = tileEntity.getBlockEntityLevel();
+        blockEntity.setChanged();
+        final Level level = blockEntity.getBlockEntityLevel();
         if (!level.isClientSide()) {
-            BlockState state = tileEntity.getBlockState();
+            BlockState state = blockEntity.getBlockState();
             for (final Face face : Face.VALUES) {
                 final BooleanProperty property = CasingBlock.FACE_TO_PROPERTY.get(face);
                 state = state.setValue(property, !items[face.ordinal()].isEmpty());
             }
-            level.setBlockAndUpdate(tileEntity.getBlockPos(), state);
+            level.setBlockAndUpdate(blockEntity.getBlockPos(), state);
         }
     }
 
@@ -85,7 +85,7 @@ public final class CasingInventory extends Inventory implements WorldlyContainer
     public boolean canPlaceItemThroughFace(final int index, final ItemStack stack, @Nullable final Direction side) {
         return side != null && side.ordinal() == index &&
                getItem(index).isEmpty() &&
-               tileEntity.getModule(Face.fromDirection(side)) == null && // Handles virtual modules.
+               blockEntity.getModule(Face.fromDirection(side)) == null && // Handles virtual modules.
                canInstall(stack, Face.fromDirection(side));
     }
 
@@ -95,7 +95,7 @@ public final class CasingInventory extends Inventory implements WorldlyContainer
     }
 
     private boolean canInstall(final ItemStack stack, final Face face) {
-        return ModuleProviders.getProviderFor(stack, tileEntity, face).isPresent();
+        return ModuleProviders.getProviderFor(stack, blockEntity, face).isPresent();
     }
 
     // --------------------------------------------------------------------- //
@@ -113,18 +113,18 @@ public final class CasingInventory extends Inventory implements WorldlyContainer
         }
 
         final Face face = Face.VALUES[index];
-        final Optional<ModuleProvider> provider = ModuleProviders.getProviderFor(stack, tileEntity, face);
+        final Optional<ModuleProvider> provider = ModuleProviders.getProviderFor(stack, blockEntity, face);
         if (!provider.isPresent()) {
             return;
         }
 
-        final Module module = provider.get().createModule(stack, tileEntity, face);
+        final Module module = provider.get().createModule(stack, blockEntity, face);
 
         if (module instanceof ModuleWithRotation) {
             ((ModuleWithRotation) module).setFacing(facing);
         }
 
-        if (!tileEntity.getCasingLevel().isClientSide()) {
+        if (!blockEntity.getCasingLevel().isClientSide()) {
             // Grab module data from newly created module, if any, don't rely on stack.
             // Rationale: module may initialize data from stack while contents of stack
             // are not synchronized to client, or do some fancy server-side only setup
@@ -137,26 +137,26 @@ public final class CasingInventory extends Inventory implements WorldlyContainer
                 moduleData = null;
             }
 
-            final CasingInventoryMessage message = new CasingInventoryMessage(tileEntity, index, stack, moduleData);
-            Network.INSTANCE.send(Network.getTracking(tileEntity), message);
+            final CasingInventoryMessage message = new CasingInventoryMessage(blockEntity, index, stack, moduleData);
+            Network.INSTANCE.send(Network.getTracking(blockEntity), message);
         }
 
-        tileEntity.setModule(Face.VALUES[index], module);
+        blockEntity.setModule(Face.VALUES[index], module);
     }
 
     @Override
     protected void onItemRemoved(final int index) {
         final Face face = Face.VALUES[index];
-        final Module module = tileEntity.getModule(face);
-        tileEntity.setModule(face, null);
-        if (!tileEntity.getCasingLevel().isClientSide()) {
+        final Module module = blockEntity.getModule(face);
+        blockEntity.setModule(face, null);
+        if (!blockEntity.getCasingLevel().isClientSide()) {
             if (module != null) {
                 module.onUninstalled(getItem(index));
                 module.onDisposed();
             }
 
-            final CasingInventoryMessage message = new CasingInventoryMessage(tileEntity, index, ItemStack.EMPTY, null);
-            Network.INSTANCE.send(Network.getTracking(tileEntity), message);
+            final CasingInventoryMessage message = new CasingInventoryMessage(blockEntity, index, ItemStack.EMPTY, null);
+            Network.INSTANCE.send(Network.getTracking(blockEntity), message);
         }
     }
 }

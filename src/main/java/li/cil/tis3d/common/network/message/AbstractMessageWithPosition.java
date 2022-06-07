@@ -22,11 +22,11 @@ public abstract class AbstractMessageWithPosition extends AbstractMessage {
     // --------------------------------------------------------------------- //
 
     @SuppressWarnings("unchecked")
-    protected <T extends BlockEntity> void withTileEntity(final Level level, final Class<T> type, final Consumer<T> callback) {
+    protected <T extends BlockEntity> void withBlockEntity(final Level level, final Class<T> type, final Consumer<T> callback) {
         if (LevelUtils.isLoaded(level, position)) {
-            final BlockEntity tileEntity = level.getBlockEntity(position);
-            if (tileEntity != null && type.isAssignableFrom(tileEntity.getClass())) {
-                callback.accept((T) tileEntity);
+            final BlockEntity blockEntity = level.getBlockEntity(position);
+            if (blockEntity != null && type.isAssignableFrom(blockEntity.getClass())) {
+                callback.accept((T) blockEntity);
             }
         }
     }

@@ -1,4 +1,4 @@
-package li.cil.tis3d.common.tileentity;
+package li.cil.tis3d.common.block.entity;
 
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
@@ -21,7 +21,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-public abstract class ComputerTileEntity extends BlockEntity implements PipeHost {
+public abstract class ComputerBlockEntity extends BlockEntity implements PipeHost {
     // --------------------------------------------------------------------- //
     // Persisted data.
 
@@ -64,12 +64,12 @@ public abstract class ComputerTileEntity extends BlockEntity implements PipeHost
     // NBT tag names.
     private static final String TAG_PIPES = "pipes";
 
-    private final ComputerTileEntity[] neighbors = new ComputerTileEntity[Face.VALUES.length];
+    private final ComputerBlockEntity[] neighbors = new ComputerBlockEntity[Face.VALUES.length];
     private final PipeImpl[] pipeOverride = new PipeImpl[pipes.length];
 
     // --------------------------------------------------------------------- //
 
-    protected ComputerTileEntity(final BlockEntityType<?> type, final BlockPos pos, final BlockState state) {
+    protected ComputerBlockEntity(final BlockEntityType<?> type, final BlockPos pos, final BlockState state) {
         super(type, pos, state);
 
         for (final Face face : Face.VALUES) {
@@ -143,7 +143,7 @@ public abstract class ComputerTileEntity extends BlockEntity implements PipeHost
     }
 
     // --------------------------------------------------------------------- //
-    // TileEntity
+    // BlockEntity
 
     @Override
     public void load(final CompoundTag tag) {
@@ -192,9 +192,9 @@ public abstract class ComputerTileEntity extends BlockEntity implements PipeHost
             final BlockPos neighborPos = getBlockPos().relative(facing);
             if (LevelUtils.isLoaded(level, neighborPos)) {
                 // If we have a casing, set it as our neighbor.
-                final BlockEntity tileEntity = level.getBlockEntity(neighborPos);
-                if (tileEntity instanceof ComputerTileEntity) {
-                    setNeighbor(Face.fromDirection(facing), (ComputerTileEntity) tileEntity);
+                final BlockEntity blockEntity = level.getBlockEntity(neighborPos);
+                if (blockEntity instanceof ComputerBlockEntity) {
+                    setNeighbor(Face.fromDirection(facing), (ComputerBlockEntity) blockEntity);
                 } else {
                     setNeighbor(Face.fromDirection(facing), null);
                 }
@@ -207,9 +207,9 @@ public abstract class ComputerTileEntity extends BlockEntity implements PipeHost
 
     protected abstract void scheduleScan();
 
-    protected void setNeighbor(final Face face, @Nullable final ComputerTileEntity neighbor) {
+    protected void setNeighbor(final Face face, @Nullable final ComputerBlockEntity neighbor) {
         // If a neighbor changed, do a rescan in the controller.
-        final ComputerTileEntity oldNeighbor = neighbors[face.ordinal()];
+        final ComputerBlockEntity oldNeighbor = neighbors[face.ordinal()];
         if (neighbor != oldNeighbor) {
             neighbors[face.ordinal()] = neighbor;
             scheduleScan();
@@ -271,7 +271,7 @@ public abstract class ComputerTileEntity extends BlockEntity implements PipeHost
                 final Face otherFace = mapFace(face, port);
                 final Port otherPort = mapPort(face, port);
 
-                final ComputerTileEntity neighbor = neighbors[otherFace.ordinal()];
+                final ComputerBlockEntity neighbor = neighbors[otherFace.ordinal()];
                 if (neighbor != null) {
                     final Face neighborFace = otherFace.getOpposite();
                     final Port neighborPort = flipSide(otherFace, otherPort);
@@ -358,7 +358,7 @@ public abstract class ComputerTileEntity extends BlockEntity implements PipeHost
      * @param startFace the face on the computer we're searching for.
      * @param startPort the port on the computer we're searching for.
      */
-    private void computePipeOverrides(final Face face, final Port port, final ComputerTileEntity start, final Face startFace, final Port startPort) {
+    private void computePipeOverrides(final Face face, final Port port, final ComputerBlockEntity start, final Face startFace, final Port startPort) {
         // Avoid cycles for inner faces of 2x2 structures.
         if (start == this) {
             return;
@@ -367,7 +367,7 @@ public abstract class ComputerTileEntity extends BlockEntity implements PipeHost
         final Face otherFace = mapFace(face, port);
         final Port otherPort = mapPort(face, port);
 
-        final ComputerTileEntity neighbor = neighbors[otherFace.ordinal()];
+        final ComputerBlockEntity neighbor = neighbors[otherFace.ordinal()];
         if (neighbor != null) {
             // Got a neighbor, continue searching through it. This can continue
             // only two times before we run into the early exit above.

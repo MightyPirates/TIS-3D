@@ -3,7 +3,7 @@ package li.cil.tis3d.client.renderer.color;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.traits.ModuleWithBakedModel;
-import li.cil.tis3d.common.tileentity.CasingTileEntity;
+import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockAndTintGetter;
@@ -24,7 +24,7 @@ public final class CasingBlockColor implements BlockColor {
         }
 
         final BlockEntity blockEntity = level.getBlockEntity(pos);
-        if (blockEntity instanceof final CasingTileEntity casing) {
+        if (blockEntity instanceof final CasingBlockEntity casing) {
             for (final Face face : Face.VALUES) {
                 final Module module = casing.getModule(face);
                 if (module instanceof final ModuleWithBakedModel moduleWithModel) {

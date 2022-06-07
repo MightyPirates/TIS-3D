@@ -1,4 +1,4 @@
-package li.cil.tis3d.common.tileentity;
+package li.cil.tis3d.common.block.entity;
 
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.HaltAndCatchFireException;
@@ -34,7 +34,7 @@ import java.util.*;
  * Controllers have no real state. They are active when powered by a redstone
  * signal, and can be reset by right-clicking them.
  */
-public final class ControllerTileEntity extends ComputerTileEntity {
+public final class ControllerBlockEntity extends ComputerBlockEntity {
     // --------------------------------------------------------------------- //
     // Computed data
 
@@ -106,7 +106,7 @@ public final class ControllerTileEntity extends ComputerTileEntity {
     /**
      * The list of casings managed by this controller.
      */
-    private final List<CasingTileEntity> casings = new ArrayList<>(CommonConfig.maxCasingsPerController);
+    private final List<CasingBlockEntity> casings = new ArrayList<>(CommonConfig.maxCasingsPerController);
 
     /**
      * The current state of the controller.
@@ -141,8 +141,8 @@ public final class ControllerTileEntity extends ComputerTileEntity {
 
     // --------------------------------------------------------------------- //
 
-    public ControllerTileEntity(final BlockPos pos, final BlockState state) {
-        super(TileEntities.CONTROLLER.get(), pos, state);
+    public ControllerBlockEntity(final BlockPos pos, final BlockState state) {
+        super(BlockEntities.CONTROLLER.get(), pos, state);
     }
 
     /**
@@ -185,7 +185,7 @@ public final class ControllerTileEntity extends ComputerTileEntity {
         final Level level = getBlockEntityLevel();
         if (!level.isClientSide()) {
             state = ControllerState.READY;
-            casings.forEach(CasingTileEntity::onDisabled);
+            casings.forEach(CasingBlockEntity::onDisabled);
             final HaltAndCatchFireMessage message = new HaltAndCatchFireMessage(getBlockPos());
             final PacketDistributor.PacketTarget target = Network.getTargetPoint(this, Network.RANGE_MEDIUM);
             Network.INSTANCE.send(target, message);
@@ -194,7 +194,7 @@ public final class ControllerTileEntity extends ComputerTileEntity {
     }
 
     // --------------------------------------------------------------------- //
-    // TileEntity
+    // BlockEntity
 
     @Override
     public void setRemoved() {
@@ -210,8 +210,8 @@ public final class ControllerTileEntity extends ComputerTileEntity {
         // Also, this is guaranteed to be correct, because we were either the sole
         // controller, thus there is no controller anymore, or there were multiple
         // controllers, in which case they were disabled to start with.
-        casings.forEach(CasingTileEntity::onDisabled);
-        for (final CasingTileEntity casing : casings) {
+        casings.forEach(CasingBlockEntity::onDisabled);
+        for (final CasingBlockEntity casing : casings) {
             casing.setController(null);
         }
         casings.clear();
@@ -222,13 +222,13 @@ public final class ControllerTileEntity extends ComputerTileEntity {
         super.onChunkUnloaded();
 
         // Just unset from our casings, do *not* disable them to keep their state.
-        for (final CasingTileEntity casing : casings) {
+        for (final CasingBlockEntity casing : casings) {
             casing.setController(null);
         }
     }
 
     // --------------------------------------------------------------------- //
-    // TileEntityComputer
+    // BlockEntityComputer
 
     @Override
     protected void loadServer(final CompoundTag tag) {
@@ -261,12 +261,12 @@ public final class ControllerTileEntity extends ComputerTileEntity {
     // --------------------------------------------------------------------- //
     // Ticking
 
-    public static void clientTick(final Level level, final BlockPos pos, final BlockState state, final ControllerTileEntity tileEntity) {
-        tileEntity.clientTick();
+    public static void clientTick(final Level level, final BlockPos pos, final BlockState state, final ControllerBlockEntity blockEntity) {
+        blockEntity.clientTick();
     }
 
-    public static void serverTick(final Level level, final BlockPos pos, final BlockState state, final ControllerTileEntity tileEntity) {
-        tileEntity.serverTick();
+    public static void serverTick(final Level level, final BlockPos pos, final BlockState state, final ControllerBlockEntity blockEntity) {
+        blockEntity.serverTick();
     }
 
     private void clientTick() {
@@ -334,7 +334,7 @@ public final class ControllerTileEntity extends ComputerTileEntity {
             } else {
                 // Yes, switch to running state and enable modules.
                 state = ControllerState.RUNNING;
-                casings.forEach(CasingTileEntity::onEnabled);
+                casings.forEach(CasingBlockEntity::onEnabled);
             }
         }
 
@@ -346,10 +346,10 @@ public final class ControllerTileEntity extends ComputerTileEntity {
             if (!level.hasNeighborSignal(getBlockPos())) {
                 // Nope, fall back to ready state, disable modules.
                 state = ControllerState.READY;
-                casings.forEach(CasingTileEntity::onDisabled);
+                casings.forEach(CasingBlockEntity::onDisabled);
             } else if (power > 1 || forceStep) {
                 // Operating, step all casings redstone input info once.
-                casings.forEach(CasingTileEntity::stepRedstone);
+                casings.forEach(CasingBlockEntity::stepRedstone);
 
                 try {
                     // 0 = off, we never have this or we'd be in the READY state.
@@ -392,7 +392,7 @@ public final class ControllerTileEntity extends ComputerTileEntity {
      * hit. In this case we abort the search and wait, to avoid potentially
      * partially loaded multi-blocks.
      * <p>
-     * Note that this is also used in {@link CasingTileEntity} for the reverse
+     * Note that this is also used in {@link CasingBlockEntity} for the reverse
      * search when trying to notify a controller.
      * <p>
      * <em>Important</em>: we have to pass along a valid level object here
@@ -403,28 +403,28 @@ public final class ControllerTileEntity extends ComputerTileEntity {
      * created tile entities are added to a separate list, and will be added
      * to their chunk and thus get their level set later on).
      *
-     * @param level      the level we're scanning for tile entities in.
-     * @param tileEntity the tile entity to get the neighbors for.
-     * @param processed  the list of processed tile entities.
-     * @param queue      the list of pending tile entities.
+     * @param level       the level we're scanning for tile entities in.
+     * @param blockEntity the tile entity to get the neighbors for.
+     * @param processed   the list of processed tile entities.
+     * @param queue       the list of pending tile entities.
      * @return <tt>true</tt> if all neighbors could be checked, <tt>false</tt> otherwise.
      */
-    static boolean addNeighbors(final Level level, final BlockEntity tileEntity, final Set<BlockEntity> processed, final Queue<BlockEntity> queue) {
+    static boolean addNeighbors(final Level level, final BlockEntity blockEntity, final Set<BlockEntity> processed, final Queue<BlockEntity> queue) {
         for (final Direction facing : Direction.values()) {
-            final BlockPos neighborPos = tileEntity.getBlockPos().relative(facing);
+            final BlockPos neighborPos = blockEntity.getBlockPos().relative(facing);
             if (!LevelUtils.isLoaded(level, neighborPos)) {
                 return false;
             }
 
-            final BlockEntity neighborTileEntity = level.getBlockEntity(neighborPos);
-            if (neighborTileEntity == null) {
+            final BlockEntity neighborBlockEntity = level.getBlockEntity(neighborPos);
+            if (neighborBlockEntity == null) {
                 continue;
             }
-            if (!processed.add(neighborTileEntity)) {
+            if (!processed.add(neighborBlockEntity)) {
                 continue;
             }
-            if (neighborTileEntity instanceof ControllerTileEntity || neighborTileEntity instanceof CasingTileEntity) {
-                queue.add(neighborTileEntity);
+            if (neighborBlockEntity instanceof ControllerBlockEntity || neighborBlockEntity instanceof CasingBlockEntity) {
+                queue.add(neighborBlockEntity);
             }
         }
         return true;
@@ -449,20 +449,20 @@ public final class ControllerTileEntity extends ComputerTileEntity {
         // List of pending tile entities that still need to be scanned.
         final Queue<BlockEntity> queue = new ArrayDeque<>();
         // List of new found casings.
-        final List<CasingTileEntity> newCasings = new ArrayList<>(CommonConfig.maxCasingsPerController);
+        final List<CasingBlockEntity> newCasings = new ArrayList<>(CommonConfig.maxCasingsPerController);
 
         // Start at our location, keep going until there's nothing left to do.
         processed.add(this);
         queue.add(this);
         while (!queue.isEmpty()) {
-            final BlockEntity tileEntity = queue.remove();
+            final BlockEntity blockEntity = queue.remove();
 
             // Check what we have. We only add controllers and casings to this list,
             // so we can skip the type check in the else branch.
-            if (tileEntity instanceof ControllerTileEntity) {
-                if (tileEntity == this) {
+            if (blockEntity instanceof ControllerBlockEntity) {
+                if (blockEntity == this) {
                     // Special case: first iteration, add the neighbors.
-                    if (!addNeighbors(level, tileEntity, processed, queue)) {
+                    if (!addNeighbors(level, blockEntity, processed, queue)) {
                         clear(ControllerState.INCOMPLETE);
                         return;
                     }
@@ -471,7 +471,7 @@ public final class ControllerTileEntity extends ComputerTileEntity {
                     clear(ControllerState.MULTIPLE_CONTROLLERS);
                     return;
                 }
-            } else /* if (tileEntity instanceof TileEntityCasing) */ {
+            } else /* if (blockEntity instanceof BlockEntityCasing) */ {
                 // We only allow a certain number of casings per multi-block.
                 if (newCasings.size() + 1 > CommonConfig.maxCasingsPerController) {
                     clear(ControllerState.TOO_COMPLEX);
@@ -479,7 +479,7 @@ public final class ControllerTileEntity extends ComputerTileEntity {
                 }
 
                 // Register as the controller with the casing and add neighbors.
-                final CasingTileEntity casing = (CasingTileEntity) tileEntity;
+                final CasingBlockEntity casing = (CasingBlockEntity) blockEntity;
                 newCasings.add(casing);
                 addNeighbors(level, casing, processed, queue);
             }
@@ -499,7 +499,7 @@ public final class ControllerTileEntity extends ComputerTileEntity {
         // but better safe than sorry).
         casings.removeAll(newCasings);
         casings.forEach(c -> c.setController(null));
-        casings.forEach(CasingTileEntity::scheduleScan);
+        casings.forEach(CasingBlockEntity::scheduleScan);
 
         // Replace old list of casings with the new found ones, now that we're
         // sure we don't have to disable our old ones.
@@ -508,14 +508,14 @@ public final class ControllerTileEntity extends ComputerTileEntity {
         casings.forEach(c -> c.setController(this));
 
         // Ensure our parts know their neighbors.
-        casings.forEach(CasingTileEntity::checkNeighbors);
-        casings.forEach(ComputerTileEntity::rebuildOverrides);
+        casings.forEach(CasingBlockEntity::checkNeighbors);
+        casings.forEach(ComputerBlockEntity::rebuildOverrides);
         rebuildOverrides();
 
         // Sort casings for deterministic order of execution (important when modules
         // write / read from multiple ports but only want to make the data available
         // to the first [e.g. execution module's ANY target]).
-        casings.sort(Comparator.comparing(CasingTileEntity::getPosition));
+        casings.sort(Comparator.comparing(CasingBlockEntity::getPosition));
 
         // All done. Make sure this comes after the checkNeighbors or we get CMEs!
         state = ControllerState.READY;
@@ -540,8 +540,8 @@ public final class ControllerTileEntity extends ComputerTileEntity {
      * Advance all computer parts by one step.
      */
     private void step() {
-        casings.forEach(CasingTileEntity::stepModules);
-        casings.forEach(CasingTileEntity::stepPipes);
+        casings.forEach(CasingBlockEntity::stepModules);
+        casings.forEach(CasingBlockEntity::stepPipes);
         stepPipes();
     }
 
@@ -559,7 +559,7 @@ public final class ControllerTileEntity extends ComputerTileEntity {
         // we want (because it could be the 'two controllers' error, in which
         // case we don't want to reference one of the controllers since that
         // could lead to confusion.
-        for (final CasingTileEntity casing : casings) {
+        for (final CasingBlockEntity casing : casings) {
             casing.setController(null);
         }
 
@@ -567,7 +567,7 @@ public final class ControllerTileEntity extends ComputerTileEntity {
         // incomplete state or rescanning, leave the state as is to avoid
         // unnecessarily resetting the computer.
         if (toState != ControllerState.INCOMPLETE) {
-            casings.forEach(CasingTileEntity::onDisabled);
+            casings.forEach(CasingBlockEntity::onDisabled);
         }
         casings.clear();
 

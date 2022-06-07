@@ -331,12 +331,12 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
         final Block block = blockState.getBlock();
 
         // Traveling through a portal?
-        final BlockEntity tileEntity = level.getBlockEntity(pos);
+        final BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockState.is(Blocks.NETHER_PORTAL)) {
             handleInsidePortal(pos);
             return;
         } else if (blockState.is(Blocks.END_GATEWAY)) {
-            if (tileEntity instanceof TheEndGatewayBlockEntity endGateway && TheEndGatewayBlockEntity.canEntityTeleport(this)) {
+            if (blockEntity instanceof TheEndGatewayBlockEntity endGateway && TheEndGatewayBlockEntity.canEntityTeleport(this)) {
                 TheEndGatewayBlockEntity.teleportEntity(level, pos, blockState, this, endGateway);
                 return;
             }
@@ -349,7 +349,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
         if (block instanceof InfraredReceiver) {
             ((InfraredReceiver) block).onInfraredPacket(this, hit);
         }
-        onCapabilityProviderCollision(hit, hit.getDirection(), tileEntity);
+        onCapabilityProviderCollision(hit, hit.getDirection(), blockEntity);
     }
 
     private void onEntityCollision(final EntityHitResult hit) {

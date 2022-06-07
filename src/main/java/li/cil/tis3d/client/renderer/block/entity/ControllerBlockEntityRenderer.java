@@ -1,8 +1,8 @@
-package li.cil.tis3d.client.renderer.tileentity;
+package li.cil.tis3d.client.renderer.block.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Matrix4f;
-import li.cil.tis3d.common.tileentity.ControllerTileEntity;
+import li.cil.tis3d.common.block.entity.ControllerBlockEntity;
 import li.cil.tis3d.util.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -20,18 +20,18 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import java.util.Objects;
 
 @OnlyIn(Dist.CLIENT)
-public final class ControllerTileEntityRenderer implements BlockEntityRenderer<ControllerTileEntity> {
+public final class ControllerBlockEntityRenderer implements BlockEntityRenderer<ControllerBlockEntity> {
     private final BlockEntityRenderDispatcher renderer;
     private final Font font;
 
-    public ControllerTileEntityRenderer(final BlockEntityRendererProvider.Context context) {
+    public ControllerBlockEntityRenderer(final BlockEntityRendererProvider.Context context) {
         renderer = context.getBlockEntityRenderDispatcher();
         font = context.getFont();
     }
 
     @Override
-    public void render(final ControllerTileEntity controller, final float partialTicks, final PoseStack matrixStack, final MultiBufferSource bufferFactory, final int light, final int overlay) {
-        final ControllerTileEntity.ControllerState state = controller.getState();
+    public void render(final ControllerBlockEntity controller, final float partialTicks, final PoseStack matrixStack, final MultiBufferSource bufferFactory, final int light, final int overlay) {
+        final ControllerBlockEntity.ControllerState state = controller.getState();
         if (!state.isError) {
             return;
         }
@@ -44,7 +44,7 @@ public final class ControllerTileEntityRenderer implements BlockEntityRenderer<C
         }
     }
 
-    private void renderState(final PoseStack matrixStack, final MultiBufferSource bufferFactory, final ControllerTileEntity.ControllerState state) {
+    private void renderState(final PoseStack matrixStack, final MultiBufferSource bufferFactory, final ControllerBlockEntity.ControllerState state) {
         matrixStack.pushPose();
         matrixStack.translate(0.5, 1.4, 0.5);
         matrixStack.mulPose(renderer.camera.rotation());

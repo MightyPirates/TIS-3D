@@ -18,10 +18,9 @@ public final class LevelUnloadHandler {
 //            if (chunkSource instanceof ServerChunkCache serverChunkCache) {
 //                serverChunkCache.
 //            }
-//            for (final BlockEntity tileEntity : ((Level) event.getWorld()).blockEntityList) {
-//                if (tileEntity instanceof CasingTileEntity) {
-//                    final CasingTileEntity tileEntityCasing = (CasingTileEntity) tileEntity;
-//                    final CasingImpl casing = (CasingImpl) tileEntityCasing.getCasing();
+//            for (final BlockEntity blockEntity : ((Level) event.getWorld()).blockEntityList) {
+//                if (blockEntity instanceof CasingBlockEntity blockEntityCasing) {
+//                    final CasingImpl casing = (CasingImpl) blockEntityCasing.getCasing();
 //                    casing.onDisposed();
 //                }
 //            }

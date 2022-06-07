@@ -8,13 +8,13 @@ import li.cil.tis3d.client.renderer.color.CasingBlockColor;
 import li.cil.tis3d.client.renderer.entity.NullEntityRenderer;
 import li.cil.tis3d.client.renderer.font.NormalFontRenderer;
 import li.cil.tis3d.client.renderer.font.SmallFontRenderer;
-import li.cil.tis3d.client.renderer.tileentity.CasingTileEntityRenderer;
-import li.cil.tis3d.client.renderer.tileentity.ControllerTileEntityRenderer;
+import li.cil.tis3d.client.renderer.block.entity.CasingBlockEntityRenderer;
+import li.cil.tis3d.client.renderer.block.entity.ControllerBlockEntityRenderer;
 import li.cil.tis3d.common.block.Blocks;
 import li.cil.tis3d.common.container.Containers;
 import li.cil.tis3d.common.entity.Entities;
 import li.cil.tis3d.common.module.DisplayModule;
-import li.cil.tis3d.common.tileentity.TileEntities;
+import li.cil.tis3d.common.block.entity.BlockEntities;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -45,8 +45,8 @@ public final class ClientSetup {
 
         MenuScreens.register(Containers.READ_ONLY_MEMORY_MODULE.get(), ReadOnlyMemoryModuleScreen::new);
 
-        BlockEntityRenderers.register(TileEntities.CASING.get(), CasingTileEntityRenderer::new);
-        BlockEntityRenderers.register(TileEntities.CONTROLLER.get(), ControllerTileEntityRenderer::new);
+        BlockEntityRenderers.register(BlockEntities.CASING.get(), CasingBlockEntityRenderer::new);
+        BlockEntityRenderers.register(BlockEntities.CONTROLLER.get(), ControllerBlockEntityRenderer::new);
 
         MinecraftForge.EVENT_BUS.addListener(DisplayModule.TextureDisposer::tick);
 
