@@ -111,6 +111,7 @@ public final class DisplayModule extends AbstractModuleWithRotation {
         super(casing, face);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     @OnlyIn(Dist.CLIENT)
     protected void finalize() {

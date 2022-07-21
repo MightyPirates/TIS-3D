@@ -35,10 +35,7 @@ def getGitRef() {
 version = "${semver}+${getGitRef()}"
 group = 'li.cil.tis3d'
 
-java.toolchain {
-    languageVersion = JavaLanguageVersion.of(17)
-    vendor = JvmVendorSpec.ADOPTOPENJDK
-}
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'utf-8'
@@ -71,6 +68,7 @@ minecraft {
 
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'info'
+            property 'forge.enabledGameTestNamespaces', 'tis3d'
 
             mods {
                 tis3d {
@@ -84,6 +82,21 @@ minecraft {
 
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'info'
+            property 'forge.enabledGameTestNamespaces', 'tis3d'
+
+            mods {
+                tis3d {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        gameTestServer {
+            workingDirectory project.file('run')
+
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'info'
+            property 'forge.enabledGameTestNamespaces', 'tis3d'
 
             mods {
                 tis3d {
