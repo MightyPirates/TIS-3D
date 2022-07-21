@@ -204,7 +204,7 @@ modrinth {
     uploadFile = jar
     gameVersions = [minecraft_version]
     dependencies {
-        required.project "P7dR8mSH" // Markdown Manual
+        required.project 'nPQ9xkPg' // Markdown Manual
     }
 }
 
