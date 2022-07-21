@@ -198,7 +198,7 @@ modrinth {
     token = System.getenv("MODRINTH_API_KEY") ?: ""
     projectId = modrinth_project_id
     changelog = System.getenv("CHANGELOG") ?: "Changelog not available."
-    versionNumber = semver
+    versionNumber = "MC${minecraft_version}-${minecraft_sdk}-${semver}"
     versionName = "${rootProject.name}-${version}"
     versionType = 'release'
     uploadFile = jar
