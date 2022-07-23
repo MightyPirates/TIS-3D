@@ -7,7 +7,6 @@ import li.cil.tis3d.api.module.traits.ModuleWithBlockChangeListener;
 import li.cil.tis3d.api.prefab.module.AbstractModule;
 import li.cil.tis3d.util.BlockStateUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -16,11 +15,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.RenderShape;
@@ -28,13 +29,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.model.data.IModelData;
-import net.minecraft.world.level.block.Block;
+import net.minecraftforge.client.ChunkRenderTypeSet;
+import net.minecraftforge.client.model.data.ModelData;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.OptionalInt;
-import java.util.Random;
 
 public final class FacadeModule extends AbstractModule implements ModuleWithBlockChangeListener, ModuleWithBakedModel {
     // --------------------------------------------------------------------- //
@@ -46,7 +46,7 @@ public final class FacadeModule extends AbstractModule implements ModuleWithBloc
     // Computed data
 
     // Error message when trying to configure with an incompatible block.
-    public static final TranslatableComponent MESSAGE_FACADE_INVALID_TARGET = new TranslatableComponent("tis3d.facade.invalid_target");
+    public static final Component MESSAGE_FACADE_INVALID_TARGET = Component.translatable("tis3d.facade.invalid_target");
 
     // Data packet types.
     private static final byte DATA_TYPE_FULL = 0;
@@ -93,7 +93,8 @@ public final class FacadeModule extends AbstractModule implements ModuleWithBloc
         final Level level = getCasing().getCasingLevel();
         final BlockPos position = getCasing().getPosition();
         final BlockState state = level.getBlockState(position);
-        level.sendBlockUpdated(position, state, state,  Block.UPDATE_ALL);
+        getCasing().setModelDataChanged();
+        level.sendBlockUpdated(position, state, state, Block.UPDATE_ALL);
     }
 
     @Override
@@ -139,8 +140,9 @@ public final class FacadeModule extends AbstractModule implements ModuleWithBloc
         return facadeState != null;
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Override
-    public IModelData getModelData(final BlockAndTintGetter world, final BlockPos pos, final BlockState state, final IModelData data) {
+    public ModelData getModelData(final BlockAndTintGetter world, final BlockPos pos, final BlockState state, final ModelData data) {
         final BlockModelShaper shapes = Minecraft.getInstance().getBlockRenderer().getBlockModelShaper();
         final BakedModel model = shapes.getBlockModel(facadeState);
         return model.getModelData(world, pos, facadeState, data);
@@ -148,20 +150,24 @@ public final class FacadeModule extends AbstractModule implements ModuleWithBloc
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public List<BakedQuad> getQuads(@Nullable final BlockState state, @Nullable final Direction face, final Random random, final IModelData data) {
+    public List<BakedQuad> getQuads(@Nullable final BlockState state, @Nullable final Direction face, final RandomSource random, final ModelData data, final @Nullable RenderType renderType) {
         final BlockModelShaper shapes = Minecraft.getInstance().getBlockRenderer().getBlockModelShaper();
         final BakedModel model = shapes.getBlockModel(facadeState);
         final Level world = getCasing().getCasingLevel();
         final BlockPos position = getCasing().getPosition();
-        final IModelData modelData = model.getModelData(world, position, facadeState, data);
-        return model.getQuads(facadeState, face, random, modelData);
+        final ModelData modelData = model.getModelData(world, position, facadeState, data);
+        return model.getQuads(facadeState, face, random, modelData, renderType);
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Override
-    public boolean canRenderInLayer(@Nullable final RenderType layer) {
-        return layer == null || ItemBlockRenderTypes.canRenderInLayer(facadeState, layer);
+    public ChunkRenderTypeSet getRenderTypes(final RandomSource random, final ModelData data) {
+        final BlockModelShaper shapes = Minecraft.getInstance().getBlockRenderer().getBlockModelShaper();
+        final BakedModel model = shapes.getBlockModel(facadeState);
+        return model.getRenderTypes(facadeState, random, data);
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public OptionalInt getTintColor(@Nullable final BlockAndTintGetter level, @Nullable final BlockPos pos, final int tintIndex) {
         return OptionalInt.of(Minecraft.getInstance().getBlockColors().getColor(facadeState, level, pos, tintIndex));

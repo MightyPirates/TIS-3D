@@ -26,7 +26,7 @@ public final class CodeBookDataMessage extends AbstractMessage {
     // AbstractMessage
 
     @Override
-    protected void handleMessage(final NetworkEvent.Context context) {
+    public void handleMessage(final NetworkEvent.Context context) {
         final ServerPlayer player = context.getSender();
         if (player == null) {
             return;

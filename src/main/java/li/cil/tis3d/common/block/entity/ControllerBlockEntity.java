@@ -11,7 +11,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -92,7 +91,7 @@ public final class ControllerBlockEntity extends ComputerBlockEntity {
 
         ControllerState(final boolean isError) {
             this.isError = isError;
-            this.message = new TranslatableComponent(API.MOD_ID + ".controller.status." + name().toLowerCase(Locale.US));
+            this.message = Component.translatable(API.MOD_ID + ".controller.status." + name().toLowerCase(Locale.US));
         }
 
         // --------------------------------------------------------------------- //

@@ -37,6 +37,11 @@ public interface Casing {
      */
     void setChanged();
 
+    /**
+     * Requests a model data update for this casing, primarily intended for {@link li.cil.tis3d.api.module.traits.ModuleWithBakedModel}.
+     */
+    void setModelDataChanged();
+
     // --------------------------------------------------------------------- //
 
     /**

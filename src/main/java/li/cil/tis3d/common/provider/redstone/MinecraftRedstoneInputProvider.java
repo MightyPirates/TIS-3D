@@ -5,9 +5,8 @@ import li.cil.tis3d.util.LevelUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 
-public final class MinecraftRedstoneInputProvider extends ForgeRegistryEntry<RedstoneInputProvider> implements RedstoneInputProvider {
+public final class MinecraftRedstoneInputProvider implements RedstoneInputProvider {
     @Override
     public int getInput(final Level level, final BlockPos position, final Direction face) {
         final BlockPos inputPos = position.relative(face);

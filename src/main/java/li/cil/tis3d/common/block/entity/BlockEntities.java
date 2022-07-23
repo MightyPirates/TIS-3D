@@ -10,7 +10,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 public final class BlockEntities {
-    private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = RegistryUtils.getInitializerFor(ForgeRegistries.BLOCK_ENTITIES);
+    private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = RegistryUtils.getInitializerFor(ForgeRegistries.BLOCK_ENTITY_TYPES);
 
     // --------------------------------------------------------------------- //
 
@@ -26,6 +26,6 @@ public final class BlockEntities {
 
     @SuppressWarnings("ConstantConditions") // .build(null) is fine
     private static <B extends Block, T extends BlockEntity> RegistryObject<BlockEntityType<T>> register(final RegistryObject<B> block, final BlockEntityType.BlockEntitySupplier<T> factory) {
-        return BLOCK_ENTITIES.register(block.getId().getPath(), () -> BlockEntityType.Builder.of(factory, block.get()).build(null));
+        return BLOCK_ENTITY_TYPES.register(block.getId().getPath(), () -> BlockEntityType.Builder.of(factory, block.get()).build(null));
     }
 }

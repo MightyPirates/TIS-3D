@@ -7,7 +7,6 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 /**
  * Redstone input providers can be queried to compute simple redstone input into blocks.
@@ -20,7 +19,7 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
  * Additional providers may be registered with the {@link net.minecraft.core.Registry}
  * <tt>tis3d:redstone_inputs</tt>.
  */
-public interface RedstoneInputProvider extends IForgeRegistryEntry<RedstoneInputProvider> {
+public interface RedstoneInputProvider {
     /**
      * The registry name of the registry holding redstone input providers.
      */

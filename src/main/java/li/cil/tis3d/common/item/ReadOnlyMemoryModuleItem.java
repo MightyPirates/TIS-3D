@@ -5,7 +5,6 @@ import li.cil.tis3d.common.container.ReadOnlyMemoryModuleContainer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -34,10 +33,10 @@ public final class ReadOnlyMemoryModuleItem extends ModuleItem {
     @Override
     public InteractionResultHolder<ItemStack> use(final Level level, final Player player, final InteractionHand hand) {
         if (!level.isClientSide() && player instanceof final ServerPlayer serverPlayer) {
-            NetworkHooks.openGui(serverPlayer, new MenuProvider() {
+            NetworkHooks.openScreen(serverPlayer, new MenuProvider() {
                 @Override
                 public Component getDisplayName() {
-                    return TextComponent.EMPTY;
+                    return Component.empty();
                 }
 
                 @Override

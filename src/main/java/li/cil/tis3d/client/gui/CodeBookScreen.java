@@ -21,8 +21,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
@@ -39,11 +37,11 @@ import java.util.stream.Collectors;
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 @OnlyIn(Dist.CLIENT)
 public final class CodeBookScreen extends Screen {
-    private static final TranslatableComponent ERROR_ON_PREVIOUS_PAGE_TOOLTIP = new TranslatableComponent("tis3d.code_book.error_on_previous_page");
-    private static final TranslatableComponent ERROR_ON_NEXT_PAGE_TOOLTIP = new TranslatableComponent("tis3d.code_book.error_on_next_page");
-    private static final TranslatableComponent PREVIOUS_PAGE_TOOLTIP = new TranslatableComponent("tis3d.code_book.previous_page");
-    private static final TranslatableComponent NEXT_PAGE_TOOLTIP = new TranslatableComponent("tis3d.code_book.next_page");
-    private static final TranslatableComponent DELETE_PAGE_TOOLTIP = new TranslatableComponent("tis3d.code_book.delete_page");
+    private static final Component ERROR_ON_PREVIOUS_PAGE_TOOLTIP = Component.translatable("tis3d.code_book.error_on_previous_page");
+    private static final Component ERROR_ON_NEXT_PAGE_TOOLTIP = Component.translatable("tis3d.code_book.error_on_next_page");
+    private static final Component PREVIOUS_PAGE_TOOLTIP = Component.translatable("tis3d.code_book.previous_page");
+    private static final Component NEXT_PAGE_TOOLTIP = Component.translatable("tis3d.code_book.next_page");
+    private static final Component DELETE_PAGE_TOOLTIP = Component.translatable("tis3d.code_book.delete_page");
 
     private static final int GUI_WIDTH = 218;
     private static final int GUI_HEIGHT = 230;
@@ -81,7 +79,7 @@ public final class CodeBookScreen extends Screen {
     // --------------------------------------------------------------------- //
 
     public CodeBookScreen(final Player player, final InteractionHand hand) {
-        super(new TextComponent("Code Book"));
+        super(Component.literal("Code Book"));
         this.player = player;
         this.hand = hand;
         this.data = CodeBookItem.Data.loadFromStack(player.getItemInHand(InteractionHand.MAIN_HAND));
@@ -720,7 +718,7 @@ public final class CodeBookScreen extends Screen {
         private final PageChangeType type;
 
         ButtonChangePage(final int x, final int y, final PageChangeType type, final OnPress action) {
-            super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, TextComponent.EMPTY, action);
+            super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, Component.empty(), action);
             this.type = type;
         }
 
@@ -753,7 +751,7 @@ public final class CodeBookScreen extends Screen {
         private static final int BUTTON_HEIGHT = 14;
 
         ButtonDeletePage(final int x, final int y, final OnPress action) {
-            super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, TextComponent.EMPTY, action);
+            super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, Component.empty(), action);
         }
 
         @Override

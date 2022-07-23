@@ -9,7 +9,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import java.util.Optional;
 
@@ -22,7 +21,7 @@ import java.util.Optional;
  * Additional providers may be registered with the {@link net.minecraft.core.Registry}
  * <tt>tis3d:serial_interfaces</tt>.
  */
-public interface SerialInterfaceProvider extends IForgeRegistryEntry<SerialInterfaceProvider> {
+public interface SerialInterfaceProvider {
     /**
      * The registry name of the registry holding serial interface providers.
      */

@@ -23,11 +23,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.event.TickEvent;
 
-import javax.annotation.Nullable;
 import java.util.Arrays;
-import java.util.LinkedList;
 
 public final class DisplayModule extends AbstractModuleWithRotation {
     // --------------------------------------------------------------------- //
@@ -111,13 +108,6 @@ public final class DisplayModule extends AbstractModuleWithRotation {
         super(casing, face);
     }
 
-    @SuppressWarnings("deprecation")
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    protected void finalize() {
-        TextureDisposer.add(texture);
-    }
-
     // --------------------------------------------------------------------- //
     // Module
 
@@ -139,6 +129,7 @@ public final class DisplayModule extends AbstractModuleWithRotation {
 
     @Override
     public void onDisposed() {
+        super.onDisposed();
         if (getCasing().getCasingLevel().isClientSide()) {
             deleteTexture();
         }
@@ -347,29 +338,5 @@ public final class DisplayModule extends AbstractModuleWithRotation {
         data.writeBoolean(false);
         data.writeBytes(drawCall);
         getCasing().sendData(getFace(), data);
-    }
-
-    // --------------------------------------------------------------------- //
-
-    /**
-     * Used to make absolutely sure we don't leak GPU memory. We should explicitly
-     * free all texture memory in destroy/unload handlers, but can't play it too
-     * safe here.
-     */
-    @OnlyIn(Dist.CLIENT)
-    public static final class TextureDisposer {
-        private static final LinkedList<DynamicTexture> leakedTextures = new LinkedList<>();
-
-        public static void add(@Nullable final DynamicTexture texture) {
-            if (texture != null) {
-                leakedTextures.add(texture);
-            }
-        }
-
-        public static void tick(@SuppressWarnings("unused") final TickEvent.ClientTickEvent event) {
-            while (!leakedTextures.isEmpty()) {
-                leakedTextures.remove().close();
-            }
-        }
     }
 }

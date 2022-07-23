@@ -1,31 +1,25 @@
 package li.cil.tis3d.client.renderer.block;
 
 import li.cil.tis3d.api.machine.Face;
-import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.traits.ModuleWithBakedModel;
-import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.BlockAndTintGetter;
-import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.client.model.data.IDynamicBakedModel;
-import net.minecraftforge.client.model.data.IModelData;
-import net.minecraftforge.client.model.data.ModelDataMap;
+import net.minecraftforge.client.ChunkRenderTypeSet;
+import net.minecraftforge.client.model.IDynamicBakedModel;
+import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 public final class ModuleBakedModel implements IDynamicBakedModel {
     private final BakedModel proxy;
@@ -39,27 +33,21 @@ public final class ModuleBakedModel implements IDynamicBakedModel {
     // --------------------------------------------------------------------- //
     // IBakedModel
 
-    @Nonnull
     @Override
-    public List<BakedQuad> getQuads(@Nullable final BlockState state, @Nullable final Direction side, final Random random, final IModelData extraData) {
-        final RenderType layer = MinecraftForgeClient.getRenderType();
-
-        final CasingModules modules = extraData.getData(CasingModules.CASING_MODULES_PROPERTY);
+    public @NotNull List<BakedQuad> getQuads(@Nullable final BlockState state, @Nullable final Direction side, final RandomSource random, final ModelData data, @Nullable final RenderType renderType) {
+        final CasingModules modules = data.get(CasingModules.CASING_MODULES_PROPERTY);
         if (side != null) {
             if (modules != null) {
                 final Face face = Face.fromDirection(side);
                 final ModuleWithBakedModel module = modules.getModule(face);
                 if (module != null && module.hasModel()) {
-                    if (module.canRenderInLayer(layer)) {
-                        return module.getQuads(state, side, random, modules.getModuleData(face));
-                    } else {
-                        return Collections.emptyList();
-                    }
+                    final ModelData moduleData = modules.getModuleData(face);
+                    return module.getQuads(state, side, random, moduleData, renderType);
                 }
             }
 
-            if (layer != null && layer.equals(RenderType.solid())) {
-                return proxy.getQuads(state, side, random, extraData);
+            if (renderType != null && renderType.equals(RenderType.solid())) {
+                return proxy.getQuads(state, side, random, data, renderType);
             } else {
                 return Collections.emptyList();
             }
@@ -70,15 +58,14 @@ public final class ModuleBakedModel implements IDynamicBakedModel {
                 for (final Face face : Face.VALUES) {
                     final ModuleWithBakedModel module = modules.getModule(face);
                     if (module != null && module.hasModel()) {
-                        if (module.canRenderInLayer(layer)) {
-                            quads.addAll(module.getQuads(state, null, random, modules.getModuleData(face)));
-                        }
+                        final ModelData moduleData = modules.getModuleData(face);
+                        quads.addAll(module.getQuads(state, null, random, moduleData, renderType));
                     }
                 }
             }
 
-            if (layer != null && layer.equals(RenderType.solid())) {
-                quads.addAll(proxy.getQuads(state, null, random, extraData));
+            if (renderType != null && renderType.equals(RenderType.solid())) {
+                quads.addAll(proxy.getQuads(state, null, random, data, renderType));
             }
 
             return quads;
@@ -116,40 +103,29 @@ public final class ModuleBakedModel implements IDynamicBakedModel {
         return proxy.getOverrides();
     }
 
-    @Nonnull
     @Override
-    public IModelData getModelData(final BlockAndTintGetter level, final BlockPos pos, final BlockState state, final IModelData tileData) {
-        final BlockEntity blockEntity = level.getBlockEntity(pos);
-        if (!(blockEntity instanceof final CasingBlockEntity casing)) {
-            return tileData;
-        }
-
-        final CasingModules data = new CasingModules();
-        for (final Face face : Face.VALUES) {
-            final Module module = casing.getModule(face);
-            if (module instanceof final ModuleWithBakedModel moduleWithModel) {
-                if (moduleWithModel.hasModel()) {
-                    data.setModule(face, moduleWithModel, moduleWithModel.getModelData(level, pos, state, tileData));
+    public ChunkRenderTypeSet getRenderTypes(@NotNull final BlockState state, @NotNull final RandomSource random, @NotNull final ModelData data) {
+        ChunkRenderTypeSet set = proxy.getRenderTypes(state, random, data);
+        final CasingModules modules = data.get(CasingModules.CASING_MODULES_PROPERTY);
+        if (modules != null) {
+            for (final Face face : Face.VALUES) {
+                final ModuleWithBakedModel module = modules.getModule(face);
+                if (module != null && module.hasModel()) {
+                    final ModelData moduleData = modules.getModuleData(face);
+                    set = ChunkRenderTypeSet.union(set, module.getRenderTypes(random, moduleData));
                 }
             }
         }
-
-        if (!data.isEmpty()) {
-            return new ModelDataMap.Builder()
-                .withInitial(CasingModules.CASING_MODULES_PROPERTY, data)
-                .build();
-        }
-
-        return tileData;
+        return set;
     }
 
     // --------------------------------------------------------------------- //
 
-    private static final class CasingModules {
+    public static final class CasingModules {
         public static final ModelProperty<CasingModules> CASING_MODULES_PROPERTY = new ModelProperty<>();
 
         private final ModuleWithBakedModel[] modules = new ModuleWithBakedModel[Face.VALUES.length];
-        private final IModelData[] moduleData = new IModelData[Face.VALUES.length];
+        private final ModelData[] moduleData = new ModelData[Face.VALUES.length];
 
         public boolean isEmpty() {
             for (final ModuleWithBakedModel module : modules) {
@@ -161,7 +137,7 @@ public final class ModuleBakedModel implements IDynamicBakedModel {
             return true;
         }
 
-        public void setModule(final Face face, final ModuleWithBakedModel module, final IModelData data) {
+        public void setModule(final Face face, final ModuleWithBakedModel module, final ModelData data) {
             modules[face.ordinal()] = module;
             moduleData[face.ordinal()] = data;
         }
@@ -171,7 +147,7 @@ public final class ModuleBakedModel implements IDynamicBakedModel {
             return modules[face.ordinal()];
         }
 
-        public IModelData getModuleData(final Face face) {
+        public ModelData getModuleData(final Face face) {
             return moduleData[face.ordinal()];
         }
     }

@@ -2,13 +2,13 @@ package li.cil.tis3d.util;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
-import java.util.Random;
 
 /**
  * Utility class for interacting with inventories.
@@ -46,7 +46,7 @@ public final class InventoryUtils {
             return null;
         }
 
-        final Random rng = level.random;
+        final RandomSource rng = level.random;
 
         final double ox = towards.getStepX();
         final double oy = towards.getStepY();

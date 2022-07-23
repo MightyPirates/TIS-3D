@@ -129,6 +129,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
 
     @Override
     public void onDisposed() {
+        super.onDisposed();
         if (getCasing().getCasingLevel().isClientSide()) {
             //noinspection MethodCallSideOnly Guarded by isClient check.
             closeGui();

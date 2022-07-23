@@ -4,16 +4,17 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.ChunkRenderTypeSet;
+import net.minecraftforge.client.model.data.ModelData;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.OptionalInt;
-import java.util.Random;
 
 /**
  * Modules implementing this interface will be queried when the quads for rendering the side of the
@@ -21,7 +22,7 @@ import java.util.Random;
  * <p>
  * Used for example by the facade module. Note that returning anything non-null will lead to <em>only</em> the
  * returned quads being used. Also note that this is called directly from
- * {@link net.minecraft.client.resources.model.BakedModel#getQuads(BlockState, Direction, Random, IModelData)},
+ * {@link net.minecraft.client.resources.model.BakedModel#getQuads(BlockState, Direction, RandomSource, ModelData, RenderType)},
  * so calls to this method may not come from the main thread.
  */
 public interface ModuleWithBakedModel {
@@ -42,7 +43,7 @@ public interface ModuleWithBakedModel {
     /**
      * Collect model data that is needed to render the quads returned by this module.
      * <p>
-     * The returned value will be passed back into {@link #getQuads(BlockState, Direction, Random, IModelData)}.
+     * The returned value will be passed back into {@link #getQuads(BlockState, Direction, RandomSource, ModelData, RenderType)}.
      *
      * @param world the render-thread safe world access.
      * @param pos   the position of the casing.
@@ -51,32 +52,33 @@ public interface ModuleWithBakedModel {
      * @return model data needed for rendering.
      */
     @OnlyIn(Dist.CLIENT)
-    default IModelData getModelData(final BlockAndTintGetter world, final BlockPos pos, final BlockState state, final IModelData data) {
+    default ModelData getModelData(final BlockAndTintGetter world, final BlockPos pos, final BlockState state, final ModelData data) {
         return data;
     }
 
     /**
      * Called to obtain quads to use for the specified side instead of the casing's default ones. Will be called
-     * directly from the casing's {@link net.minecraft.client.resources.model.BakedModel#getQuads(BlockState, Direction, Random, IModelData)}
+     * directly from the casing's {@link net.minecraft.client.resources.model.BakedModel#getQuads(BlockState, Direction, RandomSource, ModelData, RenderType)}
      * logic.
      *
-     * @param state  the casing's block state.
-     * @param face   the side to obtain replacement quads for.
-     * @param random the random seed to use for the quad generation.
+     * @param state      the casing's block state.
+     * @param face       the side to obtain replacement quads for.
+     * @param random     the random seed to use for the quad generation.
+     * @param renderType the render type.
      * @return the list of replacement quads, or <c>null</c> to use the default casing quads.
      */
     @OnlyIn(Dist.CLIENT)
-    List<BakedQuad> getQuads(final @Nullable BlockState state, @Nullable final Direction face, final Random random, final IModelData data);
+    List<BakedQuad> getQuads(final @Nullable BlockState state, @Nullable final Direction face, final RandomSource random, final ModelData data, @Nullable final RenderType renderType);
 
     /**
-     * Returns whether the quads returned by {@link #getQuads(BlockState, Direction, Random, IModelData)} can be
-     * rendered in the specified render layer.
+     * Returns the render types required by the underlying model.
      *
-     * @param layer the render layer to test.
-     * @return {@code true} if the quads can be rendered in the specified layer; {@code false} otherwise.
+     * @param random the random seed to use for the quad generation.
+     * @param data   the model data for the underlying model.
+     * @return the render layers needed by the underlying model.
      */
     @OnlyIn(Dist.CLIENT)
-    boolean canRenderInLayer(@Nullable final RenderType layer);
+    ChunkRenderTypeSet getRenderTypes(final RandomSource random, final ModelData data);
 
     /**
      * Get the tint color to use for the quads returned by this module.

@@ -18,7 +18,7 @@ public final class RedstoneInputProviders {
 
     // --------------------------------------------------------------------- //
 
-    public static final Supplier<IForgeRegistry<RedstoneInputProvider>> REDSTONE_INPUT_PROVIDER_REGISTRY = REDSTONE_INPUT_PROVIDERS.makeRegistry(RedstoneInputProvider.class, RegistryBuilder::new);
+    public static final Supplier<IForgeRegistry<RedstoneInputProvider>> REDSTONE_INPUT_PROVIDER_REGISTRY = REDSTONE_INPUT_PROVIDERS.makeRegistry(RegistryBuilder::new);
 
     // --------------------------------------------------------------------- //
 

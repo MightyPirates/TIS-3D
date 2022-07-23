@@ -4,14 +4,14 @@ import li.cil.tis3d.util.RegistryUtils;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Function;
 
 public final class Entities {
-    private static final DeferredRegister<EntityType<?>> ENTITIES = RegistryUtils.getInitializerFor(ForgeRegistries.ENTITIES);
+    private static final DeferredRegister<EntityType<?>> ENTITY_TYPES = RegistryUtils.getInitializerFor(ForgeRegistries.ENTITY_TYPES);
 
     // --------------------------------------------------------------------- //
 
@@ -31,6 +31,6 @@ public final class Entities {
     // --------------------------------------------------------------------- //
 
     private static <T extends Entity> RegistryObject<EntityType<T>> register(final String name, final EntityType.EntityFactory<T> factory, final MobCategory classification, final Function<EntityType.Builder<T>, EntityType.Builder<T>> customizer) {
-        return ENTITIES.register(name, () -> customizer.apply(EntityType.Builder.of(factory, classification)).build(name));
+        return ENTITY_TYPES.register(name, () -> customizer.apply(EntityType.Builder.of(factory, classification)).build(name));
     }
 }

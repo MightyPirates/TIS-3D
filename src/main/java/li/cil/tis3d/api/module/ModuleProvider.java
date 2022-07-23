@@ -7,7 +7,6 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 
@@ -24,7 +23,7 @@ import javax.annotation.Nullable;
  * Additional providers may be registered with the {@link net.minecraft.core.Registry}
  * <tt>tis3d:modules</tt>.
  */
-public interface ModuleProvider extends IForgeRegistryEntry<ModuleProvider> {
+public interface ModuleProvider {
     /**
      * The registry name of the registry holding module providers.
      */

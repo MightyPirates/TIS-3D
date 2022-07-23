@@ -18,7 +18,7 @@ public final class SerialInterfaceProviders {
 
     // --------------------------------------------------------------------- //
 
-    public static final Supplier<IForgeRegistry<SerialInterfaceProvider>> MODULE_PROVIDER_REGISTRY = MODULE_PROVIDERS.makeRegistry(SerialInterfaceProvider.class, RegistryBuilder::new);
+    public static final Supplier<IForgeRegistry<SerialInterfaceProvider>> MODULE_PROVIDER_REGISTRY = MODULE_PROVIDERS.makeRegistry(RegistryBuilder::new);
 
     // --------------------------------------------------------------------- //
 

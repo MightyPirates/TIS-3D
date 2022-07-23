@@ -7,12 +7,11 @@ import li.cil.tis3d.api.module.ModuleProvider;
 import li.cil.tis3d.common.item.ModuleItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.RegistryObject;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 import java.util.function.BiFunction;
 
-public final class SimpleModuleProvider<T extends Module> extends ForgeRegistryEntry<ModuleProvider> implements ModuleProvider {
+public final class SimpleModuleProvider<T extends Module> implements ModuleProvider {
     private final RegistryObject<? extends ModuleItem> module;
     private final BiFunction<Casing, Face, T> moduleConstructor;
 

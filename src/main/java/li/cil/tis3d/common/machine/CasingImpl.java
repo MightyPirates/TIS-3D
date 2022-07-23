@@ -8,11 +8,11 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.ModuleProvider;
 import li.cil.tis3d.api.module.traits.ModuleWithRedstone;
+import li.cil.tis3d.common.block.entity.CasingBlockEntity;
+import li.cil.tis3d.common.block.entity.ControllerBlockEntity;
 import li.cil.tis3d.common.item.Items;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.provider.ModuleProviders;
-import li.cil.tis3d.common.block.entity.CasingBlockEntity;
-import li.cil.tis3d.common.block.entity.ControllerBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -240,21 +240,21 @@ public final class CasingImpl implements Casing {
      */
     public void load(final CompoundTag tag) {
         for (int index = 0; index < blockEntity.getContainerSize(); index++) {
+            // We replace *all* modules to be sure we have the right types in the right slots,
+            // so make sure we dispose the old instances we may have, first.
+            if (modules[index] != null) {
+                modules[index].onDisposed();
+            }
+
             final ItemStack stack = blockEntity.getItem(index);
             if (stack.isEmpty()) {
-                if (modules[index] != null) {
-                    modules[index].onDisposed();
-                }
                 modules[index] = null;
                 continue;
             }
 
             final Face face = Face.VALUES[index];
             final Optional<ModuleProvider> provider = ModuleProviders.getProviderFor(stack, blockEntity, face);
-            if (!provider.isPresent()) {
-                if (modules[index] != null) {
-                    modules[index].onDisposed();
-                }
+            if (provider.isEmpty()) {
                 modules[index] = null;
                 continue;
             }
@@ -315,6 +315,11 @@ public final class CasingImpl implements Casing {
     @Override
     public void setChanged() {
         blockEntity.setChanged();
+    }
+
+    @Override
+    public void setModelDataChanged() {
+        blockEntity.requestModelDataUpdate();
     }
 
     @Override

@@ -15,6 +15,7 @@ import net.minecraft.world.level.storage.loot.LootTables;
 import net.minecraft.world.level.storage.loot.ValidationContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -58,7 +59,10 @@ public class ModLootTableProvider extends LootTableProvider {
         @Override
         protected Iterable<Block> getKnownBlocks() {
             return StreamSupport.stream(super.getKnownBlocks().spliterator(), false)
-                .filter(block -> block.getRegistryName() != null && Objects.equals(block.getRegistryName().getNamespace(), API.MOD_ID))
+                .filter(block -> {
+                    final ResourceLocation blockId = ForgeRegistries.BLOCKS.getKey(block);
+                    return blockId != null && Objects.equals(blockId.getNamespace(), API.MOD_ID);
+                })
                 .collect(Collectors.toSet());
         }
     }

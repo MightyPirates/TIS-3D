@@ -7,16 +7,15 @@ import li.cil.tis3d.util.EnumUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.FurnaceBlockEntity;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import java.util.Objects;
 import java.util.Optional;
 
-public final class SerialInterfaceProviderFurnace extends ForgeRegistryEntry<SerialInterfaceProvider> implements SerialInterfaceProvider {
-    private static final TranslatableComponent DOCUMENTATION_TITLE = new TranslatableComponent("tis3d.manual.serial_protocols.furnace");
+public final class SerialInterfaceProviderFurnace implements SerialInterfaceProvider {
+    private static final Component DOCUMENTATION_TITLE = Component.translatable("tis3d.manual.serial_protocols.furnace");
     private static final String DOCUMENTATION_LINK = "minecraft_furnace.md";
     private static final SerialProtocolDocumentationReference DOCUMENTATION_REFERENCE = new SerialProtocolDocumentationReference(DOCUMENTATION_TITLE, DOCUMENTATION_LINK);
 

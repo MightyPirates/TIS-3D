@@ -6,10 +6,10 @@ import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.ModuleProvider;
 import li.cil.tis3d.api.module.traits.ModuleWithRotation;
 import li.cil.tis3d.common.block.CasingBlock;
+import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.CasingInventoryMessage;
 import li.cil.tis3d.common.provider.ModuleProviders;
-import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.WorldlyContainer;
@@ -157,6 +157,10 @@ public final class CasingInventory extends Inventory implements WorldlyContainer
 
             final CasingInventoryMessage message = new CasingInventoryMessage(blockEntity, index, ItemStack.EMPTY, null);
             Network.INSTANCE.send(Network.getTracking(blockEntity), message);
+        } else {
+            if (module != null) {
+                module.onDisposed();
+            }
         }
     }
 }

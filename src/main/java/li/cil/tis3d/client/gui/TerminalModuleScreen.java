@@ -7,11 +7,11 @@ import li.cil.tis3d.common.module.TerminalModule;
 import li.cil.tis3d.util.Color;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.lwjgl.glfw.GLFW;
@@ -25,7 +25,7 @@ public final class TerminalModuleScreen extends Screen {
     private final TerminalModule module;
 
     public TerminalModuleScreen(final TerminalModule module) {
-        super(TextComponent.EMPTY);
+        super(Component.empty());
         this.module = module;
     }
 
@@ -119,7 +119,7 @@ public final class TerminalModuleScreen extends Screen {
     }
 
     @SubscribeEvent
-    public void handleRenderGameOverlay(final RenderGameOverlayEvent.Pre event) {
+    public void handleRenderGameOverlay(final RenderGuiOverlayEvent.Pre event) {
         event.setCanceled(true);
     }
 }

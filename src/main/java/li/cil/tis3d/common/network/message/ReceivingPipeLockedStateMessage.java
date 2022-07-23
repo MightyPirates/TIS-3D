@@ -28,7 +28,7 @@ public final class ReceivingPipeLockedStateMessage extends AbstractMessageWithPo
     // --------------------------------------------------------------------- //
 
     @Override
-    protected void handleMessage(final NetworkEvent.Context context) {
+    public void handleMessage(final NetworkEvent.Context context) {
         final Level level = getClientLevel();
         if (level != null) {
             withBlockEntity(level, CasingBlockEntity.class, casing ->

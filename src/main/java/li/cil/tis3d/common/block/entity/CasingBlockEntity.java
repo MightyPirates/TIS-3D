@@ -5,9 +5,11 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
+import li.cil.tis3d.api.module.traits.ModuleWithBakedModel;
 import li.cil.tis3d.api.module.traits.ModuleWithBlockChangeListener;
 import li.cil.tis3d.api.module.traits.ModuleWithRedstone;
 import li.cil.tis3d.api.module.traits.ModuleWithRotation;
+import li.cil.tis3d.client.renderer.block.ModuleBakedModel;
 import li.cil.tis3d.common.CommonConfig;
 import li.cil.tis3d.common.inventory.CasingInventory;
 import li.cil.tis3d.common.inventory.SidedInventoryProxy;
@@ -35,9 +37,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -361,6 +365,33 @@ public final class CasingBlockEntity extends ComputerBlockEntity implements Side
         level.sendBlockUpdated(getBlockPos(), state, state, Block.UPDATE_CLIENTS);
     }
 
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public @NotNull ModelData getModelData() {
+        final ModelData modelData = super.getModelData();
+        if (level == null) {
+            return modelData;
+        }
+
+        final ModuleBakedModel.CasingModules data = new ModuleBakedModel.CasingModules();
+        for (final Face face : Face.VALUES) {
+            final Module module = casing.getModule(face);
+            if (module instanceof final ModuleWithBakedModel moduleWithModel) {
+                if (moduleWithModel.hasModel()) {
+                    data.setModule(face, moduleWithModel, moduleWithModel.getModelData(level, getBlockPos(), getBlockState(), modelData));
+                }
+            }
+        }
+
+        if (!data.isEmpty()) {
+            return ModelData.builder()
+                .with(ModuleBakedModel.CasingModules.CASING_MODULES_PROPERTY, data)
+                .build();
+        }
+
+        return modelData;
+    }
+
     // --------------------------------------------------------------------- //
     // BlockEntityComputer
 
@@ -445,6 +476,7 @@ public final class CasingBlockEntity extends ComputerBlockEntity implements Side
         if (module != null) {
             module.load(moduleData);
         }
+        requestModelDataUpdate();
     }
 
     /**

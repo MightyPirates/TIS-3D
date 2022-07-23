@@ -24,7 +24,7 @@ public final class RedstoneParticleEffectMessage extends AbstractMessage {
     // AbstractMessage
 
     @Override
-    protected void handleMessage(final NetworkEvent.Context context) {
+    public void handleMessage(final NetworkEvent.Context context) {
         final Level level = getClientLevel();
         if (level != null) {
             level.addParticle(DustParticleOptions.REDSTONE, x, y, z, 0, 0, 0);

@@ -31,6 +31,11 @@ public interface CasingProxy extends Casing {
     }
 
     @Override
+    default void setModelDataChanged() {
+        getCasing().setModelDataChanged();
+    }
+
+    @Override
     default boolean isEnabled() {
         return getCasing().isEnabled();
     }

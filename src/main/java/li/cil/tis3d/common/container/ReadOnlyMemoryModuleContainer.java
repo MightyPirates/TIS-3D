@@ -10,6 +10,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.PacketDistributor;
 
 import java.util.Arrays;
@@ -57,5 +58,13 @@ public final class ReadOnlyMemoryModuleContainer extends AbstractContainerMenu {
     @Override
     public boolean stillValid(final Player player) {
         return Items.is(player.getItemInHand(hand), Items.READ_ONLY_MEMORY_MODULE);
+    }
+
+    // --------------------------------------------------------------------- //
+    // AbstractContainerMenu
+
+    @Override
+    public ItemStack quickMoveStack(final Player player, final int slot) {
+        return ItemStack.EMPTY;
     }
 }

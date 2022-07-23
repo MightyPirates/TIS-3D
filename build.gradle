@@ -1,22 +1,11 @@
-buildscript {
-    repositories {
-        maven { url = 'https://maven.minecraftforge.net' }
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-    }
-}
-
 plugins {
     id 'idea'
     id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '5.1.+'
     id 'com.matthewprenger.cursegradle' version '1.4.0'
     id 'com.modrinth.minotaur' version '2.2.0'
 }
 
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'eclipse'
 apply from: 'minecraft.gradle'
 
 def getGitRef() {
@@ -51,10 +40,10 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    implementation fg.deobf("curse.maven:markdownmanual-502485:3738124")
+    implementation fg.deobf("curse.maven:markdownmanual-502485:3894029")
 
     // Just for in-dev convenience. Mod doesn't use any JEI APIs.
-    implementation fg.deobf("curse.maven:jei-238222:3735570")
+    implementation fg.deobf("curse.maven:jei-238222:3884337")
 }
 
 minecraft {

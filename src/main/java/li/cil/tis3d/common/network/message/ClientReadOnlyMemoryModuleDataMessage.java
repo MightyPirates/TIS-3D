@@ -21,7 +21,7 @@ public final class ClientReadOnlyMemoryModuleDataMessage extends AbstractReadOnl
     // AbstractMessage
 
     @Override
-    protected void handleMessage(final NetworkEvent.Context context) {
+    public void handleMessage(final NetworkEvent.Context context) {
         final ServerPlayer player = context.getSender();
         if (player != null) {
             final ItemStack stack = player.getItemInHand(hand);

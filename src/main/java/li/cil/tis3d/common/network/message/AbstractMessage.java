@@ -11,7 +11,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
-import java.util.function.Supplier;
 
 public abstract class AbstractMessage {
     protected static final Logger LOGGER = LogManager.getLogger();
@@ -25,13 +24,7 @@ public abstract class AbstractMessage {
 
     // --------------------------------------------------------------------- //
 
-    public static boolean handleMessage(final AbstractMessage message, final Supplier<NetworkEvent.Context> contextSupplied) {
-        final NetworkEvent.Context context = contextSupplied.get();
-        context.enqueueWork(() -> message.handleMessage(context));
-        return true;
-    }
-
-    protected abstract void handleMessage(final NetworkEvent.Context context);
+    public abstract void handleMessage(final NetworkEvent.Context context);
 
     public abstract void fromBytes(final FriendlyByteBuf buffer);
 

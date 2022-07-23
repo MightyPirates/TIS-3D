@@ -1,6 +1,7 @@
 package li.cil.tis3d.api.prefab.module;
 
 import io.netty.buffer.ByteBuf;
+import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
@@ -20,9 +21,13 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Base implementation of a module, taking care of the boilerplate code.
@@ -33,10 +38,20 @@ public abstract class AbstractModule implements Module {
 
     private final Casing casing;
     private final Face face;
+    private boolean isDisposed;
 
     protected AbstractModule(final Casing casing, final Face face) {
         this.casing = casing;
         this.face = face;
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    protected void finalize() {
+        if (!isDisposed) {
+            MainThreadDisposer.add(this);
+        }
     }
 
     // --------------------------------------------------------------------- //
@@ -78,7 +93,7 @@ public abstract class AbstractModule implements Module {
 
         final BlockPos pos = blockHitResult.getBlockPos();
         return Objects.equals(getCasing().getPosition(), pos) &&
-               blockHitResult.getDirection() == Face.toDirection(getFace());
+            blockHitResult.getDirection() == Face.toDirection(getFace());
     }
 
     /**
@@ -187,6 +202,7 @@ public abstract class AbstractModule implements Module {
 
     @Override
     public void onDisposed() {
+        isDisposed = true;
     }
 
     @Override
@@ -221,5 +237,31 @@ public abstract class AbstractModule implements Module {
 
     @Override
     public void save(final CompoundTag tag) {
+    }
+
+    // --------------------------------------------------------------------- //
+
+    /**
+     * Used to make absolutely sure we call onDisposed on modules. There are some cases
+     * where we cannot guarantee that this is called regularly, e.g. on level unload.
+     * We want to make sure to call it though, because some modules may own unmanaged
+     * resources such as GPU memory.
+     */
+    @OnlyIn(Dist.CLIENT)
+    @Mod.EventBusSubscriber(modid = API.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+    private static final class MainThreadDisposer {
+        private static final ConcurrentLinkedQueue<Module> modules = new ConcurrentLinkedQueue<>();
+
+        public static void add(final Module module) {
+            modules.add(module);
+        }
+
+        @SubscribeEvent
+        public static void tick(@SuppressWarnings("unused") final TickEvent.ClientTickEvent event) {
+            Module module;
+            while ((module = modules.poll()) != null) {
+                module.onDisposed();
+            }
+        }
     }
 }

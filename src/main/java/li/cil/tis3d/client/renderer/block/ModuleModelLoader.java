@@ -2,20 +2,16 @@ package li.cil.tis3d.client.renderer.block;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraftforge.client.model.IModelLoader;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
+import com.google.gson.JsonParseException;
+import net.minecraftforge.client.model.ElementsModel;
+import net.minecraftforge.client.model.geometry.IGeometryLoader;
 
-public final class ModuleModelLoader implements IModelLoader<ModuleModel> {
+public final class ModuleModelLoader implements IGeometryLoader<ModuleModel> {
     // --------------------------------------------------------------------- //
     // IModelLoader
 
     @Override
-    public void onResourceManagerReload(final ResourceManager resourceManager) {
-    }
-
-    @Override
-    public ModuleModel read(final JsonDeserializationContext context, final JsonObject modelContents) {
-        return new ModuleModel(ModelLoaderRegistry.VanillaProxy.Loader.INSTANCE.read(context, modelContents));
+    public ModuleModel read(final JsonObject modelContents, final JsonDeserializationContext context) throws JsonParseException {
+        return new ModuleModel(ElementsModel.Loader.INSTANCE.read(modelContents, context));
     }
 }

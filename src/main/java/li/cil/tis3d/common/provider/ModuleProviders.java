@@ -24,7 +24,7 @@ public final class ModuleProviders {
 
     // --------------------------------------------------------------------- //
 
-    public static final Supplier<IForgeRegistry<ModuleProvider>> MODULE_PROVIDER_REGISTRY = MODULE_PROVIDERS.makeRegistry(ModuleProvider.class, RegistryBuilder::new);
+    public static final Supplier<IForgeRegistry<ModuleProvider>> MODULE_PROVIDER_REGISTRY = MODULE_PROVIDERS.makeRegistry(RegistryBuilder::new);
 
     // --------------------------------------------------------------------- //
 
