@@ -1,8 +1,8 @@
 package li.cil.tis3d.client.manual.provider;
 
-import com.machinezoo.noexception.optional.OptionalBoolean;
 import li.cil.manual.api.ManualModel;
 import li.cil.manual.api.prefab.provider.NamespacePathProvider;
+import li.cil.manual.api.util.MatchResult;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.client.manual.Manuals;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
@@ -21,8 +21,8 @@ public class ModPathProvider extends NamespacePathProvider {
     }
 
     @Override
-    public OptionalBoolean matches(final ManualModel manual) {
-        return OptionalBoolean.of(Objects.equals(manual, Manuals.MANUAL.get()));
+    public MatchResult matches(final ManualModel manual) {
+        return Objects.equals(manual, Manuals.MANUAL.get()) ? MatchResult.MATCH : MatchResult.MISMATCH;
     }
 
     @Override
