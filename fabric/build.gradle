@@ -128,6 +128,7 @@ curseforge {
             requiredDependency "fabric-api"
             requiredDependency "architectury-api"
             requiredDependency "forge-config-api-port-fabric"
+            requiredDependency "markdownmanual"
         }
         mainArtifact(remapJar)
         afterEvaluate {
@@ -153,5 +154,6 @@ modrinth {
         required.project "fabric-api"
         required.project "architectury-api"
         required.project "forge-config-api-port"
+        required.project "markdownmanual"
     }
 }

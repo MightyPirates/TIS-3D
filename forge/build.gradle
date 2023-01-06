@@ -120,6 +120,7 @@ curseforge {
         addGameVersion "Java 17"
         relations {
             requiredDependency "architectury-api"
+            requiredDependency "markdownmanual"
         }
         mainArtifact(remapJar)
         addArtifact(commonApiJar)
@@ -142,5 +143,6 @@ modrinth {
     loaders = ["forge"]
     dependencies {
         required.project "architectury-api"
+        required.project "markdownmanual"
     }
 }
