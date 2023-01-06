@@ -243,7 +243,6 @@ public abstract class AbstractModule implements Module {
      * We want to make sure to call it though, because some modules may own unmanaged
      * resources such as GPU memory.
      */
-    @Environment(EnvType.CLIENT)
     @ApiStatus.Internal
     public static final class MainThreadDisposer {
         private static final ConcurrentLinkedQueue<Module> modules = new ConcurrentLinkedQueue<>();

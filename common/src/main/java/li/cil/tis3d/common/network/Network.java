@@ -82,10 +82,12 @@ public final class Network {
     private static <T extends AbstractMessage> void registerMessage(final Class<T> type, final Function<FriendlyByteBuf, T> decoder, final NetworkManager.Side side) {
         final ResourceLocation id = new ResourceLocation(API.MOD_ID, type.getSimpleName().replaceAll("Message$", "").toLowerCase());
         MESSAGE_IDS.put(type, id);
-        NetworkManager.registerReceiver(side, id, (buffer, context) -> {
-            final T message = decoder.apply(buffer);
-            context.queue(() -> message.handleMessage(context));
-        });
+        if (side != NetworkManager.serverToClient() || Platform.getEnv() == EnvType.CLIENT) {
+            NetworkManager.registerReceiver(side, id, (buffer, context) -> {
+                final T message = decoder.apply(buffer);
+                context.queue(() -> message.handleMessage(context));
+            });
+        }
     }
 
     // --------------------------------------------------------------------- //

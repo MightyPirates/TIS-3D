@@ -3,6 +3,8 @@ package li.cil.tis3d.common.item;
 import li.cil.tis3d.client.gui.CodeBookScreen;
 import li.cil.tis3d.common.block.CasingBlock;
 import li.cil.tis3d.common.config.Constants;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -45,6 +47,7 @@ public final class CodeBookItem extends ModItem {
 
     // --------------------------------------------------------------------- //
 
+    @Environment(EnvType.CLIENT)
     private void openScreen(final Player player, final InteractionHand hand) {
         Minecraft.getInstance().setScreen(new CodeBookScreen(player, hand));
     }
