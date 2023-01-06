@@ -1,11 +1,11 @@
 package li.cil.tis3d.util.fabric;
 
+import fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry;
+import fuzs.forgeconfigapiport.api.config.v2.ModConfigEvents;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.util.ConfigManager;
 import li.cil.tis3d.util.config.ConfigType;
 import li.cil.tis3d.util.config.Type;
-import net.minecraftforge.api.ModLoadingContext;
-import net.minecraftforge.api.fml.event.config.ModConfigEvents;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.config.IConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
@@ -43,7 +43,7 @@ public final class ConfigManagerImpl extends ConfigManager {
                 case CLIENT -> ModConfig.Type.CLIENT;
                 case SERVER -> ModConfig.Type.SERVER;
             };
-            ModLoadingContext.registerConfig(API.MOD_ID, platformType, spec);
+            ForgeConfigRegistry.INSTANCE.register(API.MOD_ID, platformType, spec);
         });
     }
 

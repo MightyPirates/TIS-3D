@@ -3,7 +3,7 @@ package li.cil.tis3d.common.entity;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
 import li.cil.tis3d.util.RegistryUtils;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -11,7 +11,7 @@ import net.minecraft.world.entity.MobCategory;
 import java.util.function.Function;
 
 public final class Entities {
-    private static final DeferredRegister<EntityType<?>> ENTITY_TYPES = RegistryUtils.get(Registry.ENTITY_TYPE_REGISTRY);
+    private static final DeferredRegister<EntityType<?>> ENTITY_TYPES = RegistryUtils.get(Registries.ENTITY_TYPE);
 
     // --------------------------------------------------------------------- //
 

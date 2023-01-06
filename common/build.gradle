@@ -10,7 +10,7 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
     modApi "dev.architectury:architectury:${rootProject.architectury_version}"
 
-    modApi "curse.maven:markdownmanual-502485:4306671"
+    modApi "curse.maven:markdownmanual-502485:4306716"
 }
 
 task apiJar(type: Jar) {

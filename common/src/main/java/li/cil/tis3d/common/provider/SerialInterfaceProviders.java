@@ -3,7 +3,7 @@ package li.cil.tis3d.common.provider;
 import com.google.common.base.Suppliers;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.Registrar;
-import dev.architectury.registry.registries.Registries;
+import dev.architectury.registry.registries.RegistrarManager;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.serial.SerialInterfaceProvider;
 import li.cil.tis3d.common.provider.serial.SerialInterfaceProviderFurnace;
@@ -20,7 +20,7 @@ public final class SerialInterfaceProviders {
 
     // --------------------------------------------------------------------- //
 
-    public static final Supplier<Registrar<SerialInterfaceProvider>> REGISTRAR = Suppliers.memoize(() -> Registries.get(API.MOD_ID).get(SerialInterfaceProvider.REGISTRY));
+    public static final Supplier<Registrar<SerialInterfaceProvider>> REGISTRAR = Suppliers.memoize(() -> RegistrarManager.get(API.MOD_ID).get(SerialInterfaceProvider.REGISTRY));
 
     // --------------------------------------------------------------------- //
 

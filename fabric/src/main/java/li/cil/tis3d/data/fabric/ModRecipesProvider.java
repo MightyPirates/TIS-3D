@@ -3,11 +3,13 @@ package li.cil.tis3d.data.fabric;
 import dev.architectury.registry.registries.RegistrySupplier;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.common.item.Items;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
@@ -16,17 +18,18 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public final class ModRecipesProvider extends FabricRecipeProvider {
-    public ModRecipesProvider(final FabricDataGenerator generator) {
-        super(generator);
+    public ModRecipesProvider(final FabricDataOutput output, final CompletableFuture<HolderLookup.Provider> ignoredRegistries) {
+        super(output);
     }
 
     @Override
-    public void generateRecipes(final Consumer<FinishedRecipe> consumer) {
+    public void buildRecipes(final Consumer<FinishedRecipe> consumer) {
         ShapedRecipeBuilder
-            .shaped(Items.CASING.get(), 8)
+            .shaped(RecipeCategory.REDSTONE, Items.CASING.get(), 8)
             .pattern("IRI")
             .pattern("RSR")
             .pattern("IRI")
@@ -37,7 +40,7 @@ public final class ModRecipesProvider extends FabricRecipeProvider {
             .save(consumer);
 
         ShapedRecipeBuilder
-            .shaped(Items.CONTROLLER.get())
+            .shaped(RecipeCategory.REDSTONE, Items.CONTROLLER.get())
             .pattern("IRI")
             .pattern("RSR")
             .pattern("IRI")
@@ -48,7 +51,7 @@ public final class ModRecipesProvider extends FabricRecipeProvider {
             .save(consumer);
 
         ShapedRecipeBuilder
-            .shaped(Items.KEY.get())
+            .shaped(RecipeCategory.TOOLS, Items.KEY.get())
             .pattern("GI ")
             .pattern("GI ")
             .pattern("LRQ")
@@ -61,7 +64,7 @@ public final class ModRecipesProvider extends FabricRecipeProvider {
             .save(consumer);
 
         ShapelessRecipeBuilder
-            .shapeless(Items.PRISM.get())
+            .shapeless(RecipeCategory.MISC, Items.PRISM.get())
             .requires(CommonItemTags.QUARTZ_GEMS)
             .requires(CommonItemTags.REDSTONE_DUSTS)
             .requires(CommonItemTags.LAPIS_LAZULIS)
@@ -111,7 +114,7 @@ public final class ModRecipesProvider extends FabricRecipeProvider {
             .save(consumer);
 
         ShapedRecipeBuilder
-            .shaped(Items.TERMINAL_MODULE.get())
+            .shaped(RecipeCategory.MISC, Items.TERMINAL_MODULE.get())
             .pattern("KDS")
             .pattern("IQI")
             .pattern(" R ")
@@ -126,12 +129,12 @@ public final class ModRecipesProvider extends FabricRecipeProvider {
             .save(consumer);
 
         ShapelessRecipeBuilder
-            .shapeless(Items.QUEUE_MODULE.get())
+            .shapeless(RecipeCategory.MISC, Items.QUEUE_MODULE.get())
             .requires(Items.STACK_MODULE.get())
             .unlockedBy("has_stack", inventoryChange(Items.STACK_MODULE.get()))
             .save(consumer, new ResourceLocation(API.MOD_ID, Items.QUEUE_MODULE.getId().getPath() + "/from_stack"));
         ShapelessRecipeBuilder
-            .shapeless(Items.STACK_MODULE.get())
+            .shapeless(RecipeCategory.MISC, Items.STACK_MODULE.get())
             .requires(Items.QUEUE_MODULE.get())
             .unlockedBy("has_queue", inventoryChange(Items.QUEUE_MODULE.get()))
             .save(consumer, new ResourceLocation(API.MOD_ID, Items.STACK_MODULE.getId().getPath() + "/from_queue"));
@@ -149,7 +152,7 @@ public final class ModRecipesProvider extends FabricRecipeProvider {
 
     private static ShapedRecipeBuilder module(final RegistrySupplier<? extends Item> module, final int count) {
         return ShapedRecipeBuilder
-            .shaped(module.get(), count)
+            .shaped(RecipeCategory.MISC, module.get(), count)
             .pattern("PPP")
             .pattern("ISI")
             .pattern(" R ")

@@ -3,17 +3,14 @@ package li.cil.tis3d.client.fabric;
 import li.cil.tis3d.api.platform.FabricProviderInitializer;
 import li.cil.tis3d.client.ClientBootstrap;
 import li.cil.tis3d.client.ClientSetup;
-import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.client.renderer.block.fabric.ModuleModelLoader;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.block.entity.fabric.ChunkUnloadListener;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents;
 import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
-import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.fabricmc.fabric.api.event.client.player.ClientPickBlockGatherCallback;
 import net.fabricmc.loader.impl.entrypoint.EntrypointUtils;
-import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
@@ -47,9 +44,6 @@ public final class ClientBootstrapFabric implements ClientModInitializer {
             }
             return ItemStack.EMPTY;
         });
-
-        ClientSpriteRegistryCallback.event(InventoryMenu.BLOCK_ATLAS).register((atlasTexture, registry) ->
-            Textures.visitBlockAtlasTextures(registry::register));
 
         ModelLoadingRegistry.INSTANCE.registerResourceProvider(rm -> new ModuleModelLoader());
     }

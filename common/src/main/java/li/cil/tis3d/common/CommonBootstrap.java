@@ -8,6 +8,7 @@ import li.cil.tis3d.common.config.CommonConfig;
 import li.cil.tis3d.common.container.Containers;
 import li.cil.tis3d.common.entity.Entities;
 import li.cil.tis3d.common.item.Items;
+import li.cil.tis3d.common.item.ModCreativeTabs;
 import li.cil.tis3d.common.provider.ModuleProviders;
 import li.cil.tis3d.common.provider.RedstoneInputProviders;
 import li.cil.tis3d.common.provider.SerialInterfaceProviders;
@@ -35,5 +36,6 @@ public final class CommonBootstrap {
         ModuleProviders.initialize();
         SerialInterfaceProviders.initialize();
         RedstoneInputProviders.initialize();
+        ModCreativeTabs.initialize();
     }
 }

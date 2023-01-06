@@ -16,6 +16,7 @@ import li.cil.tis3d.util.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -98,8 +99,6 @@ public final class CodeBookScreen extends Screen {
         buttonPreviousPage = addRenderableWidget(new ButtonChangePage(guiX + BUTTON_PAGE_CHANGE_PREV_X, guiY + BUTTON_PAGE_CHANGE_Y, PageChangeType.Previous, button -> changePage(-1)));
         buttonNextPage = addRenderableWidget(new ButtonChangePage(guiX + BUTTON_PAGE_CHANGE_NEXT_X, guiY + BUTTON_PAGE_CHANGE_Y, PageChangeType.Next, button -> changePage(1)));
         buttonDeletePage = addRenderableWidget(new ButtonDeletePage(guiX + BUTTON_PAGE_DELETE_X, guiY + BUTTON_PAGE_DELETE_Y, button -> deletePage()));
-
-        getMinecraft().keyboardHandler.setSendRepeatsToGui(true);
     }
 
     @Override
@@ -113,8 +112,6 @@ public final class CodeBookScreen extends Screen {
         final CompoundTag tag = new CompoundTag();
         data.save(tag);
         Network.sendToServer(new CodeBookDataMessage(hand, tag));
-
-        getMinecraft().keyboardHandler.setSendRepeatsToGui(false);
     }
 
     @Override
@@ -710,7 +707,7 @@ public final class CodeBookScreen extends Screen {
         Next
     }
 
-    private class ButtonChangePage extends Button {
+    private static final class ButtonChangePage extends Button {
         private static final int TEXTURE_X = 110;
         private static final int TEXTURE_Y = 231;
         private static final int BUTTON_WIDTH = 23;
@@ -719,8 +716,11 @@ public final class CodeBookScreen extends Screen {
         private final PageChangeType type;
 
         ButtonChangePage(final int x, final int y, final PageChangeType type, final OnPress action) {
-            super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, Component.empty(), action);
+            super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, Component.empty(), action, DEFAULT_NARRATION);
             this.type = type;
+            setTooltip(Tooltip.create(type == PageChangeType.Previous
+                ? PREVIOUS_PAGE_TOOLTIP
+                : NEXT_PAGE_TOOLTIP));
         }
 
         @Override
@@ -729,30 +729,19 @@ public final class CodeBookScreen extends Screen {
             RenderSystem.setShaderTexture(0, Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
             final int offsetX = isHoveredOrFocused() ? BUTTON_WIDTH : 0;
             final int offsetY = type == PageChangeType.Previous ? BUTTON_HEIGHT : 0;
-            blit(matrixStack, x, y, TEXTURE_X + offsetX, TEXTURE_Y + offsetY, BUTTON_WIDTH, BUTTON_HEIGHT);
-
-            if (isHoveredOrFocused()) {
-                renderToolTip(matrixStack, mouseX, mouseY);
-            }
-        }
-
-        @Override
-        public void renderToolTip(final PoseStack matrixStack, final int mouseX, final int mouseY) {
-            final Component tooltip = type == PageChangeType.Previous
-                ? PREVIOUS_PAGE_TOOLTIP
-                : NEXT_PAGE_TOOLTIP;
-            renderTooltip(matrixStack, tooltip, mouseX, mouseY);
+            blit(matrixStack, getX(), getY(), TEXTURE_X + offsetX, TEXTURE_Y + offsetY, BUTTON_WIDTH, BUTTON_HEIGHT);
         }
     }
 
-    private class ButtonDeletePage extends Button {
+    private static final class ButtonDeletePage extends Button {
         private static final int TEXTURE_X = 158;
         private static final int TEXTURE_Y = 231;
         private static final int BUTTON_WIDTH = 14;
         private static final int BUTTON_HEIGHT = 14;
 
         ButtonDeletePage(final int x, final int y, final OnPress action) {
-            super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, Component.empty(), action);
+            super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, Component.empty(), action, DEFAULT_NARRATION);
+            setTooltip(Tooltip.create(DELETE_PAGE_TOOLTIP));
         }
 
         @Override
@@ -760,16 +749,7 @@ public final class CodeBookScreen extends Screen {
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderTexture(0, Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND);
             final int offsetX = isHoveredOrFocused() ? BUTTON_WIDTH : 0;
-            blit(matrixStack, x, y, TEXTURE_X + offsetX, TEXTURE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
-
-            if (isHoveredOrFocused()) {
-                renderToolTip(matrixStack, mouseX, mouseY);
-            }
-        }
-
-        @Override
-        public void renderToolTip(final PoseStack matrixStack, final int mouseX, final int mouseY) {
-            renderTooltip(matrixStack, DELETE_PAGE_TOOLTIP, mouseX, mouseY);
+            blit(matrixStack, getX(), getY(), TEXTURE_X + offsetX, TEXTURE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
         }
     }
 }

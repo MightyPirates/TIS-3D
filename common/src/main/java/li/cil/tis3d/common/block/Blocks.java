@@ -3,11 +3,11 @@ package li.cil.tis3d.common.block;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
 import li.cil.tis3d.util.RegistryUtils;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.Block;
 
 public final class Blocks {
-    private static final DeferredRegister<Block> BLOCKS = RegistryUtils.get(Registry.BLOCK_REGISTRY);
+    private static final DeferredRegister<Block> BLOCKS = RegistryUtils.get(Registries.BLOCK);
 
     // --------------------------------------------------------------------- //
 

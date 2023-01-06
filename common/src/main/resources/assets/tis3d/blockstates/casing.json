@@ -1,113 +1,113 @@
 {
   "multipart": [
     {
+      "apply": {
+        "model": "tis3d:block/casing_empty",
+        "x": -90,
+        "y": 270
+      },
       "when": {
         "yneg": "false"
-      },
-      "apply": {
-        "model": "tis3d:block/casing_empty",
-        "x": -90,
-        "y": 270
       }
     },
     {
+      "apply": {
+        "model": "tis3d:block/casing_module",
+        "x": -90,
+        "y": 270
+      },
       "when": {
         "yneg": "true"
-      },
-      "apply": {
-        "model": "tis3d:block/casing_module",
-        "x": -90,
-        "y": 270
       }
     },
     {
+      "apply": {
+        "model": "tis3d:block/casing_empty",
+        "x": 90,
+        "y": 270
+      },
       "when": {
         "ypos": "false"
-      },
-      "apply": {
-        "model": "tis3d:block/casing_empty",
-        "x": 90,
-        "y": 270
       }
     },
     {
+      "apply": {
+        "model": "tis3d:block/casing_module",
+        "x": 90,
+        "y": 270
+      },
       "when": {
         "ypos": "true"
-      },
-      "apply": {
-        "model": "tis3d:block/casing_module",
-        "x": 90,
-        "y": 270
       }
     },
     {
+      "apply": {
+        "model": "tis3d:block/casing_empty",
+        "y": 180
+      },
       "when": {
         "zneg": "false"
-      },
-      "apply": {
-        "model": "tis3d:block/casing_empty",
-        "y": 180
       }
     },
     {
+      "apply": {
+        "model": "tis3d:block/casing_module",
+        "y": 180
+      },
       "when": {
         "zneg": "true"
-      },
-      "apply": {
-        "model": "tis3d:block/casing_module",
-        "y": 180
       }
     },
     {
-      "when": {
-        "zpos": "false"
-      },
       "apply": {
         "model": "tis3d:block/casing_empty"
+      },
+      "when": {
+        "zpos": "false"
       }
     },
     {
-      "when": {
-        "zpos": "true"
-      },
       "apply": {
         "model": "tis3d:block/casing_module"
+      },
+      "when": {
+        "zpos": "true"
       }
     },
     {
+      "apply": {
+        "model": "tis3d:block/casing_empty",
+        "y": 90
+      },
       "when": {
         "xneg": "false"
-      },
-      "apply": {
-        "model": "tis3d:block/casing_empty",
-        "y": 90
       }
     },
     {
+      "apply": {
+        "model": "tis3d:block/casing_module",
+        "y": 90
+      },
       "when": {
         "xneg": "true"
-      },
-      "apply": {
-        "model": "tis3d:block/casing_module",
-        "y": 90
       }
     },
     {
-      "when": {
-        "xpos": "false"
-      },
       "apply": {
         "model": "tis3d:block/casing_empty",
         "y": 270
+      },
+      "when": {
+        "xpos": "false"
       }
     },
     {
-      "when": {
-        "xpos": "true"
-      },
       "apply": {
         "model": "tis3d:block/casing_module",
         "y": 270
+      },
+      "when": {
+        "xpos": "true"
       }
     }
   ]

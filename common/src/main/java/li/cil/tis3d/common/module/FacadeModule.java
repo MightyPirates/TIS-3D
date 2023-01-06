@@ -10,6 +10,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
@@ -91,7 +92,7 @@ public final class FacadeModule extends AbstractModule implements ModuleWithBloc
     public void load(final CompoundTag tag) {
         super.load(tag);
 
-        facadeState = NbtUtils.readBlockState(tag.getCompound(TAG_STATE));
+        facadeState = NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), tag.getCompound(TAG_STATE));
         if (facadeState == Blocks.AIR.defaultBlockState()) {
             facadeState = null;
         }

@@ -6,7 +6,7 @@ import li.cil.tis3d.common.block.Blocks;
 import li.cil.tis3d.common.block.CasingBlock;
 import li.cil.tis3d.common.item.Items;
 import net.minecraft.core.Direction;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
 import net.minecraftforge.client.model.generators.ModelFile;
@@ -19,8 +19,8 @@ public final class ModBlockStateProvider extends BlockStateProvider {
     private static final ResourceLocation MODULE_IN_CASING_MODEL = new ResourceLocation(API.MOD_ID, "block/casing_module");
     private static final ResourceLocation CONTROLLER_MODEL = new ResourceLocation(API.MOD_ID, "block/controller");
 
-    public ModBlockStateProvider(final DataGenerator generator, final ExistingFileHelper existingFileHelper) {
-        super(generator, API.MOD_ID, existingFileHelper);
+    public ModBlockStateProvider(final PackOutput output, final ExistingFileHelper existingFileHelper) {
+        super(output, API.MOD_ID, existingFileHelper);
     }
 
     @Override

@@ -5,6 +5,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.world.item.CreativeModeTab;
 
+import java.util.function.Supplier;
+
 /**
  * Glue / actual references for the TIS-3D API.
  */
@@ -17,7 +19,7 @@ public final class API {
     // --------------------------------------------------------------------- //
 
     // Set in TIS-3D constructor, prefer using static entry point classes instead where possible.
-    public static CreativeModeTab itemGroup;
+    public static Supplier<CreativeModeTab> itemGroup;
     public static li.cil.tis3d.api.detail.InfraredAPI infraredAPI;
 
     @Environment(EnvType.CLIENT)

@@ -31,20 +31,6 @@ public final class TerminalModuleScreen extends Screen {
     }
 
     @Override
-    protected void init() {
-        super.init();
-
-        getMinecraft().keyboardHandler.setSendRepeatsToGui(true);
-    }
-
-    @Override
-    public void removed() {
-        super.removed();
-
-        getMinecraft().keyboardHandler.setSendRepeatsToGui(false);
-    }
-
-    @Override
     public void render(final PoseStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
         RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, false);
         RenderSystem.enableDepthTest();

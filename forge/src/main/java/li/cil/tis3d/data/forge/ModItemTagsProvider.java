@@ -2,22 +2,25 @@ package li.cil.tis3d.data.forge;
 
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.common.tags.BlockTags;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.tags.BlockTagsProvider;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.world.item.Items;
+import net.minecraftforge.common.data.BlockTagsProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
+
+import java.util.concurrent.CompletableFuture;
 
 import static li.cil.tis3d.common.item.Items.*;
 import static li.cil.tis3d.common.tags.ItemTags.*;
 
 public final class ModItemTagsProvider extends ItemTagsProvider {
-    public ModItemTagsProvider(final DataGenerator generator, final BlockTagsProvider blockTagProvider, final ExistingFileHelper existingFileHelper) {
-        super(generator, blockTagProvider, API.MOD_ID, existingFileHelper);
+    public ModItemTagsProvider(final PackOutput output, final CompletableFuture<HolderLookup.Provider> lookupProvider, final BlockTagsProvider blockTagsProvider, final ExistingFileHelper existingFileHelper) {
+        super(output, lookupProvider, blockTagsProvider, API.MOD_ID, existingFileHelper);
     }
 
     @Override
-    protected void addTags() {
+    protected void addTags(final HolderLookup.Provider provider) {
         copy(BlockTags.COMPUTERS, COMPUTERS);
 
         tag(MODULES).add(

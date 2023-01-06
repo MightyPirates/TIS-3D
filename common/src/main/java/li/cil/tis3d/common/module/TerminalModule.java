@@ -472,7 +472,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
     private void bell() {
         final Level level = getCasing().getCasingLevel();
         if (!level.isClientSide()) {
-            level.playSound(null, getCasing().getPosition(), SoundEvents.NOTE_BLOCK_PLING, SoundSource.BLOCKS, 0.3f, 2f);
+            level.playSound(null, getCasing().getPosition(), SoundEvents.NOTE_BLOCK_PLING.value(), SoundSource.BLOCKS, 0.3f, 2f);
         }
     }
 

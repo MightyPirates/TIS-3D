@@ -23,7 +23,7 @@ import java.util.List;
  */
 public final class ManualItem extends AbstractManualItem {
     public ManualItem() {
-        super(new Properties().tab(CreativeTabs.COMMON));
+        super(new Properties());
     }
 
     // --------------------------------------------------------------------- //

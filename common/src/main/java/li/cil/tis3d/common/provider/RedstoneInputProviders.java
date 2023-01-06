@@ -3,7 +3,7 @@ package li.cil.tis3d.common.provider;
 import com.google.common.base.Suppliers;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.Registrar;
-import dev.architectury.registry.registries.Registries;
+import dev.architectury.registry.registries.RegistrarManager;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
@@ -18,7 +18,9 @@ import java.util.function.Supplier;
 public final class RedstoneInputProviders {
     private static final DeferredRegister<RedstoneInputProvider> REDSTONE_INPUT_PROVIDERS = RegistryUtils.get(RedstoneInputProvider.REGISTRY);
 
-    private static final Supplier<Registrar<RedstoneInputProvider>> REGISTRAR = Suppliers.memoize(() -> Registries.get(API.MOD_ID).get(RedstoneInputProvider.REGISTRY));
+    // --------------------------------------------------------------------- //
+
+    private static final Supplier<Registrar<RedstoneInputProvider>> REGISTRAR = Suppliers.memoize(() -> RegistrarManager.get(API.MOD_ID).get(RedstoneInputProvider.REGISTRY));
 
     // --------------------------------------------------------------------- //
 

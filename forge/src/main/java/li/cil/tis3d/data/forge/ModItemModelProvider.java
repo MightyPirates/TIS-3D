@@ -6,7 +6,7 @@ import li.cil.tis3d.common.item.Items;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.core.Direction;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
@@ -15,8 +15,8 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 public final class ModItemModelProvider extends ItemModelProvider {
     private static final String MODULE_ITEM_MODEL_NAME = "module";
 
-    public ModItemModelProvider(final DataGenerator generator, final ExistingFileHelper existingFileHelper) {
-        super(generator, API.MOD_ID, existingFileHelper);
+    public ModItemModelProvider(final PackOutput output, final ExistingFileHelper existingFileHelper) {
+        super(output, API.MOD_ID, existingFileHelper);
     }
 
     @Override

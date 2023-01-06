@@ -4,7 +4,7 @@ import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
 import li.cil.tis3d.common.block.Blocks;
 import li.cil.tis3d.util.RegistryUtils;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -13,7 +13,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public final class Items {
-    private static final DeferredRegister<Item> ITEMS = RegistryUtils.get(Registry.ITEM_REGISTRY);
+    private static final DeferredRegister<Item> ITEMS = RegistryUtils.get(Registries.ITEM);
 
     // --------------------------------------------------------------------- //
 

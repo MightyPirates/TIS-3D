@@ -2,9 +2,6 @@ package li.cil.tis3d.client.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
 import li.cil.manual.api.render.FontRenderer;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.util.Color;
@@ -16,6 +13,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
+import org.joml.Vector3f;
 
 public final class RenderContextImpl implements RenderContext {
     private static final int DETAIL_RENDER_RANGE = 8;
@@ -112,9 +110,9 @@ public final class RenderContextImpl implements RenderContext {
                          final float x, final float y, final float width, final float height,
                          final float u0, final float v0, final float u1, final float v1,
                          final int argb) {
-        final Matrix4f pose = getMatrixStack().last().pose();
-        final Matrix3f normal = getMatrixStack().last().normal();
-        final Vector3f up = new Vector3f(0, 0, -1);
+        final var pose = getMatrixStack().last().pose();
+        final var normal = getMatrixStack().last().normal();
+        final var up = new Vector3f(0, 0, -1);
 
         final int a = Color.getAlphaU8(argb);
         final int r = Color.getRedU8(argb);

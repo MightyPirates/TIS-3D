@@ -3,7 +3,7 @@ package li.cil.tis3d.common.provider;
 import com.google.common.base.Suppliers;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.Registrar;
-import dev.architectury.registry.registries.Registries;
+import dev.architectury.registry.registries.RegistrarManager;
 import dev.architectury.registry.registries.RegistrySupplier;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
@@ -26,7 +26,7 @@ public final class ModuleProviders {
 
     // --------------------------------------------------------------------- //
 
-    private static final Supplier<Registrar<ModuleProvider>> REGISTRAR = Suppliers.memoize(() -> Registries.get(API.MOD_ID).get(ModuleProvider.REGISTRY));
+    private static final Supplier<Registrar<ModuleProvider>> REGISTRAR = Suppliers.memoize(() -> RegistrarManager.get(API.MOD_ID).get(ModuleProvider.REGISTRY));
 
     // --------------------------------------------------------------------- //
 

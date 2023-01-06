@@ -113,7 +113,7 @@ public final class AudioModule extends AbstractModule {
 
             // Let there be sound!
             final Level level = getCasing().getCasingLevel();
-            level.playSound(null, x, y, z, note.instrument().getSoundEvent(), SoundSource.BLOCKS, volume, pitch);
+            level.playSound(null, x, y, z, note.instrument().getSoundEvent().value(), SoundSource.BLOCKS, volume, pitch);
             if (level instanceof final ServerLevel serverLevel) {
                 serverLevel.sendParticles(ParticleTypes.NOTE, x, y, z, 1, 0, 0, 0, 0);
             }

@@ -1,8 +1,6 @@
 package li.cil.tis3d.client.renderer.block.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
@@ -26,6 +24,8 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -41,6 +41,9 @@ public final class CasingBlockEntityRenderer implements BlockEntityRenderer<Casi
     private static final Logger LOGGER = LogManager.getLogger();
 
     private static final double Z_FIGHT_BUFFER = 0.001;
+    private static final Vector3f AXIS_X_POSITIVE = new Vector3f(1, 0, 0);
+    private static final Vector3f AXIS_Y_POSITIVE = new Vector3f(0, 1, 0);
+    private static final Vector3f AXIS_Z_POSITIVE = new Vector3f(0, 0, 1);
     private final static Set<Class<?>> BLACKLIST = new HashSet<>();
 
     private final BlockEntityRenderDispatcher renderer;
@@ -99,33 +102,33 @@ public final class CasingBlockEntityRenderer implements BlockEntityRenderer<Casi
 
         switch (face) {
             case Y_NEG -> {
-                axis = Vector3f.XP;
+                axis = AXIS_X_POSITIVE;
                 degree = -90;
             }
             case Y_POS -> {
-                axis = Vector3f.XP;
+                axis = AXIS_X_POSITIVE;
                 degree = 90;
             }
             case Z_NEG -> {
-                axis = Vector3f.YP;
+                axis = AXIS_Y_POSITIVE;
                 degree = 0;
             }
             case Z_POS -> {
-                axis = Vector3f.YP;
+                axis = AXIS_Y_POSITIVE;
                 degree = 180;
             }
             case X_NEG -> {
-                axis = Vector3f.YP;
+                axis = AXIS_Y_POSITIVE;
                 degree = 90;
             }
             case X_POS -> {
-                axis = Vector3f.YP;
+                axis = AXIS_Y_POSITIVE;
                 degree = -90;
             }
             default -> throw new IllegalArgumentException("Invalid face");
         }
 
-        matrixStack.mulPose(new Quaternion(axis, degree, true));
+        matrixStack.mulPose(new Quaternionf().fromAxisAngleDeg(axis, degree));
         matrixStack.translate(0.5, 0.5, -(0.5 + Z_FIGHT_BUFFER));
         matrixStack.scale(-1, -1, 1);
     }
@@ -174,7 +177,7 @@ public final class CasingBlockEntityRenderer implements BlockEntityRenderer<Casi
                 }
 
                 matrixStack.translate(0.5, 0.5, 0.5);
-                matrixStack.mulPose(new Quaternion(Vector3f.ZP, 90, true));
+                matrixStack.mulPose(new Quaternionf().fromAxisAngleDeg(AXIS_Z_POSITIVE, 90));
                 matrixStack.translate(-0.5, -0.5, -0.5);
             }
             matrixStack.popPose();
@@ -204,7 +207,7 @@ public final class CasingBlockEntityRenderer implements BlockEntityRenderer<Casi
             }
 
             matrixStack.translate(0.5, 0.5, 0.5);
-            matrixStack.mulPose(new Quaternion(Vector3f.ZP, 90, true));
+            matrixStack.mulPose(new Quaternionf().fromAxisAngleDeg(AXIS_Z_POSITIVE, 90));
             matrixStack.translate(-0.5, -0.5, -0.5);
         }
         matrixStack.popPose();

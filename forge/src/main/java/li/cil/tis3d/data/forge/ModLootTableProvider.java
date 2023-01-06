@@ -1,32 +1,28 @@
 package li.cil.tis3d.data.forge;
 
 import com.google.common.collect.Sets;
-import com.mojang.datafixers.util.Pair;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.common.block.Blocks;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.loot.BlockLoot;
+import net.minecraft.data.PackOutput;
+import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.LootTables;
 import net.minecraft.world.level.storage.loot.ValidationContext;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.*;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public final class ModLootTableProvider extends LootTableProvider {
-    public ModLootTableProvider(final DataGenerator generator) {
-        super(generator);
+    public ModLootTableProvider(final PackOutput packOutput) {
+        super(packOutput, Collections.emptySet(), Collections.emptyList());
     }
 
     @Override
@@ -45,13 +41,17 @@ public final class ModLootTableProvider extends LootTableProvider {
     }
 
     @Override
-    protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> getTables() {
-        return Collections.singletonList(Pair.of(ModBlockLootTables::new, LootContextParamSets.BLOCK));
+    public List<LootTableProvider.SubProviderEntry> getTables() {
+        return Collections.singletonList(new SubProviderEntry(ModBlockLootTables::new, LootContextParamSets.BLOCK));
     }
 
-    public static final class ModBlockLootTables extends BlockLoot {
+    public static final class ModBlockLootTables extends BlockLootSubProvider {
+        public ModBlockLootTables() {
+            super(Collections.emptySet(), FeatureFlags.REGISTRY.allFlags());
+        }
+
         @Override
-        protected void addTables() {
+        protected void generate() {
             dropSelf(Blocks.CASING.get());
             dropSelf(Blocks.CONTROLLER.get());
         }

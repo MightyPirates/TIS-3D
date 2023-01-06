@@ -47,11 +47,11 @@ dependencies {
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 
-    modImplementation "net.minecraftforge:forgeconfigapiport-fabric:4.2.6"
-    modImplementation "curse.maven:markdownmanual-502485:4306670"
+    modImplementation "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:5.0.3"
+    modImplementation "curse.maven:markdownmanual-502485:4306715"
 
-    modRuntimeOnly "curse.maven:tooltipfix-411557:4070924"
-    modRuntimeOnly("me.shedaniel:RoughlyEnoughItems-fabric:9.1.572") {
+    modRuntimeOnly "curse.maven:tooltipfix-411557:4167237"
+    modRuntimeOnly("me.shedaniel:RoughlyEnoughItems-fabric:10.0.581") {
         exclude(group: "net.fabricmc.fabric-api")
     }
 }

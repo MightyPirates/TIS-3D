@@ -52,13 +52,6 @@ public final class ReadOnlyMemoryModuleScreen extends AbstractContainerScreen<Re
     // GuiScreen
 
     @Override
-    public void init() {
-        super.init();
-
-        getMinecraft().keyboardHandler.setSendRepeatsToGui(true);
-    }
-
-    @Override
     public void removed() {
         super.removed();
 
@@ -68,8 +61,6 @@ public final class ReadOnlyMemoryModuleScreen extends AbstractContainerScreen<Re
             // Save any changes made and send them to the server.
             Network.sendToServer(new ClientReadOnlyMemoryModuleDataMessage(menu.getHand(), data));
         }
-
-        getMinecraft().keyboardHandler.setSendRepeatsToGui(false);
     }
 
     @Override

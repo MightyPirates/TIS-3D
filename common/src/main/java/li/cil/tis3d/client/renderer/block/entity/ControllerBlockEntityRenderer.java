@@ -1,7 +1,6 @@
 package li.cil.tis3d.client.renderer.block.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Matrix4f;
 import li.cil.tis3d.common.block.entity.ControllerBlockEntity;
 import li.cil.tis3d.util.Color;
 import net.minecraft.client.Minecraft;
@@ -49,7 +48,7 @@ public final class ControllerBlockEntityRenderer implements BlockEntityRenderer<
 
         final Component message = state.message;
         final float x = -font.width(message) / 2.0f;
-        final Matrix4f matrix = matrixStack.last().pose();
+        final var matrix = matrixStack.last().pose();
         final int backgroundColor = Minecraft.getInstance().options.getBackgroundColor(0.25f);
         final int maxBrightness = LightTexture.pack(0xF, 0xF);
         font.drawInBatch(message, x, 0, Color.withAlpha(Color.WHITE, 0.125f), false, matrix, bufferFactory, true, backgroundColor, maxBrightness);
