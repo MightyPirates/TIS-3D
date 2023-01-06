@@ -1,5 +1,6 @@
 package li.cil.tis3d.client.fabric;
 
+import li.cil.tis3d.api.platform.FabricProviderInitializer;
 import li.cil.tis3d.client.ClientBootstrap;
 import li.cil.tis3d.client.ClientSetup;
 import li.cil.tis3d.client.renderer.Textures;
@@ -11,6 +12,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents;
 import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.fabricmc.fabric.api.event.client.player.ClientPickBlockGatherCallback;
+import net.fabricmc.loader.impl.entrypoint.EntrypointUtils;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -21,6 +23,8 @@ public final class ClientBootstrapFabric implements ClientModInitializer {
     public void onInitializeClient() {
         ClientBootstrap.run();
         ClientSetup.run();
+
+        EntrypointUtils.invoke("tis3d:registration", FabricProviderInitializer.class, FabricProviderInitializer::registerProviders);
 
         ClientChunkEvents.CHUNK_UNLOAD.register((level, chunk) -> {
             for (final BlockEntity blockEntity : chunk.getBlockEntities().values()) {
