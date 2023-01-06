@@ -1,6 +1,5 @@
 package li.cil.tis3d.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import li.cil.tis3d.client.ClientConfig;
 import li.cil.tis3d.common.module.TerminalModule;
@@ -11,7 +10,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
 
 import java.util.Objects;
 
@@ -32,21 +30,10 @@ public final class TerminalModuleScreen extends Screen {
 
     @Override
     public void render(final PoseStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
-        RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, false);
-        RenderSystem.enableDepthTest();
-        RenderSystem.depthFunc(GL11.GL_LEQUAL);
-        RenderSystem.depthMask(true);
-        RenderSystem.colorMask(false, false, false, false);
-        matrixStack.pushPose();
-        matrixStack.translate(0, 0, 500);
-
-        fill(matrixStack, 8, 8, width - 8, height - 8, 0xFFFFFFFF);
-
-        matrixStack.popPose();
-        RenderSystem.depthMask(false);
-        RenderSystem.colorMask(true, true, true, true);
-
-        fill(matrixStack, 4, 4, width - 4, height - 4, Color.WHITE);
+        fill(matrixStack, 4, 4, width - 4, 8, Color.WHITE); // Top
+        fill(matrixStack, 4, 4, 8, height - 4, Color.WHITE); // Left
+        fill(matrixStack, 4, height - 8, width - 4, height - 4, Color.WHITE); // Bottom
+        fill(matrixStack, width - 8, 4, width - 4, height - 4, Color.WHITE); // Right
     }
 
     @Override
