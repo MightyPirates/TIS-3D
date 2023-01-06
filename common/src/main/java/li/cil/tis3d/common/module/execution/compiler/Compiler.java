@@ -32,7 +32,7 @@ public final class Compiler {
         state.clear();
 
         final String[] lines = Iterables.toArray(code, String.class);
-        if (lines.length > CommonConfig.maxLinesPerProgram) {
+        if (lines.length > CommonConfig.maxLinesPerProgram && CommonConfig.maxLinesPerProgram > 0) {
             throw new ParseException(Strings.MESSAGE_TOO_MANY_LINES, CommonConfig.maxLinesPerProgram, 0, 0);
         }
         for (int lineNumber = 0; lineNumber < lines.length; lineNumber++) {
