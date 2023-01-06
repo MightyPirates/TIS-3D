@@ -15,14 +15,14 @@ import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.ModRenderType;
 import li.cil.tis3d.util.Color;
 import li.cil.tis3d.util.EnumUtils;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 
 import java.util.Arrays;
 
@@ -280,12 +280,16 @@ public final class DisplayModule extends AbstractModuleWithRotation {
     @Environment(EnvType.CLIENT)
     private void deleteTexture() {
         if (textureId != null) {
-            Minecraft.getInstance().getTextureManager().release(textureId);
+            Minecraft.getInstance().doRunTask(() -> {
+                Minecraft.getInstance().getTextureManager().release(textureId);
+            });
         }
 
         if (texture != null) {
-            texture.close();
-            texture = null;
+            Minecraft.getInstance().doRunTask(() -> {
+                texture.close();
+                texture = null;
+            });
         }
     }
 
