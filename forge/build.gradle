@@ -45,7 +45,7 @@ dependencies {
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
 
-    modRuntimeOnly "curse.maven:markdownmanual-502485:4285516"
+    modImplementation "curse.maven:markdownmanual-502485:4306669"
 }
 
 processResources {

@@ -51,5 +51,10 @@ public final class Manuals {
             ManualModel.LANGUAGE_KEY + "/protocols/index.md",
             Component.translatable("tis3d.manual.serial_protocols"),
             new ResourceLocation(API.MOD_ID, "textures/gui/manual_serial_protocols.png")));
+
+        MANUALS.register();
+        pathProviders.register();
+        documentProviders.register();
+        tabs.register();
     }
 }

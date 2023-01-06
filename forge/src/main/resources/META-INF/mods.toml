@@ -35,4 +35,5 @@ side = "BOTH"
 modId = "markdown_manual"
 mandatory = true
 versionRange = "[1.2.2,)"
+ordering = "AFTER"
 side = "BOTH"

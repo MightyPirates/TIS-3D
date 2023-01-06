@@ -26,6 +26,9 @@
         ],
         "fabric-datagen": [
             "li.cil.tis3d.data.fabric.DataGenerators"
+        ],
+        "markdown_manual:registration": [
+            "li.cil.tis3d.client.fabric.ManualInitializer"
         ]
     },
     "depends": {
@@ -33,7 +36,7 @@
         "forgeconfigapiport": "*",
         "architectury": "*",
         "minecraft": ">=1.19.2",
-        "markdown_manual": ">=1.2.2",
+        "markdown_manual": ">=1.2.3",
         "java": ">=17"
     },
     "recommends": {

@@ -13,8 +13,6 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 public final class ClientBootstrap {
     public static void run() {
-        Manuals.initialize();
-
         ColorHandlerRegistry.registerBlockColors(new CasingBlockColor(), Blocks.CASING);
         EntityRendererRegistry.register(Entities.INFRARED_PACKET, NullEntityRenderer::new);
     }
