@@ -59,7 +59,7 @@ public final class SerialProtocolContentProvider extends NamespaceDocumentProvid
     private String compileLinkList() {
         final StringBuilder sb = new StringBuilder();
         final Set<SerialProtocolDocumentationReference> references = new HashSet<>();
-        for (final SerialInterfaceProvider provider : SerialInterfaceProviders.MODULE_PROVIDER_REGISTRY) {
+        for (final SerialInterfaceProvider provider : SerialInterfaceProviders.REGISTRAR.get()) {
             final Optional<SerialProtocolDocumentationReference> reference = provider.getDocumentationReference();
             reference.ifPresent(references::add);
         }

@@ -1,8 +1,11 @@
 package li.cil.tis3d.common.provider;
 
+import com.google.common.base.Suppliers;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.Registrar;
+import dev.architectury.registry.registries.Registries;
 import dev.architectury.registry.registries.RegistrySupplier;
+import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.Module;
@@ -16,19 +19,20 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 public final class ModuleProviders {
     private static final DeferredRegister<ModuleProvider> MODULE_PROVIDERS = RegistryUtils.get(ModuleProvider.REGISTRY);
 
     // --------------------------------------------------------------------- //
 
-    public static final Registrar<ModuleProvider> MODULE_PROVIDER_REGISTRY = MODULE_PROVIDERS.getRegistries()
-        .<ModuleProvider>builder(ModuleProvider.REGISTRY.location())
-        .build();
+    private static final Supplier<Registrar<ModuleProvider>> REGISTRAR = Suppliers.memoize(() -> Registries.get(API.MOD_ID).get(ModuleProvider.REGISTRY));
 
     // --------------------------------------------------------------------- //
 
     public static void initialize() {
+        RegistryUtils.builder(ModuleProvider.REGISTRY).build();
+
         register(Items.AUDIO_MODULE, AudioModule::new);
         register(Items.DISPLAY_MODULE, DisplayModule::new);
         register(Items.EXECUTION_MODULE, ExecutionModule::new);
@@ -50,7 +54,7 @@ public final class ModuleProviders {
     }
 
     public static Optional<ModuleProvider> getProviderFor(final ItemStack stack, final Casing casing, final Face face) {
-        for (final ModuleProvider provider : MODULE_PROVIDER_REGISTRY) {
+        for (final ModuleProvider provider : REGISTRAR.get()) {
             if (provider.matches(stack, casing, face)) {
                 return Optional.of(provider);
             }
