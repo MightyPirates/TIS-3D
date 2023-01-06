@@ -82,8 +82,6 @@ jar {
     classifier "dev"
 }
 
-def commonApiJar = project(":common").apiJar
-
 sourcesJar {
     def commonSources = project(":common").sourcesJar
     dependsOn commonSources
@@ -132,10 +130,8 @@ curseforge {
             requiredDependency "forge-config-api-port-fabric"
         }
         mainArtifact(remapJar)
-        addArtifact(commonApiJar)
         afterEvaluate {
             uploadTask.dependsOn(remapJar)
-            uploadTask.dependsOn(commonApiJar)
         }
     }
     options {
