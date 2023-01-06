@@ -1,0 +1,42 @@
+{
+    "schemaVersion": 1,
+    "id": "tis3d",
+    "version": "${version}",
+
+    "name": "TIS-3D",
+    "description": "TIS-100 inspired low-tech computing for Minecraft.",
+    "authors": [
+        "Sangar"
+    ],
+    "contact": {
+        "sources": "https://github.com/MightyPirates/TIS-3D"
+    },
+    "mixins": [
+        "tis3d.mixins.json"
+    ],
+    "license": "MIT",
+
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "li.cil.tis3d.common.fabric.CommonBootstrapFabric"
+        ],
+        "client": [
+            "li.cil.tis3d.client.fabric.ClientBootstrapFabric"
+        ],
+        "fabric-datagen": [
+            "li.cil.tis3d.data.fabric.DataGenerators"
+        ]
+    },
+    "depends": {
+        "fabric": "*",
+        "forgeconfigapiport": "*",
+        "architectury": "*",
+        "minecraft": ">=1.19.2",
+        "markdown_manual": ">=1.2.2",
+        "java": ">=17"
+    },
+    "recommends": {
+        "tooltipfix": "*"
+    }
+}

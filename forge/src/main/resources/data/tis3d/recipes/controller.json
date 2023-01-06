@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "I": {
+      "tag": "forge:ingots/iron"
+    },
+    "R": {
+      "tag": "forge:dusts/redstone"
+    },
+    "S": {
+      "tag": "forge:gems/diamond"
+    }
+  },
+  "pattern": [
+    "IRI",
+    "RSR",
+    "IRI"
+  ],
+  "result": {
+    "item": "tis3d:controller"
+  }
+}

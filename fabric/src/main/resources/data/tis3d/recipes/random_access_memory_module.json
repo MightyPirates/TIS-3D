@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "I": {
+      "tag": "c:iron_ingots"
+    },
+    "P": {
+      "tag": "c:glass_panes"
+    },
+    "R": {
+      "tag": "c:redstone_dusts"
+    },
+    "S": {
+      "tag": "c:emeralds"
+    }
+  },
+  "pattern": [
+    "PPP",
+    "ISI",
+    " R "
+  ],
+  "result": {
+    "count": 2,
+    "item": "tis3d:random_access_memory_module"
+  }
+}

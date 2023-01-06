@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "tis3d:stack_module"
+    }
+  ],
+  "result": {
+    "item": "tis3d:queue_module"
+  }
+}

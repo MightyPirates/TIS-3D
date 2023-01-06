@@ -1,1 +1,0 @@
-* Fixed infrared packages not properly colliding with (most) entities.

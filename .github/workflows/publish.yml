@@ -21,7 +21,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v1
         with:
-          java-version: 16
+          java-version: 17
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Validate Gradle wrapper
@@ -36,27 +36,52 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew -Psemver='${{ steps.split_tag.outputs._1 }}' build
 
+      - name: Remove extra JARs
+        run: |
+          rm fabric/build/libs/*-dev-shadow.jar
+          rm fabric/build/libs/*-sources.jar
+          rm forge/build/libs/*-dev-shadow.jar
+          rm forge/build/libs/*-sources.jar
+
       - name: Add Artifacts to Github Release
         uses: alexellis/upload-assets@0.3.0
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          asset_paths: '["./build/libs/*.jar"]'
+          asset_paths: '["./forge/build/libs/*.jar","./fabric/build/libs/*.jar"]'
 
-      - name: Publish to Github Packages
-        run: gradle -Psemver='${{ steps.split_tag.outputs._1 }}' publish
+      - name: Publish to Github Packages (Forge)
+        run: gradle -Psemver='${{ steps.split_tag.outputs._1 }}' forge:publish
         env:
           GITHUB_MAVEN_URL: 'https://maven.pkg.github.com/${{ github.repository }}'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publish to Curseforge
-        run: ./gradlew -Psemver='${{ steps.split_tag.outputs._1 }}' curseforge
+      - name: Publish to Github Packages (Fabric)
+        run: gradle -Psemver='${{ steps.split_tag.outputs._1 }}' fabric:publish
+        env:
+          GITHUB_MAVEN_URL: 'https://maven.pkg.github.com/${{ github.repository }}'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to Curseforge (Forge)
+        run: ./gradlew -Psemver='${{ steps.split_tag.outputs._1 }}' forge:curseforge
         env:
           CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
           CHANGELOG: ${{ github.event.release.body }}
 
-      - name: Publish to modrinth
-        run: ./gradlew -Psemver='${{ steps.split_tag.outputs._1 }}' modrinth
+      - name: Publish to Curseforge (Fabric)
+        run: ./gradlew -Psemver='${{ steps.split_tag.outputs._1 }}' fabric:curseforge
+        env:
+          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
+          CHANGELOG: ${{ github.event.release.body }}
+
+      - name: Publish to modrinth (Forge)
+        run: ./gradlew -Psemver='${{ steps.split_tag.outputs._1 }}' forge:modrinth
+        env:
+          MODRINTH_API_KEY: ${{ secrets.MODRINTH_API_KEY }}
+          CHANGELOG: ${{ github.event.release.body }}
+
+      - name: Publish to modrinth (Fabric)
+        run: ./gradlew -Psemver='${{ steps.split_tag.outputs._1 }}' fabric:modrinth
         env:
           MODRINTH_API_KEY: ${{ secrets.MODRINTH_API_KEY }}
           CHANGELOG: ${{ github.event.release.body }}

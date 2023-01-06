@@ -1,0 +1,16 @@
+{
+    "parent": "block/block",
+    "elements": [
+        {
+            "from": [ 0, 0, 0 ],
+            "to": [ 16, 16, 16 ],
+            "faces": {
+                "south": { "texture": "#module", "cullface": "south" }
+            }
+        }
+    ],
+    "textures": {
+        "module": "tis3d:block/casing_module",
+        "particle": "tis3d:block/casing_module"
+    }
+}

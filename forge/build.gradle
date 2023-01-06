@@ -1,0 +1,146 @@
+plugins {
+    id "com.github.johnrengelman.shadow" version "7.1.2"
+}
+
+architectury {
+    platformSetupLoomIde()
+    forge()
+}
+
+loom {
+    accessWidenerPath = project(":common").loom.accessWidenerPath
+
+    forge {
+        convertAccessWideners = true
+        extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
+
+        mixinConfig "${mod_id}.mixins.json"
+
+        dataGen {
+            mod "${mod_id}"
+        }
+    }
+
+    runs {
+        data {
+            data()
+            programArgs "--existing", project(":common").file("src/main/resources").absolutePath
+            programArgs "--existing", file("src/main/resources").absolutePath
+        }
+    }
+}
+
+configurations {
+    common
+    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentForge.extendsFrom common
+}
+
+dependencies {
+    forge "net.minecraftforge:forge:${rootProject.forge_version}"
+    modApi "dev.architectury:architectury-forge:${rootProject.architectury_version}"
+
+    common(project(path: ":common", configuration: "namedElements")) { transitive false }
+    shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
+
+    modRuntimeOnly "curse.maven:markdownmanual-502485:4285516"
+}
+
+processResources {
+    inputs.property "version", project.version
+
+    filesMatching("META-INF/mods.toml") {
+        expand "version": project.version
+    }
+}
+
+shadowJar {
+    exclude "fabric.mod.json"
+    exclude "architectury.common.json"
+
+    configurations = [project.configurations.shadowCommon]
+    classifier "dev-shadow"
+}
+
+remapJar {
+    inputFile.set(shadowJar.archiveFile)
+    dependsOn shadowJar
+    classifier null
+}
+
+jar {
+    classifier "dev"
+}
+
+def commonApiJar = project(":common").apiJar
+
+sourcesJar {
+    def commonSources = project(":common").sourcesJar
+    dependsOn commonSources
+    from commonSources.archiveFile.map { zipTree(it) }
+}
+
+components.java {
+    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+        skip()
+    }
+}
+
+publishing {
+    publications {
+        mavenForge(MavenPublication) {
+            artifactId = "${mod_id}-${rootProject.minecraft_version}-${project.name}"
+            from components.java
+        }
+    }
+
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = System.getenv("GITHUB_MAVEN_URL") ?: ""
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+}
+
+curseforge {
+    apiKey = System.getenv("CURSEFORGE_API_KEY") ?: ""
+    project {
+        id = rootProject.curse_project_id
+        releaseType = "release"
+        changelogType = "markdown"
+        changelog = System.getenv("CHANGELOG") ?: "Changelog not available."
+        addGameVersion "Forge"
+        addGameVersion rootProject.minecraft_version
+        addGameVersion "Java 17"
+        relations {
+            requiredDependency "architectury-api"
+        }
+        mainArtifact(remapJar)
+        addArtifact(commonApiJar)
+        afterEvaluate {
+            uploadTask.dependsOn(remapJar)
+            uploadTask.dependsOn(commonApiJar)
+        }
+    }
+}
+
+modrinth {
+    token = System.getenv("MODRINTH_API_KEY") ?: ""
+    projectId = rootProject.modrinth_project_id
+    changelog = System.getenv("CHANGELOG") ?: "Changelog not available."
+    versionNumber = "MC${rootProject.minecraft_version}-${project.name}-${rootProject.semver}"
+    versionName = "${mod_id}-${project.version}"
+    versionType = "release"
+    uploadFile = remapJar
+    gameVersions = [rootProject.minecraft_version]
+    loaders = ["forge"]
+    dependencies {
+        required.project "architectury-api"
+    }
+}

@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "D": {
+      "item": "tis3d:display_module"
+    },
+    "I": {
+      "tag": "forge:ingots/iron"
+    },
+    "K": {
+      "item": "tis3d:keypad_module"
+    },
+    "Q": {
+      "tag": "forge:gems/quartz"
+    },
+    "R": {
+      "tag": "forge:dusts/redstone"
+    },
+    "S": {
+      "item": "tis3d:stack_module"
+    }
+  },
+  "pattern": [
+    "KDS",
+    "IQI",
+    " R "
+  ],
+  "result": {
+    "item": "tis3d:terminal_module"
+  }
+}

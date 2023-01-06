@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "I": {
+      "tag": "c:iron_ingots"
+    },
+    "R": {
+      "tag": "c:redstone_dusts"
+    },
+    "S": {
+      "tag": "c:iron_blocks"
+    }
+  },
+  "pattern": [
+    "IRI",
+    "RSR",
+    "IRI"
+  ],
+  "result": {
+    "count": 8,
+    "item": "tis3d:casing"
+  }
+}

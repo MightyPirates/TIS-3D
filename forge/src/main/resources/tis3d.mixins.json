@@ -1,0 +1,19 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "li.cil.tis3d.mixin.forge",
+    "compatibilityLevel": "JAVA_17",
+    "client": [
+        "MixinCasingBlock",
+        "MixinFacadeModule"
+    ],
+    "mixins": [
+        "MixinCasingBlockEntity",
+        "MixinControllerBlockEntity",
+        "MixinKeyItem",
+        "MixinModuleItem"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}

@@ -1,0 +1,47 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_casing": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "tis3d:casing"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_execution_module": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "tis3d:execution_module"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "tis3d:timer_module"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_casing",
+      "has_execution_module",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "tis3d:timer_module"
+    ]
+  }
+}

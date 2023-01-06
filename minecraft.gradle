@@ -1,4 +1,0 @@
-ext {
-    minecraft_version = '1.19'
-    minecraft_sdk = 'forge'
-}

@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "I": {
+      "tag": "forge:ingots/iron"
+    },
+    "P": {
+      "tag": "forge:glass_panes/colorless"
+    },
+    "R": {
+      "tag": "forge:dusts/redstone"
+    },
+    "S": {
+      "tag": "forge:chests"
+    }
+  },
+  "pattern": [
+    "PPP",
+    "ISI",
+    " R "
+  ],
+  "result": {
+    "count": 2,
+    "item": "tis3d:stack_module"
+  }
+}
