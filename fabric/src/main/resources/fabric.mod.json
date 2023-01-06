@@ -32,9 +32,9 @@
         ]
     },
     "depends": {
-        "fabric": "*",
-        "forgeconfigapiport": "*",
-        "architectury": "*",
+        "fabric": ">=0.70.0",
+        "forgeconfigapiport": ">=5.0.3",
+        "architectury": ">=7.0.66",
         "minecraft": ">=1.19.2",
         "markdown_manual": ">=1.2.3",
         "java": ">=17"
