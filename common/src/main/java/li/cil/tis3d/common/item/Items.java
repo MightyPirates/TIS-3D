@@ -33,7 +33,7 @@ public final class Items {
     public static final RegistrySupplier<ModuleItem> AUDIO_MODULE = register("audio_module", ModuleItem::new);
     public static final RegistrySupplier<ModuleItem> DISPLAY_MODULE = register("display_module", ModuleItem::new);
     public static final RegistrySupplier<ModuleItem> EXECUTION_MODULE = register("execution_module", ModuleItem::new);
-    public static final RegistrySupplier<ModuleItem> FACADE_MODULE = register("facade_module", ModuleItem::new);
+    public static final RegistrySupplier<ModuleItem> FACADE_MODULE = register("facade_module", FacadeModuleItem::new);
     public static final RegistrySupplier<ModuleItem> INFRARED_MODULE = register("infrared_module", ModuleItem::new);
     public static final RegistrySupplier<ModuleItem> KEYPAD_MODULE = register("keypad_module", ModuleItem::new);
     public static final RegistrySupplier<ModuleItem> QUEUE_MODULE = register("queue_module", ModuleItem::new);

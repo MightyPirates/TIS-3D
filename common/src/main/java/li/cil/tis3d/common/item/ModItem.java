@@ -12,7 +12,7 @@ import java.util.List;
 
 public class ModItem extends Item {
     public ModItem(final Properties properties) {
-        super(properties.tab(CreativeTabs.COMMON));
+        super(properties);
     }
 
     public ModItem() {
@@ -36,6 +36,6 @@ public class ModItem extends Item {
     // --------------------------------------------------------------------- //
 
     protected static Properties createProperties() {
-        return new Properties();
+        return new Properties().tab(CreativeTabs.COMMON);
     }
 }

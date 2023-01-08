@@ -29,6 +29,9 @@
         ],
         "markdown_manual:registration": [
             "li.cil.tis3d.client.fabric.ManualInitializer"
+        ],
+        "rei_client": [
+            "li.cil.tis3d.client.integration.roughlyenoughitems.ModREIClientPlugin"
         ]
     },
     "depends": {
