@@ -1,10 +1,12 @@
 package li.cil.tis3d.common.item;
 
+import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.architectury.registry.CreativeTabRegistry;
 import li.cil.tis3d.api.API;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Map;
@@ -19,9 +21,15 @@ public final class ModCreativeTabs {
                 BuiltInRegistries.ITEM.entrySet().stream()
                     .filter(entry -> entry.getKey().location().getNamespace().equals(API.MOD_ID))
                     .map(Map.Entry::getValue)
+                    .filter(ModCreativeTabs::isItemEnabled)
                     .forEach(item -> output.accept(new ItemStack(item)));
             }));
 
     public static void initialize() {
+    }
+
+    @ExpectPlatform
+    private static boolean isItemEnabled(final Item item) {
+        throw new AssertionError();
     }
 }

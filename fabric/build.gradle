@@ -49,11 +49,12 @@ dependencies {
 
     modImplementation "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:5.0.3"
     modImplementation "curse.maven:markdownmanual-502485:4306715"
-
-    modRuntimeOnly "curse.maven:tooltipfix-411557:4167237"
-    modRuntimeOnly("me.shedaniel:RoughlyEnoughItems-fabric:10.0.581") {
+    modImplementation("me.shedaniel:RoughlyEnoughItems-fabric:10.0.581") {
         exclude(group: "net.fabricmc.fabric-api")
     }
+
+    modRuntimeOnly "curse.maven:tooltipfix-411557:4167237"
+    modRuntimeOnly "curse.maven:sodium-394468:4291859"
 }
 
 processResources {
