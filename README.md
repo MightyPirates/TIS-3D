@@ -22,12 +22,15 @@ To add a dependency to TIS-3D for use in your mod, add the following to your `bu
 
 ```groovy
 repositories {
-    maven {
-        url 'https://cursemaven.com'
-        content { includeGroup "curse.maven" }
+    exclusiveContent {
+        forRepository { maven("https://cursemaven.com") }
+        filter { includeGroup("curse.maven") }
     }
 }
 dependencies {
-    implementation fg.deobf("curse.maven:tis3d-238603:3738437")
+    // Forge via ForgeGradle
+    implementation(fg.deobf("curse.maven:tis3d-238603:4714037"))
+    // Fabric via Loom
+    modImplementation("curse.maven:tis3d-238603:4714055")
 }
 ```
