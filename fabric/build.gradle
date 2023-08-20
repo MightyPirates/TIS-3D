@@ -36,6 +36,7 @@ repositories {
     maven { url "https://maven.architectury.dev/" }
     maven { url "https://maven.shedaniel.me" }
     maven { url "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" }
+    maven { url "https://api.modrinth.com/maven" }
     mavenCentral()
 }
 
@@ -54,7 +55,7 @@ dependencies {
     }
 
     modRuntimeOnly "curse.maven:tooltipfix-411557:4167237"
-    modRuntimeOnly "curse.maven:sodium-394468:4291859"
+    modRuntimeOnly "maven.modrinth:sodium:mc1.19.3-0.4.9"
 }
 
 processResources {
