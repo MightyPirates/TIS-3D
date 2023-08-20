@@ -26,11 +26,11 @@ loom {
 dependencies {
     forge(libs.forge.platform)
     modApi(libs.forge.architectury)
-    modApi(libs.manual.api)
+
+    modImplementation(libs.forge.manual)
 
     // Not used by mod, just for dev convenience.
     modRuntimeOnly(libs.forge.justEnoughItems)
-    modRuntimeOnly(libs.forge.manual)
 }
 
 tasks {

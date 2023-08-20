@@ -37,8 +37,8 @@ dependencies {
     modImplementation(libs.fabric.loader)
     modApi(libs.fabric.api)
     modApi(libs.fabric.architectury)
-    modApi(libs.manual.api)
 
+    modImplementation(libs.fabric.manual)
     modImplementation(libs.fabric.forgeConfigPort)
     modImplementation(libs.fabric.roughlyEnoughItems) {
         exclude(group = "net.fabricmc.fabric-api")
@@ -47,7 +47,6 @@ dependencies {
     // Not used by mod, just for dev convenience.
     modRuntimeOnly(libs.fabric.tooltipFix)
     modRuntimeOnly(libs.fabric.sodium)
-    modRuntimeOnly(libs.fabric.manual)
 }
 
 tasks {
