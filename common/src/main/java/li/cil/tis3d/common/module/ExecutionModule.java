@@ -149,7 +149,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
 
         // Vanilla book? If so, make that a code book.
         if (Items.is(heldItem, net.minecraft.world.item.Items.BOOK)) {
-            if (!player.level.isClientSide()) {
+            if (!player.level().isClientSide()) {
                 if (!player.getAbilities().instabuild) {
                     heldItem.split(1);
                 }

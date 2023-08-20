@@ -4,11 +4,11 @@ import dev.architectury.registry.registries.RegistrySupplier;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.common.item.Items;
 import net.minecraft.client.renderer.block.model.BlockModel;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.core.Direction;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
@@ -50,27 +50,27 @@ public final class ModItemModelProvider extends ItemModelProvider {
             .end()
             .transforms()
 
-            .transform(ItemTransforms.TransformType.GUI)
+            .transform(ItemDisplayContext.GUI)
             .rotation(30, 135, 0)
             .scale(0.625f)
             .end()
 
-            .transform(ItemTransforms.TransformType.GROUND)
+            .transform(ItemDisplayContext.GROUND)
             .translation(0, 3, 0)
             .scale(0.625f)
             .end()
 
-            .transform(ItemTransforms.TransformType.FIXED)
+            .transform(ItemDisplayContext.FIXED)
             .scale(1f)
             .end()
 
-            .transform(ItemTransforms.TransformType.THIRD_PERSON_RIGHT_HAND)
+            .transform(ItemDisplayContext.THIRD_PERSON_RIGHT_HAND)
             .rotation(0, 180, 20)
             .translation(0, 2.5f, 0)
             .scale(0.375f)
             .end()
 
-            .transform(ItemTransforms.TransformType.FIRST_PERSON_RIGHT_HAND)
+            .transform(ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
             .rotation(-70, 160, 0)
             .scale(0.4f)
             .end()

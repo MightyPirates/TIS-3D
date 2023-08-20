@@ -1,8 +1,8 @@
 package li.cil.tis3d.common.block;
 
-import li.cil.tis3d.common.item.Items;
-import li.cil.tis3d.common.block.entity.ControllerBlockEntity;
 import li.cil.tis3d.common.block.entity.BlockEntities;
+import li.cil.tis3d.common.block.entity.ControllerBlockEntity;
+import li.cil.tis3d.common.item.Items;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -18,7 +18,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 
 import javax.annotation.Nullable;
@@ -29,7 +29,8 @@ import javax.annotation.Nullable;
 public final class ControllerBlock extends BaseEntityBlock {
     public ControllerBlock() {
         super(Properties
-            .of(Material.METAL)
+            .of()
+            .mapColor(MapColor.METAL)
             .sound(SoundType.METAL)
             .strength(1.5f, 6f));
     }

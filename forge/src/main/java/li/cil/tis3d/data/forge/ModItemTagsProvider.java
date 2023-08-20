@@ -16,7 +16,7 @@ import static li.cil.tis3d.common.tags.ItemTags.*;
 
 public final class ModItemTagsProvider extends ItemTagsProvider {
     public ModItemTagsProvider(final PackOutput output, final CompletableFuture<HolderLookup.Provider> lookupProvider, final BlockTagsProvider blockTagsProvider, final ExistingFileHelper existingFileHelper) {
-        super(output, lookupProvider, blockTagsProvider, API.MOD_ID, existingFileHelper);
+        super(output, lookupProvider, blockTagsProvider.contentsGetter(), API.MOD_ID, existingFileHelper);
     }
 
     @Override

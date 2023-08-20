@@ -9,10 +9,7 @@ import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.storage.loot.BuiltInLootTables;
-import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.LootTables;
-import net.minecraft.world.level.storage.loot.ValidationContext;
+import net.minecraft.world.level.storage.loot.*;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -37,7 +34,7 @@ public final class ModLootTableProvider extends LootTableProvider {
         for (final ResourceLocation id : Sets.difference(modLootTableIds, map.keySet()))
             validationContext.reportProblem("Missing mod loot table: " + id);
 
-        map.forEach((location, table) -> LootTables.validate(validationContext, location, table));
+        map.forEach((location, table) -> table.validate(validationContext.setParams(table.getParamSet()).enterElement("{" + location + "}", new LootDataId<>(LootDataType.TABLE, location))));
     }
 
     @Override

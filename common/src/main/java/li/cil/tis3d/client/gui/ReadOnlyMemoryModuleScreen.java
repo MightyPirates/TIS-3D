@@ -1,8 +1,6 @@
 package li.cil.tis3d.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.client.renderer.Textures;
@@ -12,8 +10,8 @@ import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.ClientReadOnlyMemoryModuleDataMessage;
 import li.cil.tis3d.util.Color;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -64,19 +62,19 @@ public final class ReadOnlyMemoryModuleScreen extends AbstractContainerScreen<Re
     }
 
     @Override
-    public void render(final PoseStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
-        renderBackground(matrixStack);
+    public void render(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
+        renderBackground(graphics);
 
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
+        super.render(graphics, mouseX, mouseY, partialTicks);
 
         final BufferBuilder builder = Tesselator.getInstance().getBuilder();
         final MultiBufferSource.BufferSource buffer = MultiBufferSource.immediate(builder);
 
         // Draw row and column headers.
-        drawHeaders(matrixStack, buffer);
+        drawHeaders(graphics, buffer);
 
         // Draw/fade out initializing info text.
-        drawInitializing(matrixStack, buffer);
+        drawInitializing(graphics, buffer);
 
         if (!receivedData) {
             buffer.endBatch();
@@ -84,23 +82,21 @@ public final class ReadOnlyMemoryModuleScreen extends AbstractContainerScreen<Re
         }
 
         // Draw memory cells being edited.
-        drawMemory(matrixStack, buffer);
+        drawMemory(graphics, buffer);
 
         buffer.endBatch();
 
         // Draw marker around currently selected memory cell.
-        drawSelectionBox(matrixStack);
+        drawSelectionBox(graphics);
     }
 
     @Override
-    protected void renderBg(final PoseStack matrixStack, final float partialTicks, final int x, final int y) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, Textures.LOCATION_GUI_MEMORY);
-        blit(matrixStack, leftPos, topPos, 0, 0, imageWidth, imageHeight);
+    protected void renderBg(final GuiGraphics graphics, final float partialTicks, final int x, final int y) {
+        graphics.blit(Textures.LOCATION_GUI_MEMORY, leftPos, topPos, 0, 0, imageWidth, imageHeight);
     }
 
     @Override
-    protected void renderLabels(final PoseStack matrixStack, final int x, final int y) {
+    protected void renderLabels(final GuiGraphics graphics, final int x, final int y) {
         // Suppress rendering of labels.
     }
 
@@ -217,12 +213,13 @@ public final class ReadOnlyMemoryModuleScreen extends AbstractContainerScreen<Re
         return col >= 0 && row >= 0 && col <= 0xF && row <= 0xF;
     }
 
-    private void drawHeaders(final PoseStack matrixStack, final MultiBufferSource buffer) {
+    private void drawHeaders(final GuiGraphics graphics, final MultiBufferSource buffer) {
         // Columns headers (top).
+        final var matrixStack = graphics.pose();
         matrixStack.pushPose();
         matrixStack.translate(leftPos + GRID_LEFT + 3, topPos + 6, 0);
         for (int col = 0; col < 16; col++) {
-            API.smallFontRenderer.drawBatch(matrixStack, buffer, String.format("%X", col), Color.GUI_TEXT);
+            API.smallFontRenderer.drawInBatch(String.format("%X", col), Color.GUI_TEXT, matrixStack.last().pose(), buffer);
             matrixStack.translate(CELL_WIDTH, 0, 0);
         }
         matrixStack.popPose();
@@ -231,13 +228,13 @@ public final class ReadOnlyMemoryModuleScreen extends AbstractContainerScreen<Re
         matrixStack.pushPose();
         matrixStack.translate(leftPos + 7, topPos + 14, 0);
         for (int row = 0; row < 16; row++) {
-            API.smallFontRenderer.drawBatch(matrixStack, buffer, String.format("0X%X0", row), Color.GUI_TEXT);
+            API.smallFontRenderer.drawInBatch(String.format("0X%X0", row), Color.GUI_TEXT, matrixStack.last().pose(), buffer);
             matrixStack.translate(0, CELL_HEIGHT, 0);
         }
         matrixStack.popPose();
     }
 
-    private void drawInitializing(final PoseStack matrixStack, final MultiBufferSource buffer) {
+    private void drawInitializing(final GuiGraphics graphics, final MultiBufferSource buffer) {
         final float sinceInitialized = (System.currentTimeMillis() - initTime) / 1000f;
         if (receivedData && sinceInitialized > 0.5f) {
             return;
@@ -248,18 +245,20 @@ public final class ReadOnlyMemoryModuleScreen extends AbstractContainerScreen<Re
 
         final int labelWidth = API.smallFontRenderer.width(LABEL_INITIALIZING);
 
+        final var matrixStack = graphics.pose();
         matrixStack.pushPose();
         matrixStack.translate((float) (leftPos + GRID_LEFT + 3 + 7 * CELL_WIDTH - labelWidth / 2), topPos + GRID_TOP + 1 + 7 * CELL_HEIGHT, 0);
-        API.smallFontRenderer.drawBatch(matrixStack, buffer, LABEL_INITIALIZING, color);
+        API.smallFontRenderer.drawInBatch(LABEL_INITIALIZING, color, matrixStack.last().pose(), buffer);
         matrixStack.popPose();
     }
 
-    private void drawMemory(final PoseStack matrixStack, final MultiBufferSource buffer) {
+    private void drawMemory(final GuiGraphics graphics, final MultiBufferSource buffer) {
         final int visibleCells = (int) (System.currentTimeMillis() - initTime);
 
         final int selectedX = selectedCell & 0x0F;
         final int selectedY = selectedCell / 0x0F;
 
+        final var matrixStack = graphics.pose();
         matrixStack.pushPose();
         matrixStack.translate(leftPos + GRID_LEFT + 1, topPos + GRID_TOP + 1, 0);
         for (int i = 0, count = Math.min(visibleCells, data.length); i < count; i++) {
@@ -279,7 +278,7 @@ public final class ReadOnlyMemoryModuleScreen extends AbstractContainerScreen<Re
             final float brightness = (float) Math.min(1, Math.max(0.8, 1 - distance / 32));
             final int color = Color.monochrome(brightness);
 
-            API.smallFontRenderer.drawBatch(matrixStack, buffer, String.format("%02X", data[i]), color);
+            API.smallFontRenderer.drawInBatch(String.format("%02X", data[i]), color, matrixStack.last().pose(), buffer);
 
             if (col < 0x0F) {
                 matrixStack.translate(CELL_WIDTH, 0, 0);
@@ -290,7 +289,7 @@ public final class ReadOnlyMemoryModuleScreen extends AbstractContainerScreen<Re
         matrixStack.popPose();
     }
 
-    private void drawSelectionBox(final PoseStack matrixStack) {
+    private void drawSelectionBox(final GuiGraphics graphics) {
         final int visibleCells = (int) (System.currentTimeMillis() - initTime) * 2;
         if (selectedCell > visibleCells) {
             return;
@@ -302,14 +301,13 @@ public final class ReadOnlyMemoryModuleScreen extends AbstractContainerScreen<Re
         final int x = leftPos + GRID_LEFT + CELL_WIDTH * col - 1;
         final int y = topPos + GRID_TOP + CELL_HEIGHT * row - 1;
 
+        final var matrixStack = graphics.pose();
         matrixStack.pushPose();
         matrixStack.translate(x, y, 0);
 
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, Textures.LOCATION_GUI_MEMORY);
         final var level = getMinecraft().level;
         final int vPos = level != null ? (int) (level.getGameTime() % 16) * 8 : 0;
-        blit(matrixStack, 0, 0, 256 - (CELL_WIDTH + 1), vPos, 11, 8);
+        graphics.blit(Textures.LOCATION_GUI_MEMORY, 0, 0, 256 - (CELL_WIDTH + 1), vPos, 11, 8);
 
         matrixStack.popPose();
     }

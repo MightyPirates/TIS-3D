@@ -35,14 +35,26 @@
         ]
     },
     "depends": {
-        "fabric": ">=0.70.0",
-        "forgeconfigapiport": ">=5.0.3",
-        "architectury": ">=7.0.66",
-        "minecraft": ">=1.19.2",
-        "markdown_manual": ">=1.2.3",
+        "fabric": ">=${fabricApiVersion}",
+        "forgeconfigapiport": ">=${forgeConfigPortVersion}",
+        "architectury": ">=${architecturyVersion}",
+        "minecraft": ">=${minecraftVersion}",
+        "markdown_manual": ">=${manualVersion}",
         "java": ">=17"
     },
     "recommends": {
         "tooltipfix": "*"
+    },
+    "custom": {
+        "mc-publish": {
+            "modrinth": "L23x7zL8",
+            "curseforge": 238603,
+            "dependencies": [
+                "fabric-api@>=${fabricApiVersion}(required){modrinth:P7dR8mSH}{curseforge:306612}",
+                "forgeconfigapiport@>=${forgeConfigPortVersion}(required){modrinth:ohNO6lps}{curseforge:547434}",
+                "architectury@>=${architecturyVersion}(required){modrinth:lhGA9TYQ}{curseforge:419699}",
+                "markdown_manual@>=${manualVersion}(required){modrinth:nPQ9xkPg}{curseforge:502485}"
+            ]
+        }
     }
 }

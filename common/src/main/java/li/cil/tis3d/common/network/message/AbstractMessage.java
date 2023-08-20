@@ -32,7 +32,7 @@ public abstract class AbstractMessage {
     @Nullable
     protected Level getServerLevel(final NetworkManager.PacketContext context) {
         final var sender = context.getPlayer();
-        return sender != null ? sender.getLevel() : null;
+        return sender != null ? sender.level() : null;
     }
 
     @Environment(EnvType.CLIENT)

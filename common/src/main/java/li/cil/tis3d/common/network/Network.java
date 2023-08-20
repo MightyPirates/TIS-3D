@@ -139,7 +139,7 @@ public final class Network {
         }
 
         for (final ServerPlayer player : server.getPlayerList().getPlayers()) {
-            if (player.getLevel() != level) {
+            if (player.level() != level) {
                 continue;
             }
             final var distanceX = pos.x() - player.getX();
@@ -173,7 +173,7 @@ public final class Network {
     }
 
     public static void sendPipeEffect(final Level level, final double x, final double y, final double z) {
-        final BlockPos position = new BlockPos(x, y, z);
+        final BlockPos position = BlockPos.containing(x, y, z);
         if (LevelUtils.isLoaded(level, position)) {
             final BlockState state = level.getBlockState(position);
             if (state.isSolidRender(level, position)) {
@@ -342,7 +342,7 @@ public final class Network {
         CasingSendQueue queue = queues.get(casing);
         if (queue == null) {
             synchronized (queuePool) {
-                if (queuePool.size() > 0) {
+                if (!queuePool.isEmpty()) {
                     queue = queuePool.pop();
                 } else {
                     queue = new CasingSendQueue();

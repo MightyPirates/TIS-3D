@@ -23,6 +23,8 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor.ABGR32;
+import net.minecraft.util.FastColor.ARGB32;
 
 import java.util.Arrays;
 
@@ -314,11 +316,11 @@ public final class DisplayModule extends AbstractModuleWithRotation {
         for (int iy = 0; iy < RESOLUTION; iy++) {
             for (int ix = 0; ix < RESOLUTION; ix++, ip++) {
                 final int argb = image[ip];
-                final int a = Color.getAlphaU8(argb);
-                final int b = Color.getBlueU8(argb);
-                final int g = Color.getGreenU8(argb);
-                final int r = Color.getRedU8(argb);
-                nativeImage.setPixelRGBA(ix, iy, NativeImage.combine(a, b, g, r));
+                final int a = ARGB32.alpha(argb);
+                final int b = ARGB32.blue(argb);
+                final int g = ARGB32.green(argb);
+                final int r = ARGB32.red(argb);
+                nativeImage.setPixelRGBA(ix, iy, ABGR32.color(a, b, g, r));
             }
         }
 

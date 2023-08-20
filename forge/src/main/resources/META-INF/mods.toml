@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[43,)"
+loaderVersion = "[${loaderVersion},)"
 issueTrackerURL = "https://github.com/MightyPirates/MarkdownManual/issues"
 license = "MIT"
 
@@ -15,25 +15,33 @@ TIS-100 inspired low-tech computing for Minecraft.
 [[dependencies.tis3d]]
 modId = "forge"
 mandatory = true
-versionRange = "[43.2,)"
+versionRange = "[${forgeVersion},)"
 ordering = "NONE"
 side = "BOTH"
 [[dependencies.tis3d]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.19.2,)"
+versionRange = "[${minecraftVersion},)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.tis3d]]
 modId = "architectury"
 mandatory = true
-versionRange = "[6.4,)"
+versionRange = "[${architecturyVersion},)"
 ordering = "AFTER"
 side = "BOTH"
 [[dependencies.tis3d]]
 modId = "markdown_manual"
 mandatory = true
-versionRange = "[1.2.2,)"
+versionRange = "[${manualVersion},)"
 ordering = "AFTER"
 side = "BOTH"
+
+[mc-publish]
+modrinth = "L23x7zL8"
+curseforge = 238603
+dependencies = [
+    "architectury@>=${architecturyVersion}(required){modrinth:lhGA9TYQ}{curseforge:419699}",
+    "markdown_manual@>=${manualVersion}(required){modrinth:nPQ9xkPg}{curseforge:502485}"
+]

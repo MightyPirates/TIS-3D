@@ -32,7 +32,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
@@ -66,7 +66,8 @@ public class CasingBlock extends BaseEntityBlock {
 
     public CasingBlock() {
         super(Properties
-            .of(Material.METAL)
+            .of()
+            .mapColor(MapColor.METAL)
             .sound(SoundType.METAL)
             .strength(1.5f, 6f));
 

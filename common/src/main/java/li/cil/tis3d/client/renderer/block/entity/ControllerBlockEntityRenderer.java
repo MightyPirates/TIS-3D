@@ -51,8 +51,8 @@ public final class ControllerBlockEntityRenderer implements BlockEntityRenderer<
         final var matrix = matrixStack.last().pose();
         final int backgroundColor = Minecraft.getInstance().options.getBackgroundColor(0.25f);
         final int maxBrightness = LightTexture.pack(0xF, 0xF);
-        font.drawInBatch(message, x, 0, Color.withAlpha(Color.WHITE, 0.125f), false, matrix, bufferFactory, true, backgroundColor, maxBrightness);
-        font.drawInBatch(message, x, 0, Color.WHITE, false, matrix, bufferFactory, false, 0, maxBrightness);
+        font.drawInBatch(message, x, 0, Color.withAlpha(Color.WHITE, 0.125f), false, matrix, bufferFactory, Font.DisplayMode.SEE_THROUGH, backgroundColor, maxBrightness);
+        font.drawInBatch(message, x, 0, Color.WHITE, false, matrix, bufferFactory, Font.DisplayMode.NORMAL, 0, maxBrightness);
 
         matrixStack.popPose();
     }

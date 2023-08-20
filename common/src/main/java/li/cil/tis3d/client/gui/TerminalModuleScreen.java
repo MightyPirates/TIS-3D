@@ -1,10 +1,10 @@
 package li.cil.tis3d.client.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import li.cil.tis3d.client.ClientConfig;
 import li.cil.tis3d.common.module.TerminalModule;
 import li.cil.tis3d.util.Color;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
@@ -29,11 +29,11 @@ public final class TerminalModuleScreen extends Screen {
     }
 
     @Override
-    public void render(final PoseStack matrixStack, final int mouseX, final int mouseY, final float partialTicks) {
-        fill(matrixStack, 4, 4, width - 4, 8, Color.WHITE); // Top
-        fill(matrixStack, 4, 4, 8, height - 4, Color.WHITE); // Left
-        fill(matrixStack, 4, height - 8, width - 4, height - 4, Color.WHITE); // Bottom
-        fill(matrixStack, width - 8, 4, width - 4, height - 4, Color.WHITE); // Right
+    public void render(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
+        graphics.fill(4, 4, width - 4, 8, Color.WHITE); // Top
+        graphics.fill(4, 4, 8, height - 4, Color.WHITE); // Left
+        graphics.fill(4, height - 8, width - 4, height - 4, Color.WHITE); // Bottom
+        graphics.fill(width - 8, 4, width - 4, height - 4, Color.WHITE); // Right
     }
 
     @Override

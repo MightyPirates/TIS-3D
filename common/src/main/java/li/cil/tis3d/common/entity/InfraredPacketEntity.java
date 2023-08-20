@@ -109,7 +109,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
     @Override
     protected void defineSynchedData() {
         getEntityData().define(DATA_VALUE, 0);
-        if (!level.isClientSide()) {
+        if (!level().isClientSide()) {
             InfraredPacketTickHandler.watchPacket(this);
         }
     }
@@ -117,7 +117,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
     @Override
     public void remove(final RemovalReason reason) {
         super.remove(reason);
-        if (!level.isClientSide()) {
+        if (!level().isClientSide()) {
             InfraredPacketTickHandler.unwatchPacket(this);
         }
     }
@@ -125,7 +125,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
     @Override
     protected void unsetRemoved() {
         super.unsetRemoved();
-        if (!level.isClientSide()) {
+        if (!level().isClientSide()) {
             InfraredPacketTickHandler.watchPacket(this);
         }
     }
@@ -233,7 +233,7 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
     }
 
     private void emitParticles(@Nullable final HitResult hit) {
-        if (!(level instanceof final ServerLevel serverLevel)) {
+        if (!(level() instanceof final ServerLevel serverLevel)) {
             // Entities regularly die too quickly for the client to have a
             // chance to simulate them, so we trigger the particles from
             // the server. Kinda meh, but whatever works.
@@ -266,10 +266,10 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
         final Vec3 target = start.add(getDeltaMovement());
 
         // Check for block collisions.
-        final HitResult blockHit = Raytracing.raytrace(level, start, target, Raytracing::intersectIgnoringTransparent);
+        final HitResult blockHit = Raytracing.raytrace(level(), start, target, Raytracing::intersectIgnoringTransparent);
 
         // Check for entity collisions.
-        final HitResult entityHit = checkEntityCollision(level, start, target);
+        final HitResult entityHit = checkEntityCollision(level(), start, target);
 
         // If we have both, pick the closer one.
         if (blockHit != null && blockHit.getType() != HitResult.Type.MISS &&
@@ -319,17 +319,17 @@ public final class InfraredPacketEntity extends Entity implements InfraredPacket
 
     private void onBlockCollision(final BlockHitResult hit) {
         final BlockPos pos = hit.getBlockPos();
-        final BlockState blockState = level.getBlockState(pos);
+        final BlockState blockState = level().getBlockState(pos);
         final Block block = blockState.getBlock();
 
         // Traveling through a portal?
-        final BlockEntity blockEntity = level.getBlockEntity(pos);
+        final BlockEntity blockEntity = level().getBlockEntity(pos);
         if (blockState.is(Blocks.NETHER_PORTAL)) {
             handleInsidePortal(pos);
             return;
         } else if (blockState.is(Blocks.END_GATEWAY)) {
             if (blockEntity instanceof final TheEndGatewayBlockEntity endGateway && TheEndGatewayBlockEntity.canEntityTeleport(this)) {
-                TheEndGatewayBlockEntity.teleportEntity(level, pos, blockState, this, endGateway);
+                TheEndGatewayBlockEntity.teleportEntity(level(), pos, blockState, this, endGateway);
                 return;
             }
         }

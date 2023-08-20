@@ -9,79 +9,71 @@ jobs:
     name: publish
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Extract Version from Tag
-        uses: rishabhgupta/split-by@v1
         id: split_tag
-        with:
-          string: ${{ github.event.release.tag_name }}
-          split-by: '/'
+        run: |
+          tag=${{ github.event.release.tag_name }}
+          parts=(${tag//\// })
+          echo "mc_version=${parts[0]}" >> $GITHUB_OUTPUT
+          echo "mod_version=${parts[1]}" >> $GITHUB_OUTPUT
 
       - name: Set up JDK
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
+          distribution: temurin
           java-version: 17
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v1
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: ubuntu-latest-gradle-${{ hashFiles('**/*.gradle*') }}
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: ubuntu-latest-gradle-
       - name: Build with Gradle
-        run: ./gradlew -Psemver='${{ steps.split_tag.outputs._1 }}' build
+        run: ./gradlew -PmodVersion='${{ steps.split_tag.outputs.mod_version }}' build
 
       - name: Remove extra JARs
         run: |
           rm fabric/build/libs/*-dev-shadow.jar
-          rm fabric/build/libs/*-sources.jar
           rm forge/build/libs/*-dev-shadow.jar
-          rm forge/build/libs/*-sources.jar
 
       - name: Add Artifacts to Github Release
-        uses: alexellis/upload-assets@0.3.0
+        uses: alexellis/upload-assets@0.4.0
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          asset_paths: '["./forge/build/libs/*.jar","./fabric/build/libs/*.jar"]'
+          asset_paths: '["./forge/build/libs/*.jar","./fabric/build/libs/*.jar","./common/build/libs/*-api.jar"]'
 
-      - name: Publish to Github Packages (Forge)
-        run: gradle -Psemver='${{ steps.split_tag.outputs._1 }}' forge:publish
-        env:
-          GITHUB_MAVEN_URL: 'https://maven.pkg.github.com/${{ github.repository }}'
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish to Curseforge and Minotaur (Forge)
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          name: ${{ github.event.repository.name }} MC${{ steps.split_tag.outputs.mc_version }}-${{ steps.split_tag.outputs.mod_version }}
+          version: MC${{ steps.split_tag.outputs.mc_version }}-forge-${{ steps.split_tag.outputs.mod_version }}
+          java: Java 17
 
-      - name: Publish to Github Packages (Fabric)
-        run: gradle -Psemver='${{ steps.split_tag.outputs._1 }}' fabric:publish
-        env:
-          GITHUB_MAVEN_URL: 'https://maven.pkg.github.com/${{ github.repository }}'
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          files: |
+            forge/build/libs/*.jar
+            common/build/libs/*-api.jar
 
-      - name: Publish to Curseforge (Forge)
-        run: ./gradlew -Psemver='${{ steps.split_tag.outputs._1 }}' forge:curseforge
-        env:
-          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
-          CHANGELOG: ${{ github.event.release.body }}
+          modrinth-token: ${{ secrets.MODRINTH_API_KEY }}
+          curseforge-token: ${{ secrets.CURSEFORGE_API_KEY }}
 
-      - name: Publish to Curseforge (Fabric)
-        run: ./gradlew -Psemver='${{ steps.split_tag.outputs._1 }}' fabric:curseforge
-        env:
-          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
-          CHANGELOG: ${{ github.event.release.body }}
+      - name: Publish to Curseforge and Minotaur (Fabric)
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          name: ${{ github.event.repository.name }} MC${{ steps.split_tag.outputs.mc_version }}-${{ steps.split_tag.outputs.mod_version }}
+          version: MC${{ steps.split_tag.outputs.mc_version }}-fabric-${{ steps.split_tag.outputs.mod_version }}
+          java: Java 17
 
-      - name: Publish to modrinth (Forge)
-        run: ./gradlew -Psemver='${{ steps.split_tag.outputs._1 }}' forge:modrinth
-        env:
-          MODRINTH_API_KEY: ${{ secrets.MODRINTH_API_KEY }}
-          CHANGELOG: ${{ github.event.release.body }}
+          files: |
+            fabric/build/libs/*.jar
+            common/build/libs/*-api.jar
 
-      - name: Publish to modrinth (Fabric)
-        run: ./gradlew -Psemver='${{ steps.split_tag.outputs._1 }}' fabric:modrinth
-        env:
-          MODRINTH_API_KEY: ${{ secrets.MODRINTH_API_KEY }}
-          CHANGELOG: ${{ github.event.release.body }}
+          modrinth-token: ${{ secrets.MODRINTH_API_KEY }}
+          curseforge-token: ${{ secrets.CURSEFORGE_API_KEY }}

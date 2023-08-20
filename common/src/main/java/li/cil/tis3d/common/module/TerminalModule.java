@@ -182,7 +182,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
             return true;
         }
 
-        final Level level = player.level;
+        final Level level = player.level();
         if (level.isClientSide()) {
             openScreen();
         }
@@ -254,7 +254,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
 
         output.setLength(0);
         output.append(tag.getString(TAG_OUTPUT));
-        isInputEnabled = output.length() == 0;
+        isInputEnabled = output.isEmpty();
     }
 
     @Override
@@ -477,7 +477,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
     }
 
     private static void backspace(final StringBuilder line) {
-        if (line.length() > 0) {
+        if (!line.isEmpty()) {
             line.setLength(line.length() - 1);
         }
     }
@@ -520,7 +520,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
     // Utilities for pumping output string to output pipes
 
     private boolean isWriting() {
-        return output.length() > 0;
+        return !output.isEmpty();
     }
 
     private void beginWriting(final String value) {

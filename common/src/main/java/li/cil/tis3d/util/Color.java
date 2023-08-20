@@ -79,46 +79,6 @@ public final class Color {
         return 0xFF000000 | (component << 16) | (component << 8) | component;
     }
 
-    /**
-     * Get the alpha component of an ARGB color as an int in [0, 255].
-     *
-     * @param color the color to get the blue component for.
-     * @return the blue component as the color in [0, 255].
-     */
-    public static int getAlphaU8(final int color) {
-        return (color >>> 24) & 0xFF;
-    }
-
-    /**
-     * Get the red component of an ARGB color as an int in [0, 255].
-     *
-     * @param color the color to get the red component for.
-     * @return the red component as the color in [0, 255].
-     */
-    public static int getRedU8(final int color) {
-        return (color >>> 16) & 0xFF;
-    }
-
-    /**
-     * Get the alpha component of an ARGB color as an int in [0, 255].
-     *
-     * @param color the color to get the green component for.
-     * @return the green component as the color in [0, 255].
-     */
-    public static int getGreenU8(final int color) {
-        return (color >>> 8) & 0xFF;
-    }
-
-    /**
-     * Get the blue component of an ARGB color as an int in [0, 255].
-     *
-     * @param color the color to get the blue component for.
-     * @return the blue component as the color in [0, 255].
-     */
-    public static int getBlueU8(final int color) {
-        return color & 0xFF;
-    }
-
     // --------------------------------------------------------------------- //
 
     private Color() {

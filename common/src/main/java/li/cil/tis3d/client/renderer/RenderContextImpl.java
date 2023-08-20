@@ -71,7 +71,7 @@ public final class RenderContextImpl implements RenderContext {
 
     @Override
     public void drawString(final FontRenderer fontRenderer, final CharSequence value, final int argb) {
-        fontRenderer.drawBatch(matrixStack, buffer, value, argb);
+        fontRenderer.drawInBatch(value, argb, matrixStack.last().pose(), buffer);
     }
 
     @Override
@@ -114,13 +114,8 @@ public final class RenderContextImpl implements RenderContext {
         final var normal = getMatrixStack().last().normal();
         final var up = new Vector3f(0, 0, -1);
 
-        final int a = Color.getAlphaU8(argb);
-        final int r = Color.getRedU8(argb);
-        final int g = Color.getGreenU8(argb);
-        final int b = Color.getBlueU8(argb);
-
         builder.vertex(pose, x, y + height, 0)
-            .color(r, g, b, a)
+            .color(argb)
             .uv(u0, v1)
             .overlayCoords(overlay)
             .uv2(light)
@@ -128,7 +123,7 @@ public final class RenderContextImpl implements RenderContext {
             .endVertex();
 
         builder.vertex(pose, x + width, y + height, 0)
-            .color(r, g, b, a)
+            .color(argb)
             .uv(u1, v1)
             .overlayCoords(overlay)
             .uv2(light)
@@ -136,7 +131,7 @@ public final class RenderContextImpl implements RenderContext {
             .endVertex();
 
         builder.vertex(pose, x + width, y, 0)
-            .color(r, g, b, a)
+            .color(argb)
             .uv(u1, v0)
             .overlayCoords(overlay)
             .uv2(light)
@@ -144,7 +139,7 @@ public final class RenderContextImpl implements RenderContext {
             .endVertex();
 
         builder.vertex(pose, x, y, 0)
-            .color(r, g, b, a)
+            .color(argb)
             .uv(u0, v0)
             .overlayCoords(overlay)
             .uv2(light)

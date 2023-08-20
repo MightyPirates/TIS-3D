@@ -39,7 +39,7 @@ public final class ClientBootstrapFabric implements ClientModInitializer {
         ClientPickBlockGatherCallback.EVENT.register((player, result) -> {
             // Allow picking modules installed in the casing.
             if (result instanceof final BlockHitResult hit) {
-                final BlockEntity blockEntity = player.getLevel().getBlockEntity(hit.getBlockPos());
+                final BlockEntity blockEntity = player.level().getBlockEntity(hit.getBlockPos());
                 if (blockEntity instanceof final CasingBlockEntity casing) {
                     final var stack = casing.getItem(hit.getDirection().ordinal());
                     if (!stack.isEmpty()) {
