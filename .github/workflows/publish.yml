@@ -53,7 +53,7 @@ jobs:
       - name: Publish to Curseforge and Minotaur (Forge)
         uses: Kir-Antipov/mc-publish@v3.3
         with:
-          name: ${{ github.event.repository.name }} MC${{ steps.split_tag.outputs.mc_version }}-${{ steps.split_tag.outputs.mod_version }}
+          name: ${{ github.event.repository.name }}-MC${{ steps.split_tag.outputs.mc_version }}-${{ steps.split_tag.outputs.mod_version }}
           version: MC${{ steps.split_tag.outputs.mc_version }}-forge-${{ steps.split_tag.outputs.mod_version }}
           java: Java 17
 
@@ -67,7 +67,7 @@ jobs:
       - name: Publish to Curseforge and Minotaur (Fabric)
         uses: Kir-Antipov/mc-publish@v3.3
         with:
-          name: ${{ github.event.repository.name }} MC${{ steps.split_tag.outputs.mc_version }}-${{ steps.split_tag.outputs.mod_version }}
+          name: ${{ github.event.repository.name }}-MC${{ steps.split_tag.outputs.mc_version }}-${{ steps.split_tag.outputs.mod_version }}
           version: MC${{ steps.split_tag.outputs.mc_version }}-fabric-${{ steps.split_tag.outputs.mod_version }}
           java: Java 17
 
