@@ -523,7 +523,7 @@ public final class ControllerBlockEntity extends ComputerBlockEntity {
 
         int acc = 0;
         for (final Direction facing : Direction.values()) {
-            acc += Math.max(0, Math.min(15, level.getSignal(getBlockPos().relative(facing), facing)));
+            acc += Math.max(0, Math.min(15, level.getDirectSignal(getBlockPos().relative(facing), facing)));
         }
         return acc;
     }
