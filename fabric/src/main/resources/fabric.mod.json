@@ -1,60 +1,58 @@
 {
-    "schemaVersion": 1,
-    "id": "tis3d",
-    "version": "${version}",
-
-    "name": "TIS-3D",
-    "description": "TIS-100 inspired low-tech computing for Minecraft.",
-    "authors": [
-        "Sangar"
+  "schemaVersion": 1,
+  "id": "tis3d",
+  "version": "${version}",
+  "name": "TIS-3D",
+  "description": "TIS-100 inspired low-tech computing for Minecraft.",
+  "authors": [
+    "Sangar"
+  ],
+  "contact": {
+    "sources": "https://github.com/MightyPirates/TIS-3D"
+  },
+  "mixins": [
+    "tis3d.mixins.json"
+  ],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "li.cil.tis3d.common.fabric.CommonBootstrapFabric"
     ],
-    "contact": {
-        "sources": "https://github.com/MightyPirates/TIS-3D"
-    },
-    "mixins": [
-        "tis3d.mixins.json"
+    "client": [
+      "li.cil.tis3d.client.fabric.ClientBootstrapFabric"
     ],
-    "license": "MIT",
-
-    "environment": "*",
-    "entrypoints": {
-        "main": [
-            "li.cil.tis3d.common.fabric.CommonBootstrapFabric"
-        ],
-        "client": [
-            "li.cil.tis3d.client.fabric.ClientBootstrapFabric"
-        ],
-        "fabric-datagen": [
-            "li.cil.tis3d.data.fabric.DataGenerators"
-        ],
-        "markdown_manual:registration": [
-            "li.cil.tis3d.client.fabric.ManualInitializer"
-        ],
-        "rei_client": [
-            "li.cil.tis3d.client.integration.roughlyenoughitems.ModREIClientPlugin"
-        ]
-    },
-    "depends": {
-        "fabric-api": ">=${fabricApiVersion}",
-        "forgeconfigapiport": ">=${forgeConfigPortVersion}",
-        "architectury": ">=${architecturyVersion}",
-        "minecraft": ">=${minecraftVersion}",
-        "markdown_manual": ">=${manualVersion}",
-        "java": ">=17"
-    },
-    "recommends": {
-        "tooltipfix": "*"
-    },
-    "custom": {
-        "mc-publish": {
-            "modrinth": "L23x7zL8",
-            "curseforge": 238603,
-            "dependencies": [
-                "fabric-api@>=${fabricApiVersion}(required){modrinth:P7dR8mSH}{curseforge:306612}",
-                "forgeconfigapiport@>=${forgeConfigPortVersion}(required){modrinth:ohNO6lps}{curseforge:547434}",
-                "architectury@>=${architecturyVersion}(required){modrinth:lhGA9TYQ}{curseforge:419699}",
-                "markdown_manual@>=${manualVersion}(required){modrinth:nPQ9xkPg}{curseforge:502485}"
-            ]
-        }
+    "fabric-datagen": [
+      "li.cil.tis3d.data.fabric.DataGenerators"
+    ],
+    "markdown_manual:registration": [
+      "li.cil.tis3d.client.fabric.ManualInitializer"
+    ],
+    "rei_client": [
+      "li.cil.tis3d.client.integration.roughlyenoughitems.ModREIClientPlugin"
+    ]
+  },
+  "depends": {
+    "fabric-api": ">=${fabricApiVersion}",
+    "forgeconfigapiport": ">=${forgeConfigPortVersion}",
+    "architectury": ">=${architecturyVersion}",
+    "minecraft": ">=${minecraftVersion}",
+    "markdown_manual": ">=${manualVersion}",
+    "java": ">=17"
+  },
+  "recommends": {
+    "tooltipfix": "*"
+  },
+  "custom": {
+    "mc-publish": {
+      "modrinth": "L23x7zL8",
+      "curseforge": 238603,
+      "dependencies": [
+        "fabric-api@>=${fabricApiVersion}(required){modrinth:P7dR8mSH}{curseforge:306612}",
+        "forgeconfigapiport@>=${forgeConfigPortVersion}(required){modrinth:ohNO6lps}{curseforge:547434}",
+        "architectury@>=${architecturyVersion}(required){modrinth:lhGA9TYQ}{curseforge:419699}",
+        "markdown_manual@>=${manualVersion}(required){modrinth:nPQ9xkPg}{curseforge:502485}"
+      ]
     }
+  }
 }

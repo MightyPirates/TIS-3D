@@ -1,17 +1,17 @@
 {
-    "required": true,
-    "minVersion": "0.8",
-    "package": "li.cil.tis3d.mixin.fabric",
-    "compatibilityLevel": "JAVA_17",
-    "client": [
-        "MixinFacadeModule",
-        "MixinGui"
-    ],
-    "mixins": [
-        "MixinCasingBlockEntity",
-        "MixinControllerBlockEntity"
-    ],
-    "injectors": {
-        "defaultRequire": 1
-    }
+  "required": true,
+  "minVersion": "0.8",
+  "package": "li.cil.tis3d.mixin.fabric",
+  "compatibilityLevel": "JAVA_17",
+  "client": [
+    "MixinFacadeModule",
+    "MixinGui"
+  ],
+  "mixins": [
+    "MixinCasingBlockEntity",
+    "MixinControllerBlockEntity"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
 }
