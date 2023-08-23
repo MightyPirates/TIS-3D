@@ -326,7 +326,7 @@ public final class ControllerBlockEntity extends ComputerBlockEntity {
             forceStep = forceStep && power == 1;
 
             // Are we powered?
-            if (!level.hasNeighborSignal(getBlockPos())) {
+            if (power <= 0) {
                 // Nope, fall back to ready state, disable modules.
                 state = ControllerState.READY;
                 casings.forEach(CasingBlockEntity::onDisabled);
