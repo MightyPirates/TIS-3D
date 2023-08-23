@@ -28,5 +28,6 @@
     "recipes": [
       "tis3d:casing"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

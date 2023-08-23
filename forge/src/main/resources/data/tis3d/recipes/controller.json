@@ -19,5 +19,6 @@
   ],
   "result": {
     "item": "tis3d:controller"
-  }
+  },
+  "show_notification": true
 }

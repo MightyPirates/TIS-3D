@@ -30,5 +30,6 @@
     "recipes": [
       "tis3d:prism"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

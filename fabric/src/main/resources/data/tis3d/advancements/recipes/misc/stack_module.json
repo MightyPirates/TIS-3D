@@ -1,19 +1,7 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_casing": {
-      "conditions": {
-        "items": [
-          {
-            "items": [
-              "tis3d:casing"
-            ]
-          }
-        ]
-      },
-      "trigger": "minecraft:inventory_changed"
-    },
-    "has_redstone_module": {
+    "has_base_item": {
       "conditions": {
         "items": [
           {
@@ -34,8 +22,7 @@
   },
   "requirements": [
     [
-      "has_casing",
-      "has_redstone_module",
+      "has_base_item",
       "has_the_recipe"
     ]
   ],
@@ -43,5 +30,6 @@
     "recipes": [
       "tis3d:stack_module"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

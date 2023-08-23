@@ -30,5 +30,6 @@
     "recipes": [
       "tis3d:key"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

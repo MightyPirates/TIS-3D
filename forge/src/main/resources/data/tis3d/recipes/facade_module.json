@@ -23,5 +23,6 @@
   "result": {
     "count": 8,
     "item": "tis3d:facade_module"
-  }
+  },
+  "show_notification": true
 }

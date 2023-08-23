@@ -30,5 +30,6 @@
     "recipes": [
       "tis3d:stack_module/from_queue"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

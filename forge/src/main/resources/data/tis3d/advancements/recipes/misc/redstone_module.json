@@ -1,13 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_casing": {
+    "has_base_item": {
       "conditions": {
         "items": [
           {
-            "items": [
-              "tis3d:casing"
-            ]
+            "tag": "forge:dusts/redstone"
           }
         ]
       },
@@ -22,7 +20,7 @@
   },
   "requirements": [
     [
-      "has_casing",
+      "has_base_item",
       "has_the_recipe"
     ]
   ],
@@ -30,5 +28,6 @@
     "recipes": [
       "tis3d:redstone_module"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }
