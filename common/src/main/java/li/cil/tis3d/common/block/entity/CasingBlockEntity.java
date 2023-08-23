@@ -225,6 +225,7 @@ public final class CasingBlockEntity extends ComputerBlockEntity implements Side
         isEnabled = false;
         sendState();
         casing.onDisabled();
+        markRedstoneDirty();
     }
 
     void stepRedstone() {
