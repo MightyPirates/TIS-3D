@@ -68,7 +68,9 @@ public abstract class AbstractCasingDataMessage extends AbstractMessageWithPosit
     public void toBytes(final FriendlyByteBuf buffer) {
         super.toBytes(buffer);
 
+        final int oldReaderIndex = data.readerIndex();
         buffer.writeInt(data.readableBytes());
         buffer.writeBytes(data);
+        data.readerIndex(oldReaderIndex);
     }
 }
