@@ -20,14 +20,14 @@ spotless = { id = "com.diffplug.spotless", version = "6.20.0" }
 [libraries]
 minecraft = { group = "com.mojang", name = "minecraft", version.ref = "minecraft" }
 architectury-api = { group = "dev.architectury", name = "architectury", version.ref = "architectury" }
-manual-api = { group = "curse.maven", name = "markdownmanual-502485", version = "4713963" }
+manual-api = { group = "curse.maven", name = "markdownmanual-502485", version = "4719409" }
 
 fabric-loader = { group = "net.fabricmc", name = "fabric-loader", version.ref = "fabric-loader" }
 fabric-api = { group = "net.fabricmc.fabric-api", name = "fabric-api", version.ref = "fabric-api" }
 fabric-architectury = { group = "dev.architectury", name = "architectury-fabric", version.ref = "architectury" }
 
 fabric-forgeConfigPort = { group = "fuzs.forgeconfigapiport", name = "forgeconfigapiport-fabric", version.ref = "fabric-forgeConfigPort" }
-fabric-manual = { group = "curse.maven", name = "markdownmanual-502485", version = "4713962" }
+fabric-manual = { group = "curse.maven", name = "markdownmanual-502485", version = "4719410" }
 fabric-roughlyEnoughItems = { group = "me.shedaniel", name = "RoughlyEnoughItems-fabric", version = "12.0.645" }
 
 fabric-tooltipFix = { group = "curse.maven", name = "tooltipfix-411557", version = "4577194" }
@@ -36,6 +36,6 @@ fabric-sodium = { group = "maven.modrinth", name = "sodium", version = "mc1.20.1
 forge-platform = { group = "net.minecraftforge", name = "forge", version.ref = "forge-platform" }
 forge-architectury = { group = "dev.architectury", name = "architectury-forge", version.ref = "architectury" }
 
-forge-manual = { group = "curse.maven", name = "markdownmanual-502485", version = "4713960" }
+forge-manual = { group = "curse.maven", name = "markdownmanual-502485", version = "4719408" }
 
 forge-justEnoughItems = { group = "curse.maven", name = "jei-238222", version = "4690097" }
