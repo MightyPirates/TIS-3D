@@ -1,32 +1,33 @@
 {
-  "parent": "minecraft:recipes/root",
-  "criteria": {
-    "has_redstone": {
-      "conditions": {
-        "items": [
-          {
-            "tag": "c:redstone_dusts"
-          }
-        ]
-      },
-      "trigger": "minecraft:inventory_changed"
+    "parent": "minecraft:recipes/root",
+    "criteria": {
+        "has_redstone": {
+            "conditions": {
+                "items": [
+                    {
+                        "tag": "c:redstone_dusts"
+                    }
+                ]
+            },
+            "trigger": "minecraft:inventory_changed"
+        },
+        "has_the_recipe": {
+            "conditions": {
+                "recipe": "tis3d:casing"
+            },
+            "trigger": "minecraft:recipe_unlocked"
+        }
     },
-    "has_the_recipe": {
-      "conditions": {
-        "recipe": "tis3d:casing"
-      },
-      "trigger": "minecraft:recipe_unlocked"
-    }
-  },
-  "requirements": [
-    [
-      "has_redstone",
-      "has_the_recipe"
-    ]
-  ],
-  "rewards": {
-    "recipes": [
-      "tis3d:casing"
-    ]
-  }
+    "requirements": [
+        [
+            "has_redstone",
+            "has_the_recipe"
+        ]
+    ],
+    "rewards": {
+        "recipes": [
+            "tis3d:casing"
+        ]
+    },
+    "sends_telemetry_event": false
 }

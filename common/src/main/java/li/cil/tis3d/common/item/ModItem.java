@@ -36,6 +36,6 @@ public class ModItem extends Item {
     // --------------------------------------------------------------------- //
 
     protected static Properties createProperties() {
-        return new Properties().tab(CreativeTabs.COMMON);
+        return new Properties().tab(ModCreativeTabs.COMMON);
     }
 }

@@ -13,7 +13,7 @@ import java.util.List;
 
 public class ModBlockItem extends BlockItem {
     public ModBlockItem(final Block block, final Properties properties) {
-        super(block, properties.tab(CreativeTabs.COMMON));
+        super(block, properties.tab(ModCreativeTabs.COMMON));
     }
 
     public ModBlockItem(final Block block) {
