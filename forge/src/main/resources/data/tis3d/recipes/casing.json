@@ -19,5 +19,6 @@
   "result": {
     "count": 8,
     "item": "tis3d:casing"
-  }
+  },
+  "show_notification": true
 }

@@ -27,5 +27,6 @@
   ],
   "result": {
     "item": "tis3d:terminal_module"
-  }
+  },
+  "show_notification": true
 }

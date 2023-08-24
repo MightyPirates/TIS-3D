@@ -1,47 +1,35 @@
 {
-  "parent": "minecraft:recipes/root",
-  "criteria": {
-    "has_casing": {
-      "conditions": {
-        "items": [
-          {
-            "items": [
-              "tis3d:casing"
-            ]
-          }
-        ]
-      },
-      "trigger": "minecraft:inventory_changed"
+    "parent": "minecraft:recipes/root",
+    "criteria": {
+        "has_base_item": {
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "tis3d:redstone_module"
+                        ]
+                    }
+                ]
+            },
+            "trigger": "minecraft:inventory_changed"
+        },
+        "has_the_recipe": {
+            "conditions": {
+                "recipe": "tis3d:infrared_module"
+            },
+            "trigger": "minecraft:recipe_unlocked"
+        }
     },
-    "has_redstone_module": {
-      "conditions": {
-        "items": [
-          {
-            "items": [
-              "tis3d:redstone_module"
-            ]
-          }
+    "requirements": [
+        [
+            "has_base_item",
+            "has_the_recipe"
         ]
-      },
-      "trigger": "minecraft:inventory_changed"
+    ],
+    "rewards": {
+        "recipes": [
+            "tis3d:infrared_module"
+        ]
     },
-    "has_the_recipe": {
-      "conditions": {
-        "recipe": "tis3d:infrared_module"
-      },
-      "trigger": "minecraft:recipe_unlocked"
-    }
-  },
-  "requirements": [
-    [
-      "has_casing",
-      "has_redstone_module",
-      "has_the_recipe"
-    ]
-  ],
-  "rewards": {
-    "recipes": [
-      "tis3d:infrared_module"
-    ]
-  }
+    "sends_telemetry_event": false
 }

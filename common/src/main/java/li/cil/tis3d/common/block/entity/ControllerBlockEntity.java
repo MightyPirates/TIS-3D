@@ -326,7 +326,7 @@ public final class ControllerBlockEntity extends ComputerBlockEntity {
             forceStep = forceStep && power == 1;
 
             // Are we powered?
-            if (!level.hasNeighborSignal(getBlockPos())) {
+            if (power <= 0) {
                 // Nope, fall back to ready state, disable modules.
                 state = ControllerState.READY;
                 casings.forEach(CasingBlockEntity::onDisabled);
@@ -523,7 +523,7 @@ public final class ControllerBlockEntity extends ComputerBlockEntity {
 
         int acc = 0;
         for (final Direction facing : Direction.values()) {
-            acc += Math.max(0, Math.min(15, level.getSignal(getBlockPos().relative(facing), facing)));
+            acc += Math.max(0, Math.min(15, level.getDirectSignal(getBlockPos().relative(facing), facing)));
         }
         return acc;
     }

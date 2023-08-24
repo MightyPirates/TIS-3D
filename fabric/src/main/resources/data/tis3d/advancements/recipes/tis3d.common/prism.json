@@ -1,34 +1,35 @@
 {
-  "parent": "minecraft:recipes/root",
-  "criteria": {
-    "has_execution_module": {
-      "conditions": {
-        "items": [
-          {
-            "items": [
-              "tis3d:execution_module"
-            ]
-          }
-        ]
-      },
-      "trigger": "minecraft:inventory_changed"
+    "parent": "minecraft:recipes/root",
+    "criteria": {
+        "has_execution_module": {
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "tis3d:execution_module"
+                        ]
+                    }
+                ]
+            },
+            "trigger": "minecraft:inventory_changed"
+        },
+        "has_the_recipe": {
+            "conditions": {
+                "recipe": "tis3d:prism"
+            },
+            "trigger": "minecraft:recipe_unlocked"
+        }
     },
-    "has_the_recipe": {
-      "conditions": {
-        "recipe": "tis3d:prism"
-      },
-      "trigger": "minecraft:recipe_unlocked"
-    }
-  },
-  "requirements": [
-    [
-      "has_execution_module",
-      "has_the_recipe"
-    ]
-  ],
-  "rewards": {
-    "recipes": [
-      "tis3d:prism"
-    ]
-  }
+    "requirements": [
+        [
+            "has_execution_module",
+            "has_the_recipe"
+        ]
+    ],
+    "rewards": {
+        "recipes": [
+            "tis3d:prism"
+        ]
+    },
+    "sends_telemetry_event": false
 }
