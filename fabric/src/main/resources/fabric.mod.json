@@ -15,7 +15,6 @@
         "tis3d.mixins.json"
     ],
     "license": "MIT",
-
     "environment": "*",
     "entrypoints": {
         "main": [
@@ -35,7 +34,7 @@
         ]
     },
     "depends": {
-        "fabric": ">=0.66.0",
+        "fabric-api": ">=0.66.0",
         "forgeconfigapiport": ">=4.2.6",
         "architectury": ">=6.4",
         "minecraft": ">=1.19.2",
@@ -44,5 +43,17 @@
     },
     "recommends": {
         "tooltipfix": "*"
+    },
+    "custom": {
+        "mc-publish": {
+            "modrinth": "L23x7zL8",
+            "curseforge": 238603,
+            "dependencies": [
+                "fabric-api@>=0.66.0(required){modrinth:P7dR8mSH}{curseforge:306612}",
+                "forgeconfigapiport@>=4.2.6(required){modrinth:ohNO6lps}{curseforge:547434}",
+                "architectury@>=6.4(required){modrinth:lhGA9TYQ}{curseforge:419699}",
+                "markdown_manual@>=1.2.3(required){modrinth:nPQ9xkPg}{curseforge:502485}"
+            ]
+        }
     }
 }

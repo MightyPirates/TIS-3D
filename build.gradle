@@ -65,10 +65,6 @@ allprojects {
         options.release.set(17)
     }
 
-    java {
-        withSourcesJar()
-    }
-
     jar {
         from("LICENSE") {
             rename { "${it}_${rootProject.archivesBaseName}" }

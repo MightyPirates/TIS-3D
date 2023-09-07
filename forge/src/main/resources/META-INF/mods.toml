@@ -37,3 +37,11 @@ mandatory = true
 versionRange = "[1.2.2,)"
 ordering = "AFTER"
 side = "BOTH"
+
+[mc-publish]
+modrinth = "L23x7zL8"
+curseforge = 238603
+dependencies = [
+    "architectury@>=6.4(required){modrinth:lhGA9TYQ}{curseforge:419699}",
+    "markdown_manual@>=1.2.2(required){modrinth:nPQ9xkPg}{curseforge:502485}"
+]

@@ -82,76 +82,8 @@ jar {
     classifier "dev"
 }
 
-sourcesJar {
-    def commonSources = project(":common").sourcesJar
-    dependsOn commonSources
-    from commonSources.archiveFile.map { zipTree(it) }
-}
-
 components.java {
     withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
         skip()
-    }
-}
-
-publishing {
-    publications {
-        mavenFabric(MavenPublication) {
-            artifactId = "${mod_id}-${rootProject.minecraft_version}-${project.name}"
-            from components.java
-        }
-    }
-
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = System.getenv("GITHUB_MAVEN_URL") ?: ""
-            credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
-            }
-        }
-    }
-}
-
-curseforge {
-    apiKey = System.getenv("CURSEFORGE_API_KEY") ?: ""
-    project {
-        id = rootProject.curse_project_id
-        releaseType = "release"
-        changelogType = "markdown"
-        changelog = System.getenv("CHANGELOG") ?: "Changelog not available."
-        addGameVersion "Fabric"
-        addGameVersion rootProject.minecraft_version
-        addGameVersion "Java 17"
-        relations {
-            requiredDependency "fabric-api"
-            requiredDependency "architectury-api"
-            requiredDependency "forge-config-api-port-fabric"
-        }
-        mainArtifact(remapJar)
-        afterEvaluate {
-            uploadTask.dependsOn(remapJar)
-        }
-    }
-    options {
-        forgeGradleIntegration = false
-    }
-}
-
-modrinth {
-    token = System.getenv("MODRINTH_API_KEY") ?: ""
-    projectId = rootProject.modrinth_project_id
-    changelog = System.getenv("CHANGELOG") ?: "Changelog not available."
-    versionNumber = "MC${rootProject.minecraft_version}-${project.name}-${rootProject.semver}"
-    versionName = "${mod_id}-${project.version}"
-    versionType = "release"
-    uploadFile = remapJar
-    gameVersions = [rootProject.minecraft_version]
-    loaders = ["fabric"]
-    dependencies {
-        required.project "fabric-api"
-        required.project "architectury-api"
-        required.project "forge-config-api-port"
     }
 }
