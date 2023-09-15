@@ -18,7 +18,7 @@ public final class ModuloImmediateInstruction implements Instruction {
         }
 
         final MachineState state = machine.getState();
-        state.acc = (short) Math.max(Short.MIN_VALUE, Math.min(Short.MAX_VALUE, state.acc % value));
+        state.acc %= value;
         state.pc++;
     }
 
