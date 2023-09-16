@@ -102,6 +102,12 @@ Example:
 `DIV 2` Divides the value of `ACC` by two.  
 `DIV LEFT` Reads a value from the left port, then divides `ACC` by it.
 
+`MOD <SRC>`
+Reads a value from the specified target `SRC` and performs a modulo operation with `ACC`, then writes the result of the operation back to `ACC`. Note that modulo zero will lead to the system entering an error state and resetting itself.  
+Example:  
+`MOD 2` Performs `ACC` modulo 2, i.e. the remainder of `ACC` divided by 2.  
+`MOD LEFT` Reads a value from the left port, then performs the modulo of `ACC` by it.
+
 `NEG`
 Negates the current value of `ACC` and stores the result in `ACC`.
 
