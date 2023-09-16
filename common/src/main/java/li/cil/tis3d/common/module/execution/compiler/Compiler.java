@@ -221,6 +221,7 @@ public final class Compiler {
         builder.put(SubtractInstruction.NAME, new TargetOrImmediateInstructionEmitter(SubtractInstruction::new, SubtractImmediateInstruction::new));
         builder.put(MulInstruction.NAME, new TargetOrImmediateInstructionEmitter(MulInstruction::new, MulImmediateInstruction::new));
         builder.put(DivInstruction.NAME, new TargetOrImmediateInstructionEmitter(DivInstruction::new, DivImmediateInstruction::new));
+        builder.put(ModuloInstruction.NAME, new TargetOrImmediateInstructionEmitter(ModuloInstruction::new, ModuloImmediateInstruction::new));
 
         // Bitwise operations.
         builder.put(BitwiseNotInstruction.NAME, new UnaryInstructionEmitter(() -> BitwiseNotInstruction.INSTANCE));
