@@ -18,6 +18,7 @@ import li.cil.tis3d.common.machine.CasingProxy;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.CasingEnabledStateMessage;
 import li.cil.tis3d.common.network.message.CasingLockedStateMessage;
+import li.cil.tis3d.common.network.message.ClientCasingLoadedMessage;
 import li.cil.tis3d.common.network.message.ReceivingPipeLockedStateMessage;
 import li.cil.tis3d.common.provider.RedstoneInputProviders;
 import li.cil.tis3d.util.InventoryUtils;
@@ -357,6 +358,41 @@ public final class CasingBlockEntity extends ComputerBlockEntity implements Side
         super.loadClient(tag);
 
         isEnabled = tag.getBoolean(TAG_ENABLED);
+
+        // This is a bit of a hack, but I can't find a better solution for now.
+        //
+        // The issue is that we can run into race conditions between Minecraft
+        // initializing the casing block entity and modules in the server block
+        // entity sending messages to tracking players - or, more generally,
+        // between Minecraft's network package stream and our mod package stream.
+        // For example:
+        // - Server
+        //   - Module enqueues data packet.
+        //   - Minecraft adds player to server world.
+        //   - Minecraft calls getUpdateTag for player.
+        //   - Module send queue is processed.  It does not appear
+        //     to make a difference when this is called precisely,
+        //     flushing our queues to attempt sending before MC sends
+        //     the update tag does not make a difference.  Data packet
+        //     from before getUpdateTag is sent to player the update tag
+        //     is for...
+        // - Client
+        //   - Minecraft loads data from update tag.
+        //   - Minecraft processes our network messages.
+        //   - Messages sent before server serialization of module are received
+        //     by module, potentially resulting in duplicated data, as is the
+        //     case for the terminal module, for example.
+        //
+        // Therefore, to ensure modules are in a consistent state on the client, we
+        // re-request the state of the module to be sent over the mod network channel
+        // after the client is ready for this.  We still send this data in the update
+        // packet, to ensure minimal latency.  At best, this will result in a very
+        // short timeframe of incorrect module data on the client.
+        //
+        // The downside of this approach is that we send the module data more than
+        // once, which is a bit of a waste of bandwidth, but as it only occurs when
+        // players load the modules initially, this should be acceptable.
+        Network.sendToServer(new ClientCasingLoadedMessage(this));
     }
 
     @Override

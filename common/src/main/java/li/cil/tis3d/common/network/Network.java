@@ -68,6 +68,8 @@ public final class Network {
         registerMessage(ServerReadOnlyMemoryModuleDataMessage.class, ServerReadOnlyMemoryModuleDataMessage::new, NetworkManager.serverToClient());
         registerMessage(ClientReadOnlyMemoryModuleDataMessage.class, ClientReadOnlyMemoryModuleDataMessage::new, NetworkManager.clientToServer());
         registerMessage(ControllerStateMessage.class, ControllerStateMessage::new, NetworkManager.serverToClient());
+        registerMessage(ClientCasingLoadedMessage.class, ClientCasingLoadedMessage::new, NetworkManager.clientToServer());
+        registerMessage(ServerCasingInitializeMessage.class, ServerCasingInitializeMessage::new, NetworkManager.serverToClient());
 
         TickEvent.SERVER_POST.register(server -> {
             flushCasingQueues(Side.DEDICATED_SERVER);
