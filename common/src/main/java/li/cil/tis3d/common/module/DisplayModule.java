@@ -186,7 +186,7 @@ public final class DisplayModule extends AbstractModuleWithRotation {
     public void save(final CompoundTag tag) {
         super.save(tag);
 
-        tag.putIntArray(TAG_IMAGE, image);
+        tag.putIntArray(TAG_IMAGE, image.clone());
         EnumUtils.save(state, TAG_STATE, tag);
         tag.putByteArray(TAG_DRAW_CALL, drawCall.clone());
     }
