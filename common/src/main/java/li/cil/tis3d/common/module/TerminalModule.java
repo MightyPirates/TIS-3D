@@ -140,6 +140,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
     public void onDisabled() {
         display.clear();
         output.setLength(0);
+        sendBuffer = null;
 
         final ByteBuf data = Unpooled.buffer();
         data.writeByte(PACKET_CLEAR);
