@@ -22,7 +22,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -102,27 +101,30 @@ public final class Network {
         NetworkManager.sendToPlayer(player, id, buffer);
     }
 
-    public static void sendToTrackingPlayers(final BlockEntity blockEntity, final AbstractMessage message) {
+    public static boolean sendToTrackingPlayers(final BlockEntity blockEntity, final AbstractMessage message) {
         final var level = blockEntity.getLevel();
         if (level == null) {
-            return;
+            return false;
         }
 
         // Avoids weird potential deadlock when loading into a single player world.
         if (!LevelUtils.isLoaded(level, blockEntity.getBlockPos())) {
-            return;
+            return false;
         }
 
-        sendToTrackingPlayers(level.getChunkAt(blockEntity.getBlockPos()), message);
+        return sendToTrackingPlayers(level.getChunkAt(blockEntity.getBlockPos()), message);
     }
 
-    public static void sendToTrackingPlayers(final LevelChunk chunk, final AbstractMessage message) {
+    public static boolean sendToTrackingPlayers(final LevelChunk chunk, final AbstractMessage message) {
+        boolean didSend = false;
         if (chunk.getLevel().getChunkSource() instanceof final ServerChunkCache cache) {
             final var players = cache.chunkMap.getPlayers(chunk.getPos(), false);
             for (final ServerPlayer player : players) {
                 sendToPlayer(player, message);
+                didSend = true;
             }
         }
+        return didSend;
     }
 
     public static void sendToNearbyPlayers(final BlockEntity blockEntity, final float range, final AbstractMessage message) {
@@ -132,12 +134,13 @@ public final class Network {
         }
     }
 
-    public static void sendToNearbyPlayers(final Level level, final Vec3 pos, final float range, final AbstractMessage message) {
+    public static boolean sendToNearbyPlayers(final Level level, final Vec3 pos, final float range, final AbstractMessage message) {
         final MinecraftServer server = level.getServer();
         if (server == null) {
-            return;
+            return false;
         }
 
+        boolean didSend = false;
         for (final ServerPlayer player : server.getPlayerList().getPlayers()) {
             if (player.level() != level) {
                 continue;
@@ -149,7 +152,10 @@ public final class Network {
             }
 
             sendToPlayer(player, message);
+            didSend = true;
         }
+
+        return didSend;
     }
 
     // --------------------------------------------------------------------- //
@@ -223,23 +229,10 @@ public final class Network {
      * Track dimensional position of particle emission for culling duplicates
      * when currently throttling.
      */
-    private static final class Position {
-        private final Level level;
-        private final float x;
-        private final float y;
-        private final float z;
-
-        private Position(final Level level, final float x, final float y, final float z) {
-            this.level = level;
-            this.x = x;
-            this.y = y;
-            this.z = z;
-        }
-
+    private record Position(Level level, float x, float y, float z) {
         private void sendMessage() {
             final RedstoneParticleEffectMessage message = new RedstoneParticleEffectMessage(x, y, z);
-            if (areAnyPlayersNear(level, new Vec3(x, y, z), RANGE_LOW)) {
-                Network.sendToNearbyPlayers(level, new Vec3(x, y, z), RANGE_LOW, message);
+            if (Network.sendToNearbyPlayers(level, new Vec3(x, y, z), RANGE_LOW, message)) {
                 particlesSent++;
             }
         }
@@ -421,8 +414,7 @@ public final class Network {
                     didSend = true;
                 } else {
                     final ServerCasingDataMessage message = new ServerCasingDataMessage(casing, data);
-                    Network.sendToTrackingPlayers(casing, message);
-                    didSend = areAnyPlayersNear(casing.getCasingLevel(), casing.getPosition(), RANGE_HIGH);
+                    didSend = Network.sendToTrackingPlayers(casing, message);
                 }
                 if (didSend) {
                     incrementPacketsSent(side);
@@ -571,34 +563,6 @@ public final class Network {
                 }
             }
         }
-    }
-
-    // --------------------------------------------------------------------- //
-
-    /**
-     * Check if there are any players nearby the specified target point.
-     * <p>
-     * Used to determine whether a packet will actually be sent to any
-     * clients.
-     *
-     * @param level    the level to check in.
-     * @param position the position to check for.
-     * @param range    the radius around the position to check for.
-     * @return <tt>true</tt> if there are nearby players; <tt>false</tt> otherwise.
-     */
-    private static boolean areAnyPlayersNear(final Level level, final Vec3 position, final int range) {
-        for (final Player player : level.players()) {
-            if (player instanceof ServerPlayer) {
-                if (position.closerThan(player.position(), range)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private static boolean areAnyPlayersNear(final Level level, final BlockPos position, final int range) {
-        return areAnyPlayersNear(level, Vec3.atCenterOf(position), range);
     }
 
     // --------------------------------------------------------------------- //
