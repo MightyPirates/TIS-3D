@@ -139,6 +139,8 @@ public final class ControllerBlockEntity extends ComputerBlockEntity {
      */
     private boolean forceStep;
 
+    private boolean isDisposed;
+
     // --------------------------------------------------------------------- //
 
     public ControllerBlockEntity(final BlockPos pos, final BlockState state) {
@@ -150,6 +152,7 @@ public final class ControllerBlockEntity extends ComputerBlockEntity {
         for (final CasingBlockEntity casing : casings) {
             casing.setController(null);
         }
+        isDisposed = true;
     }
 
     /**
@@ -205,6 +208,15 @@ public final class ControllerBlockEntity extends ComputerBlockEntity {
     @Override
     public void setRemoved() {
         super.setRemoved();
+
+        // This is also called during chunk unload/server shutdown.  In these cases,
+        // we do *not* want to disable modules: if the casings are in other chunks
+        // than this controller, they may not have been saved yet, and this would
+        // nuke their data.  Thus, we flag this instance as being unloaded in the
+        // dispose() method and skip disabling here in these cases.
+        if (isDisposed) {
+            return;
+        }
 
         if (getBlockEntityLevel().isClientSide()) {
             return;
