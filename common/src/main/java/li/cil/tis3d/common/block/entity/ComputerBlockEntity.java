@@ -144,6 +144,11 @@ public abstract class ComputerBlockEntity extends BlockEntity implements PipeHos
         return getBlockPos();
     }
 
+    @Override
+    public void onPipeStateChanged() {
+        setChanged();
+    }
+
     // --------------------------------------------------------------------- //
     // BlockEntity
 

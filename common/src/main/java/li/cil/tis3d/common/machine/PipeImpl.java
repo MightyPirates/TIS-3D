@@ -111,6 +111,8 @@ public final class PipeImpl implements Pipe {
         if (writeState == State.COMPLETE && readState == State.COMPLETE) {
             finishTransfer();
         }
+
+        host.onPipeStateChanged();
     }
 
     public void load(final CompoundTag tag) {
@@ -146,6 +148,8 @@ public final class PipeImpl implements Pipe {
         }
         writeState = State.BUSY;
         this.value = value;
+
+        host.onPipeStateChanged();
     }
 
     @Override
@@ -159,6 +163,8 @@ public final class PipeImpl implements Pipe {
         if (readState == State.FLUSHING) {
             readState = State.READY;
         }
+
+        host.onPipeStateChanged();
     }
 
     @Override
@@ -175,6 +181,8 @@ public final class PipeImpl implements Pipe {
             throw new IllegalStateException("Trying to read from a busy pipe. Check isReading().");
         }
         readState = State.BUSY;
+
+        host.onPipeStateChanged();
     }
 
     @Override
@@ -187,6 +195,8 @@ public final class PipeImpl implements Pipe {
         if (writeState == State.FLUSHING) {
             writeState = State.READY;
         }
+
+        host.onPipeStateChanged();
     }
 
     @Override
@@ -211,6 +221,8 @@ public final class PipeImpl implements Pipe {
         sendEffect();
 
         host.onBeforeWriteComplete(sendingFace, sendingPort);
+
+        host.onPipeStateChanged();
 
         return value;
     }
