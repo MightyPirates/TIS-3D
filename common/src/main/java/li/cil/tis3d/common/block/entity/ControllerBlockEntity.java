@@ -36,7 +36,19 @@ import java.util.*;
  */
 public final class ControllerBlockEntity extends ComputerBlockEntity {
     // --------------------------------------------------------------------- //
+    // Persisted data
+
+    /**
+     * Time to keep waiting before resuming execution after an HCF event.
+     */
+    private int hcfCooldown = 0;
+
+    // --------------------------------------------------------------------- //
     // Computed data
+
+    // NBT tag names.
+    private static final String TAG_HCF_COOLDOWN = "hcfCooldown";
+    private static final String TAG_STATE = "state";
 
     /**
      * Time in ticks to wait before restarting execution after an HCF event.
@@ -118,26 +130,14 @@ public final class ControllerBlockEntity extends ComputerBlockEntity {
      */
     private ControllerState lastSentState = ControllerState.SCANNING;
 
-    // NBT tag names.
-    private static final String TAG_HCF_COOLDOWN = "hcfCooldown";
-    private static final String TAG_STATE = "state";
-
     /**
      * User scheduled a forced step for the next tick.
      * <p>
      * This only matters if the machine is currently paused; in particular,
-     * this is ignored if the machine is currently powered down. Therefore
-     * there's not need to save the value, either.
+     * this is ignored if the machine is currently powered down. Therefore,
+     * there's no need to save the value, either.
      */
     private boolean forceStep;
-
-    // --------------------------------------------------------------------- //
-    // Persisted data
-
-    /**
-     * Time to keep waiting before resuming execution after an HCF event.
-     */
-    private int hcfCooldown = 0;
 
     // --------------------------------------------------------------------- //
 
