@@ -36,7 +36,7 @@
     "fabric-api": ">=${fabricApiVersion}",
     "forgeconfigapiport": ">=${forgeConfigPortVersion}",
     "architectury": ">=${architecturyVersion}",
-    "minecraft": ">=${minecraftVersion}",
+    "minecraft": "${minecraftVersion}",
     "markdown_manual": ">=${manualVersion}",
     "java": ">=17"
   },

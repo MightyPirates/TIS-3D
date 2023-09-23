@@ -21,7 +21,7 @@ side = "BOTH"
 [[dependencies.tis3d]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[${minecraftVersion},)"
+versionRange = "${minecraftVersion}"
 ordering = "NONE"
 side = "BOTH"
 
