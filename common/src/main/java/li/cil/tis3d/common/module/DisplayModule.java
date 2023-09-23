@@ -220,6 +220,7 @@ public final class DisplayModule extends AbstractModuleWithRotation {
             applyDrawCall(drawCall);
             sendDrawCall();
         }
+        getCasing().setChanged();
     }
 
     /**

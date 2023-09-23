@@ -149,6 +149,8 @@ public final class TimerModule extends AbstractModuleWithRotation {
         }
 
         sendData();
+
+        getCasing().setChanged();
     }
 
     /**

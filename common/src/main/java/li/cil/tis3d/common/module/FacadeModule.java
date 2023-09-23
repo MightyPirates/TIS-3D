@@ -149,6 +149,7 @@ public final class FacadeModule extends AbstractModule implements ModuleWithBloc
         if (!getCasing().getCasingLevel().isClientSide()) {
             facadeState = state;
             sendState();
+            getCasing().setChanged();
         }
 
         return true;

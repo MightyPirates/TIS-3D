@@ -131,6 +131,7 @@ public final class SequencerModule extends AbstractModuleWithRotation {
             decodeConfiguration(data.readLong(), configuration);
             sendConfiguration(EnvType.CLIENT);
         }
+        getCasing().setChanged();
     }
 
     @Environment(EnvType.CLIENT)
@@ -217,6 +218,7 @@ public final class SequencerModule extends AbstractModuleWithRotation {
             cancelWrite();
             position = (position + 1) % COL_COUNT;
             sendPosition();
+            getCasing().setChanged();
 
             initializeOutput();
             for (final Port port : Port.VALUES) {
@@ -236,6 +238,7 @@ public final class SequencerModule extends AbstractModuleWithRotation {
             }
             if (receivingPipe.canTransfer()) {
                 delay = receivingPipe.read() & 0xFFFF;
+                getCasing().setChanged();
             }
         }
     }

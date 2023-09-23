@@ -71,6 +71,7 @@ public final class InfraredModule extends AbstractModule implements InfraredRece
     public void onBeforeWriteComplete(final Port port) {
         // Pop the top value (the one that was being written).
         receiveQueue.removeFirst();
+        getCasing().setChanged();
 
         // If one completes, cancel all other writes to ensure a value is only
         // written once.
@@ -138,6 +139,7 @@ public final class InfraredModule extends AbstractModule implements InfraredRece
         final short value = packet.getPacketValue();
         if (receiveQueue.size() < CommonConfig.maxInfraredQueueLength) {
             receiveQueue.addLast(value);
+            getCasing().setChanged();
         }
     }
 

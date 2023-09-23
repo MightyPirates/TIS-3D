@@ -217,6 +217,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
             // Client -> Server is only input.
             beginWriting(readString(data));
             sendInputEnabled(false);
+            getCasing().setChanged();
         }
     }
 
@@ -283,6 +284,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
                 final char ch = toChar(receivingPipe.read());
                 writeToDisplay(ch);
                 sendDisplayToClient(ch);
+                getCasing().setChanged();
             }
         }
     }

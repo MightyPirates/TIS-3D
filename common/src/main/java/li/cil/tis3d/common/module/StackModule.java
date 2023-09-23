@@ -175,6 +175,8 @@ public final class StackModule extends AbstractModuleWithRotation {
         stack[++top] = value;
 
         sendData();
+
+        getCasing().setChanged();
     }
 
     /**
@@ -195,6 +197,8 @@ public final class StackModule extends AbstractModuleWithRotation {
         top = Math.max(-1, top - 1);
 
         sendData();
+
+        getCasing().setChanged();
     }
 
     /**

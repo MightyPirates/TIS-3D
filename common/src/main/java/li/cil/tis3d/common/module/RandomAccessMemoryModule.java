@@ -139,6 +139,7 @@ public class RandomAccessMemoryModule extends AbstractModuleWithRotation {
             } else {
                 load(ReadOnlyMemoryModuleItem.loadFromStack(heldItem));
                 sendFull();
+                getCasing().setChanged();
             }
         }
 
@@ -284,6 +285,7 @@ public class RandomAccessMemoryModule extends AbstractModuleWithRotation {
             case ADDRESS -> beginReadWrite((byte) value);
             case ACCESS -> finishReading((byte) value);
         }
+        getCasing().setChanged();
     }
 
     /**

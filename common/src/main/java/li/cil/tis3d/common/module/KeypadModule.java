@@ -86,6 +86,7 @@ public final class KeypadModule extends AbstractModuleWithRotation {
     public void onBeforeWriteComplete(final Port port) {
         // Pop the value (that was being written).
         value = Optional.empty();
+        getCasing().setChanged();
 
         // If one completes, cancel all other writes to ensure a value is only
         // written once.
@@ -152,6 +153,7 @@ public final class KeypadModule extends AbstractModuleWithRotation {
             value = Optional.of(newValue);
             getCasing().sendData(getFace(), data, DATA_TYPE_VALUE);
             getCasing().getCasingLevel().playSound(null, getCasing().getPosition(), SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.3f, VALUE_TO_PITCH[newValue]);
+            getCasing().setChanged();
         }
     }
 

@@ -182,6 +182,8 @@ public final class QueueModule extends AbstractModuleWithRotation {
         head = (head + 1) % QUEUE_SIZE;
 
         sendData();
+
+        getCasing().setChanged();
     }
 
     /**
@@ -202,6 +204,8 @@ public final class QueueModule extends AbstractModuleWithRotation {
         tail = (tail + 1) % QUEUE_SIZE;
 
         sendData();
+
+        getCasing().setChanged();
     }
 
     /**

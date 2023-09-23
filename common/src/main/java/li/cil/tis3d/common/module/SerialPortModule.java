@@ -78,6 +78,7 @@ public final class SerialPortModule extends AbstractModule implements ModuleWith
     public void onBeforeWriteComplete(final Port port) {
         // Consume the read value (the one that was being written).
         serialInterface.ifPresent(SerialInterface::skip);
+        getCasing().setChanged();
 
         // If one completes, cancel all other writes to ensure a value is only
         // written once.
@@ -184,6 +185,7 @@ public final class SerialPortModule extends AbstractModule implements ModuleWith
         serialInterface = Optional.empty();
         cancelRead();
         cancelWrite();
+        getCasing().setChanged();
     }
 
     /**
@@ -195,6 +197,7 @@ public final class SerialPortModule extends AbstractModule implements ModuleWith
             if (value != writing) {
                 cancelWrite();
                 writing = value;
+                getCasing().setChanged();
             }
             for (final Port port : Port.VALUES) {
                 final Pipe sendingPipe = getCasing().getSendingPipe(getFace(), port);
@@ -221,7 +224,10 @@ public final class SerialPortModule extends AbstractModule implements ModuleWith
                 }
                 if (receivingPipe.canTransfer()) {
                     // Forward the value.
-                    serialInterface.ifPresent(s -> s.write(receivingPipe.read()));
+                    serialInterface.ifPresent(s -> {
+                        s.write(receivingPipe.read());
+                        getCasing().setChanged();
+                    });
                 }
             }
         } else {
