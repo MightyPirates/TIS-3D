@@ -8,10 +8,8 @@ import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.block.entity.fabric.ChunkUnloadListener;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents;
-import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
 import net.fabricmc.fabric.api.event.client.player.ClientPickBlockGatherCallback;
 import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.impl.entrypoint.EntrypointUtils;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
@@ -26,7 +24,9 @@ public final class ClientBootstrapFabric implements ClientModInitializer {
         ClientBootstrap.run();
         ClientSetup.run();
 
-        EntrypointUtils.invoke("tis3d:registration", FabricProviderInitializer.class, FabricProviderInitializer::registerProviders);
+        FabricLoader.getInstance()
+            .getEntrypoints("tis3d:registration", FabricProviderInitializer.class)
+            .forEach(FabricProviderInitializer::registerProviders);
 
         ClientChunkEvents.CHUNK_UNLOAD.register((level, chunk) -> {
             for (final BlockEntity blockEntity : chunk.getBlockEntities().values()) {
@@ -53,7 +53,7 @@ public final class ClientBootstrapFabric implements ClientModInitializer {
         if (FabricLoader.getInstance().isModLoaded("sodium")) {
             LOGGER.warn("Sodium detected, disabling modules that need custom block model rendering. See https://github.com/MightyPirates/TIS-3D/issues/171");
         } else {
-            ModelLoadingRegistry.INSTANCE.registerResourceProvider(rm -> new ModuleModelLoader());
+            ModuleModelLoader.initialize();
         }
     }
 }

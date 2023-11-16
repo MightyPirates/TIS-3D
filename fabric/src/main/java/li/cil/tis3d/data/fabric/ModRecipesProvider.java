@@ -5,12 +5,12 @@ import li.cil.tis3d.api.API;
 import li.cil.tis3d.common.item.Items;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
-import net.minecraft.advancements.critereon.AbstractCriterionTriggerInstance;
+import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
@@ -20,7 +20,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 public final class ModRecipesProvider extends FabricRecipeProvider {
     public ModRecipesProvider(final FabricDataOutput output, final CompletableFuture<HolderLookup.Provider> ignoredRegistries) {
@@ -28,7 +27,7 @@ public final class ModRecipesProvider extends FabricRecipeProvider {
     }
 
     @Override
-    public void buildRecipes(final Consumer<FinishedRecipe> consumer) {
+    public void buildRecipes(final RecipeOutput consumer) {
         ShapedRecipeBuilder
             .shaped(RecipeCategory.REDSTONE, Items.CASING.get(), 8)
             .pattern("IRI")
@@ -128,17 +127,17 @@ public final class ModRecipesProvider extends FabricRecipeProvider {
             .save(consumer, new ResourceLocation(API.MOD_ID, Items.STACK_MODULE.getId().getPath() + "/from_queue"));
     }
 
-    private static ShapedRecipeBuilder module(final RegistrySupplier<? extends Item> module, final int count, final Item item, final AbstractCriterionTriggerInstance unlockedBy) {
+    private static ShapedRecipeBuilder module(final RegistrySupplier<? extends Item> module, final int count, final Item item, final Criterion<InventoryChangeTrigger.TriggerInstance> unlockedBy) {
         return module(module, count, unlockedBy)
             .define('S', item);
     }
 
-    private static ShapedRecipeBuilder module(final RegistrySupplier<? extends Item> module, final int count, final TagKey<Item> tag, final AbstractCriterionTriggerInstance unlockedBy) {
+    private static ShapedRecipeBuilder module(final RegistrySupplier<? extends Item> module, final int count, final TagKey<Item> tag, final Criterion<InventoryChangeTrigger.TriggerInstance> unlockedBy) {
         return module(module, count, unlockedBy)
             .define('S', tag);
     }
 
-    private static ShapedRecipeBuilder module(final RegistrySupplier<? extends Item> module, final int count, final AbstractCriterionTriggerInstance unlockedBy) {
+    private static ShapedRecipeBuilder module(final RegistrySupplier<? extends Item> module, final int count, final Criterion<InventoryChangeTrigger.TriggerInstance> unlockedBy) {
         return ShapedRecipeBuilder
             .shaped(RecipeCategory.MISC, module.get(), count)
             .pattern("PPP")
@@ -150,11 +149,11 @@ public final class ModRecipesProvider extends FabricRecipeProvider {
             .unlockedBy("has_base_item", unlockedBy);
     }
 
-    private static InventoryChangeTrigger.TriggerInstance inventoryChange(final TagKey<Item> tag) {
+    private static Criterion<InventoryChangeTrigger.TriggerInstance> inventoryChange(final TagKey<Item> tag) {
         return InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(tag).build());
     }
 
-    private static InventoryChangeTrigger.TriggerInstance inventoryChange(final ItemLike item) {
+    private static Criterion<InventoryChangeTrigger.TriggerInstance> inventoryChange(final ItemLike item) {
         return InventoryChangeTrigger.TriggerInstance.hasItems(item);
     }
 }

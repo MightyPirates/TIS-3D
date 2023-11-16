@@ -47,16 +47,8 @@ subprojects {
             filter { includeGroupByRegex("org\\.parchmentmc.*") }
         }
         exclusiveContent {
-            forRepository { maven("https://cursemaven.com") }
-            filter { includeGroup("curse.maven") }
-        }
-        exclusiveContent {
             forRepository { maven("https://api.modrinth.com/maven") }
             filter { includeGroup("maven.modrinth") }
-        }
-        exclusiveContent {
-            forRepository { flatDir { dir("${rootProject.projectDir}/libs") } }
-            filter { includeGroup("local") }
         }
     }
 
@@ -65,7 +57,7 @@ subprojects {
         val loom = project.extensions.getByName<LoomGradleExtensionAPI>("loom")
         "mappings"(loom.layered {
             officialMojangMappings()
-            parchment("org.parchmentmc.data:parchment-$minecraftVersion:${rootProject.libs.versions.parchment.get()}@zip")
+            parchment("org.parchmentmc.data:parchment-${rootProject.libs.versions.parchment.minecraft.get()}:${rootProject.libs.versions.parchment.mappings.get()}@zip")
         })
         "compileOnly"("com.google.code.findbugs:jsr305:3.0.2")
     }

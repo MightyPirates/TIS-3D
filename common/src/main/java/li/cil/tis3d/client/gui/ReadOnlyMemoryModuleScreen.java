@@ -63,8 +63,6 @@ public final class ReadOnlyMemoryModuleScreen extends AbstractContainerScreen<Re
 
     @Override
     public void render(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
-        renderBackground(graphics);
-
         super.render(graphics, mouseX, mouseY, partialTicks);
 
         final BufferBuilder builder = Tesselator.getInstance().getBuilder();

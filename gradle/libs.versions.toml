@@ -1,41 +1,51 @@
 [versions]
-minecraft = "1.20.1"
-parchment = "2023.08.13"
+minecraft = "1.20.2"
+parchment-minecraft = "1.20.1"
+parchment-mappings = "2023.09.03"
 
-architectury = "9.1.12"
-manual = "1.2.3"
+architectury = "10.0.9"
+manual = "1.2.6"
 
-fabric-loader = "0.14.22"
-fabric-api = "0.87.0+1.20.1"
-fabric-forgeConfigPort = "8.0.0"
+fabric-loader = "0.14.24"
+fabric-api = "0.90.7+1.20.2"
 
-forge-platform = "1.20.1-47.1.0"
+fabric-forgeConfigPort = "9.0.0"
+fabric-forgeConfigPortArtifact = "v9.0.0-1.20.2-Fabric"
+fabric-rei = "13.0.675+fabric"
+fabric-clothConfig = "12.0.109+fabric"
+fabric-markdownManual = "MC1.20.2-fabric-1.2.6"
+
+fabric-tooltipfix = "1.1.1-1.20"
+
+forge-platform = "1.20.2-48.0.39"
+
+forge-markdownManual = "MC1.20.2-forge-1.2.6"
+forge-jei = "16.0.0.28"
 
 [plugins]
 loom = { id = "dev.architectury.loom", version = "1.3-SNAPSHOT" }
 architectury = { id = "architectury-plugin", version = "3.4-SNAPSHOT" }
 shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
-spotless = { id = "com.diffplug.spotless", version = "6.20.0" }
+spotless = { id = "com.diffplug.spotless", version = "6.22.0" }
 
 [libraries]
 minecraft = { group = "com.mojang", name = "minecraft", version.ref = "minecraft" }
 architectury-api = { group = "dev.architectury", name = "architectury", version.ref = "architectury" }
-manual-api = { group = "curse.maven", name = "markdownmanual-502485", version = "4719409" }
 
 fabric-loader = { group = "net.fabricmc", name = "fabric-loader", version.ref = "fabric-loader" }
 fabric-api = { group = "net.fabricmc.fabric-api", name = "fabric-api", version.ref = "fabric-api" }
 fabric-architectury = { group = "dev.architectury", name = "architectury-fabric", version.ref = "architectury" }
 
-fabric-forgeConfigPort = { group = "fuzs.forgeconfigapiport", name = "forgeconfigapiport-fabric", version.ref = "fabric-forgeConfigPort" }
-fabric-manual = { group = "curse.maven", name = "markdownmanual-502485", version = "4719410" }
-fabric-roughlyEnoughItems = { group = "me.shedaniel", name = "RoughlyEnoughItems-fabric", version = "12.0.645" }
+fabric-forgeConfigPort = { group = "maven.modrinth", name = "forge-config-api-port", version.ref = "fabric-forgeConfigPortArtifact" }
+fabric-manual = { group = "maven.modrinth", name = "markdownmanual", version.ref = "fabric-markdownManual" }
+fabric-clothConfig = { group = "maven.modrinth", name = "cloth-config", version.ref = "fabric-clothConfig" }
+fabric-roughlyEnoughItems = { group = "maven.modrinth", name = "rei", version.ref = "fabric-rei" }
 
-fabric-tooltipFix = { group = "curse.maven", name = "tooltipfix-411557", version = "4577194" }
-fabric-sodium = { group = "maven.modrinth", name = "sodium", version = "mc1.20.1-0.5.2" }
+fabric-tooltipFix = { group = "maven.modrinth", name = "tooltipfix", version.ref = "fabric-tooltipfix" }
 
 forge-platform = { group = "net.minecraftforge", name = "forge", version.ref = "forge-platform" }
 forge-architectury = { group = "dev.architectury", name = "architectury-forge", version.ref = "architectury" }
 
-forge-manual = { group = "curse.maven", name = "markdownmanual-502485", version = "4719408" }
+forge-manual = { group = "maven.modrinth", name = "markdownmanual", version.ref = "forge-markdownManual" }
 
-forge-justEnoughItems = { group = "curse.maven", name = "jei-238222", version = "4690097" }
+forge-justEnoughItems = { group = "maven.modrinth", name = "jei", version.ref = "forge-jei" }

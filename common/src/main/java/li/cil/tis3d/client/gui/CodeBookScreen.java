@@ -114,24 +114,27 @@ public final class CodeBookScreen extends Screen {
     }
 
     @Override
+    public void renderBackground(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
+        super.renderBackground(graphics, mouseX, mouseY, partialTicks);
+
+        graphics.blit(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND, guiX, guiY, 0, 0, GUI_WIDTH, GUI_HEIGHT);
+    }
+
+    @Override
     public void render(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
         if (!player.isAlive() || !Items.is(player.getItemInHand(hand), Items.BOOK_CODE)) {
             Minecraft.getInstance().setScreen(null);
             return;
         }
 
-        renderBackground(graphics);
-
         // Background.
-        graphics.blit(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND, guiX, guiY, 0, 0, GUI_WIDTH, GUI_HEIGHT);
+        super.render(graphics, mouseX, mouseY, partialTicks);
 
         // Check page change button availability.
         buttonPreviousPage.visible = data.getSelectedPage() > 0 && data.getPageCount() > 0;
         buttonNextPage.visible = (data.getSelectedPage() < data.getPageCount() - 1) ||
             (data.getSelectedPage() == data.getPageCount() - 1 && isCurrentProgramNonEmpty());
         buttonDeletePage.visible = data.getPageCount() > 1 || isCurrentProgramNonEmpty();
-
-        super.render(graphics, mouseX, mouseY, partialTicks);
 
         // Draw current program.
         drawProgram(graphics, mouseX, mouseY);
@@ -723,9 +726,13 @@ public final class CodeBookScreen extends Screen {
 
         @Override
         public void renderWidget(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
-            final int offsetX = isHoveredOrFocused() ? BUTTON_WIDTH : 0;
+            final int offsetX = isHoveredOrFocusedUsingKeyboard() ? BUTTON_WIDTH : 0;
             final int offsetY = type == PageChangeType.Previous ? BUTTON_HEIGHT : 0;
             graphics.blit(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND, getX(), getY(), TEXTURE_X + offsetX, TEXTURE_Y + offsetY, BUTTON_WIDTH, BUTTON_HEIGHT);
+        }
+
+        private boolean isHoveredOrFocusedUsingKeyboard() {
+            return this.isHovered() || this.isFocused() && Minecraft.getInstance().getLastInputType().isKeyboard();
         }
     }
 
@@ -742,8 +749,12 @@ public final class CodeBookScreen extends Screen {
 
         @Override
         public void renderWidget(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
-            final int offsetX = isHoveredOrFocused() ? BUTTON_WIDTH : 0;
+            final int offsetX = isHoveredOrFocusedUsingKeyboard() ? BUTTON_WIDTH : 0;
             graphics.blit(Textures.LOCATION_GUI_BOOK_CODE_BACKGROUND, getX(), getY(), TEXTURE_X + offsetX, TEXTURE_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
+        }
+
+        private boolean isHoveredOrFocusedUsingKeyboard() {
+            return this.isHovered() || this.isFocused() && Minecraft.getInstance().getLastInputType().isKeyboard();
         }
     }
 }

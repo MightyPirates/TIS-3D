@@ -51,7 +51,7 @@ public final class ModuleBakedModel implements BakedModel, FabricBakedModel {
         if (module instanceof final ModuleWithBakedModelFabric moduleWithModel && moduleWithModel.hasModel()) {
             moduleWithModel.emitBlockQuads(blockView, state, pos, direction, randomSupplier, context);
         } else {
-            ((FabricBakedModel) proxy).emitBlockQuads(blockView, state, pos, randomSupplier, context);
+            proxy.emitBlockQuads(blockView, state, pos, randomSupplier, context);
         }
     }
 

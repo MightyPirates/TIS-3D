@@ -174,10 +174,10 @@ public interface RenderContext {
     default void drawAtlasQuad(final VertexConsumer builder, final TextureAtlasSprite sprite,
                                final float x, final float y, final float width, final float height,
                                final float u0, final float v0, final float u1, final float v1, final int argb) {
-        final float atlasU0 = sprite.getU(u0 * 16);
-        final float atlasV0 = sprite.getV(v0 * 16);
-        final float atlasU1 = sprite.getU(u1 * 16);
-        final float atlasV1 = sprite.getV(v1 * 16);
+        final float atlasU0 = sprite.getU(u0);
+        final float atlasV0 = sprite.getV(v0);
+        final float atlasU1 = sprite.getU(u1);
+        final float atlasV1 = sprite.getV(v1);
         drawQuad(builder, x, y, width, height, atlasU0, atlasV0, atlasU1, atlasV1, argb);
     }
 

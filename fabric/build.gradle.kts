@@ -22,31 +22,17 @@ loom {
     }
 }
 
-repositories {
-    exclusiveContent {
-        forRepository { maven("https://raw.githubusercontent.com/Fuzss/modresources/main/maven/") }
-        filter { includeGroup("fuzs.forgeconfigapiport") }
-    }
-    exclusiveContent {
-        forRepository { maven("https://maven.shedaniel.me") }
-        filter { includeGroup("me.shedaniel") }
-    }
-}
-
 dependencies {
     modImplementation(libs.fabric.loader)
     modApi(libs.fabric.api)
     modApi(libs.fabric.architectury)
 
+    modApi(libs.fabric.roughlyEnoughItems)
     modImplementation(libs.fabric.manual)
     modImplementation(libs.fabric.forgeConfigPort)
-    modImplementation(libs.fabric.roughlyEnoughItems) {
-        exclude(group = "net.fabricmc.fabric-api")
-    }
 
     // Not used by mod, just for dev convenience.
     modRuntimeOnly(libs.fabric.tooltipFix)
-    modRuntimeOnly(libs.fabric.sodium)
 }
 
 tasks {

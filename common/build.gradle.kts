@@ -12,7 +12,7 @@ loom {
 dependencies {
     modImplementation(libs.fabric.loader)
     modApi(libs.architectury.api)
-    modApi(libs.manual.api)
+    modApi(libs.fabric.manual)
 }
 
 tasks {
