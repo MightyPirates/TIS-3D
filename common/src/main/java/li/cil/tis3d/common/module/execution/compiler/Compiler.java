@@ -209,6 +209,7 @@ public final class Compiler {
         builder.put(JumpLessThanZeroInstruction.NAME, new LabelInstructionEmitter(JumpLessThanZeroInstruction::new));
         builder.put(JumpNotZeroInstruction.NAME, new LabelInstructionEmitter(JumpNotZeroInstruction::new));
         builder.put(JumpRelativeInstruction.NAME, new TargetOrImmediateInstructionEmitter(JumpRelativeInstruction::new, JumpRelativeImmediateInstruction::new));
+        builder.put(JumpAbsoluteInstruction.NAME, new TargetOrImmediateInstructionEmitter(JumpAbsoluteInstruction::new, JumpAbsoluteImmediateInstruction::new));
 
         // Data transfer.
         builder.put(MoveInstruction.NAME, new MoveInstructionEmitter());

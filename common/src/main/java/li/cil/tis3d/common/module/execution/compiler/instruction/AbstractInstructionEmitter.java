@@ -55,4 +55,20 @@ abstract class AbstractInstructionEmitter implements InstructionEmitter {
             }
         }
     }
+    static Object checkTargetOrNumberOrLabel(String name, final int lineNumber, final Map<String, String> defines, final int start, final int end) throws ParseException {
+        name = defines.getOrDefault(name, name);
+        try {
+            final Target target = Enum.valueOf(Target.class, name);
+            if (!Target.VALID_TARGETS.contains(target)) {
+                throw new ParseException(Strings.MESSAGE_PARAMETER_INVALID, lineNumber, start, end);
+            }
+            return target;
+        } catch (final IllegalArgumentException ex) {
+            try {
+                return Integer.decode(name).shortValue();
+            } catch (final NumberFormatException ignored) {
+                return name;
+            }
+        }
+    }
 }
