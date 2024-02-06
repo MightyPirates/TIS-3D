@@ -11,7 +11,6 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents;
 import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
 import net.fabricmc.fabric.api.event.client.player.ClientPickBlockGatherCallback;
 import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.impl.entrypoint.EntrypointUtils;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
@@ -26,7 +25,9 @@ public final class ClientBootstrapFabric implements ClientModInitializer {
         ClientBootstrap.run();
         ClientSetup.run();
 
-        EntrypointUtils.invoke("tis3d:registration", FabricProviderInitializer.class, FabricProviderInitializer::registerProviders);
+        FabricLoader.getInstance()
+            .getEntrypoints("tis3d:registration", FabricProviderInitializer.class)
+            .forEach(FabricProviderInitializer::registerProviders);
 
         ClientChunkEvents.CHUNK_UNLOAD.register((level, chunk) -> {
             for (final BlockEntity blockEntity : chunk.getBlockEntities().values()) {

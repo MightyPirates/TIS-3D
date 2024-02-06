@@ -3,9 +3,9 @@ minecraft = "1.20.1"
 parchment = "2023.08.13"
 
 architectury = "9.1.12"
-manual = "1.2.3"
+manual = "1.2.5"
 
-fabric-loader = "0.14.22"
+fabric-loader = "0.15.6"
 fabric-api = "0.87.0+1.20.1"
 fabric-forgeConfigPort = "8.0.0"
 
@@ -20,14 +20,14 @@ spotless = { id = "com.diffplug.spotless", version = "6.20.0" }
 [libraries]
 minecraft = { group = "com.mojang", name = "minecraft", version.ref = "minecraft" }
 architectury-api = { group = "dev.architectury", name = "architectury", version.ref = "architectury" }
-manual-api = { group = "curse.maven", name = "markdownmanual-502485", version = "4719409" }
+manual-api = { group = "curse.maven", name = "markdownmanual-502485", version = "4873117" }
 
 fabric-loader = { group = "net.fabricmc", name = "fabric-loader", version.ref = "fabric-loader" }
 fabric-api = { group = "net.fabricmc.fabric-api", name = "fabric-api", version.ref = "fabric-api" }
 fabric-architectury = { group = "dev.architectury", name = "architectury-fabric", version.ref = "architectury" }
 
 fabric-forgeConfigPort = { group = "fuzs.forgeconfigapiport", name = "forgeconfigapiport-fabric", version.ref = "fabric-forgeConfigPort" }
-fabric-manual = { group = "curse.maven", name = "markdownmanual-502485", version = "4719410" }
+fabric-manual = { group = "curse.maven", name = "markdownmanual-502485", version = "4873117" }
 fabric-roughlyEnoughItems = { group = "me.shedaniel", name = "RoughlyEnoughItems-fabric", version = "12.0.645" }
 
 fabric-tooltipFix = { group = "curse.maven", name = "tooltipfix-411557", version = "4577194" }
