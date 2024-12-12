@@ -8,7 +8,6 @@ import li.cil.tis3d.common.module.execution.target.Target;
 abstract class AbstractMoveInstruction implements Instruction {
     protected final Target destination;
 
-
     protected AbstractMoveInstruction(final Target destination) {
         this.destination = destination;
     }
@@ -24,7 +23,7 @@ abstract class AbstractMoveInstruction implements Instruction {
         if (machine.getState().pc < 0 || machine.getState().pc >= machine.getState().instructions.size()){
             machine.getState().pc = 0;
         }
-        machine.getModule().updatescreen();
+        machine.getModule().updateScreen();
     }
 
 }
