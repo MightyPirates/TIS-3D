@@ -116,6 +116,12 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
         }
     }
 
+    public void updatescreen(){
+        state = State.RUN;
+        getCasing().setChanged();
+        sendPartialState();
+    }
+
     @Override
     public void onEnabled() {
         sendFullState();

@@ -41,6 +41,6 @@ public interface Instruction {
      * @param machine the machine the operation finished on.
      * @param port    the port the operation finished on.
      */
-    default void onWriteCompleted(final Machine machine, final Port port) {
+    default void onWriteCompleted(final MachineImpl machine, final Port port) {
     }
 }
