@@ -42,7 +42,7 @@ public abstract class AbstractModule implements Module {
         this.face = face;
     }
 
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings("removal")
     @Override
     protected void finalize() {
         if (!isDisposed) {

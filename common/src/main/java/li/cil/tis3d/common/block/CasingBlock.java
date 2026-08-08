@@ -209,7 +209,6 @@ public class CasingBlock extends BaseEntityBlock {
         return InteractionResult.PASS;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void onRemove(final BlockState state, final Level level, final BlockPos pos, final BlockState newState, final boolean isMoving) {
         if (!state.is(newState.getBlock())) {
@@ -225,19 +224,16 @@ public class CasingBlock extends BaseEntityBlock {
     // --------------------------------------------------------------------- //
     // Redstone
 
-    @SuppressWarnings("deprecation")
     @Override
     public boolean hasAnalogOutputSignal(final BlockState state) {
         return true;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public int getAnalogOutputSignal(final BlockState state, final Level level, final BlockPos pos) {
         return AbstractContainerMenu.getRedstoneSignalFromBlockEntity(level.getBlockEntity(pos));
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public int getSignal(final BlockState blockState, final BlockGetter level, final BlockPos pos, final Direction side) {
         final BlockEntity blockEntity = level.getBlockEntity(pos);
@@ -250,7 +246,6 @@ public class CasingBlock extends BaseEntityBlock {
         return super.getSignal(blockState, level, pos, side);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public boolean isSignalSource(final BlockState state) {
         return true;
@@ -259,7 +254,6 @@ public class CasingBlock extends BaseEntityBlock {
     // --------------------------------------------------------------------- //
     // Networking
 
-    @SuppressWarnings("deprecation")
     @Override
     public void neighborChanged(final BlockState state, final Level level, final BlockPos pos, final Block block, final BlockPos fromPos, final boolean isMoving) {
         final BlockEntity blockEntity = level.getBlockEntity(pos);

@@ -3,7 +3,7 @@ val minecraftVersion: String = libs.versions.minecraft.get()
 val neoforgeVersion: String = libs.versions.neoforge.platform.get()
 val neoforgeLoaderVersion: String = libs.versions.neoforge.loader.get()
 val architecturyVersion: String = libs.versions.architectury.get()
-val markdownManualDir: String by project
+val manualVersion: String = markdownManualVersion(libs.versions.manual.get())
 
 loom {
     accessWidenerPath.set(project(":common").loom.accessWidenerPath)
@@ -23,16 +23,6 @@ loom {
 repositories {
     maven("https://maven.neoforged.net/releases")
 }
-
-val useLocalMarkdownManual = rootProject.file(markdownManualDir).isDirectory
-
-fun markdownManualJar(module: String, pattern: String): File =
-    fileTree(rootProject.file("$markdownManualDir/$module/build/libs")) {
-        include(pattern)
-        exclude("*-dev-shadow.jar", "*-sources.jar")
-    }.files.maxByOrNull { it.lastModified() } ?: error("No jar matching '$pattern' in $markdownManualDir/$module/build/libs; build that project first.")
-
-val manualVersion: String = if (useLocalMarkdownManual) "0.0.0" else libs.versions.manual.get()
 
 dependencies {
     neoForge(libs.neoforge.platform)

@@ -28,7 +28,7 @@ public abstract class MixinFacadeModule implements ModuleWithBakedModelFabric {
         final var model = Minecraft.getInstance().getBlockRenderer().getBlockModel(facadeState);
         final var quads = model.getQuads(facadeState, direction, randomSupplier.get());
         for (final BakedQuad quad : quads) {
-            emitter.fromVanilla(quad, IndigoRenderer.INSTANCE.materialFinder().blendMode(0, BlendMode.CUTOUT_MIPPED).find(), direction);
+            emitter.fromVanilla(quad, IndigoRenderer.INSTANCE.materialFinder().blendMode(BlendMode.CUTOUT_MIPPED).find(), direction);
             emitter.emit();
         }
     }

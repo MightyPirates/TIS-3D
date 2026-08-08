@@ -14,7 +14,6 @@ import net.minecraft.world.level.block.state.BlockState;
  * Specifically, this is called from the {@link Casing}'s
  * {@link Block#neighborChanged(BlockState, Level, BlockPos, Block, BlockPos, boolean)} method.
  */
-@SuppressWarnings("deprecation")
 public interface ModuleWithBlockChangeListener extends Module {
     /**
      * Called when a block adjacent to the hosting {@link Casing} changes.

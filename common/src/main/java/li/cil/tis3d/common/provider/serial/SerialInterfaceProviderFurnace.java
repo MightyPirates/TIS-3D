@@ -82,14 +82,14 @@ public final class SerialInterfaceProviderFurnace implements SerialInterfaceProv
         @Override
         public short peek() {
             switch (mode) {
-                case PercentageFuel: {
+                case PercentageFuel -> {
                     final int value = furnace.litTime;
                     final int total = furnace.litDuration;
                     if (total > 0) {
                         return (short) (value * 100 / total);
                     }
                 }
-                case PercentageProgress: {
+                case PercentageProgress -> {
                     final int value = furnace.cookingProgress;
                     final int total = furnace.cookingTotalTime;
                     if (total > 0) {

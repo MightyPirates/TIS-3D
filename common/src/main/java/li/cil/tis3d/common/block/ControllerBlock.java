@@ -111,13 +111,11 @@ public final class ControllerBlock extends BaseEntityBlock {
     // --------------------------------------------------------------------- //
     // Redstone
 
-    @SuppressWarnings("deprecation")
     @Override
     public boolean hasAnalogOutputSignal(final BlockState state) {
         return true;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public int getAnalogOutputSignal(final BlockState state, final Level level, final BlockPos pos) {
         final BlockEntity blockEntity = level.getBlockEntity(pos);
@@ -130,7 +128,6 @@ public final class ControllerBlock extends BaseEntityBlock {
     // --------------------------------------------------------------------- //
     // Networking
 
-    @SuppressWarnings("deprecation")
     @Override
     public void neighborChanged(final BlockState state, final Level level, final BlockPos pos, final Block block, final BlockPos fromPos, final boolean isMoving) {
         final BlockEntity blockEntity = level.getBlockEntity(pos);

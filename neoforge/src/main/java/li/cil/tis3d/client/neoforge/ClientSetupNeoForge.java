@@ -15,7 +15,7 @@ import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
-@EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD, modid = API.MOD_ID)
+@EventBusSubscriber(value = Dist.CLIENT, modid = API.MOD_ID)
 public final class ClientSetupNeoForge {
     @SubscribeEvent
     public static void handleClientSetup(final FMLClientSetupEvent ignoredEvent) {
