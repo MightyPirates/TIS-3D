@@ -90,6 +90,12 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
         return machine.getState();
     }
 
+    public void onInstructionCompleted() {
+        state = State.RUN;
+        getCasing().setChanged();
+        sendPartialState();
+    }
+
     // --------------------------------------------------------------------- //
     // Module
 

@@ -83,6 +83,16 @@ public final class MachineImpl implements Machine {
         final Instruction instruction = getInstruction();
         if (instruction != null) {
             instruction.onWriteCompleted(this, port);
+
+            // Writes complete after all modules have been stepped, so instructions
+            // advancing the program counter here do so after the cycle has already
+            // been finished. Finish it again to keep the program counter valid and
+            // let the module know, otherwise the instruction we just advanced to
+            // would never be shown on the client, and advancing past the end of the
+            // program would waste a cycle before wrapping around.
+            if (state.finishCycle()) {
+                module.onInstructionCompleted();
+            }
         }
     }
 
