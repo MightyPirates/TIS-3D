@@ -7,6 +7,7 @@ import li.cil.tis3d.common.machine.PipeHost;
 import li.cil.tis3d.common.machine.PipeImpl;
 import li.cil.tis3d.util.LevelUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -153,26 +154,26 @@ public abstract class ComputerBlockEntity extends BlockEntity implements PipeHos
     // BlockEntity
 
     @Override
-    public void load(final CompoundTag tag) {
-        super.load(tag);
+    protected void loadAdditional(final CompoundTag tag, final HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
         if (tag.contains(TAG_IS_UPDATE_TAG)) {
-            loadClient(tag);
+            loadClient(tag, registries);
         } else {
-            loadServer(tag);
+            loadServer(tag, registries);
         }
     }
 
     @Override
-    protected void saveAdditional(CompoundTag nbt) {
-        super.saveAdditional(nbt);
-        saveServer(nbt);
+    protected void saveAdditional(final CompoundTag tag, final HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        saveServer(tag, registries);
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        final CompoundTag tag = super.getUpdateTag();
+    public CompoundTag getUpdateTag(final HolderLookup.Provider registries) {
+        final CompoundTag tag = super.getUpdateTag(registries);
         tag.putBoolean(TAG_IS_UPDATE_TAG, true);
-        saveClient(tag);
+        saveClient(tag, registries);
         return tag;
     }
 
@@ -216,17 +217,17 @@ public abstract class ComputerBlockEntity extends BlockEntity implements PipeHos
         }
     }
 
-    protected void loadServer(final CompoundTag tag) {
+    protected void loadServer(final CompoundTag tag, final HolderLookup.Provider registries) {
         final ListTag pipesTag = tag.getList(TAG_PIPES, Tag.TAG_COMPOUND);
         final int pipeCount = Math.min(pipesTag.size(), pipes.length);
         for (int i = 0; i < pipeCount; i++) {
             pipes[i].load(pipesTag.getCompound(i));
         }
 
-        loadCommon(tag);
+        loadCommon(tag, registries);
     }
 
-    protected void saveServer(final CompoundTag tag) {
+    protected void saveServer(final CompoundTag tag, final HolderLookup.Provider registries) {
         final ListTag pipesTag = new ListTag();
         for (final PipeImpl pipe : pipes) {
             final CompoundTag portTag = new CompoundTag();
@@ -235,21 +236,21 @@ public abstract class ComputerBlockEntity extends BlockEntity implements PipeHos
         }
         tag.put(TAG_PIPES, pipesTag);
 
-        saveCommon(tag);
+        saveCommon(tag, registries);
     }
 
-    protected void loadClient(final CompoundTag tag) {
-        loadCommon(tag);
+    protected void loadClient(final CompoundTag tag, final HolderLookup.Provider registries) {
+        loadCommon(tag, registries);
     }
 
-    protected void saveClient(final CompoundTag tag) {
-        saveCommon(tag);
+    protected void saveClient(final CompoundTag tag, final HolderLookup.Provider registries) {
+        saveCommon(tag, registries);
     }
 
-    protected void loadCommon(final CompoundTag tag) {
+    protected void loadCommon(final CompoundTag tag, final HolderLookup.Provider registries) {
     }
 
-    protected void saveCommon(final CompoundTag tag) {
+    protected void saveCommon(final CompoundTag tag, final HolderLookup.Provider registries) {
     }
 
     boolean hasNeighbor(final Face face) {

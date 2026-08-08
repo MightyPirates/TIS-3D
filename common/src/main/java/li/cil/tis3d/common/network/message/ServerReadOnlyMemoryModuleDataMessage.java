@@ -4,7 +4,7 @@ import dev.architectury.networking.NetworkManager;
 import li.cil.tis3d.client.gui.ReadOnlyMemoryModuleScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.InteractionHand;
 
 public final class ServerReadOnlyMemoryModuleDataMessage extends AbstractReadOnlyMemoryModuleDataMessage {
@@ -12,7 +12,7 @@ public final class ServerReadOnlyMemoryModuleDataMessage extends AbstractReadOnl
         super(hand, data);
     }
 
-    public ServerReadOnlyMemoryModuleDataMessage(final FriendlyByteBuf buffer) {
+    public ServerReadOnlyMemoryModuleDataMessage(final RegistryFriendlyByteBuf buffer) {
         super(buffer);
     }
 

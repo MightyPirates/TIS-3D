@@ -23,7 +23,7 @@ public interface SerialInterfaceProvider {
     /**
      * The registry name of the registry holding serial interface providers.
      */
-    ResourceKey<Registry<SerialInterfaceProvider>> REGISTRY = ResourceKey.createRegistryKey(new ResourceLocation(API.MOD_ID, "serial_interface_provider"));
+    ResourceKey<Registry<SerialInterfaceProvider>> REGISTRY = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(API.MOD_ID, "serial_interface_provider"));
 
     /**
      * Checks whether the provider supports the specified block position.

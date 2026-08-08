@@ -1,0 +1,50 @@
+modLoader = "javafml"
+loaderVersion = "[${loaderVersion},)"
+issueTrackerURL = "https://github.com/MightyPirates/TIS-3D/issues"
+license = "MIT"
+
+[[mods]]
+modId = "tis3d"
+version = "${version}"
+displayName = "TIS-3D"
+authors = "Sangar"
+description = '''
+TIS-100 inspired low-tech computing for Minecraft.
+'''
+
+[[dependencies.tis3d]]
+modId = "neoforge"
+type = "required"
+versionRange = "[${neoforgeVersion},)"
+ordering = "NONE"
+side = "BOTH"
+[[dependencies.tis3d]]
+modId = "minecraft"
+type = "required"
+versionRange = "${minecraftVersion}"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.tis3d]]
+modId = "architectury"
+type = "required"
+versionRange = "[${architecturyVersion},)"
+ordering = "AFTER"
+side = "BOTH"
+[[dependencies.tis3d]]
+modId = "markdown_manual"
+type = "required"
+versionRange = "[${manualVersion},)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[mixins]]
+config = "tis3d.mixins.json"
+
+[mc-publish]
+modrinth = "L23x7zL8"
+curseforge = 238603
+dependencies = [
+    "architectury@>=${architecturyVersion}(required){modrinth:lhGA9TYQ}{curseforge:419699}",
+    "markdown_manual@>=${manualVersion}(required){modrinth:nPQ9xkPg}{curseforge:502485}"
+]

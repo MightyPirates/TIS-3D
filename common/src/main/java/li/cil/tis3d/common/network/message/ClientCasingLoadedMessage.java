@@ -7,7 +7,7 @@ import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.network.Network;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 
 public final class ClientCasingLoadedMessage extends AbstractMessageWithPosition {
@@ -15,7 +15,7 @@ public final class ClientCasingLoadedMessage extends AbstractMessageWithPosition
         super(casing.getPosition());
     }
 
-    public ClientCasingLoadedMessage(final FriendlyByteBuf buffer) {
+    public ClientCasingLoadedMessage(final RegistryFriendlyByteBuf buffer) {
         super(buffer);
     }
 

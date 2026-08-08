@@ -269,7 +269,7 @@ public final class DisplayModule extends AbstractModuleWithRotation {
         if (renderLayer == null) {
             final TextureManager textureManager = Minecraft.getInstance().getTextureManager();
             final DynamicTexture texture = getOrCreateTexture();
-            textureId = new ResourceLocation(API.MOD_ID, "dynamic/display_module_" + (++nextTextureId));
+            textureId = ResourceLocation.fromNamespaceAndPath(API.MOD_ID, "dynamic/display_module_" + (++nextTextureId));
             textureManager.register(textureId, texture);
             renderLayer = ModRenderType.unlitTexture(textureId);
         }

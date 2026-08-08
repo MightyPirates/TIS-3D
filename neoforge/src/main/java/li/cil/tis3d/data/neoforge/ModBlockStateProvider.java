@@ -14,10 +14,10 @@ import net.neoforged.neoforge.client.model.generators.MultiPartBlockStateBuilder
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 public final class ModBlockStateProvider extends BlockStateProvider {
-    private static final ResourceLocation FULL_CASING_MODEL = new ResourceLocation(API.MOD_ID, "block/casing_all");
-    private static final ResourceLocation EMPTY_CASING_MODEL = new ResourceLocation(API.MOD_ID, "block/casing_empty");
-    private static final ResourceLocation MODULE_IN_CASING_MODEL = new ResourceLocation(API.MOD_ID, "block/casing_module");
-    private static final ResourceLocation CONTROLLER_MODEL = new ResourceLocation(API.MOD_ID, "block/controller");
+    private static final ResourceLocation FULL_CASING_MODEL = ResourceLocation.fromNamespaceAndPath(API.MOD_ID, "block/casing_all");
+    private static final ResourceLocation EMPTY_CASING_MODEL = ResourceLocation.fromNamespaceAndPath(API.MOD_ID, "block/casing_empty");
+    private static final ResourceLocation MODULE_IN_CASING_MODEL = ResourceLocation.fromNamespaceAndPath(API.MOD_ID, "block/casing_module");
+    private static final ResourceLocation CONTROLLER_MODEL = ResourceLocation.fromNamespaceAndPath(API.MOD_ID, "block/controller");
 
     public ModBlockStateProvider(final PackOutput output, final ExistingFileHelper existingFileHelper) {
         super(output, API.MOD_ID, existingFileHelper);

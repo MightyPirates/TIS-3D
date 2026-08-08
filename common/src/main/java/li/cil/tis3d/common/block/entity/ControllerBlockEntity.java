@@ -10,6 +10,7 @@ import li.cil.tis3d.util.LevelUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -239,29 +240,29 @@ public final class ControllerBlockEntity extends ComputerBlockEntity {
     // BlockEntityComputer
 
     @Override
-    protected void loadServer(final CompoundTag tag) {
-        super.loadServer(tag);
+    protected void loadServer(final CompoundTag tag, final HolderLookup.Provider registries) {
+        super.loadServer(tag, registries);
 
         hcfCooldown = tag.getInt(TAG_HCF_COOLDOWN);
     }
 
     @Override
-    protected void saveServer(final CompoundTag tag) {
-        super.saveServer(tag);
+    protected void saveServer(final CompoundTag tag, final HolderLookup.Provider registries) {
+        super.saveServer(tag, registries);
 
         tag.putInt(TAG_HCF_COOLDOWN, hcfCooldown);
     }
 
     @Override
-    protected void loadClient(final CompoundTag tag) {
-        super.loadClient(tag);
+    protected void loadClient(final CompoundTag tag, final HolderLookup.Provider registries) {
+        super.loadClient(tag, registries);
 
         state = ControllerState.VALUES[tag.getByte(TAG_STATE) & 0xFF];
     }
 
     @Override
-    protected void saveClient(final CompoundTag tag) {
-        super.saveClient(tag);
+    protected void saveClient(final CompoundTag tag, final HolderLookup.Provider registries) {
+        super.saveClient(tag, registries);
 
         tag.putByte(TAG_STATE, (byte) state.ordinal());
     }

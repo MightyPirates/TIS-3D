@@ -9,7 +9,7 @@ import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.level.Level;
 
 import java.io.IOException;
@@ -22,7 +22,7 @@ public abstract class AbstractCasingDataMessage extends AbstractMessageWithPosit
         this.data = data;
     }
 
-    public AbstractCasingDataMessage(final FriendlyByteBuf buffer) {
+    public AbstractCasingDataMessage(final RegistryFriendlyByteBuf buffer) {
         super(buffer);
     }
 
@@ -58,7 +58,7 @@ public abstract class AbstractCasingDataMessage extends AbstractMessageWithPosit
     // AbstractMessage
 
     @Override
-    public void fromBytes(final FriendlyByteBuf buffer) {
+    public void fromBytes(final RegistryFriendlyByteBuf buffer) {
         super.fromBytes(buffer);
 
         final int count = buffer.readInt();
@@ -66,7 +66,7 @@ public abstract class AbstractCasingDataMessage extends AbstractMessageWithPosit
     }
 
     @Override
-    public void toBytes(final FriendlyByteBuf buffer) {
+    public void toBytes(final RegistryFriendlyByteBuf buffer) {
         super.toBytes(buffer);
 
         final int oldReaderIndex = data.readerIndex();

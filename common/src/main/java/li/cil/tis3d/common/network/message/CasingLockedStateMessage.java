@@ -3,7 +3,7 @@ package li.cil.tis3d.common.network.message;
 import dev.architectury.networking.NetworkManager;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.level.Level;
 
 public final class CasingLockedStateMessage extends AbstractMessageWithPosition {
@@ -14,7 +14,7 @@ public final class CasingLockedStateMessage extends AbstractMessageWithPosition 
         this.isLocked = isLocked;
     }
 
-    public CasingLockedStateMessage(final FriendlyByteBuf buffer) {
+    public CasingLockedStateMessage(final RegistryFriendlyByteBuf buffer) {
         super(buffer);
     }
 
@@ -31,14 +31,14 @@ public final class CasingLockedStateMessage extends AbstractMessageWithPosition 
     }
 
     @Override
-    public void fromBytes(final FriendlyByteBuf buffer) {
+    public void fromBytes(final RegistryFriendlyByteBuf buffer) {
         super.fromBytes(buffer);
 
         isLocked = buffer.readBoolean();
     }
 
     @Override
-    public void toBytes(final FriendlyByteBuf buffer) {
+    public void toBytes(final RegistryFriendlyByteBuf buffer) {
         super.toBytes(buffer);
 
         buffer.writeBoolean(isLocked);

@@ -17,7 +17,9 @@ import net.fabricmc.api.EnvType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerChunkCache;
@@ -51,7 +53,7 @@ public final class Network {
 
     // --------------------------------------------------------------------- //
 
-    private static final Map<Class<?>, ResourceLocation> MESSAGE_IDS = new HashMap<>();
+    private static final Map<Class<?>, CustomPacketPayload.Type<? extends CustomPacketPayload>> MESSAGE_TYPES = new HashMap<>();
 
     // --------------------------------------------------------------------- //
 
@@ -80,27 +82,32 @@ public final class Network {
         }
     }
 
-    private static <T extends AbstractMessage> void registerMessage(final Class<T> type, final Function<FriendlyByteBuf, T> decoder, final NetworkManager.Side side) {
-        final ResourceLocation id = new ResourceLocation(API.MOD_ID, type.getSimpleName().replaceAll("Message$", "").toLowerCase(Locale.US));
-        MESSAGE_IDS.put(type, id);
-        if (side != NetworkManager.serverToClient() || Platform.getEnv() == EnvType.CLIENT) {
-            NetworkManager.registerReceiver(side, id, (buffer, context) -> {
-                final T message = decoder.apply(buffer);
-                context.queue(() -> message.handleMessage(context));
-            });
+    private static <T extends AbstractMessage> void registerMessage(final Class<T> type, final Function<RegistryFriendlyByteBuf, T> decoder, final NetworkManager.Side side) {
+        final ResourceLocation id = ResourceLocation.fromNamespaceAndPath(API.MOD_ID, type.getSimpleName().replaceAll("Message$", "").toLowerCase(Locale.US));
+        final CustomPacketPayload.Type<T> payloadType = new CustomPacketPayload.Type<>(id);
+        final StreamCodec<RegistryFriendlyByteBuf, T> codec = CustomPacketPayload.codec(AbstractMessage::toBytes, decoder::apply);
+        MESSAGE_TYPES.put(type, payloadType);
+
+        if (side == NetworkManager.serverToClient() && Platform.getEnv() != EnvType.CLIENT) {
+            NetworkManager.registerS2CPayloadType(payloadType, codec);
+        } else {
+            NetworkManager.registerReceiver(side, payloadType, codec, (message, context) ->
+                context.queue(() -> message.handleMessage(context)));
         }
+    }
+
+    public static CustomPacketPayload.Type<? extends CustomPacketPayload> getMessageType(final Class<?> type) {
+        final var payloadType = MESSAGE_TYPES.get(type);
+        if (payloadType == null) {
+            throw new IllegalArgumentException("Trying to use message with unregistered type: " + type);
+        }
+        return payloadType;
     }
 
     // --------------------------------------------------------------------- //
 
     public static void sendToPlayer(final ServerPlayer player, final AbstractMessage message) {
-        final var id = MESSAGE_IDS.get(message.getClass());
-        if (id == null) {
-            throw new IllegalArgumentException("Trying to send message with unregistered type.");
-        }
-        final var buffer = new FriendlyByteBuf(Unpooled.buffer());
-        message.toBytes(buffer);
-        NetworkManager.sendToPlayer(player, id, buffer);
+        NetworkManager.sendToPlayer(player, message);
     }
 
     public static boolean sendToTrackingPlayers(final BlockEntity blockEntity, final AbstractMessage message) {
@@ -163,13 +170,7 @@ public final class Network {
     // --------------------------------------------------------------------- //
 
     public static void sendToServer(final AbstractMessage message) {
-        final var id = MESSAGE_IDS.get(message.getClass());
-        if (id == null) {
-            throw new IllegalArgumentException("Trying to send message with unregistered type.");
-        }
-        final var buffer = new FriendlyByteBuf(Unpooled.buffer());
-        message.toBytes(buffer);
-        NetworkManager.sendToServer(id, buffer);
+        NetworkManager.sendToServer(message);
     }
 
     public static void sendModuleData(final CasingBlockEntity casing, final Face face, final CompoundTag data, final byte type) {

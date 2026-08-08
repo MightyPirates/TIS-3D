@@ -6,6 +6,7 @@ import li.cil.tis3d.common.item.Items;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
 import net.minecraft.resources.ResourceLocation;
@@ -15,9 +16,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.Tags;
 
+import java.util.concurrent.CompletableFuture;
+
 public final class ModRecipesProvider extends RecipeProvider {
-    public ModRecipesProvider(final PackOutput output) {
-        super(output);
+    public ModRecipesProvider(final PackOutput output, final CompletableFuture<HolderLookup.Provider> registries) {
+        super(output, registries);
     }
 
     @Override
@@ -82,17 +85,17 @@ public final class ModRecipesProvider extends RecipeProvider {
             .save(consumer);
         module(Items.RANDOM_ACCESS_MEMORY_MODULE, 2, Tags.Items.GEMS_EMERALD, inventoryChange(Items.STACK_MODULE.get()))
             .save(consumer);
-        module(Items.READ_ONLY_MEMORY_MODULE, 2, li.cil.tis3d.common.tags.ItemTags.BOOKS, inventoryChange(Items.STACK_MODULE.get()))
+        module(Items.READ_ONLY_MEMORY_MODULE, 1, li.cil.tis3d.common.tags.ItemTags.BOOKS, inventoryChange(Items.STACK_MODULE.get()))
             .save(consumer);
         module(Items.REDSTONE_MODULE, 2, net.minecraft.world.item.Items.REPEATER, inventoryChange(Tags.Items.DUSTS_REDSTONE))
             .save(consumer);
-        module(Items.SEQUENCER_MODULE, 2, ItemTags.MUSIC_DISCS, inventoryChange(Items.QUEUE_MODULE.get()))
+        module(Items.SEQUENCER_MODULE, 2, Tags.Items.MUSIC_DISCS, inventoryChange(Items.QUEUE_MODULE.get()))
             .save(consumer);
         module(Items.SERIAL_PORT_MODULE, 2, Tags.Items.GEMS_QUARTZ, inventoryChange(Items.EXECUTION_MODULE.get()))
             .save(consumer);
         module(Items.STACK_MODULE, 2, Tags.Items.CHESTS, inventoryChange(Items.REDSTONE_MODULE.get()))
             .save(consumer);
-        module(Items.TIMER_MODULE, 2, Tags.Items.SAND, inventoryChange(Items.EXECUTION_MODULE.get()))
+        module(Items.TIMER_MODULE, 2, Tags.Items.SANDS, inventoryChange(Items.EXECUTION_MODULE.get()))
             .save(consumer);
 
         ShapedRecipeBuilder
@@ -113,12 +116,12 @@ public final class ModRecipesProvider extends RecipeProvider {
             .shapeless(RecipeCategory.MISC, Items.QUEUE_MODULE.get())
             .requires(Items.STACK_MODULE.get())
             .unlockedBy("has_stack", inventoryChange(Items.STACK_MODULE.get()))
-            .save(consumer, new ResourceLocation(API.MOD_ID, Items.QUEUE_MODULE.getId().getPath() + "/from_stack"));
+            .save(consumer, ResourceLocation.fromNamespaceAndPath(API.MOD_ID, Items.QUEUE_MODULE.getId().getPath() + "/from_stack"));
         ShapelessRecipeBuilder
             .shapeless(RecipeCategory.MISC, Items.STACK_MODULE.get())
             .requires(Items.QUEUE_MODULE.get())
             .unlockedBy("has_queue", inventoryChange(Items.QUEUE_MODULE.get()))
-            .save(consumer, new ResourceLocation(API.MOD_ID, Items.STACK_MODULE.getId().getPath() + "/from_queue"));
+            .save(consumer, ResourceLocation.fromNamespaceAndPath(API.MOD_ID, Items.STACK_MODULE.getId().getPath() + "/from_queue"));
     }
 
     private static ShapedRecipeBuilder module(final RegistrySupplier<? extends Item> module, final int count, final Item item, final Criterion<InventoryChangeTrigger.TriggerInstance> unlockedBy) {

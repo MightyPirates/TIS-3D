@@ -13,6 +13,7 @@ import li.cil.tis3d.common.block.entity.ControllerBlockEntity;
 import li.cil.tis3d.common.item.Items;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.provider.ModuleProviders;
+import li.cil.tis3d.util.ItemStackUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -369,10 +370,7 @@ public final class CasingImpl implements Casing {
      * @return the key, if present.
      */
     private static Optional<UUID> getKeyFromStack(final ItemStack stack) {
-        final CompoundTag tag = stack.getTag();
-        if (tag == null) {
-            return Optional.empty();
-        }
+        final CompoundTag tag = ItemStackUtils.getData(stack);
         if (!tag.hasUUID(TAG_KEY)) {
             return Optional.empty();
         }
@@ -386,7 +384,6 @@ public final class CasingImpl implements Casing {
      * @param key   the key to store on the stack.
      */
     private static void setKeyForStack(final ItemStack stack, final UUID key) {
-        final CompoundTag tag = stack.getOrCreateTag();
-        tag.putUUID(TAG_KEY, key);
+        ItemStackUtils.updateData(stack, tag -> tag.putUUID(TAG_KEY, key));
     }
 }

@@ -40,7 +40,7 @@ public abstract class ConfigManager {
         STRING_CONVERTERS.put(double.class, Pair.of(o -> String.valueOf((double) o), Double::parseDouble));
         STRING_CONVERTERS.put(String.class, Pair.of(s -> (String) s, s -> s));
         STRING_CONVERTERS.put(UUID.class, Pair.of(Object::toString, UUID::fromString));
-        STRING_CONVERTERS.put(ResourceLocation.class, Pair.of(Object::toString, ResourceLocation::new));
+        STRING_CONVERTERS.put(ResourceLocation.class, Pair.of(Object::toString, ResourceLocation::parse));
     }
 
     // --------------------------------------------------------------------- //

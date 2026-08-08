@@ -3,7 +3,7 @@ package li.cil.tis3d.common.network.message;
 import dev.architectury.networking.NetworkManager;
 import li.cil.tis3d.common.block.entity.ControllerBlockEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.level.Level;
 
 public final class HaltAndCatchFireMessage extends AbstractMessageWithPosition {
@@ -11,7 +11,7 @@ public final class HaltAndCatchFireMessage extends AbstractMessageWithPosition {
         super(position);
     }
 
-    public HaltAndCatchFireMessage(final FriendlyByteBuf buffer) {
+    public HaltAndCatchFireMessage(final RegistryFriendlyByteBuf buffer) {
         super(buffer);
     }
 

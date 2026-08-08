@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "I": {
+      "tag": "c:ingots/iron"
+    },
+    "R": {
+      "tag": "c:dusts/redstone"
+    },
+    "S": {
+      "tag": "c:storage_blocks/iron"
+    }
+  },
+  "pattern": [
+    "IRI",
+    "RSR",
+    "IRI"
+  ],
+  "result": {
+    "count": 8,
+    "id": "tis3d:casing"
+  }
+}

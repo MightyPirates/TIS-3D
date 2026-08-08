@@ -3,7 +3,7 @@ val minecraftVersion: String = libs.versions.minecraft.get()
 val fabricApiVersion: String = libs.versions.fabric.api.get()
 val architecturyVersion: String = libs.versions.architectury.get()
 val forgeConfigPortVersion: String = libs.versions.fabric.forgeConfigPort.get()
-val manualVersion: String = libs.versions.manual.get()
+val markdownManualDir: String by project
 
 loom {
     accessWidenerPath.set(project(":common").loom.accessWidenerPath)
@@ -33,6 +33,16 @@ repositories {
     }
 }
 
+val useLocalMarkdownManual = rootProject.file(markdownManualDir).isDirectory
+
+fun markdownManualJar(module: String, pattern: String): File =
+    fileTree(rootProject.file("$markdownManualDir/$module/build/libs")) {
+        include(pattern)
+        exclude("*-dev-shadow.jar", "*-sources.jar")
+    }.files.maxByOrNull { it.lastModified() } ?: error("No jar matching '$pattern' in $markdownManualDir/$module/build/libs; build that project first.")
+
+val manualVersion: String = if (useLocalMarkdownManual) "0.0.0" else libs.versions.manual.get()
+
 dependencies {
     modImplementation(libs.fabric.loader)
     modApi(libs.fabric.api)
@@ -42,7 +52,11 @@ dependencies {
     modCompileOnly(libs.fabric.roughlyEnoughItems.api)
     modRuntimeOnly(libs.fabric.roughlyEnoughItems)
 
-    modImplementation(libs.fabric.manual)
+    if (useLocalMarkdownManual) {
+        modImplementation(files(markdownManualJar("fabric", "markdown_manual-MC*-fabric-*.jar")))
+    } else {
+        modImplementation(libs.fabric.manual)
+    }
     modImplementation(libs.fabric.forgeConfigPort)
 
     // Not used by mod, just for dev convenience.

@@ -23,8 +23,8 @@ public final class ModuleModel implements IUnbakedGeometry<ModuleModel> {
     // IModelGeometry
 
     @Override
-    public BakedModel bake(final IGeometryBakingContext context, final ModelBaker baker, final Function<Material, TextureAtlasSprite> spriteGetter, final ModelState modelState, final ItemOverrides overrides, final ResourceLocation modelLocation) {
-        return new ModuleBakedModel(proxy.bake(context, baker, spriteGetter, modelState, overrides, modelLocation));
+    public BakedModel bake(final IGeometryBakingContext context, final ModelBaker baker, final Function<Material, TextureAtlasSprite> spriteGetter, final ModelState modelState, final ItemOverrides overrides) {
+        return new ModuleBakedModel(proxy.bake(context, baker, spriteGetter, modelState, overrides));
     }
 
     @Override

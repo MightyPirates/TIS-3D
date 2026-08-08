@@ -22,8 +22,8 @@ import net.minecraft.world.level.ItemLike;
 import java.util.concurrent.CompletableFuture;
 
 public final class ModRecipesProvider extends FabricRecipeProvider {
-    public ModRecipesProvider(final FabricDataOutput output, final CompletableFuture<HolderLookup.Provider> ignoredRegistries) {
-        super(output);
+    public ModRecipesProvider(final FabricDataOutput output, final CompletableFuture<HolderLookup.Provider> registries) {
+        super(output, registries);
     }
 
     @Override
@@ -88,11 +88,11 @@ public final class ModRecipesProvider extends FabricRecipeProvider {
             .save(consumer);
         module(Items.RANDOM_ACCESS_MEMORY_MODULE, 2, CommonItemTags.EMERALDS, inventoryChange(Items.STACK_MODULE.get()))
             .save(consumer);
-        module(Items.READ_ONLY_MEMORY_MODULE, 2, li.cil.tis3d.common.tags.ItemTags.BOOKS, inventoryChange(Items.STACK_MODULE.get()))
+        module(Items.READ_ONLY_MEMORY_MODULE, 1, li.cil.tis3d.common.tags.ItemTags.BOOKS, inventoryChange(Items.STACK_MODULE.get()))
             .save(consumer);
         module(Items.REDSTONE_MODULE, 2, net.minecraft.world.item.Items.REPEATER, inventoryChange(CommonItemTags.REDSTONE_DUSTS))
             .save(consumer);
-        module(Items.SEQUENCER_MODULE, 2, ItemTags.MUSIC_DISCS, inventoryChange(Items.QUEUE_MODULE.get()))
+        module(Items.SEQUENCER_MODULE, 2, CommonItemTags.MUSIC_DISCS, inventoryChange(Items.QUEUE_MODULE.get()))
             .save(consumer);
         module(Items.SERIAL_PORT_MODULE, 2, CommonItemTags.QUARTZ_GEMS, inventoryChange(Items.EXECUTION_MODULE.get()))
             .save(consumer);
@@ -119,12 +119,12 @@ public final class ModRecipesProvider extends FabricRecipeProvider {
             .shapeless(RecipeCategory.MISC, Items.QUEUE_MODULE.get())
             .requires(Items.STACK_MODULE.get())
             .unlockedBy("has_stack", inventoryChange(Items.STACK_MODULE.get()))
-            .save(consumer, new ResourceLocation(API.MOD_ID, Items.QUEUE_MODULE.getId().getPath() + "/from_stack"));
+            .save(consumer, ResourceLocation.fromNamespaceAndPath(API.MOD_ID, Items.QUEUE_MODULE.getId().getPath() + "/from_stack"));
         ShapelessRecipeBuilder
             .shapeless(RecipeCategory.MISC, Items.STACK_MODULE.get())
             .requires(Items.QUEUE_MODULE.get())
             .unlockedBy("has_queue", inventoryChange(Items.QUEUE_MODULE.get()))
-            .save(consumer, new ResourceLocation(API.MOD_ID, Items.STACK_MODULE.getId().getPath() + "/from_queue"));
+            .save(consumer, ResourceLocation.fromNamespaceAndPath(API.MOD_ID, Items.STACK_MODULE.getId().getPath() + "/from_queue"));
     }
 
     private static ShapedRecipeBuilder module(final RegistrySupplier<? extends Item> module, final int count, final Item item, final Criterion<InventoryChangeTrigger.TriggerInstance> unlockedBy) {

@@ -1,5 +1,6 @@
 package li.cil.tis3d.common.inventory;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.Container;
@@ -22,22 +23,18 @@ public class Inventory implements Container {
 
     // --------------------------------------------------------------------- //
 
-    public void load(final CompoundTag tag) {
+    public void load(final CompoundTag tag, final HolderLookup.Provider registries) {
         final ListTag itemList = tag.getList(TAG_ITEMS, Tag.TAG_COMPOUND);
         final int count = Math.min(itemList.size(), items.length);
         for (int index = 0; index < count; index++) {
-            items[index] = ItemStack.of(itemList.getCompound(index));
+            items[index] = ItemStack.parseOptional(registries, itemList.getCompound(index));
         }
     }
 
-    public void save(final CompoundTag tag) {
+    public void save(final CompoundTag tag, final HolderLookup.Provider registries) {
         final ListTag itemList = new ListTag();
         for (final ItemStack stack : items) {
-            final CompoundTag stackTag = new CompoundTag();
-            if (stack != null) {
-                stack.save(stackTag);
-            }
-            itemList.add(stackTag);
+            itemList.add(stack == null ? new CompoundTag() : stack.saveOptional(registries));
         }
         tag.put(TAG_ITEMS, itemList);
     }

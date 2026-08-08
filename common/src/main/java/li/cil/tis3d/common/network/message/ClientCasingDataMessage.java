@@ -3,7 +3,7 @@ package li.cil.tis3d.common.network.message;
 import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.ByteBuf;
 import li.cil.tis3d.api.machine.Casing;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.level.Level;
 
 public final class ClientCasingDataMessage extends AbstractCasingDataMessage {
@@ -11,7 +11,7 @@ public final class ClientCasingDataMessage extends AbstractCasingDataMessage {
         super(casing, data);
     }
 
-    public ClientCasingDataMessage(final FriendlyByteBuf buffer) {
+    public ClientCasingDataMessage(final RegistryFriendlyByteBuf buffer) {
         super(buffer);
     }
 

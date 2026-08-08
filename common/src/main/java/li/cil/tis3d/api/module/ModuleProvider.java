@@ -27,7 +27,7 @@ public interface ModuleProvider {
     /**
      * The registry name of the registry holding module providers.
      */
-    ResourceKey<Registry<ModuleProvider>> REGISTRY = ResourceKey.createRegistryKey(new ResourceLocation(API.MOD_ID, "module_provider"));
+    ResourceKey<Registry<ModuleProvider>> REGISTRY = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(API.MOD_ID, "module_provider"));
 
     /**
      * Checks whether the provider supports the specified stack.

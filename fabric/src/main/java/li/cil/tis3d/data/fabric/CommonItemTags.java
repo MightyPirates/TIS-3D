@@ -16,6 +16,7 @@ public final class CommonItemTags {
     public static final TagKey<Item> IRON_BLOCKS = commonTag("iron_blocks");
     public static final TagKey<Item> IRON_INGOTS = commonTag("iron_ingots");
     public static final TagKey<Item> LAPIS_LAZULIS = commonTag("lapis_lazulis");
+    public static final TagKey<Item> MUSIC_DISCS = commonTag("music_discs");
     public static final TagKey<Item> QUARTZ_GEMS = commonTag("quartz");
     public static final TagKey<Item> REDSTONE_DUSTS = commonTag("redstone_dusts");
     public static final TagKey<Item> SAND = commonTag("sand");
@@ -23,6 +24,6 @@ public final class CommonItemTags {
     // --------------------------------------------------------------------- //
 
     private static TagKey<Item> commonTag(final String name) {
-        return TagKey.create(Registries.ITEM, new ResourceLocation("c", name));
+        return TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", name));
     }
 }

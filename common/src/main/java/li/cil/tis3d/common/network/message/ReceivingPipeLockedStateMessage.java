@@ -5,7 +5,7 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.level.Level;
 
 public final class ReceivingPipeLockedStateMessage extends AbstractMessageWithPosition {
@@ -21,7 +21,7 @@ public final class ReceivingPipeLockedStateMessage extends AbstractMessageWithPo
     }
 
     @SuppressWarnings("unused") // For deserialization.
-    public ReceivingPipeLockedStateMessage(final FriendlyByteBuf buffer) {
+    public ReceivingPipeLockedStateMessage(final RegistryFriendlyByteBuf buffer) {
         super(buffer);
     }
 
@@ -43,7 +43,7 @@ public final class ReceivingPipeLockedStateMessage extends AbstractMessageWithPo
     // It's an infrequent message, so this is totally overkill. But it's fun!
 
     @Override
-    public void fromBytes(final FriendlyByteBuf buffer) {
+    public void fromBytes(final RegistryFriendlyByteBuf buffer) {
         super.fromBytes(buffer);
 
         final byte compressed = buffer.readByte();
@@ -53,7 +53,7 @@ public final class ReceivingPipeLockedStateMessage extends AbstractMessageWithPo
     }
 
     @Override
-    public void toBytes(final FriendlyByteBuf buffer) {
+    public void toBytes(final RegistryFriendlyByteBuf buffer) {
         super.toBytes(buffer);
 
         final byte compressed = (byte) ((face.ordinal() << 3) |

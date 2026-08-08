@@ -3,6 +3,7 @@ package li.cil.tis3d.common.item;
 import li.cil.tis3d.client.gui.CodeBookScreen;
 import li.cil.tis3d.common.block.CasingBlock;
 import li.cil.tis3d.common.config.Constants;
+import li.cil.tis3d.util.ItemStackUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
@@ -315,7 +316,7 @@ public final class CodeBookItem extends ModItem {
          * @return the data loaded from the stack.
          */
         public static Data loadFromStack(final ItemStack stack) {
-            return loadFromTag(stack.getTag());
+            return loadFromTag(ItemStackUtils.getData(stack));
         }
 
         /**
@@ -325,7 +326,7 @@ public final class CodeBookItem extends ModItem {
          * @param data  the data to save to the item stack.
          */
         public static void saveToStack(final ItemStack stack, final Data data) {
-            data.save(stack.getOrCreateTag());
+            ItemStackUtils.updateData(stack, data::save);
         }
 
         // --------------------------------------------------------------------- //

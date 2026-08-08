@@ -5,7 +5,7 @@ TIS-3D is a Minecraft mod inspired by the brilliant game TIS-100 (go buy it if y
 This mod is [licensed under the **MIT license**](LICENSE). All **assets are public domain**, unless otherwise stated; all are free to be distributed as long as the license / source credits are kept. This means you can use this mod in any mod pack **as you please**. I'd be happy to hear about you using it, though, just out of curiosity.
 
 ## Extending
-In general, please refer to [the API](src/main/java/li/cil/tis3d/api), everything you need to know should be explained in the Javadoc of the API classes and interfaces.
+In general, please refer to [the API](common/src/main/java/li/cil/tis3d/api), everything you need to know should be explained in the Javadoc of the API classes and interfaces.
 
 There are two main ways of extending TIS-3D: by adding custom modules, and by adding serial protocols for the serial port module. Create a custom module if it has its own, self-contained functionality, such as the display module for example.
 
@@ -23,14 +23,18 @@ To add a dependency to TIS-3D for use in your mod, add the following to your `bu
 ```groovy
 repositories {
     exclusiveContent {
-        forRepository { maven("https://cursemaven.com") }
-        filter { includeGroup("curse.maven") }
+        forRepository { maven("https://api.modrinth.com/maven") }
+        filter { includeGroup("maven.modrinth") }
     }
 }
 dependencies {
-    // Forge via ForgeGradle
-    implementation(fg.deobf("curse.maven:tis3d-238603:4714037"))
-    // Fabric via Loom
-    modImplementation("curse.maven:tis3d-238603:4714055")
+    // Fabric
+    modImplementation("maven.modrinth:tis3d:MC1.21.1-fabric-1.2.6")
+    // NeoForge
+    modImplementation("maven.modrinth:tis3d:MC1.21.1-neoforge-1.2.6")
 }
 ```
+
+The version is `MC<minecraft version>-<loader>-<mod version>`, matching the release names on
+[Modrinth](https://modrinth.com/mod/tis3d). To compile against the API only, without pulling in the
+mod itself, use the `-api` jar attached to the [GitHub release](https://github.com/MightyPirates/TIS-3D/releases).

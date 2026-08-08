@@ -2,7 +2,7 @@ package li.cil.tis3d.common.network.message;
 
 import dev.architectury.networking.NetworkManager;
 import li.cil.tis3d.common.block.entity.ControllerBlockEntity;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 
 public final class ControllerStateMessage extends AbstractMessageWithPosition {
     private ControllerBlockEntity.ControllerState state;
@@ -12,7 +12,7 @@ public final class ControllerStateMessage extends AbstractMessageWithPosition {
         this.state = state;
     }
 
-    public ControllerStateMessage(final FriendlyByteBuf buffer) {
+    public ControllerStateMessage(final RegistryFriendlyByteBuf buffer) {
         super(buffer);
     }
 
@@ -29,14 +29,14 @@ public final class ControllerStateMessage extends AbstractMessageWithPosition {
     }
 
     @Override
-    public void fromBytes(final FriendlyByteBuf buffer) {
+    public void fromBytes(final RegistryFriendlyByteBuf buffer) {
         super.fromBytes(buffer);
 
         state = buffer.readEnum(ControllerBlockEntity.ControllerState.class);
     }
 
     @Override
-    public void toBytes(final FriendlyByteBuf buffer) {
+    public void toBytes(final RegistryFriendlyByteBuf buffer) {
         super.toBytes(buffer);
 
         buffer.writeEnum(state);

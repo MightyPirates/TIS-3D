@@ -18,6 +18,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -115,18 +116,24 @@ public class CasingBlock extends BaseEntityBlock {
             final var state = context.getLevel().getBlockState(context.getClickedPos());
             if (state.getBlock() instanceof final CasingBlock casing) {
                 final var hit = new BlockHitResult(context.getClickLocation(), context.getClickedFace(), context.getClickedPos(), context.isInside());
-                return Optional.of(casing.use(state, context.getLevel(), context.getClickedPos(), context.getPlayer(), context.getHand(), hit));
+                return Optional.of(casing.useCasing(context.getLevel(), context.getClickedPos(), player, context.getHand(), hit));
             }
         }
         return Optional.empty();
     }
 
-    @SuppressWarnings("deprecation")
     @Override
-    public InteractionResult use(final BlockState state, final Level level, final BlockPos pos, final Player player, final InteractionHand hand, final BlockHitResult hit) {
+    protected ItemInteractionResult useItemOn(final ItemStack stack, final BlockState state, final Level level, final BlockPos pos, final Player player, final InteractionHand hand, final BlockHitResult hit) {
+        final InteractionResult result = useCasing(level, pos, player, hand, hit);
+        return result == InteractionResult.PASS
+            ? ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
+            : ItemInteractionResult.sidedSuccess(level.isClientSide());
+    }
+
+    private InteractionResult useCasing(final Level level, final BlockPos pos, final Player player, final InteractionHand hand, final BlockHitResult hit) {
         final BlockEntity blockEntity = level.getBlockEntity(pos);
         if (!(blockEntity instanceof final CasingBlockEntity casing)) {
-            return super.use(state, level, pos, player, hand, hit);
+            return InteractionResult.PASS;
         }
 
         final BlockPos hitPos = hit.getBlockPos();
@@ -162,7 +169,7 @@ public class CasingBlock extends BaseEntityBlock {
 
         // Don't allow changing modules while casing is locked.
         if (casing.isLocked()) {
-            return super.use(state, level, pos, player, hand, hit);
+            return InteractionResult.PASS;
         }
 
         // Remove old module or install new one.
@@ -199,7 +206,7 @@ public class CasingBlock extends BaseEntityBlock {
                 return InteractionResult.sidedSuccess(level.isClientSide());
             }
         }
-        return super.use(state, level, pos, player, hand, hit);
+        return InteractionResult.PASS;
     }
 
     @SuppressWarnings("deprecation")

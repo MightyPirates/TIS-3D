@@ -1,33 +1,30 @@
 [versions]
-minecraft = "1.20.4"
-parchment-minecraft = "1.20.4"
-parchment-mappings = "2024.02.25"
+minecraft = "1.21.1"
+parchment-minecraft = "1.21.1"
+parchment-mappings = "2024.11.17"
 
-architectury = "11.1.17"
+architectury = "13.0.11"
 manual = "1.2.6"
 
-fabric-loader = "0.15.10"
-fabric-api = "0.97.0+1.20.4"
+fabric-loader = "0.19.3"
+fabric-api = "0.116.15+1.21.1"
 
-fabric-forgeConfigPort = "20.4.3"
-fabric-rei = "14.1.774"
-fabric-markdownManual = "MC1.20.4-fabric-1.2.6"
+fabric-forgeConfigPort = "21.1.6"
+fabric-rei = "16.0.799"
+
+fabric-markdownManual = "MC1.21.1-fabric-1.2.6"
 
 fabric-tooltipfix = "1.1.1-1.20"
 
-forge-platform = "1.20.4-49.0.41"
+neoforge-platform = "21.1.248"
+neoforge-loader = "4"
 
-forge-markdownManual = "MC1.20.4-forge-1.2.6"
-
-neoforge-platform = "20.4.227"
-neoforge-loader = "2"
-
-neoforge-markdownManual = "MC1.20.4-neoforge-1.2.6"
+neoforge-markdownManual = "MC1.21.1-neoforge-1.2.6"
 
 [plugins]
-loom = { id = "dev.architectury.loom", version = "1.6-SNAPSHOT" }
+loom = { id = "dev.architectury.loom", version = "1.11-SNAPSHOT" }
 architectury = { id = "architectury-plugin", version = "3.4-SNAPSHOT" }
-shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
+shadow = { id = "com.gradleup.shadow", version = "9.4.1" }
 spotless = { id = "com.diffplug.spotless", version = "6.22.0" }
 
 [libraries]
@@ -44,11 +41,6 @@ fabric-roughlyEnoughItems = { group = "me.shedaniel", name = "RoughlyEnoughItems
 fabric-roughlyEnoughItems-api = { group = "me.shedaniel", name = "RoughlyEnoughItems-api-fabric", version.ref = "fabric-rei" }
 
 fabric-tooltipFix = { group = "maven.modrinth", name = "tooltipfix", version.ref = "fabric-tooltipfix" }
-
-forge-platform = { group = "net.minecraftforge", name = "forge", version.ref = "forge-platform" }
-forge-architectury = { group = "dev.architectury", name = "architectury-forge", version.ref = "architectury" }
-
-forge-manual = { group = "maven.modrinth", name = "markdownmanual", version.ref = "forge-markdownManual" }
 
 neoforge-platform = { group = "net.neoforged", name = "neoforge", version.ref = "neoforge-platform" }
 neoforge-architectury = { group = "dev.architectury", name = "architectury-neoforge", version.ref = "architectury" }

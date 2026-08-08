@@ -7,6 +7,7 @@ import li.cil.tis3d.common.item.Items;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -65,9 +66,15 @@ public final class ControllerBlock extends BaseEntityBlock {
     // --------------------------------------------------------------------- //
     // Common
 
-    @SuppressWarnings("deprecation")
     @Override
-    public InteractionResult use(final BlockState state, final Level level, final BlockPos pos, final Player player, final InteractionHand hand, final BlockHitResult hit) {
+    protected ItemInteractionResult useItemOn(final ItemStack stack, final BlockState state, final Level level, final BlockPos pos, final Player player, final InteractionHand hand, final BlockHitResult hit) {
+        final InteractionResult result = useController(level, pos, player, hand);
+        return result == InteractionResult.PASS
+            ? ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
+            : ItemInteractionResult.sidedSuccess(level.isClientSide());
+    }
+
+    private InteractionResult useController(final Level level, final BlockPos pos, final Player player, final InteractionHand hand) {
         final ItemStack heldItem = player.getItemInHand(hand);
         if (!heldItem.isEmpty()) {
             final Item item = heldItem.getItem();
@@ -98,7 +105,7 @@ public final class ControllerBlock extends BaseEntityBlock {
             return InteractionResult.sidedSuccess(level.isClientSide());
         }
 
-        return super.use(state, level, pos, player, hand, hit);
+        return InteractionResult.PASS;
     }
 
     // --------------------------------------------------------------------- //

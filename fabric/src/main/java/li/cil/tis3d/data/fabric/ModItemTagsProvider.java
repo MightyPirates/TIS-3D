@@ -3,6 +3,7 @@ package li.cil.tis3d.data.fabric;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
@@ -71,6 +72,11 @@ public class ModItemTagsProvider extends FabricTagProvider.ItemTagProvider {
         tag(CommonItemTags.QUARTZ_GEMS).add(key(Items.QUARTZ));
         tag(CommonItemTags.REDSTONE_DUSTS).add(key(Items.REDSTONE));
         tag(CommonItemTags.SAND).add(key(Items.SAND));
+
+        final var musicDiscs = tag(CommonItemTags.MUSIC_DISCS);
+        BuiltInRegistries.ITEM.stream()
+            .filter(item -> item.components().has(DataComponents.JUKEBOX_PLAYABLE))
+            .forEach(item -> musicDiscs.add(key(item)));
     }
 
     private static ResourceKey<Item> key(final Item item) {

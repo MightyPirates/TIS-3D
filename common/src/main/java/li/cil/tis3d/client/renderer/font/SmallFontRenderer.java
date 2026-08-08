@@ -8,7 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 public final class SmallFontRenderer extends BitmapFontRenderer {
     public static final FontRenderer INSTANCE = new SmallFontRenderer();
 
-    private static final ResourceLocation LOCATION_FONT_TEXTURE = new ResourceLocation(API.MOD_ID, "textures/font/small.png");
+    private static final ResourceLocation LOCATION_FONT_TEXTURE = ResourceLocation.fromNamespaceAndPath(API.MOD_ID, "textures/font/small.png");
     private static final String CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890:#-,?+!=()'.";
 
     // --------------------------------------------------------------------- //

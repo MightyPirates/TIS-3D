@@ -1,7 +1,5 @@
 package li.cil.tis3d.client.gui;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.Tesselator;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.common.container.ReadOnlyMemoryModuleContainer;
@@ -65,8 +63,7 @@ public final class ReadOnlyMemoryModuleScreen extends AbstractContainerScreen<Re
     public void render(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
         super.render(graphics, mouseX, mouseY, partialTicks);
 
-        final BufferBuilder builder = Tesselator.getInstance().getBuilder();
-        final MultiBufferSource.BufferSource buffer = MultiBufferSource.immediate(builder);
+        final MultiBufferSource.BufferSource buffer = graphics.bufferSource();
 
         // Draw row and column headers.
         drawHeaders(graphics, buffer);

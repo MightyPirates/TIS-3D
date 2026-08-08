@@ -38,7 +38,7 @@ public final class Manuals {
         tabs.register("home", () -> new TextureTab(
             ManualModel.LANGUAGE_KEY + "/index.md",
             Component.translatable("tis3d.manual.home"),
-            new ResourceLocation(API.MOD_ID, "textures/gui/manual_home.png")));
+            ResourceLocation.fromNamespaceAndPath(API.MOD_ID, "textures/gui/manual_home.png")));
         tabs.register("blocks", () -> new ItemStackTab(
             ManualModel.LANGUAGE_KEY + "/block/index.md",
             Component.translatable("tis3d.manual.blocks"),
@@ -50,7 +50,7 @@ public final class Manuals {
         tabs.register("serial_protocols", () -> new TextureTab(
             ManualModel.LANGUAGE_KEY + "/protocols/index.md",
             Component.translatable("tis3d.manual.serial_protocols"),
-            new ResourceLocation(API.MOD_ID, "textures/gui/manual_serial_protocols.png")));
+            ResourceLocation.fromNamespaceAndPath(API.MOD_ID, "textures/gui/manual_serial_protocols.png")));
 
         MANUALS.register();
         pathProviders.register();

@@ -61,6 +61,11 @@ subprojects {
         "compileOnly"("com.google.code.findbugs:jsr305:3.0.2")
     }
 
+    java {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+    }
+
     tasks {
         jar {
             from("LICENSE") {
@@ -70,7 +75,7 @@ subprojects {
 
         withType<JavaCompile>().configureEach {
             options.encoding = "utf-8"
-            options.release.set(17)
+            options.release.set(21)
         }
     }
 
@@ -85,7 +90,6 @@ subprojects {
 
 val projectConfigurations = mapOf(
     "fabric" to "Fabric",
-    "forge" to "Forge",
     "neoforge" to "NeoForge"
 )
 

@@ -4,7 +4,7 @@ import dev.architectury.networking.NetworkManager;
 import li.cil.tis3d.common.item.CodeBookItem;
 import li.cil.tis3d.common.item.Items;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 
@@ -17,7 +17,7 @@ public final class CodeBookDataMessage extends AbstractMessage {
         this.tag = tag;
     }
 
-    public CodeBookDataMessage(final FriendlyByteBuf buffer) {
+    public CodeBookDataMessage(final RegistryFriendlyByteBuf buffer) {
         super(buffer);
     }
 
@@ -39,13 +39,13 @@ public final class CodeBookDataMessage extends AbstractMessage {
     }
 
     @Override
-    public void fromBytes(final FriendlyByteBuf buffer) {
+    public void fromBytes(final RegistryFriendlyByteBuf buffer) {
         hand = buffer.readEnum(InteractionHand.class);
         tag = buffer.readNbt();
     }
 
     @Override
-    public void toBytes(final FriendlyByteBuf buffer) {
+    public void toBytes(final RegistryFriendlyByteBuf buffer) {
         buffer.writeEnum(hand);
         buffer.writeNbt(tag);
     }

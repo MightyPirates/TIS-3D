@@ -23,15 +23,14 @@ import li.cil.tis3d.common.module.execution.compiler.Strings;
 import li.cil.tis3d.util.Color;
 import li.cil.tis3d.util.EnumUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.WritableBookContent;
+import net.minecraft.world.item.component.WrittenBookContent;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.fabricmc.api.EnvType;
@@ -433,29 +432,25 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
 
         @Override
         public Iterable<String> codeFor(final ItemStack stack) {
-            final CompoundTag tag = stack.getTag();
-            if (tag == null) {
-                return null;
+            final List<String> pages = new ArrayList<>();
+
+            final WritableBookContent writable = stack.get(DataComponents.WRITABLE_BOOK_CONTENT);
+            if (writable != null) {
+                writable.getPages(false).forEach(pages::add);
             }
 
-            final ListTag pages = tag.getList("pages", Tag.TAG_STRING);
+            final WrittenBookContent written = stack.get(DataComponents.WRITTEN_BOOK_CONTENT);
+            if (written != null) {
+                written.getPages(false).forEach(page -> pages.add(page.getString()));
+            }
+
             if (pages.isEmpty()) {
                 return null;
             }
 
             final List<String> code = new ArrayList<>();
-            for (int page = 0; page < pages.size(); page++) {
-                String line = pages.getString(page);
-                if (Items.is(stack, net.minecraft.world.item.Items.WRITTEN_BOOK)) {
-                    try {
-                        final FormattedText stringVisitable = Component.Serializer.fromJson(line);
-                        if (stringVisitable != null) {
-                            line = stringVisitable.getString();
-                        }
-                    } catch (final Exception ignored) {
-                    }
-                }
-                line = line.replaceAll("§[a-z0-9]", "");
+            for (final String page : pages) {
+                final String line = page.replaceAll("§[a-z0-9]", "");
                 Collections.addAll(code, Constants.PATTERN_LINES.split(line));
             }
             return code;

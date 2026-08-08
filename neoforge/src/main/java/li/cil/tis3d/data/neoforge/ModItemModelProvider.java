@@ -96,7 +96,7 @@ public final class ModItemModelProvider extends ItemModelProvider {
 
     private <T extends Item> void simple(final RegistrySupplier<T> item) {
         singleTexture(item.getId().getPath(),
-            new ResourceLocation(ITEM_FOLDER + "/generated"),
+            ResourceLocation.withDefaultNamespace(ITEM_FOLDER + "/generated"),
             "layer0", modLoc(ITEM_FOLDER + "/" + item.getId().getPath()));
     }
 

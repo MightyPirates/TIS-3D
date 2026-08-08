@@ -17,15 +17,15 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.Portal;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.TheEndGatewayBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.*;
 
@@ -110,8 +110,8 @@ public final class InfraredPacketEntity extends Entity implements EntitySpawnExt
     // --------------------------------------------------------------------- //
 
     @Override
-    protected void defineSynchedData() {
-        getEntityData().define(DATA_VALUE, 0);
+    protected void defineSynchedData(final SynchedEntityData.Builder builder) {
+        builder.define(DATA_VALUE, 0);
         if (!level().isClientSide()) {
             InfraredPacketTickHandler.watchPacket(this);
         }
@@ -146,8 +146,8 @@ public final class InfraredPacketEntity extends Entity implements EntitySpawnExt
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkManager.createAddEntityPacket(this);
+    public Packet<ClientGamePacketListener> getAddEntityPacket(final ServerEntity serverEntity) {
+        return NetworkManager.createAddEntityPacket(this, serverEntity);
     }
 
     @Override
@@ -338,14 +338,9 @@ public final class InfraredPacketEntity extends Entity implements EntitySpawnExt
 
         // Traveling through a portal?
         final BlockEntity blockEntity = level().getBlockEntity(pos);
-        if (blockState.is(Blocks.NETHER_PORTAL)) {
-            handleInsidePortal(pos);
+        if (block instanceof final Portal portal) {
+            setAsInsidePortal(portal, pos);
             return;
-        } else if (blockState.is(Blocks.END_GATEWAY)) {
-            if (blockEntity instanceof final TheEndGatewayBlockEntity endGateway && TheEndGatewayBlockEntity.canEntityTeleport(this)) {
-                TheEndGatewayBlockEntity.teleportEntity(level(), pos, blockState, this, endGateway);
-                return;
-            }
         }
 
         // First things first, we ded.

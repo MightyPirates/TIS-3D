@@ -8,7 +8,7 @@ import net.neoforged.neoforge.capabilities.EntityCapability;
 
 public final class Capabilities {
     public static class InfraredReceiver {
-        public static final BlockCapability<li.cil.tis3d.api.infrared.InfraredReceiver, Direction> BLOCK = BlockCapability.createSided(new ResourceLocation(API.MOD_ID, "infrared_receiver"), li.cil.tis3d.api.infrared.InfraredReceiver.class);
-        public static final EntityCapability<li.cil.tis3d.api.infrared.InfraredReceiver, Void> ENTITY = EntityCapability.createVoid(new ResourceLocation(API.MOD_ID, "infrared_receiver"), li.cil.tis3d.api.infrared.InfraredReceiver.class);
+        public static final BlockCapability<li.cil.tis3d.api.infrared.InfraredReceiver, Direction> BLOCK = BlockCapability.createSided(ResourceLocation.fromNamespaceAndPath(API.MOD_ID, "infrared_receiver"), li.cil.tis3d.api.infrared.InfraredReceiver.class);
+        public static final EntityCapability<li.cil.tis3d.api.infrared.InfraredReceiver, Void> ENTITY = EntityCapability.createVoid(ResourceLocation.fromNamespaceAndPath(API.MOD_ID, "infrared_receiver"), li.cil.tis3d.api.infrared.InfraredReceiver.class);
     }
 }

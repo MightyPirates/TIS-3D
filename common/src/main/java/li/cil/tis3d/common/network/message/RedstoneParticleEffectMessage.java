@@ -2,7 +2,7 @@ package li.cil.tis3d.common.network.message;
 
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.core.particles.DustParticleOptions;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.level.Level;
 
 public final class RedstoneParticleEffectMessage extends AbstractMessage {
@@ -16,7 +16,7 @@ public final class RedstoneParticleEffectMessage extends AbstractMessage {
         this.z = z;
     }
 
-    public RedstoneParticleEffectMessage(final FriendlyByteBuf buffer) {
+    public RedstoneParticleEffectMessage(final RegistryFriendlyByteBuf buffer) {
         super(buffer);
     }
 
@@ -32,14 +32,14 @@ public final class RedstoneParticleEffectMessage extends AbstractMessage {
     }
 
     @Override
-    public void fromBytes(final FriendlyByteBuf buffer) {
+    public void fromBytes(final RegistryFriendlyByteBuf buffer) {
         x = buffer.readDouble();
         y = buffer.readDouble();
         z = buffer.readDouble();
     }
 
     @Override
-    public void toBytes(final FriendlyByteBuf buffer) {
+    public void toBytes(final RegistryFriendlyByteBuf buffer) {
         buffer.writeDouble(x);
         buffer.writeDouble(y);
         buffer.writeDouble(z);

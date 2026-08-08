@@ -7,7 +7,7 @@ import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.resources.ResourceLocation;
 
 public final class ModuleModelLoader implements ModelLoadingPlugin, ModelModifier.OnLoad {
-    private static final ResourceLocation BLOCK_CASING_MODULE_MODEL_LOCATION = new ResourceLocation(API.MOD_ID, "block/casing_module");
+    private static final ResourceLocation BLOCK_CASING_MODULE_MODEL_LOCATION = ResourceLocation.fromNamespaceAndPath(API.MOD_ID, "block/casing_module");
 
     public static void initialize() {
         ModelLoadingPlugin.register(new ModuleModelLoader());
@@ -20,10 +20,12 @@ public final class ModuleModelLoader implements ModelLoadingPlugin, ModelModifie
 
     @Override
     public UnbakedModel modifyModelOnLoad(UnbakedModel model, ModelModifier.OnLoad.Context context) {
-        if (context.id().equals(BLOCK_CASING_MODULE_MODEL_LOCATION)) {
-            return new ModuleUnbakedModel(context.getOrLoadModel(new ResourceLocation(context.id().getNamespace(), context.id().getPath() + "_proxy")));
-        } else {
+        final ResourceLocation id = context.resourceId();
+        if (id == null || !id.equals(BLOCK_CASING_MODULE_MODEL_LOCATION)) {
             return model;
         }
+
+        return new ModuleUnbakedModel(context.getOrLoadModel(
+            ResourceLocation.fromNamespaceAndPath(id.getNamespace(), id.getPath() + "_proxy")));
     }
 }

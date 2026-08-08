@@ -3,6 +3,7 @@ package li.cil.tis3d.common.item;
 import dev.architectury.registry.menu.MenuRegistry;
 import li.cil.tis3d.common.block.CasingBlock;
 import li.cil.tis3d.common.container.ReadOnlyMemoryModuleContainer;
+import li.cil.tis3d.util.ItemStackUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -75,7 +76,7 @@ public final class ReadOnlyMemoryModuleItem extends ModuleItem {
      * @return the data loaded from the stack.
      */
     public static byte[] loadFromStack(final ItemStack stack) {
-        return loadFromTag(stack.getTag());
+        return loadFromTag(ItemStackUtils.getData(stack));
     }
 
     /**
@@ -85,14 +86,6 @@ public final class ReadOnlyMemoryModuleItem extends ModuleItem {
      * @param data  the data to save to the item stack.
      */
     public static void saveToStack(final ItemStack stack, final byte[] data) {
-        final CompoundTag tag = stack.getOrCreateTag();
-
-        byte[] tagData = tag.getByteArray(TAG_DATA);
-        if (tagData.length != data.length) {
-            tagData = new byte[data.length];
-        }
-
-        System.arraycopy(data, 0, tagData, 0, data.length);
-        tag.putByteArray(TAG_DATA, tagData);
+        ItemStackUtils.updateData(stack, tag -> tag.putByteArray(TAG_DATA, data.clone()));
     }
 }

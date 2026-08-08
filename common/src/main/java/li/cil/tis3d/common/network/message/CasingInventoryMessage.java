@@ -4,7 +4,7 @@ import dev.architectury.networking.NetworkManager;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
@@ -22,7 +22,7 @@ public final class CasingInventoryMessage extends AbstractMessageWithPosition {
         this.moduleData = moduleData;
     }
 
-    public CasingInventoryMessage(final FriendlyByteBuf buffer) {
+    public CasingInventoryMessage(final RegistryFriendlyByteBuf buffer) {
         super(buffer);
     }
 
@@ -39,20 +39,20 @@ public final class CasingInventoryMessage extends AbstractMessageWithPosition {
     }
 
     @Override
-    public void fromBytes(final FriendlyByteBuf buffer) {
+    public void fromBytes(final RegistryFriendlyByteBuf buffer) {
         super.fromBytes(buffer);
 
         slot = buffer.readUnsignedByte();
-        stack = buffer.readItem();
+        stack = ItemStack.OPTIONAL_STREAM_CODEC.decode(buffer);
         moduleData = buffer.readNbt();
     }
 
     @Override
-    public void toBytes(final FriendlyByteBuf buffer) {
+    public void toBytes(final RegistryFriendlyByteBuf buffer) {
         super.toBytes(buffer);
 
         buffer.writeByte(slot);
-        buffer.writeItem(stack);
+        ItemStack.OPTIONAL_STREAM_CODEC.encode(buffer, stack);
         buffer.writeNbt(moduleData);
     }
 }

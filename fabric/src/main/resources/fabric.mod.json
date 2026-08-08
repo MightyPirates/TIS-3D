@@ -38,7 +38,7 @@
     "architectury": ">=${architecturyVersion}",
     "minecraft": "${minecraftVersion}",
     "markdown_manual": ">=${manualVersion}",
-    "java": ">=17"
+    "java": ">=21"
   },
   "recommends": {
     "tooltipfix": "*"

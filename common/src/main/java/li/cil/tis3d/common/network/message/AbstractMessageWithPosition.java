@@ -2,7 +2,7 @@ package li.cil.tis3d.common.network.message;
 
 import li.cil.tis3d.util.LevelUtils;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
@@ -15,7 +15,7 @@ public abstract class AbstractMessageWithPosition extends AbstractMessage {
         this.position = position;
     }
 
-    AbstractMessageWithPosition(final FriendlyByteBuf buffer) {
+    AbstractMessageWithPosition(final RegistryFriendlyByteBuf buffer) {
         super(buffer);
     }
 
@@ -35,12 +35,12 @@ public abstract class AbstractMessageWithPosition extends AbstractMessage {
     // AbstractMessage
 
     @Override
-    public void fromBytes(final FriendlyByteBuf buffer) {
+    public void fromBytes(final RegistryFriendlyByteBuf buffer) {
         position = buffer.readBlockPos();
     }
 
     @Override
-    public void toBytes(final FriendlyByteBuf buffer) {
+    public void toBytes(final RegistryFriendlyByteBuf buffer) {
         buffer.writeBlockPos(position);
     }
 }

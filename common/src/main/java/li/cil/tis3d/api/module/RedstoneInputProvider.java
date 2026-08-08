@@ -23,7 +23,7 @@ public interface RedstoneInputProvider {
     /**
      * The registry name of the registry holding redstone input providers.
      */
-    ResourceKey<Registry<RedstoneInputProvider>> REGISTRY = ResourceKey.createRegistryKey(new ResourceLocation(API.MOD_ID, "redstone_input_provider"));
+    ResourceKey<Registry<RedstoneInputProvider>> REGISTRY = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(API.MOD_ID, "redstone_input_provider"));
 
     /**
      * Get the redstone level provided to the specified face of a block at the specified position.

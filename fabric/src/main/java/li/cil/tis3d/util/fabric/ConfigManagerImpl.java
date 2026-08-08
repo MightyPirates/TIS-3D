@@ -1,14 +1,14 @@
 package li.cil.tis3d.util.fabric;
 
-import fuzs.forgeconfigapiport.fabric.api.forge.v4.ForgeConfigRegistry;
-import fuzs.forgeconfigapiport.fabric.api.forge.v4.ForgeModConfigEvents;
+import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeConfigRegistry;
+import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeModConfigEvents;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.util.ConfigManager;
 import li.cil.tis3d.util.config.ConfigType;
 import li.cil.tis3d.util.config.Type;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.config.IConfigSpec;
-import net.minecraftforge.fml.config.ModConfig;
+import net.neoforged.fml.config.IConfigSpec;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -17,13 +17,13 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 public final class ConfigManagerImpl extends ConfigManager {
-    private static final Map<IConfigSpec<ForgeConfigSpec>, ConfigDefinition> CONFIGS = new HashMap<>();
+    private static final Map<IConfigSpec, ConfigDefinition> CONFIGS = new HashMap<>();
 
     // --------------------------------------------------------------------- //
 
     public static <T> void add(final Supplier<T> factory) {
         final ArrayList<ConfigFieldPair<?>> values = new ArrayList<>();
-        final var config = new ForgeConfigSpec.Builder().configure(builder -> {
+        final var config = new ModConfigSpec.Builder().configure(builder -> {
             final T instance = factory.get();
             fillSpec(instance, new BuilderImpl(builder), values);
             return instance;
@@ -32,8 +32,8 @@ public final class ConfigManagerImpl extends ConfigManager {
     }
 
     public static void initialize() {
-        ForgeModConfigEvents.loading(API.MOD_ID).register(ConfigManagerImpl::handleModConfigEvent);
-        ForgeModConfigEvents.reloading(API.MOD_ID).register(ConfigManagerImpl::handleModConfigEvent);
+        NeoForgeModConfigEvents.loading(API.MOD_ID).register(ConfigManagerImpl::handleModConfigEvent);
+        NeoForgeModConfigEvents.reloading(API.MOD_ID).register(ConfigManagerImpl::handleModConfigEvent);
 
         CONFIGS.forEach((spec, config) -> {
             final Type typeAnnotation = config.instance().getClass().getAnnotation(Type.class);
@@ -43,7 +43,7 @@ public final class ConfigManagerImpl extends ConfigManager {
                 case CLIENT -> ModConfig.Type.CLIENT;
                 case SERVER -> ModConfig.Type.SERVER;
             };
-            ForgeConfigRegistry.INSTANCE.register(API.MOD_ID, platformType, spec);
+            NeoForgeConfigRegistry.INSTANCE.register(API.MOD_ID, platformType, spec);
         });
     }
 
@@ -60,7 +60,7 @@ public final class ConfigManagerImpl extends ConfigManager {
 
     // --------------------------------------------------------------------- //
 
-    private record BuilderImpl(ForgeConfigSpec.Builder builder) implements Builder {
+    private record BuilderImpl(ModConfigSpec.Builder builder) implements Builder {
         @Override
         public <T> ConfigValue<T> define(final String path, final T defaultValue) {
             return new ConfigValueImpl<>(builder.define(path, defaultValue));
@@ -90,7 +90,7 @@ public final class ConfigManagerImpl extends ConfigManager {
         }
     }
 
-    private record ConfigValueImpl<T>(ForgeConfigSpec.ConfigValue<T> value) implements ConfigValue<T> {
+    private record ConfigValueImpl<T>(ModConfigSpec.ConfigValue<T> value) implements ConfigValue<T> {
         @Override
         public T get() {
             return value().get();

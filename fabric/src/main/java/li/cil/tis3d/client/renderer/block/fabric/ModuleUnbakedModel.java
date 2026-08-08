@@ -33,8 +33,8 @@ public final class ModuleUnbakedModel implements UnbakedModel {
 
     @Nullable
     @Override
-    public BakedModel bake(final ModelBaker modelBaker, final Function<Material, TextureAtlasSprite> function, final ModelState modelState, final ResourceLocation resourceLocation) {
-        final var bakedProxy = this.proxy.bake(modelBaker, function, modelState, resourceLocation);
+    public BakedModel bake(final ModelBaker modelBaker, final Function<Material, TextureAtlasSprite> function, final ModelState modelState) {
+        final var bakedProxy = this.proxy.bake(modelBaker, function, modelState);
         if (bakedProxy != null) {
             return new ModuleBakedModel(bakedProxy, Direction.rotate(modelState.getRotation().getMatrix(), Direction.SOUTH));
         } else {

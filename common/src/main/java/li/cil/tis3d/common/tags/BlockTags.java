@@ -17,6 +17,6 @@ public final class BlockTags {
     // --------------------------------------------------------------------- //
 
     private static TagKey<Block> tag(final String name) {
-        return TagKey.create(Registries.BLOCK, new ResourceLocation(API.MOD_ID, name));
+        return TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(API.MOD_ID, name));
     }
 }

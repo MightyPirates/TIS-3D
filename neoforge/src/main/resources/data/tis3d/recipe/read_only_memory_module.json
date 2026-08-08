@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": {
+      "tag": "c:ingots/iron"
+    },
+    "P": {
+      "tag": "c:glass_panes/colorless"
+    },
+    "R": {
+      "tag": "c:dusts/redstone"
+    },
+    "S": {
+      "tag": "tis3d:books"
+    }
+  },
+  "pattern": [
+    "PPP",
+    "ISI",
+    " R "
+  ],
+  "result": {
+    "count": 1,
+    "id": "tis3d:read_only_memory_module"
+  }
+}

@@ -3,7 +3,7 @@ package li.cil.tis3d.common.network.message;
 import dev.architectury.networking.NetworkManager;
 import li.cil.tis3d.common.item.Items;
 import li.cil.tis3d.common.item.ReadOnlyMemoryModuleItem;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 
@@ -12,7 +12,7 @@ public final class ClientReadOnlyMemoryModuleDataMessage extends AbstractReadOnl
         super(hand, data);
     }
 
-    public ClientReadOnlyMemoryModuleDataMessage(final FriendlyByteBuf buffer) {
+    public ClientReadOnlyMemoryModuleDataMessage(final RegistryFriendlyByteBuf buffer) {
         super(buffer);
     }
 

@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "G": {
+      "tag": "c:nuggets/gold"
+    },
+    "I": {
+      "tag": "c:ingots/iron"
+    },
+    "L": {
+      "tag": "c:gems/lapis"
+    },
+    "Q": {
+      "tag": "c:gems/quartz"
+    },
+    "R": {
+      "tag": "c:dusts/redstone"
+    }
+  },
+  "pattern": [
+    "GI ",
+    "GI ",
+    "LRQ"
+  ],
+  "result": {
+    "count": 1,
+    "id": "tis3d:key"
+  }
+}

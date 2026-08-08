@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 public final class RenderContextImpl implements RenderContext {
@@ -110,41 +111,27 @@ public final class RenderContextImpl implements RenderContext {
                          final float x, final float y, final float width, final float height,
                          final float u0, final float v0, final float u1, final float v1,
                          final int argb) {
-        final var pose = getMatrixStack().last().pose();
-        final var normal = getMatrixStack().last().normal();
+        final var last = getMatrixStack().last();
+        final var pose = last.pose();
         final var up = new Vector3f(0, 0, -1);
 
-        builder.vertex(pose, x, y + height, 0)
-            .color(argb)
-            .uv(u0, v1)
-            .overlayCoords(overlay)
-            .uv2(light)
-            .normal(normal, up.x(), up.y(), up.z())
-            .endVertex();
+        addVertex(builder, pose, last, up, x, y + height, u0, v1, argb);
+        addVertex(builder, pose, last, up, x + width, y + height, u1, v1, argb);
+        addVertex(builder, pose, last, up, x + width, y, u1, v0, argb);
+        addVertex(builder, pose, last, up, x, y, u0, v0, argb);
+    }
 
-        builder.vertex(pose, x + width, y + height, 0)
-            .color(argb)
-            .uv(u1, v1)
-            .overlayCoords(overlay)
-            .uv2(light)
-            .normal(normal, up.x(), up.y(), up.z())
-            .endVertex();
+    // --------------------------------------------------------------------- //
 
-        builder.vertex(pose, x + width, y, 0)
-            .color(argb)
-            .uv(u1, v0)
-            .overlayCoords(overlay)
-            .uv2(light)
-            .normal(normal, up.x(), up.y(), up.z())
-            .endVertex();
-
-        builder.vertex(pose, x, y, 0)
-            .color(argb)
-            .uv(u0, v0)
-            .overlayCoords(overlay)
-            .uv2(light)
-            .normal(normal, up.x(), up.y(), up.z())
-            .endVertex();
+    private void addVertex(final VertexConsumer builder, final Matrix4f pose, final PoseStack.Pose last,
+                           final Vector3f up, final float x, final float y,
+                           final float u, final float v, final int argb) {
+        builder.addVertex(pose, x, y, 0)
+            .setColor(argb)
+            .setUv(u, v)
+            .setOverlay(overlay)
+            .setLight(light)
+            .setNormal(last, up.x(), up.y(), up.z());
     }
 
     // --------------------------------------------------------------------- //

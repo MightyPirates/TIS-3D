@@ -25,6 +25,7 @@ import li.cil.tis3d.util.InventoryUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -354,8 +355,8 @@ public final class CasingBlockEntity extends ComputerBlockEntity implements Side
     }
 
     @Override
-    protected void loadClient(final CompoundTag tag) {
-        super.loadClient(tag);
+    protected void loadClient(final CompoundTag tag, final HolderLookup.Provider registries) {
+        super.loadClient(tag, registries);
 
         isEnabled = tag.getBoolean(TAG_ENABLED);
 
@@ -396,35 +397,35 @@ public final class CasingBlockEntity extends ComputerBlockEntity implements Side
     }
 
     @Override
-    protected void saveClient(final CompoundTag tag) {
-        super.saveClient(tag);
+    protected void saveClient(final CompoundTag tag, final HolderLookup.Provider registries) {
+        super.saveClient(tag, registries);
 
         tag.putBoolean(TAG_ENABLED, isEnabled);
     }
 
     @Override
-    protected void loadCommon(final CompoundTag tag) {
-        super.loadCommon(tag);
+    protected void loadCommon(final CompoundTag tag, final HolderLookup.Provider registries) {
+        super.loadCommon(tag, registries);
 
         decompressClosed(tag.getByteArray(TAG_LOCKED), locked);
 
         final CompoundTag inventoryTag = tag.getCompound(TAG_INVENTORY);
-        inventory.load(inventoryTag);
+        inventory.load(inventoryTag, registries);
 
         final CompoundTag casingTag = tag.getCompound(TAG_CASING);
         casing.load(casingTag);
     }
 
     @Override
-    protected void saveCommon(final CompoundTag tag) {
-        super.saveCommon(tag);
+    protected void saveCommon(final CompoundTag tag, final HolderLookup.Provider registries) {
+        super.saveCommon(tag, registries);
 
         tag.putByteArray(TAG_LOCKED, compressClosed(locked));
 
         // Needed on the client also, for picking and for actually instantiating
         // the installed modules on the client side (to find the provider).
         final CompoundTag inventoryTag = new CompoundTag();
-        inventory.save(inventoryTag);
+        inventory.save(inventoryTag, registries);
         tag.put(TAG_INVENTORY, inventoryTag);
 
         // Needed on the client also, to allow initializing client side modules
