@@ -16,8 +16,6 @@ pluginManagement {
             }
         }
         exclusiveContent {
-            // Required by Architectury Loom itself (installertools, mcinjector, DiffPatch),
-            // not by the mod; keep this even though Forge is no longer a target platform.
             forRepository { maven("https://maven.minecraftforge.net") }
             filter {
                 includeGroupByRegex("net\\.minecraftforge.*")
