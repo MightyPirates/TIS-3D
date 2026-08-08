@@ -24,6 +24,10 @@ public final class MachineImpl implements Machine {
     private final ExecutionModule module;
     private final Map<Target, TargetInterface> interfaces;
 
+    public ExecutionModule getModule(){
+        return this.module;
+    }
+
     // --------------------------------------------------------------------- //
 
     public MachineImpl(final ExecutionModule module, final Face face) {

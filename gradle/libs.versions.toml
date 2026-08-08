@@ -36,6 +36,6 @@ fabric-sodium = { group = "maven.modrinth", name = "sodium", version = "mc1.20.1
 forge-platform = { group = "net.minecraftforge", name = "forge", version.ref = "forge-platform" }
 forge-architectury = { group = "dev.architectury", name = "architectury-forge", version.ref = "architectury" }
 
-forge-manual = { group = "curse.maven", name = "markdownmanual-502485", version = "4719408" }
+forge-manual = { group = "curse.maven", name = "markdownmanual-502485", version = "4873115" }
 
 forge-justEnoughItems = { group = "curse.maven", name = "jei-238222", version = "4690097" }
