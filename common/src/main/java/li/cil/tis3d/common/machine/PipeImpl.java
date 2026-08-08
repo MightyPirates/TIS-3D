@@ -25,7 +25,7 @@ public final class PipeImpl implements Pipe {
     /**
      * The value currently being written over this pipe.
      */
-    private short value = 0;
+    private short value;
 
     // --------------------------------------------------------------------- //
     // Computed data

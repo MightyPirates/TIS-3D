@@ -13,9 +13,9 @@ import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.util.Color;
-import net.minecraft.nbt.CompoundTag;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.nbt.CompoundTag;
 
 /**
  * The timer module can be used to wait for a specific amount of game time.
@@ -107,7 +107,7 @@ public final class TimerModule extends AbstractModuleWithRotation {
         // Render detailed state when player is close.
         if (!hasElapsed && context.closeEnoughForDetails(getCasing().getPosition())) {
             final long gameTime = context.getDispatcher().level.getGameTime();
-            final float remaining = (float) (timer - gameTime) - context.getPartialTicks();
+            final float remaining = timer - gameTime - context.getPartialTicks();
             if (remaining <= 0) {
                 hasElapsed = true;
             } else {

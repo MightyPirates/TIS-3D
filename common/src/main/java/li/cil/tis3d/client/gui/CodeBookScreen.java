@@ -67,10 +67,10 @@ public final class CodeBookScreen extends Screen {
     private final CodeBookItem.Data data;
     private final List<StringBuilder> lines = new ArrayList<>();
 
-    private int guiX = 0;
-    private int guiY = 0;
-    private int selectionStart = 0;
-    private int selectionEnd = 0;
+    private int guiX;
+    private int guiY;
+    private int selectionStart;
+    private int selectionEnd;
     private Optional<ParseException> compileError = Optional.empty();
 
     // --------------------------------------------------------------------- //

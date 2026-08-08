@@ -42,7 +42,7 @@ public final class DisplayModule extends AbstractModuleWithRotation {
     /**
      * Whether the image data changed and needs to be re-uploaded to the GPU.
      */
-    private boolean imageDirty = false;
+    private boolean imageDirty;
 
     /**
      * The current input state, i.e. what value we're currently reading.

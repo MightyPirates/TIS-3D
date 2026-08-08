@@ -32,7 +32,7 @@ public final class AudioModule extends AbstractModule {
      * per tick when overclocked, because that could quickly spam a lot of
      * packets, and sound horrible, too.
      */
-    private long lastStep = 0L;
+    private long lastStep;
 
     // --------------------------------------------------------------------- //
 

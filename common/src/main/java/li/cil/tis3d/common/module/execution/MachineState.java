@@ -21,17 +21,17 @@ public final class MachineState {
     /**
      * Program counter, i.e. the index of the next operation to execute.
      */
-    public int pc = 0;
+    public int pc;
 
     /**
      * Accumulator register.
      */
-    public short acc = 0;
+    public short acc;
 
     /**
      * Backup register.
      */
-    public short bak = 0;
+    public short bak;
 
     /**
      * The port last read from.

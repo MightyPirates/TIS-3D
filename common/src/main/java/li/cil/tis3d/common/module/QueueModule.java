@@ -13,10 +13,10 @@ import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.util.Color;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.Mth;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Mth;
 
 /**
  * The queue module can be used to store a number of values to be retrieved
@@ -30,8 +30,8 @@ public final class QueueModule extends AbstractModuleWithRotation {
     // Persisted data
 
     private final short[] queue = new short[QUEUE_SIZE];
-    private int head = 0; // Highest element index, exclusive.
-    private int tail = 0; // Lowest element index, inclusive.
+    private int head; // Highest element index, exclusive.
+    private int tail; // Lowest element index, inclusive.
 
     // --------------------------------------------------------------------- //
     // Computed data

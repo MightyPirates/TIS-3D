@@ -4,9 +4,9 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.common.item.ReadOnlyMemoryModuleItem;
-import net.minecraft.world.item.ItemStack;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * The RAM module can be used to store up to 256 values by address. It runs

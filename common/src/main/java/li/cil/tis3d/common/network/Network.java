@@ -199,8 +199,8 @@ public final class Network {
 
     private static final int TICK_TIME = 50;
     private static final Set<Position> particleQueue = new HashSet<>();
-    private static long lastParticlesSent = 0;
-    private static int particlesSent = 0;
+    private static long lastParticlesSent;
+    private static int particlesSent;
     private static int particleSendInterval = TICK_TIME;
 
     private static void queueParticleEffect(final Level level, final float x, final float y, final float z) {
@@ -267,10 +267,10 @@ public final class Network {
     // --------------------------------------------------------------------- //
     // Module data metering
 
-    private static int packetsSentServer = 0;
-    private static int packetsSentClient = 0;
-    private static int throttleServer = 0;
-    private static int throttleClient = 0;
+    private static int packetsSentServer;
+    private static int packetsSentClient;
+    private static int throttleServer;
+    private static int throttleClient;
 
     private enum Side {
         CLIENT, DEDICATED_SERVER
@@ -532,7 +532,7 @@ public final class Network {
             @Override
             public void write(final ByteBuf buffer) {
                 final ByteBuf data = Unpooled.buffer();
-                try (final ByteBufOutputStream bos = new ByteBufOutputStream(data)) {
+                try (ByteBufOutputStream bos = new ByteBufOutputStream(data)) {
                     NbtIo.writeCompressed(this.data, bos);
 
                     if (data.readableBytes() > 0) {

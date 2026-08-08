@@ -42,7 +42,7 @@ public final class CasingImpl implements Casing {
      * cannot add or remove modules from the casing. A key with the correct
      * UUID in its tag is required to unlock a casing.
      */
-    private UUID lock = null;
+    private UUID lock;
 
     // --------------------------------------------------------------------- //
     // Computed data.

@@ -26,7 +26,7 @@ public final class SequencerModule extends AbstractModuleWithRotation {
     private final boolean[][] configuration = new boolean[COL_COUNT][ROW_COUNT];
     private int position = -1;
     private int delay = 4;
-    private int stepsRemaining = 0;
+    private int stepsRemaining;
 
     // --------------------------------------------------------------------- //
     // Computed data
@@ -85,10 +85,6 @@ public final class SequencerModule extends AbstractModuleWithRotation {
         stepOutput();
     }
 
-    @Override
-    public void onEnabled() {
-        super.onEnabled();
-    }
 
     @Override
     public void onDisabled() {
@@ -263,7 +259,7 @@ public final class SequencerModule extends AbstractModuleWithRotation {
         output = 0;
         for (int mask = 1, row = 0; row < ROW_COUNT; row++, mask <<= 1) {
             if (configuration[position][row]) {
-                output |= mask;
+                output = (short) (output | mask);
             }
         }
     }

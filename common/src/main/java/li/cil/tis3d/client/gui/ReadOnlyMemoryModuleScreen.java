@@ -26,7 +26,7 @@ public final class ReadOnlyMemoryModuleScreen extends AbstractContainerScreen<Re
 
     private final byte[] data = new byte[RandomAccessMemoryModule.MEMORY_SIZE];
 
-    private static int selectedCell = 0;
+    private static int selectedCell;
     private boolean highNibble = true;
     private boolean receivedData;
     private long initTime;
@@ -122,7 +122,7 @@ public final class ReadOnlyMemoryModuleScreen extends AbstractContainerScreen<Re
 
         final int digit = Character.digit(keyCode, 16);
         if (digit >= 0) {
-            byte value = data[selectedCell];
+            int value = data[selectedCell];
             if (highNibble) {
                 value &= 0x0F;
                 value |= (digit & 0x0F) << 4;
@@ -130,7 +130,7 @@ public final class ReadOnlyMemoryModuleScreen extends AbstractContainerScreen<Re
                 value &= 0xF0;
                 value |= digit & 0x0F;
             }
-            data[selectedCell] = value;
+            data[selectedCell] = (byte) value;
             highNibble = !highNibble;
             if (highNibble) {
                 selectedCell = (selectedCell + 1) % data.length;

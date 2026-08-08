@@ -12,18 +12,18 @@ import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.util.Color;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 
 public final class RedstoneModule extends AbstractModuleWithRotation implements ModuleWithRedstone {
     // --------------------------------------------------------------------- //
     // Persisted data
 
-    private short output = 0;
-    private short input = 0;
+    private short output;
+    private short input;
 
     // --------------------------------------------------------------------- //
     // Computed data
@@ -47,13 +47,13 @@ public final class RedstoneModule extends AbstractModuleWithRotation implements 
      * The last tick we updated. Used to avoid changing output multiple times a
      * tick, which is usually pointless and really bad for performance.
      */
-    private long lastStep = 0L;
+    private long lastStep;
 
     /**
      * Something changed last tick after the first neighbor block update, so
      * we need to update again in the next tick (if we don't anyway).
      */
-    private boolean scheduledNeighborUpdate = false;
+    private boolean scheduledNeighborUpdate;
 
     // --------------------------------------------------------------------- //
 

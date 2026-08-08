@@ -41,7 +41,7 @@ public final class InfraredModule extends AbstractModule implements InfraredRece
      * per tick when overclocked, because that could quickly spam a lot of
      * entities, which is... not a great idea.
      */
-    private long lastStep = 0L;
+    private long lastStep;
 
     // --------------------------------------------------------------------- //
 

@@ -98,7 +98,7 @@ public final class TerminalModule extends AbstractModuleWithRotation {
     // Buffer for building packet to clients with newly printed characters.
     private ByteBuf sendBuffer;
     // Last time we sent the buffer to clients. Only try to send once per tick.
-    private long lastSendTick = 0L;
+    private long lastSendTick;
     // Used on the client only, indicates whether input can currently be set.
     // This is false if the terminal is currently writing previous input to
     // adjacent modules. Only one command at a time can be processed.

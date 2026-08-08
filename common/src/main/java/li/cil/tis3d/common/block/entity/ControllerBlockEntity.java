@@ -10,8 +10,8 @@ import li.cil.tis3d.util.LevelUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -42,7 +42,7 @@ public final class ControllerBlockEntity extends ComputerBlockEntity {
     /**
      * Time to keep waiting before resuming execution after an HCF event.
      */
-    private int hcfCooldown = 0;
+    private int hcfCooldown;
 
     // --------------------------------------------------------------------- //
     // Computed data

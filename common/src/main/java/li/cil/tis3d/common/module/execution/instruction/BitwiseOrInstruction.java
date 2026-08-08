@@ -14,7 +14,7 @@ public final class BitwiseOrInstruction extends AbstractReadInstruction {
     @Override
     protected void doStep(final Machine machine, final int value) {
         final MachineState state = machine.getState();
-        state.acc |= value;
+        state.acc = (short) (state.acc | value);
         state.pc++;
     }
 

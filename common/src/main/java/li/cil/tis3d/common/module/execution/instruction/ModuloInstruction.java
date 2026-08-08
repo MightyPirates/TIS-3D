@@ -19,7 +19,7 @@ public final class ModuloInstruction extends AbstractReadInstruction {
         }
 
         final MachineState state = machine.getState();
-        state.acc %= value;
+        state.acc = (short) (state.acc % value);
         state.pc++;
     }
 
