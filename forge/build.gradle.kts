@@ -32,7 +32,7 @@ tasks {
         val properties = mapOf(
             "version" to project.version,
             "minecraftVersion" to minecraftVersion,
-            "loaderVersion" to forgeVersion.split(".").first(),
+            "loaderVersion" to forgeVersion.substringBefore("."),
             "forgeVersion" to forgeVersion,
             "architecturyVersion" to architecturyVersion,
             "manualVersion" to manualVersion

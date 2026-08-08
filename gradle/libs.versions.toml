@@ -10,7 +10,7 @@ fabric-loader = "0.15.10"
 fabric-api = "0.97.0+1.20.4"
 
 fabric-forgeConfigPort = "20.4.3"
-fabric-rei = "13.1.706+fabric"
+fabric-rei = "14.1.774"
 fabric-markdownManual = "MC1.20.4-fabric-1.2.6"
 
 fabric-tooltipfix = "1.1.1-1.20"
@@ -40,7 +40,8 @@ fabric-architectury = { group = "dev.architectury", name = "architectury-fabric"
 
 fabric-forgeConfigPort = { group = "fuzs.forgeconfigapiport", name = "forgeconfigapiport-fabric", version.ref = "fabric-forgeConfigPort" }
 fabric-manual = { group = "maven.modrinth", name = "markdownmanual", version.ref = "fabric-markdownManual" }
-fabric-roughlyEnoughItems = { group = "maven.modrinth", name = "rei", version.ref = "fabric-rei" }
+fabric-roughlyEnoughItems = { group = "me.shedaniel", name = "RoughlyEnoughItems-fabric", version.ref = "fabric-rei" }
+fabric-roughlyEnoughItems-api = { group = "me.shedaniel", name = "RoughlyEnoughItems-api-fabric", version.ref = "fabric-rei" }
 
 fabric-tooltipFix = { group = "maven.modrinth", name = "tooltipfix", version.ref = "fabric-tooltipfix" }
 
