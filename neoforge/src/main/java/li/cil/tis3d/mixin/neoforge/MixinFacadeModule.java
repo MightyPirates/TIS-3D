@@ -3,8 +3,10 @@ package li.cil.tis3d.mixin.neoforge;
 import li.cil.tis3d.api.module.traits.neoforge.ModuleWithBakedModelNeoForge;
 import li.cil.tis3d.common.module.FacadeModule;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockModelPart;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -24,6 +26,7 @@ public abstract class MixinFacadeModule implements ModuleWithBakedModelNeoForge 
     private BlockState facadeState;
 
     @Override
+    @SuppressWarnings("deprecation")
     public void collectParts(final BlockAndTintGetter level, final BlockPos pos, final BlockState state, final Direction direction, final RandomSource random, final List<BlockModelPart> parts) {
         final var model = Minecraft.getInstance().getBlockRenderer().getBlockModel(facadeState);
 
@@ -33,16 +36,24 @@ public abstract class MixinFacadeModule implements ModuleWithBakedModelNeoForge 
         for (final BlockModelPart part : facadeParts) {
             final List<BakedQuad> quads = part.getQuads(direction);
             if (!quads.isEmpty()) {
-                parts.add(new SingleFacePart(quads, direction, part.useAmbientOcclusion(), part.particleIcon()));
+                parts.add(new SingleFacePart(quads, direction, part.useAmbientOcclusion(), part.particleIcon(),
+                    ItemBlockRenderTypes.getChunkRenderType(facadeState)));
             }
         }
     }
 
+    @SuppressWarnings("deprecation")
     private record SingleFacePart(List<BakedQuad> quads, Direction direction, boolean useAmbientOcclusion,
-                                  TextureAtlasSprite particleIcon) implements BlockModelPart {
+                                  TextureAtlasSprite particleIcon,
+                                  ChunkSectionLayer renderLayer) implements BlockModelPart {
         @Override
         public List<BakedQuad> getQuads(@Nullable final Direction side) {
             return side == direction ? quads : List.of();
+        }
+
+        @Override
+        public ChunkSectionLayer getRenderType(final BlockState state) {
+            return renderLayer;
         }
     }
 }
