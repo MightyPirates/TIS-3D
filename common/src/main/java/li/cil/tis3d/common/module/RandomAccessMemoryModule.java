@@ -13,8 +13,6 @@ import li.cil.tis3d.common.item.Items;
 import li.cil.tis3d.common.item.ReadOnlyMemoryModuleItem;
 import li.cil.tis3d.util.Color;
 import li.cil.tis3d.util.EnumUtils;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -158,7 +156,6 @@ public class RandomAccessMemoryModule extends AbstractModuleWithRotation {
         }
     }
 
-    @Environment(EnvType.CLIENT)
     @Override
     public void render(final RenderContext context) {
         if (!getCasing().isEnabled() || !isVisible()) {
@@ -191,8 +188,8 @@ public class RandomAccessMemoryModule extends AbstractModuleWithRotation {
     public void load(final CompoundTag tag) {
         super.load(tag);
 
-        load(tag.getByteArray(TAG_MEMORY));
-        address = tag.getByte(TAG_ADDRESS);
+        load(tag.getByteArray(TAG_MEMORY).orElse(new byte[0]));
+        address = tag.getByteOr(TAG_ADDRESS, (byte) 0);
         state = EnumUtils.load(State.class, TAG_STATE, tag);
     }
 
@@ -224,7 +221,6 @@ public class RandomAccessMemoryModule extends AbstractModuleWithRotation {
     /**
      * Get the color of the memory cells for this module.
      */
-    @Environment(EnvType.CLIENT)
     protected int getCellColor() {
         return 0xFFBBDDFF;
     }

@@ -4,8 +4,6 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.common.item.ReadOnlyMemoryModuleItem;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.world.item.ItemStack;
 
 /**
@@ -54,7 +52,6 @@ public final class ReadOnlyMemoryModule extends RandomAccessMemoryModule {
         }
     }
 
-    @Environment(EnvType.CLIENT)
     @Override
     protected int getCellColor() {
         return 0xFFCCFFCC;

@@ -1,6 +1,7 @@
 package li.cil.tis3d.common.neoforge;
 
 import li.cil.tis3d.api.API;
+import li.cil.tis3d.client.ClientBootstrap;
 import li.cil.tis3d.client.manual.Manuals;
 import li.cil.tis3d.common.CommonBootstrap;
 import net.neoforged.api.distmarker.Dist;
@@ -13,8 +14,9 @@ public class BootstrapNeoForge {
     public BootstrapNeoForge(final IEventBus modEventBus) {
         ModEventBus.INSTANCE = modEventBus;
         CommonBootstrap.run();
-        if (FMLEnvironment.dist == Dist.CLIENT) {
+        if (FMLEnvironment.getDist() == Dist.CLIENT) {
             Manuals.initialize();
+            ClientBootstrap.registerRenderers();
         }
     }
 }

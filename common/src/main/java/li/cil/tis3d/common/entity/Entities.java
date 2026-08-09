@@ -2,8 +2,11 @@ package li.cil.tis3d.common.entity;
 
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
+import li.cil.tis3d.api.API;
 import li.cil.tis3d.util.RegistryUtils;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -32,6 +35,8 @@ public final class Entities {
     // --------------------------------------------------------------------- //
 
     private static <T extends Entity> RegistrySupplier<EntityType<T>> register(final String name, final EntityType.EntityFactory<T> factory, final MobCategory classification, final Function<EntityType.Builder<T>, EntityType.Builder<T>> customizer) {
-        return ENTITY_TYPES.register(name, () -> customizer.apply(EntityType.Builder.of(factory, classification)).build(name));
+        final ResourceKey<EntityType<?>> key = ResourceKey.create(Registries.ENTITY_TYPE,
+            Identifier.fromNamespaceAndPath(API.MOD_ID, name));
+        return ENTITY_TYPES.register(name, () -> customizer.apply(EntityType.Builder.of(factory, classification)).build(key));
     }
 }

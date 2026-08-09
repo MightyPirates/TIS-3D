@@ -4,19 +4,19 @@ import li.cil.tis3d.api.API;
 import li.cil.tis3d.common.tags.BlockTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.tags.ItemTagsProvider;
+import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.world.item.Items;
-import net.neoforged.neoforge.common.data.BlockTagsProvider;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.minecraft.world.level.block.Block;
+import net.neoforged.neoforge.common.data.BlockTagCopyingItemTagProvider;
 
 import java.util.concurrent.CompletableFuture;
 
 import static li.cil.tis3d.common.item.Items.*;
 import static li.cil.tis3d.common.tags.ItemTags.*;
 
-public final class ModItemTagsProvider extends ItemTagsProvider {
-    public ModItemTagsProvider(final PackOutput output, final CompletableFuture<HolderLookup.Provider> lookupProvider, final BlockTagsProvider blockTagsProvider, final ExistingFileHelper existingFileHelper) {
-        super(output, lookupProvider, blockTagsProvider.contentsGetter(), API.MOD_ID, existingFileHelper);
+public final class ModItemTagsProvider extends BlockTagCopyingItemTagProvider {
+    public ModItemTagsProvider(final PackOutput output, final CompletableFuture<HolderLookup.Provider> lookupProvider, final CompletableFuture<TagsProvider.TagLookup<Block>> blockTags) {
+        super(output, lookupProvider, blockTags, API.MOD_ID);
     }
 
     @Override

@@ -20,7 +20,7 @@ import net.minecraft.nbt.NbtIo;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerPlayer;
@@ -83,7 +83,7 @@ public final class Network {
     }
 
     private static <T extends AbstractMessage> void registerMessage(final Class<T> type, final Function<RegistryFriendlyByteBuf, T> decoder, final NetworkManager.Side side) {
-        final ResourceLocation id = ResourceLocation.fromNamespaceAndPath(API.MOD_ID, type.getSimpleName().replaceAll("Message$", "").toLowerCase(Locale.US));
+        final Identifier id = Identifier.fromNamespaceAndPath(API.MOD_ID, type.getSimpleName().replaceAll("Message$", "").toLowerCase(Locale.US));
         final CustomPacketPayload.Type<T> payloadType = new CustomPacketPayload.Type<>(id);
         final StreamCodec<RegistryFriendlyByteBuf, T> codec = CustomPacketPayload.codec(AbstractMessage::toBytes, decoder::apply);
         MESSAGE_TYPES.put(type, payloadType);
@@ -185,7 +185,7 @@ public final class Network {
         final BlockPos position = BlockPos.containing(x, y, z);
         if (LevelUtils.isLoaded(level, position)) {
             final BlockState state = level.getBlockState(position);
-            if (state.isSolidRender(level, position)) {
+            if (state.isSolidRender()) {
                 // Skip particle emission when inside a block where they aren't visible anyway.
                 return;
             }

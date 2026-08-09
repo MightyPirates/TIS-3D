@@ -15,11 +15,12 @@ import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.provider.ModuleProviders;
 import li.cil.tis3d.util.ItemStackUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -232,11 +233,11 @@ public final class CasingImpl implements Casing {
     }
 
     /**
-     * Restore data of all modules and pipes from the specified tag.
+     * Restore data of all modules and pipes from the specified input.
      *
-     * @param tag the data to load.
+     * @param input the data to load.
      */
-    public void load(final CompoundTag tag) {
+    public void load(final ValueInput input) {
         for (int index = 0; index < blockEntity.getContainerSize(); index++) {
             // We replace *all* modules to be sure we have the right types in the right slots,
             // so make sure we dispose the old instances we may have, first.
@@ -261,28 +262,27 @@ public final class CasingImpl implements Casing {
             modules[index] = module;
         }
 
-        final ListTag modulesTag = tag.getList(TAG_MODULES, Tag.TAG_COMPOUND);
-        final int moduleCount = Math.min(modulesTag.size(), modules.length);
-        for (int i = 0; i < moduleCount; i++) {
-            if (modules[i] != null) {
-                modules[i].load(modulesTag.getCompound(i));
+        int i = 0;
+        for (final CompoundTag moduleTag : input.listOrEmpty(TAG_MODULES, CompoundTag.CODEC)) {
+            if (i >= modules.length) {
+                break;
             }
+            if (modules[i] != null) {
+                modules[i].load(moduleTag);
+            }
+            i++;
         }
 
-        if (tag.hasUUID(TAG_KEY)) {
-            lock = tag.getUUID(TAG_KEY);
-        } else {
-            lock = null;
-        }
+        lock = input.read(TAG_KEY, UUIDUtil.CODEC).orElse(null);
     }
 
     /**
-     * Write the state of all modules and pipes to the specified tag.
+     * Write the state of all modules and pipes to the specified output.
      *
-     * @param tag the tag to write the data to.
+     * @param output the output to write the data to.
      */
-    public void save(final CompoundTag tag) {
-        final ListTag modulesTag = new ListTag();
+    public void save(final ValueOutput output) {
+        final ValueOutput.TypedOutputList<CompoundTag> modulesTag = output.list(TAG_MODULES, CompoundTag.CODEC);
         for (final Module module : modules) {
             final CompoundTag moduleTag = new CompoundTag();
             if (module != null) {
@@ -290,10 +290,9 @@ public final class CasingImpl implements Casing {
             }
             modulesTag.add(moduleTag);
         }
-        tag.put(TAG_MODULES, modulesTag);
 
         if (lock != null) {
-            tag.putUUID(TAG_KEY, lock);
+            output.store(TAG_KEY, UUIDUtil.CODEC, lock);
         }
     }
 
@@ -370,11 +369,7 @@ public final class CasingImpl implements Casing {
      * @return the key, if present.
      */
     private static Optional<UUID> getKeyFromStack(final ItemStack stack) {
-        final CompoundTag tag = ItemStackUtils.getData(stack);
-        if (!tag.hasUUID(TAG_KEY)) {
-            return Optional.empty();
-        }
-        return Optional.of(tag.getUUID(TAG_KEY));
+        return ItemStackUtils.getData(stack).read(TAG_KEY, UUIDUtil.CODEC);
     }
 
     /**
@@ -384,6 +379,6 @@ public final class CasingImpl implements Casing {
      * @param key   the key to store on the stack.
      */
     private static void setKeyForStack(final ItemStack stack, final UUID key) {
-        ItemStackUtils.updateData(stack, tag -> tag.putUUID(TAG_KEY, key));
+        ItemStackUtils.updateData(stack, tag -> tag.store(TAG_KEY, UUIDUtil.CODEC, key));
     }
 }

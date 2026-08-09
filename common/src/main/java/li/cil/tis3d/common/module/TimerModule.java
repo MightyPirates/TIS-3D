@@ -13,8 +13,6 @@ import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.util.Color;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
 
 /**
@@ -91,7 +89,6 @@ public final class TimerModule extends AbstractModuleWithRotation {
         hasElapsed = false; // Recompute in render().
     }
 
-    @Environment(EnvType.CLIENT)
     @Override
     public void render(final RenderContext context) {
         if (!getCasing().isEnabled()) {
@@ -106,7 +103,7 @@ public final class TimerModule extends AbstractModuleWithRotation {
 
         // Render detailed state when player is close.
         if (!hasElapsed && context.closeEnoughForDetails(getCasing().getPosition())) {
-            final long gameTime = context.getDispatcher().level.getGameTime();
+            final long gameTime = getCasing().getCasingLevel().getGameTime();
             final float remaining = timer - gameTime - context.getPartialTicks();
             if (remaining <= 0) {
                 hasElapsed = true;
@@ -122,7 +119,7 @@ public final class TimerModule extends AbstractModuleWithRotation {
     public void load(final CompoundTag tag) {
         super.load(tag);
 
-        timer = tag.getLong(TAG_TIMER);
+        timer = tag.getLongOr(TAG_TIMER, 0L);
     }
 
     @Override
@@ -193,7 +190,6 @@ public final class TimerModule extends AbstractModuleWithRotation {
         getCasing().sendData(getFace(), data, DATA_TYPE_UPDATE);
     }
 
-    @Environment(EnvType.CLIENT)
     private void drawState(final RenderContext context, final float remaining) {
         final float milliseconds = remaining * 50f; // One tick is 50ms.
         final float seconds = milliseconds / 1000f;

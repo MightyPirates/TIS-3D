@@ -118,7 +118,7 @@ public final class PipeImpl implements Pipe {
     public void load(final CompoundTag tag) {
         readState = EnumUtils.load(State.class, TAG_READ_STATE, tag);
         writeState = EnumUtils.load(State.class, TAG_WRITE_STATE, tag);
-        value = tag.getShort(TAG_VALUE);
+        value = tag.getShortOr(TAG_VALUE, (short) 0);
     }
 
     public void save(final CompoundTag tag) {

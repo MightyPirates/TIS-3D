@@ -5,9 +5,9 @@ import li.cil.tis3d.common.block.entity.BlockEntities;
 import li.cil.tis3d.common.block.entity.ControllerBlockEntity;
 import li.cil.tis3d.common.item.Items;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -19,6 +19,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
 
 import javax.annotation.Nullable;
@@ -67,11 +68,11 @@ public final class ControllerBlock extends BaseEntityBlock {
     // Common
 
     @Override
-    protected ItemInteractionResult useItemOn(final ItemStack stack, final BlockState state, final Level level, final BlockPos pos, final Player player, final InteractionHand hand, final BlockHitResult hit) {
+    protected InteractionResult useItemOn(final ItemStack stack, final BlockState state, final Level level, final BlockPos pos, final Player player, final InteractionHand hand, final BlockHitResult hit) {
         final InteractionResult result = useController(level, pos, player, hand);
         return result == InteractionResult.PASS
-            ? ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
-            : ItemInteractionResult.sidedSuccess(level.isClientSide());
+            ? InteractionResult.TRY_WITH_EMPTY_HAND
+            : result;
     }
 
     private InteractionResult useController(final Level level, final BlockPos pos, final Player player, final InteractionHand hand) {
@@ -92,7 +93,7 @@ public final class ControllerBlock extends BaseEntityBlock {
                     }
                 }
 
-                return InteractionResult.sidedSuccess(level.isClientSide());
+                return InteractionResult.SUCCESS;
             }
         }
 
@@ -102,7 +103,7 @@ public final class ControllerBlock extends BaseEntityBlock {
                 controller.forceStep();
             }
 
-            return InteractionResult.sidedSuccess(level.isClientSide());
+            return InteractionResult.SUCCESS;
         }
 
         return InteractionResult.PASS;
@@ -117,7 +118,7 @@ public final class ControllerBlock extends BaseEntityBlock {
     }
 
     @Override
-    public int getAnalogOutputSignal(final BlockState state, final Level level, final BlockPos pos) {
+    public int getAnalogOutputSignal(final BlockState state, final Level level, final BlockPos pos, final Direction side) {
         final BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof final ControllerBlockEntity controller) {
             return controller.getState() == ControllerBlockEntity.ControllerState.READY ? 15 : 0;
@@ -129,11 +130,11 @@ public final class ControllerBlock extends BaseEntityBlock {
     // Networking
 
     @Override
-    public void neighborChanged(final BlockState state, final Level level, final BlockPos pos, final Block block, final BlockPos fromPos, final boolean isMoving) {
+    protected void neighborChanged(final BlockState state, final Level level, final BlockPos pos, final Block block, @Nullable final Orientation orientation, final boolean isMoving) {
         final BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof final ControllerBlockEntity controller) {
             controller.checkNeighbors();
         }
-        super.neighborChanged(state, level, pos, block, fromPos, isMoving);
+        super.neighborChanged(state, level, pos, block, orientation, isMoving);
     }
 }

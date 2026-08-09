@@ -2,21 +2,11 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "G": {
-      "tag": "c:nuggets/gold"
-    },
-    "I": {
-      "tag": "c:ingots/iron"
-    },
-    "L": {
-      "tag": "c:gems/lapis"
-    },
-    "Q": {
-      "tag": "c:gems/quartz"
-    },
-    "R": {
-      "tag": "c:dusts/redstone"
-    }
+    "G": "#c:nuggets/gold",
+    "I": "#c:ingots/iron",
+    "L": "#c:gems/lapis",
+    "Q": "#c:gems/quartz",
+    "R": "#c:dusts/redstone"
   },
   "pattern": [
     "GI ",

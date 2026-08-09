@@ -5,10 +5,8 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.traits.ModuleWithBakedModel;
 import li.cil.tis3d.api.module.traits.ModuleWithBlockChangeListener;
 import li.cil.tis3d.api.prefab.module.AbstractModule;
+import li.cil.tis3d.client.ClientHooks;
 import li.cil.tis3d.util.BlockStateUtils;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -92,7 +90,7 @@ public final class FacadeModule extends AbstractModule implements ModuleWithBloc
     public void load(final CompoundTag tag) {
         super.load(tag);
 
-        facadeState = NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), tag.getCompound(TAG_STATE));
+        facadeState = NbtUtils.readBlockState(BuiltInRegistries.BLOCK, tag.getCompoundOrEmpty(TAG_STATE));
         if (facadeState == Blocks.AIR.defaultBlockState()) {
             facadeState = null;
         }
@@ -131,17 +129,16 @@ public final class FacadeModule extends AbstractModule implements ModuleWithBloc
         return facadeState != null;
     }
 
-    @Environment(EnvType.CLIENT)
     @Override
     public OptionalInt getTintColor(@Nullable final BlockAndTintGetter level, @Nullable final BlockPos pos, final int tintIndex) {
-        return OptionalInt.of(Minecraft.getInstance().getBlockColors().getColor(facadeState, level, pos, tintIndex));
+        return OptionalInt.of(ClientHooks.getBlockTintColor(facadeState, level, pos, tintIndex));
     }
 
     // --------------------------------------------------------------------- //
 
     private boolean trySetFacadeState(final BlockState state) {
         if (state.getRenderShape() != RenderShape.MODEL ||
-            !state.isSolidRender(getCasing().getCasingLevel(), getCasing().getPosition()) ||
+            !state.isSolidRender() ||
             state.getBlock() instanceof EntityBlock) {
             return false;
         }

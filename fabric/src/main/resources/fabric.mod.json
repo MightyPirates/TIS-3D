@@ -40,9 +40,6 @@
     "markdown_manual": ">=${manualVersion}",
     "java": ">=21"
   },
-  "recommends": {
-    "tooltipfix": "*"
-  },
   "custom": {
     "mc-publish": {
       "modrinth": "L23x7zL8",

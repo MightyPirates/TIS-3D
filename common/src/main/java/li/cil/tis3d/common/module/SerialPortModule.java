@@ -12,8 +12,6 @@ import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.common.provider.SerialInterfaceProviders;
 import li.cil.tis3d.util.LevelUtils;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -95,7 +93,6 @@ public final class SerialPortModule extends AbstractModule implements ModuleWith
         stepOutput();
     }
 
-    @Environment(EnvType.CLIENT)
     @Override
     public void render(final RenderContext context) {
         if (!getCasing().isEnabled()) {
@@ -109,13 +106,13 @@ public final class SerialPortModule extends AbstractModule implements ModuleWith
     public void load(final CompoundTag tag) {
         super.load(tag);
 
-        writing = tag.getShort(TAG_VALUE);
+        writing = tag.getShortOr(TAG_VALUE, (short) 0);
 
         if (tag.contains(TAG_SERIAL_INTERFACE)) {
             if (serialInterface.isPresent()) {
-                serialInterface.get().load(tag.getCompound(TAG_SERIAL_INTERFACE));
+                serialInterface.get().load(tag.getCompoundOrEmpty(TAG_SERIAL_INTERFACE));
             } else {
-                serialInterfaceTag = Optional.of(tag.getCompound(TAG_SERIAL_INTERFACE));
+                serialInterfaceTag = Optional.of(tag.getCompoundOrEmpty(TAG_SERIAL_INTERFACE));
             }
         }
     }

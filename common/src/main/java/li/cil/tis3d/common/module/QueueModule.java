@@ -13,8 +13,6 @@ import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.util.Color;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 
@@ -102,7 +100,6 @@ public final class QueueModule extends AbstractModuleWithRotation {
         }
     }
 
-    @Environment(EnvType.CLIENT)
     @Override
     public void render(final RenderContext context) {
         if (!getCasing().isEnabled()) {
@@ -127,14 +124,14 @@ public final class QueueModule extends AbstractModuleWithRotation {
     public void load(final CompoundTag tag) {
         super.load(tag);
 
-        final int[] queueTag = tag.getIntArray(TAG_QUEUE);
+        final int[] queueTag = tag.getIntArray(TAG_QUEUE).orElse(new int[0]);
         final int count = Math.min(queueTag.length, queue.length);
         for (int i = 0; i < count; i++) {
             queue[i] = (short) queueTag[i];
         }
 
-        head = Mth.clamp(tag.getInt(TAG_HEAD), 0, QUEUE_SIZE - 1);
-        tail = Mth.clamp(tag.getInt(TAG_TAIL), 0, QUEUE_SIZE - 1);
+        head = Mth.clamp(tag.getIntOr(TAG_HEAD, 0), 0, QUEUE_SIZE - 1);
+        tail = Mth.clamp(tag.getIntOr(TAG_TAIL, 0), 0, QUEUE_SIZE - 1);
     }
 
     @Override
@@ -263,7 +260,6 @@ public final class QueueModule extends AbstractModuleWithRotation {
         getCasing().sendData(getFace(), data, DATA_TYPE_UPDATE);
     }
 
-    @Environment(EnvType.CLIENT)
     private void drawState(final RenderContext context) {
         final PoseStack matrixStack = context.getMatrixStack();
 

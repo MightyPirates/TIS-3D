@@ -1,5 +1,6 @@
 package li.cil.tis3d.common.block.entity;
 
+import com.mojang.serialization.Codec;
 import li.cil.tis3d.api.infrared.InfraredPacket;
 import li.cil.tis3d.api.infrared.InfraredReceiver;
 import li.cil.tis3d.api.machine.Casing;
@@ -22,10 +23,7 @@ import li.cil.tis3d.common.network.message.ClientCasingLoadedMessage;
 import li.cil.tis3d.common.network.message.ReceivingPipeLockedStateMessage;
 import li.cil.tis3d.common.provider.RedstoneInputProviders;
 import li.cil.tis3d.util.InventoryUtils;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -35,11 +33,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
+import java.nio.ByteBuffer;
 import java.util.*;
 
 /**
@@ -200,13 +201,11 @@ public final class CasingBlockEntity extends ComputerBlockEntity implements Side
         }
     }
 
-    public void notifyModulesOfBlockChange(final BlockPos neighborPos) {
+    public void notifyModulesOfBlockChange() {
         for (final Face face : Face.VALUES) {
             final Module module = getModule(face);
             if (module instanceof final ModuleWithBlockChangeListener listener) {
-                final BlockPos moduleNeighborPos = getPosition().relative(Face.toDirection(face));
-                final boolean isModuleNeighbor = Objects.equals(neighborPos, moduleNeighborPos);
-                listener.onNeighborBlockChange(neighborPos, isModuleNeighbor);
+                listener.onNeighborBlockChange(getPosition().relative(Face.toDirection(face)), true);
             }
         }
     }
@@ -355,10 +354,10 @@ public final class CasingBlockEntity extends ComputerBlockEntity implements Side
     }
 
     @Override
-    protected void loadClient(final CompoundTag tag, final HolderLookup.Provider registries) {
-        super.loadClient(tag, registries);
+    protected void loadClient(final ValueInput input) {
+        super.loadClient(input);
 
-        isEnabled = tag.getBoolean(TAG_ENABLED);
+        isEnabled = input.getBooleanOr(TAG_ENABLED, false);
 
         // This is a bit of a hack, but I can't find a better solution for now.
         //
@@ -397,42 +396,36 @@ public final class CasingBlockEntity extends ComputerBlockEntity implements Side
     }
 
     @Override
-    protected void saveClient(final CompoundTag tag, final HolderLookup.Provider registries) {
-        super.saveClient(tag, registries);
+    protected void saveClient(final ValueOutput output) {
+        super.saveClient(output);
 
-        tag.putBoolean(TAG_ENABLED, isEnabled);
+        output.putBoolean(TAG_ENABLED, isEnabled);
     }
 
     @Override
-    protected void loadCommon(final CompoundTag tag, final HolderLookup.Provider registries) {
-        super.loadCommon(tag, registries);
+    protected void loadCommon(final ValueInput input) {
+        super.loadCommon(input);
 
-        decompressClosed(tag.getByteArray(TAG_LOCKED), locked);
+        decompressClosed(input.read(TAG_LOCKED, Codec.BYTE_BUFFER).map(ByteBuffer::array).orElse(new byte[0]), locked);
 
-        final CompoundTag inventoryTag = tag.getCompound(TAG_INVENTORY);
-        inventory.load(inventoryTag, registries);
+        inventory.load(input.childOrEmpty(TAG_INVENTORY));
 
-        final CompoundTag casingTag = tag.getCompound(TAG_CASING);
-        casing.load(casingTag);
+        casing.load(input.childOrEmpty(TAG_CASING));
     }
 
     @Override
-    protected void saveCommon(final CompoundTag tag, final HolderLookup.Provider registries) {
-        super.saveCommon(tag, registries);
+    protected void saveCommon(final ValueOutput output) {
+        super.saveCommon(output);
 
-        tag.putByteArray(TAG_LOCKED, compressClosed(locked));
+        output.store(TAG_LOCKED, Codec.BYTE_BUFFER, ByteBuffer.wrap(compressClosed(locked)));
 
         // Needed on the client also, for picking and for actually instantiating
         // the installed modules on the client side (to find the provider).
-        final CompoundTag inventoryTag = new CompoundTag();
-        inventory.save(inventoryTag, registries);
-        tag.put(TAG_INVENTORY, inventoryTag);
+        inventory.save(output.child(TAG_INVENTORY));
 
         // Needed on the client also, to allow initializing client side modules
         // immediately after creation.
-        final CompoundTag casingTag = new CompoundTag();
-        casing.save(casingTag);
-        tag.put(TAG_CASING, casingTag);
+        casing.save(output.child(TAG_CASING));
     }
 
     // --------------------------------------------------------------------- //
@@ -444,7 +437,6 @@ public final class CasingBlockEntity extends ComputerBlockEntity implements Side
      *
      * @param locked the new locked state of the case.
      */
-    @Environment(EnvType.CLIENT)
     public void setCasingLockedClient(final boolean locked) {
         casing.setLocked(locked);
     }
@@ -458,7 +450,6 @@ public final class CasingBlockEntity extends ComputerBlockEntity implements Side
      * @param stack      the new item stack in that slot, if any.
      * @param moduleData the original state of the module on the server, if present.
      */
-    @Environment(EnvType.CLIENT)
     public void setStackAndModuleClient(final int slot, final ItemStack stack, final CompoundTag moduleData) {
         inventory.setItem(slot, stack);
         final Module module = casing.getModule(Face.VALUES[slot]);
@@ -473,7 +464,6 @@ public final class CasingBlockEntity extends ComputerBlockEntity implements Side
      *
      * @param value the new enabled state of this casing.
      */
-    @Environment(EnvType.CLIENT)
     public void setEnabledClient(final boolean value) {
         isEnabled = value;
     }
@@ -486,7 +476,6 @@ public final class CasingBlockEntity extends ComputerBlockEntity implements Side
      * @param port  the port to set the locked state of.
      * @param value the new enabled state of this casing.
      */
-    @Environment(EnvType.CLIENT)
     public void setReceivingPipeLockedClient(final Face face, final Port port, final boolean value) {
         locked[face.ordinal()][port.ordinal()] = value;
     }

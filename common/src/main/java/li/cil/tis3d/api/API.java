@@ -1,8 +1,6 @@
 package li.cil.tis3d.api;
 
 import li.cil.manual.api.render.FontRenderer;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.world.item.CreativeModeTab;
 
 import java.util.function.Supplier;
@@ -22,9 +20,7 @@ public final class API {
     public static Supplier<CreativeModeTab> itemGroup;
     public static li.cil.tis3d.api.detail.InfraredAPI infraredAPI;
 
-    @Environment(EnvType.CLIENT)
     public static FontRenderer normalFontRenderer;
-    @Environment(EnvType.CLIENT)
     public static FontRenderer smallFontRenderer;
 
     private API() {

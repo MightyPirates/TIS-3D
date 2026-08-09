@@ -4,8 +4,8 @@ import li.cil.tis3d.api.API;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
@@ -27,7 +27,7 @@ public interface ModuleProvider {
     /**
      * The registry name of the registry holding module providers.
      */
-    ResourceKey<Registry<ModuleProvider>> REGISTRY = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(API.MOD_ID, "module_provider"));
+    ResourceKey<Registry<ModuleProvider>> REGISTRY = ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(API.MOD_ID, "module_provider"));
 
     /**
      * Checks whether the provider supports the specified stack.

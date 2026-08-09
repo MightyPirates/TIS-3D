@@ -3,102 +3,58 @@ package li.cil.tis3d.client.renderer.block.fabric;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.traits.fabric.ModuleWithBakedModelFabric;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
-import net.fabricmc.fabric.api.renderer.v1.model.FabricBakedModel;
-import net.fabricmc.fabric.api.renderer.v1.render.RenderContext;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
+import net.fabricmc.fabric.api.renderer.v1.model.FabricBlockStateModel;
+import net.minecraft.client.renderer.block.model.BlockModelPart;
+import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.function.Supplier;
+import java.util.function.Predicate;
 
-public final class ModuleBakedModel implements BakedModel, FabricBakedModel {
-    private final BakedModel proxy;
+public final class ModuleBakedModel implements BlockStateModel, FabricBlockStateModel {
+    private final BlockStateModel proxy;
     private final Direction direction;
 
     // --------------------------------------------------------------------- //
 
-    ModuleBakedModel(final BakedModel proxy, final Direction direction) {
+    ModuleBakedModel(final BlockStateModel proxy, final Direction direction) {
         this.proxy = proxy;
         this.direction = direction;
     }
 
     // --------------------------------------------------------------------- //
-    // FabricBakedModel
+    // FabricBlockStateModel
 
     @Override
-    public boolean isVanillaAdapter() {
-        return false;
-    }
-
-    @Override
-    public void emitBlockQuads(final BlockAndTintGetter blockView, final BlockState state, final BlockPos pos, final Supplier<RandomSource> randomSupplier, final RenderContext context) {
-        if (!(blockView.getBlockEntity(pos) instanceof final CasingBlockEntity casing)) {
-            return;
+    public void emitQuads(final QuadEmitter emitter, final BlockAndTintGetter blockView, final BlockPos pos,
+                          final BlockState state, final RandomSource random, final Predicate<Direction> cullTest) {
+        if (blockView.getBlockEntity(pos) instanceof final CasingBlockEntity casing) {
+            final var module = casing.getModule(Face.fromDirection(direction));
+            if (module instanceof final ModuleWithBakedModelFabric moduleWithModel && moduleWithModel.hasModel()) {
+                moduleWithModel.emitBlockQuads(blockView, state, pos, direction, random, emitter);
+                return;
+            }
         }
 
-        final var module = casing.getModule(Face.fromDirection(direction));
-        if (module instanceof final ModuleWithBakedModelFabric moduleWithModel && moduleWithModel.hasModel()) {
-            moduleWithModel.emitBlockQuads(blockView, state, pos, direction, randomSupplier, context);
-        } else {
-            proxy.emitBlockQuads(blockView, state, pos, randomSupplier, context);
-        }
-    }
-
-    @Override
-    public void emitItemQuads(final ItemStack stack, final Supplier<RandomSource> randomSupplier, final RenderContext context) {
+        proxy.emitQuads(emitter, blockView, pos, state, random, cullTest);
     }
 
     // --------------------------------------------------------------------- //
-    // BakedModel
+    // BlockStateModel
 
     @Override
-    public List<BakedQuad> getQuads(@Nullable final BlockState blockState, @Nullable final Direction direction, final RandomSource randomSource) {
-        return Collections.emptyList();
+    public void collectParts(final RandomSource random, final List<BlockModelPart> parts) {
+        proxy.collectParts(random, parts);
     }
 
     @Override
-    public boolean useAmbientOcclusion() {
-        return proxy.useAmbientOcclusion();
-    }
-
-    @Override
-    public boolean isGui3d() {
-        return proxy.isGui3d();
-    }
-
-    @Override
-    public boolean usesBlockLight() {
-        return proxy.usesBlockLight();
-    }
-
-    @Override
-    public boolean isCustomRenderer() {
-        return proxy.isCustomRenderer();
-    }
-
-    @Override
-    public TextureAtlasSprite getParticleIcon() {
-        return proxy.getParticleIcon();
-    }
-
-    @Override
-    public ItemTransforms getTransforms() {
-        return proxy.getTransforms();
-    }
-
-    @Override
-    public ItemOverrides getOverrides() {
-        return proxy.getOverrides();
+    public TextureAtlasSprite particleIcon() {
+        return proxy.particleIcon();
     }
 }

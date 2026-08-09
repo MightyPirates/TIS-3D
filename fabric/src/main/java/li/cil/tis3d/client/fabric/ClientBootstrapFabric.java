@@ -4,15 +4,11 @@ import li.cil.tis3d.api.platform.FabricProviderInitializer;
 import li.cil.tis3d.client.ClientBootstrap;
 import li.cil.tis3d.client.ClientSetup;
 import li.cil.tis3d.client.renderer.block.fabric.ModuleModelLoader;
-import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.block.entity.fabric.ChunkUnloadListener;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents;
-import net.fabricmc.fabric.api.event.client.player.ClientPickBlockGatherCallback;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.phys.BlockHitResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,6 +17,7 @@ public final class ClientBootstrapFabric implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        ClientBootstrap.registerRenderers();
         ClientBootstrap.run();
         ClientSetup.run();
 
@@ -34,20 +31,6 @@ public final class ClientBootstrapFabric implements ClientModInitializer {
                     listener.onChunkUnloaded();
                 }
             }
-        });
-
-        ClientPickBlockGatherCallback.EVENT.register((player, result) -> {
-            // Allow picking modules installed in the casing.
-            if (result instanceof final BlockHitResult hit) {
-                final BlockEntity blockEntity = player.level().getBlockEntity(hit.getBlockPos());
-                if (blockEntity instanceof final CasingBlockEntity casing) {
-                    final var stack = casing.getItem(hit.getDirection().ordinal());
-                    if (!stack.isEmpty()) {
-                        return stack.copy();
-                    }
-                }
-            }
-            return ItemStack.EMPTY;
         });
 
         if (FabricLoader.getInstance().isModLoaded("sodium")) {

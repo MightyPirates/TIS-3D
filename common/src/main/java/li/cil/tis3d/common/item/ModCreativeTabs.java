@@ -23,7 +23,7 @@ public final class ModCreativeTabs {
             builder.title(Component.translatable("itemGroup.tis3d.common"));
             builder.displayItems((parameters, output) -> {
                 BuiltInRegistries.ITEM.entrySet().stream()
-                    .filter(entry -> entry.getKey().location().getNamespace().equals(API.MOD_ID))
+                    .filter(entry -> entry.getKey().identifier().getNamespace().equals(API.MOD_ID))
                     .map(Map.Entry::getValue)
                     .filter(ModCreativeTabs::isItemEnabled)
                     .forEach(item -> output.accept(new ItemStack(item)));

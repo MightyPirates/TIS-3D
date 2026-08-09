@@ -13,9 +13,6 @@
  * can interact with the casing and other modules.
  */
 @ParametersAreNonnullByDefault
-@MethodsReturnNonnullByDefault
 package li.cil.tis3d.api;
-
-import net.minecraft.MethodsReturnNonnullByDefault;
 
 import javax.annotation.ParametersAreNonnullByDefault;

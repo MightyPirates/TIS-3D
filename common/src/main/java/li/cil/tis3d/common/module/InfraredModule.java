@@ -11,8 +11,6 @@ import li.cil.tis3d.api.prefab.module.AbstractModule;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.common.config.CommonConfig;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -88,7 +86,6 @@ public final class InfraredModule extends AbstractModule implements InfraredRece
         stepOutput();
     }
 
-    @Environment(EnvType.CLIENT)
     @Override
     public void render(final RenderContext context) {
         if (!getCasing().isEnabled()) {
@@ -103,7 +100,7 @@ public final class InfraredModule extends AbstractModule implements InfraredRece
         super.load(tag);
 
         receiveQueue.clear();
-        final int[] receiveQueueTag = tag.getIntArray(TAG_RECEIVE_QUEUE);
+        final int[] receiveQueueTag = tag.getIntArray(TAG_RECEIVE_QUEUE).orElse(new int[0]);
         for (final int value : receiveQueueTag) {
             receiveQueue.addLast((short) value);
         }

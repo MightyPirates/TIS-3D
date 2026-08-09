@@ -21,12 +21,12 @@ public class ModItemTagsProvider extends FabricTagProvider.ItemTagProvider {
 
     @Override
     protected void addTags(final HolderLookup.Provider provider) {
-        tag(COMPUTERS).add(
+        builder(COMPUTERS).add(
             key(CASING.get()),
             key(CONTROLLER.get())
         );
 
-        tag(MODULES).add(
+        builder(MODULES).add(
             key(AUDIO_MODULE.get()),
             key(DISPLAY_MODULE.get()),
             key(EXECUTION_MODULE.get()),
@@ -45,7 +45,7 @@ public class ModItemTagsProvider extends FabricTagProvider.ItemTagProvider {
             key(TIMER_MODULE.get())
         );
 
-        tag(BOOKS).add(
+        builder(BOOKS).add(
             key(BOOK_CODE.get()),
             key(BOOK_MANUAL.get()),
             key(Items.BOOK),
@@ -54,26 +54,26 @@ public class ModItemTagsProvider extends FabricTagProvider.ItemTagProvider {
             key(Items.WRITTEN_BOOK)
         );
 
-        tag(KEYS).add(
+        builder(KEYS).add(
             key(KEY.get()),
             key(KEY_CREATIVE.get())
         );
 
-        tag(CommonItemTags.CHESTS).add(key(Items.CHEST));
-        tag(CommonItemTags.DIAMOND_GEMS).add(key(Items.DIAMOND));
-        tag(CommonItemTags.EMERALDS).add(key(Items.EMERALD));
-        tag(CommonItemTags.ENDER_PEARLS).add(key(Items.ENDER_PEARL));
-        tag(CommonItemTags.GLASS_PANES).add(key(Items.GLASS_PANE));
-        tag(CommonItemTags.GOLD_INGOTS).add(key(Items.GOLD_INGOT));
-        tag(CommonItemTags.GOLD_NUGGETS).add(key(Items.GOLD_NUGGET));
-        tag(CommonItemTags.IRON_BLOCKS).add(key(Items.IRON_BLOCK));
-        tag(CommonItemTags.IRON_INGOTS).add(key(Items.IRON_INGOT));
-        tag(CommonItemTags.LAPIS_LAZULIS).add(key(Items.LAPIS_LAZULI));
-        tag(CommonItemTags.QUARTZ_GEMS).add(key(Items.QUARTZ));
-        tag(CommonItemTags.REDSTONE_DUSTS).add(key(Items.REDSTONE));
-        tag(CommonItemTags.SAND).add(key(Items.SAND));
+        builder(CommonItemTags.CHESTS).add(key(Items.CHEST));
+        builder(CommonItemTags.DIAMOND_GEMS).add(key(Items.DIAMOND));
+        builder(CommonItemTags.EMERALDS).add(key(Items.EMERALD));
+        builder(CommonItemTags.ENDER_PEARLS).add(key(Items.ENDER_PEARL));
+        builder(CommonItemTags.GLASS_PANES).add(key(Items.GLASS_PANE));
+        builder(CommonItemTags.GOLD_INGOTS).add(key(Items.GOLD_INGOT));
+        builder(CommonItemTags.GOLD_NUGGETS).add(key(Items.GOLD_NUGGET));
+        builder(CommonItemTags.IRON_BLOCKS).add(key(Items.IRON_BLOCK));
+        builder(CommonItemTags.IRON_INGOTS).add(key(Items.IRON_INGOT));
+        builder(CommonItemTags.LAPIS_LAZULIS).add(key(Items.LAPIS_LAZULI));
+        builder(CommonItemTags.QUARTZ_GEMS).add(key(Items.QUARTZ));
+        builder(CommonItemTags.REDSTONE_DUSTS).add(key(Items.REDSTONE));
+        builder(CommonItemTags.SAND).add(key(Items.SAND));
 
-        final var musicDiscs = tag(CommonItemTags.MUSIC_DISCS);
+        final var musicDiscs = builder(CommonItemTags.MUSIC_DISCS);
         BuiltInRegistries.ITEM.stream()
             .filter(item -> item.components().has(DataComponents.JUKEBOX_PLAYABLE))
             .forEach(item -> musicDiscs.add(key(item)));

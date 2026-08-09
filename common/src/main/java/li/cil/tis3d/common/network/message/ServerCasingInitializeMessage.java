@@ -6,7 +6,6 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 
 import static java.util.Objects.requireNonNull;
@@ -35,7 +34,7 @@ public final class ServerCasingInitializeMessage extends AbstractMessageWithPosi
             withBlockEntity(level, CasingBlockEntity.class, casing -> {
                 for (int i = 0; i < Face.VALUES.length; i++) {
                     final var face = Face.VALUES[i];
-                    final var moduleTag = tag.getCompound(i);
+                    final var moduleTag = tag.getCompoundOrEmpty(i);
                     final var module = casing.getModule(face);
                     if (module != null) {
                         module.load(moduleTag);
@@ -50,7 +49,7 @@ public final class ServerCasingInitializeMessage extends AbstractMessageWithPosi
         super.fromBytes(buffer);
 
         final var wrapper = requireNonNull(buffer.readNbt());
-        tag = wrapper.getList(MODULES_TAG, Tag.TAG_COMPOUND);
+        tag = wrapper.getListOrEmpty(MODULES_TAG);
     }
 
     @Override

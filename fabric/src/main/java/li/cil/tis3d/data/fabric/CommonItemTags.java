@@ -1,7 +1,7 @@
 package li.cil.tis3d.data.fabric;
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 
@@ -24,6 +24,6 @@ public final class CommonItemTags {
     // --------------------------------------------------------------------- //
 
     private static TagKey<Item> commonTag(final String name) {
-        return TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", name));
+        return TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", name));
     }
 }

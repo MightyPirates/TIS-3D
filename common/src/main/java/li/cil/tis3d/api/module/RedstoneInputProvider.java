@@ -4,8 +4,8 @@ import li.cil.tis3d.api.API;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
 /**
@@ -23,7 +23,7 @@ public interface RedstoneInputProvider {
     /**
      * The registry name of the registry holding redstone input providers.
      */
-    ResourceKey<Registry<RedstoneInputProvider>> REGISTRY = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(API.MOD_ID, "redstone_input_provider"));
+    ResourceKey<Registry<RedstoneInputProvider>> REGISTRY = ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(API.MOD_ID, "redstone_input_provider"));
 
     /**
      * Get the redstone level provided to the specified face of a block at the specified position.

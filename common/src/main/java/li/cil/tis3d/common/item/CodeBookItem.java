@@ -1,19 +1,14 @@
 package li.cil.tis3d.common.item;
 
-import li.cil.tis3d.client.gui.CodeBookScreen;
+import li.cil.tis3d.client.ClientHooks;
 import li.cil.tis3d.common.block.CasingBlock;
 import li.cil.tis3d.common.config.Constants;
 import li.cil.tis3d.util.ItemStackUtils;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
@@ -26,19 +21,19 @@ import java.util.*;
  * The code book, utility book for coding ASM programs for execution modules.
  */
 public final class CodeBookItem extends ModItem {
-    public CodeBookItem() {
-        super(createProperties().stacksTo(1));
+    public CodeBookItem(final Properties properties) {
+        super(properties.stacksTo(1));
     }
 
     // --------------------------------------------------------------------- //
     // Item
 
     @Override
-    public InteractionResultHolder<ItemStack> use(final Level level, final Player player, final InteractionHand hand) {
+    public InteractionResult use(final Level level, final Player player, final InteractionHand hand) {
         if (level.isClientSide()) {
             openScreen(player, hand);
         }
-        return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), level.isClientSide());
+        return InteractionResult.SUCCESS;
     }
 
     @Override
@@ -48,9 +43,8 @@ public final class CodeBookItem extends ModItem {
 
     // --------------------------------------------------------------------- //
 
-    @Environment(EnvType.CLIENT)
     private void openScreen(final Player player, final InteractionHand hand) {
-        Minecraft.getInstance().setScreen(new CodeBookScreen(player, hand));
+        ClientHooks.openCodeBookScreen(player, hand);
     }
 
     // --------------------------------------------------------------------- //
@@ -245,12 +239,12 @@ public final class CodeBookItem extends ModItem {
         public void load(final CompoundTag tag) {
             pages.clear();
 
-            final ListTag pagesTag = tag.getList(TAG_PAGES, Tag.TAG_STRING);
+            final ListTag pagesTag = tag.getListOrEmpty(TAG_PAGES);
             for (int index = 0; index < pagesTag.size(); index++) {
-                pages.add(Arrays.asList(Constants.PATTERN_LINES.split(pagesTag.getString(index))));
+                pages.add(Arrays.asList(Constants.PATTERN_LINES.split(pagesTag.getStringOr(index, ""))));
             }
 
-            selectedPage = tag.getInt(TAG_SELECTED);
+            selectedPage = tag.getIntOr(TAG_SELECTED, 0);
             validateSelectedPage();
         }
 

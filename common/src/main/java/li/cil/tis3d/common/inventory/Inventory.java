@@ -1,12 +1,10 @@
 package li.cil.tis3d.common.inventory;
 
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import java.util.Arrays;
 
@@ -24,20 +22,21 @@ public class Inventory implements Container {
 
     // --------------------------------------------------------------------- //
 
-    public void load(final CompoundTag tag, final HolderLookup.Provider registries) {
-        final ListTag itemList = tag.getList(TAG_ITEMS, Tag.TAG_COMPOUND);
-        final int count = Math.min(itemList.size(), items.length);
-        for (int index = 0; index < count; index++) {
-            items[index] = ItemStack.parseOptional(registries, itemList.getCompound(index));
+    public void load(final ValueInput input) {
+        int index = 0;
+        for (final ItemStack stack : input.listOrEmpty(TAG_ITEMS, ItemStack.OPTIONAL_CODEC)) {
+            if (index >= items.length) {
+                break;
+            }
+            items[index++] = stack;
         }
     }
 
-    public void save(final CompoundTag tag, final HolderLookup.Provider registries) {
-        final ListTag itemList = new ListTag();
+    public void save(final ValueOutput output) {
+        final ValueOutput.TypedOutputList<ItemStack> itemList = output.list(TAG_ITEMS, ItemStack.OPTIONAL_CODEC);
         for (final ItemStack stack : items) {
-            itemList.add(stack == null ? new CompoundTag() : stack.saveOptional(registries));
+            itemList.add(stack == null ? ItemStack.EMPTY : stack);
         }
-        tag.put(TAG_ITEMS, itemList);
     }
 
     // --------------------------------------------------------------------- //

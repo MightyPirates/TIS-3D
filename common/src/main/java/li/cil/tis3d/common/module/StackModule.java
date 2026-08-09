@@ -13,8 +13,6 @@ import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.util.Color;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 
@@ -98,7 +96,6 @@ public final class StackModule extends AbstractModuleWithRotation {
         }
     }
 
-    @Environment(EnvType.CLIENT)
     @Override
     public void render(final RenderContext context) {
         if (!getCasing().isEnabled()) {
@@ -123,13 +120,13 @@ public final class StackModule extends AbstractModuleWithRotation {
     public void load(final CompoundTag tag) {
         super.load(tag);
 
-        final int[] stackTag = tag.getIntArray(TAG_STACK);
+        final int[] stackTag = tag.getIntArray(TAG_STACK).orElse(new int[0]);
         final int count = Math.min(stackTag.length, stack.length);
         for (int i = 0; i < count; i++) {
             stack[i] = (short) stackTag[i];
         }
 
-        top = Mth.clamp(tag.getInt(TAG_TOP), -1, STACK_SIZE - 1);
+        top = Mth.clamp(tag.getIntOr(TAG_TOP, 0), -1, STACK_SIZE - 1);
     }
 
     @Override
@@ -253,7 +250,6 @@ public final class StackModule extends AbstractModuleWithRotation {
         getCasing().sendData(getFace(), data, DATA_TYPE_UPDATE);
     }
 
-    @Environment(EnvType.CLIENT)
     private void drawState(final RenderContext context) {
         final PoseStack matrixStack = context.getMatrixStack();
 

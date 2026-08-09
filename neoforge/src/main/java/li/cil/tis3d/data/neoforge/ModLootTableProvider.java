@@ -7,8 +7,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
@@ -32,7 +32,7 @@ public final class ModLootTableProvider extends LootTableProvider {
         return BuiltInLootTables
             .all()
             .stream()
-            .filter(table -> Objects.equals(table.location().getNamespace(), API.MOD_ID))
+            .filter(table -> Objects.equals(table.identifier().getNamespace(), API.MOD_ID))
             .collect(Collectors.toSet());
     }
 
@@ -51,7 +51,7 @@ public final class ModLootTableProvider extends LootTableProvider {
         protected Iterable<Block> getKnownBlocks() {
             return StreamSupport.stream(super.getKnownBlocks().spliterator(), false)
                 .filter(block -> {
-                    final ResourceLocation blockId = BuiltInRegistries.BLOCK.getKey(block);
+                    final Identifier blockId = BuiltInRegistries.BLOCK.getKey(block);
                     return Objects.equals(blockId.getNamespace(), API.MOD_ID);
                 })
                 .collect(Collectors.toSet());

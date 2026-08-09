@@ -125,7 +125,7 @@ public final class MachineState {
     public void load(final CompoundTag tag) {
         if (tag.contains(TAG_CODE)) {
             try {
-                Compiler.compile(Arrays.asList(Constants.PATTERN_LINES.split(tag.getString(TAG_CODE))), this);
+                Compiler.compile(Arrays.asList(Constants.PATTERN_LINES.split(tag.getStringOr(TAG_CODE, ""))), this);
             } catch (final ParseException ignored) {
                 // Silent because this is also used to send code to the
                 // clients to visualize errors, and code is also saved
@@ -133,15 +133,15 @@ public final class MachineState {
             }
         }
 
-        pc = tag.getInt(TAG_PC);
-        acc = tag.getShort(TAG_ACC);
-        bak = tag.getShort(TAG_BAK);
+        pc = tag.getIntOr(TAG_PC, 0);
+        acc = tag.getShortOr(TAG_ACC, (short) 0);
+        bak = tag.getShortOr(TAG_BAK, (short) 0);
         if (tag.contains(TAG_LAST)) {
             last = Optional.of(EnumUtils.load(Port.class, TAG_LAST, tag));
         } else {
             last = Optional.empty();
         }
-        pcPrev = tag.getInt(TAG_PC_PREV);
+        pcPrev = tag.getIntOr(TAG_PC_PREV, 0);
     }
 
     public void save(final CompoundTag tag) {

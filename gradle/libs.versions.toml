@@ -1,28 +1,26 @@
 [versions]
-minecraft = "1.21.1"
-parchment-minecraft = "1.21.1"
-parchment-mappings = "2024.11.17"
+minecraft = "1.21.11"
+parchment-minecraft = "1.21.11"
+parchment-mappings = "2025.12.20"
 
-architectury = "13.0.11"
+architectury = "19.0.1"
 manual = "1.2.6"
 
-fabric-loader = "0.19.3"
-fabric-api = "0.116.15+1.21.1"
+fabric-loader = "0.18.2"
+fabric-api = "0.141.6+1.21.11"
 
-fabric-forgeConfigPort = "21.1.6"
-fabric-rei = "16.0.799"
+fabric-forgeConfigPort = "21.11.1"
+fabric-rei = "21.11.816"
 
-fabric-markdownManual = "MC1.21.1-fabric-1.2.6"
+fabric-markdownManual = "MC1.21.11-fabric-1.2.6"
 
-fabric-tooltipfix = "1.1.1-1.20"
+neoforge-platform = "21.11.42"
+neoforge-loader = "1"
 
-neoforge-platform = "21.1.248"
-neoforge-loader = "4"
-
-neoforge-markdownManual = "MC1.21.1-neoforge-1.2.6"
+neoforge-markdownManual = "MC1.21.11-neoforge-1.2.6"
 
 [plugins]
-loom = { id = "dev.architectury.loom", version = "1.11-SNAPSHOT" }
+loom = { id = "dev.architectury.loom", version = "1.13-SNAPSHOT" }
 architectury = { id = "architectury-plugin", version = "3.4-SNAPSHOT" }
 shadow = { id = "com.gradleup.shadow", version = "9.4.1" }
 spotless = { id = "com.diffplug.spotless", version = "6.22.0" }
@@ -39,8 +37,6 @@ fabric-forgeConfigPort = { group = "fuzs.forgeconfigapiport", name = "forgeconfi
 fabric-manual = { group = "maven.modrinth", name = "markdownmanual", version.ref = "fabric-markdownManual" }
 fabric-roughlyEnoughItems = { group = "me.shedaniel", name = "RoughlyEnoughItems-fabric", version.ref = "fabric-rei" }
 fabric-roughlyEnoughItems-api = { group = "me.shedaniel", name = "RoughlyEnoughItems-api-fabric", version.ref = "fabric-rei" }
-
-fabric-tooltipFix = { group = "maven.modrinth", name = "tooltipfix", version.ref = "fabric-tooltipfix" }
 
 neoforge-platform = { group = "net.neoforged", name = "neoforge", version.ref = "neoforge-platform" }
 neoforge-architectury = { group = "dev.architectury", name = "architectury-neoforge", version.ref = "architectury" }

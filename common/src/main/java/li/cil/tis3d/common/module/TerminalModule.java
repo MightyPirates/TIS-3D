@@ -11,17 +11,12 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderContext;
-import li.cil.tis3d.client.gui.TerminalModuleScreen;
+import li.cil.tis3d.client.ClientHooks;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.util.Color;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -222,7 +217,6 @@ public final class TerminalModule extends AbstractModuleWithRotation {
         }
     }
 
-    @Environment(EnvType.CLIENT)
     @Override
     public void render(final RenderContext context) {
         if (!getCasing().isEnabled() || !isVisible()) {
@@ -248,14 +242,14 @@ public final class TerminalModule extends AbstractModuleWithRotation {
     public void load(final CompoundTag tag) {
         super.load(tag);
 
-        final ListTag lines = tag.getList(TAG_DISPLAY, Tag.TAG_STRING);
+        final ListTag lines = tag.getListOrEmpty(TAG_DISPLAY);
         display.clear();
         for (int tagIndex = 0; tagIndex < lines.size(); tagIndex++) {
-            display.add(new StringBuilder(lines.getString(tagIndex)));
+            display.add(new StringBuilder(lines.getStringOr(tagIndex, "")));
         }
 
         output.setLength(0);
-        output.append(tag.getString(TAG_OUTPUT));
+        output.append(tag.getStringOr(TAG_OUTPUT, ""));
         isInputEnabled = output.isEmpty();
     }
 
@@ -304,7 +298,6 @@ public final class TerminalModule extends AbstractModuleWithRotation {
     // --------------------------------------------------------------------- //
     // Rendering
 
-    @Environment(EnvType.CLIENT)
     private void renderText(final RenderContext context) {
         final PoseStack matrixStack = context.getMatrixStack();
         matrixStack.translate(2f / 16f, 2f / 16f, 0);
@@ -324,7 +317,6 @@ public final class TerminalModule extends AbstractModuleWithRotation {
         renderInput(context, fontRenderer, textWidth);
     }
 
-    @Environment(EnvType.CLIENT)
     private void renderDisplay(final RenderContext context, final FontRenderer fontRenderer) {
         final PoseStack matrixStack = context.getMatrixStack();
         for (final StringBuilder line : display) {
@@ -333,7 +325,6 @@ public final class TerminalModule extends AbstractModuleWithRotation {
         }
     }
 
-    @Environment(EnvType.CLIENT)
     private void renderInput(final RenderContext context, final FontRenderer fontRenderer, final int textWidth) {
         final PoseStack matrixStack = context.getMatrixStack();
 
@@ -353,20 +344,12 @@ public final class TerminalModule extends AbstractModuleWithRotation {
         }
     }
 
-    @Environment(EnvType.CLIENT)
     private void openScreen() {
-        Minecraft.getInstance().setScreen(new TerminalModuleScreen(this));
+        ClientHooks.openTerminalScreen(this);
     }
 
-    @Environment(EnvType.CLIENT)
     private void closeGui() {
-        final Minecraft mc = Minecraft.getInstance();
-        final Screen screen = mc.screen;
-        if (screen instanceof final TerminalModuleScreen gui) {
-            if (gui.isFor(this)) {
-                gui.onClose();
-            }
-        }
+        ClientHooks.closeTerminalScreen(this);
     }
 
     // --------------------------------------------------------------------- //

@@ -12,8 +12,6 @@ import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.util.Color;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -107,7 +105,6 @@ public final class RedstoneModule extends AbstractModuleWithRotation implements 
         output = data.readShort();
     }
 
-    @Environment(EnvType.CLIENT)
     @Override
     public void render(final RenderContext context) {
         final PoseStack matrixStack = context.getMatrixStack();
@@ -147,8 +144,8 @@ public final class RedstoneModule extends AbstractModuleWithRotation implements 
     public void load(final CompoundTag tag) {
         super.load(tag);
 
-        output = (short) Math.max(0, Math.min(15, tag.getShort(TAG_OUTPUT)));
-        input = (short) Math.max(0, Math.min(15, tag.getShort(TAG_INPUT)));
+        output = (short) Math.max(0, Math.min(15, tag.getShortOr(TAG_OUTPUT, (short) 0)));
+        input = (short) Math.max(0, Math.min(15, tag.getShortOr(TAG_INPUT, (short) 0)));
     }
 
     @Override

@@ -2,15 +2,19 @@ package li.cil.tis3d.common.item;
 
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
+import li.cil.tis3d.api.API;
 import li.cil.tis3d.common.block.Blocks;
 import li.cil.tis3d.util.RegistryUtils;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Item.Properties;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 
+import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public final class Items {
     private static final DeferredRegister<Item> ITEMS = RegistryUtils.get(Registries.ITEM);
@@ -67,15 +71,21 @@ public final class Items {
         return register(name, ModItem::new);
     }
 
-    private static <T extends Item> RegistrySupplier<T> register(final String name, final Supplier<T> factory) {
-        return ITEMS.register(name, factory);
+    private static <T extends Item> RegistrySupplier<T> register(final String name, final Function<Properties, T> factory) {
+        return ITEMS.register(name, () -> factory.apply(createProperties(name)));
     }
 
     private static <T extends Block> RegistrySupplier<Item> register(final RegistrySupplier<T> block) {
         return register(block, ModBlockItem::new);
     }
 
-    private static <TBlock extends Block, TItem extends Item> RegistrySupplier<TItem> register(final RegistrySupplier<TBlock> block, final Function<TBlock, TItem> factory) {
-        return register(block.getId().getPath(), () -> factory.apply(block.get()));
+    private static <TBlock extends Block, TItem extends Item> RegistrySupplier<TItem> register(final RegistrySupplier<TBlock> block, final BiFunction<TBlock, Properties, TItem> factory) {
+        final String name = block.getId().getPath();
+        return ITEMS.register(name, () -> factory.apply(block.get(), createProperties(name).useBlockDescriptionPrefix()));
+    }
+
+    private static Properties createProperties(final String name) {
+        return new Properties().setId(ResourceKey.create(Registries.ITEM,
+            Identifier.fromNamespaceAndPath(API.MOD_ID, name)));
     }
 }

@@ -48,9 +48,6 @@ dependencies {
         modImplementation(libs.fabric.manual)
     }
     modImplementation(libs.fabric.forgeConfigPort)
-
-    // Not used by mod, just for dev convenience.
-    modRuntimeOnly(libs.fabric.tooltipFix)
 }
 
 tasks {

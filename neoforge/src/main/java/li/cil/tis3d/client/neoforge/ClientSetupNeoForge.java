@@ -6,12 +6,11 @@ import li.cil.tis3d.client.ClientSetup;
 import li.cil.tis3d.client.gui.TerminalModuleScreen;
 import li.cil.tis3d.client.renderer.block.neoforge.ModuleModelLoader;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.event.RegisterBlockStateModels;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
@@ -30,7 +29,7 @@ public final class ClientSetupNeoForge {
     }
 
     @SubscribeEvent
-    public static void handleModelRegistryEvent(ModelEvent.RegisterGeometryLoaders event) {
-        event.register(ResourceLocation.fromNamespaceAndPath(API.MOD_ID, "module"), new ModuleModelLoader());
+    public static void handleBlockStateModelRegistry(final RegisterBlockStateModels event) {
+        ModuleModelLoader.register(event);
     }
 }

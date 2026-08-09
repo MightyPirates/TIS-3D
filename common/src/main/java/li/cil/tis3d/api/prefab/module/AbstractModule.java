@@ -8,8 +8,6 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.api.util.TransformUtil;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
@@ -160,7 +158,7 @@ public abstract class AbstractModule implements Module {
 
         // Otherwise check if the neighboring block blocks visibility to our face.
         final BlockState neighborState = level.getBlockState(neighborPos);
-        return !neighborState.isSolidRender(level, neighborPos);
+        return !neighborState.isSolidRender();
     }
 
     // --------------------------------------------------------------------- //
@@ -223,7 +221,6 @@ public abstract class AbstractModule implements Module {
     }
 
     @Override
-    @Environment(EnvType.CLIENT)
     public void render(final RenderContext context) {
     }
 

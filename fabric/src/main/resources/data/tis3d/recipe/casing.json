@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "key": {
-    "I": {
-      "tag": "c:iron_ingots"
-    },
-    "R": {
-      "tag": "c:redstone_dusts"
-    },
-    "S": {
-      "tag": "c:iron_blocks"
-    }
+    "I": "#c:iron_ingots",
+    "R": "#c:redstone_dusts",
+    "S": "#c:iron_blocks"
   },
   "pattern": [
     "IRI",

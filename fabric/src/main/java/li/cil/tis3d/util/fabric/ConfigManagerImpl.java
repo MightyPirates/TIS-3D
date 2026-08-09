@@ -1,7 +1,7 @@
 package li.cil.tis3d.util.fabric;
 
-import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeConfigRegistry;
-import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeModConfigEvents;
+import fuzs.forgeconfigapiport.fabric.api.v5.ConfigRegistry;
+import fuzs.forgeconfigapiport.fabric.api.v5.ModConfigEvents;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.util.ConfigManager;
 import li.cil.tis3d.util.config.ConfigType;
@@ -32,8 +32,8 @@ public final class ConfigManagerImpl extends ConfigManager {
     }
 
     public static void initialize() {
-        NeoForgeModConfigEvents.loading(API.MOD_ID).register(ConfigManagerImpl::handleModConfigEvent);
-        NeoForgeModConfigEvents.reloading(API.MOD_ID).register(ConfigManagerImpl::handleModConfigEvent);
+        ModConfigEvents.loading(API.MOD_ID).register(ConfigManagerImpl::handleModConfigEvent);
+        ModConfigEvents.reloading(API.MOD_ID).register(ConfigManagerImpl::handleModConfigEvent);
 
         CONFIGS.forEach((spec, config) -> {
             final Type typeAnnotation = config.instance().getClass().getAnnotation(Type.class);
@@ -43,7 +43,7 @@ public final class ConfigManagerImpl extends ConfigManager {
                 case CLIENT -> ModConfig.Type.CLIENT;
                 case SERVER -> ModConfig.Type.SERVER;
             };
-            NeoForgeConfigRegistry.INSTANCE.register(API.MOD_ID, platformType, spec);
+            ConfigRegistry.INSTANCE.register(API.MOD_ID, platformType, spec);
         });
     }
 

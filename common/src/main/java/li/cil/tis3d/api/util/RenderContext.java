@@ -4,21 +4,21 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import li.cil.manual.api.render.FontRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.phys.HitResult;
 
 /**
  * Wraps up render context and provides several convenience methods for {@link li.cil.tis3d.api.module.Module} rendering.
  */
 public interface RenderContext {
     /**
-     * Gets the current renderer in use for the context in which this module is being rendered.
+     * The result of the observer's look ray-cast, if any.
      *
-     * @return the current renderer.
+     * @return the observer's current hit result.
      */
-    BlockEntityRenderDispatcher getDispatcher();
+    HitResult getCameraHitResult();
 
     /**
      * The matrix stack in use for this context.
@@ -71,7 +71,7 @@ public interface RenderContext {
      *
      * @param location the location of the texture to draw.
      */
-    void drawAtlasQuadLit(ResourceLocation location);
+    void drawAtlasQuadLit(Identifier location);
 
     /**
      * Draws a 1x1 textured quad at maximum brightness.
@@ -80,7 +80,7 @@ public interface RenderContext {
      *
      * @param location the location of the texture to draw.
      */
-    void drawAtlasQuadUnlit(final ResourceLocation location);
+    void drawAtlasQuadUnlit(final Identifier location);
 
     /**
      * Draws a 1x1 textured quad at maximum brightness.
@@ -90,7 +90,7 @@ public interface RenderContext {
      * @param location the location of the texture to draw.
      * @param argb     the color tint of the quad as an ARGB color.
      */
-    default void drawAtlasQuadUnlit(final ResourceLocation location, final int argb) {
+    default void drawAtlasQuadUnlit(final Identifier location, final int argb) {
         drawAtlasQuadUnlit(location, 0, 0, 1, 1, 0, 0, 1, 1, argb);
     }
 
@@ -112,7 +112,7 @@ public interface RenderContext {
      * @param v1       the v component of the UV coordinate of the maximum corner of the quad.
      * @param argb     the color tint of the quad as an ARGB color.
      */
-    void drawAtlasQuadUnlit(ResourceLocation location, float x, float y, float width, float height,
+    void drawAtlasQuadUnlit(Identifier location, float x, float y, float width, float height,
                             float u0, float v0, float u1, float v1, int argb);
 
     /**

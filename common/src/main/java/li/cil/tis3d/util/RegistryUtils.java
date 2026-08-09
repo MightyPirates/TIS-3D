@@ -12,7 +12,7 @@ public abstract class RegistryUtils {
     @SafeVarargs
     public static <T> RegistrarBuilder<T> builder(ResourceKey<Registry<T>> registryKey, T... typeGetter) {
         if (modId == null) throw new IllegalStateException();
-        return RegistrarManager.get(modId).builder(registryKey.location(), typeGetter);
+        return RegistrarManager.get(modId).builder(registryKey.identifier(), typeGetter);
     }
 
     public static <T> DeferredRegister<T> get(ResourceKey<Registry<T>> registryKey) {

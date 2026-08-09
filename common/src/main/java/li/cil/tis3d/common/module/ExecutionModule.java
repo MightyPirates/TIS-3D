@@ -22,12 +22,10 @@ import li.cil.tis3d.common.module.execution.compiler.ParseException;
 import li.cil.tis3d.common.module.execution.compiler.Strings;
 import li.cil.tis3d.util.Color;
 import li.cil.tis3d.util.EnumUtils;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -60,9 +58,8 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
         WAIT
     }
 
-    @Environment(EnvType.CLIENT)
     private static final class RenderData {
-        private static final ResourceLocation[] STATE_LOCATIONS = new ResourceLocation[]{
+        private static final Identifier[] STATE_LOCATIONS = new Identifier[]{
             Textures.LOCATION_OVERLAY_MODULE_EXECUTION_IDLE,
             Textures.LOCATION_OVERLAY_MODULE_EXECUTION_ERROR,
             Textures.LOCATION_OVERLAY_MODULE_EXECUTION_RUNNING,
@@ -236,10 +233,9 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
         state = State.values()[data.readByte()];
     }
 
-    @Environment(EnvType.CLIENT)
     @Override
     public void render(final RenderContext context) {
-        if ((!getCasing().isEnabled() || !isVisible()) && !this.isHitFace(context.getDispatcher().cameraHitResult)) {
+        if ((!getCasing().isEnabled() || !isVisible()) && !this.isHitFace(context.getCameraHitResult())) {
             return;
         }
 
@@ -263,7 +259,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
     public void load(final CompoundTag tag) {
         super.load(tag);
 
-        final CompoundTag machineTag = tag.getCompound(TAG_MACHINE);
+        final CompoundTag machineTag = tag.getCompoundOrEmpty(TAG_MACHINE);
         getState().load(machineTag);
         state = EnumUtils.load(State.class, TAG_STATE, tag);
 
@@ -340,7 +336,6 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
         getCasing().sendData(getFace(), data, DATA_TYPE_INCREMENTAL);
     }
 
-    @Environment(EnvType.CLIENT)
     private void renderState(final RenderContext context, final MachineState machineState) {
         final PoseStack matrixStack = context.getMatrixStack();
         matrixStack.pushPose();
@@ -409,7 +404,6 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
      *
      * @param height the height of the line to draw.
      */
-    @Environment(EnvType.CLIENT)
     private static void drawLine(final RenderContext context, final int height, final int color) {
         context.drawQuadUnlit(-0.5f, -0.5f, 72, height + 1, color);
     }

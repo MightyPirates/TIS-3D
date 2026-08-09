@@ -4,8 +4,8 @@ import li.cil.tis3d.api.API;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
 import java.util.Optional;
@@ -23,7 +23,7 @@ public interface SerialInterfaceProvider {
     /**
      * The registry name of the registry holding serial interface providers.
      */
-    ResourceKey<Registry<SerialInterfaceProvider>> REGISTRY = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(API.MOD_ID, "serial_interface_provider"));
+    ResourceKey<Registry<SerialInterfaceProvider>> REGISTRY = ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(API.MOD_ID, "serial_interface_provider"));
 
     /**
      * Checks whether the provider supports the specified block position.

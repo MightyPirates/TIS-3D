@@ -2,24 +2,12 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "D": {
-      "item": "tis3d:display_module"
-    },
-    "I": {
-      "tag": "c:iron_ingots"
-    },
-    "K": {
-      "item": "tis3d:keypad_module"
-    },
-    "Q": {
-      "tag": "c:quartz"
-    },
-    "R": {
-      "tag": "c:redstone_dusts"
-    },
-    "S": {
-      "item": "tis3d:stack_module"
-    }
+    "D": "tis3d:display_module",
+    "I": "#c:iron_ingots",
+    "K": "tis3d:keypad_module",
+    "Q": "#c:quartz",
+    "R": "#c:redstone_dusts",
+    "S": "tis3d:stack_module"
   },
   "pattern": [
     "KDS",

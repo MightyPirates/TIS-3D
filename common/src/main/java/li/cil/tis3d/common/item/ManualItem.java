@@ -10,25 +10,26 @@ import li.cil.tis3d.client.renderer.font.NormalFontRenderer;
 import li.cil.tis3d.util.TooltipUtils;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * The manual!
  */
 public final class ManualItem extends AbstractManualItem {
-    public ManualItem() {
-        super(new Properties());
+    public ManualItem(final Properties properties) {
+        super(properties);
     }
 
     // --------------------------------------------------------------------- //
 
     @Override
-    public void appendHoverText(final ItemStack stack, final TooltipContext context, final List<Component> tooltip, final TooltipFlag flag) {
-        super.appendHoverText(stack, context, tooltip, flag);
+    public void appendHoverText(final ItemStack stack, final TooltipContext context, final TooltipDisplay display, final Consumer<Component> tooltip, final TooltipFlag flag) {
+        super.appendHoverText(stack, context, display, tooltip, flag);
         TooltipUtils.tryAddDescription(stack, tooltip);
     }
 
@@ -53,17 +54,17 @@ public final class ManualItem extends AbstractManualItem {
     protected ManualScreenStyle getScreenStyle() {
         return new ManualScreenStyle() {
             @Override
-            public ResourceLocation getWindowBackground() {
+            public Identifier getWindowBackground() {
                 return Textures.LOCATION_GUI_MANUAL_BACKGROUND;
             }
 
             @Override
-            public ResourceLocation getScrollButtonTexture() {
+            public Identifier getScrollButtonTexture() {
                 return Textures.LOCATION_GUI_MANUAL_SCROLL;
             }
 
             @Override
-            public ResourceLocation getTabButtonTexture() {
+            public Identifier getTabButtonTexture() {
                 return Textures.LOCATION_GUI_MANUAL_TAB;
             }
 

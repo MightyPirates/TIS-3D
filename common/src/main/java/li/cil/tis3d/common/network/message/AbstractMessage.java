@@ -1,10 +1,8 @@
 package li.cil.tis3d.common.network.message;
 
 import dev.architectury.networking.NetworkManager;
+import li.cil.tis3d.client.ClientHooks;
 import li.cil.tis3d.common.network.Network;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.level.Level;
@@ -45,9 +43,8 @@ public abstract class AbstractMessage implements CustomPacketPayload {
         return sender != null ? sender.level() : null;
     }
 
-    @Environment(EnvType.CLIENT)
     @Nullable
     protected Level getClientLevel() {
-        return Minecraft.getInstance().level;
+        return ClientHooks.getLevel();
     }
 }

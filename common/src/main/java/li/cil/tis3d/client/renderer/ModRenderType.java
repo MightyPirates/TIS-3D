@@ -1,29 +1,54 @@
 package li.cil.tis3d.client.renderer;
 
+import com.mojang.blaze3d.pipeline.BlendFunction;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import li.cil.tis3d.api.API;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.RenderStateShard;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.rendertype.RenderSetup;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.Util;
 
 import java.util.function.Function;
 
-public abstract class ModRenderType extends RenderType {
-    private static final ShaderStateShard POSITION_TEX_COLOR_SHADER =
-        new ShaderStateShard(GameRenderer::getPositionTexColorShader);
+public final class ModRenderType {
+    public static final RenderPipeline UNLIT_PIPELINE = RenderPipeline
+        .builder(RenderPipelines.MATRICES_PROJECTION_SNIPPET)
+        .withLocation(Identifier.fromNamespaceAndPath(API.MOD_ID, "pipeline/module_overlay"))
+        .withVertexShader("core/position_color")
+        .withFragmentShader("core/position_color")
+        .withBlend(BlendFunction.TRANSLUCENT)
+        .withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS)
+        .withDepthWrite(false)
+        .build();
 
-    private static final RenderType UNLIT_ATLAS_TEXTURE = create("atlas_module_overlay",
-        DefaultVertexFormat.POSITION_TEX_COLOR,
-        builder -> builder
-            .setShaderState(POSITION_TEX_COLOR_SHADER)
-            .setTextureState(BLOCK_SHEET_MIPPED));
+    public static final RenderPipeline UNLIT_TEXTURED_PIPELINE = RenderPipeline
+        .builder(RenderPipelines.MATRICES_PROJECTION_SNIPPET)
+        .withLocation(Identifier.fromNamespaceAndPath(API.MOD_ID, "pipeline/module_overlay_textured"))
+        .withVertexShader("core/position_tex_color")
+        .withFragmentShader("core/position_tex_color")
+        .withSampler("Sampler0")
+        .withBlend(BlendFunction.TRANSLUCENT)
+        .withVertexFormat(DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS)
+        .withDepthWrite(false)
+        .build();
 
-    private static final RenderType UNLIT = create("module_overlay",
-        DefaultVertexFormat.POSITION_COLOR,
-        builder -> builder
-            .setShaderState(RenderStateShard.POSITION_COLOR_SHADER));
+    private static final RenderType UNLIT = RenderType.create(API.MOD_ID + "/module_overlay",
+        RenderSetup.builder(UNLIT_PIPELINE).createRenderSetup());
+
+    private static final RenderType UNLIT_ATLAS_TEXTURE = RenderType.create(API.MOD_ID + "/atlas_module_overlay",
+        RenderSetup.builder(UNLIT_TEXTURED_PIPELINE)
+            .withTexture("Sampler0", TextureAtlas.LOCATION_BLOCKS)
+            .createRenderSetup());
+
+    private static final Function<Identifier, RenderType> UNLIT_TEXTURE = Util.memoize(texture ->
+        RenderType.create(API.MOD_ID + "/texture_module_overlay",
+            RenderSetup.builder(UNLIT_TEXTURED_PIPELINE)
+                .withTexture("Sampler0", texture)
+                .createRenderSetup()));
 
     // --------------------------------------------------------------------- //
 
@@ -50,38 +75,19 @@ public abstract class ModRenderType extends RenderType {
     }
 
     /**
-     * Create a render layer that is identical to {@link RenderType#entityCutout(ResourceLocation)},
+     * Create a render layer that is identical to {@link net.minecraft.client.renderer.rendertype.RenderTypes#entityCutout(Identifier)},
      * except with diffuse lighting disabled.
      *
      * @param texture the id of the texture to be bound.
      * @return the {@link RenderType} instance.
      */
-    public static RenderType unlitTexture(final ResourceLocation texture) {
-        return create("texture_module_overlay",
-            DefaultVertexFormat.POSITION_TEX_COLOR,
-            builder -> builder
-                .setShaderState(POSITION_TEX_COLOR_SHADER)
-                .setTextureState(new TextureStateShard(texture, false, false)));
-    }
-
-    // --------------------------------------------------------------------- //
-
-    private static RenderType create(final String name, final VertexFormat format, final Function<CompositeState.CompositeStateBuilder, CompositeState.CompositeStateBuilder> parameters) {
-        return create(API.MOD_ID + "/" + name,
-            format,
-            VertexFormat.Mode.QUADS, 256,
-            false,
-            false,
-            parameters.apply(CompositeState.builder())
-                .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                .setWriteMaskState(COLOR_WRITE)
-                .createCompositeState(false));
+    public static RenderType unlitTexture(final Identifier texture) {
+        return UNLIT_TEXTURE.apply(texture);
     }
 
     // --------------------------------------------------------------------- //
 
     private ModRenderType() {
-        super("", DefaultVertexFormat.POSITION, VertexFormat.Mode.QUADS, 256, false, false, () -> {}, () -> {});
         throw new UnsupportedOperationException("Not meant to be instantiated.");
     }
 }

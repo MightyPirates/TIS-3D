@@ -17,7 +17,7 @@ public final class ModBlockTagsProvider extends FabricTagProvider.BlockTagProvid
 
     @Override
     protected void addTags(final HolderLookup.Provider provider) {
-        getOrCreateTagBuilder(COMPUTERS).add(
+        valueLookupBuilder(COMPUTERS).add(
             CASING.get(),
             CONTROLLER.get()
         );

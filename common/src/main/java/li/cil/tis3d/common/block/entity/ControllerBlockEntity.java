@@ -7,13 +7,9 @@ import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.ControllerStateMessage;
 import li.cil.tis3d.common.network.message.HaltAndCatchFireMessage;
 import li.cil.tis3d.util.LevelUtils;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -21,6 +17,8 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
@@ -240,31 +238,31 @@ public final class ControllerBlockEntity extends ComputerBlockEntity {
     // BlockEntityComputer
 
     @Override
-    protected void loadServer(final CompoundTag tag, final HolderLookup.Provider registries) {
-        super.loadServer(tag, registries);
+    protected void loadServer(final ValueInput input) {
+        super.loadServer(input);
 
-        hcfCooldown = tag.getInt(TAG_HCF_COOLDOWN);
+        hcfCooldown = input.getIntOr(TAG_HCF_COOLDOWN, 0);
     }
 
     @Override
-    protected void saveServer(final CompoundTag tag, final HolderLookup.Provider registries) {
-        super.saveServer(tag, registries);
+    protected void saveServer(final ValueOutput output) {
+        super.saveServer(output);
 
-        tag.putInt(TAG_HCF_COOLDOWN, hcfCooldown);
+        output.putInt(TAG_HCF_COOLDOWN, hcfCooldown);
     }
 
     @Override
-    protected void loadClient(final CompoundTag tag, final HolderLookup.Provider registries) {
-        super.loadClient(tag, registries);
+    protected void loadClient(final ValueInput input) {
+        super.loadClient(input);
 
-        state = ControllerState.VALUES[tag.getByte(TAG_STATE) & 0xFF];
+        state = ControllerState.VALUES[input.getByteOr(TAG_STATE, (byte) 0) & 0xFF];
     }
 
     @Override
-    protected void saveClient(final CompoundTag tag, final HolderLookup.Provider registries) {
-        super.saveClient(tag, registries);
+    protected void saveClient(final ValueOutput output) {
+        super.saveClient(output);
 
-        tag.putByte(TAG_STATE, (byte) state.ordinal());
+        output.putByte(TAG_STATE, (byte) state.ordinal());
     }
 
     // --------------------------------------------------------------------- //
@@ -280,7 +278,7 @@ public final class ControllerBlockEntity extends ComputerBlockEntity {
         if (state != lastSentState) {
             final BlockState blockState = level.getBlockState(getBlockPos());
             level.sendBlockUpdated(getBlockPos(), blockState, blockState, 7);
-            level.blockUpdated(getBlockPos(), blockState.getBlock());
+            level.updateNeighborsAt(getBlockPos(), blockState.getBlock(), null);
             Network.sendToTrackingPlayers(this, new ControllerStateMessage(this, state));
             lastSentState = state;
         }
@@ -293,7 +291,7 @@ public final class ControllerBlockEntity extends ComputerBlockEntity {
                 for (final Direction facing : Direction.values()) {
                     final BlockPos neighborPos = getBlockPos().relative(facing);
                     final BlockState neighborState = level.getBlockState(neighborPos);
-                    if (neighborState.isSolidRender(level, neighborPos)) {
+                    if (neighborState.isSolidRender()) {
                         continue;
                     }
                     if (level.random.nextFloat() > 0.25f) {
@@ -380,7 +378,6 @@ public final class ControllerBlockEntity extends ComputerBlockEntity {
     // --------------------------------------------------------------------- //
     // Synchronization
 
-    @Environment(EnvType.CLIENT)
     public void setStateClient(final ControllerState state) {
         this.state = state;
     }

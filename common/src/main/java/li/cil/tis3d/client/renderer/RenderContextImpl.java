@@ -7,47 +7,52 @@ import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.util.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.Material;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 public final class RenderContextImpl implements RenderContext {
     private static final int DETAIL_RENDER_RANGE = 8;
 
-    private final BlockEntityRenderDispatcher dispatcher;
     private final PoseStack matrixStack;
     private final MultiBufferSource buffer;
+    private final Vec3 cameraPosition;
+    private final HitResult cameraHitResult;
     private final float partialTicks;
     private final int light;
     private final int overlay;
 
     // --------------------------------------------------------------------- //
 
-    public RenderContextImpl(final BlockEntityRenderDispatcher dispatcher, final PoseStack matrixStack,
-                             final MultiBufferSource buffer, final float partialTicks,
-                             final int light, final int overlay) {
-        this.dispatcher = dispatcher;
+    public RenderContextImpl(final PoseStack matrixStack, final MultiBufferSource buffer,
+                             final Vec3 cameraPosition, final HitResult cameraHitResult,
+                             final float partialTicks, final int light, final int overlay) {
         this.matrixStack = matrixStack;
         this.buffer = buffer;
+        this.cameraPosition = cameraPosition;
+        this.cameraHitResult = cameraHitResult;
         this.partialTicks = partialTicks;
         this.light = light;
         this.overlay = overlay;
     }
 
     public RenderContextImpl(final RenderContextImpl other, final int light) {
-        this(other.dispatcher, other.matrixStack, other.buffer, other.partialTicks, light, other.overlay);
+        this(other.matrixStack, other.buffer, other.cameraPosition, other.cameraHitResult,
+            other.partialTicks, light, other.overlay);
     }
 
     // --------------------------------------------------------------------- //
 
     @Override
-    public BlockEntityRenderDispatcher getDispatcher() {
-        return dispatcher;
+    public HitResult getCameraHitResult() {
+        return cameraHitResult;
     }
 
     @Override
@@ -67,7 +72,7 @@ public final class RenderContextImpl implements RenderContext {
 
     @Override
     public boolean closeEnoughForDetails(final BlockPos position) {
-        return position.closerToCenterThan(dispatcher.camera.getPosition(), (float) DETAIL_RENDER_RANGE);
+        return position.closerToCenterThan(cameraPosition, DETAIL_RENDER_RANGE);
     }
 
     @Override
@@ -76,18 +81,18 @@ public final class RenderContextImpl implements RenderContext {
     }
 
     @Override
-    public void drawAtlasQuadLit(final ResourceLocation location) {
-        final VertexConsumer builder = buffer.getBuffer(RenderType.translucent());
+    public void drawAtlasQuadLit(final Identifier location) {
+        final VertexConsumer builder = buffer.getBuffer(RenderTypes.entityTranslucent(TextureAtlas.LOCATION_BLOCKS));
         drawAtlasQuad(builder, getSprite(location), 0, 0, 1, 1, 0, 0, 1, 1, Color.WHITE);
     }
 
     @Override
-    public void drawAtlasQuadUnlit(final ResourceLocation location) {
+    public void drawAtlasQuadUnlit(final Identifier location) {
         drawAtlasQuadUnlit(location, 0, 0, 1, 1, 0, 0, 1, 1, Color.WHITE);
     }
 
     @Override
-    public void drawAtlasQuadUnlit(final ResourceLocation location,
+    public void drawAtlasQuadUnlit(final Identifier location,
                                    final float x, final float y, final float width, final float height,
                                    final float u0, final float v0, final float u1, final float v1,
                                    final int argb) {
@@ -136,7 +141,7 @@ public final class RenderContextImpl implements RenderContext {
 
     // --------------------------------------------------------------------- //
 
-    private static TextureAtlasSprite getSprite(final ResourceLocation location) {
-        return Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(location);
+    private static TextureAtlasSprite getSprite(final Identifier location) {
+        return Minecraft.getInstance().getAtlasManager().get(new Material(TextureAtlas.LOCATION_BLOCKS, location));
     }
 }

@@ -14,7 +14,7 @@ import li.cil.tis3d.common.block.Blocks;
 import li.cil.tis3d.common.item.Items;
 import li.cil.tis3d.util.RegistryUtils;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 public final class Manuals {
@@ -38,7 +38,7 @@ public final class Manuals {
         tabs.register("home", () -> new TextureTab(
             ManualModel.LANGUAGE_KEY + "/index.md",
             Component.translatable("tis3d.manual.home"),
-            ResourceLocation.fromNamespaceAndPath(API.MOD_ID, "textures/gui/manual_home.png")));
+            Identifier.fromNamespaceAndPath(API.MOD_ID, "textures/gui/manual_home.png")));
         tabs.register("blocks", () -> new ItemStackTab(
             ManualModel.LANGUAGE_KEY + "/block/index.md",
             Component.translatable("tis3d.manual.blocks"),
@@ -50,7 +50,7 @@ public final class Manuals {
         tabs.register("serial_protocols", () -> new TextureTab(
             ManualModel.LANGUAGE_KEY + "/protocols/index.md",
             Component.translatable("tis3d.manual.serial_protocols"),
-            ResourceLocation.fromNamespaceAndPath(API.MOD_ID, "textures/gui/manual_serial_protocols.png")));
+            Identifier.fromNamespaceAndPath(API.MOD_ID, "textures/gui/manual_serial_protocols.png")));
 
         MANUALS.register();
         pathProviders.register();

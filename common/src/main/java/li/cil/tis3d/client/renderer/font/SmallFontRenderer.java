@@ -3,12 +3,12 @@ package li.cil.tis3d.client.renderer.font;
 import li.cil.manual.api.prefab.renderer.BitmapFontRenderer;
 import li.cil.manual.api.render.FontRenderer;
 import li.cil.tis3d.api.API;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public final class SmallFontRenderer extends BitmapFontRenderer {
     public static final FontRenderer INSTANCE = new SmallFontRenderer();
 
-    private static final ResourceLocation LOCATION_FONT_TEXTURE = ResourceLocation.fromNamespaceAndPath(API.MOD_ID, "textures/font/small.png");
+    private static final Identifier LOCATION_FONT_TEXTURE = Identifier.fromNamespaceAndPath(API.MOD_ID, "textures/font/small.png");
     private static final String CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890:#-,?+!=()'.";
 
     // --------------------------------------------------------------------- //
@@ -33,7 +33,7 @@ public final class SmallFontRenderer extends BitmapFontRenderer {
     }
 
     @Override
-    protected ResourceLocation getTextureLocation() {
+    protected Identifier getTextureLocation() {
         return LOCATION_FONT_TEXTURE;
     }
 

@@ -6,6 +6,8 @@ import li.cil.tis3d.util.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -29,6 +31,11 @@ public final class TerminalModuleScreen extends Screen {
     }
 
     @Override
+    public void renderBackground(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
+        // This page intentionally left blank.
+    }
+
+    @Override
     public void render(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
         graphics.fill(4, 4, width - 4, 8, Color.WHITE); // Top
         graphics.fill(4, 4, 8, height - 4, Color.WHITE); // Left
@@ -37,11 +44,12 @@ public final class TerminalModuleScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(final int keyCode, final int scanCode, final int modifiers) {
-        if (super.keyPressed(keyCode, scanCode, modifiers)) {
+    public boolean keyPressed(final KeyEvent event) {
+        if (super.keyPressed(event)) {
             return true;
         }
 
+        final int keyCode = event.key();
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
             return true;
         } else if (keyCode == GLFW.GLFW_KEY_BACKSPACE) {
@@ -59,13 +67,14 @@ public final class TerminalModuleScreen extends Screen {
     }
 
     @Override
-    public boolean charTyped(final char typedChar, final int modifiers) {
-        if (super.charTyped(typedChar, modifiers)) {
+    public boolean charTyped(final CharacterEvent event) {
+        if (super.charTyped(event)) {
             return true;
         }
 
-        if (typedChar != '\0') {
-            writeToModule(typedChar);
+        final int codepoint = event.codepoint();
+        if (codepoint != 0) {
+            writeToModule((char) codepoint);
             return true;
         }
 

@@ -10,7 +10,6 @@ import li.cil.tis3d.common.module.InfraredModule;
 import li.cil.tis3d.util.Raytracing;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -19,6 +18,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Explosion;
@@ -27,6 +27,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Portal;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.*;
 
 import javax.annotation.Nullable;
@@ -134,15 +136,20 @@ public final class InfraredPacketEntity extends Entity implements EntitySpawnExt
     }
 
     @Override
-    protected void readAdditionalSaveData(final CompoundTag tag) {
-        lifetime = tag.getInt(TAG_LIFETIME);
-        value = tag.getShort(TAG_VALUE);
+    public boolean hurtServer(final ServerLevel level, final DamageSource damageSource, final float amount) {
+        return false;
     }
 
     @Override
-    protected void addAdditionalSaveData(final CompoundTag tag) {
-        tag.putInt(TAG_LIFETIME, lifetime);
-        tag.putShort(TAG_VALUE, value);
+    protected void readAdditionalSaveData(final ValueInput input) {
+        lifetime = input.getIntOr(TAG_LIFETIME, 0);
+        value = (short) input.getShortOr(TAG_VALUE, (short) 0);
+    }
+
+    @Override
+    protected void addAdditionalSaveData(final ValueOutput output) {
+        output.putInt(TAG_LIFETIME, lifetime);
+        output.putShort(TAG_VALUE, value);
     }
 
     @Override

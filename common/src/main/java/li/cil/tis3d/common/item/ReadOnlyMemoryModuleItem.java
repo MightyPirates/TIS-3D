@@ -9,7 +9,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -24,15 +23,15 @@ public final class ReadOnlyMemoryModuleItem extends ModuleItem {
     private static final String TAG_DATA = "data";
     private static final byte[] EMPTY_DATA = new byte[0];
 
-    public ReadOnlyMemoryModuleItem() {
-        super(createProperties().stacksTo(1));
+    public ReadOnlyMemoryModuleItem(final Properties properties) {
+        super(properties.stacksTo(1));
     }
 
     // --------------------------------------------------------------------- //
     // Item
 
     @Override
-    public InteractionResultHolder<ItemStack> use(final Level level, final Player player, final InteractionHand hand) {
+    public InteractionResult use(final Level level, final Player player, final InteractionHand hand) {
         if (!level.isClientSide() && player instanceof final ServerPlayer serverPlayer) {
             MenuRegistry.openExtendedMenu(serverPlayer, new MenuProvider() {
                 @Override
@@ -46,7 +45,7 @@ public final class ReadOnlyMemoryModuleItem extends ModuleItem {
                 }
             }, buffer -> buffer.writeEnum(hand));
         }
-        return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), level.isClientSide());
+        return InteractionResult.SUCCESS;
     }
 
     @Override
@@ -64,7 +63,7 @@ public final class ReadOnlyMemoryModuleItem extends ModuleItem {
      */
     public static byte[] loadFromTag(@Nullable final CompoundTag tag) {
         if (tag != null) {
-            return tag.getByteArray(TAG_DATA);
+            return tag.getByteArray(TAG_DATA).orElse(EMPTY_DATA);
         }
         return EMPTY_DATA;
     }

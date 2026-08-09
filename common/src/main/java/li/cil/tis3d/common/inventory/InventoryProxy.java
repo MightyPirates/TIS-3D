@@ -1,6 +1,7 @@
 package li.cil.tis3d.common.inventory;
 
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.ContainerUser;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -53,13 +54,13 @@ public interface InventoryProxy extends Container {
     }
 
     @Override
-    default void startOpen(final Player player) {
-        getInventory().startOpen(player);
+    default void startOpen(final ContainerUser user) {
+        getInventory().startOpen(user);
     }
 
     @Override
-    default void stopOpen(final Player player) {
-        getInventory().stopOpen(player);
+    default void stopOpen(final ContainerUser user) {
+        getInventory().stopOpen(user);
     }
 
     @Override

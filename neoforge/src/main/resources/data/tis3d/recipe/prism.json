@@ -2,18 +2,10 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "tag": "c:gems/quartz"
-    },
-    {
-      "tag": "c:dusts/redstone"
-    },
-    {
-      "tag": "c:gems/lapis"
-    },
-    {
-      "tag": "c:gems/emerald"
-    }
+    "#c:gems/quartz",
+    "#c:dusts/redstone",
+    "#c:gems/lapis",
+    "#c:gems/emerald"
   ],
   "result": {
     "count": 1,

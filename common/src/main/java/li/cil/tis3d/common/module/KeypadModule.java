@@ -9,8 +9,6 @@ import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.util.Color;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -41,7 +39,7 @@ public final class KeypadModule extends AbstractModuleWithRotation {
     private static final byte DATA_TYPE_VALUE = 0;
 
     // Color of hovered/focused button highlight.
-    private static final int HIGHLIGHT_COLOR = Color.withAlpha(Color.WHITE, 0.5f);
+    private static final int HIGHLIGHT_COLOR = Color.withAlpha(Color.WHITE, 0.55f);
 
     // Rendering info.
     private static final float KEYS_U0 = 5 / 32f;
@@ -143,13 +141,13 @@ public final class KeypadModule extends AbstractModuleWithRotation {
         if (level.isClientSide()) {
             // Got state on which key is currently 'pressed'.
             if (data.contains(TAG_VALUE)) {
-                value = Optional.of(data.getShort(TAG_VALUE));
+                value = Optional.of(data.getShortOr(TAG_VALUE, (short) 0));
             } else {
                 value = Optional.empty();
             }
         } else if (value.isEmpty() && data.contains(TAG_VALUE)) {
             // Got an input and don't have one yet.
-            final short newValue = data.getShort(TAG_VALUE);
+            final short newValue = data.getShortOr(TAG_VALUE, (short) 0);
             value = Optional.of(newValue);
             getCasing().sendData(getFace(), data, DATA_TYPE_VALUE);
             getCasing().getCasingLevel().playSound(null, getCasing().getPosition(), SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.3f, VALUE_TO_PITCH[newValue]);
@@ -157,7 +155,6 @@ public final class KeypadModule extends AbstractModuleWithRotation {
         }
     }
 
-    @Environment(EnvType.CLIENT)
     @Override
     public void render(final RenderContext context) {
         if (!getCasing().isEnabled() || !isVisible()) {
@@ -174,7 +171,7 @@ public final class KeypadModule extends AbstractModuleWithRotation {
 
         // Draw overlay for hovered button if we can currently input a value.
         if (value.isEmpty()) {
-            final Vec3 hitPos = getLocalHitPosition(context.getDispatcher().cameraHitResult);
+            final Vec3 hitPos = getLocalHitPosition(context.getCameraHitResult());
             if (hitPos != null) {
                 final Vec3 uv = hitToUV(hitPos);
                 final int button = uvToButton((float) uv.x, (float) uv.y);
@@ -192,7 +189,7 @@ public final class KeypadModule extends AbstractModuleWithRotation {
         super.load(tag);
 
         if (tag.contains(TAG_VALUE)) {
-            value = Optional.of(tag.getShort(TAG_VALUE));
+            value = Optional.of(tag.getShortOr(TAG_VALUE, (short) 0));
         }
     }
 

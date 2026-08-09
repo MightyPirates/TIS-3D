@@ -1,44 +1,38 @@
 package li.cil.tis3d.client.renderer.block.fabric;
 
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.*;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import li.cil.tis3d.api.API;
+import net.fabricmc.fabric.api.client.model.loading.v1.CustomUnbakedBlockStateModel;
+import net.minecraft.client.renderer.block.model.BlockStateModel;
+import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.resources.Identifier;
 
-import java.util.Collection;
-import java.util.function.Function;
+public record ModuleUnbakedModel(Direction face,
+                                 BlockStateModel.Unbaked proxy) implements CustomUnbakedBlockStateModel {
+    public static final Identifier ID = Identifier.fromNamespaceAndPath(API.MOD_ID, "casing_module");
 
-public final class ModuleUnbakedModel implements UnbakedModel {
-    private final UnbakedModel proxy;
-
-    // --------------------------------------------------------------------- //
-
-    ModuleUnbakedModel(final UnbakedModel proxy) {
-        this.proxy = proxy;
-    }
+    public static final MapCodec<ModuleUnbakedModel> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+        Direction.CODEC.fieldOf("face").forGetter(ModuleUnbakedModel::face),
+        BlockStateModel.Unbaked.CODEC.fieldOf("proxy").forGetter(ModuleUnbakedModel::proxy)
+    ).apply(instance, ModuleUnbakedModel::new));
 
     // --------------------------------------------------------------------- //
-    // UnbakedModel
+    // CustomUnbakedBlockStateModel
 
     @Override
-    public Collection<ResourceLocation> getDependencies() {
-        return proxy.getDependencies();
+    public MapCodec<? extends CustomUnbakedBlockStateModel> codec() {
+        return CODEC;
     }
 
     @Override
-    public void resolveParents(final Function<ResourceLocation, UnbakedModel> function) {
-        proxy.resolveParents(function);
+    public BlockStateModel bake(final ModelBaker baker) {
+        return new ModuleBakedModel(proxy.bake(baker), face);
     }
 
-    @Nullable
     @Override
-    public BakedModel bake(final ModelBaker modelBaker, final Function<Material, TextureAtlasSprite> function, final ModelState modelState) {
-        final var bakedProxy = this.proxy.bake(modelBaker, function, modelState);
-        if (bakedProxy != null) {
-            return new ModuleBakedModel(bakedProxy, Direction.rotate(modelState.getRotation().getMatrix(), Direction.SOUTH));
-        } else {
-            return null;
-        }
+    public void resolveDependencies(final Resolver resolver) {
+        proxy.resolveDependencies(resolver);
     }
 }

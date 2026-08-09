@@ -1,7 +1,4 @@
 @ParametersAreNonnullByDefault
-@MethodsReturnNonnullByDefault
 package li.cil.tis3d.common.block.entity;
-
-import net.minecraft.MethodsReturnNonnullByDefault;
 
 import javax.annotation.ParametersAreNonnullByDefault;

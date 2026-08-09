@@ -4,9 +4,7 @@ import li.cil.tis3d.api.API;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
-import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
 
 import static li.cil.tis3d.common.block.Blocks.CASING;
@@ -14,8 +12,8 @@ import static li.cil.tis3d.common.block.Blocks.CONTROLLER;
 import static li.cil.tis3d.common.tags.BlockTags.COMPUTERS;
 
 public final class ModBlockTagsProvider extends BlockTagsProvider {
-    public ModBlockTagsProvider(final PackOutput output, final CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable final ExistingFileHelper existingFileHelper) {
-        super(output, lookupProvider, API.MOD_ID, existingFileHelper);
+    public ModBlockTagsProvider(final PackOutput output, final CompletableFuture<HolderLookup.Provider> lookupProvider) {
+        super(output, lookupProvider, API.MOD_ID);
     }
 
     @Override

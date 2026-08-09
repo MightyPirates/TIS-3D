@@ -1,7 +1,5 @@
 package li.cil.tis3d.api.module.traits;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockAndTintGetter;
 
@@ -40,7 +38,6 @@ public interface ModuleWithBakedModel {
      * @param tintIndex the tint index to resolve.
      * @return the color for the specified tint index, if possible.
      */
-    @Environment(EnvType.CLIENT)
     default OptionalInt getTintColor(@Nullable final BlockAndTintGetter level, @Nullable final BlockPos pos, final int tintIndex) {
         return OptionalInt.empty();
     }

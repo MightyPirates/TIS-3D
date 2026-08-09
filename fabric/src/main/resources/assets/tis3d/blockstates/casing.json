@@ -3,7 +3,7 @@
     {
       "apply": {
         "model": "tis3d:block/casing_empty",
-        "x": -90,
+        "x": 270,
         "y": 270
       },
       "when": {
@@ -12,9 +12,13 @@
     },
     {
       "apply": {
-        "model": "tis3d:block/casing_module",
-        "x": -90,
-        "y": 270
+        "fabric:type": "tis3d:casing_module",
+        "face": "down",
+        "proxy": {
+          "model": "tis3d:block/casing_module",
+          "x": 270,
+          "y": 270
+        }
       },
       "when": {
         "yneg": "true"
@@ -32,9 +36,13 @@
     },
     {
       "apply": {
-        "model": "tis3d:block/casing_module",
-        "x": 90,
-        "y": 270
+        "fabric:type": "tis3d:casing_module",
+        "face": "up",
+        "proxy": {
+          "model": "tis3d:block/casing_module",
+          "x": 90,
+          "y": 270
+        }
       },
       "when": {
         "ypos": "true"
@@ -51,8 +59,12 @@
     },
     {
       "apply": {
-        "model": "tis3d:block/casing_module",
-        "y": 180
+        "fabric:type": "tis3d:casing_module",
+        "face": "north",
+        "proxy": {
+          "model": "tis3d:block/casing_module",
+          "y": 180
+        }
       },
       "when": {
         "zneg": "true"
@@ -68,7 +80,11 @@
     },
     {
       "apply": {
-        "model": "tis3d:block/casing_module"
+        "fabric:type": "tis3d:casing_module",
+        "face": "south",
+        "proxy": {
+          "model": "tis3d:block/casing_module"
+        }
       },
       "when": {
         "zpos": "true"
@@ -85,8 +101,12 @@
     },
     {
       "apply": {
-        "model": "tis3d:block/casing_module",
-        "y": 90
+        "fabric:type": "tis3d:casing_module",
+        "face": "west",
+        "proxy": {
+          "model": "tis3d:block/casing_module",
+          "y": 90
+        }
       },
       "when": {
         "xneg": "true"
@@ -103,8 +123,12 @@
     },
     {
       "apply": {
-        "model": "tis3d:block/casing_module",
-        "y": 270
+        "fabric:type": "tis3d:casing_module",
+        "face": "east",
+        "proxy": {
+          "model": "tis3d:block/casing_module",
+          "y": 270
+        }
       },
       "when": {
         "xpos": "true"

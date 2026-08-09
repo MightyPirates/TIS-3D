@@ -1,9 +1,7 @@
 package li.cil.tis3d.common.network.message;
 
 import dev.architectury.networking.NetworkManager;
-import li.cil.tis3d.client.gui.ReadOnlyMemoryModuleScreen;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
+import li.cil.tis3d.client.ClientHooks;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.InteractionHand;
 
@@ -21,9 +19,6 @@ public final class ServerReadOnlyMemoryModuleDataMessage extends AbstractReadOnl
 
     @Override
     public void handleMessage(final NetworkManager.PacketContext context) {
-        final Screen screen = Minecraft.getInstance().screen;
-        if (screen instanceof final ReadOnlyMemoryModuleScreen moduleScreen) {
-            moduleScreen.setData(data);
-        }
+        ClientHooks.setReadOnlyMemoryModuleData(data);
     }
 }

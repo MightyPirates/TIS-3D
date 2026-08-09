@@ -10,15 +10,18 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -154,27 +157,30 @@ public abstract class ComputerBlockEntity extends BlockEntity implements PipeHos
     // BlockEntity
 
     @Override
-    protected void loadAdditional(final CompoundTag tag, final HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        if (tag.contains(TAG_IS_UPDATE_TAG)) {
-            loadClient(tag, registries);
+    protected void loadAdditional(final ValueInput input) {
+        super.loadAdditional(input);
+        if (input.getBooleanOr(TAG_IS_UPDATE_TAG, false)) {
+            loadClient(input);
         } else {
-            loadServer(tag, registries);
+            loadServer(input);
         }
     }
 
     @Override
-    protected void saveAdditional(final CompoundTag tag, final HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        saveServer(tag, registries);
+    protected void saveAdditional(final ValueOutput output) {
+        super.saveAdditional(output);
+        saveServer(output);
     }
 
     @Override
     public CompoundTag getUpdateTag(final HolderLookup.Provider registries) {
-        final CompoundTag tag = super.getUpdateTag(registries);
-        tag.putBoolean(TAG_IS_UPDATE_TAG, true);
-        saveClient(tag, registries);
-        return tag;
+        try (ProblemReporter.ScopedCollector problems =
+                 new ProblemReporter.ScopedCollector(problemPath(), LoggerFactory.getLogger(getClass()))) {
+            final TagValueOutput output = TagValueOutput.createWithContext(problems, registries);
+            output.putBoolean(TAG_IS_UPDATE_TAG, true);
+            saveClient(output);
+            return output.buildResult();
+        }
     }
 
     @Override
@@ -217,40 +223,41 @@ public abstract class ComputerBlockEntity extends BlockEntity implements PipeHos
         }
     }
 
-    protected void loadServer(final CompoundTag tag, final HolderLookup.Provider registries) {
-        final ListTag pipesTag = tag.getList(TAG_PIPES, Tag.TAG_COMPOUND);
-        final int pipeCount = Math.min(pipesTag.size(), pipes.length);
-        for (int i = 0; i < pipeCount; i++) {
-            pipes[i].load(pipesTag.getCompound(i));
+    protected void loadServer(final ValueInput input) {
+        int i = 0;
+        for (final CompoundTag pipeTag : input.listOrEmpty(TAG_PIPES, CompoundTag.CODEC)) {
+            if (i >= pipes.length) {
+                break;
+            }
+            pipes[i++].load(pipeTag);
         }
 
-        loadCommon(tag, registries);
+        loadCommon(input);
     }
 
-    protected void saveServer(final CompoundTag tag, final HolderLookup.Provider registries) {
-        final ListTag pipesTag = new ListTag();
+    protected void saveServer(final ValueOutput output) {
+        final ValueOutput.TypedOutputList<CompoundTag> pipesTag = output.list(TAG_PIPES, CompoundTag.CODEC);
         for (final PipeImpl pipe : pipes) {
             final CompoundTag portTag = new CompoundTag();
             pipe.save(portTag);
             pipesTag.add(portTag);
         }
-        tag.put(TAG_PIPES, pipesTag);
 
-        saveCommon(tag, registries);
+        saveCommon(output);
     }
 
-    protected void loadClient(final CompoundTag tag, final HolderLookup.Provider registries) {
-        loadCommon(tag, registries);
+    protected void loadClient(final ValueInput input) {
+        loadCommon(input);
     }
 
-    protected void saveClient(final CompoundTag tag, final HolderLookup.Provider registries) {
-        saveCommon(tag, registries);
+    protected void saveClient(final ValueOutput output) {
+        saveCommon(output);
     }
 
-    protected void loadCommon(final CompoundTag tag, final HolderLookup.Provider registries) {
+    protected void loadCommon(final ValueInput input) {
     }
 
-    protected void saveCommon(final CompoundTag tag, final HolderLookup.Provider registries) {
+    protected void saveCommon(final ValueOutput output) {
     }
 
     boolean hasNeighbor(final Face face) {
