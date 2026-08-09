@@ -23,6 +23,7 @@ import net.minecraft.client.renderer.block.model.VariantMutator;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
@@ -58,7 +59,7 @@ public final class ModModelProvider extends ModelProvider {
 
     @Override
     protected Stream<? extends Holder<Block>> getKnownBlocks() {
-        return Stream.of(Blocks.CASING, Blocks.CONTROLLER).map(supplier -> supplier.get().builtInRegistryHolder());
+        return Stream.of(Blocks.CASING, Blocks.CONTROLLER).map(supplier -> BuiltInRegistries.BLOCK.wrapAsHolder(supplier.get()));
     }
 
     @Override
@@ -71,7 +72,7 @@ public final class ModModelProvider extends ModelProvider {
             Items.RANDOM_ACCESS_MEMORY_MODULE, Items.READ_ONLY_MEMORY_MODULE, Items.REDSTONE_MODULE,
             Items.SEQUENCER_MODULE, Items.SERIAL_PORT_MODULE, Items.STACK_MODULE, Items.TERMINAL_MODULE,
             Items.TIMER_MODULE
-        ).map(supplier -> supplier.get().builtInRegistryHolder());
+        ).map(supplier -> BuiltInRegistries.ITEM.wrapAsHolder(supplier.get()));
     }
 
     // --------------------------------------------------------------------- //

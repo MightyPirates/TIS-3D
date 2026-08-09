@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import static li.cil.tis3d.common.item.Items.*;
@@ -21,12 +22,12 @@ public class ModItemTagsProvider extends FabricTagProvider.ItemTagProvider {
 
     @Override
     protected void addTags(final HolderLookup.Provider provider) {
-        builder(COMPUTERS).add(
+        builder(COMPUTERS).addAll(List.of(
             key(CASING.get()),
             key(CONTROLLER.get())
-        );
+        ));
 
-        builder(MODULES).add(
+        builder(MODULES).addAll(List.of(
             key(AUDIO_MODULE.get()),
             key(DISPLAY_MODULE.get()),
             key(EXECUTION_MODULE.get()),
@@ -43,21 +44,21 @@ public class ModItemTagsProvider extends FabricTagProvider.ItemTagProvider {
             key(STACK_MODULE.get()),
             key(TERMINAL_MODULE.get()),
             key(TIMER_MODULE.get())
-        );
+        ));
 
-        builder(BOOKS).add(
+        builder(BOOKS).addAll(List.of(
             key(BOOK_CODE.get()),
             key(BOOK_MANUAL.get()),
             key(Items.BOOK),
             key(Items.ENCHANTED_BOOK),
             key(Items.WRITABLE_BOOK),
             key(Items.WRITTEN_BOOK)
-        );
+        ));
 
-        builder(KEYS).add(
+        builder(KEYS).addAll(List.of(
             key(KEY.get()),
             key(KEY_CREATIVE.get())
-        );
+        ));
 
         builder(CommonItemTags.CHESTS).add(key(Items.CHEST));
         builder(CommonItemTags.DIAMOND_GEMS).add(key(Items.DIAMOND));

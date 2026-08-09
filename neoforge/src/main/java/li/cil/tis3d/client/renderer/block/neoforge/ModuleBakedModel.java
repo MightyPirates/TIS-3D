@@ -40,16 +40,17 @@ public final class ModuleBakedModel implements DynamicBlockStateModel {
             }
         }
 
-        proxy.collectParts(random, parts);
+        proxy.collectParts(level, pos, state, random, parts);
     }
 
-    @Override
-    public void collectParts(final RandomSource random, final List<BlockModelPart> parts) {
-        proxy.collectParts(random, parts);
-    }
-
+    @SuppressWarnings("deprecation")
     @Override
     public TextureAtlasSprite particleIcon() {
         return proxy.particleIcon();
+    }
+
+    @Override
+    public TextureAtlasSprite particleIcon(final BlockAndTintGetter level, final BlockPos pos, final BlockState state) {
+        return proxy.particleIcon(level, pos, state);
     }
 }

@@ -8,7 +8,6 @@ import li.cil.tis3d.util.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.core.BlockPos;
@@ -82,7 +81,7 @@ public final class RenderContextImpl implements RenderContext {
 
     @Override
     public void drawAtlasQuadLit(final Identifier location) {
-        final VertexConsumer builder = buffer.getBuffer(RenderTypes.entityTranslucent(TextureAtlas.LOCATION_BLOCKS));
+        final VertexConsumer builder = buffer.getBuffer(RenderTypes.entityTranslucent(Textures.LOCATION_BLOCK_ATLAS));
         drawAtlasQuad(builder, getSprite(location), 0, 0, 1, 1, 0, 0, 1, 1, Color.WHITE);
     }
 
@@ -142,6 +141,6 @@ public final class RenderContextImpl implements RenderContext {
     // --------------------------------------------------------------------- //
 
     private static TextureAtlasSprite getSprite(final Identifier location) {
-        return Minecraft.getInstance().getAtlasManager().get(new Material(TextureAtlas.LOCATION_BLOCKS, location));
+        return Minecraft.getInstance().getAtlasManager().get(new Material(Textures.LOCATION_BLOCK_ATLAS, location));
     }
 }

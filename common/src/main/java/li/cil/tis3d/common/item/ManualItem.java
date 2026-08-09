@@ -27,6 +27,7 @@ public final class ManualItem extends AbstractManualItem {
 
     // --------------------------------------------------------------------- //
 
+    @SuppressWarnings("deprecation")
     @Override
     public void appendHoverText(final ItemStack stack, final TooltipContext context, final TooltipDisplay display, final Consumer<Component> tooltip, final TooltipFlag flag) {
         super.appendHoverText(stack, context, display, tooltip, flag);

@@ -8,7 +8,6 @@ import li.cil.tis3d.api.API;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Util;
 
@@ -41,7 +40,7 @@ public final class ModRenderType {
 
     private static final RenderType UNLIT_ATLAS_TEXTURE = RenderType.create(API.MOD_ID + "/atlas_module_overlay",
         RenderSetup.builder(UNLIT_TEXTURED_PIPELINE)
-            .withTexture("Sampler0", TextureAtlas.LOCATION_BLOCKS)
+            .withTexture("Sampler0", Textures.LOCATION_BLOCK_ATLAS)
             .createRenderSetup());
 
     private static final Function<Identifier, RenderType> UNLIT_TEXTURE = Util.memoize(texture ->

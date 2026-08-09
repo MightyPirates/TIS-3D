@@ -3,10 +3,14 @@ package li.cil.tis3d.client.renderer;
 import li.cil.tis3d.api.API;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.Identifier;
 
 @Environment(EnvType.CLIENT)
 public final class Textures {
+    @SuppressWarnings("deprecation")
+    public static final Identifier LOCATION_BLOCK_ATLAS = TextureAtlas.LOCATION_BLOCKS;
+
     public static final Identifier LOCATION_GUI_BOOK_CODE_BACKGROUND = Identifier.fromNamespaceAndPath(API.MOD_ID, "textures/gui/code_book.png");
     public static final Identifier LOCATION_GUI_MANUAL_BACKGROUND = Identifier.fromNamespaceAndPath(API.MOD_ID, "textures/gui/manual.png");
     public static final Identifier LOCATION_GUI_MANUAL_TAB = Identifier.fromNamespaceAndPath(API.MOD_ID, "textures/gui/manual_tab.png");
