@@ -1,9 +1,12 @@
 package li.cil.tis3d.util.neoforge;
 
+import li.cil.tis3d.api.API;
 import li.cil.tis3d.common.neoforge.ModEventBus;
 import li.cil.tis3d.util.ConfigManager;
 import li.cil.tis3d.util.config.ConfigType;
 import li.cil.tis3d.util.config.Type;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.config.IConfigSpec;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.config.ModConfigEvent;
@@ -15,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
+@EventBusSubscriber(modid = API.MOD_ID)
 public final class ConfigManagerImpl extends ConfigManager {
     private static final Map<IConfigSpec, ConfigDefinition> CONFIGS = new HashMap<>();
 
@@ -41,13 +45,12 @@ public final class ConfigManagerImpl extends ConfigManager {
             };
             ModEventBus.MOD_CONTAINER.registerConfig(platformType, spec);
         });
-
-        ModEventBus.INSTANCE.addListener(ConfigManagerImpl::handleModConfigEvent);
     }
 
     // --------------------------------------------------------------------- //
 
-    private static void handleModConfigEvent(final ModConfigEvent event) {
+    @SubscribeEvent
+    public static void handleModConfigEvent(final ModConfigEvent event) {
         final ConfigDefinition config = CONFIGS.get(event.getConfig().getSpec());
         if (config != null) {
             config.apply();
