@@ -1,6 +1,5 @@
 package li.cil.tis3d.client.fabric;
 
-import li.cil.tis3d.api.platform.FabricProviderInitializer;
 import li.cil.tis3d.client.ClientBootstrap;
 import li.cil.tis3d.client.ClientSetup;
 import li.cil.tis3d.client.renderer.block.fabric.ModuleModelLoader;
@@ -23,10 +22,6 @@ public final class ClientBootstrapFabric implements ClientModInitializer {
     public void onInitializeClient() {
         ClientBootstrap.run();
         ClientSetup.run();
-
-        FabricLoader.getInstance()
-            .getEntrypoints("tis3d:registration", FabricProviderInitializer.class)
-            .forEach(FabricProviderInitializer::registerProviders);
 
         ClientChunkEvents.CHUNK_UNLOAD.register((level, chunk) -> {
             for (final BlockEntity blockEntity : chunk.getBlockEntities().values()) {
