@@ -1,7 +1,7 @@
 package li.cil.tis3d.util.neoforge;
 
 import li.cil.tis3d.api.API;
-import li.cil.tis3d.common.neoforge.ModEventBus;
+import li.cil.tis3d.common.neoforge.BootstrapNeoForge;
 import li.cil.tis3d.util.ConfigManager;
 import li.cil.tis3d.util.config.ConfigType;
 import li.cil.tis3d.util.config.Type;
@@ -43,7 +43,7 @@ public final class ConfigManagerImpl extends ConfigManager {
                 case CLIENT -> ModConfig.Type.CLIENT;
                 case SERVER -> ModConfig.Type.SERVER;
             };
-            ModEventBus.MOD_CONTAINER.registerConfig(platformType, spec);
+            BootstrapNeoForge.MOD_CONTAINER.registerConfig(platformType, spec);
         });
     }
 

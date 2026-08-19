@@ -10,8 +10,10 @@ import net.neoforged.fml.loading.FMLEnvironment;
 
 @Mod(API.MOD_ID)
 public class BootstrapNeoForge {
+    public static ModContainer MOD_CONTAINER;
+
     public BootstrapNeoForge(final ModContainer modContainer) {
-        ModEventBus.MOD_CONTAINER = modContainer;
+        MOD_CONTAINER = modContainer;
         CommonBootstrap.run();
         if (FMLEnvironment.dist == Dist.CLIENT) {
             Manuals.initialize();
