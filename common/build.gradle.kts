@@ -19,16 +19,3 @@ dependencies {
         modApi(libs.fabric.manual)
     }
 }
-
-tasks {
-    register<Jar>("apiJar") {
-        from(sourceSets.main.get().allSource)
-        from(sourceSets.main.get().output)
-        archiveClassifier.set("api")
-        include("li/cil/${modId}/api/**")
-    }
-
-    jar {
-        dependsOn("apiJar")
-    }
-}

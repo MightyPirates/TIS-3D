@@ -1,6 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import net.fabricmc.loom.task.RemapJarTask
+import java.util.concurrent.Callable
 
 plugins {
     java
@@ -174,6 +175,27 @@ for (platform in enabledPlatforms.split(',')) {
                 skip()
             }
     }
+}
+
+tasks.register<Jar>("apiJar") {
+    group = "build"
+    description = "Assembles a jar of the public API of every module."
+    archiveBaseName.set("${modId}-MC${minecraftVersion}")
+    archiveVersion.set("${modVersion}+${getGitRef()}")
+    archiveClassifier.set("api")
+
+    for (name in listOf("common") + enabledPlatforms.split(',')) {
+        val module = project(":$name")
+        dependsOn("${module.path}:classes")
+        from(Callable { module.the<SourceSetContainer>()["main"].allSource })
+        from(Callable { module.the<SourceSetContainer>()["main"].output })
+    }
+
+    include("li/cil/${modId}/api/**")
+}
+
+tasks.named("build") {
+    dependsOn("apiJar")
 }
 
 tasks.register("lint") {
