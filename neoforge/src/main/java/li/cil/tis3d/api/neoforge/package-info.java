@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package li.cil.tis3d.common.capabilities;
+package li.cil.tis3d.api.neoforge;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 
