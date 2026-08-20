@@ -52,7 +52,13 @@ public final class ConfigManagerImpl extends ConfigManager {
     @SubscribeEvent
     public static void handleModConfigEvent(final ModConfigEvent event) {
         final ConfigDefinition config = CONFIGS.get(event.getConfig().getSpec());
-        if (config != null) {
+        if (config == null) {
+            return;
+        }
+
+        if (event instanceof ModConfigEvent.Unloading) {
+            config.applyDefaults();
+        } else {
             config.apply();
         }
     }
@@ -93,6 +99,11 @@ public final class ConfigManagerImpl extends ConfigManager {
         @Override
         public T get() {
             return value().get();
+        }
+
+        @Override
+        public T getDefault() {
+            return value().getDefault();
         }
     }
 }

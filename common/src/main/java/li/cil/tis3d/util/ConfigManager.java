@@ -360,6 +360,12 @@ public abstract class ConfigManager {
                 pair.apply(instance);
             }
         }
+
+        public void applyDefaults() {
+            for (final ConfigFieldPair<?> pair : values) {
+                pair.applyDefault(instance);
+            }
+        }
     }
 
     protected static abstract class ConfigFieldPair<T> {
@@ -372,6 +378,8 @@ public abstract class ConfigManager {
         }
 
         public abstract void apply(Object instance);
+
+        public abstract void applyDefault(Object instance);
     }
 
     private static final class SetFieldConfigItem<T> extends ConfigFieldPair<T> {
@@ -388,8 +396,17 @@ public abstract class ConfigManager {
 
         @Override
         public void apply(final Object instance) {
+            set(instance, value.get());
+        }
+
+        @Override
+        public void applyDefault(final Object instance) {
+            set(instance, value.getDefault());
+        }
+
+        private void set(final Object instance, final T raw) {
             try {
-                field.set(instance, converter.apply(value.get()));
+                field.set(instance, converter.apply(raw));
             } catch (final IllegalAccessException ignored) {
             }
         }
@@ -407,6 +424,11 @@ public abstract class ConfigManager {
         public void apply(final Object instance) {
             applier.accept(value.get());
         }
+
+        @Override
+        public void applyDefault(final Object instance) {
+            applier.accept(value.getDefault());
+        }
     }
 
     protected interface Builder {
@@ -423,5 +445,7 @@ public abstract class ConfigManager {
 
     protected interface ConfigValue<T> {
         T get();
+
+        T getDefault();
     }
 }
