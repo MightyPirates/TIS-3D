@@ -5,6 +5,11 @@ architectury {
     common(enabledPlatforms.split(","))
 }
 
+sourceSets.main {
+    resources.srcDir("src/generated/resources")
+    resources.exclude(".cache/**")
+}
+
 loom {
     accessWidenerPath.set(file("src/main/resources/${modId}.accesswidener"))
 }

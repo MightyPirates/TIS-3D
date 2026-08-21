@@ -32,6 +32,22 @@ public final class TestSupport {
         return CASING_POS.offset(index, 0, 0);
     }
 
+    public static GameTestAssertException failure(final GameTestHelper helper, final String message) {
+        return new GameTestAssertException(message);
+    }
+
+    public static void assertTrue(final GameTestHelper helper, final String what, final boolean condition) {
+        if (!condition) {
+            throw failure(helper, what);
+        }
+    }
+
+    public static void assertEquals(final GameTestHelper helper, final String what, final long expected, final long actual) {
+        if (expected != actual) {
+            throw failure(helper, what + ": expected " + expected + ", got " + actual);
+        }
+    }
+
     public static <T> T requireBlockEntity(final GameTestHelper helper, final BlockPos pos, final Class<T> type) {
         final Object blockEntity = helper.getLevel().getBlockEntity(helper.absolutePos(pos));
         if (!type.isInstance(blockEntity)) {

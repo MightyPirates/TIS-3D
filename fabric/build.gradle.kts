@@ -8,11 +8,6 @@ val manualVersion: String = markdownManualVersion(libs.versions.manual.get())
 val gameTestRuntime: Configuration by configurations.creating
 val gameTestResultsDir = layout.buildDirectory.dir("test-results/gameTest")
 
-sourceSets.main {
-    resources.srcDir("src/generated/resources")
-    resources.exclude(".cache/**")
-}
-
 loom {
     accessWidenerPath.set(project(":common").loom.accessWidenerPath)
 
@@ -28,16 +23,6 @@ loom {
             vmArg("-ea")
         }
 
-        create("data") {
-            client()
-            name("Data Generation")
-            vmArg("-Dfabric-api.datagen")
-            vmArg("-Dfabric-api.datagen.output-dir=${file("src/generated/resources")}")
-            vmArg("-Dfabric-api.datagen.modid=${modId}")
-            vmArg("-Dfabric-api.datagen.strict-validation")
-
-            runDir("build/datagen")
-        }
     }
 }
 
