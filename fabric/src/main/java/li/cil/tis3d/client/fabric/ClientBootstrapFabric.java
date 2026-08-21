@@ -10,16 +10,11 @@ import li.cil.tis3d.common.block.entity.fabric.ChunkUnloadListener;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents;
 import net.fabricmc.fabric.api.event.client.player.ClientPickBlockGatherCallback;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public final class ClientBootstrapFabric implements ClientModInitializer {
-    private static final Logger LOGGER = LogManager.getLogger();
-
     @Override
     public void onInitializeClient() {
         ClientBootstrap.run();
@@ -47,10 +42,6 @@ public final class ClientBootstrapFabric implements ClientModInitializer {
             return ItemStack.EMPTY;
         });
 
-        if (FabricLoader.getInstance().isModLoaded("sodium")) {
-            LOGGER.warn("Sodium detected, disabling modules that need custom block model rendering. See https://github.com/MightyPirates/TIS-3D/issues/171");
-        } else {
-            ModuleModelLoader.initialize();
-        }
+        ModuleModelLoader.initialize();
     }
 }
