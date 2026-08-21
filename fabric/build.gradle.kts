@@ -7,6 +7,8 @@ val manualVersion: String = markdownManualVersion(libs.versions.manual.get())
 
 val gameTestRuntime: Configuration by configurations.creating
 val gameTestResultsDir = layout.buildDirectory.dir("test-results/gameTest")
+val devOnlyMods: Configuration by configurations.creating
+val devOnlyModNames = provider { devOnlyMods.resolvedConfiguration.resolvedArtifacts.map { it.moduleVersion.id.name } }
 
 loom {
     accessWidenerPath.set(project(":common").loom.accessWidenerPath)
@@ -43,6 +45,7 @@ val fixGameTestReport = tasks.register("fixGameTestReport") {
 tasks.named<JavaExec>("runGameTest") {
     dependsOn(cleanGameTestResults)
     classpath += gameTestRuntime
+    classpath = classpath.filter { file -> devOnlyModNames.get().none { file.name.startsWith("${it}-") } }
     finalizedBy(fixGameTestReport)
 }
 
@@ -51,20 +54,14 @@ repositories {
         forRepository { maven("https://raw.githubusercontent.com/Fuzss/modresources/main/maven/") }
         filter { includeGroup("fuzs.forgeconfigapiport") }
     }
-    exclusiveContent {
-        forRepository { maven("https://maven.shedaniel.me/") }
-        filter { includeGroupByRegex("me\\.shedaniel.*") }
-    }
 }
+
+configurations.named("modRuntimeOnly") { extendsFrom(devOnlyMods) }
 
 dependencies {
     modImplementation(libs.fabric.loader)
     modApi(libs.fabric.api)
     modApi(libs.fabric.architectury)
-
-    // Optional integration, see the `rei_client` entrypoint; compile against the API only.
-    modCompileOnly(libs.fabric.roughlyEnoughItems.api)
-    modRuntimeOnly(libs.fabric.roughlyEnoughItems)
 
     if (useLocalMarkdownManual) {
         modImplementation(files(markdownManualJar("fabric", "markdown_manual-MC*-fabric-*.jar")))
@@ -74,7 +71,8 @@ dependencies {
     modImplementation(libs.fabric.forgeConfigPort)
 
     // Not used by mod, just for dev convenience.
-    modRuntimeOnly(libs.fabric.tooltipFix)
+    devOnlyMods(libs.fabric.tooltipFix)
+    devOnlyMods(libs.jei.fabric)
 
     // Only the game test run gets the game test mod, so runClient and runServer never load it.
     gameTestRuntime(project(path = ":gametest-fabric", configuration = "namedElements")) { isTransitive = false }

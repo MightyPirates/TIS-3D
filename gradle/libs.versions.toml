@@ -10,7 +10,6 @@ fabric-loader = "0.19.3"
 fabric-api = "0.116.15+1.21.1"
 
 fabric-forgeConfigPort = "21.1.6"
-fabric-rei = "16.0.799"
 
 fabric-markdownManual = "MC1.21.1-fabric-1.2.6"
 
@@ -20,6 +19,8 @@ neoforge-platform = "21.1.248"
 neoforge-loader = "4"
 
 neoforge-markdownManual = "MC1.21.1-neoforge-1.2.6"
+
+jei = "19.43.0.395"
 
 [plugins]
 loom = { id = "dev.architectury.loom", version = "1.17-SNAPSHOT" }
@@ -37,8 +38,6 @@ fabric-architectury = { group = "dev.architectury", name = "architectury-fabric"
 
 fabric-forgeConfigPort = { group = "fuzs.forgeconfigapiport", name = "forgeconfigapiport-fabric", version.ref = "fabric-forgeConfigPort" }
 fabric-manual = { group = "maven.modrinth", name = "markdownmanual", version.ref = "fabric-markdownManual" }
-fabric-roughlyEnoughItems = { group = "me.shedaniel", name = "RoughlyEnoughItems-fabric", version.ref = "fabric-rei" }
-fabric-roughlyEnoughItems-api = { group = "me.shedaniel", name = "RoughlyEnoughItems-api-fabric", version.ref = "fabric-rei" }
 
 fabric-tooltipFix = { group = "maven.modrinth", name = "tooltipfix", version.ref = "fabric-tooltipfix" }
 
@@ -46,3 +45,6 @@ neoforge-platform = { group = "net.neoforged", name = "neoforge", version.ref = 
 neoforge-architectury = { group = "dev.architectury", name = "architectury-neoforge", version.ref = "architectury" }
 
 neoforge-manual = { group = "maven.modrinth", name = "markdownmanual", version.ref = "neoforge-markdownManual" }
+
+jei-fabric = { group = "mezz.jei", name = "jei-1.21.1-fabric", version.ref = "jei" }
+jei-neoforge = { group = "mezz.jei", name = "jei-1.21.1-neoforge", version.ref = "jei" }
