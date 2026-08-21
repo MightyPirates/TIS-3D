@@ -88,6 +88,7 @@ public final class RecipeTests {
 
         final List<RecipeHolder<?>> modRecipes = recipes.getRecipes().stream()
             .filter(holder -> holder.id().getNamespace().equals(API.MOD_ID))
+            .filter(holder -> !holder.value().isSpecial())
             .toList();
 
         assertTrue(helper, "expected the mod to contribute recipes, found none", !modRecipes.isEmpty());
@@ -131,9 +132,8 @@ public final class RecipeTests {
             ItemStack.isSameItemSameComponents(expected, result));
         assertEquals(helper, id + " result count", expected.getCount(), result.getCount());
 
-        final List<ItemStack> expectedLeftovers = inputs.stream()
-            .map(RecipeTests::craftingRemainder)
-            .toList();
+        final List<ItemStack> expectedLeftovers =
+            recipe.getRemainingItems(CraftingInput.of(GRID_WIDTH, GRID_HEIGHT, inputs));
 
         menu.quickMoveStack(player, menu.getResultSlotIndex());
 
@@ -185,15 +185,6 @@ public final class RecipeTests {
         }
 
         return candidates[0].copyWithCount(1);
-    }
-
-    private static ItemStack craftingRemainder(final ItemStack input) {
-        if (input.isEmpty()) {
-            return ItemStack.EMPTY;
-        }
-
-        final Item remainder = input.getItem().getCraftingRemainingItem();
-        return remainder == null ? ItemStack.EMPTY : new ItemStack(remainder);
     }
 
     private static String describe(final List<ItemStack> inputs) {

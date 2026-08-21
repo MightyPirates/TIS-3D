@@ -12,12 +12,12 @@ import static li.cil.tis3d.gametest.TestSupport.TEMPLATE;
 @GameTestHolder(MOD_ID)
 @PrefixGameTestTemplate(false)
 public final class RecipeTestsNeoForge {
-    @GameTest(template = TEMPLATE, timeoutTicks = 200)
+    @GameTest(template = TEMPLATE)
     public static void everyModItemIsCraftable(final GameTestHelper helper) {
         RecipeTests.everyModItemIsCraftable(helper);
     }
 
-    @GameTest(template = TEMPLATE, timeoutTicks = 200)
+    @GameTest(template = TEMPLATE)
     public static void everyRecipeCraftsInCraftingTable(final GameTestHelper helper) {
         RecipeTests.everyRecipeCraftsInCraftingTable(helper);
     }
