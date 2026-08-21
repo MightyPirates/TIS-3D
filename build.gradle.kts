@@ -47,6 +47,10 @@ subprojects {
             forRepository { maven("https://maven.blamejared.com") }
             filter { includeGroup("mezz.jei") }
         }
+        exclusiveContent {
+            forRepository { maven("https://fnuecke.github.io/maven") }
+            filter { includeGroup("li.cil.markdown_manual") }
+        }
     }
 
     dependencies {
@@ -174,7 +178,7 @@ for (platform in enabledPlatforms.split(',')) {
 }
 
 tasks.named("build") {
-    dependsOn("apiJar")
+    dependsOn("apiJar", "apiSourcesJar")
 }
 
 spotless {
@@ -194,3 +198,4 @@ spotless {
 registerGameTestTask()
 registerLintTask()
 registerApiJarTask(minecraftVersion)
+configureMavenPublishing(minecraftVersion, "https://github.com/fnuecke/TIS-3D")

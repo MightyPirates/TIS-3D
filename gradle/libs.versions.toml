@@ -4,21 +4,17 @@ parchment-minecraft = "1.21.1"
 parchment-mappings = "2024.11.17"
 
 architectury = "13.0.11"
-manual = "1.2.6"
+manual = "1.2.7"
 
 fabric-loader = "0.19.3"
 fabric-api = "0.116.15+1.21.1"
 
 fabric-forgeConfigPort = "21.1.6"
 
-fabric-markdownManual = "MC1.21.1-fabric-1.2.6"
-
 fabric-tooltipfix = "1.1.1-1.20"
 
 neoforge-platform = "21.1.248"
 neoforge-loader = "4"
-
-neoforge-markdownManual = "MC1.21.1-neoforge-1.2.6"
 
 jei = "19.43.0.395"
 
@@ -37,14 +33,15 @@ fabric-api = { group = "net.fabricmc.fabric-api", name = "fabric-api", version.r
 fabric-architectury = { group = "dev.architectury", name = "architectury-fabric", version.ref = "architectury" }
 
 fabric-forgeConfigPort = { group = "fuzs.forgeconfigapiport", name = "forgeconfigapiport-fabric", version.ref = "fabric-forgeConfigPort" }
-fabric-manual = { group = "maven.modrinth", name = "markdownmanual", version.ref = "fabric-markdownManual" }
+common-manual-api = { group = "li.cil.markdown_manual", name = "markdown_manual-1.21.1-api", version.ref = "manual" }
+fabric-manual = { group = "li.cil.markdown_manual", name = "markdown_manual-1.21.1-fabric", version.ref = "manual" }
 
 fabric-tooltipFix = { group = "maven.modrinth", name = "tooltipfix", version.ref = "fabric-tooltipfix" }
 
 neoforge-platform = { group = "net.neoforged", name = "neoforge", version.ref = "neoforge-platform" }
 neoforge-architectury = { group = "dev.architectury", name = "architectury-neoforge", version.ref = "architectury" }
 
-neoforge-manual = { group = "maven.modrinth", name = "markdownmanual", version.ref = "neoforge-markdownManual" }
+neoforge-manual = { group = "li.cil.markdown_manual", name = "markdown_manual-1.21.1-neoforge", version.ref = "manual" }
 
 jei-fabric = { group = "mezz.jei", name = "jei-1.21.1-fabric", version.ref = "jei" }
 jei-neoforge = { group = "mezz.jei", name = "jei-1.21.1-neoforge", version.ref = "jei" }

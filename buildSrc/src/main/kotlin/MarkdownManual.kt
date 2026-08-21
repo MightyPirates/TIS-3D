@@ -5,7 +5,7 @@ private val Project.markdownManualDir: String
     get() = property("markdownManualDir") as String
 
 val Project.useLocalMarkdownManual: Boolean
-    get() = rootProject.file(markdownManualDir).isDirectory
+    get() = markdownManualDir.isNotBlank() && rootProject.file(markdownManualDir).isDirectory
 
 fun Project.markdownManualJar(module: String, pattern: String): File {
     val dir = rootProject.file("$markdownManualDir/$module/build/libs")
