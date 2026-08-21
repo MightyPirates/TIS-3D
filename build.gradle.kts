@@ -56,43 +56,9 @@ subprojects {
     }
 
     configureJava()
-
     configurePmd()
-
-    tasks.withType<Pmd>().configureEach {
-        exclude("**/mixin/**")
-        reports {
-            xml.required.set(false)
-            html.required.set(true)
-        }
-    }
-
-    tasks {
-        jar {
-            from(rootProject.file("LICENSE")) {
-                rename { "${it}_${modId}" }
-            }
-        }
-
-        withType<JavaCompile>().configureEach {
-            options.encoding = "utf-8"
-            options.release.set(21)
-            options.compilerArgs.addAll(
-                listOf(
-                    "-Xlint:all,-processing,-serial,-classfile,-this-escape",
-                    "-Xmaxwarns", "1000",
-                )
-            )
-        }
-    }
-
-    idea {
-        module {
-            for (exclude in arrayOf("out", "logs", "run")) {
-                excludeDirs.add(file(exclude))
-            }
-        }
-    }
+    embedLicenses()
+    configureIdeaExcludes()
 }
 
 val projectConfigurations = mapOf(
