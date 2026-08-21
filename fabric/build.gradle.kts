@@ -8,6 +8,11 @@ val manualVersion: String = markdownManualVersion(libs.versions.manual.get())
 val gameTestRuntime: Configuration by configurations.creating
 val gameTestResultsDir = layout.buildDirectory.dir("test-results/gameTest")
 
+sourceSets.main {
+    resources.srcDir("src/generated/resources")
+    resources.exclude(".cache/**")
+}
+
 loom {
     accessWidenerPath.set(project(":common").loom.accessWidenerPath)
 

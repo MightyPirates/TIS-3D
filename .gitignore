@@ -1,4 +1,4 @@
-#system
+# system
 .DS_Store
 
 # eclipse
@@ -16,25 +16,20 @@ out/
 *.iml
 .idea/
 
+#vscode
+.vscode
+
 # gradle
 build/
 .gradle/
 
 # other
 eclipse/
+run/
+logs/
 output/
 libs/
 classes/
 
-#vscode
-.vscode
-
-# Files from Forge MDK
-forge*changelog.txt
-
 # generated resources
-**/src/generated/
-
-# minecraft
-run/
-logs/
+**/src/generated/resources/.cache/
