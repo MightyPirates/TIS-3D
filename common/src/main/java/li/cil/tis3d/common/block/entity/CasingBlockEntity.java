@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.common.block.entity;
 
 import li.cil.tis3d.api.infrared.InfraredPacket;

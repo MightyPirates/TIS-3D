@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.client.renderer.block.neoforge;
 
 import com.google.gson.JsonDeserializationContext;

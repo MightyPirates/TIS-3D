@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.api.module;
 
 import li.cil.tis3d.api.API;

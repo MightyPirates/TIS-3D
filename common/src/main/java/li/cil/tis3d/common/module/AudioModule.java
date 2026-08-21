@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.common.module;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;

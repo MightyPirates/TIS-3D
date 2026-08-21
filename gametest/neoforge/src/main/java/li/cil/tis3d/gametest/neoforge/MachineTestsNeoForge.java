@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.gametest.neoforge;
 
 import li.cil.tis3d.gametest.MachineTests;

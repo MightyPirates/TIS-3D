@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.gametest.fabric;
 
 import li.cil.tis3d.gametest.RecipeTests;

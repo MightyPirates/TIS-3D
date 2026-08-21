@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.common.provider.module;
 
 import dev.architectury.registry.registries.RegistrySupplier;

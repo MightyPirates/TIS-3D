@@ -215,6 +215,8 @@ spotless {
     java {
         target("**/src/*/java/li/cil/**/*.java")
 
+        licenseHeader("/* SPDX-License-Identifier: MIT */\n\n")
+
         endWithNewline()
         trimTrailingWhitespace()
         removeUnusedImports()

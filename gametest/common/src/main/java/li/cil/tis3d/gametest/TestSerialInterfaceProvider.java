@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.gametest;
 
 import li.cil.tis3d.api.serial.SerialInterface;

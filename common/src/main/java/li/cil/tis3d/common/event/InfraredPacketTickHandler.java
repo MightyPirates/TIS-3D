@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.common.event;
 
 import dev.architectury.event.events.common.TickEvent;

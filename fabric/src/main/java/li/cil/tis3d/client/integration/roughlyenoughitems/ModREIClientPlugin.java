@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.client.integration.roughlyenoughitems;
 
 import li.cil.tis3d.common.item.Items;

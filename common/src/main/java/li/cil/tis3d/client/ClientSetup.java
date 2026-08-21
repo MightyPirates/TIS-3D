@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.client;
 
 import dev.architectury.event.events.client.ClientTickEvent;

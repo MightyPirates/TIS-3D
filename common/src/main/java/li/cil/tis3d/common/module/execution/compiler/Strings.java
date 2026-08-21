@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.common.module.execution.compiler;
 
 import net.minecraft.network.chat.Component;

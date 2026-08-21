@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.util.config;
 
 import java.lang.annotation.ElementType;

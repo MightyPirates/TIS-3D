@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.api.infrared;
 
 import net.minecraft.world.phys.HitResult;

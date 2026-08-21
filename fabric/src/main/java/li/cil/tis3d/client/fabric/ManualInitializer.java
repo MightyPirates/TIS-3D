@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.client.fabric;
 
 import li.cil.manual.api.platform.FabricManualInitializer;
