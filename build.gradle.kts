@@ -64,6 +64,7 @@ subprojects {
     }
 
     java {
+        toolchain.languageVersion.set(JavaLanguageVersion.of(21))
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
@@ -86,7 +87,7 @@ subprojects {
 
     tasks {
         jar {
-            from("LICENSE") {
+            from(rootProject.file("LICENSE")) {
                 rename { "${it}_${modId}" }
             }
         }
@@ -156,6 +157,10 @@ for (platform in enabledPlatforms.split(',')) {
                 exclude("architectury.common.json")
                 configurations = listOf(shadowBundle)
                 archiveClassifier.set("dev-shadow")
+
+                from(rootProject.file("LICENSE")) {
+                    rename { "${it}_${modId}" }
+                }
             }
 
             withType<RemapJarTask> {
@@ -175,6 +180,61 @@ for (platform in enabledPlatforms.split(',')) {
                 skip()
             }
     }
+}
+
+for (platform in enabledPlatforms.split(',')) {
+    project(":gametest-$platform") {
+        architectury {
+            platformSetupLoomIde()
+            loader(platform)
+        }
+
+        val common: Configuration by configurations.creating
+        val bundle: Configuration by configurations.creating
+
+        configurations {
+            common.isCanBeResolved = true
+            common.isCanBeConsumed = false
+
+            compileClasspath.get().extendsFrom(common)
+            runtimeClasspath.get().extendsFrom(common)
+            getByName("development${projectConfigurations[platform]}").extendsFrom(common)
+
+            bundle.isCanBeResolved = true
+            bundle.isCanBeConsumed = false
+        }
+
+        dependencies {
+            common(project(path = ":gametest-common", configuration = "namedElements")) { isTransitive = false }
+            bundle(
+                project(
+                    path = ":gametest-common",
+                    configuration = "transformProduction${projectConfigurations[platform]}"
+                )
+            ) { isTransitive = false }
+        }
+
+        tasks.jar {
+            val bundleFiles = configurations["bundle"]
+            dependsOn(bundleFiles)
+            from(bundleFiles.elements.map { files -> files.map { zipTree(it) } }) {
+                exclude("architectury.common.json", "META-INF/MANIFEST.MF")
+            }
+            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        }
+    }
+}
+
+tasks.register("gameTest") {
+    group = "verification"
+    description = "Runs the game tests on all enabled platforms."
+    dependsOn(enabledPlatforms.split(',').map { platform ->
+        when (platform) {
+            "fabric" -> ":fabric:runGameTest"
+            "neoforge" -> ":neoforge:runGameTestServer"
+            else -> throw GradleException("No game test run configured for platform '${platform}'.")
+        }
+    })
 }
 
 tasks.register<Jar>("apiJar") {
@@ -207,7 +267,7 @@ tasks.register("lint") {
 
 spotless {
     java {
-        target("*/src/*/java/li/cil/**/*.java")
+        target("**/src/*/java/li/cil/**/*.java")
 
         endWithNewline()
         trimTrailingWhitespace()

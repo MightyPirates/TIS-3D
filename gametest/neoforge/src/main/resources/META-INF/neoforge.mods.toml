@@ -1,0 +1,25 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+license = "MIT"
+
+[[mods]]
+modId = "tis3d_gametest"
+version = "0.0.0"
+displayName = "TIS-3D Game Tests"
+description = '''
+Game test suite. Run with ./gradlew :neoforge:runGameTestServer
+'''
+
+[[dependencies.tis3d_gametest]]
+modId = "architectury"
+type = "required"
+versionRange = "[1,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.tis3d_gametest]]
+modId = "tis3d"
+type = "required"
+versionRange = "[0,)"
+ordering = "AFTER"
+side = "BOTH"
