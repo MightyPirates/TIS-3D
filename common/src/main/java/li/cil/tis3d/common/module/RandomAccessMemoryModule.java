@@ -224,6 +224,13 @@ public class RandomAccessMemoryModule extends AbstractModuleWithRotation {
     }
 
     /**
+     * Called after switching to the access state, before the addressed value
+     * is usable by the ports.
+     */
+    protected void beginAccess() {
+    }
+
+    /**
      * Get the color of the memory cells for this module.
      */
     @Environment(EnvType.CLIENT)
@@ -301,6 +308,8 @@ public class RandomAccessMemoryModule extends AbstractModuleWithRotation {
 
         // Change to the read/write state.
         state = State.ACCESS;
+
+        beginAccess();
 
         // Begin writing the value at that address to all ports.
         stepOutput();

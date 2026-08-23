@@ -24,6 +24,11 @@ public final class ModuleTestsNeoForge {
         ModuleTests.infraredPacketReachesReceiver(helper);
     }
 
+    @GameTest(template = TEMPLATE, timeoutTicks = 200)
+    public static void readOnlyMemoryModuleIgnoresConcurrentWrite(final GameTestHelper helper) {
+        ModuleTests.readOnlyMemoryModuleIgnoresConcurrentWrite(helper);
+    }
+
     // --------------------------------------------------------------------- //
 
     private ModuleTestsNeoForge() {
