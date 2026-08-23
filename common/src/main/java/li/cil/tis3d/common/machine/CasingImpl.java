@@ -9,6 +9,7 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.ModuleProvider;
+import li.cil.tis3d.api.module.traits.ModuleWithBakedModel;
 import li.cil.tis3d.api.module.traits.ModuleWithRedstone;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.block.entity.ControllerBlockEntity;
@@ -149,6 +150,11 @@ public final class CasingImpl implements Casing {
 
         // Apply new module before adjust remaining state.
         modules[face.ordinal()] = module;
+
+        // Modules contributing to the casing's model require a re-render when they come and go.
+        if (oldModule instanceof ModuleWithBakedModel || module instanceof ModuleWithBakedModel) {
+            blockEntity.invalidateModel();
+        }
 
         // Reset redstone output if the previous module was redstone capable.
         if (hadRedstone) {
