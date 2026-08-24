@@ -6,23 +6,23 @@ parchment-mappings = "2025.12.20"
 architectury = "19.0.1"
 manual = "1.2.6"
 
-fabric-loader = "0.18.2"
+fabric-loader = "0.19.3"
 fabric-api = "0.141.6+1.21.11"
 
 fabric-forgeConfigPort = "21.11.1"
-fabric-rei = "21.11.816"
+jei = "27.30.0.76"
 
 fabric-markdownManual = "MC1.21.11-fabric-1.2.6"
 
-neoforge-platform = "21.11.42"
+neoforge-platform = "21.11.45"
 neoforge-loader = "1"
 
 neoforge-markdownManual = "MC1.21.11-neoforge-1.2.6"
 
 [plugins]
-loom = { id = "dev.architectury.loom", version = "1.13-SNAPSHOT" }
-architectury = { id = "architectury-plugin", version = "3.4-SNAPSHOT" }
-shadow = { id = "com.gradleup.shadow", version = "9.4.1" }
+loom = { id = "dev.architectury.loom", version = "1.17-SNAPSHOT" }
+architectury = { id = "architectury-plugin", version = "3.5-SNAPSHOT" }
+shadow = { id = "com.gradleup.shadow", version = "9.4.3" }
 spotless = { id = "com.diffplug.spotless", version = "6.22.0" }
 
 [libraries]
@@ -35,8 +35,8 @@ fabric-architectury = { group = "dev.architectury", name = "architectury-fabric"
 
 fabric-forgeConfigPort = { group = "fuzs.forgeconfigapiport", name = "forgeconfigapiport-fabric", version.ref = "fabric-forgeConfigPort" }
 fabric-manual = { group = "maven.modrinth", name = "markdownmanual", version.ref = "fabric-markdownManual" }
-fabric-roughlyEnoughItems = { group = "me.shedaniel", name = "RoughlyEnoughItems-fabric", version.ref = "fabric-rei" }
-fabric-roughlyEnoughItems-api = { group = "me.shedaniel", name = "RoughlyEnoughItems-api-fabric", version.ref = "fabric-rei" }
+jei-fabric = { group = "mezz.jei", name = "jei-1.21.11-fabric", version.ref = "jei" }
+jei-neoforge = { group = "mezz.jei", name = "jei-1.21.11-neoforge", version.ref = "jei" }
 
 neoforge-platform = { group = "net.neoforged", name = "neoforge", version.ref = "neoforge-platform" }
 neoforge-architectury = { group = "dev.architectury", name = "architectury-neoforge", version.ref = "architectury" }

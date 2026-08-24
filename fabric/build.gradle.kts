@@ -27,10 +27,6 @@ repositories {
         forRepository { maven("https://raw.githubusercontent.com/Fuzss/modresources/main/maven/") }
         filter { includeGroup("fuzs.forgeconfigapiport") }
     }
-    exclusiveContent {
-        forRepository { maven("https://maven.shedaniel.me/") }
-        filter { includeGroupByRegex("me\\.shedaniel.*") }
-    }
 }
 
 dependencies {
@@ -38,16 +34,15 @@ dependencies {
     modApi(libs.fabric.api)
     modApi(libs.fabric.architectury)
 
-    // Optional integration, see the `rei_client` entrypoint; compile against the API only.
-    modCompileOnly(libs.fabric.roughlyEnoughItems.api)
-    modRuntimeOnly(libs.fabric.roughlyEnoughItems)
-
     if (useLocalMarkdownManual) {
         modImplementation(files(markdownManualJar("fabric", "markdown_manual-MC*-fabric-*.jar")))
     } else {
         modImplementation(libs.fabric.manual)
     }
     modImplementation(libs.fabric.forgeConfigPort)
+
+    // Not used by mod, just for dev convenience.
+    modRuntimeOnly(libs.jei.fabric)
 }
 
 tasks {

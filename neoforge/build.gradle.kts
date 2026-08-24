@@ -39,6 +39,9 @@ dependencies {
     } else {
         modImplementation(libs.neoforge.manual)
     }
+
+    // Not used by mod, just for dev convenience.
+    modRuntimeOnly(libs.jei.neoforge)
 }
 
 tasks {

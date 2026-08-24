@@ -50,6 +50,10 @@ subprojects {
             forRepository { maven("https://api.modrinth.com/maven") }
             filter { includeGroup("maven.modrinth") }
         }
+        exclusiveContent {
+            forRepository { maven("https://maven.blamejared.com") }
+            filter { includeGroup("mezz.jei") }
+        }
     }
 
     dependencies {
