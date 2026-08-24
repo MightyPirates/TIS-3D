@@ -33,3 +33,4 @@ classes/
 
 # generated resources
 **/src/generated/resources/.cache/
+.architectury-transformer/

@@ -198,4 +198,4 @@ spotless {
 registerGameTestTask()
 registerLintTask()
 registerApiJarTask(minecraftVersion)
-configureMavenPublishing(minecraftVersion, "https://github.com/fnuecke/TIS-3D")
+configureMavenPublishing(minecraftVersion, "https://github.com/MightyPirates/TIS-3D")
