@@ -27,3 +27,13 @@ jobs:
           validate-wrappers: true
       - name: Build with Gradle
         run: ./gradlew build
+      - name: Run game tests
+        run: ./gradlew gameTest
+      - name: Upload game test results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: gametest-results-${{ matrix.os }}
+          path: '*/build/test-results/gameTest/*.xml'
+          if-no-files-found: error
+          retention-days: 1

@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.common.module;
 
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -9,6 +11,7 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
+import li.cil.tis3d.api.module.traits.ModuleWithExclusiveWrites;
 import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
@@ -23,7 +26,7 @@ import net.minecraft.util.Mth;
  * <p>
  * While it is not full, it will receive data on all ports and push them back.
  */
-public final class QueueModule extends AbstractModuleWithRotation {
+public final class QueueModule extends AbstractModuleWithRotation implements ModuleWithExclusiveWrites {
     // --------------------------------------------------------------------- //
     // Persisted data
 

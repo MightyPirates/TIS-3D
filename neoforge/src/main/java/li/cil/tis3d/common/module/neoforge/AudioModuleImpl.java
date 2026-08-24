@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.common.module.neoforge;
 
 import li.cil.tis3d.common.module.AudioModule;

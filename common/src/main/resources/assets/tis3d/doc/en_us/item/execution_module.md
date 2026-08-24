@@ -17,6 +17,9 @@ Register. This is the primary register of an execution module. Arithmetic operat
 `BAK`
 Non-addressable register. Special register that can be used to store a value from `ACC`. It cannot be addressed directly, but must instead be accessed using the `SAV` and `SWP` instructions.
 
+`PC`
+Register. The program counter, i.e. the address of the instruction currently being executed. Reading from it and writing to it never blocks. Writing to it jumps, but the write itself still advances the program counter afterwards, so execution resumes at the address written *plus one*. Use `JAB` to jump to an address exactly.
+
 `NIL`
 Virtual register. This is a pseudo-target that may be written to to dispose values, or read from to produce zero values.
 
@@ -30,7 +33,7 @@ Virtual port. This is a pseudo-target that will perform an operation on all port
 Virtual port. This is a pseudo-target that will store the *actual* port that finished the last operation that used the `ANY` pseudo-target.
 
 ## Language Specification
-In addition to a list of instructions, assembler code provided to an execution module may contain metadata. Comments are textual notes in the code that are completely ignored in the execution of the program. Labels mark positions in the code that can be addressed by jump instructions. Comments, labels and blank lines have no influence on the addressing of the compiled program. This is relevant when using the `JRO` instruction.
+In addition to a list of instructions, assembler code provided to an execution module may contain metadata. Comments are textual notes in the code that are completely ignored in the execution of the program. Labels mark positions in the code that can be addressed by jump instructions. Comments, labels and blank lines have no influence on the addressing of the compiled program. This is relevant when using the `JRO` and `JAB` instructions, and when using a label as a value.
 
 ### Comments
 Comments are denoted by a leading `#` (#) hash character. They may either appear as the sole content of a line, or on the same line as an instruction or label.  
@@ -58,6 +61,12 @@ Example:
 `JGZ LOOP`  
 `JMP START`  
 `# Never reached`
+
+A label may also be used as a *value*, by moving it into a target using `MOV`. The value written is the address of the instruction the label refers to. Together with `JAB` this allows computed jumps, such as jump tables.  
+Example:  
+`MOV HANDLER, ACC` Writes the address of the instruction following `HANDLER:` to `ACC`.  
+`ADD LEFT` Reads an offset from the left port and adds it to that address.  
+`JAB ACC` Continues execution at the resulting address.
 
 ### Instructions
 `NOP`
@@ -172,3 +181,6 @@ If the current value of `ACC` is *less than* zero (0), jump to the instruction r
 
 `JRO <SRC>`
 Unconditionally jump to a relative address, read from the specified target `SRC`. This modifies the program counter by adding the value read from `SRC` to it. Execution resumes at the new address. `JRO 0` effectively halts the execution module indefinitely.
+
+`JAB <SRC>`
+Unconditionally jump to an absolute address, read from the specified target `SRC`. This sets the program counter to the value read from `SRC`. Execution resumes at that address, unlike a write to the `PC` register, which resumes at the address plus one.

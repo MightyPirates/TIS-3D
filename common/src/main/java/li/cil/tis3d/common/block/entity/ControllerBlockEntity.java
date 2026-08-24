@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.common.block.entity;
 
 import li.cil.tis3d.api.API;
@@ -545,6 +547,7 @@ public final class ControllerBlockEntity extends ComputerBlockEntity {
         casings.forEach(CasingBlockEntity::stepModules);
         casings.forEach(CasingBlockEntity::stepPipes);
         stepPipes();
+        casings.forEach(CasingBlockEntity::arbitrateWrites);
     }
 
     /**

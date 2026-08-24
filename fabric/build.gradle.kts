@@ -5,19 +5,27 @@ val architecturyVersion: String = libs.versions.architectury.get()
 val forgeConfigPortVersion: String = libs.versions.fabric.forgeConfigPort.get()
 val manualVersion: String = markdownManualVersion(libs.versions.manual.get())
 
+val gameTestRuntime: Configuration by configurations.creating
+val gameTestResultsDir = layout.buildDirectory.dir("test-results/gameTest")
+val devOnlyMods: Configuration by configurations.creating
+val devOnlyModNames = provider { devOnlyMods.resolvedConfiguration.resolvedArtifacts.map { it.moduleVersion.id.name } }
+
 loom {
     accessWidenerPath.set(project(":common").loom.accessWidenerPath)
 
     runs {
-        create("data") {
-            client()
-            name("Data Generation")
-            vmArg("-Dfabric-api.datagen")
-            vmArg("-Dfabric-api.datagen.output-dir=${file("src/generated/resources")}")
-            vmArg("-Dfabric-api.datagen.modid=${modId}")
-            vmArg("-Dfabric-api.datagen.strict-validation")
+        named("client") { runDir = "run/client" }
+        named("server") { runDir = "run/server" }
 
-            runDir("build/datagen")
+        create("gameTest") {
+            server()
+            runDir = "run/gametest"
+            property("fabric-api.gametest")
+            property(
+                "fabric-api.gametest.report-file",
+                gameTestResultsDir.get().file("fabric-game-tests.xml").asFile.absolutePath
+            )
+            vmArg("-ea")
         }
     }
 }
@@ -29,10 +37,15 @@ repositories {
     }
 }
 
+configurations.named("modRuntimeOnly") { extendsFrom(devOnlyMods) }
+
 dependencies {
     modImplementation(libs.fabric.loader)
     modApi(libs.fabric.api)
     modApi(libs.fabric.architectury)
+
+    // Allows `remapSourcesJar` to resolve `@ExpectPlatform` in the common sources it bundles.
+    compileOnly(libs.architectury.injectables)
 
     if (useLocalMarkdownManual) {
         modImplementation(files(markdownManualJar("fabric", "markdown_manual-MC*-fabric-*.jar")))
@@ -42,7 +55,11 @@ dependencies {
     modImplementation(libs.fabric.forgeConfigPort)
 
     // Not used by mod, just for dev convenience.
-    modRuntimeOnly(libs.jei.fabric)
+    devOnlyMods(libs.jei.fabric)
+
+    // Only the game test run gets the game test mod, so runClient and runServer never load it.
+    gameTestRuntime(project(path = ":gametest-fabric", configuration = "namedElements")) { isTransitive = false }
+
 }
 
 tasks {
@@ -64,4 +81,25 @@ tasks {
     remapJar {
         injectAccessWidener.set(true)
     }
+}
+
+val cleanGameTestResults = tasks.register<Delete>("cleanGameTestResults") {
+    description = "Deletes game test results and the scratch world from previous runs."
+    delete(gameTestResultsDir)
+    delete(layout.projectDirectory.dir("run/gametest/world"))
+}
+
+val fixGameTestReport = tasks.register("fixGameTestReport") {
+    val reportFile = gameTestResultsDir.map { it.file("fabric-game-tests.xml") }
+    outputs.upToDateWhen { false }
+    doLast {
+        normalizeGameTestReport(reportFile.get().asFile)
+    }
+}
+
+tasks.named<JavaExec>("runGameTest") {
+    dependsOn(cleanGameTestResults)
+    classpath += gameTestRuntime
+    classpath = classpath.filter { file -> devOnlyModNames.get().none { file.name.startsWith("${it}-") } }
+    finalizedBy(fixGameTestReport)
 }

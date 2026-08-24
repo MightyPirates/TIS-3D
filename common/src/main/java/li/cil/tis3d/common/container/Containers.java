@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.common.container;
 
 import dev.architectury.registry.menu.MenuRegistry;

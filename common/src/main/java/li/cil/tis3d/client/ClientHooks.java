@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.client;
 
 import li.cil.tis3d.client.gui.CodeBookScreen;

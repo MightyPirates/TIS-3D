@@ -5,6 +5,7 @@ parchment-mappings = "2025.12.20"
 
 architectury = "19.0.1"
 manual = "1.2.6"
+injectables = "1.0.10"
 
 fabric-loader = "0.19.3"
 fabric-api = "0.141.6+1.21.11"
@@ -28,12 +29,14 @@ spotless = { id = "com.diffplug.spotless", version = "6.22.0" }
 [libraries]
 minecraft = { group = "com.mojang", name = "minecraft", version.ref = "minecraft" }
 architectury-api = { group = "dev.architectury", name = "architectury", version.ref = "architectury" }
+architectury-injectables = { group = "dev.architectury", name = "architectury-injectables", version.ref = "injectables" }
 
 fabric-loader = { group = "net.fabricmc", name = "fabric-loader", version.ref = "fabric-loader" }
 fabric-api = { group = "net.fabricmc.fabric-api", name = "fabric-api", version.ref = "fabric-api" }
 fabric-architectury = { group = "dev.architectury", name = "architectury-fabric", version.ref = "architectury" }
 
 fabric-forgeConfigPort = { group = "fuzs.forgeconfigapiport", name = "forgeconfigapiport-fabric", version.ref = "fabric-forgeConfigPort" }
+common-manual-api = { group = "li.cil.markdown_manual", name = "markdown_manual-1.21.11-api", version.ref = "manual" }
 fabric-manual = { group = "maven.modrinth", name = "markdownmanual", version.ref = "fabric-markdownManual" }
 jei-fabric = { group = "mezz.jei", name = "jei-1.21.11-fabric", version.ref = "jei" }
 jei-neoforge = { group = "mezz.jei", name = "jei-1.21.11-neoforge", version.ref = "jei" }

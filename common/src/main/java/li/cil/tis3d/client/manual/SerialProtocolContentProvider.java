@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.client.manual;
 
 import li.cil.manual.api.ManualModel;

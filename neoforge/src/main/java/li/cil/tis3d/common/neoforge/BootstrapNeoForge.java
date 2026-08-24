@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.common.neoforge;
 
 import li.cil.tis3d.api.API;
@@ -5,14 +7,16 @@ import li.cil.tis3d.client.ClientBootstrap;
 import li.cil.tis3d.client.manual.Manuals;
 import li.cil.tis3d.common.CommonBootstrap;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
 
 @Mod(API.MOD_ID)
 public class BootstrapNeoForge {
-    public BootstrapNeoForge(final IEventBus modEventBus) {
-        ModEventBus.INSTANCE = modEventBus;
+    public static ModContainer MOD_CONTAINER;
+
+    public BootstrapNeoForge(final ModContainer modContainer) {
+        MOD_CONTAINER = modContainer;
         CommonBootstrap.run();
         if (FMLEnvironment.getDist() == Dist.CLIENT) {
             Manuals.initialize();

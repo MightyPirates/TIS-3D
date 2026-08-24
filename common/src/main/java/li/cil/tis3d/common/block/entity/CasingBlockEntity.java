@@ -1,6 +1,9 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.common.block.entity;
 
 import com.mojang.serialization.Codec;
+import dev.architectury.injectables.annotations.ExpectPlatform;
 import li.cil.tis3d.api.infrared.InfraredPacket;
 import li.cil.tis3d.api.infrared.InfraredReceiver;
 import li.cil.tis3d.api.machine.Casing;
@@ -31,6 +34,7 @@ import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
@@ -246,6 +250,22 @@ public final class CasingBlockEntity extends ComputerBlockEntity implements Side
 
     void stepModules() {
         casing.stepModules();
+    }
+
+    void arbitrateWrites() {
+        casing.arbitrateWrites();
+    }
+
+    public void invalidateModel() {
+        final Level level = getBlockEntityLevel();
+        if (!level.isClientSide()) {
+            return;
+        }
+
+        invalidateModelData(this);
+
+        final BlockState state = getBlockState();
+        level.sendBlockUpdated(getBlockPos(), state, state, Block.UPDATE_ALL);
     }
 
     // --------------------------------------------------------------------- //
@@ -482,6 +502,11 @@ public final class CasingBlockEntity extends ComputerBlockEntity implements Side
 
     // --------------------------------------------------------------------- //
 
+    @ExpectPlatform
+    private static void invalidateModelData(final CasingBlockEntity casing) {
+        throw new AssertionError();
+    }
+
     @Nullable
     private ControllerBlockEntity findController() {
         final Level level = getBlockEntityLevel();
@@ -542,7 +567,7 @@ public final class CasingBlockEntity extends ComputerBlockEntity implements Side
         Network.sendToTrackingPlayers(this, message);
 
         getBlockEntityLevel().playSound(null, getBlockPos(),
-            SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.3f, isLocked() ? 0.5f : 0.6f);
+                SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.3f, isLocked() ? 0.5f : 0.6f);
     }
 
     private void sendReceivingPipeLockedState(final Face face, final Port port) {
@@ -550,7 +575,7 @@ public final class CasingBlockEntity extends ComputerBlockEntity implements Side
         Network.sendToTrackingPlayers(this, message);
 
         getBlockEntityLevel().playSound(null, getBlockPos(),
-            SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.3f, isReceivingPipeLocked(face, port) ? 0.5f : 0.6f);
+                SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.3f, isReceivingPipeLocked(face, port) ? 0.5f : 0.6f);
     }
 
     private static void decompressClosed(final byte[] compressed, final boolean[][] decompressed) {

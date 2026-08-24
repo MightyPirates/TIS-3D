@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "tis3d_gametest",
+  "version": "0.0.0",
+  "name": "TIS-3D Game Tests",
+  "description": "Game test suite. Run with ./gradlew :fabric:runGameTest",
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "tis3d:registration": [
+      "li.cil.tis3d.gametest.fabric.GameTestsFabric"
+    ],
+    "fabric-gametest": [
+      "li.cil.tis3d.gametest.fabric.RegistrationTestsFabric",
+      "li.cil.tis3d.gametest.fabric.RecipeTestsFabric"
+    ]
+  },
+  "depends": {
+    "architectury": "*",
+    "tis3d": "*",
+    "fabric-gametest-api-v1": "*"
+  }
+}

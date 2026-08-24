@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.common.module;
 
 import li.cil.tis3d.api.machine.Casing;
@@ -5,6 +7,7 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.traits.ModuleWithBlockChangeListener;
+import li.cil.tis3d.api.module.traits.ModuleWithExclusiveWrites;
 import li.cil.tis3d.api.prefab.module.AbstractModule;
 import li.cil.tis3d.api.serial.SerialInterface;
 import li.cil.tis3d.api.serial.SerialInterfaceProvider;
@@ -23,7 +26,7 @@ import java.util.Optional;
  * The serial port module can provides access to blocks with a {@link SerialInterface}.
  */
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-public final class SerialPortModule extends AbstractModule implements ModuleWithBlockChangeListener {
+public final class SerialPortModule extends AbstractModule implements ModuleWithBlockChangeListener, ModuleWithExclusiveWrites {
     // --------------------------------------------------------------------- //
     // Persisted data
 

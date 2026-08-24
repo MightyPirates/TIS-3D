@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.api.module.traits.fabric;
 
 import li.cil.tis3d.api.module.traits.ModuleWithBakedModel;

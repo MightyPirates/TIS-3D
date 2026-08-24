@@ -5,6 +5,11 @@ architectury {
     common(enabledPlatforms.split(","))
 }
 
+sourceSets.main {
+    resources.srcDir("src/generated/resources")
+    resources.exclude(".cache/**")
+}
+
 loom {
     accessWidenerPath.set(file("src/main/resources/${modId}.accesswidener"))
 }
@@ -14,21 +19,8 @@ dependencies {
     modApi(libs.architectury.api)
 
     if (useLocalMarkdownManual) {
-        compileOnly(files(markdownManualJar("common", "markdown_manual-MC*-common-*-api.jar")))
+        compileOnly(files(markdownManualJar(".", "markdown_manual-MC*-api.jar")))
     } else {
-        modApi(libs.fabric.manual)
-    }
-}
-
-tasks {
-    register<Jar>("apiJar") {
-        from(sourceSets.main.get().allSource)
-        from(sourceSets.main.get().output)
-        archiveClassifier.set("api")
-        include("li/cil/${modId}/api/**")
-    }
-
-    jar {
-        dependsOn("apiJar")
+        compileOnly(libs.common.manual.api)
     }
 }

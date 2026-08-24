@@ -1,8 +1,11 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.common.module;
 
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
+import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.common.item.ReadOnlyMemoryModuleItem;
 import net.minecraft.world.item.ItemStack;
 
@@ -49,6 +52,13 @@ public final class ReadOnlyMemoryModule extends RandomAccessMemoryModule {
     protected void beginRead(final Pipe pipe) {
         if (state == State.ADDRESS) {
             pipe.beginRead();
+        }
+    }
+
+    @Override
+    protected void beginAccess() {
+        for (final Port port : Port.VALUES) {
+            getCasing().getReceivingPipe(getFace(), port).cancelRead();
         }
     }
 

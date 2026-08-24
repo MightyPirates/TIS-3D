@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.util.fabric;
 
 import fuzs.forgeconfigapiport.fabric.api.v5.ConfigRegistry;
@@ -32,8 +34,9 @@ public final class ConfigManagerImpl extends ConfigManager {
     }
 
     public static void initialize() {
-        ModConfigEvents.loading(API.MOD_ID).register(ConfigManagerImpl::handleModConfigEvent);
-        ModConfigEvents.reloading(API.MOD_ID).register(ConfigManagerImpl::handleModConfigEvent);
+        ModConfigEvents.loading(API.MOD_ID).register(config -> handleModConfigEvent(config, false));
+        ModConfigEvents.reloading(API.MOD_ID).register(config -> handleModConfigEvent(config, false));
+        ModConfigEvents.unloading(API.MOD_ID).register(config -> handleModConfigEvent(config, true));
 
         CONFIGS.forEach((spec, config) -> {
             final Type typeAnnotation = config.instance().getClass().getAnnotation(Type.class);
@@ -49,11 +52,17 @@ public final class ConfigManagerImpl extends ConfigManager {
 
     // --------------------------------------------------------------------- //
 
-    private static void handleModConfigEvent(final ModConfig eventConfig) {
+    private static void handleModConfigEvent(final ModConfig eventConfig, final boolean isUnloading) {
         if (!eventConfig.getModId().equals(API.MOD_ID))
             return;
         final ConfigDefinition config = CONFIGS.get(eventConfig.getSpec());
-        if (config != null) {
+        if (config == null) {
+            return;
+        }
+
+        if (isUnloading) {
+            config.applyDefaults();
+        } else {
             config.apply();
         }
     }
@@ -94,6 +103,11 @@ public final class ConfigManagerImpl extends ConfigManager {
         @Override
         public T get() {
             return value().get();
+        }
+
+        @Override
+        public T getDefault() {
+            return value().getDefault();
         }
     }
 }

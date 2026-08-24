@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.common.module;
 
 import li.cil.tis3d.api.machine.Casing;
@@ -6,6 +8,7 @@ import li.cil.tis3d.api.module.traits.ModuleWithBakedModel;
 import li.cil.tis3d.api.module.traits.ModuleWithBlockChangeListener;
 import li.cil.tis3d.api.prefab.module.AbstractModule;
 import li.cil.tis3d.client.ClientHooks;
+import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.util.BlockStateUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -15,8 +18,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockAndTintGetter;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.RenderShape;
@@ -80,10 +81,9 @@ public final class FacadeModule extends AbstractModule implements ModuleWithBloc
         load(data);
 
         // Force re-render to make change of facade configuration visible.
-        final Level level = getCasing().getCasingLevel();
-        final BlockPos position = getCasing().getPosition();
-        final BlockState state = level.getBlockState(position);
-        level.sendBlockUpdated(position, state, state, Block.UPDATE_ALL);
+        if (getCasing() instanceof final CasingBlockEntity casing) {
+            casing.invalidateModel();
+        }
     }
 
     @Override

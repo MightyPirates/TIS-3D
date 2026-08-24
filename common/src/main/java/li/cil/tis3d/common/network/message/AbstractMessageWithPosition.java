@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.common.network.message;
 
 import li.cil.tis3d.util.LevelUtils;

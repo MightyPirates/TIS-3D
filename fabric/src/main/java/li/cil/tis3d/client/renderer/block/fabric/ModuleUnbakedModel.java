@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.client.renderer.block.fabric;
 
 import com.mojang.serialization.MapCodec;

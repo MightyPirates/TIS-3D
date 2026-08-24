@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.common.module.execution.target;
 
 import li.cil.tis3d.api.machine.Face;
@@ -34,7 +36,7 @@ public final class AnyTargetInterface extends AbstractSidedTargetInterface {
 
     @Override
     public boolean isWriting() {
-        return isWriting(Port.LEFT) && isWriting(Port.RIGHT) && isWriting(Port.UP) && isWriting(Port.DOWN);
+        return isWriting(Port.LEFT) || isWriting(Port.RIGHT) || isWriting(Port.UP) || isWriting(Port.DOWN);
     }
 
     @Override

@@ -1,5 +1,8 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.common.fabric;
 
+import li.cil.tis3d.api.platform.FabricProviderInitializer;
 import li.cil.tis3d.common.CommonBootstrap;
 import li.cil.tis3d.common.CommonSetup;
 import li.cil.tis3d.common.block.CasingBlock;
@@ -7,6 +10,7 @@ import li.cil.tis3d.common.block.entity.fabric.ChunkUnloadListener;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents;
 import net.fabricmc.fabric.api.event.player.PlayerPickItemEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 public final class CommonBootstrapFabric implements ModInitializer {
@@ -19,6 +23,10 @@ public final class CommonBootstrapFabric implements ModInitializer {
             final var stack = CasingBlock.getPickedModule(player.level(), pos, player);
             return stack.isEmpty() ? null : stack;
         });
+
+        FabricLoader.getInstance()
+            .getEntrypoints("tis3d:registration", FabricProviderInitializer.class)
+            .forEach(FabricProviderInitializer::registerProviders);
 
         ServerChunkEvents.CHUNK_UNLOAD.register((level, chunk) -> {
             for (final BlockEntity blockEntity : chunk.getBlockEntities().values()) {

@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.common.module;
 
 import li.cil.tis3d.api.InfraredAPI;
@@ -7,6 +9,7 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
+import li.cil.tis3d.api.module.traits.ModuleWithExclusiveWrites;
 import li.cil.tis3d.api.prefab.module.AbstractModule;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
@@ -22,7 +25,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.Deque;
 import java.util.LinkedList;
 
-public final class InfraredModule extends AbstractModule implements InfraredReceiver {
+public final class InfraredModule extends AbstractModule implements InfraredReceiver, ModuleWithExclusiveWrites {
     // --------------------------------------------------------------------- //
     // Persisted data
 

@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.data.neoforge;
 
 import com.mojang.math.Quadrant;

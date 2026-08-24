@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.util;
 
 import net.minecraft.core.component.DataComponents;

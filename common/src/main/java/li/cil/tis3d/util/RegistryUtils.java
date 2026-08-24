@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.util;
 
 import dev.architectury.registry.registries.DeferredRegister;
@@ -10,6 +12,7 @@ public abstract class RegistryUtils {
     private static String modId;
 
     @SafeVarargs
+    @SuppressWarnings("varargs")
     public static <T> RegistrarBuilder<T> builder(ResourceKey<Registry<T>> registryKey, T... typeGetter) {
         if (modId == null) throw new IllegalStateException();
         return RegistrarManager.get(modId).builder(registryKey.identifier(), typeGetter);

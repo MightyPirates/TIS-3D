@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 package li.cil.tis3d.common.item;
 
 import li.cil.tis3d.common.block.CasingBlock;
