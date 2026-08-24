@@ -29,6 +29,37 @@ public final class ModuleTestsNeoForge {
         ModuleTests.readOnlyMemoryModuleIgnoresConcurrentWrite(helper);
     }
 
+    @GameTest(template = TEMPLATE, timeoutTicks = 200)
+    public static void anyWriteUsesFirstPortOnYPos(final GameTestHelper helper) {
+        ModuleTests.anyWriteUsesFirstPortOnYPos(helper);
+    }
+
+    @GameTest(template = TEMPLATE, timeoutTicks = 200)
+    public static void anyWriteUsesFirstPortOnYNeg(final GameTestHelper helper) {
+        ModuleTests.anyWriteUsesFirstPortOnYNeg(helper);
+    }
+
+    @GameTest(template = TEMPLATE, timeoutTicks = 200)
+    public static void anyWriteUsesFirstPortOnXPos(final GameTestHelper helper) {
+        ModuleTests.anyWriteUsesFirstPortOnXPos(helper);
+    }
+
+    @GameTest(template = TEMPLATE, timeoutTicks = 200)
+    public static void anyWriteUsesFirstPortOnXNeg(final GameTestHelper helper) {
+        ModuleTests.anyWriteUsesFirstPortOnXNeg(helper);
+    }
+
+    @GameTest(template = TEMPLATE, timeoutTicks = 200)
+    public static void anyWriteUsesFirstPortOnZPos(final GameTestHelper helper) {
+        ModuleTests.anyWriteUsesFirstPortOnZPos(helper);
+    }
+
+    @GameTest(template = TEMPLATE, timeoutTicks = 200)
+    public static void anyWriteUsesFirstPortOnZNeg(final GameTestHelper helper) {
+        ModuleTests.anyWriteUsesFirstPortOnZNeg(helper);
+    }
+
+
     // --------------------------------------------------------------------- //
 
     private ModuleTestsNeoForge() {

@@ -10,6 +10,7 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.ModuleProvider;
 import li.cil.tis3d.api.module.traits.ModuleWithBakedModel;
+import li.cil.tis3d.api.module.traits.ModuleWithExclusiveWrites;
 import li.cil.tis3d.api.module.traits.ModuleWithRedstone;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.block.entity.ControllerBlockEntity;
@@ -118,6 +119,17 @@ public final class CasingImpl implements Casing {
         for (final Module module : modules) {
             if (module != null) {
                 module.step();
+            }
+        }
+    }
+
+    /**
+     * Give modules a chance to cancel redundant pending writes, after pipes advanced.
+     */
+    public void arbitrateWrites() {
+        for (final Module module : modules) {
+            if (module instanceof final ModuleWithExclusiveWrites moduleWithExclusiveWrites) {
+                moduleWithExclusiveWrites.arbitrateWrites();
             }
         }
     }

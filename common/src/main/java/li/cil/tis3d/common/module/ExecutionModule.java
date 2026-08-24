@@ -11,6 +11,7 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.traits.ModuleWithBlockChangeListener;
+import li.cil.tis3d.api.module.traits.ModuleWithExclusiveWrites;
 import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
@@ -44,7 +45,7 @@ import java.util.*;
 /**
  * The programmable execution module.
  */
-public final class ExecutionModule extends AbstractModuleWithRotation implements ModuleWithBlockChangeListener {
+public final class ExecutionModule extends AbstractModuleWithRotation implements ModuleWithBlockChangeListener, ModuleWithExclusiveWrites {
     // --------------------------------------------------------------------- //
     // Persisted data
 

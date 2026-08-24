@@ -550,6 +550,7 @@ public final class ControllerBlockEntity extends ComputerBlockEntity {
         casings.forEach(CasingBlockEntity::stepModules);
         casings.forEach(CasingBlockEntity::stepPipes);
         stepPipes();
+        casings.forEach(CasingBlockEntity::arbitrateWrites);
     }
 
     /**

@@ -7,19 +7,26 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.common.item.Items;
 import li.cil.tis3d.common.item.ReadOnlyMemoryModuleItem;
+import li.cil.tis3d.common.module.ExecutionModule;
 import li.cil.tis3d.common.module.ReadOnlyMemoryModule;
 import li.cil.tis3d.common.module.RedstoneModule;
+import li.cil.tis3d.common.module.execution.compiler.Compiler;
+import li.cil.tis3d.common.module.execution.compiler.ParseException;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static li.cil.tis3d.gametest.Invocations.Kind.INFRARED;
 import static li.cil.tis3d.gametest.Invocations.Kind.READ;
-import static li.cil.tis3d.gametest.TestSupport.CASING_NEIGHBOR_POS;
-import static li.cil.tis3d.gametest.TestSupport.CASING_POS;
+import static li.cil.tis3d.gametest.TestSupport.*;
 
 public final class ModuleTests {
     private static final int OUTPUT_VALUE = 9;
@@ -30,6 +37,10 @@ public final class ModuleTests {
     private static final byte[] ROM_DATA = {3, 4, 5, 6};
     private static final int ROM_ADDRESS = 0;
     private static final int INTERFERING_VALUE = 42;
+
+    // Ticks to let an ANY write settle, at one step per tick and at one step per two ticks.
+    private static final int FULL_POWER_STEP_TICKS = 20;
+    private static final int WIRE_POWER_STEP_TICKS = 40;
 
     public static void redstoneModuleExchangesWithWorld(final GameTestHelper helper) {
         final MachineFixture machine = MachineFixture.place(helper, CASING_POS).powerFully();
@@ -99,6 +110,30 @@ public final class ModuleTests {
             .thenSucceed();
     }
 
+    public static void anyWriteUsesFirstPortOnYPos(final GameTestHelper helper) {
+        assertAnyWriteUsesFirstPortAboveController(helper, Face.Y_POS);
+    }
+
+    public static void anyWriteUsesFirstPortOnYNeg(final GameTestHelper helper) {
+        assertAnyWriteUsesFirstPortBelowController(helper, Face.Y_NEG);
+    }
+
+    public static void anyWriteUsesFirstPortOnXPos(final GameTestHelper helper) {
+        assertAnyWriteUsesFirstPortBelowController(helper, Face.X_POS);
+    }
+
+    public static void anyWriteUsesFirstPortOnXNeg(final GameTestHelper helper) {
+        assertAnyWriteUsesFirstPortBelowController(helper, Face.X_NEG);
+    }
+
+    public static void anyWriteUsesFirstPortOnZPos(final GameTestHelper helper) {
+        assertAnyWriteUsesFirstPortBelowController(helper, Face.Z_POS);
+    }
+
+    public static void anyWriteUsesFirstPortOnZNeg(final GameTestHelper helper) {
+        assertAnyWriteUsesFirstPortBelowController(helper, Face.Z_NEG);
+    }
+
     // --------------------------------------------------------------------- //
 
     private static ReadOnlyMemoryModule installReadOnlyMemory(final MachineFixture machine) {
@@ -119,6 +154,60 @@ public final class ModuleTests {
         for (int address = 0; address < ROM_DATA.length; address++) {
             helper.assertValueEqual(memory[address], ROM_DATA[address], "ROM memory at address " + address);
         }
+    }
+
+    private static void assertAnyWriteUsesFirstPortBelowController(final GameTestHelper helper, final Face exeFace) {
+        final BlockPos casingPos = CONTROLLER_POS.below();
+        assertAnyWriteUsesFirstPort(helper, exeFace, casingPos, Face.Y_POS,
+            MachineFixture.place(helper, casingPos).powerFully(), FULL_POWER_STEP_TICKS);
+    }
+
+    private static void assertAnyWriteUsesFirstPortAboveController(final GameTestHelper helper, final Face exeFace) {
+        final BlockPos casingPos = CONTROLLER_POS.above();
+        assertAnyWriteUsesFirstPort(helper, exeFace, casingPos, Face.Y_NEG,
+            MachineFixture.place(helper, casingPos).powerWithWire(), WIRE_POWER_STEP_TICKS);
+    }
+
+    private static void assertAnyWriteUsesFirstPort(final GameTestHelper helper, final Face exeFace, final BlockPos casingPos, final Face controllerFace, final MachineFixture machine, final int ticks) {
+        final ExecutionModule[] exe = new ExecutionModule[1];
+        final List<TestModule> readers = new ArrayList<>();
+
+        helper.startSequence()
+            .thenWaitUntil(machine::assertRunning)
+            .thenExecute(() -> {
+                exe[0] = machine.install(casingPos, exeFace, new ExecutionModule(machine.casing(casingPos), exeFace));
+                try {
+                    Compiler.compile(List.of("MOV 1 ANY"), exe[0].getState());
+                } catch (final ParseException e) {
+                    throw new GameTestAssertException("failed compiling test program: " + e);
+                }
+
+                // A willing reader on every port of every other face, so that all four ports of the
+                // execution module could complete their write.
+                for (final Face face : Face.VALUES) {
+                    if (face == exeFace || face == controllerFace) {
+                        continue;
+                    }
+
+                    final TestModule reader = machine.install(casingPos, face);
+                    for (final Port port : Port.VALUES) {
+                        reader.readOn(port);
+                    }
+                    readers.add(reader);
+                }
+            })
+            .thenIdle(ticks)
+            .thenExecute(() -> {
+                helper.assertTrue(exe[0].getState().last.isPresent(),
+                    "no ANY write completed at all with the execution module on " + exeFace);
+                helper.assertValueEqual(exe[0].getState().last.get(), Port.VALUES[0],
+                    "port the ANY write completed on with the execution module on " + exeFace);
+
+                final long fed = readers.stream().filter(reader -> reader.invocations().any(READ)).count();
+                helper.assertValueEqual(fed, 1L,
+                    "modules that received a value with the execution module on " + exeFace);
+            })
+            .thenSucceed();
     }
 
     // --------------------------------------------------------------------- //

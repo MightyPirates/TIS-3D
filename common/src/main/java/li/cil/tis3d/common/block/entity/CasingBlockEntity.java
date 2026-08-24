@@ -253,6 +253,10 @@ public final class CasingBlockEntity extends ComputerBlockEntity implements Side
         casing.stepModules();
     }
 
+    void arbitrateWrites() {
+        casing.arbitrateWrites();
+    }
+
     public void invalidateModel() {
         final Level level = getBlockEntityLevel();
         if (!level.isClientSide()) {

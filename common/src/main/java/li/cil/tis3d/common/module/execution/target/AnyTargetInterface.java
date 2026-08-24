@@ -36,7 +36,7 @@ public final class AnyTargetInterface extends AbstractSidedTargetInterface {
 
     @Override
     public boolean isWriting() {
-        return isWriting(Port.LEFT) && isWriting(Port.RIGHT) && isWriting(Port.UP) && isWriting(Port.DOWN);
+        return isWriting(Port.LEFT) || isWriting(Port.RIGHT) || isWriting(Port.UP) || isWriting(Port.DOWN);
     }
 
     @Override
