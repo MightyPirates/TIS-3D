@@ -4,7 +4,7 @@ parchment-minecraft = "1.21.11"
 parchment-mappings = "2025.12.20"
 
 architectury = "19.0.1"
-manual = "1.2.6"
+manual = "1.2.7"
 injectables = "1.0.10"
 
 fabric-loader = "0.19.3"
@@ -13,12 +13,12 @@ fabric-api = "0.141.6+1.21.11"
 fabric-forgeConfigPort = "21.11.1"
 jei = "27.30.0.76"
 
-fabric-markdownManual = "MC1.21.11-fabric-1.2.6"
+fabric-markdownManual = "MC1.21.11-fabric-1.2.7"
 
 neoforge-platform = "21.11.45"
 neoforge-loader = "1"
 
-neoforge-markdownManual = "MC1.21.11-neoforge-1.2.6"
+neoforge-markdownManual = "MC1.21.11-neoforge-1.2.7"
 
 [plugins]
 loom = { id = "dev.architectury.loom", version = "1.17-SNAPSHOT" }
