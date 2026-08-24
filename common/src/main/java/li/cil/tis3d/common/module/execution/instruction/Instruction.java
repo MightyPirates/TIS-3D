@@ -4,7 +4,6 @@ package li.cil.tis3d.common.module.execution.instruction;
 
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.common.module.execution.Machine;
-import li.cil.tis3d.common.module.execution.MachineImpl;
 
 /**
  * A single instruction that can be executed by the execution module.
@@ -30,7 +29,7 @@ public interface Instruction {
      * @param port    the port the operation will finish on.
      * @see li.cil.tis3d.api.module.Module#onBeforeWriteComplete(Port)
      */
-    default void onBeforeWriteComplete(final MachineImpl machine, final Port port) {
+    default void onBeforeWriteComplete(final Machine machine, final Port port) {
     }
 
     /**

@@ -4,7 +4,6 @@ package li.cil.tis3d.common.module.execution.instruction;
 
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.common.module.execution.Machine;
-import li.cil.tis3d.common.module.execution.MachineImpl;
 import li.cil.tis3d.common.module.execution.target.Target;
 
 abstract class AbstractMoveInstruction implements Instruction {
@@ -15,7 +14,7 @@ abstract class AbstractMoveInstruction implements Instruction {
     }
 
     @Override
-    public void onBeforeWriteComplete(final MachineImpl machine, final Port port) {
+    public void onBeforeWriteComplete(final Machine machine, final Port port) {
         machine.getInterface(destination).onBeforeWriteComplete(port);
     }
 
