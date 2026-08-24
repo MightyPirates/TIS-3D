@@ -10,12 +10,25 @@ val gameTestResultsDir = layout.buildDirectory.dir("test-results/gameTest")
 val devOnlyMods: Configuration by configurations.creating
 val devOnlyModNames = provider { devOnlyMods.resolvedConfiguration.resolvedArtifacts.map { it.moduleVersion.id.name } }
 
+sourceSets.main {
+    resources.srcDir("src/generated/resources")
+    resources.exclude(".cache/**")
+}
+
 loom {
     accessWidenerPath.set(project(":common").loom.accessWidenerPath)
 
     runs {
         named("client") { runDir = "run/client" }
         named("server") { runDir = "run/server" }
+
+        create("data") {
+            client()
+            runDir = "build/datagen"
+            property("fabric-api.datagen")
+            property("fabric-api.datagen.output-dir", file("src/generated/resources").absolutePath)
+            property("fabric-api.datagen.modid", modId)
+        }
 
         create("gameTest") {
             server()
@@ -64,6 +77,11 @@ dependencies {
 
 tasks {
     processResources {
+        from(project(":neoforge").file("src/generated/server"))
+        from(project(":neoforge").file("src/generated/client")) {
+            exclude("assets/*/blockstates/**", "assets/*/items/casing.json", "assets/*/items/controller.json")
+        }
+
         val properties = mapOf(
             "version" to project.version,
             "minecraftVersion" to minecraftVersion,

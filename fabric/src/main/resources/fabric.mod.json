@@ -22,6 +22,9 @@
     "client": [
       "li.cil.tis3d.client.fabric.ClientBootstrapFabric"
     ],
+    "fabric-datagen": [
+      "li.cil.tis3d.data.fabric.DataGenerators"
+    ],
     "markdown_manual:registration": [
       "li.cil.tis3d.client.fabric.ManualInitializer"
     ]

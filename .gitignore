@@ -32,5 +32,5 @@ libs/
 classes/
 
 # generated resources
-**/src/generated/resources/.cache/
+**/src/generated/**/.cache/
 .architectury-transformer/

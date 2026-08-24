@@ -10,6 +10,12 @@ val gameTestResultsDir = layout.buildDirectory.dir("test-results/gameTest")
 val devOnlyMods: Configuration by configurations.creating
 val devOnlyModNames = provider { devOnlyMods.resolvedConfiguration.resolvedArtifacts.map { it.moduleVersion.id.name } }
 
+sourceSets.main {
+    resources.srcDir("src/generated/client")
+    resources.srcDir("src/generated/server")
+    resources.exclude(".cache/**")
+}
+
 loom {
     accessWidenerPath.set(project(":common").loom.accessWidenerPath)
 
@@ -30,14 +36,14 @@ loom {
         create("clientData") {
             clientData()
             programArgs("--mod", modId)
-            programArgs("--output", file("src/generated/resources/").absolutePath)
+            programArgs("--output", file("src/generated/client").absolutePath)
             programArgs("--existing", project(":common").file("src/main/resources").absolutePath)
             programArgs("--existing", file("src/main/resources").absolutePath)
         }
         create("serverData") {
             serverData()
             programArgs("--mod", modId)
-            programArgs("--output", project(":common").file("src/generated/resources").absolutePath)
+            programArgs("--output", file("src/generated/server").absolutePath)
             programArgs("--existing", project(":common").file("src/main/resources").absolutePath)
             programArgs("--existing", file("src/main/resources").absolutePath)
         }

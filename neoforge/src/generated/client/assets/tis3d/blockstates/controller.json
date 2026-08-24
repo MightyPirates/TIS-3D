@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "tis3d:block/controller"
+    }
+  }
+}
