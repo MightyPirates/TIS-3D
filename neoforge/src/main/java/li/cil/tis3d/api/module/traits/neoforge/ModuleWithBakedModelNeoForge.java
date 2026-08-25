@@ -45,13 +45,13 @@ public interface ModuleWithBakedModelNeoForge extends ModuleWithBakedModel {
      * logic.
      *
      * @param state      the casing's block state.
-     * @param face       the side to obtain replacement quads for.
+     * @param side       the side to obtain replacement quads for.
      * @param random     the random seed to use for the quad generation.
      * @param renderType the render type.
      * @return the list of replacement quads, or <c>null</c> to use the default casing quads.
      */
     @OnlyIn(Dist.CLIENT)
-    List<BakedQuad> getQuads(final @Nullable BlockState state, @Nullable final Direction face, final RandomSource random, final ModelData data, @Nullable final RenderType renderType);
+    List<BakedQuad> getQuads(final @Nullable BlockState state, @Nullable final Direction side, final RandomSource random, final ModelData data, @Nullable final RenderType renderType);
 
     /**
      * Returns the render types required by the underlying model.

@@ -50,7 +50,7 @@ public final class TestSerialInterfaceProvider implements SerialInterfaceProvide
     }
 
     @Override
-    public Optional<SerialInterface> getInterface(final Level level, final BlockPos position, final Direction face) {
+    public Optional<SerialInterface> getInterface(final Level level, final BlockPos position, final Direction side) {
         return Optional.of(new TestSerialInterface(exchange(position)));
     }
 

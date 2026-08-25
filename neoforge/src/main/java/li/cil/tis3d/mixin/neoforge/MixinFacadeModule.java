@@ -32,9 +32,9 @@ public abstract class MixinFacadeModule implements ModuleWithBakedModelNeoForge 
     }
 
     @Override
-    public List<BakedQuad> getQuads(@Nullable final BlockState state, @Nullable final Direction face, final RandomSource random, final ModelData data, final @Nullable RenderType renderType) {
+    public List<BakedQuad> getQuads(@Nullable final BlockState state, @Nullable final Direction side, final RandomSource random, final ModelData data, final @Nullable RenderType renderType) {
         final var model = Minecraft.getInstance().getBlockRenderer().getBlockModel(facadeState);
-        return model.getQuads(facadeState, face, random, data, renderType);
+        return model.getQuads(facadeState, side, random, data, renderType);
     }
 
     @Override

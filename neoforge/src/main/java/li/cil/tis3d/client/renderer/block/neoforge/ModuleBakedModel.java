@@ -2,7 +2,6 @@
 
 package li.cil.tis3d.client.renderer.block.neoforge;
 
-import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.traits.neoforge.ModuleWithBakedModelNeoForge;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -16,7 +15,6 @@ import net.neoforged.neoforge.client.ChunkRenderTypeSet;
 import net.neoforged.neoforge.client.model.IDynamicBakedModel;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.model.data.ModelProperty;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -24,6 +22,8 @@ import java.util.Collections;
 import java.util.List;
 
 public final class ModuleBakedModel implements IDynamicBakedModel {
+    private static final Direction[] DIRECTIONS = Direction.values();
+
     private final BakedModel proxy;
 
     // --------------------------------------------------------------------- //
@@ -36,14 +36,13 @@ public final class ModuleBakedModel implements IDynamicBakedModel {
     // IBakedModel
 
     @Override
-    public @NotNull List<BakedQuad> getQuads(@Nullable final BlockState state, @Nullable final Direction side, final RandomSource random, final ModelData data, @Nullable final RenderType renderType) {
+    public List<BakedQuad> getQuads(@Nullable final BlockState state, @Nullable final Direction side, final RandomSource random, final ModelData data, @Nullable final RenderType renderType) {
         final CasingModules modules = data.get(CasingModules.CASING_MODULES_PROPERTY);
         if (side != null) {
             if (modules != null) {
-                final Face face = Face.fromDirection(side);
-                final ModuleWithBakedModelNeoForge module = modules.getModule(face);
+                final ModuleWithBakedModelNeoForge module = modules.getModule(side);
                 if (module != null && module.hasModel()) {
-                    final ModelData moduleData = modules.getModuleData(face);
+                    final ModelData moduleData = modules.getModuleData(side);
                     return module.getQuads(state, side, random, moduleData, renderType);
                 }
             }
@@ -57,10 +56,10 @@ public final class ModuleBakedModel implements IDynamicBakedModel {
             final ArrayList<BakedQuad> quads = new ArrayList<>();
 
             if (modules != null) {
-                for (final Face face : Face.VALUES) {
-                    final ModuleWithBakedModelNeoForge module = modules.getModule(face);
+                for (final Direction moduleSide : DIRECTIONS) {
+                    final ModuleWithBakedModelNeoForge module = modules.getModule(moduleSide);
                     if (module != null && module.hasModel()) {
-                        final ModelData moduleData = modules.getModuleData(face);
+                        final ModelData moduleData = modules.getModuleData(moduleSide);
                         quads.addAll(module.getQuads(state, null, random, moduleData, renderType));
                     }
                 }
@@ -106,14 +105,14 @@ public final class ModuleBakedModel implements IDynamicBakedModel {
     }
 
     @Override
-    public ChunkRenderTypeSet getRenderTypes(@NotNull final BlockState state, @NotNull final RandomSource random, @NotNull final ModelData data) {
+    public ChunkRenderTypeSet getRenderTypes(final BlockState state, final RandomSource random, final ModelData data) {
         ChunkRenderTypeSet set = proxy.getRenderTypes(state, random, data);
         final CasingModules modules = data.get(CasingModules.CASING_MODULES_PROPERTY);
         if (modules != null) {
-            for (final Face face : Face.VALUES) {
-                final ModuleWithBakedModelNeoForge module = modules.getModule(face);
+            for (final Direction side : DIRECTIONS) {
+                final ModuleWithBakedModelNeoForge module = modules.getModule(side);
                 if (module != null && module.hasModel()) {
-                    final ModelData moduleData = modules.getModuleData(face);
+                    final ModelData moduleData = modules.getModuleData(side);
                     set = ChunkRenderTypeSet.union(set, module.getRenderTypes(random, moduleData));
                 }
             }
@@ -126,8 +125,8 @@ public final class ModuleBakedModel implements IDynamicBakedModel {
     public static final class CasingModules {
         public static final ModelProperty<CasingModules> CASING_MODULES_PROPERTY = new ModelProperty<>();
 
-        private final ModuleWithBakedModelNeoForge[] modules = new ModuleWithBakedModelNeoForge[Face.VALUES.length];
-        private final ModelData[] moduleData = new ModelData[Face.VALUES.length];
+        private final ModuleWithBakedModelNeoForge[] modules = new ModuleWithBakedModelNeoForge[DIRECTIONS.length];
+        private final ModelData[] moduleData = new ModelData[DIRECTIONS.length];
 
         public boolean isEmpty() {
             for (final ModuleWithBakedModelNeoForge module : modules) {
@@ -139,18 +138,18 @@ public final class ModuleBakedModel implements IDynamicBakedModel {
             return true;
         }
 
-        public void setModule(final Face face, final ModuleWithBakedModelNeoForge module, final ModelData data) {
-            modules[face.ordinal()] = module;
-            moduleData[face.ordinal()] = data;
+        public void setModule(final Direction side, final ModuleWithBakedModelNeoForge module, final ModelData data) {
+            modules[side.ordinal()] = module;
+            moduleData[side.ordinal()] = data;
         }
 
         @Nullable
-        public ModuleWithBakedModelNeoForge getModule(final Face face) {
-            return modules[face.ordinal()];
+        public ModuleWithBakedModelNeoForge getModule(final Direction side) {
+            return modules[side.ordinal()];
         }
 
-        public ModelData getModuleData(final Face face) {
-            return moduleData[face.ordinal()];
+        public ModelData getModuleData(final Direction side) {
+            return moduleData[side.ordinal()];
         }
     }
 }

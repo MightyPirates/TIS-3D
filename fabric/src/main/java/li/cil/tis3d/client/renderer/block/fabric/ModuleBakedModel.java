@@ -2,7 +2,6 @@
 
 package li.cil.tis3d.client.renderer.block.fabric;
 
-import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.traits.fabric.ModuleWithBakedModelFabric;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import net.fabricmc.fabric.api.renderer.v1.model.FabricBakedModel;
@@ -49,7 +48,7 @@ public final class ModuleBakedModel implements BakedModel, FabricBakedModel {
             return;
         }
 
-        final var module = casing.getModule(Face.fromDirection(direction));
+        final var module = casing.getModule(casing.toLocal(direction));
         if (module instanceof final ModuleWithBakedModelFabric moduleWithModel && moduleWithModel.hasModel()) {
             moduleWithModel.emitBlockQuads(blockView, state, pos, direction, randomSupplier, context);
         } else {

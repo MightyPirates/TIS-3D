@@ -3,7 +3,6 @@
 package li.cil.tis3d.data.neoforge;
 
 import li.cil.tis3d.api.API;
-import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.common.block.Blocks;
 import li.cil.tis3d.common.block.CasingBlock;
 import li.cil.tis3d.common.item.Items;
@@ -32,8 +31,7 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         final ModelFile.ExistingModelFile casingModule = models().getExistingFile(MODULE_IN_CASING_MODEL);
 
         final MultiPartBlockStateBuilder casingBuilder = getMultipartBuilder(Blocks.CASING.get());
-        CasingBlock.FACE_TO_PROPERTY.forEach((face, property) -> {
-            final Direction direction = Face.toDirection(face);
+        CasingBlock.DIRECTION_TO_PROPERTY.forEach((direction, property) -> {
             final int rotationY = (int) direction.toYRot();
             final int rotationX;
             if (direction == Direction.UP) {

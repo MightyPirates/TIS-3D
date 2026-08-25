@@ -4,11 +4,14 @@ package li.cil.tis3d.api.machine;
 
 import io.netty.buffer.ByteBuf;
 import li.cil.tis3d.api.module.Module;
+import li.cil.tis3d.api.util.TransformUtil;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
@@ -32,6 +35,17 @@ public interface Casing {
      * @return the position of the casing.
      */
     BlockPos getPosition();
+
+    /**
+     * The rotation of this casing, mapping its local space to world space.
+     * <p>
+     * Casings store everything per face and per port as though they were unrotated. Anything
+     * interacting with the world has to map through this, most conveniently using the helpers
+     * below.
+     *
+     * @return the rotation of this casing.
+     */
+    Rotation getRotation();
 
     /**
      * Flag the casing as dirty so it is saved when the chunk containing it
@@ -197,4 +211,48 @@ public interface Casing {
      * @param data the data to send to the client.
      */
     void sendData(final Face face, final ByteBuf data);
+
+    // --------------------------------------------------------------------- //
+
+    /**
+     * Map one of this casing's local faces to world space.
+     *
+     * @param face the face in this casing's local space.
+     * @return the direction the face points in, in world space.
+     */
+    default Direction toWorld(final Face face) {
+        return TransformUtil.toWorld(face, getRotation());
+    }
+
+    /**
+     * Map a world space face to this casing's local space.
+     *
+     * @param side the face in world space.
+     * @return the face in this casing's local space.
+     */
+    default Face toLocal(final Direction side) {
+        return TransformUtil.toLocal(side, getRotation());
+    }
+
+    /**
+     * Map one of this casing's local ports to world space.
+     *
+     * @param face the face the port is on, in this casing's local space.
+     * @param port the port in this casing's local space.
+     * @return the port in world space.
+     */
+    default Port toWorld(final Face face, final Port port) {
+        return TransformUtil.toWorld(face, port, getRotation());
+    }
+
+    /**
+     * Map a world space port to this casing's local space.
+     *
+     * @param side the face the port is on, in world space.
+     * @param port the port in world space.
+     * @return the port in this casing's local space.
+     */
+    default Port toLocal(final Direction side, final Port port) {
+        return TransformUtil.toLocal(side, port, getRotation());
+    }
 }

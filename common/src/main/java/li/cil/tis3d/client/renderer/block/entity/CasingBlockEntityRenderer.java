@@ -19,6 +19,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -44,10 +45,11 @@ public final class CasingBlockEntityRenderer implements BlockEntityRenderer<Casi
     private static final Logger LOGGER = LogManager.getLogger();
 
     private static final double Z_FIGHT_BUFFER = 0.001;
+    private static final Direction[] DIRECTIONS = Direction.values();
     private static final Vector3f AXIS_X_POSITIVE = new Vector3f(1, 0, 0);
     private static final Vector3f AXIS_Y_POSITIVE = new Vector3f(0, 1, 0);
     private static final Vector3f AXIS_Z_POSITIVE = new Vector3f(0, 0, 1);
-    private final static Set<Class<?>> BLACKLIST = new HashSet<>();
+    private static final Set<Class<?>> BLACKLIST = new HashSet<>();
 
     private final BlockEntityRenderDispatcher renderer;
 
@@ -69,19 +71,19 @@ public final class CasingBlockEntityRenderer implements BlockEntityRenderer<Casi
         final RenderContextImpl context = new RenderContextImpl(renderer, matrixStack, bufferFactory, partialTicks, light, overlay);
 
         // Render all modules, adjust matrix stack to allow easily rendering an overlay in (0, 0, 0) to (1, 1, 0).
-        for (final Face face : Face.VALUES) {
-            if (isBackFace(casing.getPosition(), face)) {
+        for (final Direction side : DIRECTIONS) {
+            if (isBackFace(casing.getPosition(), side)) {
                 continue;
             }
 
             matrixStack.pushPose();
-            setupMatrix(face, matrixStack);
+            setupMatrix(side, matrixStack);
 
-            if (!isObserverHoldingKey() || !drawConfigOverlay(context, casing, face)) {
+            if (!isObserverHoldingKey() || !drawConfigOverlay(context, casing, side)) {
                 // Grab neighbor lighting for module rendering because the casing itself is opaque and hence fully dark.
-                final BlockPos neighborPos = casing.getBlockPos().relative(Face.toDirection(face));
+                final BlockPos neighborPos = casing.getBlockPos().relative(side);
                 final int neighborLight = LevelRenderer.getLightColor(renderer.level, neighborPos);
-                drawModuleOverlay(new RenderContextImpl(context, neighborLight), casing, face);
+                drawModuleOverlay(new RenderContextImpl(context, neighborLight), casing, side);
             }
 
             matrixStack.popPose();
@@ -90,64 +92,44 @@ public final class CasingBlockEntityRenderer implements BlockEntityRenderer<Casi
         matrixStack.popPose();
     }
 
-    private boolean isBackFace(final BlockPos position, final Face face) {
+    private boolean isBackFace(final BlockPos position, final Direction side) {
         final Vec3 cameraPosition = renderer.camera.getPosition();
         final Vec3 blockCenter = Vec3.atCenterOf(position);
-        final Vec3 faceNormal = Vec3.atLowerCornerOf(Face.toDirection(face).getNormal());
+        final Vec3 faceNormal = Vec3.atLowerCornerOf(side.getNormal());
         final Vec3 faceCenter = blockCenter.add(faceNormal.scale(0.5));
         final Vec3 cameraToFaceCenter = faceCenter.subtract(cameraPosition);
         return faceNormal.dot(cameraToFaceCenter) > 0;
     }
 
-    private void setupMatrix(final Face face, final PoseStack matrixStack) {
-        final Vector3f axis;
-        final int degree;
-
-        switch (face) {
-            case Y_NEG -> {
-                axis = AXIS_X_POSITIVE;
-                degree = -90;
-            }
-            case Y_POS -> {
-                axis = AXIS_X_POSITIVE;
-                degree = 90;
-            }
-            case Z_NEG -> {
-                axis = AXIS_Y_POSITIVE;
-                degree = 0;
-            }
-            case Z_POS -> {
-                axis = AXIS_Y_POSITIVE;
-                degree = 180;
-            }
-            case X_NEG -> {
-                axis = AXIS_Y_POSITIVE;
-                degree = 90;
-            }
-            case X_POS -> {
-                axis = AXIS_Y_POSITIVE;
-                degree = -90;
-            }
-            default -> throw new IllegalArgumentException("Invalid face");
-        }
+    private void setupMatrix(final Direction side, final PoseStack matrixStack) {
+        final Vector3f axis = side.getAxis() == Direction.Axis.Y ? AXIS_X_POSITIVE : AXIS_Y_POSITIVE;
+        final int degree = switch (side) {
+            case DOWN -> -90;
+            case UP -> 90;
+            case NORTH -> 0;
+            case SOUTH -> 180;
+            case WEST -> 90;
+            case EAST -> -90;
+        };
 
         matrixStack.mulPose(new Quaternionf().fromAxisAngleDeg(axis, degree));
         matrixStack.translate(0.5, 0.5, -(0.5 + Z_FIGHT_BUFFER));
         matrixStack.scale(-1, -1, 1);
     }
 
-    private boolean drawConfigOverlay(final RenderContext context, final CasingBlockEntity casing, final Face face) {
+    private boolean drawConfigOverlay(final RenderContext context, final CasingBlockEntity casing, final Direction side) {
         // Only bother rendering the overlay if the player is nearby.
         if (!isObserverKindaClose(casing)) {
             return false;
         }
 
         if (isObserverSneaking() && !casing.isLocked()) {
+            final Face face = casing.toLocal(side);
             final ResourceLocation closedSprite;
             final ResourceLocation openSprite;
 
             final Port lookingAtPort;
-            final boolean isLookingAt = isObserverLookingAt(casing.getPosition(), face);
+            final boolean isLookingAt = isObserverLookingAt(casing.getPosition(), side);
             if (isLookingAt) {
                 closedSprite = Textures.LOCATION_OVERLAY_CASING_PORT_CLOSED;
                 openSprite = Textures.LOCATION_OVERLAY_CASING_PORT_OPEN;
@@ -157,7 +139,7 @@ public final class CasingBlockEntityRenderer implements BlockEntityRenderer<Casi
                 assert hit instanceof BlockHitResult : "renderer.cameraHitResult is not a BlockRayTraceResult even though it was in isObserverLookingAt";
                 final BlockHitResult blockHit = (BlockHitResult) hit;
                 final BlockPos pos = blockHit.getBlockPos();
-                final Vec3 uv = TransformUtil.hitToUV(face, blockHit.getLocation().subtract(pos.getX(), pos.getY(), pos.getZ()));
+                final Vec3 uv = TransformUtil.hitToUV(side, blockHit.getLocation().subtract(pos.getX(), pos.getY(), pos.getZ()));
                 lookingAtPort = Port.fromUVQuadrant(uv);
             } else {
                 closedSprite = Textures.LOCATION_OVERLAY_CASING_PORT_CLOSED_SMALL;
@@ -169,7 +151,7 @@ public final class CasingBlockEntityRenderer implements BlockEntityRenderer<Casi
             final PoseStack matrixStack = context.getMatrixStack();
             matrixStack.pushPose();
             for (final Port port : Port.CLOCKWISE) {
-                final boolean isClosed = casing.isReceivingPipeLocked(face, port);
+                final boolean isClosed = casing.isReceivingPipeLocked(face, casing.toLocal(side, port));
                 final ResourceLocation sprite = isClosed ? closedSprite : openSprite;
                 if (sprite != null) {
                     context.drawAtlasQuadUnlit(sprite);
@@ -200,11 +182,12 @@ public final class CasingBlockEntityRenderer implements BlockEntityRenderer<Casi
         return true;
     }
 
-    private void drawModuleOverlay(final RenderContext context, final CasingBlockEntity casing, final Face face) {
+    private void drawModuleOverlay(final RenderContext context, final CasingBlockEntity casing, final Direction side) {
+        final Face face = casing.toLocal(side);
         final PoseStack matrixStack = context.getMatrixStack();
         matrixStack.pushPose();
         for (final Port port : Port.CLOCKWISE) {
-            final boolean isClosed = casing.isReceivingPipeLocked(face, port);
+            final boolean isClosed = casing.isReceivingPipeLocked(face, casing.toLocal(side, port));
             if (isClosed) {
                 context.drawAtlasQuadUnlit(Textures.LOCATION_OVERLAY_CASING_PORT_CLOSED_SMALL);
             }
@@ -253,13 +236,13 @@ public final class CasingBlockEntityRenderer implements BlockEntityRenderer<Casi
         return renderer.camera.getEntity().isShiftKeyDown();
     }
 
-    private boolean isObserverLookingAt(final BlockPos pos, final Face face) {
+    private boolean isObserverLookingAt(final BlockPos pos, final Direction side) {
         final HitResult hit = renderer.cameraHitResult;
         if (!(hit instanceof final BlockHitResult blockHit)) {
             return false;
         }
 
-        if (Face.fromDirection(blockHit.getDirection()) != face) {
+        if (blockHit.getDirection() != side) {
             return false;
         }
 

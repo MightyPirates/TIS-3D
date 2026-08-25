@@ -26,7 +26,7 @@ public abstract class MixinCasingBlock extends Block {
         // Allow picking modules installed in the casing.
         final BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof final CasingBlockEntity casing && hit instanceof final BlockHitResult blockHit) {
-            final ItemStack stack = casing.getItem(blockHit.getDirection().ordinal());
+            final ItemStack stack = casing.getItem(casing.toLocal(blockHit.getDirection()).ordinal());
             if (!stack.isEmpty()) {
                 return stack.copy();
             }

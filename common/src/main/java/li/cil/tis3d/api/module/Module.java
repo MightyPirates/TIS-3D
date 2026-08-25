@@ -30,6 +30,9 @@ public interface Module {
 
     /**
      * The {@link Face} the {@link Module} is installed on in its {@link Casing}.
+     * <p>
+     * This is in the casing's local space. Use {@link Casing#toWorld(Face)}
+     * for anything that touches the world.
      *
      * @return the face the module is installed on.
      */

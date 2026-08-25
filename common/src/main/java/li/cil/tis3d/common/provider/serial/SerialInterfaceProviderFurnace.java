@@ -30,7 +30,7 @@ public final class SerialInterfaceProviderFurnace implements SerialInterfaceProv
     }
 
     @Override
-    public Optional<SerialInterface> getInterface(final Level level, final BlockPos position, final Direction face) {
+    public Optional<SerialInterface> getInterface(final Level level, final BlockPos position, final Direction side) {
         final FurnaceBlockEntity furnace = Objects.requireNonNull((FurnaceBlockEntity) level.getBlockEntity(position));
         return Optional.of(new SerialInterfaceFurnace(furnace));
     }

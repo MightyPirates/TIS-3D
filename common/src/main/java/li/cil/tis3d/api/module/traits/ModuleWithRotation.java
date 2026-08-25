@@ -2,6 +2,7 @@
 
 package li.cil.tis3d.api.module.traits;
 
+import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 
@@ -12,7 +13,9 @@ import li.cil.tis3d.api.module.Module;
  * being placed into a casing. Note that this is only called when the module
  * is placed in the top or bottom slot of a casing.
  * <p>
- * The set orientation represents where {@link Port#UP} is pointing.
+ * The set orientation represents where {@link Port#UP} is pointing, in the
+ * casing's local space. On a rotated casing that is not where it points in
+ * the world; map with {@link li.cil.tis3d.api.machine.Casing#toWorld(Face, Port)} first.
  */
 public interface ModuleWithRotation extends Module {
     /**

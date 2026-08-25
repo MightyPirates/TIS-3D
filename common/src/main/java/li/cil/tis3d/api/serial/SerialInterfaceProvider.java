@@ -42,10 +42,10 @@ public interface SerialInterfaceProvider {
      *
      * @param level    the level containing the position.
      * @param position the position in question.
-     * @param face     the side of the position in question.
+     * @param side     the side of the position in question.
      * @return the interface to use for communicating with the position.
      */
-    Optional<SerialInterface> getInterface(final Level level, final BlockPos position, final Direction face);
+    Optional<SerialInterface> getInterface(final Level level, final BlockPos position, final Direction side);
 
     /**
      * A reference to a manual entry describing the protocol used by the

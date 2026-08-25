@@ -24,6 +24,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Rotation;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -328,6 +329,11 @@ public final class CasingImpl implements Casing {
     @Override
     public BlockPos getPosition() {
         return blockEntity.getBlockPos();
+    }
+
+    @Override
+    public Rotation getRotation() {
+        return blockEntity.getRotation();
     }
 
     @Override

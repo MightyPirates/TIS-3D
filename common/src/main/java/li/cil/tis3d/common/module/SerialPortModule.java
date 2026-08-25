@@ -154,8 +154,8 @@ public final class SerialPortModule extends AbstractModule implements ModuleWith
         isScanScheduled = false;
 
         final Level level = getCasing().getCasingLevel();
-        final BlockPos neighborPos = getCasing().getPosition().relative(Face.toDirection(getFace()));
-        final Direction neighborSide = Face.toDirection(getFace().getOpposite());
+        final BlockPos neighborPos = getCasing().getPosition().relative(getWorldSide());
+        final Direction neighborSide = getWorldSide().getOpposite();
         if (LevelUtils.isLoaded(level, neighborPos)) {
             final Optional<SerialInterfaceProvider> provider = SerialInterfaceProviders.getProviderFor(level, neighborPos, neighborSide);
             if (provider.isPresent()) {

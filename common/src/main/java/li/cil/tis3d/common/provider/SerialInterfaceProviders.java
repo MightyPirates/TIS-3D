@@ -34,9 +34,9 @@ public final class SerialInterfaceProviders {
         MODULE_PROVIDERS.register();
     }
 
-    public static Optional<SerialInterfaceProvider> getProviderFor(final Level level, final BlockPos position, final Direction face) {
+    public static Optional<SerialInterfaceProvider> getProviderFor(final Level level, final BlockPos position, final Direction side) {
         for (final SerialInterfaceProvider provider : REGISTRAR.get()) {
-            if (provider.matches(level, position, face)) {
+            if (provider.matches(level, position, side)) {
                 return Optional.of(provider);
             }
         }

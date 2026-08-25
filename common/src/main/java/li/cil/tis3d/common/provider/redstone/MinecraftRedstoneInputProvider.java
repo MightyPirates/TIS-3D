@@ -10,12 +10,12 @@ import net.minecraft.world.level.Level;
 
 public final class MinecraftRedstoneInputProvider implements RedstoneInputProvider {
     @Override
-    public int getInput(final Level level, final BlockPos position, final Direction face) {
-        final BlockPos inputPos = position.relative(face);
+    public int getInput(final Level level, final BlockPos position, final Direction side) {
+        final BlockPos inputPos = position.relative(side);
         if (!LevelUtils.isLoaded(level, inputPos)) {
             return 0;
         }
 
-        return (short) level.getSignal(inputPos, face);
+        return (short) level.getSignal(inputPos, side);
     }
 }

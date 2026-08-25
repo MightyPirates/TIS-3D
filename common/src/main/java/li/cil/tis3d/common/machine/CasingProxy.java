@@ -11,6 +11,7 @@ import li.cil.tis3d.api.module.Module;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Rotation;
 
 import javax.annotation.Nullable;
 
@@ -25,6 +26,11 @@ public interface CasingProxy extends Casing {
     @Override
     default BlockPos getPosition() {
         return getCasing().getPosition();
+    }
+
+    @Override
+    default Rotation getRotation() {
+        return getCasing().getRotation();
     }
 
     @Override

@@ -13,14 +13,14 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.data.ModelData;
-import org.jetbrains.annotations.NotNull;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(CasingBlockEntity.class)
 public abstract class MixinCasingBlockEntity extends BlockEntity {
-    @Shadow(remap = false)
+    @Shadow(remap = false) @Final
     private CasingImpl casing;
 
     private MixinCasingBlockEntity(final BlockEntityType<?> type, final BlockPos pos, final BlockState state) {
@@ -40,7 +40,7 @@ public abstract class MixinCasingBlockEntity extends BlockEntity {
     }
 
     @Override
-    public @NotNull ModelData getModelData() {
+    public ModelData getModelData() {
         final ModelData modelData = super.getModelData();
         if (level == null) {
             return modelData;
@@ -51,7 +51,8 @@ public abstract class MixinCasingBlockEntity extends BlockEntity {
             final Module module = casing.getModule(face);
             if (module instanceof final ModuleWithBakedModelNeoForge moduleWithModel) {
                 if (moduleWithModel.hasModel()) {
-                    data.setModule(face, moduleWithModel, moduleWithModel.getModelData(level, getBlockPos(), getBlockState(), modelData));
+                    data.setModule(casing.toWorld(face), moduleWithModel,
+                        moduleWithModel.getModelData(level, getBlockPos(), getBlockState(), modelData));
                 }
             }
         }

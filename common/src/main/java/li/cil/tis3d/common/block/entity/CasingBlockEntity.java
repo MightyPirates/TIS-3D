@@ -13,6 +13,7 @@ import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.traits.ModuleWithBlockChangeListener;
 import li.cil.tis3d.api.module.traits.ModuleWithRedstone;
 import li.cil.tis3d.api.module.traits.ModuleWithRotation;
+import li.cil.tis3d.common.block.CasingBlock;
 import li.cil.tis3d.common.config.CommonConfig;
 import li.cil.tis3d.common.inventory.CasingInventory;
 import li.cil.tis3d.common.inventory.SidedInventoryProxy;
@@ -37,6 +38,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -208,7 +210,7 @@ public final class CasingBlockEntity extends ComputerBlockEntity implements Side
         for (final Face face : Face.VALUES) {
             final Module module = getModule(face);
             if (module instanceof final ModuleWithBlockChangeListener listener) {
-                final BlockPos moduleNeighborPos = getPosition().relative(Face.toDirection(face));
+                final BlockPos moduleNeighborPos = getPosition().relative(toWorld(face));
                 final boolean isModuleNeighbor = Objects.equals(neighborPos, moduleNeighborPos);
                 listener.onNeighborBlockChange(neighborPos, isModuleNeighbor);
             }
@@ -278,7 +280,7 @@ public final class CasingBlockEntity extends ComputerBlockEntity implements Side
 
         // Ensure there are no modules installed between two casings.
         if (hasNeighbor(face)) {
-            InventoryUtils.drop(getBlockEntityLevel(), getBlockPos(), this, face.ordinal(), getMaxStackSize(), Face.toDirection(face));
+            InventoryUtils.drop(getBlockEntityLevel(), getBlockPos(), this, face.ordinal(), getMaxStackSize(), toWorld(face));
         }
 
         if (neighbor instanceof final ControllerBlockEntity neighborController) {
@@ -339,13 +341,18 @@ public final class CasingBlockEntity extends ComputerBlockEntity implements Side
         return casing;
     }
 
+    @Override
+    public Rotation getRotation() {
+        return CasingBlock.getRotation(getBlockState());
+    }
+
     // --------------------------------------------------------------------- //
     // InfraredReceiver
 
     @Override
     public void onInfraredPacket(final InfraredPacket packet, final HitResult hit) {
         if (hit instanceof final BlockHitResult blockHit) {
-            final var module = getModule(Face.fromDirection(blockHit.getDirection()));
+            final var module = getModule(toLocal(blockHit.getDirection()));
             if (module instanceof final InfraredReceiver receiver) {
                 receiver.onInfraredPacket(packet, hit);
             }
@@ -364,6 +371,18 @@ public final class CasingBlockEntity extends ComputerBlockEntity implements Side
         }
 
         dispose();
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void setBlockState(final BlockState state) {
+        final Rotation oldRotation = CasingBlock.getRotation(getBlockState());
+
+        super.setBlockState(state);
+
+        if (getLevel() != null && CasingBlock.getRotation(state) != oldRotation) {
+            onRotated();
+        }
     }
 
     // --------------------------------------------------------------------- //
@@ -578,7 +597,7 @@ public final class CasingBlockEntity extends ComputerBlockEntity implements Side
         Network.sendToTrackingPlayers(this, message);
 
         getBlockEntityLevel().playSound(null, getBlockPos(),
-                SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.3f, isLocked() ? 0.5f : 0.6f);
+            SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.3f, isLocked() ? 0.5f : 0.6f);
     }
 
     private void sendReceivingPipeLockedState(final Face face, final Port port) {
@@ -586,7 +605,19 @@ public final class CasingBlockEntity extends ComputerBlockEntity implements Side
         Network.sendToTrackingPlayers(this, message);
 
         getBlockEntityLevel().playSound(null, getBlockPos(),
-                SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.3f, isReceivingPipeLocked(face, port) ? 0.5f : 0.6f);
+            SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.3f, isReceivingPipeLocked(face, port) ? 0.5f : 0.6f);
+    }
+
+    private void onRotated() {
+        if (getBlockEntityLevel().isClientSide()) {
+            invalidateModel();
+            return;
+        }
+
+        inventory.syncFaceProperties();
+
+        checkNeighbors();
+        scheduleScan();
     }
 
     private static void decompressClosed(final byte[] compressed, final boolean[][] decompressed) {

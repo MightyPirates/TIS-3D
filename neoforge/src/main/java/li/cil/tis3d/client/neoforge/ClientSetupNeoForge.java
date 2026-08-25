@@ -7,12 +7,15 @@ import li.cil.tis3d.client.ClientBootstrap;
 import li.cil.tis3d.client.ClientSetup;
 import li.cil.tis3d.client.gui.TerminalModuleScreen;
 import li.cil.tis3d.client.renderer.block.neoforge.ModuleModelLoader;
+import li.cil.tis3d.client.renderer.entity.NullEntityRenderer;
+import li.cil.tis3d.common.entity.Entities;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -29,6 +32,11 @@ public final class ClientSetupNeoForge {
                 event.setCanceled(true);
             }
         });
+    }
+
+    @SubscribeEvent
+    public static void handleRegisterRenderers(final EntityRenderersEvent.RegisterRenderers event) {
+        event.registerEntityRenderer(Entities.INFRARED_PACKET.get(), NullEntityRenderer::new);
     }
 
     @SubscribeEvent
