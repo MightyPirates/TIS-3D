@@ -9,6 +9,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(CasingBlockEntity.class)
 public abstract class MixinCasingBlockEntity extends BlockEntity implements ChunkUnloadListener {
@@ -16,13 +17,14 @@ public abstract class MixinCasingBlockEntity extends BlockEntity implements Chun
         super(type, pos, state);
     }
 
+    @Unique
     @SuppressWarnings("DataFlowIssue")
-    private CasingBlockEntity asCasingBlockEntity() {
+    private CasingBlockEntity tis3d$asCasingBlockEntity() {
         return (CasingBlockEntity) (Object) this;
     }
 
     @Override
     public void onChunkUnloaded() {
-        asCasingBlockEntity().dispose();
+        tis3d$asCasingBlockEntity().dispose();
     }
 }
