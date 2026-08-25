@@ -27,12 +27,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static li.cil.tis3d.gametest.Invocations.Kind.READ;
-import static li.cil.tis3d.gametest.TestSupport.CASING_2_POS;
-import static li.cil.tis3d.gametest.TestSupport.CASING_POS;
+import static li.cil.tis3d.gametest.TestSupport.*;
 
 public final class RotationTests {
     private static final int VALUE = 1234;
     private static final int PROGRAM_VALUE = 42;
+    private static final Face EXE_FACE = Face.Y_NEG;
+    private static final Port EXE_FACING = Port.UP;
 
     public static void facesRoundTripThroughWorldSpace(final GameTestHelper helper) {
         for (final Rotation rotation : Rotation.values()) {
@@ -229,21 +230,22 @@ public final class RotationTests {
             .thenSucceed();
     }
 
-    public static void executionModulePortsFollowWorldFacingOnCapFace(final GameTestHelper helper, final Rotation rotation) {
-        final MachineFixture machine = MachineFixture.place(helper, CASING_POS).powerFully().rotate(CASING_POS, rotation);
+    public static void executionModulePortsFollowLocalFacingOnCapFace(final GameTestHelper helper, final Rotation rotation) {
+        final BlockPos casingPos = CONTROLLER_POS.below();
+        final MachineFixture machine = MachineFixture.place(helper, casingPos).powerFully().rotate(casingPos, rotation);
         final List<TestModule> readers = new ArrayList<>();
         final List<Face> readerFaces = new ArrayList<>();
 
         helper.startSequence()
             .thenWaitUntil(machine::assertRunning)
             .thenExecute(() -> {
-                final CasingBlockEntity casing = machine.casing(CASING_POS);
-                final Face exeFace = casing.toLocal(Direction.DOWN);
-                final Face controllerFace = casing.toLocal(Direction.WEST);
+                final CasingBlockEntity casing = machine.casing(casingPos);
+                final Face exeFace = EXE_FACE;
+                final Face controllerFace = Face.Y_POS;
 
-                final ExecutionModule exe = machine.install(CASING_POS, exeFace, new ExecutionModule(casing, exeFace));
-                // Oriented the way installing it while facing north does: a world facing, mapped in.
-                exe.setFacing(casing.toLocal(Direction.DOWN, Port.fromDirection(Direction.NORTH)));
+                final ExecutionModule exe = machine.install(casingPos, exeFace, new ExecutionModule(casing, exeFace));
+                // A fixed *local* facing to check that sticks after rotation.
+                exe.setFacing(EXE_FACING);
                 try {
                     Compiler.compile(List.of("MOV " + PROGRAM_VALUE + " UP"), exe.getState());
                 } catch (final ParseException e) {
@@ -256,7 +258,7 @@ public final class RotationTests {
                     if (face == exeFace || face == controllerFace) {
                         continue;
                     }
-                    final TestModule reader = machine.install(CASING_POS, face);
+                    final TestModule reader = machine.install(casingPos, face);
                     for (final Port port : Port.VALUES) {
                         reader.readOn(port);
                     }
@@ -266,18 +268,18 @@ public final class RotationTests {
             })
             .thenIdle(40)
             .thenExecute(() -> {
-                final CasingBlockEntity casing = machine.casing(CASING_POS);
                 final List<String> arrivals = new ArrayList<>();
                 for (int i = 0; i < readers.size(); i++) {
                     for (final Port port : Port.VALUES) {
                         if (readers.get(i).invocations().any(READ, port)) {
-                            final Face localFace = readerFaces.get(i);
-                            arrivals.add(casing.toWorld(localFace) + "/" + casing.toWorld(localFace, port));
+                            arrivals.add(readerFaces.get(i) + "/" + port);
                         }
                     }
                 }
 
-                helper.assertValueEqual(String.join(", ", arrivals), Direction.SOUTH + "/" + Port.DOWN,
+                final String expected = ComputerBlockEntity.mapFace(EXE_FACE, EXE_FACING)
+                    + "/" + ComputerBlockEntity.mapPort(EXE_FACE, EXE_FACING);
+                helper.assertValueEqual(String.join(", ", arrivals), expected,
                     "where the execution module's UP port surfaced, rotated " + rotation);
             })
             .thenSucceed();

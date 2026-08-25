@@ -101,23 +101,23 @@ public final class RotationTestsNeoForge {
     }
 
     @GameTest(template = TEMPLATE, timeoutTicks = 200)
-    public static void executionModulePortsFollowWorldFacingOnCapFaceNone(final GameTestHelper helper) {
-        RotationTests.executionModulePortsFollowWorldFacingOnCapFace(helper, Rotation.NONE);
+    public static void executionModulePortsFollowLocalFacingOnCapFaceNone(final GameTestHelper helper) {
+        RotationTests.executionModulePortsFollowLocalFacingOnCapFace(helper, Rotation.NONE);
     }
 
     @GameTest(template = TEMPLATE, timeoutTicks = 200)
-    public static void executionModulePortsFollowWorldFacingOnCapFaceCw90(final GameTestHelper helper) {
-        RotationTests.executionModulePortsFollowWorldFacingOnCapFace(helper, Rotation.CLOCKWISE_90);
+    public static void executionModulePortsFollowLocalFacingOnCapFaceCw90(final GameTestHelper helper) {
+        RotationTests.executionModulePortsFollowLocalFacingOnCapFace(helper, Rotation.CLOCKWISE_90);
     }
 
     @GameTest(template = TEMPLATE, timeoutTicks = 200)
-    public static void executionModulePortsFollowWorldFacingOnCapFaceCw180(final GameTestHelper helper) {
-        RotationTests.executionModulePortsFollowWorldFacingOnCapFace(helper, Rotation.CLOCKWISE_180);
+    public static void executionModulePortsFollowLocalFacingOnCapFaceCw180(final GameTestHelper helper) {
+        RotationTests.executionModulePortsFollowLocalFacingOnCapFace(helper, Rotation.CLOCKWISE_180);
     }
 
     @GameTest(template = TEMPLATE, timeoutTicks = 200)
-    public static void executionModulePortsFollowWorldFacingOnCapFaceCcw90(final GameTestHelper helper) {
-        RotationTests.executionModulePortsFollowWorldFacingOnCapFace(helper, Rotation.COUNTERCLOCKWISE_90);
+    public static void executionModulePortsFollowLocalFacingOnCapFaceCcw90(final GameTestHelper helper) {
+        RotationTests.executionModulePortsFollowLocalFacingOnCapFace(helper, Rotation.COUNTERCLOCKWISE_90);
     }
 
     @GameTest(template = TEMPLATE, timeoutTicks = 200)
