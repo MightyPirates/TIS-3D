@@ -103,7 +103,7 @@ public final class CasingInventory extends Inventory implements WorldlyContainer
 
     @Override
     public boolean canPlaceItemThroughFace(final int index, final ItemStack stack, @Nullable final Direction side) {
-        if (side == null) {
+        if (side == null || blockEntity.isLocked()) {
             return false;
         }
 
@@ -116,7 +116,9 @@ public final class CasingInventory extends Inventory implements WorldlyContainer
 
     @Override
     public boolean canTakeItemThroughFace(final int index, final ItemStack stack, final Direction side) {
-        return blockEntity.toLocal(side).ordinal() == index && stack == getItem(index);
+        return !blockEntity.isLocked() &&
+            blockEntity.toLocal(side).ordinal() == index &&
+            stack == getItem(index);
     }
 
     private boolean canInstall(final ItemStack stack, final Face face) {
