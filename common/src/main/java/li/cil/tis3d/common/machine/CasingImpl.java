@@ -23,6 +23,7 @@ import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
@@ -327,6 +328,11 @@ public final class CasingImpl implements Casing {
     @Override
     public BlockPos getPosition() {
         return blockEntity.getBlockPos();
+    }
+
+    @Override
+    public Rotation getRotation() {
+        return blockEntity.getRotation();
     }
 
     @Override

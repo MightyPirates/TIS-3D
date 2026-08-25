@@ -82,13 +82,15 @@ public enum Port {
     // --------------------------------------------------------------------- //
 
     /**
-     * Convert a facing from Forge's format to a port, assuming a top or bottom face.
+     * Convert a world direction to the port pointing that way on a top face.
+     * <p>
+     * On the bottom face the result is the mirrored one.
      *
-     * @param facing the facing to convert.
+     * @param side the facing to convert.
      * @return the {@link Port} representing that facing.
      */
-    public static Port fromDirection(final Direction facing) {
-        return HORIZONTAL[facing.ordinal()];
+    public static Port fromDirection(final Direction side) {
+        return HORIZONTAL[side.ordinal()];
     }
 
     /**

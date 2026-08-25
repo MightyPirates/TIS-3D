@@ -7,16 +7,19 @@ import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.ModuleProvider;
 import li.cil.tis3d.api.module.traits.ModuleWithRotation;
+import li.cil.tis3d.api.util.TransformUtil;
 import li.cil.tis3d.common.block.CasingBlock;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.CasingInventoryMessage;
 import li.cil.tis3d.common.provider.ModuleProviders;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
@@ -64,14 +67,29 @@ public final class CasingInventory extends Inventory implements WorldlyContainer
     @Override
     public void setChanged() {
         blockEntity.setChanged();
+        syncFaceProperties();
+    }
+
+    public void syncFaceProperties() {
         final Level level = blockEntity.getBlockEntityLevel();
-        if (!level.isClientSide()) {
-            BlockState state = blockEntity.getBlockState();
-            for (final Face face : Face.VALUES) {
-                final BooleanProperty property = CasingBlock.FACE_TO_PROPERTY.get(face);
-                state = state.setValue(property, !items[face.ordinal()].isEmpty());
-            }
-            level.setBlockAndUpdate(blockEntity.getBlockPos(), state);
+        if (level.isClientSide()) {
+            return;
+        }
+
+        final BlockPos position = blockEntity.getBlockPos();
+        BlockState state = level.getBlockState(position);
+        if (!(state.getBlock() instanceof CasingBlock)) {
+            return;
+        }
+
+        final Rotation rotation = CasingBlock.getRotation(state);
+        for (final Face face : Face.VALUES) {
+            final BooleanProperty property = CasingBlock.DIRECTION_TO_PROPERTY.get(TransformUtil.toWorld(face, rotation));
+            state = state.setValue(property, !items[face.ordinal()].isEmpty());
+        }
+
+        if (state != level.getBlockState(position)) {
+            level.setBlockAndUpdate(position, state);
         }
     }
 
@@ -80,20 +98,27 @@ public final class CasingInventory extends Inventory implements WorldlyContainer
 
     @Override
     public int[] getSlotsForFace(final Direction side) {
-        return new int[side.ordinal()];
+        return new int[]{blockEntity.toLocal(side).ordinal()};
     }
 
     @Override
     public boolean canPlaceItemThroughFace(final int index, final ItemStack stack, @Nullable final Direction side) {
-        return side != null && side.ordinal() == index &&
+        if (side == null || blockEntity.isLocked()) {
+            return false;
+        }
+
+        final Face face = blockEntity.toLocal(side);
+        return face.ordinal() == index &&
             getItem(index).isEmpty() &&
-            blockEntity.getModule(Face.fromDirection(side)) == null && // Handles virtual modules.
-            canInstall(stack, Face.fromDirection(side));
+            blockEntity.getModule(face) == null && // Handles virtual modules.
+            canInstall(stack, face);
     }
 
     @Override
     public boolean canTakeItemThroughFace(final int index, final ItemStack stack, final Direction side) {
-        return side.ordinal() == index && stack == getItem(index);
+        return !blockEntity.isLocked() &&
+            blockEntity.toLocal(side).ordinal() == index &&
+            stack == getItem(index);
     }
 
     private boolean canInstall(final ItemStack stack, final Face face) {

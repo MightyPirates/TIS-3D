@@ -7,10 +7,13 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.Module;
+import li.cil.tis3d.api.util.TransformUtil;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.util.EnumUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.Rotation;
 
 /**
  * Implementation of {@link Pipe}s for passing data between {@link Module}s.
@@ -231,9 +234,12 @@ public final class PipeImpl implements Pipe {
 
     private void sendEffect() {
         final BlockPos position = host.getPipeHostPosition();
-        final double ox = Face.toDirection(receivingFace).getStepX() + Face.toDirection(sendingFace).getStepX();
-        final double oy = Face.toDirection(receivingFace).getStepY() + Face.toDirection(sendingFace).getStepY();
-        final double oz = Face.toDirection(receivingFace).getStepZ() + Face.toDirection(sendingFace).getStepZ();
+        final Rotation rotation = host.getPipeHostRotation();
+        final Direction receiving = TransformUtil.toWorld(receivingFace, rotation);
+        final Direction sending = TransformUtil.toWorld(sendingFace, rotation);
+        final double ox = receiving.getStepX() + sending.getStepX();
+        final double oy = receiving.getStepY() + sending.getStepY();
+        final double oz = receiving.getStepZ() + sending.getStepZ();
         final double x = ox * 0.55 + position.getX() + 0.5;
         final double y = oy * 0.55 + position.getY() + 0.5;
         final double z = oz * 0.55 + position.getZ() + 0.5;

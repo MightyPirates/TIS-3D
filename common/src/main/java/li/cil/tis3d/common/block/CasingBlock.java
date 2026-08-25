@@ -29,14 +29,13 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -52,6 +51,7 @@ import java.util.Optional;
 public class CasingBlock extends BaseEntityBlock {
     public static final MapCodec<CasingBlock> CODEC = simpleCodec(CasingBlock::new);
 
+    public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty MODULE_X_NEG = BooleanProperty.create("xneg");
     public static final BooleanProperty MODULE_X_POS = BooleanProperty.create("xpos");
     public static final BooleanProperty MODULE_Y_NEG = BooleanProperty.create("yneg");
@@ -59,14 +59,14 @@ public class CasingBlock extends BaseEntityBlock {
     public static final BooleanProperty MODULE_Z_NEG = BooleanProperty.create("zneg");
     public static final BooleanProperty MODULE_Z_POS = BooleanProperty.create("zpos");
 
-    public static final EnumMap<Face, BooleanProperty> FACE_TO_PROPERTY = Util.make(() -> {
-        final EnumMap<Face, BooleanProperty> map = new EnumMap<>(Face.class);
-        map.put(Face.X_NEG, MODULE_X_NEG);
-        map.put(Face.X_POS, MODULE_X_POS);
-        map.put(Face.Y_NEG, MODULE_Y_NEG);
-        map.put(Face.Y_POS, MODULE_Y_POS);
-        map.put(Face.Z_NEG, MODULE_Z_NEG);
-        map.put(Face.Z_POS, MODULE_Z_POS);
+    public static final EnumMap<Direction, BooleanProperty> DIRECTION_TO_PROPERTY = Util.make(() -> {
+        final EnumMap<Direction, BooleanProperty> map = new EnumMap<>(Direction.class);
+        map.put(Direction.WEST, MODULE_X_NEG);
+        map.put(Direction.EAST, MODULE_X_POS);
+        map.put(Direction.DOWN, MODULE_Y_NEG);
+        map.put(Direction.UP, MODULE_Y_POS);
+        map.put(Direction.NORTH, MODULE_Z_NEG);
+        map.put(Direction.SOUTH, MODULE_Z_POS);
         return map;
     });
 
@@ -80,8 +80,8 @@ public class CasingBlock extends BaseEntityBlock {
     public CasingBlock(BlockBehaviour.Properties properties) {
         super(properties);
 
-        BlockState defaultState = getStateDefinition().any();
-        for (final BooleanProperty value : FACE_TO_PROPERTY.values()) {
+        BlockState defaultState = getStateDefinition().any().setValue(FACING, Direction.NORTH);
+        for (final BooleanProperty value : DIRECTION_TO_PROPERTY.values()) {
             defaultState = defaultState.setValue(value, false);
         }
         registerDefaultState(defaultState);
@@ -93,9 +93,30 @@ public class CasingBlock extends BaseEntityBlock {
     @Override
     protected void createBlockStateDefinition(final StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
-        for (final BooleanProperty value : FACE_TO_PROPERTY.values()) {
+        builder.add(FACING);
+        for (final BooleanProperty value : DIRECTION_TO_PROPERTY.values()) {
             builder.add(value);
         }
+    }
+
+    @Override
+    protected BlockState rotate(final BlockState state, final Rotation rotation) {
+        BlockState result = state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
+        for (final Direction direction : Direction.values()) {
+            final var oldKey = DIRECTION_TO_PROPERTY.get(direction);
+            final var newKey = DIRECTION_TO_PROPERTY.get(rotation.rotate(direction));
+            result = result.setValue(newKey, state.getValue(oldKey));
+        }
+        return result;
+    }
+
+    public static Rotation getRotation(final BlockState state) {
+        return switch (state.getValue(FACING)) {
+            case EAST -> Rotation.CLOCKWISE_90;
+            case SOUTH -> Rotation.CLOCKWISE_180;
+            case WEST -> Rotation.COUNTERCLOCKWISE_90;
+            default -> Rotation.NONE;
+        };
     }
 
     // --------------------------------------------------------------------- //
@@ -139,7 +160,7 @@ public class CasingBlock extends BaseEntityBlock {
             return ItemStack.EMPTY;
         }
 
-        return casing.getItem(hit.getDirection().ordinal()).copy();
+        return casing.getItem(casing.toLocal(hit.getDirection()).ordinal()).copy();
     }
 
     @Override
@@ -159,6 +180,7 @@ public class CasingBlock extends BaseEntityBlock {
         final BlockPos hitPos = hit.getBlockPos();
         final Vec3 localHitPos = hit.getLocation().subtract(hitPos.getX(), hitPos.getY(), hitPos.getZ());
         final Direction side = hit.getDirection();
+        final Face face = casing.toLocal(side);
         final ItemStack heldItem = player.getItemInHand(hand);
 
         // Locking or unlocking the casing or a port?
@@ -170,9 +192,8 @@ public class CasingBlock extends BaseEntityBlock {
                     if (!player.isShiftKeyDown()) {
                         casing.lock(heldItem);
                     } else {
-                        final Face face = Face.fromDirection(side);
-                        final Vec3 uv = TransformUtil.hitToUV(face, localHitPos);
-                        final Port port = Port.fromUVQuadrant(uv);
+                        final Vec3 uv = TransformUtil.hitToUV(side, localHitPos);
+                        final Port port = casing.toLocal(side, Port.fromUVQuadrant(uv));
 
                         casing.setReceivingPipeLocked(face, port, !casing.isReceivingPipeLocked(face, port));
                     }
@@ -182,7 +203,7 @@ public class CasingBlock extends BaseEntityBlock {
         }
 
         // Let the module handle the activation.
-        final Module module = casing.getModule(Face.fromDirection(side));
+        final Module module = casing.getModule(face);
         if (module != null && module.use(player, hand, localHitPos)) {
             return InteractionResult.SUCCESS;
         }
@@ -193,11 +214,11 @@ public class CasingBlock extends BaseEntityBlock {
         }
 
         // Remove old module or install new one.
-        final ItemStack oldModule = casing.getItem(side.ordinal());
+        final ItemStack oldModule = casing.getItem(face.ordinal());
         if (!oldModule.isEmpty()) {
             // Removing a present module from the casing.
             if (!level.isClientSide()) {
-                final ItemEntity entity = InventoryUtils.drop(level, pos, casing, side.ordinal(), 1, side);
+                final ItemEntity entity = InventoryUtils.drop(level, pos, casing, face.ordinal(), 1, side);
                 if (entity != null) {
                     entity.setNoPickUpDelay();
                     entity.playerTouch(player);
@@ -207,7 +228,7 @@ public class CasingBlock extends BaseEntityBlock {
             return InteractionResult.SUCCESS;
         } else if (!heldItem.isEmpty()) {
             // Installing a new module in the casing.
-            if (casing.canPlaceItemThroughFace(side.ordinal(), heldItem, side)) {
+            if (casing.canPlaceItemThroughFace(face.ordinal(), heldItem, side)) {
                 if (!level.isClientSide()) {
                     final ItemStack insertedStack;
                     if (player.getAbilities().instabuild) {
@@ -216,10 +237,10 @@ public class CasingBlock extends BaseEntityBlock {
                         insertedStack = heldItem.split(1);
                     }
                     if (side.getAxis() == Direction.Axis.Y) {
-                        final Port orientation = Port.fromDirection(player.getDirection());
-                        casing.setInventorySlotContents(side.ordinal(), insertedStack, orientation);
+                        final Port orientation = casing.toLocal(side, Port.fromDirection(player.getDirection()));
+                        casing.setInventorySlotContents(face.ordinal(), insertedStack, orientation);
                     } else {
-                        casing.setItem(side.ordinal(), insertedStack);
+                        casing.setItem(face.ordinal(), insertedStack);
                     }
                     level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.PISTON_EXTEND, SoundSource.BLOCKS, 0.2f, 0.8f + level.random.nextFloat() * 0.1f);
                 }
@@ -256,7 +277,7 @@ public class CasingBlock extends BaseEntityBlock {
     public int getSignal(final BlockState blockState, final BlockGetter level, final BlockPos pos, final Direction side) {
         final BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof final CasingBlockEntity casing) {
-            final Module module = casing.getModule(Face.fromDirection(side.getOpposite()));
+            final Module module = casing.getModule(casing.toLocal(side.getOpposite()));
             if (module instanceof final ModuleWithRedstone redstoneModule) {
                 return redstoneModule.getRedstoneOutput();
             }

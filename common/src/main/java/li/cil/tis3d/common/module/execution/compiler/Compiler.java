@@ -34,9 +34,6 @@ public final class Compiler {
         state.clear();
 
         final String[] lines = Iterables.toArray(code, String.class);
-        if (lines.length > CommonConfig.maxLinesPerProgram && CommonConfig.maxLinesPerProgram > 0) {
-            throw new ParseException(Strings.MESSAGE_TOO_MANY_LINES, CommonConfig.maxLinesPerProgram, 0, 0);
-        }
         for (int lineNumber = 0; lineNumber < lines.length; lineNumber++) {
             lines[lineNumber] = lines[lineNumber].toUpperCase(Locale.US);
         }
@@ -172,6 +169,12 @@ public final class Compiler {
         final String name = matcher.group("name");
         if (name == null) {
             return;
+        }
+
+        // Only instructions count towards the program length, comments, defines, labels and
+        // blank lines are free.
+        if (CommonConfig.maxLinesPerProgram > 0 && state.instructions.size() >= CommonConfig.maxLinesPerProgram) {
+            throw new ParseException(Strings.MESSAGE_TOO_MANY_LINES, lineNumber, 0, 0);
         }
 
         // Got an instruction, process arguments and instantiate it.

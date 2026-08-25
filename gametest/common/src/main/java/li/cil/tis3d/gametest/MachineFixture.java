@@ -19,6 +19,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FaceAttachedHorizontalDirectionalBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.LeverBlock;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.AttachFace;
 import net.minecraft.world.level.storage.TagValueInput;
@@ -95,6 +96,13 @@ public final class MachineFixture {
 
     public TestModule install(final BlockPos casingPos, final Face face) {
         return install(casingPos, face, new TestModule(casing(casingPos), face));
+    }
+
+    public MachineFixture rotate(final BlockPos casingPos, final Rotation rotation) {
+        final BlockPos absolute = helper.absolutePos(casingPos);
+        final BlockState state = helper.getLevel().getBlockState(absolute);
+        helper.getLevel().setBlockAndUpdate(absolute, state.rotate(rotation));
+        return this;
     }
 
     public void reload(final BlockPos casingPos) {

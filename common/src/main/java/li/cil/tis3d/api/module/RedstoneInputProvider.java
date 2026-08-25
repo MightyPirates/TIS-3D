@@ -28,12 +28,12 @@ public interface RedstoneInputProvider {
     ResourceKey<Registry<RedstoneInputProvider>> REGISTRY = ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(API.MOD_ID, "redstone_input_provider"));
 
     /**
-     * Get the redstone level provided to the specified face of a block at the specified position.
+     * Get the redstone level provided to the specified side of a block at the specified position.
      *
      * @param level    the level containing the block in question.
      * @param position the position of the block.
-     * @param face     the face of the block.
-     * @return the redstone level going into the face of the block.
+     * @param side     the side of the block.
+     * @return the redstone level going into the side of the block.
      */
-    int getInput(final Level level, final BlockPos position, final Direction face);
+    int getInput(final Level level, final BlockPos position, final Direction side);
 }

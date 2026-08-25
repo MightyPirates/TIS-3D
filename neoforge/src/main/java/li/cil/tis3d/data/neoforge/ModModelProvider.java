@@ -5,7 +5,6 @@ package li.cil.tis3d.data.neoforge;
 import com.mojang.math.Quadrant;
 import dev.architectury.registry.registries.RegistrySupplier;
 import li.cil.tis3d.api.API;
-import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.client.renderer.block.neoforge.ModuleUnbakedModel;
 import li.cil.tis3d.common.block.Blocks;
 import li.cil.tis3d.common.block.CasingBlock;
@@ -81,8 +80,7 @@ public final class ModModelProvider extends ModelProvider {
 
     private void registerCasing(final BlockModelGenerators blocks) {
         final MultiPartGenerator casing = MultiPartGenerator.multiPart(Blocks.CASING.get());
-        CasingBlock.FACE_TO_PROPERTY.forEach((face, property) -> {
-            final Direction direction = Face.toDirection(face);
+        CasingBlock.DIRECTION_TO_PROPERTY.forEach((direction, property) -> {
             final VariantMutator rotation = rotationFor(direction);
 
             casing.with(new ConditionBuilder().term(property, false),

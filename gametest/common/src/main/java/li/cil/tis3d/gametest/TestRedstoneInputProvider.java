@@ -13,13 +13,13 @@ import java.util.Map;
 public final class TestRedstoneInputProvider implements RedstoneInputProvider {
     private static final Map<Key, Integer> SIGNALS = new HashMap<>();
 
-    private record Key(BlockPos position, Direction face) {
+    private record Key(BlockPos position, Direction side) {
     }
 
     // --------------------------------------------------------------------- //
 
-    public static void setSignal(final BlockPos position, final Direction face, final int signal) {
-        SIGNALS.put(new Key(position.immutable(), face), signal);
+    public static void setSignal(final BlockPos position, final Direction side, final int signal) {
+        SIGNALS.put(new Key(position.immutable(), side), signal);
     }
 
     public static void reset() {
@@ -28,7 +28,7 @@ public final class TestRedstoneInputProvider implements RedstoneInputProvider {
     // --------------------------------------------------------------------- //
 
     @Override
-    public int getInput(final Level level, final BlockPos position, final Direction face) {
-        return SIGNALS.getOrDefault(new Key(position.immutable(), face), 0);
+    public int getInput(final Level level, final BlockPos position, final Direction side) {
+        return SIGNALS.getOrDefault(new Key(position.immutable(), side), 0);
     }
 }

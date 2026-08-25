@@ -11,6 +11,7 @@ import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.api.util.TransformUtil;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -89,7 +90,7 @@ public abstract class AbstractModule implements Module {
 
         final BlockPos pos = blockHitResult.getBlockPos();
         return Objects.equals(getCasing().getPosition(), pos) &&
-            blockHitResult.getDirection() == Face.toDirection(getFace());
+            blockHitResult.getDirection() == getWorldSide();
     }
 
     /**
@@ -115,7 +116,7 @@ public abstract class AbstractModule implements Module {
         if (!Objects.equals(getCasing().getPosition(), pos)) {
             return null;
         }
-        if (blockHitResult.getDirection() != Face.toDirection(getFace())) {
+        if (blockHitResult.getDirection() != getWorldSide()) {
             return null;
         }
 
@@ -138,7 +139,7 @@ public abstract class AbstractModule implements Module {
      * @see Module#use(Player, InteractionHand, Vec3)
      */
     protected Vec3 hitToUV(final Vec3 hitPos) {
-        return TransformUtil.hitToUV(getFace(), hitPos);
+        return TransformUtil.hitToUV(getWorldSide(), hitPos);
     }
 
     /**
@@ -152,7 +153,7 @@ public abstract class AbstractModule implements Module {
      */
     protected boolean isVisible() {
         final Level level = getCasing().getCasingLevel();
-        final BlockPos neighborPos = getCasing().getPosition().relative(Face.toDirection(getFace()));
+        final BlockPos neighborPos = getCasing().getPosition().relative(getWorldSide());
         if (!level.isLoaded(neighborPos)) {
             // If the neighbor isn't loaded, we can assume we're also not visible on that side.
             return false;
@@ -161,6 +162,15 @@ public abstract class AbstractModule implements Module {
         // Otherwise check if the neighboring block blocks visibility to our face.
         final BlockState neighborState = level.getBlockState(neighborPos);
         return !neighborState.isSolidRender();
+    }
+
+    /**
+     * The {@link Direction} the {@link Module} is installed on in its {@link Casing}.
+     *
+     * @return the direction the face of the casing this module is installed in points in.
+     */
+    protected final Direction getWorldSide() {
+        return getCasing().toWorld(getFace());
     }
 
     // --------------------------------------------------------------------- //

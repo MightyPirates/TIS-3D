@@ -102,11 +102,11 @@ public final class AudioModule extends AbstractModule {
         final var note = transformNote(this, new Note(noteId, NoteBlockInstrument.values()[instrumentId]));
         if (note != null) {
             // Offset to have the actual origin be in front of the module.
-            final Direction facing = Face.toDirection(getFace());
+            final Direction side = getWorldSide();
             final BlockPos pos = getCasing().getPosition();
-            final double x = pos.getX() + 0.5 + facing.getStepX() * 0.6;
-            final double y = pos.getY() + 0.5 + facing.getStepY() * 0.6;
-            final double z = pos.getZ() + 0.5 + facing.getStepZ() * 0.6;
+            final double x = pos.getX() + 0.5 + side.getStepX() * 0.6;
+            final double y = pos.getY() + 0.5 + side.getStepY() * 0.6;
+            final double z = pos.getZ() + 0.5 + side.getStepZ() * 0.6;
 
             final float pitch = (float) Math.pow(2, (note.id() - 12) / 12.0);
 

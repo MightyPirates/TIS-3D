@@ -28,16 +28,16 @@ public class ModPathProvider extends NamespacePathProvider {
     }
 
     @Override
-    public Optional<String> pathFor(final Level level, final BlockPos pos, final Direction face) {
+    public Optional<String> pathFor(final Level level, final BlockPos pos, final Direction side) {
         final BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof final CasingBlockEntity casing) {
-            final ItemStack moduleStack = casing.getItem(face.ordinal());
+            final ItemStack moduleStack = casing.getItem(casing.toLocal(side).ordinal());
             final Optional<String> path = pathFor(moduleStack);
             if (path.isPresent()) {
                 return path;
             }
         }
 
-        return super.pathFor(level, pos, face);
+        return super.pathFor(level, pos, side);
     }
 }

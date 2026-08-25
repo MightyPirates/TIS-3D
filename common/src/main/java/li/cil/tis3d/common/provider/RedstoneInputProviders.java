@@ -7,7 +7,7 @@ import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.Registrar;
 import dev.architectury.registry.registries.RegistrarManager;
 import li.cil.tis3d.api.API;
-import li.cil.tis3d.api.machine.Face;
+import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.module.Module;
 import li.cil.tis3d.api.module.RedstoneInputProvider;
 import li.cil.tis3d.common.provider.redstone.MinecraftRedstoneInputProvider;
@@ -36,10 +36,11 @@ public final class RedstoneInputProviders {
 
     public static int getRedstoneInput(final Module module) {
         int maxSignal = 0;
-        final Level level = module.getCasing().getCasingLevel();
-        final BlockPos position = module.getCasing().getPosition();
+        final Casing casing = module.getCasing();
+        final Level level = casing.getCasingLevel();
+        final BlockPos position = casing.getPosition();
         for (final RedstoneInputProvider provider : REGISTRAR.get()) {
-            final int signal = provider.getInput(level, position, Face.toDirection(module.getFace()));
+            final int signal = provider.getInput(level, position, casing.toWorld(module.getFace()));
             if (signal > maxSignal) {
                 maxSignal = signal;
             }

@@ -4,7 +4,6 @@ package li.cil.tis3d.data.fabric;
 
 import com.mojang.math.Quadrant;
 import li.cil.tis3d.api.API;
-import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.client.renderer.block.fabric.ModuleUnbakedModel;
 import li.cil.tis3d.common.block.Blocks;
 import li.cil.tis3d.common.block.CasingBlock;
@@ -63,8 +62,7 @@ public final class ModModelProvider extends FabricModelProvider {
 
     private static BlockModelDefinitionGenerator casingDefinition() {
         final List<Selector> selectors = new ArrayList<>();
-        CasingBlock.FACE_TO_PROPERTY.forEach((face, property) -> {
-            final Direction direction = Face.toDirection(face);
+        CasingBlock.DIRECTION_TO_PROPERTY.forEach((direction, property) -> {
             final VariantMutator rotation = rotationFor(direction);
 
             selectors.add(new Selector(Optional.of(condition(property.getName(), "false")),

@@ -17,6 +17,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
@@ -170,9 +171,17 @@ public final class ControllerBlockEntity extends ComputerBlockEntity {
      * <p>
      * If we're currently scanning this does nothing.
      */
+    @Override
     public void scheduleScan() {
         state = ControllerState.SCANNING;
     }
+
+    @Override
+    public Rotation getRotation() {
+        return Rotation.NONE;
+    }
+
+    // --------------------------------------------------------------------- //
 
     /**
      * If the controller is running, force at least one step in the next tick,
@@ -535,7 +544,7 @@ public final class ControllerBlockEntity extends ComputerBlockEntity {
 
         int acc = 0;
         for (final Direction facing : Direction.values()) {
-            acc += Math.max(0, Math.min(15, level.getDirectSignal(getBlockPos().relative(facing), facing)));
+            acc += Math.clamp(level.getDirectSignal(getBlockPos().relative(facing), facing), 0, 15);
         }
         return acc;
     }

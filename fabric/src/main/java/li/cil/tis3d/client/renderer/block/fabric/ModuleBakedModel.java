@@ -2,8 +2,9 @@
 
 package li.cil.tis3d.client.renderer.block.fabric;
 
-import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.traits.fabric.ModuleWithBakedModelFabric;
+import li.cil.tis3d.api.util.TransformUtil;
+import li.cil.tis3d.common.block.CasingBlock;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
 import net.fabricmc.fabric.api.renderer.v1.model.FabricBlockStateModel;
@@ -37,7 +38,7 @@ public final class ModuleBakedModel implements BlockStateModel, FabricBlockState
     public void emitQuads(final QuadEmitter emitter, final BlockAndTintGetter blockView, final BlockPos pos,
                           final BlockState state, final RandomSource random, final Predicate<Direction> cullTest) {
         if (blockView.getBlockEntity(pos) instanceof final CasingBlockEntity casing) {
-            final var module = casing.getModule(Face.fromDirection(direction));
+            final var module = casing.getModule(TransformUtil.toLocal(direction, CasingBlock.getRotation(state)));
             if (module instanceof final ModuleWithBakedModelFabric moduleWithModel && moduleWithModel.hasModel()) {
                 moduleWithModel.emitBlockQuads(blockView, state, pos, direction, random, emitter);
                 return;

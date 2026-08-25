@@ -49,9 +49,9 @@ public abstract class AbstractModuleWithRotation extends AbstractModule implemen
      * @param matrixStack the current matrix stack.
      */
     protected void rotateForRendering(final PoseStack matrixStack) {
-        final int rotation = Port.ROTATION[getFacing().ordinal()];
+        final int rotation = Port.ROTATION[getWorldFacing().ordinal()];
         matrixStack.translate(0.5f, 0.5f, 0);
-        matrixStack.mulPose(new Quaternionf().fromAxisAngleDeg(0, 0, 1, 90 * rotation * Face.toDirection(getFace()).getStepY()));
+        matrixStack.mulPose(new Quaternionf().fromAxisAngleDeg(0, 0, 1, 90 * rotation * getWorldSide().getStepY()));
         matrixStack.translate(-0.5f, -0.5f, 0);
     }
 
@@ -60,7 +60,11 @@ public abstract class AbstractModuleWithRotation extends AbstractModule implemen
 
     @Override
     protected Vec3 hitToUV(final Vec3 hitPos) {
-        return TransformUtil.hitToUV(getFace(), getFacing(), hitPos);
+        return TransformUtil.hitToUV(getWorldSide(), getWorldFacing(), hitPos);
+    }
+
+    protected final Port getWorldFacing() {
+        return getCasing().toWorld(getFace(), getFacing());
     }
 
     // --------------------------------------------------------------------- //

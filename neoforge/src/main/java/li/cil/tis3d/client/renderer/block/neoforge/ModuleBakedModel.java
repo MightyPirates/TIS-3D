@@ -2,8 +2,9 @@
 
 package li.cil.tis3d.client.renderer.block.neoforge;
 
-import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.module.traits.neoforge.ModuleWithBakedModelNeoForge;
+import li.cil.tis3d.api.util.TransformUtil;
+import li.cil.tis3d.common.block.CasingBlock;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import net.minecraft.client.renderer.block.model.BlockModelPart;
 import net.minecraft.client.renderer.block.model.BlockStateModel;
@@ -35,7 +36,7 @@ public final class ModuleBakedModel implements DynamicBlockStateModel {
     public void collectParts(final BlockAndTintGetter level, final BlockPos pos, final BlockState state,
                              final RandomSource random, final List<BlockModelPart> parts) {
         if (level.getBlockEntity(pos) instanceof final CasingBlockEntity casing) {
-            final var module = casing.getModule(Face.fromDirection(direction));
+            final var module = casing.getModule(TransformUtil.toLocal(direction, CasingBlock.getRotation(state)));
             if (module instanceof final ModuleWithBakedModelNeoForge moduleWithModel && moduleWithModel.hasModel()) {
                 moduleWithModel.collectParts(level, pos, state, direction, random, parts);
                 return;

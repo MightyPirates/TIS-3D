@@ -5,6 +5,7 @@ package li.cil.tis3d.common.block.entity;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
+import li.cil.tis3d.api.util.TransformUtil;
 import li.cil.tis3d.common.machine.PipeHost;
 import li.cil.tis3d.common.machine.PipeImpl;
 import li.cil.tis3d.util.LevelUtils;
@@ -17,6 +18,7 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -92,6 +94,8 @@ public abstract class ComputerBlockEntity extends BlockEntity implements PipeHos
         return Objects.requireNonNull(getLevel());
     }
 
+    public abstract Rotation getRotation();
+
     /**
      * Advances the logic of all pipes by calling {@link PipeImpl#step()} on them.
      * <p>
@@ -151,6 +155,11 @@ public abstract class ComputerBlockEntity extends BlockEntity implements PipeHos
     }
 
     @Override
+    public Rotation getPipeHostRotation() {
+        return getRotation();
+    }
+
+    @Override
     public void onPipeStateChanged() {
         setChanged();
     }
@@ -197,19 +206,19 @@ public abstract class ComputerBlockEntity extends BlockEntity implements PipeHos
 
         // When a neighbor changed, check all neighbors and register them in
         // our tile entity.
-        for (final Direction facing : Direction.values()) {
-            final BlockPos neighborPos = getBlockPos().relative(facing);
+        for (final Direction side : Direction.values()) {
+            final BlockPos neighborPos = getBlockPos().relative(side);
             if (LevelUtils.isLoaded(level, neighborPos)) {
                 // If we have a casing, set it as our neighbor.
                 final BlockEntity blockEntity = level.getBlockEntity(neighborPos);
                 if (blockEntity instanceof final ComputerBlockEntity computerPart) {
-                    setNeighbor(Face.fromDirection(facing), computerPart);
+                    setNeighbor(toLocal(side), computerPart);
                 } else {
-                    setNeighbor(Face.fromDirection(facing), null);
+                    setNeighbor(toLocal(side), null);
                 }
             } else {
                 // Neighbor is in unloaded area.
-                setNeighbor(Face.fromDirection(facing), null);
+                setNeighbor(toLocal(side), null);
             }
         }
     }
@@ -283,8 +292,8 @@ public abstract class ComputerBlockEntity extends BlockEntity implements PipeHos
 
                 final ComputerBlockEntity neighbor = neighbors[otherFace.ordinal()];
                 if (neighbor != null) {
-                    final Face neighborFace = otherFace.getOpposite();
-                    final Port neighborPort = flipSide(otherFace, otherPort);
+                    final Face neighborFace = toNeighborFace(neighbor, otherFace);
+                    final Port neighborPort = toNeighborPort(neighbor, otherFace, otherPort);
                     neighbor.computePipeOverrides(neighborFace, neighborPort, this, face, port);
                 }
             }
@@ -300,7 +309,7 @@ public abstract class ComputerBlockEntity extends BlockEntity implements PipeHos
      * @param port the port defining the edge.
      * @return the face on the other side of the edge.
      */
-    private static Face mapFace(final Face face, final Port port) {
+    public static Face mapFace(final Face face, final Port port) {
         return FACE_MAPPING[face.ordinal()][port.ordinal()];
     }
 
@@ -312,7 +321,7 @@ public abstract class ComputerBlockEntity extends BlockEntity implements PipeHos
      * @param port the port defining the edge.
      * @return the port on the other side of the edge.
      */
-    private static Port mapPort(final Face face, final Port port) {
+    public static Port mapPort(final Face face, final Port port) {
         return PORT_MAPPING[face.ordinal()][port.ordinal()];
     }
 
@@ -344,12 +353,12 @@ public abstract class ComputerBlockEntity extends BlockEntity implements PipeHos
      * Get the port opposite to the specified port in a casing opposite to the
      * the specified facing. Used when connecting across multiple casings.
      *
-     * @param face the face opposite to which to get the port for.
-     * @param port the port opposite to which to get the port for.
+     * @param side the face opposite to which to get the port for, in world space.
+     * @param port the port opposite to which to get the port for, in world space.
      * @return the port opposite to the specified port on the specified face.
      */
-    private static Port flipSide(final Face face, final Port port) {
-        if (face == Face.Y_NEG || face == Face.Y_POS) {
+    private static Port flipSide(final Direction side, final Port port) {
+        if (side.getAxis() == Direction.Axis.Y) {
             return (port == Port.UP || port == Port.DOWN) ? port.getOpposite() : port;
         } else {
             return (port == Port.LEFT || port == Port.RIGHT) ? port.getOpposite() : port;
@@ -381,8 +390,8 @@ public abstract class ComputerBlockEntity extends BlockEntity implements PipeHos
         if (neighbor != null) {
             // Got a neighbor, continue searching through it. This can continue
             // only two times before we run into the early exit above.
-            final Face neighborFace = otherFace.getOpposite();
-            final Port neighborPort = flipSide(otherFace, otherPort);
+            final Face neighborFace = toNeighborFace(neighbor, otherFace);
+            final Port neighborPort = toNeighborPort(neighbor, otherFace, otherPort);
             neighbor.computePipeOverrides(neighborFace, neighborPort, start, startFace, startPort);
         } else {
             // No neighbor, we have an open face. Use as target for the pipe.
@@ -392,5 +401,23 @@ public abstract class ComputerBlockEntity extends BlockEntity implements PipeHos
             final int mySendingIndex = packMapped(otherFace, otherPort);
             start.pipeOverride[receivingIndex] = pipes[mySendingIndex];
         }
+    }
+
+    private Face toNeighborFace(final ComputerBlockEntity neighbor, final Face face) {
+        return neighbor.toLocal(toWorld(face).getOpposite());
+    }
+
+    private Port toNeighborPort(final ComputerBlockEntity neighbor, final Face face, final Port port) {
+        final Direction side = toWorld(face);
+        final Port worldPort = TransformUtil.toWorld(face, port, getRotation());
+        return TransformUtil.toLocal(side.getOpposite(), flipSide(side, worldPort), neighbor.getRotation());
+    }
+
+    public final Direction toWorld(final Face face) {
+        return TransformUtil.toWorld(face, getRotation());
+    }
+
+    public final Face toLocal(final Direction side) {
+        return TransformUtil.toLocal(side, getRotation());
     }
 }

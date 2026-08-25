@@ -3,11 +3,13 @@
 package li.cil.tis3d.common.module.execution;
 
 import com.google.common.collect.ImmutableMap;
+import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.common.module.ExecutionModule;
 import li.cil.tis3d.common.module.execution.instruction.Instruction;
 import li.cil.tis3d.common.module.execution.target.*;
+import net.minecraft.core.Direction;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -138,13 +140,17 @@ public final class MachineImpl implements Machine {
     private Target getRotatedTarget(final Target target) {
         switch (target) {
             case LEFT, RIGHT, UP, DOWN -> {
-                int rotation = Port.ROTATION[module.getFacing().ordinal()];
-                if (module.getFace() == Face.Y_NEG) {
+                final Casing casing = module.getCasing();
+                final Face face = module.getFace();
+                final Direction side = casing.toWorld(face);
+
+                int rotation = Port.ROTATION[casing.toWorld(face, module.getFacing()).ordinal()];
+                if (side == Direction.DOWN) {
                     rotation = -rotation;
                 }
                 final Port port = Target.toPort(target);
                 final Port rotatedPort = port.rotated(rotation);
-                return Target.fromPort(rotatedPort);
+                return Target.fromPort(casing.toLocal(side, rotatedPort));
             }
         }
         return target;
