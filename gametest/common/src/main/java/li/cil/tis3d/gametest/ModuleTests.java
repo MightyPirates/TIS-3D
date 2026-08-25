@@ -5,9 +5,12 @@ package li.cil.tis3d.gametest;
 import li.cil.tis3d.api.InfraredAPI;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
+import li.cil.tis3d.common.block.entity.CasingBlockEntity;
+import li.cil.tis3d.common.block.entity.ComputerBlockEntity;
 import li.cil.tis3d.common.item.Items;
 import li.cil.tis3d.common.item.ReadOnlyMemoryModuleItem;
 import li.cil.tis3d.common.module.ExecutionModule;
+import li.cil.tis3d.common.module.QueueModule;
 import li.cil.tis3d.common.module.ReadOnlyMemoryModule;
 import li.cil.tis3d.common.module.RedstoneModule;
 import li.cil.tis3d.common.module.execution.compiler.Compiler;
@@ -33,6 +36,9 @@ public final class ModuleTests {
     private static final int INFRARED_VALUE = 321;
 
     private static final String TAG_MEMORY = "memory";
+    private static final String TAG_HEAD = "head";
+    private static final String TAG_TAIL = "tail";
+    private static final int QUEUE_SIZE = 17;
 
     private static final byte[] ROM_DATA = {3, 4, 5, 6};
     private static final int ROM_ADDRESS = 0;
@@ -134,7 +140,51 @@ public final class ModuleTests {
         assertAnyWriteUsesFirstPortBelowController(helper, Face.Z_NEG);
     }
 
+    public static void fullQueueWithdrawsItsReads(final GameTestHelper helper) {
+        final BlockPos casingPos = CONTROLLER_POS.below();
+        final MachineFixture machine = MachineFixture.place(helper, casingPos).powerFully();
+
+        final Face[] queueFace = new Face[1];
+
+        helper.startSequence()
+            .thenWaitUntil(machine::assertRunning)
+            .thenExecute(() -> queueFace[0] = installAlmostFullQueue(machine, casingPos, Face.Y_NEG, Port.VALUES[0]))
+            .thenIdle(FULL_POWER_STEP_TICKS)
+            .thenExecute(() -> {
+                final CasingBlockEntity casing = machine.casing(casingPos);
+                for (final Port port : Port.VALUES) {
+                    helper.assertFalse(casing.getReceivingPipe(queueFace[0], port).isReading(),
+                        "the full queue still offers to read on " + port);
+                }
+            })
+            .thenSucceed();
+    }
+
     // --------------------------------------------------------------------- //
+
+    private static Face installAlmostFullQueue(final MachineFixture machine, final BlockPos casingPos, final Face writerFace, final Port writerPort) {
+        final Face queueFace = ComputerBlockEntity.mapFace(writerFace, writerPort);
+
+        final QueueModule queue = new QueueModule(machine.casing(casingPos), queueFace);
+        final CompoundTag tag = new CompoundTag();
+        tag.putInt(TAG_HEAD, QUEUE_SIZE - 2);
+        tag.putInt(TAG_TAIL, 0);
+        queue.load(tag);
+        machine.install(casingPos, queueFace, queue);
+
+        for (final Port port : Port.VALUES) {
+            final Face feederFace = ComputerBlockEntity.mapFace(queueFace, port);
+            if (feederFace == writerFace || feederFace == Face.Y_POS) {
+                continue;
+            }
+
+            machine.install(casingPos, feederFace)
+                .writeOn(ComputerBlockEntity.mapPort(queueFace, port), 7);
+            return queueFace;
+        }
+
+        throw new GameTestAssertException("no free face to feed the queue from");
+    }
 
     private static ReadOnlyMemoryModule installReadOnlyMemory(final MachineFixture machine) {
         final ItemStack stack = new ItemStack(Items.READ_ONLY_MEMORY_MODULE.get());

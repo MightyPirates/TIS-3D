@@ -235,7 +235,7 @@ public final class QueueModule extends AbstractModuleWithRotation implements Mod
         for (final Port port : Port.VALUES) {
             // Stop reading if the queue is full.
             if (isFull()) {
-                return;
+                break;
             }
 
             // Continuously read from all ports, push back last received value.
@@ -253,6 +253,11 @@ public final class QueueModule extends AbstractModuleWithRotation implements Mod
                     stepOutput();
                 }
             }
+        }
+
+        // Cancel any active reads when full; hard requirement for ANY writers to not stall.
+        if (isFull()) {
+            cancelRead();
         }
     }
 

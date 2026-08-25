@@ -60,6 +60,11 @@ public final class ModuleTestsNeoForge {
     }
 
 
+    @GameTest(template = TEMPLATE, timeoutTicks = 200)
+    public static void fullQueueWithdrawsItsReads(final GameTestHelper helper) {
+        ModuleTests.fullQueueWithdrawsItsReads(helper);
+    }
+
     // --------------------------------------------------------------------- //
 
     private ModuleTestsNeoForge() {
