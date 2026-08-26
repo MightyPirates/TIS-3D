@@ -19,7 +19,7 @@ dependencies {
     modApi(libs.architectury.api)
 
     if (useLocalMarkdownManual) {
-        compileOnly(files(markdownManualJar(".", "markdown_manual-MC*-api.jar")))
+        compileOnly(files(markdownManualJar(".", "*-api.jar")))
     } else {
         compileOnly(libs.common.manual.api)
     }
