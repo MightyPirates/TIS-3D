@@ -29,6 +29,8 @@ import li.cil.tis3d.common.provider.RedstoneInputProviders;
 import li.cil.tis3d.util.InventoryUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.TickTask;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.WorldlyContainer;
@@ -598,15 +600,20 @@ public final class CasingBlockEntity extends ComputerBlockEntity implements Side
     }
 
     private void onRotated() {
-        if (getBlockEntityLevel().isClientSide()) {
+        final Level level = getBlockEntityLevel();
+        if (level.isClientSide()) {
             invalidateModel();
             return;
         }
 
-        inventory.syncFaceProperties();
+        if (level.getServer() instanceof final MinecraftServer server) {
+            server.schedule(new TickTask(server.getTickCount() + 1, () -> {
+                inventory.syncFaceProperties();
 
-        checkNeighbors();
-        scheduleScan();
+                checkNeighbors();
+                scheduleScan();
+            }));
+        }
     }
 
     private static void decompressClosed(final byte[] compressed, final boolean[][] decompressed) {

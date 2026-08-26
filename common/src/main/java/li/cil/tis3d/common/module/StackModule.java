@@ -225,7 +225,7 @@ public final class StackModule extends AbstractModuleWithRotation implements Mod
         for (final Port port : Port.VALUES) {
             // Stop reading if the stack is full.
             if (isFull()) {
-                return;
+                break;
             }
 
             // Continuously read from all ports, push back last received value.
@@ -241,6 +241,11 @@ public final class StackModule extends AbstractModuleWithRotation implements Mod
                 cancelWrite();
                 stepOutput();
             }
+        }
+
+        // Cancel any active reads when full; hard requirement for ANY writers to not stall.
+        if (isFull()) {
+            cancelRead();
         }
     }
 

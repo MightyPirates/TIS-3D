@@ -26,11 +26,8 @@ public final class AnyTargetInterface extends AbstractSidedTargetInterface {
 
     @Override
     public boolean beginWrite(final short value) {
-        for (final Port port : Port.VALUES) {
-            if (!isWriting(port)) {
-                beginWrite(port, value);
-            }
-        }
+        getMachine().getState().pendingAnyWrite = Optional.of(value);
+        beginWrite();
         return false;
     }
 
@@ -80,6 +77,7 @@ public final class AnyTargetInterface extends AbstractSidedTargetInterface {
     @Override
     public void onBeforeWriteComplete(final Port port) {
         cancelWrite();
+        getMachine().getState().pendingAnyWrite = Optional.empty();
         getMachine().getState().last = Optional.of(port);
     }
 
@@ -92,6 +90,16 @@ public final class AnyTargetInterface extends AbstractSidedTargetInterface {
     }
 
     // --------------------------------------------------------------------- //
+
+    public void beginWrite() {
+        getMachine().getState().pendingAnyWrite.ifPresent(value -> {
+            for (final Port port : Port.VALUES) {
+                if (!isWriting(port)) {
+                    beginWrite(port, value);
+                }
+            }
+        });
+    }
 
     public void cancelWrite() {
         for (final Port port : Port.VALUES) {

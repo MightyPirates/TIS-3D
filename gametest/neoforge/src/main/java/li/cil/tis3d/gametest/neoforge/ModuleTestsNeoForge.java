@@ -66,6 +66,23 @@ public final class ModuleTestsNeoForge {
         ModuleTests.anyWriteUsesFirstPortOnZNeg(helper);
     }
 
+    @GameTest(template = TEMPLATE_ID, timeoutTicks = 200)
+    @TestHolder(description = "Any write is not pinned to full queue.")
+    public static void anyWriteIsNotPinnedToFullQueue(final GameTestHelper helper) {
+        ModuleTests.anyWriteIsNotPinnedToFullQueue(helper);
+    }
+
+    @GameTest(template = TEMPLATE_ID, timeoutTicks = 200)
+    @TestHolder(description = "Any write survives reload.")
+    public static void anyWriteSurvivesReload(final GameTestHelper helper) {
+        ModuleTests.anyWriteSurvivesReload(helper);
+    }
+
+    @GameTest(template = TEMPLATE_ID, timeoutTicks = 200)
+    @TestHolder(description = "Full queue withdraws its reads.")
+    public static void fullQueueWithdrawsItsReads(final GameTestHelper helper) {
+        ModuleTests.fullQueueWithdrawsItsReads(helper);
+    }
 
     // --------------------------------------------------------------------- //
 

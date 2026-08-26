@@ -5,9 +5,12 @@ package li.cil.tis3d.gametest;
 import li.cil.tis3d.api.InfraredAPI;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
+import li.cil.tis3d.common.block.entity.CasingBlockEntity;
+import li.cil.tis3d.common.block.entity.ComputerBlockEntity;
 import li.cil.tis3d.common.item.Items;
 import li.cil.tis3d.common.item.ReadOnlyMemoryModuleItem;
 import li.cil.tis3d.common.module.ExecutionModule;
+import li.cil.tis3d.common.module.QueueModule;
 import li.cil.tis3d.common.module.ReadOnlyMemoryModule;
 import li.cil.tis3d.common.module.RedstoneModule;
 import li.cil.tis3d.common.module.execution.compiler.Compiler;
@@ -34,6 +37,10 @@ public final class ModuleTests {
     private static final int INFRARED_VALUE = 321;
 
     private static final String TAG_MEMORY = "memory";
+    private static final String TAG_HEAD = "head";
+    private static final String TAG_TAIL = "tail";
+    private static final int QUEUE_SIZE = 17;
+    private static final int PENDING_VALUE = 1234;
 
     private static final byte[] ROM_DATA = {3, 4, 5, 6};
     private static final int ROM_ADDRESS = 0;
@@ -135,7 +142,121 @@ public final class ModuleTests {
         assertAnyWriteUsesFirstPortBelowController(helper, Face.Z_NEG);
     }
 
+    public static void anyWriteIsNotPinnedToFullQueue(final GameTestHelper helper) {
+        final BlockPos casingPos = CONTROLLER_POS.below();
+        final MachineFixture machine = MachineFixture.place(helper, casingPos).powerFully();
+
+        final Face exeFace = Face.Y_NEG;
+        final Port fullPort = Port.VALUES[0];
+        final Port livePort = Port.VALUES[1];
+        final Face fullFace = ComputerBlockEntity.mapFace(exeFace, fullPort);
+        final Face liveFace = ComputerBlockEntity.mapFace(exeFace, livePort);
+
+        final TestModule[] live = new TestModule[1];
+
+        helper.startSequence()
+            .thenWaitUntil(machine::assertRunning)
+            .thenExecute(() -> {
+                final ExecutionModule exe = machine.install(casingPos, exeFace,
+                    new ExecutionModule(machine.casing(casingPos), exeFace));
+                try {
+                    Compiler.compile(List.of("MOV 1 ANY"), exe.getState());
+                } catch (final ParseException e) {
+                    throw new GameTestAssertException(Component.literal("failed compiling test program: " + e), 0);
+                }
+
+                installAlmostFullQueue(machine, casingPos, exeFace, fullPort);
+                live[0] = machine.install(casingPos, liveFace)
+                    .readOn(ComputerBlockEntity.mapPort(exeFace, livePort));
+            })
+            .thenIdle(FULL_POWER_STEP_TICKS)
+            .thenExecute(() -> helper.assertTrue(live[0].invocations().any(READ),
+                "the ANY write never reached the willing reader on " + liveFace
+                    + "; it stayed pinned to the full queue on " + fullFace))
+            .thenSucceed();
+    }
+
+    public static void anyWriteSurvivesReload(final GameTestHelper helper) {
+        final BlockPos casingPos = CONTROLLER_POS.below();
+        final MachineFixture machine = MachineFixture.place(helper, casingPos).powerFully();
+
+        final Face exeFace = Face.Y_NEG;
+
+        helper.startSequence()
+            .thenWaitUntil(machine::assertRunning)
+            .thenExecute(() -> {
+                // Through the inventory, so the module is rebuilt from its item on reload.
+                machine.casing(casingPos).setItem(exeFace.ordinal(), new ItemStack(Items.EXECUTION_MODULE.get()));
+                try {
+                    Compiler.compile(List.of("MOV " + PENDING_VALUE + " ANY"),
+                        executionModule(machine, casingPos, exeFace).getState());
+                } catch (final ParseException e) {
+                    throw new GameTestAssertException(Component.literal("failed compiling test program: " + e), 0);
+                }
+            })
+            // No reader anywhere, so the write stays in flight and the value stays stashed.
+            .thenIdle(FULL_POWER_STEP_TICKS)
+            .thenExecute(() -> helper.assertTrue(
+                executionModule(machine, casingPos, exeFace).getState().pendingAnyWrite.isPresent(),
+                "the ANY write was not stashed before the reload"))
+            .thenExecute(() -> machine.reload(casingPos))
+            .thenExecute(() -> {
+                final var pending = executionModule(machine, casingPos, exeFace).getState().pendingAnyWrite;
+                helper.assertTrue(pending.isPresent(), "the stashed ANY write did not survive the reload");
+                helper.assertValueEqual((int) pending.get(), PENDING_VALUE, "the reloaded ANY write value");
+            })
+            .thenSucceed();
+    }
+
+    public static void fullQueueWithdrawsItsReads(final GameTestHelper helper) {
+        final BlockPos casingPos = CONTROLLER_POS.below();
+        final MachineFixture machine = MachineFixture.place(helper, casingPos).powerFully();
+
+        final Face[] queueFace = new Face[1];
+
+        helper.startSequence()
+            .thenWaitUntil(machine::assertRunning)
+            .thenExecute(() -> queueFace[0] = installAlmostFullQueue(machine, casingPos, Face.Y_NEG, Port.VALUES[0]))
+            .thenIdle(FULL_POWER_STEP_TICKS)
+            .thenExecute(() -> {
+                final CasingBlockEntity casing = machine.casing(casingPos);
+                for (final Port port : Port.VALUES) {
+                    helper.assertFalse(casing.getReceivingPipe(queueFace[0], port).isReading(),
+                        "the full queue still offers to read on " + port);
+                }
+            })
+            .thenSucceed();
+    }
+
     // --------------------------------------------------------------------- //
+
+    private static ExecutionModule executionModule(final MachineFixture machine, final BlockPos casingPos, final Face face) {
+        return (ExecutionModule) machine.casing(casingPos).getModule(face);
+    }
+
+    private static Face installAlmostFullQueue(final MachineFixture machine, final BlockPos casingPos, final Face writerFace, final Port writerPort) {
+        final Face queueFace = ComputerBlockEntity.mapFace(writerFace, writerPort);
+
+        final QueueModule queue = new QueueModule(machine.casing(casingPos), queueFace);
+        final CompoundTag tag = new CompoundTag();
+        tag.putInt(TAG_HEAD, QUEUE_SIZE - 2);
+        tag.putInt(TAG_TAIL, 0);
+        queue.load(tag);
+        machine.install(casingPos, queueFace, queue);
+
+        for (final Port port : Port.VALUES) {
+            final Face feederFace = ComputerBlockEntity.mapFace(queueFace, port);
+            if (feederFace == writerFace || feederFace == Face.Y_POS) {
+                continue;
+            }
+
+            machine.install(casingPos, feederFace)
+                .writeOn(ComputerBlockEntity.mapPort(queueFace, port), 7);
+            return queueFace;
+        }
+
+        throw new GameTestAssertException(Component.literal("no free face to feed the queue from"), 0);
+    }
 
     private static ReadOnlyMemoryModule installReadOnlyMemory(final MachineFixture machine) {
         final ItemStack stack = new ItemStack(Items.READ_ONLY_MEMORY_MODULE.get());

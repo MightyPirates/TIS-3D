@@ -116,27 +116,27 @@ public final class RotationTestsNeoForge {
     }
 
     @GameTest(template = TEMPLATE_ID, timeoutTicks = 200)
-    @TestHolder(description = "Execution module ports follow world facing on cap face none.")
-    public static void executionModulePortsFollowWorldFacingOnCapFaceNone(final GameTestHelper helper) {
-        RotationTests.executionModulePortsFollowWorldFacingOnCapFace(helper, Rotation.NONE);
+    @TestHolder(description = "Execution module ports follow local facing on cap face none.")
+    public static void executionModulePortsFollowLocalFacingOnCapFaceNone(final GameTestHelper helper) {
+        RotationTests.executionModulePortsFollowLocalFacingOnCapFace(helper, Rotation.NONE);
     }
 
     @GameTest(template = TEMPLATE_ID, timeoutTicks = 200)
-    @TestHolder(description = "Execution module ports follow world facing on cap face cw90.")
-    public static void executionModulePortsFollowWorldFacingOnCapFaceCw90(final GameTestHelper helper) {
-        RotationTests.executionModulePortsFollowWorldFacingOnCapFace(helper, Rotation.CLOCKWISE_90);
+    @TestHolder(description = "Execution module ports follow local facing on cap face cw90.")
+    public static void executionModulePortsFollowLocalFacingOnCapFaceCw90(final GameTestHelper helper) {
+        RotationTests.executionModulePortsFollowLocalFacingOnCapFace(helper, Rotation.CLOCKWISE_90);
     }
 
     @GameTest(template = TEMPLATE_ID, timeoutTicks = 200)
-    @TestHolder(description = "Execution module ports follow world facing on cap face cw180.")
-    public static void executionModulePortsFollowWorldFacingOnCapFaceCw180(final GameTestHelper helper) {
-        RotationTests.executionModulePortsFollowWorldFacingOnCapFace(helper, Rotation.CLOCKWISE_180);
+    @TestHolder(description = "Execution module ports follow local facing on cap face cw180.")
+    public static void executionModulePortsFollowLocalFacingOnCapFaceCw180(final GameTestHelper helper) {
+        RotationTests.executionModulePortsFollowLocalFacingOnCapFace(helper, Rotation.CLOCKWISE_180);
     }
 
     @GameTest(template = TEMPLATE_ID, timeoutTicks = 200)
-    @TestHolder(description = "Execution module ports follow world facing on cap face ccw90.")
-    public static void executionModulePortsFollowWorldFacingOnCapFaceCcw90(final GameTestHelper helper) {
-        RotationTests.executionModulePortsFollowWorldFacingOnCapFace(helper, Rotation.COUNTERCLOCKWISE_90);
+    @TestHolder(description = "Execution module ports follow local facing on cap face ccw90.")
+    public static void executionModulePortsFollowLocalFacingOnCapFaceCcw90(final GameTestHelper helper) {
+        RotationTests.executionModulePortsFollowLocalFacingOnCapFace(helper, Rotation.COUNTERCLOCKWISE_90);
     }
 
     @GameTest(template = TEMPLATE_ID, timeoutTicks = 200)
