@@ -138,6 +138,12 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
     }
 
     @Override
+    public void arbitrateWrites() {
+        machine.onBeforeArbitrateWrites();
+        ModuleWithExclusiveWrites.super.arbitrateWrites();
+    }
+
+    @Override
     public void onBeforeWriteComplete(final Port port) {
         if (compileError == null) {
             machine.onBeforeWriteComplete(port);
@@ -430,7 +436,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
         @Override
         public boolean worksFor(final ItemStack stack) {
             return Items.is(stack, net.minecraft.world.item.Items.WRITTEN_BOOK) ||
-                   Items.is(stack, net.minecraft.world.item.Items.WRITABLE_BOOK);
+                Items.is(stack, net.minecraft.world.item.Items.WRITABLE_BOOK);
         }
 
         @Override

@@ -61,6 +61,16 @@ public final class ModuleTestsNeoForge {
 
 
     @GameTest(template = TEMPLATE, timeoutTicks = 200)
+    public static void anyWriteIsNotPinnedToFullQueue(final GameTestHelper helper) {
+        ModuleTests.anyWriteIsNotPinnedToFullQueue(helper);
+    }
+
+    @GameTest(template = TEMPLATE, timeoutTicks = 200)
+    public static void anyWriteSurvivesReload(final GameTestHelper helper) {
+        ModuleTests.anyWriteSurvivesReload(helper);
+    }
+
+    @GameTest(template = TEMPLATE, timeoutTicks = 200)
     public static void fullQueueWithdrawsItsReads(final GameTestHelper helper) {
         ModuleTests.fullQueueWithdrawsItsReads(helper);
     }

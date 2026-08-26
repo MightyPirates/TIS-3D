@@ -50,6 +50,17 @@ public final class MachineState {
      */
     private int pcPrev;
 
+    /**
+     * The value of an in-flight {@link li.cil.tis3d.common.module.execution.target.Target#ANY} write.
+     * <p>
+     * An ANY write is performed on all ports at once, but port arbitration prunes it down to one,
+     * discarding the data on the other ports. We can't do retries in the instruction itself, because
+     * it has already consumed its source at this point (and instructions are stateless themselves).
+     * So the value is kept here until the write completes, which aligns with what we're doing in the
+     * other modules that have this problem.
+     */
+    public Optional<Short> pendingAnyWrite = Optional.empty();
+
     // --------------------------------------------------------------------- //
     // Computed data
 
@@ -60,6 +71,7 @@ public final class MachineState {
     private static final String TAG_BAK = "bak";
     private static final String TAG_LAST = "last";
     private static final String TAG_PC_PREV = "pcPrev";
+    private static final String TAG_PENDING_ANY_WRITE = "any";
 
     /**
      * List of instructions (the program) stored in the machine.
@@ -110,6 +122,7 @@ public final class MachineState {
         acc = 0;
         bak = 0;
         last = Optional.empty();
+        pendingAnyWrite = Optional.empty();
     }
 
     /**
@@ -144,6 +157,11 @@ public final class MachineState {
             last = Optional.empty();
         }
         pcPrev = tag.getInt(TAG_PC_PREV);
+        if (tag.contains(TAG_PENDING_ANY_WRITE)) {
+            pendingAnyWrite = Optional.of(tag.getShort(TAG_PENDING_ANY_WRITE));
+        } else {
+            pendingAnyWrite = Optional.empty();
+        }
     }
 
     public void save(final CompoundTag tag) {
@@ -152,6 +170,7 @@ public final class MachineState {
         tag.putShort(TAG_BAK, bak);
         last.ifPresent(port -> EnumUtils.save(port, TAG_LAST, tag));
         tag.putInt(TAG_PC_PREV, pcPrev);
+        pendingAnyWrite.ifPresent(value -> tag.putShort(TAG_PENDING_ANY_WRITE, value));
 
         if (code != null) {
             tag.putString(TAG_CODE, String.join("\n", code));

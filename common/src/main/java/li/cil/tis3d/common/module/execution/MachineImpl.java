@@ -24,6 +24,7 @@ public final class MachineImpl implements Machine {
     // Computed data
 
     private final ExecutionModule module;
+    private final AnyTargetInterface any;
     private final Map<Target, TargetInterface> interfaces;
 
     // --------------------------------------------------------------------- //
@@ -40,7 +41,7 @@ public final class MachineImpl implements Machine {
             put(Target.RIGHT, new SideTargetInterface(this, module, face, Port.RIGHT)).
             put(Target.UP, new SideTargetInterface(this, module, face, Port.UP)).
             put(Target.DOWN, new SideTargetInterface(this, module, face, Port.DOWN)).
-            put(Target.ANY, new AnyTargetInterface(this, module, face)).
+            put(Target.ANY, this.any = new AnyTargetInterface(this, module, face)).
             put(Target.LAST, new LastTargetInterface(this, module, face)).
             build();
     }
@@ -58,6 +59,13 @@ public final class MachineImpl implements Machine {
         }
 
         return state.finishCycle();
+    }
+
+    /**
+     * Re-offer an in-flight ANY write on the ports arbitration pruned it from.
+     */
+    public void onBeforeArbitrateWrites() {
+        any.beginWrite();
     }
 
     /**
