@@ -1,4 +1,11 @@
 # TIS-3D
+
+[![build](https://img.shields.io/github/actions/workflow/status/MightyPirates/TIS-3D/build.yml?label=build)](https://github.com/MightyPirates/TIS-3D/actions/workflows/build.yml)
+[![game tests](https://img.shields.io/github/actions/workflow/status/MightyPirates/TIS-3D/test-report.yml?label=game%20tests)](https://github.com/MightyPirates/TIS-3D/actions/workflows/test-report.yml)
+[![curseforge](https://img.shields.io/curseforge/dt/238603?label=curseforge&color=f16436&logo=curseforge&logoColor=white)](https://www.curseforge.com/minecraft/mc-mods/tis-3d)
+[![modrinth](https://img.shields.io/modrinth/dt/tis3d?label=modrinth&color=1bd96a&logo=modrinth&logoColor=white)](https://modrinth.com/mod/tis3d)
+![loaders](https://img.shields.io/badge/loaders-Fabric%20%7C%20NeoForge-blueviolet)
+
 TIS-3D is a Minecraft mod inspired by the brilliant game TIS-100 (go buy it if you don't own it yet). It takes the concept of minimal, programmable nodes and expands it to the third dimension, allowing you to build multiblock computers from different modules. Basic modules are the executable module, which can be programmed in very basic ASM (as introduced by TIS-100), and the redstone module, which allows reading and writing redstone signals, enabling basic interaction with the world.
 
 ## License / Use in Modpacks
