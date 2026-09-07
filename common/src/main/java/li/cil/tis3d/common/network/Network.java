@@ -47,7 +47,7 @@ import java.util.function.Function;
  * effect emission and module packets where possible.
  */
 public final class Network {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger(Network.class);
 
     public static final int RANGE_HIGH = 48;
     public static final int RANGE_MEDIUM = 32;
