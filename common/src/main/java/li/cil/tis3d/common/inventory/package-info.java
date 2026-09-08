@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 package li.cil.tis3d.common.inventory;

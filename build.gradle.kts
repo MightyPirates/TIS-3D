@@ -193,10 +193,17 @@ spotless {
         indentWithSpaces()
         importOrder("", "javax|java", "\\#")
     }
+
+    format("packageInfo") {
+        target("**/src/*/java/li/cil/**/package-info.java")
+
+        licenseHeader("/* SPDX-License-Identifier: MIT */\n\n", "(/\\*\\*|//|@|package )")
+    }
 }
 
 serializeArchitecturyTransforms()
 registerGameTestTask()
+registerPackageInfoTask()
 registerLintTask()
 registerApiJarTask(minecraftVersion)
 configureMavenPublishing(minecraftVersion, "https://github.com/MightyPirates/TIS-3D")

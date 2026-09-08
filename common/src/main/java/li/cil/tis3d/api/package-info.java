@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 /**
  * Welcome to the TIS-3D API, where some dreams come true, and others go to die.
  * <p>

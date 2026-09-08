@@ -2,7 +2,7 @@
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package li.cil.tis3d.api.module.traits.neoforge;
+package li.cil.tis3d.util.config;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 
