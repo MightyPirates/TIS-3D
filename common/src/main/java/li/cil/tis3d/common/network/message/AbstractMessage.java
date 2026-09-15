@@ -16,7 +16,7 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nullable;
 
 public abstract class AbstractMessage implements CustomPacketPayload {
-    protected static final Logger LOGGER = LogManager.getLogger();
+    protected static final Logger LOGGER = LogManager.getLogger(AbstractMessage.class);
 
     protected AbstractMessage() {
     }
