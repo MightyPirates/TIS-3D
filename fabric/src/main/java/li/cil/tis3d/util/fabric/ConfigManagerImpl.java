@@ -53,8 +53,6 @@ public final class ConfigManagerImpl extends ConfigManager {
     // --------------------------------------------------------------------- //
 
     private static void handleModConfigEvent(final ModConfig eventConfig, final boolean isUnloading) {
-        if (!eventConfig.getModId().equals(API.MOD_ID))
-            return;
         final ConfigDefinition config = CONFIGS.get(eventConfig.getSpec());
         if (config == null) {
             return;
