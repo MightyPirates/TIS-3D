@@ -16,8 +16,9 @@ import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.util.Color;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 /**
  * The stack module can be used to store a number of values to be retrieved
@@ -120,29 +121,29 @@ public final class StackModule extends AbstractModuleWithRotation implements Mod
     }
 
     @Override
-    public void load(final CompoundTag tag) {
-        super.load(tag);
+    public void load(final ValueInput input) {
+        super.load(input);
 
-        final int[] stackTag = tag.getIntArray(TAG_STACK).orElse(new int[0]);
+        final int[] stackTag = input.getIntArray(TAG_STACK).orElse(new int[0]);
         final int count = Math.min(stackTag.length, stack.length);
         for (int i = 0; i < count; i++) {
             stack[i] = (short) stackTag[i];
         }
 
-        top = Mth.clamp(tag.getIntOr(TAG_TOP, 0), -1, STACK_SIZE - 1);
+        top = Mth.clamp(input.getIntOr(TAG_TOP, 0), -1, STACK_SIZE - 1);
     }
 
     @Override
-    public void save(final CompoundTag tag) {
-        super.save(tag);
+    public void save(final ValueOutput output) {
+        super.save(output);
 
         final int[] stackTag = new int[stack.length];
         for (int i = 0; i < stack.length; i++) {
             stackTag[i] = stack[i];
         }
-        tag.putIntArray(TAG_STACK, stackTag);
+        output.putIntArray(TAG_STACK, stackTag);
 
-        tag.putInt(TAG_TOP, top);
+        output.putInt(TAG_TOP, top);
     }
 
     // --------------------------------------------------------------------- //

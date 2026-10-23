@@ -8,7 +8,8 @@ import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.module.traits.ModuleWithRotation;
 import li.cil.tis3d.api.util.TransformUtil;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
 
@@ -71,17 +72,17 @@ public abstract class AbstractModuleWithRotation extends AbstractModule implemen
     // Module
 
     @Override
-    public void load(final CompoundTag tag) {
-        super.load(tag);
+    public void load(final ValueInput input) {
+        super.load(input);
 
-        facing = Port.VALUES[Math.max(0, tag.getByteOr(FACING_TAG, (byte) 0)) % Port.VALUES.length];
+        facing = Port.VALUES[Math.max(0, input.getByteOr(FACING_TAG, (byte) 0)) % Port.VALUES.length];
     }
 
     @Override
-    public void save(final CompoundTag tag) {
-        super.save(tag);
+    public void save(final ValueOutput output) {
+        super.save(output);
 
-        tag.putByte(FACING_TAG, (byte) facing.ordinal());
+        output.putByte(FACING_TAG, (byte) facing.ordinal());
     }
 
     // --------------------------------------------------------------------- //

@@ -8,9 +8,10 @@ import li.cil.tis3d.api.serial.SerialProtocolDocumentationReference;
 import li.cil.tis3d.gametest.Invocations.Kind;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import java.util.Map;
 import java.util.Optional;
@@ -104,13 +105,13 @@ public final class TestSerialInterfaceProvider implements SerialInterfaceProvide
         }
 
         @Override
-        public void save(final CompoundTag tag) {
-            tag.putShort(TAG_VALUE, exchange.offeredValue);
+        public void save(final ValueOutput output) {
+            output.putShort(TAG_VALUE, exchange.offeredValue);
         }
 
         @Override
-        public void load(final CompoundTag tag) {
-            exchange.offeredValue = tag.getShortOr(TAG_VALUE, (short) 0);
+        public void load(final ValueInput input) {
+            exchange.offeredValue = (short) input.getShortOr(TAG_VALUE, (short) 0);
         }
     }
 }

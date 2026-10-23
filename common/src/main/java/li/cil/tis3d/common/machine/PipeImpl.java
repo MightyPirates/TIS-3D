@@ -12,8 +12,9 @@ import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.util.EnumUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 /**
  * Implementation of {@link Pipe}s for passing data between {@link Module}s.
@@ -120,16 +121,16 @@ public final class PipeImpl implements Pipe {
         host.onPipeStateChanged();
     }
 
-    public void load(final CompoundTag tag) {
-        readState = EnumUtils.load(State.class, TAG_READ_STATE, tag);
-        writeState = EnumUtils.load(State.class, TAG_WRITE_STATE, tag);
-        value = tag.getShortOr(TAG_VALUE, (short) 0);
+    public void load(final ValueInput input) {
+        readState = EnumUtils.load(State.class, TAG_READ_STATE, input);
+        writeState = EnumUtils.load(State.class, TAG_WRITE_STATE, input);
+        value = (short) input.getShortOr(TAG_VALUE, (short) 0);
     }
 
-    public void save(final CompoundTag tag) {
-        EnumUtils.save(readState, TAG_READ_STATE, tag);
-        EnumUtils.save(writeState, TAG_WRITE_STATE, tag);
-        tag.putShort(TAG_VALUE, value);
+    public void save(final ValueOutput output) {
+        EnumUtils.save(readState, TAG_READ_STATE, output);
+        EnumUtils.save(writeState, TAG_WRITE_STATE, output);
+        output.putShort(TAG_VALUE, value);
     }
 
     private void finishTransfer() {

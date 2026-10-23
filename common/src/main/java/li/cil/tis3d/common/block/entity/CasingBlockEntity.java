@@ -27,6 +27,7 @@ import li.cil.tis3d.common.network.message.ClientCasingLoadedMessage;
 import li.cil.tis3d.common.network.message.ReceivingPipeLockedStateMessage;
 import li.cil.tis3d.common.provider.RedstoneInputProviders;
 import li.cil.tis3d.util.InventoryUtils;
+import li.cil.tis3d.util.NBTUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
@@ -495,7 +496,7 @@ public final class CasingBlockEntity extends ComputerBlockEntity implements Side
         inventory.setItem(slot, stack);
         final Module module = casing.getModule(Face.VALUES[slot]);
         if (module != null) {
-            module.load(moduleData);
+            NBTUtils.loadFromTag(problemPath(), getBlockEntityLevel().registryAccess(), moduleData, module::load);
         }
     }
 

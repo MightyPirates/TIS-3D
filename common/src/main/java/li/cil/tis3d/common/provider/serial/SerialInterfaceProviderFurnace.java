@@ -8,10 +8,11 @@ import li.cil.tis3d.api.serial.SerialProtocolDocumentationReference;
 import li.cil.tis3d.util.EnumUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.FurnaceBlockEntity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -112,13 +113,13 @@ public final class SerialInterfaceProviderFurnace implements SerialInterfaceProv
         }
 
         @Override
-        public void load(final CompoundTag tag) {
-            mode = EnumUtils.load(SerialInterfaceFurnace.Mode.class, TAG_MODE, tag);
+        public void load(final ValueInput input) {
+            mode = EnumUtils.load(SerialInterfaceFurnace.Mode.class, TAG_MODE, input);
         }
 
         @Override
-        public void save(final CompoundTag tag) {
-            EnumUtils.save(mode, TAG_MODE, tag);
+        public void save(final ValueOutput output) {
+            EnumUtils.save(mode, TAG_MODE, output);
         }
     }
 }

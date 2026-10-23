@@ -3,6 +3,7 @@
 package li.cil.tis3d.common.module;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.serialization.Codec;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.api.machine.Pipe;
@@ -18,6 +19,8 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Optional;
@@ -188,19 +191,17 @@ public final class KeypadModule extends AbstractModuleWithRotation implements Mo
     }
 
     @Override
-    public void load(final CompoundTag tag) {
-        super.load(tag);
+    public void load(final ValueInput input) {
+        super.load(input);
 
-        if (tag.contains(TAG_VALUE)) {
-            value = Optional.of(tag.getShortOr(TAG_VALUE, (short) 0));
-        }
+        input.read(TAG_VALUE, Codec.SHORT).ifPresent(x -> value = Optional.of(x));
     }
 
     @Override
-    public void save(final CompoundTag tag) {
-        super.save(tag);
+    public void save(final ValueOutput output) {
+        super.save(output);
 
-        value.ifPresent(x -> tag.putShort(TAG_VALUE, x));
+        value.ifPresent(x -> output.putShort(TAG_VALUE, x));
     }
 
     // --------------------------------------------------------------------- //

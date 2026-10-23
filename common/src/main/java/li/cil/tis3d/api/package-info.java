@@ -13,6 +13,9 @@
  * can interact with the casing and other modules.
  */
 @ParametersAreNonnullByDefault
+@NullMarked
 package li.cil.tis3d.api;
+
+import org.jspecify.annotations.NullMarked;
 
 import javax.annotation.ParametersAreNonnullByDefault;

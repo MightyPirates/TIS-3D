@@ -7,6 +7,7 @@ import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.network.Network;
+import li.cil.tis3d.util.NBTUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -32,11 +33,11 @@ public final class ClientCasingLoadedMessage extends AbstractMessageWithPosition
                 final var listTag = new ListTag();
                 for (var face : Face.VALUES) {
                     final var module = casing.getModule(face);
-                    final var moduleTag = new CompoundTag();
                     if (module != null) {
-                        module.save(moduleTag);
+                        listTag.add(NBTUtils.saveToTag(casing.problemPath(), level.registryAccess(), module::save));
+                    } else {
+                        listTag.add(new CompoundTag());
                     }
-                    listTag.add(moduleTag);
                 }
                 Network.sendToPlayer(player, new ServerCasingInitializeMessage(casing, listTag));
             });

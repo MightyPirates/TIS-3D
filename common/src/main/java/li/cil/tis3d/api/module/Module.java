@@ -11,6 +11,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -201,16 +203,16 @@ public interface Module {
     // --------------------------------------------------------------------- //
 
     /**
-     * Restore the state of the module from the specified tag.
+     * Restore the state of the module from the specified input.
      *
-     * @param tag the tag to load the state from.
+     * @param input the input to load the state from.
      */
-    void load(final CompoundTag tag);
+    void load(final ValueInput input);
 
     /**
-     * Save the state of the module to the specified tag.
+     * Save the state of the module to the specified output.
      *
-     * @param tag the tag to save the state to.
+     * @param output the output to save the state to.
      */
-    void save(final CompoundTag tag);
+    void save(final ValueOutput output);
 }

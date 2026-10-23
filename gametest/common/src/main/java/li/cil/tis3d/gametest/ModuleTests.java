@@ -15,12 +15,14 @@ import li.cil.tis3d.common.module.ReadOnlyMemoryModule;
 import li.cil.tis3d.common.module.RedstoneModule;
 import li.cil.tis3d.common.module.execution.compiler.Compiler;
 import li.cil.tis3d.common.module.execution.compiler.ParseException;
+import li.cil.tis3d.util.NBTUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
@@ -241,7 +243,7 @@ public final class ModuleTests {
         final CompoundTag tag = new CompoundTag();
         tag.putInt(TAG_HEAD, QUEUE_SIZE - 2);
         tag.putInt(TAG_TAIL, 0);
-        queue.load(tag);
+        NBTUtils.loadFromTag(ProblemReporter.Collector.EMPTY_ROOT, queue.getCasing().getCasingLevel().registryAccess(), tag, queue::load);
         machine.install(casingPos, queueFace, queue);
 
         for (final Port port : Port.VALUES) {
@@ -269,8 +271,7 @@ public final class ModuleTests {
     }
 
     private static void assertMemoryIntact(final GameTestHelper helper, final ReadOnlyMemoryModule rom) {
-        final CompoundTag tag = new CompoundTag();
-        rom.save(tag);
+        final CompoundTag tag = NBTUtils.saveToTag(ProblemReporter.Collector.EMPTY_ROOT, helper.getLevel().registryAccess(), rom::save);
 
         final byte[] memory = tag.getByteArray(TAG_MEMORY).orElse(new byte[0]);
         for (int address = 0; address < ROM_DATA.length; address++) {

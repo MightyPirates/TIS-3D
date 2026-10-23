@@ -3,6 +3,7 @@
 package li.cil.tis3d.common.module;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import li.cil.manual.api.render.FontRenderer;
@@ -17,14 +18,13 @@ import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.ClientHooks;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.util.Color;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
 import java.nio.ByteBuffer;
@@ -242,31 +242,29 @@ public final class TerminalModule extends AbstractModuleWithRotation implements 
     }
 
     @Override
-    public void load(final CompoundTag tag) {
-        super.load(tag);
+    public void load(final ValueInput input) {
+        super.load(input);
 
-        final ListTag lines = tag.getListOrEmpty(TAG_DISPLAY);
         display.clear();
-        for (int tagIndex = 0; tagIndex < lines.size(); tagIndex++) {
-            display.add(new StringBuilder(lines.getStringOr(tagIndex, "")));
+        for (final String line : input.listOrEmpty(TAG_DISPLAY, Codec.STRING)) {
+            display.add(new StringBuilder(line));
         }
 
         output.setLength(0);
-        output.append(tag.getStringOr(TAG_OUTPUT, ""));
+        output.append(input.getStringOr(TAG_OUTPUT, ""));
         isInputEnabled = output.isEmpty();
     }
 
     @Override
-    public void save(final CompoundTag tag) {
-        super.save(tag);
+    public void save(final ValueOutput output) {
+        super.save(output);
 
-        final ListTag lines = new ListTag();
+        final ValueOutput.TypedOutputList<String> lines = output.list(TAG_DISPLAY, Codec.STRING);
         for (final StringBuilder line : display) {
-            lines.add(StringTag.valueOf(line.toString()));
+            lines.add(line.toString());
         }
-        tag.put(TAG_DISPLAY, lines);
 
-        tag.putString(TAG_OUTPUT, output.toString());
+        output.putString(TAG_OUTPUT, this.output.toString());
     }
 
     // --------------------------------------------------------------------- //

@@ -3,6 +3,7 @@
 package li.cil.tis3d.common.module;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.machine.Casing;
@@ -16,12 +17,14 @@ import li.cil.tis3d.common.item.Items;
 import li.cil.tis3d.common.item.ReadOnlyMemoryModuleItem;
 import li.cil.tis3d.util.Color;
 import li.cil.tis3d.util.EnumUtils;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 /**
@@ -188,21 +191,21 @@ public class RandomAccessMemoryModule extends AbstractModuleWithRotation impleme
     }
 
     @Override
-    public void load(final CompoundTag tag) {
-        super.load(tag);
+    public void load(final ValueInput input) {
+        super.load(input);
 
-        load(tag.getByteArray(TAG_MEMORY).orElse(new byte[0]));
-        address = tag.getByteOr(TAG_ADDRESS, (byte) 0);
-        state = EnumUtils.load(State.class, TAG_STATE, tag);
+        load(input.read(TAG_MEMORY, Codec.BYTE_BUFFER).map(ByteBuffer::array).orElse(new byte[0]));
+        address = input.getByteOr(TAG_ADDRESS, (byte) 0);
+        state = EnumUtils.load(State.class, TAG_STATE, input);
     }
 
     @Override
-    public void save(final CompoundTag tag) {
-        super.save(tag);
+    public void save(final ValueOutput output) {
+        super.save(output);
 
-        tag.putByteArray(TAG_MEMORY, memory.clone());
-        tag.putByte(TAG_ADDRESS, address);
-        EnumUtils.save(state, TAG_STATE, tag);
+        output.store(TAG_MEMORY, Codec.BYTE_BUFFER, ByteBuffer.wrap(memory));
+        output.putByte(TAG_ADDRESS, address);
+        EnumUtils.save(state, TAG_STATE, output);
     }
 
     // --------------------------------------------------------------------- //

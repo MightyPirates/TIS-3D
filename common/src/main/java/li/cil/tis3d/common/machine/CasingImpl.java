@@ -284,12 +284,12 @@ public final class CasingImpl implements Casing {
         }
 
         int i = 0;
-        for (final CompoundTag moduleTag : input.listOrEmpty(TAG_MODULES, CompoundTag.CODEC)) {
+        for (final ValueInput moduleInput : input.childrenListOrEmpty(TAG_MODULES)) {
             if (i >= modules.length) {
                 break;
             }
             if (modules[i] != null) {
-                modules[i].load(moduleTag);
+                modules[i].load(moduleInput);
             }
             i++;
         }
@@ -303,13 +303,12 @@ public final class CasingImpl implements Casing {
      * @param output the output to write the data to.
      */
     public void save(final ValueOutput output) {
-        final ValueOutput.TypedOutputList<CompoundTag> modulesTag = output.list(TAG_MODULES, CompoundTag.CODEC);
+        final ValueOutput.ValueOutputList modulesOutput = output.childrenList(TAG_MODULES);
         for (final Module module : modules) {
-            final CompoundTag moduleTag = new CompoundTag();
+            final ValueOutput moduleOutput = modulesOutput.addChild();
             if (module != null) {
-                module.save(moduleTag);
+                module.save(moduleOutput);
             }
-            modulesTag.add(moduleTag);
         }
 
         if (lock != null) {

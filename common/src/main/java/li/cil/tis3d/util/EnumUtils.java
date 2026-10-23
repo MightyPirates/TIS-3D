@@ -2,31 +2,19 @@
 
 package li.cil.tis3d.util;
 
-import li.cil.tis3d.api.API;
-import net.minecraft.nbt.CompoundTag;
-import org.apache.logging.log4j.LogManager;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 /**
- * Utility method for wrapping enum serialization against exceptions.
+ * Utility methods for enum serialization by ordinal.
  */
 public final class EnumUtils {
-    public static <T extends Enum<T>> T load(final Class<T> clazz, final String tagName, final CompoundTag tag) {
-        if (tag.getString(tagName).isPresent()) {
-            // Backwards compatibility.
-            try {
-                return Enum.valueOf(clazz, tag.getStringOr(tagName, ""));
-            } catch (final IllegalArgumentException e) {
-                // This can only happen if someone messes with the save.
-                LogManager.getLogger(API.MOD_ID).warn("Broken save, enum value is invalid.", e);
-                return clazz.getEnumConstants()[0];
-            }
-        } else {
-            return clazz.getEnumConstants()[tag.getByteOr(tagName, (byte) 0)];
-        }
+    public static <T extends Enum<T>> T load(final Class<T> clazz, final String tagName, final ValueInput input) {
+        return clazz.getEnumConstants()[input.getByteOr(tagName, (byte) 0)];
     }
 
-    public static <T extends Enum<T>> void save(final Enum<T> value, final String tagName, final CompoundTag tag) {
-        tag.putByte(tagName, (byte) value.ordinal());
+    public static <T extends Enum<T>> void save(final Enum<T> value, final String tagName, final ValueOutput output) {
+        output.putByte(tagName, (byte) value.ordinal());
     }
 
     // --------------------------------------------------------------------- //

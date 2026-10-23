@@ -14,10 +14,11 @@ import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.util.Color;
 import net.fabricmc.api.EnvType;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
 public final class SequencerModule extends AbstractModuleWithRotation {
@@ -185,25 +186,25 @@ public final class SequencerModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void load(final CompoundTag tag) {
-        super.load(tag);
+    public void load(final ValueInput input) {
+        super.load(input);
 
-        decodeConfiguration(tag.getLongOr(TAG_CONFIGURATION, 0L), configuration);
-        position = Math.min(Math.max(tag.getIntOr(TAG_POSITION, 0), 0), COL_COUNT - 1);
-        delay = Math.min(Math.max(tag.getIntOr(TAG_DELAY, 0), 0), 0xFFFF);
-        stepsRemaining = Math.min(Math.max(tag.getIntOr(TAG_STEPS_REMAINING, 0), 0), 0xFFFF);
+        decodeConfiguration(input.getLongOr(TAG_CONFIGURATION, 0L), configuration);
+        position = Math.min(Math.max(input.getIntOr(TAG_POSITION, 0), 0), COL_COUNT - 1);
+        delay = Math.min(Math.max(input.getIntOr(TAG_DELAY, 0), 0), 0xFFFF);
+        stepsRemaining = Math.min(Math.max(input.getIntOr(TAG_STEPS_REMAINING, 0), 0), 0xFFFF);
 
         initializeOutput();
     }
 
     @Override
-    public void save(final CompoundTag tag) {
-        super.save(tag);
+    public void save(final ValueOutput output) {
+        super.save(output);
 
-        tag.putLong(TAG_CONFIGURATION, encodeConfiguration(configuration));
-        tag.putInt(TAG_POSITION, position);
-        tag.putInt(TAG_DELAY, delay);
-        tag.putInt(TAG_STEPS_REMAINING, stepsRemaining);
+        output.putLong(TAG_CONFIGURATION, encodeConfiguration(configuration));
+        output.putInt(TAG_POSITION, position);
+        output.putInt(TAG_DELAY, delay);
+        output.putInt(TAG_STEPS_REMAINING, stepsRemaining);
     }
 
     // --------------------------------------------------------------------- //

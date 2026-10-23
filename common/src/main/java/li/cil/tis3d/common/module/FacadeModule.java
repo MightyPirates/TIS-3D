@@ -10,11 +10,11 @@ import li.cil.tis3d.api.prefab.module.AbstractModule;
 import li.cil.tis3d.client.ClientHooks;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.util.BlockStateUtils;
+import li.cil.tis3d.util.NBTUtils;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockAndTintGetter;
@@ -22,6 +22,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
@@ -78,7 +80,7 @@ public final class FacadeModule extends AbstractModule implements ModuleWithBloc
 
     @Override
     public void onData(final CompoundTag data) {
-        load(data);
+        NBTUtils.loadFromTag(ProblemReporter.Collector.EMPTY_ROOT, getCasing().getCasingLevel().registryAccess(), data, this::load);
 
         // Force re-render to make change of facade configuration visible.
         if (getCasing() instanceof final CasingBlockEntity casing) {
@@ -87,22 +89,20 @@ public final class FacadeModule extends AbstractModule implements ModuleWithBloc
     }
 
     @Override
-    public void load(final CompoundTag tag) {
-        super.load(tag);
+    public void load(final ValueInput input) {
+        super.load(input);
 
-        facadeState = NbtUtils.readBlockState(BuiltInRegistries.BLOCK, tag.getCompoundOrEmpty(TAG_STATE));
+        facadeState = input.read(TAG_STATE, BlockState.CODEC).orElse(null);
         if (facadeState == Blocks.AIR.defaultBlockState()) {
             facadeState = null;
         }
     }
 
     @Override
-    public void save(final CompoundTag tag) {
-        super.save(tag);
+    public void save(final ValueOutput output) {
+        super.save(output);
 
-        if (facadeState != null) {
-            tag.put(TAG_STATE, NbtUtils.writeBlockState(facadeState));
-        }
+        output.storeNullable(TAG_STATE, BlockState.CODEC, facadeState);
     }
 
     // --------------------------------------------------------------------- //
@@ -153,8 +153,7 @@ public final class FacadeModule extends AbstractModule implements ModuleWithBloc
     }
 
     private void sendState() {
-        final CompoundTag tag = new CompoundTag();
-        save(tag);
+        final CompoundTag tag = NBTUtils.saveToTag(ProblemReporter.Collector.EMPTY_ROOT, getCasing().getCasingLevel().registryAccess(), this::save);
         getCasing().sendData(getFace(), tag, DATA_TYPE_FULL);
     }
 }

@@ -16,9 +16,9 @@ import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.common.config.CommonConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
@@ -99,27 +99,26 @@ public final class InfraredModule extends AbstractModule implements InfraredRece
     }
 
     @Override
-    public void load(final CompoundTag tag) {
-        super.load(tag);
+    public void load(final ValueInput input) {
+        super.load(input);
 
         receiveQueue.clear();
-        final int[] receiveQueueTag = tag.getIntArray(TAG_RECEIVE_QUEUE).orElse(new int[0]);
+        final int[] receiveQueueTag = input.getIntArray(TAG_RECEIVE_QUEUE).orElse(new int[0]);
         for (final int value : receiveQueueTag) {
             receiveQueue.addLast((short) value);
         }
     }
 
     @Override
-    public void save(final CompoundTag tag) {
-        super.save(tag);
+    public void save(final ValueOutput output) {
+        super.save(output);
 
         final int[] receiveQueueArray = new int[receiveQueue.size()];
         int i = 0;
         for (final int value : receiveQueue) {
             receiveQueueArray[i++] = value;
         }
-        final IntArrayTag receiveQueueTag = new IntArrayTag(receiveQueueArray);
-        tag.put(TAG_RECEIVE_QUEUE, receiveQueueTag);
+        output.putIntArray(TAG_RECEIVE_QUEUE, receiveQueueArray);
     }
 
     // --------------------------------------------------------------------- //

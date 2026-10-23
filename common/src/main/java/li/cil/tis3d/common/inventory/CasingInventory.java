@@ -13,6 +13,7 @@ import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.network.Network;
 import li.cil.tis3d.common.network.message.CasingInventoryMessage;
 import li.cil.tis3d.common.provider.ModuleProviders;
+import li.cil.tis3d.util.NBTUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -159,7 +160,7 @@ public final class CasingInventory extends Inventory implements WorldlyContainer
             final CompoundTag moduleData;
             if (module != null) {
                 module.onInstalled(stack);
-                module.save(moduleData = new CompoundTag());
+                moduleData = NBTUtils.saveToTag(blockEntity.problemPath(), blockEntity.getCasingLevel().registryAccess(), module::save);
             } else {
                 moduleData = null;
             }

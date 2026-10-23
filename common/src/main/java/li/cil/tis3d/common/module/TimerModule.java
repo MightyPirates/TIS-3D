@@ -15,7 +15,8 @@ import li.cil.tis3d.api.prefab.module.AbstractModuleWithRotation;
 import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.util.Color;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 /**
  * The timer module can be used to wait for a specific amount of game time.
@@ -118,17 +119,17 @@ public final class TimerModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void load(final CompoundTag tag) {
-        super.load(tag);
+    public void load(final ValueInput input) {
+        super.load(input);
 
-        timer = tag.getLongOr(TAG_TIMER, 0L);
+        timer = input.getLongOr(TAG_TIMER, 0L);
     }
 
     @Override
-    public void save(final CompoundTag tag) {
-        super.save(tag);
+    public void save(final ValueOutput output) {
+        super.save(output);
 
-        tag.putLong(TAG_TIMER, timer);
+        output.putLong(TAG_TIMER, timer);
     }
 
     // --------------------------------------------------------------------- //

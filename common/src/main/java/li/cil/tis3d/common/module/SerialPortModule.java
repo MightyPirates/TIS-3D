@@ -15,10 +15,14 @@ import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.Textures;
 import li.cil.tis3d.common.provider.SerialInterfaceProviders;
 import li.cil.tis3d.util.LevelUtils;
+import li.cil.tis3d.util.NBTUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import java.util.Optional;
 
@@ -106,32 +110,32 @@ public final class SerialPortModule extends AbstractModule implements ModuleWith
     }
 
     @Override
-    public void load(final CompoundTag tag) {
-        super.load(tag);
+    public void load(final ValueInput input) {
+        super.load(input);
 
-        writing = tag.getShortOr(TAG_VALUE, (short) 0);
+        writing = (short) input.getShortOr(TAG_VALUE, (short) 0);
 
-        if (tag.contains(TAG_SERIAL_INTERFACE)) {
-            if (serialInterface.isPresent()) {
-                serialInterface.get().load(tag.getCompoundOrEmpty(TAG_SERIAL_INTERFACE));
-            } else {
-                serialInterfaceTag = Optional.of(tag.getCompoundOrEmpty(TAG_SERIAL_INTERFACE));
-            }
+        if (serialInterface.isPresent()) {
+            input.child(TAG_SERIAL_INTERFACE).ifPresent(serialInterface.get()::load);
+        } else {
+            input.read(TAG_SERIAL_INTERFACE, CompoundTag.CODEC).ifPresent(tag -> serialInterfaceTag = Optional.of(tag));
         }
     }
 
     @Override
-    public void save(final CompoundTag tag) {
-        super.save(tag);
+    public void save(final ValueOutput output) {
+        super.save(output);
 
-        tag.putShort(TAG_VALUE, writing);
+        output.putShort(TAG_VALUE, writing);
 
         if (serialInterface.isPresent()) {
-            final CompoundTag serialInterfaceTag = new CompoundTag();
-            serialInterface.get().save(serialInterfaceTag);
-            if (!tag.isEmpty()) {
-                tag.put(TAG_SERIAL_INTERFACE, serialInterfaceTag);
+            final ValueOutput serialInterfaceOutput = output.child(TAG_SERIAL_INTERFACE);
+            serialInterface.get().save(serialInterfaceOutput);
+            if (serialInterfaceOutput.isEmpty()) {
+                output.discard(TAG_SERIAL_INTERFACE);
             }
+        } else {
+            serialInterfaceTag.ifPresent(tag -> output.store(TAG_SERIAL_INTERFACE, CompoundTag.CODEC, tag));
         }
     }
 
@@ -162,7 +166,7 @@ public final class SerialPortModule extends AbstractModule implements ModuleWith
                     reset();
                     serialInterface = provider.get().getInterface(level, neighborPos, neighborSide);
                     if (serialInterface.isPresent() && serialInterfaceTag.isPresent()) {
-                        serialInterface.get().load(serialInterfaceTag.get());
+                        NBTUtils.loadFromTag(ProblemReporter.Collector.EMPTY_ROOT, level.registryAccess(), serialInterfaceTag.get(), serialInterface.get()::load);
                         serialInterfaceTag = Optional.empty(); // Done reading, don't re-use.
                     }
                 } // else: interface still valid.

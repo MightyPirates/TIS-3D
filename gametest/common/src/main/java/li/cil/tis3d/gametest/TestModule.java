@@ -10,7 +10,8 @@ import li.cil.tis3d.api.machine.Pipe;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.api.prefab.module.AbstractModule;
 import li.cil.tis3d.gametest.Invocations.Kind;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.HitResult;
 
 import java.util.Arrays;
@@ -125,14 +126,14 @@ public final class TestModule extends AbstractModule implements InfraredReceiver
     }
 
     @Override
-    public void save(final CompoundTag tag) {
-        super.save(tag);
-        tag.putInt(TAG_STEP_COUNT, stepCount);
+    public void save(final ValueOutput output) {
+        super.save(output);
+        output.putInt(TAG_STEP_COUNT, stepCount);
     }
 
     @Override
-    public void load(final CompoundTag tag) {
-        super.load(tag);
-        stepCount = tag.getIntOr(TAG_STEP_COUNT, 0);
+    public void load(final ValueInput input) {
+        super.load(input);
+        stepCount = input.getIntOr(TAG_STEP_COUNT, 0);
     }
 }

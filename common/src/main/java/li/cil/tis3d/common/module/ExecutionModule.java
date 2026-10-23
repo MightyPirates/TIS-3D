@@ -25,16 +25,20 @@ import li.cil.tis3d.common.module.execution.compiler.ParseException;
 import li.cil.tis3d.common.module.execution.compiler.Strings;
 import li.cil.tis3d.util.Color;
 import li.cil.tis3d.util.EnumUtils;
+import li.cil.tis3d.util.NBTUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.WritableBookContent;
 import net.minecraft.world.item.component.WrittenBookContent;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
@@ -225,7 +229,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
 
     @Override
     public void onData(final CompoundTag data) {
-        this.load(data);
+        NBTUtils.loadFromTag(ProblemReporter.Collector.EMPTY_ROOT, getCasing().getCasingLevel().registryAccess(), data, this::load);
     }
 
     @Override
@@ -265,12 +269,11 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
     }
 
     @Override
-    public void load(final CompoundTag tag) {
-        super.load(tag);
+    public void load(final ValueInput input) {
+        super.load(input);
 
-        final CompoundTag machineTag = tag.getCompoundOrEmpty(TAG_MACHINE);
-        getState().load(machineTag);
-        state = EnumUtils.load(State.class, TAG_STATE, tag);
+        getState().load(input.childOrEmpty(TAG_MACHINE));
+        state = EnumUtils.load(State.class, TAG_STATE, input);
 
         if (getState().code != null) {
             compile(Arrays.asList(getState().code));
@@ -278,13 +281,11 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
     }
 
     @Override
-    public void save(final CompoundTag tag) {
-        super.save(tag);
+    public void save(final ValueOutput output) {
+        super.save(output);
 
-        final CompoundTag machineTag = new CompoundTag();
-        getState().save(machineTag);
-        tag.put(TAG_MACHINE, machineTag);
-        EnumUtils.save(state, TAG_STATE, tag);
+        getState().save(output.child(TAG_MACHINE));
+        EnumUtils.save(state, TAG_STATE, output);
     }
 
     // --------------------------------------------------------------------- //
@@ -320,8 +321,7 @@ public final class ExecutionModule extends AbstractModuleWithRotation implements
      * Send the full state to the client.
      */
     private void sendFullState() {
-        final CompoundTag tag = new CompoundTag();
-        this.save(tag);
+        final CompoundTag tag = NBTUtils.saveToTag(ProblemReporter.Collector.EMPTY_ROOT, getCasing().getCasingLevel().registryAccess(), this::save);
         getCasing().sendData(getFace(), tag, DATA_TYPE_FULL);
     }
 

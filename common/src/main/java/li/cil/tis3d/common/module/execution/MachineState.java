@@ -2,6 +2,7 @@
 
 package li.cil.tis3d.common.module.execution;
 
+import com.mojang.serialization.Codec;
 import li.cil.tis3d.api.machine.Port;
 import li.cil.tis3d.common.config.CommonConfig;
 import li.cil.tis3d.common.config.Constants;
@@ -9,7 +10,8 @@ import li.cil.tis3d.common.module.execution.compiler.Compiler;
 import li.cil.tis3d.common.module.execution.compiler.ParseException;
 import li.cil.tis3d.common.module.execution.instruction.Instruction;
 import li.cil.tis3d.util.EnumUtils;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import java.util.*;
 
@@ -137,10 +139,11 @@ public final class MachineState {
 
     // --------------------------------------------------------------------- //
 
-    public void load(final CompoundTag tag) {
-        if (tag.contains(TAG_CODE)) {
+    public void load(final ValueInput input) {
+        final Optional<String> source = input.getString(TAG_CODE);
+        if (source.isPresent()) {
             try {
-                Compiler.compile(Arrays.asList(Constants.PATTERN_LINES.split(tag.getStringOr(TAG_CODE, ""))), this);
+                Compiler.compile(Arrays.asList(Constants.PATTERN_LINES.split(source.get())), this);
             } catch (final ParseException ignored) {
                 // Silent because this is also used to send code to the
                 // clients to visualize errors, and code is also saved
@@ -148,28 +151,24 @@ public final class MachineState {
             }
         }
 
-        pc = tag.getIntOr(TAG_PC, 0);
-        acc = tag.getShortOr(TAG_ACC, (short) 0);
-        bak = tag.getShortOr(TAG_BAK, (short) 0);
-        if (tag.contains(TAG_LAST)) {
-            last = Optional.of(EnumUtils.load(Port.class, TAG_LAST, tag));
-        } else {
-            last = Optional.empty();
-        }
-        pcPrev = tag.getIntOr(TAG_PC_PREV, 0);
-        pendingAnyWrite = tag.getShort(TAG_PENDING_ANY_WRITE);
+        pc = input.getIntOr(TAG_PC, 0);
+        acc = (short) input.getShortOr(TAG_ACC, (short) 0);
+        bak = (short) input.getShortOr(TAG_BAK, (short) 0);
+        last = input.getInt(TAG_LAST).map(ordinal -> Port.VALUES[ordinal]);
+        pcPrev = input.getIntOr(TAG_PC_PREV, 0);
+        pendingAnyWrite = input.read(TAG_PENDING_ANY_WRITE, Codec.SHORT);
     }
 
-    public void save(final CompoundTag tag) {
-        tag.putInt(TAG_PC, pc);
-        tag.putShort(TAG_ACC, acc);
-        tag.putShort(TAG_BAK, bak);
-        last.ifPresent(port -> EnumUtils.save(port, TAG_LAST, tag));
-        tag.putInt(TAG_PC_PREV, pcPrev);
-        pendingAnyWrite.ifPresent(value -> tag.putShort(TAG_PENDING_ANY_WRITE, value));
+    public void save(final ValueOutput output) {
+        output.putInt(TAG_PC, pc);
+        output.putShort(TAG_ACC, acc);
+        output.putShort(TAG_BAK, bak);
+        last.ifPresent(port -> EnumUtils.save(port, TAG_LAST, output));
+        output.putInt(TAG_PC_PREV, pcPrev);
+        pendingAnyWrite.ifPresent(value -> output.putShort(TAG_PENDING_ANY_WRITE, value));
 
         if (code != null) {
-            tag.putString(TAG_CODE, String.join("\n", code));
+            output.putString(TAG_CODE, String.join("\n", code));
         }
     }
 }

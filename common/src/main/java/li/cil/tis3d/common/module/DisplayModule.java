@@ -3,6 +3,7 @@
 package li.cil.tis3d.common.module;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import li.cil.tis3d.api.machine.Casing;
@@ -14,8 +15,10 @@ import li.cil.tis3d.api.util.RenderContext;
 import li.cil.tis3d.client.renderer.DisplayModuleRenderer;
 import li.cil.tis3d.util.Color;
 import li.cil.tis3d.util.EnumUtils;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 public final class DisplayModule extends AbstractModuleWithRotation {
@@ -151,26 +154,26 @@ public final class DisplayModule extends AbstractModuleWithRotation {
     }
 
     @Override
-    public void load(final CompoundTag tag) {
-        super.load(tag);
+    public void load(final ValueInput input) {
+        super.load(input);
 
-        final int[] imageTag = tag.getIntArray(TAG_IMAGE).orElse(new int[0]);
+        final int[] imageTag = input.getIntArray(TAG_IMAGE).orElse(new int[0]);
         System.arraycopy(imageTag, 0, image, 0, Math.min(imageTag.length, image.length));
         imageDirty = true;
 
-        state = EnumUtils.load(State.class, TAG_STATE, tag);
+        state = EnumUtils.load(State.class, TAG_STATE, input);
 
-        final byte[] drawCallTag = tag.getByteArray(TAG_DRAW_CALL).orElse(new byte[0]);
+        final byte[] drawCallTag = input.read(TAG_DRAW_CALL, Codec.BYTE_BUFFER).map(ByteBuffer::array).orElse(new byte[0]);
         System.arraycopy(drawCallTag, 0, drawCall, 0, Math.min(drawCallTag.length, drawCall.length));
     }
 
     @Override
-    public void save(final CompoundTag tag) {
-        super.save(tag);
+    public void save(final ValueOutput output) {
+        super.save(output);
 
-        tag.putIntArray(TAG_IMAGE, image.clone());
-        EnumUtils.save(state, TAG_STATE, tag);
-        tag.putByteArray(TAG_DRAW_CALL, drawCall.clone());
+        output.putIntArray(TAG_IMAGE, image.clone());
+        EnumUtils.save(state, TAG_STATE, output);
+        output.store(TAG_DRAW_CALL, Codec.BYTE_BUFFER, ByteBuffer.wrap(drawCall));
     }
 
     // --------------------------------------------------------------------- //

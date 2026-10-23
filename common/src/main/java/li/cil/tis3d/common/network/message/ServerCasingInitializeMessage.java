@@ -6,6 +6,7 @@ import dev.architectury.networking.NetworkManager;
 import li.cil.tis3d.api.machine.Casing;
 import li.cil.tis3d.api.machine.Face;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
+import li.cil.tis3d.util.NBTUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -39,7 +40,7 @@ public final class ServerCasingInitializeMessage extends AbstractMessageWithPosi
                     final var moduleTag = tag.getCompoundOrEmpty(i);
                     final var module = casing.getModule(face);
                     if (module != null) {
-                        module.load(moduleTag);
+                        NBTUtils.loadFromTag(casing.problemPath(), level.registryAccess(), moduleTag, module::load);
                     }
                 }
             });

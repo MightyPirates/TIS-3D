@@ -236,22 +236,20 @@ public abstract class ComputerBlockEntity extends BlockEntity implements PipeHos
 
     protected void loadServer(final ValueInput input) {
         int i = 0;
-        for (final CompoundTag pipeTag : input.listOrEmpty(TAG_PIPES, CompoundTag.CODEC)) {
+        for (final ValueInput pipeInput : input.childrenListOrEmpty(TAG_PIPES)) {
             if (i >= pipes.length) {
                 break;
             }
-            pipes[i++].load(pipeTag);
+            pipes[i++].load(pipeInput);
         }
 
         loadCommon(input);
     }
 
     protected void saveServer(final ValueOutput output) {
-        final ValueOutput.TypedOutputList<CompoundTag> pipesTag = output.list(TAG_PIPES, CompoundTag.CODEC);
+        final ValueOutput.ValueOutputList pipesOutput = output.childrenList(TAG_PIPES);
         for (final PipeImpl pipe : pipes) {
-            final CompoundTag portTag = new CompoundTag();
-            pipe.save(portTag);
-            pipesTag.add(portTag);
+            pipe.save(pipesOutput.addChild());
         }
 
         saveCommon(output);

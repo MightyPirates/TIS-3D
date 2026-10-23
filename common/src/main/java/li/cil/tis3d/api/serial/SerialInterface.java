@@ -2,7 +2,8 @@
 
 package li.cil.tis3d.api.serial;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 /**
  * Provides serial input and output on an arbitrary block position.
@@ -99,11 +100,11 @@ public interface SerialInterface {
 
     /**
      * Called when the serial port module is saved, allows storing state of the
-     * serial interface to be restored using {@link #load(CompoundTag)}.
+     * serial interface to be restored using {@link #load(ValueInput)}.
      *
-     * @param tag the tag to write the interface's state to.
+     * @param output the output to write the interface's state to.
      */
-    void save(final CompoundTag tag);
+    void save(final ValueOutput output);
 
     /**
      * Called when a serial port module is created and an earlier interface had
@@ -115,7 +116,7 @@ public interface SerialInterface {
      * actually belonged to another interface). Note that such incorrect
      * assignments can typically only happen if the save-game was tampered with.
      *
-     * @param tag the tag to restore the interface's state from.
+     * @param input the input to restore the interface's state from.
      */
-    void load(final CompoundTag tag);
+    void load(final ValueInput input);
 }
