@@ -40,6 +40,8 @@ public final class ModuleTests {
     private static final String TAG_TAIL = "tail";
     private static final int QUEUE_SIZE = 17;
     private static final int PENDING_VALUE = 1234;
+    private static final int SAVED_SERIAL_VALUE = 77;
+    private static final int UNSAVED_SERIAL_VALUE = 88;
 
     private static final byte[] ROM_DATA = {3, 4, 5, 6};
     private static final int ROM_ADDRESS = 0;
@@ -204,6 +206,35 @@ public final class ModuleTests {
                 helper.assertTrue(pending.isPresent(), "the stashed ANY write did not survive the reload");
                 helper.assertValueEqual((int) pending.get(), PENDING_VALUE, "the reloaded ANY write value");
             })
+            .thenSucceed();
+    }
+
+    public static void serialInterfaceStateSurvivesReloadBeforeScan(final GameTestHelper helper) {
+        final BlockPos casingPos = CONTROLLER_POS.below();
+        final MachineFixture machine = MachineFixture.place(helper, casingPos).powerFully();
+        final Direction side = Direction.EAST;
+
+        helper.setBlock(casingPos.relative(side), Blocks.NOTE_BLOCK);
+        final BlockPos interfacePos = helper.absolutePos(casingPos.relative(side));
+        TestSerialInterfaceProvider.initialize(interfacePos, SAVED_SERIAL_VALUE);
+
+        helper.startSequence()
+            .thenWaitUntil(machine::assertRunning)
+            .thenExecute(() -> {
+                final CasingBlockEntity casing = machine.casing(casingPos);
+                casing.setItem(casing.toLocal(side).ordinal(), new ItemStack(Items.SERIAL_PORT_MODULE.get()));
+            })
+            // Lets the module find the interface, so the first reload saves its state.
+            .thenIdle(FULL_POWER_STEP_TICKS)
+            .thenExecute(() -> {
+                // The second reload saves a module that has not scanned for the interface yet.
+                machine.reload(casingPos);
+                machine.reload(casingPos);
+                TestSerialInterfaceProvider.initialize(interfacePos, UNSAVED_SERIAL_VALUE);
+            })
+            .thenIdle(FULL_POWER_STEP_TICKS)
+            .thenExecute(() -> helper.assertValueEqual(TestSerialInterfaceProvider.offeredValue(interfacePos),
+                SAVED_SERIAL_VALUE, "serial interface state after the reloads"))
             .thenSucceed();
     }
 

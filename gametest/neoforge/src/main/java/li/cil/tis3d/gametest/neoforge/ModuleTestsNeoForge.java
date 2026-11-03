@@ -71,6 +71,11 @@ public final class ModuleTestsNeoForge {
     }
 
     @GameTest(template = TEMPLATE, timeoutTicks = 200)
+    public static void serialInterfaceStateSurvivesReloadBeforeScan(final GameTestHelper helper) {
+        ModuleTests.serialInterfaceStateSurvivesReloadBeforeScan(helper);
+    }
+
+    @GameTest(template = TEMPLATE, timeoutTicks = 200)
     public static void fullQueueWithdrawsItsReads(final GameTestHelper helper) {
         ModuleTests.fullQueueWithdrawsItsReads(helper);
     }

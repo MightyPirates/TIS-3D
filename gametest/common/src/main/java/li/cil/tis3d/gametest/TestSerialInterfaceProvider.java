@@ -42,6 +42,10 @@ public final class TestSerialInterfaceProvider implements SerialInterfaceProvide
         return exchange(position).invocations;
     }
 
+    public static int offeredValue(final BlockPos position) {
+        return exchange(position).offeredValue;
+    }
+
     // --------------------------------------------------------------------- //
 
     @Override

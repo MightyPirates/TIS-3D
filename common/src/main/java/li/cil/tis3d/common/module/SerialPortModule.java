@@ -132,9 +132,11 @@ public final class SerialPortModule extends AbstractModule implements ModuleWith
         if (serialInterface.isPresent()) {
             final CompoundTag serialInterfaceTag = new CompoundTag();
             serialInterface.get().save(serialInterfaceTag);
-            if (!tag.isEmpty()) {
+            if (!serialInterfaceTag.isEmpty()) {
                 tag.put(TAG_SERIAL_INTERFACE, serialInterfaceTag);
             }
+        } else {
+            serialInterfaceTag.ifPresent(t -> tag.put(TAG_SERIAL_INTERFACE, t));
         }
     }
 
