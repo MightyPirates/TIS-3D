@@ -1,5 +1,5 @@
-val enabledPlatforms: String by project
-val modId: String by project
+val enabledPlatforms = providers.gradleProperty("enabledPlatforms").get()
+val modId = providers.gradleProperty("modId").get()
 
 architectury {
     common(enabledPlatforms.split(","))
@@ -14,7 +14,7 @@ dependencies {
     modApi(libs.architectury.api)
 
     if (useLocalMarkdownManual) {
-        compileOnly(files(markdownManualJar(".", "markdown_manual-MC*-api.jar")))
+        compileOnly(files(markdownManualJar(".", "*-api.jar")))
     } else {
         compileOnly(libs.common.manual.api)
     }

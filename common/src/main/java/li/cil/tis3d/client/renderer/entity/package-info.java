@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MIT */
+
 @ParametersAreNonnullByDefault
 @NullMarked
 package li.cil.tis3d.client.renderer.entity;

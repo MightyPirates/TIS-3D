@@ -79,6 +79,12 @@ public final class ModuleTestsNeoForge {
     }
 
     @GameTest(template = TEMPLATE_ID, timeoutTicks = 200)
+    @TestHolder(description = "Serial interface state survives reload before scan.")
+    public static void serialInterfaceStateSurvivesReloadBeforeScan(final GameTestHelper helper) {
+        ModuleTests.serialInterfaceStateSurvivesReloadBeforeScan(helper);
+    }
+
+    @GameTest(template = TEMPLATE_ID, timeoutTicks = 200)
     @TestHolder(description = "Full queue withdraws its reads.")
     public static void fullQueueWithdrawsItsReads(final GameTestHelper helper) {
         ModuleTests.fullQueueWithdrawsItsReads(helper);

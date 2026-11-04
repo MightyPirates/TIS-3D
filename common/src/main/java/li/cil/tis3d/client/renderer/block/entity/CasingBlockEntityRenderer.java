@@ -48,7 +48,7 @@ import java.util.Set;
  * block states for static individual texturing).
  */
 public final class CasingBlockEntityRenderer implements BlockEntityRenderer<CasingBlockEntity, CasingRenderState> {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger(CasingBlockEntityRenderer.class);
 
     private static final double Z_FIGHT_BUFFER = 0.001;
     private static final Direction[] DIRECTIONS = Direction.values();

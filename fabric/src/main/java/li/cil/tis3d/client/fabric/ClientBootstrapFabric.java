@@ -14,7 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public final class ClientBootstrapFabric implements ClientModInitializer {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger(ClientBootstrapFabric.class);
 
     @Override
     public void onInitializeClient() {

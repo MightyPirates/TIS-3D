@@ -7,6 +7,8 @@ import org.gradle.api.plugins.quality.Pmd
 import org.gradle.api.plugins.quality.PmdExtension
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.services.BuildService
+import org.gradle.api.services.BuildServiceParameters
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.compile.JavaCompile
@@ -20,6 +22,14 @@ fun Project.gitRef(): String =
         commandLine("git", "rev-parse", "--short", "HEAD")
         isIgnoreExitValue = true
     }.standardOutput.asText.get().trim()
+
+fun Project.devPlayerArgs(): List<String> {
+    fun arg(name: String, propertyName: String): List<String> =
+        providers.gradleProperty(propertyName).orNull?.takeIf { it.isNotBlank() }
+            ?.let { listOf(name, it) } ?: emptyList()
+
+    return arg("--username", "devPlayerName") + arg("--uuid", "devPlayerUuid")
+}
 
 fun Project.configureJava() {
     extensions.configure<JavaPluginExtension> {
@@ -44,7 +54,7 @@ fun Project.configurePmd(vararg additionalExcludes: String) {
     extensions.configure<PmdExtension> {
         toolVersion = "7.26.0"
         ruleSets = emptyList()
-        ruleSetFiles = rootProject.files("config/pmd/ruleset.xml")
+        ruleSetFiles = rootProject.files("pmd.xml")
         isConsoleOutput = true
         isIgnoreFailures = false
     }
@@ -81,12 +91,61 @@ fun Project.configureIdeaExcludes() {
     }
 }
 
+fun Project.registerPackageInfoTask(vararg excludes: String) {
+    val sources = fileTree(projectDir) {
+        include("**/src/*/java/li/cil/**/*.java")
+        exclude("**/build/**")
+        for (pattern in excludes) {
+            exclude(pattern)
+        }
+    }
+
+    val checkPackageInfo = tasks.register("checkPackageInfo") {
+        group = "verification"
+        description = "Checks that every Java package declares a package-info.java."
+        inputs.files(sources)
+        outputs.upToDateWhen { true }
+        val root = rootDir
+        doLast {
+            val sourceSetAndPackage = Regex("""(?:.*/)?src/([^/]+/java/.+)""")
+            val missing = sources.files
+                .map { it.parentFile }
+                .distinct()
+                .groupBy { sourceSetAndPackage.matchEntire(it.relativeTo(root).invariantSeparatorsPath)!!.groupValues[1] }
+                .filterValues { directories -> directories.none { it.resolve("package-info.java").isFile } }
+                .values
+                .flatten()
+                .map { it.relativeTo(root).path }
+                .sorted()
+            if (missing.isNotEmpty()) {
+                throw GradleException(missing.joinToString("\n", "Missing package-info.java in:\n") { "  $it" })
+            }
+        }
+    }
+
+    tasks.named("check") { dependsOn(checkPackageInfo) }
+}
+
 fun Project.registerLintTask() {
     tasks.register("lint") {
         group = "verification"
-        description = "Runs Spotless and PMD across all modules."
+        description = "Runs Spotless, PMD and the package-info check across all modules."
         dependsOn("spotlessCheck")
+        dependsOn("checkPackageInfo")
         dependsOn(subprojects.map { "${it.path}:pmdMain" })
+    }
+}
+
+abstract class ArchitecturyTransformLock : BuildService<BuildServiceParameters.None>
+
+fun Project.serializeArchitecturyTransforms() {
+    val lock = gradle.sharedServices.registerIfAbsent(
+        "architecturyTransformLock",
+        ArchitecturyTransformLock::class
+    ) { maxParallelUsages.set(1) }
+
+    subprojects {
+        tasks.matching { it.name.startsWith("transformProduction") }.configureEach { usesService(lock) }
     }
 }
 
