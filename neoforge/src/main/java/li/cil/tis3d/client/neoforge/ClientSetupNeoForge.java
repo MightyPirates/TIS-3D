@@ -5,9 +5,11 @@ package li.cil.tis3d.client.neoforge;
 import li.cil.tis3d.api.API;
 import li.cil.tis3d.client.ClientBootstrap;
 import li.cil.tis3d.client.ClientSetup;
+import li.cil.tis3d.client.gui.ReadOnlyMemoryModuleScreen;
 import li.cil.tis3d.client.gui.TerminalModuleScreen;
 import li.cil.tis3d.client.renderer.block.neoforge.ModuleModelLoader;
 import li.cil.tis3d.client.renderer.entity.NullEntityRenderer;
+import li.cil.tis3d.common.container.Containers;
 import li.cil.tis3d.common.entity.Entities;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -17,6 +19,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
@@ -32,6 +35,11 @@ public final class ClientSetupNeoForge {
                 event.setCanceled(true);
             }
         });
+    }
+
+    @SubscribeEvent
+    public static void handleRegisterMenuScreens(final RegisterMenuScreensEvent event) {
+        event.register(Containers.READ_ONLY_MEMORY_MODULE.get(), ReadOnlyMemoryModuleScreen::new);
     }
 
     @SubscribeEvent

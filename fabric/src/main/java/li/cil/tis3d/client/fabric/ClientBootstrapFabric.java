@@ -3,12 +3,15 @@
 package li.cil.tis3d.client.fabric;
 
 import dev.architectury.registry.client.level.entity.EntityRendererRegistry;
+import dev.architectury.registry.menu.MenuRegistry;
 import li.cil.tis3d.client.ClientBootstrap;
 import li.cil.tis3d.client.ClientSetup;
+import li.cil.tis3d.client.gui.ReadOnlyMemoryModuleScreen;
 import li.cil.tis3d.client.renderer.block.fabric.ModuleModelLoader;
 import li.cil.tis3d.client.renderer.entity.NullEntityRenderer;
 import li.cil.tis3d.common.block.entity.CasingBlockEntity;
 import li.cil.tis3d.common.block.entity.fabric.ChunkUnloadListener;
+import li.cil.tis3d.common.container.Containers;
 import li.cil.tis3d.common.entity.Entities;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents;
@@ -22,6 +25,8 @@ public final class ClientBootstrapFabric implements ClientModInitializer {
     public void onInitializeClient() {
         ClientBootstrap.run();
         ClientSetup.run();
+
+        MenuRegistry.registerScreenFactory(Containers.READ_ONLY_MEMORY_MODULE.get(), ReadOnlyMemoryModuleScreen::new);
 
         EntityRendererRegistry.register(Entities.INFRARED_PACKET, NullEntityRenderer::new);
 
