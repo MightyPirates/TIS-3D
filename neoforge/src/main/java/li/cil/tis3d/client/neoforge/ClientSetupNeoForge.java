@@ -26,9 +26,11 @@ import net.neoforged.neoforge.common.NeoForge;
 @EventBusSubscriber(value = Dist.CLIENT, modid = API.MOD_ID)
 public final class ClientSetupNeoForge {
     @SubscribeEvent
-    public static void handleClientSetup(final FMLClientSetupEvent ignoredEvent) {
-        ClientBootstrap.run();
-        ClientSetup.run();
+    public static void handleClientSetup(final FMLClientSetupEvent setupEvent) {
+        setupEvent.enqueueWork(() -> {
+            ClientBootstrap.run();
+            ClientSetup.run();
+        });
 
         NeoForge.EVENT_BUS.addListener((RenderGuiEvent.Pre event) -> {
             if (Minecraft.getInstance().screen instanceof TerminalModuleScreen) {
